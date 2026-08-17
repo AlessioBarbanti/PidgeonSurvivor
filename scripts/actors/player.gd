@@ -48,7 +48,10 @@ var _run_controller: RunController
 var _damage_flash_remaining := 0.0
 var _death_handled := false
 var _base_health_max := 100.0
+var _base_move_speed := 360.0
 var _base_pickup_radius := 160.0
+var _move_speed_multiplier := 1.0
+var _pickup_radius_multiplier := 1.0
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 @onready var _health_component: HealthComponent = %HealthComponent
@@ -61,6 +64,7 @@ func _ready() -> void:
 	_make_collision_shape_unique()
 	_sync_collision_radius()
 	_base_health_max = _health_component.health_max
+	_base_move_speed = move_speed
 	_base_pickup_radius = pickup_radius
 	_connect_health_component()
 	_connect_arena_layout()
@@ -143,7 +147,7 @@ func take_contact_damage(amount: float) -> bool:
 func reset_for_run() -> void:
 	_death_handled = false
 	_damage_flash_remaining = 0.0
-	pickup_radius = _base_pickup_radius
+	reset_upgrade_stat_multipliers()
 	clear_movement_input()
 	if is_instance_valid(_health_component):
 		_health_component.set_health_max(_base_health_max)
@@ -191,6 +195,48 @@ func get_ability_controller() -> AbilityController:
 
 func get_pickup_radius() -> float:
 	return pickup_radius
+
+
+func set_upgrade_stat_multipliers(
+	move_speed_multiplier: float,
+	pickup_radius_multiplier: float
+) -> bool:
+	if (
+		not is_finite(move_speed_multiplier)
+		or move_speed_multiplier <= 0.0
+		or not is_finite(pickup_radius_multiplier)
+		or pickup_radius_multiplier <= 0.0
+	):
+		return false
+
+	_move_speed_multiplier = move_speed_multiplier
+	_pickup_radius_multiplier = pickup_radius_multiplier
+	move_speed = _base_move_speed * _move_speed_multiplier
+	pickup_radius = _base_pickup_radius * _pickup_radius_multiplier
+	return true
+
+
+func reset_upgrade_stat_multipliers() -> void:
+	_move_speed_multiplier = 1.0
+	_pickup_radius_multiplier = 1.0
+	move_speed = _base_move_speed
+	pickup_radius = _base_pickup_radius
+
+
+func get_base_move_speed() -> float:
+	return _base_move_speed
+
+
+func get_base_pickup_radius() -> float:
+	return _base_pickup_radius
+
+
+func get_move_speed_multiplier() -> float:
+	return _move_speed_multiplier
+
+
+func get_pickup_radius_multiplier() -> float:
+	return _pickup_radius_multiplier
 
 
 func is_alive() -> bool:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3]
+[gd_scene load_steps=31 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -29,6 +29,7 @@
 [ext_resource type="Resource" path="res://data/upgrades/fallback_haste.tres" id="27_fallback_haste"]
 [ext_resource type="Resource" path="res://data/upgrades/fallback_reach.tres" id="28_fallback_reach"]
 [ext_resource type="PackedScene" path="res://scenes/ui/upgrade_overlay.tscn" id="29_upgrade_overlay"]
+[ext_resource type="Script" path="res://scripts/progression/upgrade_effect_registry.gd" id="30_upgrade_effect_registry"]
 
 [node name="MovementSlice" type="Control"]
 layout_mode = 3
@@ -90,6 +91,10 @@ definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"
 [node name="UpgradeService" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("22_upgrade_service")
+
+[node name="UpgradeEffectRegistry" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("30_upgrade_effect_registry")
 
 [node name="ExperienceDropper" type="Node" parent="."]
 unique_name_in_owner = true

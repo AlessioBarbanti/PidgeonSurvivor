@@ -16,6 +16,7 @@ const SETUP_VALIDATOR = preload("res://scripts/app/setup_validator.gd")
 @onready var _experience_system: ExperienceSystem = %ExperienceSystem
 @onready var _upgrade_registry: UpgradeRegistry = %UpgradeRegistry
 @onready var _upgrade_service: UpgradeService = %UpgradeService
+@onready var _upgrade_effect_registry: UpgradeEffectRegistry = %UpgradeEffectRegistry
 @onready var _experience_dropper: ExperienceDropper = %ExperienceDropper
 @onready var _arena_view = %ArenaView
 @onready var _player: Player = %Player
@@ -90,6 +91,12 @@ func _ready() -> void:
 		_projectiles,
 		_player
 	)
+	_upgrade_effect_registry.configure(
+		_upgrade_service,
+		_upgrade_registry,
+		_player,
+		_weapon_controller
+	)
 	_ability_controller.configure(
 		_run_controller,
 		_input_router,
@@ -107,7 +114,7 @@ func _ready() -> void:
 	var success := SETUP_VALIDATOR.print_result() and _validate_current_contract()
 	_run_controller.start_run(_resolve_run_seed())
 	print(
-		"B11_READY os=%s viewport=%s window=%s display_safe=%s playfield=%s safe_area=%s seed=%d"
+		"B12_READY os=%s viewport=%s window=%s display_safe=%s playfield=%s safe_area=%s seed=%d"
 		% [
 			OS.get_name(),
 			get_viewport().get_visible_rect(),
@@ -258,6 +265,10 @@ func get_upgrade_service() -> UpgradeService:
 
 func get_upgrade_overlay() -> UpgradeOverlay:
 	return _upgrade_overlay
+
+
+func get_upgrade_effect_registry() -> UpgradeEffectRegistry:
+	return _upgrade_effect_registry
 
 
 func get_experience_dropper() -> ExperienceDropper:
@@ -419,6 +430,30 @@ func _validate_current_contract() -> bool:
 		failures.append("UpgradeService non collegato al RunController.")
 	if _upgrade_service.get_experience_system() != _experience_system:
 		failures.append("UpgradeService non collegato a ExperienceSystem.")
+	if not _upgrade_effect_registry.has_valid_configuration():
+		failures.append("UpgradeEffectRegistry non configurato per il catalogo B12.")
+	if _upgrade_effect_registry.get_upgrade_service() != _upgrade_service:
+		failures.append("UpgradeEffectRegistry non collegato a UpgradeService.")
+	if _upgrade_effect_registry.get_upgrade_registry() != _upgrade_registry:
+		failures.append("UpgradeEffectRegistry non collegato a UpgradeRegistry.")
+	if _upgrade_effect_registry.get_player() != _player:
+		failures.append("UpgradeEffectRegistry non collegato al Player.")
+	if _upgrade_effect_registry.get_weapon_controller() != _weapon_controller:
+		failures.append("UpgradeEffectRegistry non collegato all'arma.")
+	if not is_equal_approx(_player.move_speed, _player.get_base_move_speed()):
+		failures.append("La run deve iniziare con la velocita Player base.")
+	if not is_equal_approx(_player.get_pickup_radius(), _player.get_base_pickup_radius()):
+		failures.append("La run deve iniziare con il raggio pickup base.")
+	if not is_equal_approx(
+		_weapon_controller.get_effective_shots_per_second(),
+		_weapon_controller.get_base_shots_per_second()
+	):
+		failures.append("La run deve iniziare con la frequenza arma base.")
+	if not is_equal_approx(
+		_weapon_controller.get_effective_damage(),
+		_weapon_controller.get_base_damage()
+	):
+		failures.append("La run deve iniziare con il danno arma base.")
 	if _upgrade_overlay == null:
 		failures.append("UpgradeOverlay non presente.")
 	else:
@@ -500,11 +535,12 @@ func _validate_current_contract() -> bool:
 		print("B09A_CONTRACT_OK")
 		print("B10_CONTRACT_OK")
 		print("B11_CONTRACT_OK")
+		print("B12_CONTRACT_OK")
 		return true
 
 	for failure in failures:
 		push_error(failure)
-	printerr("B11_CONTRACT_FAIL")
+	printerr("B12_CONTRACT_FAIL")
 	return false
 
 

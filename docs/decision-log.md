@@ -96,8 +96,10 @@ Non comprende account sviluppatore, scheda store, policy, privacy form, closed t
 | PROG-003 | Baseline operativa | `ExperienceSystem` conserva XP totali e XP nella soglia corrente, accoda il livello di ogni scelta guadagnata e mantiene `LEVEL_UP` fino a esaurimento della coda | Un salto di più soglie non perde XP né frame di pausa fra due offerte; B10 può generare una pesca per ogni evento `level_up_started` |
 | PROG-004 | Baseline operativa | `UpgradeDefinition` dichiara ID ed `effect_id` snake_case, testi, icona, parametri, peso, rank massimo, tag e prerequisiti; `UpgradeRegistry` esclude definizioni nulle, non valide, duplicate o con prerequisiti assenti | Il catalogo resta sostituibile senza codice e nessun ID ambiguo o riferimento rotto entra nella pesca |
 | PROG-005 | Baseline operativa | `UpgradeService` usa uno stream RNG scene-local derivato dal seed della run, pesca pesata senza reinserimento e conserva i rank solo per la run corrente; tre fallback statistici con ID diversi sono ripetibili | Lo stesso seed e le stesse scelte riproducono la sequenza, ogni offerta ha tre ID unici e il level-up non si blocca quando le primarie raggiungono il cap |
+| PROG-006 | Baseline operativa | `UpgradeEffectRegistry` ricostruisce ogni statistica effettiva come valore base per il prodotto dei moltiplicatori elevati ai rispettivi rank, poi applica un cap; Player e arma conservano i valori runtime separati dai `Resource` | Lo stacking è deterministico e idempotente, i profili condivisi non vengono mutati e restart/nuova run riportano tutti i moltiplicatori a identità |
 | BAL-003 | Baseline operativa | Profilo B07: BaseEnemy vale 1 XP, Player ha `pickup_radius=160 px`, pickup a `460 px/s` e raccolta a `18 px` | Il magnete è leggibile nella slice e tutti i valori restano esportati per upgrade e bilanciamento successivi |
 | BAL-004 | Baseline operativa | Curva B08 lineare e configurabile: soglia livello 1 pari a 10 XP, crescita di 5 XP per livello (`10, 15, 20, …`) | La slice raggiunge presto i primi level-up; il bilanciamento può cambiare nel `.tres` senza modificare il codice |
+| BAL-005 | Baseline operativa | I cap provvisori B12 sono `×2` velocità, `×3` raggio pickup, `×3` frequenza e `×5` danno; un aumento di frequenza non riscrive il cooldown già iniziato, ma determina l'intervallo dal colpo successivo | I fallback restano consumabili senza crescita illimitata; i cap sono proprietà esportate della scena e potranno essere ribilanciati senza cambiare la composizione degli effetti |
 
 ## Decisioni di sconfitta e restart
 
@@ -164,4 +166,4 @@ Rilevazione del 12 agosto 2026:
 | OPEN-004 | Prima di B20 | Identità e posizione sicura del release keystore |
 | OPEN-005 | Prima di B20 | Nome pubblico definitivo e icone dell'app |
 
-Restano inoltre aperte le decisioni di gameplay elencate in B01 del piano di sviluppo: durata della run, valori Boss, curva XP, bilanciamento finale del danno, stacking e cap degli upgrade.
+Restano inoltre aperte le decisioni di gameplay elencate in B01 del piano di sviluppo: durata della run, valori Boss e bilanciamento finale di curva XP, danno e cap degli upgrade. La regola di stacking è chiusa da PROG-006.

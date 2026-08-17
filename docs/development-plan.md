@@ -2,7 +2,7 @@
 
 Fonte: [`prd.md`](./prd.md)  
 Decisioni: [`decision-log.md`](./decision-log.md)  
-Stato: B06A, B09, B09A e B10 verificati su Windows e Pixel 9/Android 17; B11 implementato, suite ed export Windows verificati e APK rigenerato, con runtime Android fisico in attesa di un device collegato; B12 è il prossimo backlog  
+Stato: B12 implementato e verificato con suite completa, export Windows e runtime automatizzato su Pixel 9/Android 17; la prova manuale touch/controller e i profili Android 12/API 31 e Android 16/API 36 restano aperti; B13 è il prossimo backlog
 Obiettivo: trasformare il concept in un MVP completo, verificabile su Windows e Android; Web resta un target secondario
 
 Vincolo aggiuntivo ricevuto l'11 agosto 2026: Windows e Android sono piattaforme obbligatorie.
@@ -436,8 +436,8 @@ Un'attività è finita solo quando:
 
 Ordine operativo immediato:
 
-1. avviare B12 applicando i tre effetti statistici già dichiarati da B10 alle scelte confermate dall'overlay B11, con stacking e cap;
-2. chiudere il gate runtime B11 su Android touch e validare M2/B09A su un device Android 12/API 31, su Android 16 e con un controller fisico, quindi ricalibrare le stime durante M3.
+1. avviare B13 integrando un upgrade signature alla volta sopra il registry B12, iniziando da un effetto isolato e aggiungendo poi i test combinatori;
+2. chiudere il gate manuale B11–B12 con tap a dito, joystick ripristinato e coda multipla, quindi validare M2–M3 su Android 12/API 31, Android 16/API 36 e controller fisico prima di dichiarare chiuso il gate multipiattaforma M3.
 
 Il setup host e gli artefatti generati il 12 agosto 2026 sono registrati in
 [`m0-verification.md`](./m0-verification.md).
@@ -463,3 +463,5 @@ Resource upgrade, registry, rank, pesca deterministica e lo stato del gate B10
 sono registrati in [`b10-verification.md`](./b10-verification.md).
 Overlay safe-area, navigazione multipiattaforma e stato del gate B11 sono
 registrati in [`b11-verification.md`](./b11-verification.md).
+Stacking, cap e applicazione runtime degli upgrade statistici B12 sono
+registrati in [`b12-verification.md`](./b12-verification.md).

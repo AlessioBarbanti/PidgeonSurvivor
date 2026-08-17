@@ -25,6 +25,10 @@ var _cooldown_remaining := 0.0
 var _last_aim_direction := Vector2.RIGHT
 var _invalid_projectile_scene_warning_emitted := false
 var _projectile_scene_valid := true
+var _base_shots_per_second := 0.0
+var _base_damage := 0.0
+var _fire_rate_multiplier := 1.0
+var _damage_multiplier := 1.0
 
 
 func _ready() -> void:
@@ -67,6 +71,7 @@ func configure(
 	_targeting_system = targeting_system
 	_projectile_parent = projectile_parent
 	_source = source if is_instance_valid(source) else get_parent() as Node2D
+	_capture_base_stats()
 	_connect_run_controller()
 	reset_for_run(false)
 
@@ -107,7 +112,7 @@ func try_fire() -> Projectile:
 	projectile.global_position = _source.global_position + aim_direction * muzzle_offset
 	if not projectile.initialize(
 		aim_direction,
-		weapon_profile.damage,
+		get_effective_damage(),
 		weapon_profile.projectile_speed,
 		weapon_profile.projectile_lifetime,
 		weapon_profile.projectile_radius,
@@ -118,7 +123,7 @@ func try_fire() -> Projectile:
 
 	_last_aim_direction = aim_direction
 	rotation = _last_aim_direction.angle()
-	_cooldown_remaining = weapon_profile.get_fire_interval()
+	_cooldown_remaining = get_effective_fire_interval()
 	queue_redraw()
 	projectile_fired.emit(projectile, target)
 	return projectile
@@ -126,6 +131,7 @@ func try_fire() -> Projectile:
 
 func reset_for_run(clear_existing_projectiles: bool = true) -> void:
 	_cooldown_remaining = 0.0
+	reset_upgrade_stat_multipliers()
 	_last_aim_direction = Vector2.RIGHT
 	_invalid_projectile_scene_warning_emitted = false
 	_projectile_scene_valid = true
@@ -163,10 +169,60 @@ func is_ready_to_fire() -> bool:
 	return _cooldown_remaining <= 0.0
 
 
+func set_upgrade_stat_multipliers(
+	fire_rate_multiplier: float,
+	damage_multiplier: float
+) -> bool:
+	if (
+		not is_finite(fire_rate_multiplier)
+		or fire_rate_multiplier <= 0.0
+		or not is_finite(damage_multiplier)
+		or damage_multiplier <= 0.0
+	):
+		return false
+	_fire_rate_multiplier = fire_rate_multiplier
+	_damage_multiplier = damage_multiplier
+	return true
+
+
+func reset_upgrade_stat_multipliers() -> void:
+	_fire_rate_multiplier = 1.0
+	_damage_multiplier = 1.0
+
+
+func get_base_shots_per_second() -> float:
+	return _base_shots_per_second
+
+
+func get_base_damage() -> float:
+	return _base_damage
+
+
+func get_fire_rate_multiplier() -> float:
+	return _fire_rate_multiplier
+
+
+func get_damage_multiplier() -> float:
+	return _damage_multiplier
+
+
+func get_effective_shots_per_second() -> float:
+	return _base_shots_per_second * _fire_rate_multiplier
+
+
+func get_effective_damage() -> float:
+	return _base_damage * _damage_multiplier
+
+
+func get_effective_fire_interval() -> float:
+	var shots_per_second := get_effective_shots_per_second()
+	return 1.0 / shots_per_second if shots_per_second > 0.0 else INF
+
+
 func _has_valid_dependencies() -> bool:
 	return (
 		weapon_profile != null
-		and weapon_profile.shots_per_second > 0.0
+		and get_effective_shots_per_second() > 0.0
 		and projectile_scene != null
 		and _projectile_scene_valid
 		and is_instance_valid(_run_controller)
@@ -175,6 +231,15 @@ func _has_valid_dependencies() -> bool:
 		and _projectile_parent.is_inside_tree()
 		and is_instance_valid(_source)
 	)
+
+
+func _capture_base_stats() -> void:
+	if weapon_profile == null:
+		_base_shots_per_second = 0.0
+		_base_damage = 0.0
+		return
+	_base_shots_per_second = weapon_profile.shots_per_second
+	_base_damage = weapon_profile.damage
 
 
 func _connect_run_controller() -> void:

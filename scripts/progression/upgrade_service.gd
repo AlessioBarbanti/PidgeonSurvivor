@@ -121,11 +121,12 @@ func select_upgrade(upgrade_id: StringName) -> bool:
 	var new_rank := get_rank(upgrade_id) + 1
 	_ranks[upgrade_id] = new_rank
 	_clear_current_offer()
-	upgrade_selected.emit(selected_definition, new_rank, selected_level)
 	if _experience_system.complete_level_up():
+		upgrade_selected.emit(selected_definition, new_rank, selected_level)
 		return true
 
-	# The guards above make this rollback exceptional, but preserve rank atomicity.
+	# The guards above make this rollback exceptional. Effects are notified only
+	# after progression commits, so a failed selection cannot leak runtime state.
 	if new_rank <= 1:
 		_ranks.erase(upgrade_id)
 	else:
