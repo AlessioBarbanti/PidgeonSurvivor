@@ -69,6 +69,22 @@ func take_damage(amount: float) -> bool:
 	return true
 
 
+func heal(amount: float) -> float:
+	if (
+		not _initialized
+		or _dead
+		or _damage_transition_active
+		or not is_finite(amount)
+		or amount <= 0.0
+	):
+		return 0.0
+	var applied_healing := minf(amount, health_max - _health_current)
+	if applied_healing <= 0.0:
+		return 0.0
+	_set_health_current(_health_current + applied_healing)
+	return applied_healing
+
+
 func reset_to_max() -> void:
 	if _damage_transition_active:
 		return

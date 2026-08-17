@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ability_definition.gd" id="1_definition"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/abilities/lightning.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_definition")
+id = &"zat_lightning_storm"
+title = "Tempesta di Fulmini"
+description = "Scatena sei fulmini contro bersagli casuali vicini."
+icon = ExtResource("2_icon")
+cooldown_seconds = 12.0
+duration_seconds = 0.0
+area_radius = 800.0
+damage = 8.0
+effect_id = &"lightning_storm"
+effect_parameters = {
+"strike_interval": 0.08,
+"strikes": 6,
+"targeting_radius": 800.0
+}
+tags = Array[StringName]([&"damage", &"multi_target", &"random", &"copy_compatible"])

@@ -21,14 +21,23 @@ var _run_controller: RunController
 var _targeting_system: TargetingSystem
 var _projectile_parent: Node
 var _source: Node2D
+var _arena_layout: ArenaLayout
 var _cooldown_remaining := 0.0
 var _last_aim_direction := Vector2.RIGHT
 var _invalid_projectile_scene_warning_emitted := false
 var _projectile_scene_valid := true
 var _base_shots_per_second := 0.0
 var _base_damage := 0.0
+var _character_fire_rate_multiplier := 1.0
+var _character_damage_multiplier := 1.0
 var _fire_rate_multiplier := 1.0
 var _damage_multiplier := 1.0
+var _projectile_chain_enabled := false
+var _projectile_chain_jumps := 0
+var _projectile_chain_damage_falloff := 1.0
+var _projectile_chain_radius := 0.0
+var _projectile_oscillation_amplitude := 0.0
+var _projectile_oscillation_frequency_hz := 0.0
 
 
 func _ready() -> void:
@@ -64,13 +73,15 @@ func configure(
 	run_controller: RunController,
 	targeting_system: TargetingSystem,
 	projectile_parent: Node,
-	source: Node2D = null
+	source: Node2D = null,
+	arena_layout: ArenaLayout = null
 ) -> void:
 	_disconnect_run_controller()
 	_run_controller = run_controller
 	_targeting_system = targeting_system
 	_projectile_parent = projectile_parent
 	_source = source if is_instance_valid(source) else get_parent() as Node2D
+	_arena_layout = arena_layout
 	_capture_base_stats()
 	_connect_run_controller()
 	reset_for_run(false)
@@ -120,6 +131,17 @@ func try_fire() -> Projectile:
 	):
 		projectile.queue_free()
 		return null
+	if not projectile.configure_signature_effects(
+		_projectile_chain_enabled,
+		_projectile_chain_jumps,
+		_projectile_chain_damage_falloff,
+		_projectile_chain_radius,
+		_projectile_oscillation_amplitude,
+		_projectile_oscillation_frequency_hz,
+		_targeting_system
+	):
+		projectile.expire()
+		return null
 
 	_last_aim_direction = aim_direction
 	rotation = _last_aim_direction.angle()
@@ -161,6 +183,10 @@ func get_projectile_parent() -> Node:
 	return _projectile_parent if is_instance_valid(_projectile_parent) else null
 
 
+func get_arena_layout() -> ArenaLayout:
+	return _arena_layout if is_instance_valid(_arena_layout) else null
+
+
 func get_cooldown_remaining() -> float:
 	return _cooldown_remaining
 
@@ -188,14 +214,101 @@ func set_upgrade_stat_multipliers(
 func reset_upgrade_stat_multipliers() -> void:
 	_fire_rate_multiplier = 1.0
 	_damage_multiplier = 1.0
+	reset_projectile_upgrade_modifiers()
+
+
+func set_character_stat_multipliers(
+	fire_rate_multiplier: float,
+	damage_multiplier: float = 1.0
+) -> bool:
+	if (
+		not is_finite(fire_rate_multiplier)
+		or fire_rate_multiplier <= 0.0
+		or not is_finite(damage_multiplier)
+		or damage_multiplier <= 0.0
+	):
+		return false
+	_character_fire_rate_multiplier = fire_rate_multiplier
+	_character_damage_multiplier = damage_multiplier
+	return true
+
+
+func reset_character_stat_multipliers() -> void:
+	_character_fire_rate_multiplier = 1.0
+	_character_damage_multiplier = 1.0
+
+
+func set_projectile_upgrade_modifiers(
+	chain_enabled: bool,
+	chain_jumps: int,
+	chain_damage_falloff: float,
+	chain_radius: float,
+	oscillation_amplitude: float,
+	oscillation_frequency_hz: float
+) -> bool:
+	if (
+		chain_jumps < 0
+		or not is_finite(chain_damage_falloff)
+		or chain_damage_falloff <= 0.0
+		or chain_damage_falloff > 1.0
+		or not is_finite(chain_radius)
+		or chain_radius < 0.0
+		or (chain_enabled and (chain_jumps <= 0 or chain_radius <= 0.0))
+		or not is_finite(oscillation_amplitude)
+		or oscillation_amplitude < 0.0
+		or not is_finite(oscillation_frequency_hz)
+		or oscillation_frequency_hz < 0.0
+		or (oscillation_amplitude > 0.0 and oscillation_frequency_hz <= 0.0)
+	):
+		return false
+	_projectile_chain_enabled = chain_enabled
+	_projectile_chain_jumps = chain_jumps
+	_projectile_chain_damage_falloff = chain_damage_falloff
+	_projectile_chain_radius = chain_radius
+	_projectile_oscillation_amplitude = oscillation_amplitude
+	_projectile_oscillation_frequency_hz = oscillation_frequency_hz
+	return true
+
+
+func reset_projectile_upgrade_modifiers() -> void:
+	_projectile_chain_enabled = false
+	_projectile_chain_jumps = 0
+	_projectile_chain_damage_falloff = 1.0
+	_projectile_chain_radius = 0.0
+	_projectile_oscillation_amplitude = 0.0
+	_projectile_oscillation_frequency_hz = 0.0
+
+
+func is_projectile_chain_enabled() -> bool:
+	return _projectile_chain_enabled
+
+
+func get_projectile_chain_jumps() -> int:
+	return _projectile_chain_jumps
+
+
+func get_projectile_chain_damage_falloff() -> float:
+	return _projectile_chain_damage_falloff
+
+
+func get_projectile_chain_radius() -> float:
+	return _projectile_chain_radius
+
+
+func get_projectile_oscillation_amplitude() -> float:
+	return _projectile_oscillation_amplitude
+
+
+func get_projectile_oscillation_frequency_hz() -> float:
+	return _projectile_oscillation_frequency_hz
 
 
 func get_base_shots_per_second() -> float:
-	return _base_shots_per_second
+	return _base_shots_per_second * _character_fire_rate_multiplier
 
 
 func get_base_damage() -> float:
-	return _base_damage
+	return _base_damage * _character_damage_multiplier
 
 
 func get_fire_rate_multiplier() -> float:
@@ -206,12 +319,16 @@ func get_damage_multiplier() -> float:
 	return _damage_multiplier
 
 
+func get_character_fire_rate_multiplier() -> float:
+	return _character_fire_rate_multiplier
+
+
 func get_effective_shots_per_second() -> float:
-	return _base_shots_per_second * _fire_rate_multiplier
+	return get_base_shots_per_second() * _fire_rate_multiplier
 
 
 func get_effective_damage() -> float:
-	return _base_damage * _damage_multiplier
+	return get_base_damage() * _damage_multiplier
 
 
 func get_effective_fire_interval() -> float:

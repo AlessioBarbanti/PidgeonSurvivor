@@ -4,6 +4,7 @@ extends Node
 signal cooldown_changed(cooldown_remaining: float, cooldown_total: float)
 signal readiness_changed(is_ready: bool)
 signal ability_activated(definition: AbilityDefinition)
+signal definition_changed(definition: AbilityDefinition)
 
 @export var ability_definition: AbilityDefinition
 
@@ -73,6 +74,17 @@ func try_activate() -> bool:
 	cooldown_changed.emit(_cooldown_remaining, get_cooldown_total())
 	_update_ready_state()
 	ability_activated.emit(ability_definition)
+	return true
+
+
+func equip_definition(definition: AbilityDefinition) -> bool:
+	if definition == null or not definition.is_valid():
+		return false
+	if is_instance_valid(_effect_registry) and not _effect_registry.register_definition(definition):
+		return false
+	ability_definition = definition
+	reset_for_run()
+	definition_changed.emit(ability_definition)
 	return true
 
 

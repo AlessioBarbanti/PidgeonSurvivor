@@ -1,0 +1,92 @@
+class_name BossDefinition
+extends Resource
+
+const MINIMUM_POSITIVE_VALUE := 0.001
+
+@export var id: StringName = &"first_boss"
+@export var title := "IL CAPOSQUADRA OMBRA"
+@export var friend_profile: FriendDefinition
+@export_multiline var quote := "Citazione personale in attesa di approvazione."
+@export var quote_approved := false
+@export_multiline var safe_quote_placeholder := "Il Boss entra nell'arena."
+
+@export_group("Stats")
+@export_range(1.0, 1000000.0, 1.0, "or_greater") var health_max := 2400.0
+@export_range(0.0, 2000.0, 1.0, "or_greater") var move_speed := 85.0
+@export_range(1.0, 256.0, 0.5, "or_greater") var collision_radius := 46.0
+@export_range(0.0, 1000000.0, 1.0, "or_greater") var contact_damage := 25.0
+@export_range(1, 1000000, 1, "or_greater") var experience_reward := 50
+
+@export_group("Pattern cadence")
+@export_range(0.01, 60.0, 0.01, "or_greater") var initial_attack_delay := 1.5
+@export_range(0.01, 60.0, 0.01, "or_greater") var pattern_interval := 2.5
+
+@export_group("Radial volley")
+@export_range(0.01, 10.0, 0.01, "or_greater") var radial_telegraph_duration := 0.75
+@export_range(4, 64, 1, "or_greater") var radial_projectile_count := 12
+@export_range(0.0, 1000000.0, 0.1, "or_greater") var radial_projectile_damage := 14.0
+@export_range(1.0, 4000.0, 1.0, "or_greater") var radial_projectile_speed := 270.0
+@export_range(0.01, 30.0, 0.01, "or_greater") var radial_projectile_lifetime := 4.0
+@export_range(1.0, 128.0, 0.5, "or_greater") var radial_projectile_radius := 9.0
+
+@export_group("Targeted blast")
+@export_range(0.01, 10.0, 0.01, "or_greater") var targeted_telegraph_duration := 1.0
+@export_range(1.0, 1024.0, 1.0, "or_greater") var targeted_blast_radius := 115.0
+@export_range(0.0, 1000000.0, 0.1, "or_greater") var targeted_blast_damage := 26.0
+
+@export_group("Visual")
+@export var body_color := Color(0.55, 0.17, 0.92, 1.0)
+@export var outline_color := Color(0.08, 0.015, 0.16, 1.0)
+@export var accent_color := Color(1.0, 0.72, 0.18, 1.0)
+@export var telegraph_color := Color(1.0, 0.24, 0.18, 0.72)
+
+
+func get_safe_quote() -> String:
+	var approved_quote := quote.strip_edges()
+	if quote_approved and not approved_quote.is_empty():
+		return approved_quote
+	return safe_quote_placeholder.strip_edges()
+
+
+func get_safe_title() -> String:
+	if friend_profile != null and friend_profile.is_valid():
+		return friend_profile.get_public_evil_display_name()
+	return title.strip_edges()
+
+
+func get_safe_portrait() -> Texture2D:
+	if friend_profile == null or not friend_profile.is_valid():
+		return null
+	return friend_profile.get_public_evil_portrait()
+
+
+func is_valid() -> bool:
+	return (
+		not id.is_empty()
+		and not get_safe_title().is_empty()
+		and not get_safe_quote().is_empty()
+		and is_finite(health_max)
+		and health_max > 0.0
+		and is_finite(move_speed)
+		and move_speed >= 0.0
+		and is_finite(collision_radius)
+		and collision_radius > 0.0
+		and is_finite(contact_damage)
+		and contact_damage >= 0.0
+		and experience_reward > 0
+		and _is_positive_finite(initial_attack_delay)
+		and _is_positive_finite(pattern_interval)
+		and _is_positive_finite(radial_telegraph_duration)
+		and radial_projectile_count >= 4
+		and _is_positive_finite(radial_projectile_damage)
+		and _is_positive_finite(radial_projectile_speed)
+		and _is_positive_finite(radial_projectile_lifetime)
+		and _is_positive_finite(radial_projectile_radius)
+		and _is_positive_finite(targeted_telegraph_duration)
+		and _is_positive_finite(targeted_blast_radius)
+		and _is_positive_finite(targeted_blast_damage)
+	)
+
+
+static func _is_positive_finite(value: float) -> bool:
+	return is_finite(value) and value >= MINIMUM_POSITIVE_VALUE

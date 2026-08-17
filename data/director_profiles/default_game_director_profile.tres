@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="GameDirectorProfile" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/game/game_director_profile.gd" id="1_director_profile"]
+[ext_resource type="Resource" path="res://data/spawn_profiles/default_enemy_spawn_profile.tres" id="2_enemy_spawn_profile"]
+
+[resource]
+script = ExtResource("1_director_profile")
+enemy_spawn_profile = ExtResource("2_enemy_spawn_profile")
+boss_thresholds_seconds = PackedFloat32Array(240)

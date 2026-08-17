@@ -103,7 +103,7 @@ definizione contiene almeno:
 - `description`;
 - `cooldown_seconds` (float);
 - `duration_seconds` (float, opzionale);
-- `area_radius` (pixel, opzionale);
+- `area_radius` (unità logiche del mondo, opzionale);
 - `damage` (valore o formula, opzionale);
 - `effects` (lista di `effect_id` e relativi parametri);
 - `tags` (filtri e compatibilità).
@@ -178,10 +178,11 @@ in base ai tag di compatibilità, in particolare per gli effetti di copia.
 - **Parametri iniziali:** `cooldown_seconds: 11.0`, `area_radius: 260`,
   `duration_seconds: 3.5`, `slow_factor: 0.4`.
 
-#### Marghe — Esana Inganno d'Ombra
+#### Marghe — Reggeton time!
 
-- **Tipo:** creazione di un'entità illusoria.
-- **Effetto:** genera un clone che attira temporaneamente l'aggro dei nemici.
+- **Tipo:** esca illusoria a tema reggaeton.
+- **Effetto:** genera un clone che balla reggaeton e attira temporaneamente
+  l'aggro dei nemici.
 - **Parametri iniziali:** `cooldown_seconds: 13.0`, `duration_seconds: 3.0`,
   `illusion_lifetime_on_death: true`.
 - **Nota tecnica:** definire raggio e priorità dell'aggro e rendere configurabile
@@ -190,29 +191,86 @@ in base ai tag di compatibilità, in particolare per gli effetti di copia.
 I valori numerici sono una baseline di bilanciamento e devono poter essere
 modificati nei `Resource` senza cambiare il codice.
 
+### 3.5. Boss, vittoria e chiusura della run
+
+Il primo Boss viene richiesto dal `GameDirector` a `04:00` di clock logico e
+convive con le ondate ordinarie. L'introduzione porta la run in `BOSS_INTRO`,
+ferma clock e gameplay e mostra nella safe area nome, barra HP e una citazione.
+Una citazione personale non approvata non viene mai mostrata: la UI usa il
+placeholder sicuro dichiarato nel `BossDefinition`.
+
+La vertical slice alterna due pattern leggibili e schivabili: una raffica
+radiale preceduta da raggi di avviso e un'esplosione sull'ultima posizione
+marcata del Player. Durate, danni, velocità, numero di proiettili e raggi sono
+parametri dati; raggi e velocità sono unità logiche del mondo Godot, non pixel
+fisici del display.
+
+La morte atomica del Boss assegna una sola ricompensa XP e richiede `VICTORY`,
+che blocca clock, danni, spawn e progressione. La schermata finale mostra Boss,
+tempo e ricompensa e consente una nuova run in-place. Il restart elimina Boss,
+proiettili, offerte, XP, cooldown ed effetti appartenenti alla run precedente.
+
+### 3.6. Catalogo amici e controparti Evil
+
+Gli otto profili approvati sono Magno, Bea, Zat, Alea, Aleo, Lollo, Migi e
+Marghe. Ogni profilo dichiara in un `FriendDefinition` identità, ruolo, passiva,
+parametri runtime della passiva, attiva, ID abilità, ritratto sostituibile e la
+controparte Boss denominata `Evil <Nome>`. Il Player della vertical slice M4 è
+Magno; B17A rende selezionabili e giocabili tutti gli otto profili prima della
+run. Il primo incontro Boss continua a usare Evil Bea.
+
+La selezione resta in `BOOT`: nessun clock, spawn o input di gameplay avanza
+finché il giocatore non conferma un profilo. Il profilo scelto assegna ritratto,
+passiva e abilità; un restart rapido conserva la scelta, mentre l'azione
+“Cambia personaggio” da vittoria o sconfitta torna alla selezione dopo aver
+ripulito la run. Passive e upgrade si compongono senza mutare i dati base.
+
+Baseline iniziali delle passive, tutte configurabili nei `.tres`:
+
+| Profilo | Parametri runtime B17A |
+|---|---|
+| Magno | velocità di movimento `×1,15` |
+| Bea | probabilità di evasione `15%` |
+| Zat | `35%` del danno recuperabile dopo `3 s`, recupero in `4 s` |
+| Alea | effetto ogni `12 s` per `5 s`; `75%` positivo (`×1,20`) e `25%` negativo (`×0,90`) su movimento o fuoco |
+| Aleo | riduzione danno `15%`; resistenza knockback `×0,50` quando una sorgente applica spostamento al Player |
+| Lollo | movimento `×1,10`, frequenza di fuoco `×1,15` |
+| Migi | riduzione danno `10%`; sotto `35%` HP scudo da un colpo per `4 s`, cooldown `20 s` |
+| Marghe | salute massima dei nemici base `×0,95`; Boss esclusi dalla baseline |
+
+Il `FriendRegistry` rifiuta ID amico, ID abilità e nomi Evil ambigui. Copy e
+ritratti vengono esposti attraverso getter sicuri: se manca l'approvazione
+ritornano fallback neutri. L'approvazione richiede approvatore, data ISO e
+riferimento; gli stati correnti sono registrati in `content-approvals.md`.
+
+I ritratti B17 sono placeholder top-down CC0 ritagliati da un atlas. Possono
+essere sostituiti nei `.tres` senza cambiare codice. Citazioni personali e audio
+non forniti non vengono inventati e restano rispettivamente sul placeholder
+neutro o silenziosi.
+
 ## 4. Idee per i potenziamenti (Citazioni e Amici)
 
-### “L'Ansia di [Nome]”
+### “L'Ansia”
 
 Effetto: `+35%` velocità di movimento e `-20%` vita massima. Applica un leggero
 effetto di vignettatura scura ai bordi dello schermo.
 
-### “La Teoria Complottista di [Nome]”
+### “Gossip”
 
-Effetto: i proiettili non spariscono quando colpiscono un nemico e rimbalzano due
-volte sulle pareti dell'arena.
+Effetto: quando un proiettile colpisce un nemico può saltare a un altro bersaglio
+vivo vicino, applicando un danno progressivamente ridotto a ogni salto.
 
-### “Il Ritardo Cronico di [Nome]”
+### “Ritardo Cronico”
 
 Effetto: ogni 12 secondi rallenta tutti i nemici a schermo del `50%` per tre
 secondi.
 
-### “Il Caffè Corretto di [Nome]”
+### “Birra”
 
 Effetto: aumenta la frequenza di sparo del `25%`, ma rende la traiettoria dei
 proiettili leggermente oscillante.
 
-### “Non Ho Tempo Per Questo di [Nome]”
+### “Non Ho Tempo Per Questo”
 
 Effetto: quando il Player subisce danno, crea un'onda d'urto che respinge tutti i
 nemici vicini.
@@ -236,6 +294,24 @@ riquadri selezionabili con mouse, tastiera, controller o touch.
 **Stile visivo:** 2D minimale, con pixel art o forme geometriche pulite e colori
 ad alto contrasto per un prototipo rapido. Area, direzione e durata delle abilità
 devono essere leggibili anche durante le ondate più dense.
+Le aree e i VFX alleati sono renderizzati sotto attori e attacchi; telegraph e
+proiettili ostili hanno priorità visiva e non possono essere coperti da un'abilità.
+Forma, contorno e pattern affiancano sempre il colore come segnali distintivi.
+
+La presentazione B18B usa una fascia superiore compatta da `64` unità logiche,
+seguita da una linea XP da `8`; ritratto, livello e vita occupano il lato sinistro,
+il timer resta centrato e pausa usa un target touch da almeno `44` unità. La card
+dell'abilità misura `246×94` unità logiche e conserva lo stesso minimo touch.
+Il joystick mantiene area di acquisizione `224×224` e raggio input `84`, ma viene
+disegnato con raggio `68` e opacità ridotta a riposo. Il pavimento è procedurale e
+irregolare, privo di griglia o bordo ciano regolari; flash, squash, hit spark,
+particelle di morte e impulso di prontezza sono esclusivamente presentazionali.
+
+**Audio:** gli eventi di combattimento, progressione, abilità, Boss e terminali
+usano cue brevi su un bus SFX polifonico. Il menu di pausa offre volume lineare e
+mute, applicati anche durante la pausa e persistiti in `user://audio_settings.cfg`.
+Le voci personali restano separate da questi effetti generici e silenziose finché
+non vengono fornite e approvate.
 
 ## 6. Roadmap di sviluppo
 
@@ -247,9 +323,10 @@ devono essere leggibili anche durante le ondate più dense.
 4. **Sistema abilità attive:** azione multipiattaforma, cooldown sul tempo di
    gameplay, HUD, `abilities_registry` e una prima abilità completa come vertical
    slice.
-5. **Contenuti Amici:** `Resource` in `res://data/abilities/` per le otto abilità,
+5. **Roster Amici:** selezione pre-run degli otto `FriendDefinition`, passive
+   parametriche e `Resource` in `res://data/abilities/` per le otto abilità;
    database definitivo di citazioni e potenziamenti, grafica, VFX e audio
-   dedicati.
+   dedicati restano contenuti sostituibili.
 
 Le descrizioni narrative, i ruoli e le passive dei personaggi sono mantenuti in
 [`characters.md`](./characters.md); questo documento è la fonte dei contratti e

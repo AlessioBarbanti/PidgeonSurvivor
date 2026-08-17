@@ -72,11 +72,57 @@ theme_override_font_sizes/font_size = 18
 text = "La partita riprende solo su tua conferma"
 horizontal_alignment = 1
 
+[node name="AudioSeparator" type="HSeparator" parent="Center/Panel/VBox"]
+layout_mode = 2
+
+[node name="AudioTitle" type="Label" parent="Center/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
+theme_override_font_sizes/font_size = 17
+text = "AUDIO"
+
+[node name="VolumeRow" type="HBoxContainer" parent="Center/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="VolumeCaption" type="Label" parent="Center/Panel/VBox/VolumeRow"]
+custom_minimum_size = Vector2(142, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.93, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "Volume effetti"
+
+[node name="VolumeSlider" type="HSlider" parent="Center/Panel/VBox/VolumeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.0
+max_value = 1.0
+step = 0.05
+value = 0.8
+
+[node name="VolumeValueLabel" type="Label" parent="Center/Panel/VBox/VolumeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(52, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.78, 1)
+theme_override_font_sizes/font_size = 16
+text = "80%"
+horizontal_alignment = 2
+
+[node name="MuteCheckButton" type="CheckButton" parent="Center/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "DISATTIVA SUONI"
+
 [node name="ResumeButton" type="Button" parent="Center/Panel/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
-focus_neighbor_top = NodePath(".")
+focus_neighbor_top = NodePath("../MuteCheckButton")
 focus_neighbor_bottom = NodePath(".")
 theme_override_font_sizes/font_size = 20
 text = "RIPRENDI"

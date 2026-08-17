@@ -8,7 +8,7 @@ Target co-primari:
 - Windows x64;
 - Android 12–16 (API 31–36), ARM64, landscape.
 
-Il vertical slice corrente completa B06A, B09, B09A, B10, B11 e B12, usa il renderer Compatibility e
+Il vertical slice corrente completa l'implementazione automatizzata B03–B18B, usa il renderer Compatibility e
 include movimento 8 direzioni,
 joystick touch, arena responsive, nemici inseguitori, spawner dinamico, targeting
 del vivo più vicino, fuoco automatico, proiettili, salute Player, danno da
@@ -22,10 +22,17 @@ aggiunge inoltre `UpgradeDefinition`, catalogo validato, rank per run e pesca
 pesata deterministica di tre ID unici con fallback ripetibili. B11 aggiunge
 l'overlay safe-area e la selezione con mouse, tastiera, controller e touch.
 B12 applica velocità, frequenza, danno e raggio pickup con stacking
-moltiplicativo, cap configurabili e reset completo senza mutare i Resource. Lo
-stato dei gate è in
-[`docs/b06a-verification.md`](docs/b06a-verification.md) e
-[`docs/b12-verification.md`](docs/b12-verification.md).
+moltiplicativo, cap configurabili e reset completo senza mutare i Resource.
+B13–B16 completano upgrade signature, Game Director, Evil Bea, vittoria e run
+chiusa. B17 aggiunge gli otto profili approvati e le controparti `Evil <Nome>`;
+B17A rende gli otto amici selezionabili e giocabili con ritratto, passiva e
+abilità propria. B18 aggiunge icone dedicate, gerarchia VFX leggibile, cue CC0 e
+volume/mute persistenti. B18B compatta HUD e controlli, sostituisce la vista
+debug dell'arena con un pavimento procedurale discreto e aggiunge reazioni,
+particelle e impulsi di combattimento senza cambiare collisioni o bilanciamento.
+Lo stato più recente è in
+[`docs/b18b-verification.md`](docs/b18b-verification.md) e le approvazioni sono
+in [`docs/content-approvals.md`](docs/content-approvals.md).
 
 ## Avvio rapido
 
@@ -40,9 +47,17 @@ godot_console --headless --path . --script tests/integration/_experience_pickup_
 godot_console --headless --path . --script tests/integration/_level_progression_smoke.gd
 godot_console --headless --path . --script tests/integration/_hud_smoke.gd
 godot_console --headless --path . --script tests/integration/_active_ability_smoke.gd
+godot_console --headless --path . --script tests/integration/_complete_roster_abilities_smoke.gd
 godot_console --headless --path . --script tests/integration/_upgrade_service_smoke.gd
 godot_console --headless --path . --resolution 1280x720 --script tests/integration/_upgrade_overlay_smoke.gd
 godot_console --headless --path . --resolution 1280x720 --script tests/integration/_upgrade_effects_smoke.gd
+godot_console --headless --path . --script tests/integration/_signature_upgrades_smoke.gd
+godot_console --headless --path . --script tests/integration/_game_director_smoke.gd
+godot_console --headless --path . --script tests/integration/_boss_encounter_smoke.gd
+godot_console --headless --path . --script tests/integration/_complete_run_smoke.gd
+godot_console --headless --path . --script tests/integration/_friend_content_smoke.gd
+godot_console --headless --path . --script tests/integration/_audiovisual_feedback_smoke.gd
+godot_console --headless --path . --resolution 1280x720 --script tests/integration/_visual_identity_smoke.gd
 godot_console --headless --path . --script tests/integration/_platform_lifecycle_smoke.gd
 godot --editor --path .
 ```

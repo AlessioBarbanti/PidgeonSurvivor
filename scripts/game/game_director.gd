@@ -1,0 +1,258 @@
+class_name GameDirector
+extends Node
+
+signal boss_event_queued(schedule_index: int, threshold_seconds: float)
+signal boss_event_requested(schedule_index: int, threshold_seconds: float)
+signal boss_event_completed(schedule_index: int)
+
+@export var profile: GameDirectorProfile
+
+var _run_controller: RunController
+var _enemy_spawner: EnemySpawner
+var _thresholds := PackedFloat32Array()
+var _triggered_events: Dictionary[int, bool] = {}
+var _pending_event_indices: Array[int] = []
+var _active_event_index := -1
+var _boss_request_in_flight := false
+var _active_boss: Node
+var _requested_count := 0
+
+
+func _init() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
+
+func configure(
+	run_controller: RunController,
+	enemy_spawner: EnemySpawner
+) -> bool:
+	set_run_controller(run_controller)
+	_enemy_spawner = enemy_spawner
+	_apply_profile_to_spawner()
+	reset_for_run()
+	if is_instance_valid(_run_controller) and _run_controller.is_running():
+		_evaluate_run_time(_run_controller.get_run_time())
+	return has_valid_configuration()
+
+
+func set_run_controller(value: RunController) -> void:
+	if value == _run_controller:
+		return
+
+	_disconnect_run_controller()
+	_run_controller = value
+	if not is_instance_valid(_run_controller):
+		return
+
+	if not _run_controller.run_started.is_connected(_on_run_started):
+		_run_controller.run_started.connect(_on_run_started)
+	if not _run_controller.run_time_changed.is_connected(_on_run_time_changed):
+		_run_controller.run_time_changed.connect(_on_run_time_changed)
+	if not _run_controller.state_changed.is_connected(_on_run_state_changed):
+		_run_controller.state_changed.connect(_on_run_state_changed)
+	if not _run_controller.restart_prepared.is_connected(_on_restart_prepared):
+		_run_controller.restart_prepared.connect(_on_restart_prepared)
+
+
+func get_run_controller() -> RunController:
+	return _run_controller if is_instance_valid(_run_controller) else null
+
+
+func get_enemy_spawner() -> EnemySpawner:
+	return _enemy_spawner if is_instance_valid(_enemy_spawner) else null
+
+
+func has_valid_configuration() -> bool:
+	return (
+		profile != null
+		and profile.is_valid()
+		and is_instance_valid(_run_controller)
+		and is_instance_valid(_enemy_spawner)
+		and _enemy_spawner.spawn_profile == profile.enemy_spawn_profile
+	)
+
+
+func apply_profile() -> bool:
+	_apply_profile_to_spawner()
+	return has_valid_configuration()
+
+
+func reset_for_run(clear_tracked_boss: bool = true) -> void:
+	_clear_active_event(clear_tracked_boss)
+	_thresholds = (
+		profile.get_effective_boss_thresholds()
+		if profile != null
+		else PackedFloat32Array()
+	)
+	_triggered_events.clear()
+	_pending_event_indices.clear()
+	_requested_count = 0
+
+
+func register_active_boss(boss: Node, schedule_index: int = -1) -> bool:
+	if (
+		_active_event_index < 0
+		or not _boss_request_in_flight
+		or not is_instance_valid(boss)
+	):
+		return false
+	if schedule_index >= 0 and schedule_index != _active_event_index:
+		return false
+
+	_active_boss = boss
+	_boss_request_in_flight = false
+	if not _active_boss.tree_exiting.is_connected(_on_active_boss_tree_exiting):
+		_active_boss.tree_exiting.connect(
+			_on_active_boss_tree_exiting,
+			CONNECT_ONE_SHOT
+		)
+	return true
+
+
+func complete_active_boss_event() -> bool:
+	if _active_event_index < 0:
+		return false
+	var completed_index := _active_event_index
+	_clear_active_event(false)
+	boss_event_completed.emit(completed_index)
+	_request_next_boss_event()
+	return true
+
+
+func get_thresholds() -> PackedFloat32Array:
+	return _thresholds.duplicate()
+
+
+func get_triggered_count() -> int:
+	return _triggered_events.size()
+
+
+func get_pending_count() -> int:
+	return _pending_event_indices.size()
+
+
+func get_requested_count() -> int:
+	return _requested_count
+
+
+func get_active_event_index() -> int:
+	return _active_event_index
+
+
+func is_boss_request_in_flight() -> bool:
+	return _boss_request_in_flight
+
+
+func get_active_boss() -> Node:
+	return _active_boss if is_instance_valid(_active_boss) else null
+
+
+func has_blocking_boss_event() -> bool:
+	return _active_event_index >= 0
+
+
+func _exit_tree() -> void:
+	_disconnect_run_controller()
+	_clear_active_event(false)
+	_enemy_spawner = null
+
+
+func _apply_profile_to_spawner() -> void:
+	if (
+		profile == null
+		or not is_instance_valid(_enemy_spawner)
+		or profile.enemy_spawn_profile == null
+	):
+		return
+	_enemy_spawner.spawn_profile = profile.enemy_spawn_profile
+
+
+func _evaluate_run_time(run_time: float) -> void:
+	if not is_instance_valid(_run_controller) or not _run_controller.is_running():
+		return
+	var safe_run_time := maxf(run_time, 0.0) if is_finite(run_time) else 0.0
+	for schedule_index in range(_thresholds.size()):
+		if _triggered_events.has(schedule_index):
+			continue
+		var threshold_seconds := _thresholds[schedule_index]
+		if safe_run_time < threshold_seconds:
+			break
+		_triggered_events[schedule_index] = true
+		_pending_event_indices.append(schedule_index)
+		boss_event_queued.emit(schedule_index, threshold_seconds)
+	_request_next_boss_event()
+
+
+func _request_next_boss_event() -> void:
+	if (
+		_active_event_index >= 0
+		or _pending_event_indices.is_empty()
+		or not is_instance_valid(_run_controller)
+		or not _run_controller.is_running()
+	):
+		return
+
+	_active_event_index = _pending_event_indices.pop_front()
+	_boss_request_in_flight = true
+	_requested_count += 1
+	boss_event_requested.emit(
+		_active_event_index,
+		_thresholds[_active_event_index]
+	)
+
+
+func _clear_active_event(clear_tracked_boss: bool) -> void:
+	var boss_to_clear := _active_boss
+	if is_instance_valid(boss_to_clear):
+		if boss_to_clear.tree_exiting.is_connected(_on_active_boss_tree_exiting):
+			boss_to_clear.tree_exiting.disconnect(_on_active_boss_tree_exiting)
+	_active_boss = null
+	_active_event_index = -1
+	_boss_request_in_flight = false
+	if (
+		clear_tracked_boss
+		and is_instance_valid(boss_to_clear)
+		and not boss_to_clear.is_queued_for_deletion()
+	):
+		boss_to_clear.queue_free()
+
+
+func _disconnect_run_controller() -> void:
+	if not is_instance_valid(_run_controller):
+		_run_controller = null
+		return
+	if _run_controller.run_started.is_connected(_on_run_started):
+		_run_controller.run_started.disconnect(_on_run_started)
+	if _run_controller.run_time_changed.is_connected(_on_run_time_changed):
+		_run_controller.run_time_changed.disconnect(_on_run_time_changed)
+	if _run_controller.state_changed.is_connected(_on_run_state_changed):
+		_run_controller.state_changed.disconnect(_on_run_state_changed)
+	if _run_controller.restart_prepared.is_connected(_on_restart_prepared):
+		_run_controller.restart_prepared.disconnect(_on_restart_prepared)
+	_run_controller = null
+
+
+func _on_run_started(_seed_value: int) -> void:
+	reset_for_run()
+
+
+func _on_run_time_changed(run_time: float) -> void:
+	_evaluate_run_time(run_time)
+
+
+func _on_run_state_changed(
+	_previous_state: RunController.RunState,
+	current_state: RunController.RunState
+) -> void:
+	if current_state != RunController.RunState.RUNNING:
+		return
+	_evaluate_run_time(_run_controller.get_run_time())
+	_request_next_boss_event()
+
+
+func _on_restart_prepared() -> void:
+	reset_for_run()
+
+
+func _on_active_boss_tree_exiting() -> void:
+	complete_active_boss_event()

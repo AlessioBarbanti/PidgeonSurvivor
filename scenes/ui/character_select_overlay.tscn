@@ -1,0 +1,135 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/character_select_overlay.gd" id="1_overlay"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.025, 0.043, 0.075, 0.98)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.25, 0.72, 1, 0.82)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+content_margin_left = 28.0
+content_margin_top = 22.0
+content_margin_right = 28.0
+content_margin_bottom = 22.0
+
+[node name="CharacterSelectOverlay" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1_overlay")
+
+[node name="Dimmer" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.006, 0.01, 0.02, 0.9)
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="SelectionPanel" type="PanelContainer" parent="Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(820, 650)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Content" type="VBoxContainer" parent="Center/SelectionPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Center/SelectionPanel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.48, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 28
+text = "SCEGLI IL PERSONAGGIO"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Center/SelectionPanel/Content"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.86, 0.94, 1)
+theme_override_font_sizes/font_size = 15
+text = "Ogni amico ha una passiva e un'abilità attiva proprie"
+horizontal_alignment = 1
+
+[node name="RosterGrid" type="GridContainer" parent="Center/SelectionPanel/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 4
+
+[node name="Details" type="HBoxContainer" parent="Center/SelectionPanel/Content"]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Portrait" type="TextureRect" parent="Center/SelectionPanel/Content/Details"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Copy" type="VBoxContainer" parent="Center/SelectionPanel/Content/Details"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 5
+
+[node name="NameLabel" type="Label" parent="Center/SelectionPanel/Content/Details/Copy"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
+theme_override_font_sizes/font_size = 22
+text = "MAGNO"
+
+[node name="RoleLabel" type="Label" parent="Center/SelectionPanel/Content/Details/Copy"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 15
+text = "Ruolo"
+autowrap_mode = 2
+
+[node name="PassiveLabel" type="Label" parent="Center/SelectionPanel/Content/Details/Copy"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Passiva"
+autowrap_mode = 2
+
+[node name="AbilityLabel" type="Label" parent="Center/SelectionPanel/Content/Details/Copy"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.74, 0.38, 1)
+theme_override_font_sizes/font_size = 14
+text = "Attiva"
+autowrap_mode = 2
+
+[node name="ConfirmButton" type="Button" parent="Center/SelectionPanel/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 62)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "GIOCA"

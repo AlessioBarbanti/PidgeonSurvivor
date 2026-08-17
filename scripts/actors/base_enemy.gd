@@ -4,6 +4,7 @@ extends CharacterBody2D
 signal health_changed(enemy: BaseEnemy, health_current: float, health_max: float)
 signal damaged(enemy: BaseEnemy, amount: float, health_current: float)
 signal died(enemy: BaseEnemy)
+signal speed_modifiers_changed(enemy: BaseEnemy, effective_multiplier: float)
 
 @export_range(0.0, 2000.0, 1.0) var move_speed: float = 140.0
 
@@ -41,13 +42,17 @@ signal died(enemy: BaseEnemy)
 
 @export_group("Combat Feedback")
 @export_range(0.0, 1.0, 0.01) var damage_flash_duration := 0.08
+@export_range(0.0, 1.0, 0.01) var hit_reaction_duration := 0.14
+@export_range(0.0, 0.5, 0.01) var hit_squash_strength := 0.16
 
 var _target: Node2D
 var _run_controller: RunController
 var _damage_flash_remaining := 0.0
+var _hit_reaction_remaining := 0.0
 var _death_handled := false
 var _knockback_velocity := Vector2.ZERO
 var _knockback_remaining := 0.0
+var _speed_modifiers: Dictionary = {}
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 @onready var _health_component: HealthComponent = %HealthComponent
@@ -76,12 +81,22 @@ func _exit_tree() -> void:
 
 
 func _process(delta: float) -> void:
+	if is_instance_valid(_run_controller) and not _run_controller.is_running():
+		return
+	var safe_delta := maxf(delta, 0.0) if is_finite(delta) else 0.0
 	_damage_flash_remaining = maxf(
-		_damage_flash_remaining - maxf(delta, 0.0),
+		_damage_flash_remaining - safe_delta,
+		0.0
+	)
+	_hit_reaction_remaining = maxf(
+		_hit_reaction_remaining - safe_delta,
 		0.0
 	)
 	queue_redraw()
-	if is_zero_approx(_damage_flash_remaining):
+	if (
+		is_zero_approx(_damage_flash_remaining)
+		and is_zero_approx(_hit_reaction_remaining)
+	):
 		set_process(false)
 
 
@@ -103,14 +118,20 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 
-	velocity = offset_to_target.normalized() * move_speed
+	velocity = offset_to_target.normalized() * get_effective_move_speed()
 	move_and_slide()
 
 
 func _draw() -> void:
+	draw_set_transform(Vector2.ZERO, 0.0, get_visual_hit_scale())
 	var visible_body_color := body_color
+	if get_speed_multiplier() < 1.0 - 0.0001:
+		visible_body_color = visible_body_color.lerp(
+			Color(0.25, 0.68, 1.0, visible_body_color.a),
+			0.38
+		)
 	if _damage_flash_remaining > 0.0:
-		visible_body_color = body_color.lerp(Color.WHITE, 0.78)
+		visible_body_color = visible_body_color.lerp(Color.WHITE, 0.82)
 	draw_circle(
 		Vector2.ZERO,
 		collision_radius + outline_width,
@@ -129,6 +150,7 @@ func _draw() -> void:
 		maxf(outline_width * 0.75, 1.0),
 		true
 	)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	_draw_health_bar()
 
 
@@ -162,11 +184,77 @@ func get_knockback_velocity() -> Vector2:
 	return _knockback_velocity
 
 
+func set_speed_modifier(modifier_id: StringName, multiplier: float) -> bool:
+	if (
+		String(modifier_id).is_empty()
+		or not is_finite(multiplier)
+		or multiplier <= 0.0
+	):
+		return false
+	_speed_modifiers[modifier_id] = multiplier
+	speed_modifiers_changed.emit(self, get_speed_multiplier())
+	queue_redraw()
+	return true
+
+
+func remove_speed_modifier(modifier_id: StringName) -> bool:
+	if not _speed_modifiers.erase(modifier_id):
+		return false
+	speed_modifiers_changed.emit(self, get_speed_multiplier())
+	queue_redraw()
+	return true
+
+
+func clear_speed_modifiers() -> void:
+	if _speed_modifiers.is_empty():
+		return
+	_speed_modifiers.clear()
+	speed_modifiers_changed.emit(self, 1.0)
+	queue_redraw()
+
+
+func has_speed_modifier(modifier_id: StringName) -> bool:
+	return _speed_modifiers.has(modifier_id)
+
+
+func get_speed_multiplier() -> float:
+	var multiplier := 1.0
+	for value: Variant in _speed_modifiers.values():
+		multiplier *= float(value)
+	return multiplier
+
+
+func get_effective_move_speed() -> float:
+	return move_speed * get_speed_multiplier()
+
+
 func is_alive() -> bool:
 	return (
 		is_instance_valid(_health_component)
 		and not _death_handled
 		and _health_component.is_alive()
+	)
+
+
+func get_damage_flash_remaining() -> float:
+	return _damage_flash_remaining
+
+
+func get_hit_reaction_remaining() -> float:
+	return _hit_reaction_remaining
+
+
+func get_visual_hit_scale() -> Vector2:
+	if hit_reaction_duration <= 0.0 or _hit_reaction_remaining <= 0.0:
+		return Vector2.ONE
+	var strength := clampf(
+		_hit_reaction_remaining / hit_reaction_duration,
+		0.0,
+		1.0
+	)
+	return Vector2(
+		1.0 + hit_squash_strength * strength,
+		1.0 - hit_squash_strength * strength
 	)
 
 
@@ -222,6 +310,7 @@ func clear_chase_dependencies() -> void:
 		_contact_damage.set_run_controller(null)
 	velocity = Vector2.ZERO
 	_clear_knockback()
+	clear_speed_modifiers()
 
 
 func _can_chase_target() -> bool:
@@ -318,7 +407,11 @@ func _on_health_changed(health_current: float, health_max: float) -> void:
 
 func _on_damaged(amount: float, health_current: float) -> void:
 	_damage_flash_remaining = maxf(damage_flash_duration, 0.0)
-	set_process(_damage_flash_remaining > 0.0)
+	_hit_reaction_remaining = maxf(hit_reaction_duration, 0.0)
+	set_process(
+		_damage_flash_remaining > 0.0
+		or _hit_reaction_remaining > 0.0
+	)
 	damaged.emit(self, amount, health_current)
 	queue_redraw()
 

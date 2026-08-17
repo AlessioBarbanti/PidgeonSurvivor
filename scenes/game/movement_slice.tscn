@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3]
+[gd_scene load_steps=76 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -9,7 +9,6 @@
 [ext_resource type="Script" path="res://scripts/game/run_controller.gd" id="7_run_controller"]
 [ext_resource type="Script" path="res://scripts/game/enemy_spawner.gd" id="8_enemy_spawner"]
 [ext_resource type="PackedScene" path="res://scenes/actors/base_enemy.tscn" id="9_base_enemy"]
-[ext_resource type="Resource" path="res://data/spawn_profiles/default_enemy_spawn_profile.tres" id="10_spawn_profile"]
 [ext_resource type="Script" path="res://scripts/combat/targeting_system.gd" id="11_targeting"]
 [ext_resource type="PackedScene" path="res://scenes/ui/end_screen.tscn" id="12_end_screen"]
 [ext_resource type="Script" path="res://scripts/progression/experience_system.gd" id="13_experience_system"]
@@ -30,6 +29,52 @@
 [ext_resource type="Resource" path="res://data/upgrades/fallback_reach.tres" id="28_fallback_reach"]
 [ext_resource type="PackedScene" path="res://scenes/ui/upgrade_overlay.tscn" id="29_upgrade_overlay"]
 [ext_resource type="Script" path="res://scripts/progression/upgrade_effect_registry.gd" id="30_upgrade_effect_registry"]
+[ext_resource type="Resource" path="res://data/upgrades/anxiety_signature.tres" id="31_anxiety_signature"]
+[ext_resource type="Resource" path="res://data/upgrades/gossip_projectiles.tres" id="32_gossip_projectiles"]
+[ext_resource type="Resource" path="res://data/upgrades/chronic_delay.tres" id="33_chronic_delay"]
+[ext_resource type="Resource" path="res://data/upgrades/beer_signature.tres" id="34_beer_signature"]
+[ext_resource type="Resource" path="res://data/upgrades/damage_shockwave.tres" id="35_damage_shockwave"]
+[ext_resource type="PackedScene" path="res://scenes/ui/vignette_effect.tscn" id="36_vignette_effect"]
+[ext_resource type="Script" path="res://scripts/game/game_director.gd" id="37_game_director"]
+[ext_resource type="Resource" path="res://data/director_profiles/default_game_director_profile.tres" id="38_director_profile"]
+[ext_resource type="Script" path="res://scripts/bosses/boss_encounter.gd" id="39_boss_encounter"]
+[ext_resource type="PackedScene" path="res://scenes/actors/first_boss.tscn" id="40_first_boss"]
+[ext_resource type="Resource" path="res://data/bosses/first_boss.tres" id="41_boss_definition"]
+[ext_resource type="PackedScene" path="res://scenes/ui/boss_ui.tscn" id="42_boss_ui"]
+[ext_resource type="Script" path="res://scripts/content/friend_registry.gd" id="43_friend_registry"]
+[ext_resource type="Resource" path="res://data/friends/magno.tres" id="44_magno"]
+[ext_resource type="Resource" path="res://data/friends/bea.tres" id="45_bea"]
+[ext_resource type="Resource" path="res://data/friends/zat.tres" id="46_zat"]
+[ext_resource type="Resource" path="res://data/friends/alea.tres" id="47_alea"]
+[ext_resource type="Resource" path="res://data/friends/aleo.tres" id="48_aleo"]
+[ext_resource type="Resource" path="res://data/friends/lollo.tres" id="49_lollo"]
+[ext_resource type="Resource" path="res://data/friends/migi.tres" id="50_migi"]
+[ext_resource type="Resource" path="res://data/friends/marghe.tres" id="51_marghe"]
+[ext_resource type="Resource" path="res://data/abilities/bea_fire_z_trail.tres" id="52_bea_ability"]
+[ext_resource type="Resource" path="res://data/abilities/zat_lightning_storm.tres" id="53_zat_ability"]
+[ext_resource type="Resource" path="res://data/abilities/alea_grand_spin.tres" id="54_alea_ability"]
+[ext_resource type="Resource" path="res://data/abilities/aleo_cement_pour.tres" id="55_aleo_ability"]
+[ext_resource type="Resource" path="res://data/abilities/lollo_random_cosplay.tres" id="56_lollo_ability"]
+[ext_resource type="Resource" path="res://data/abilities/migi_zen_slowdown.tres" id="57_migi_ability"]
+[ext_resource type="Resource" path="res://data/abilities/marghe_shadow_deception.tres" id="58_marghe_ability"]
+[ext_resource type="Script" path="res://scripts/content/friend_passive_controller.gd" id="59_passive_controller"]
+[ext_resource type="PackedScene" path="res://scenes/ui/character_select_overlay.tscn" id="60_character_select"]
+[ext_resource type="Script" path="res://scripts/audio/game_audio.gd" id="61_game_audio"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/shot.ogg" id="62_shot"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/hit.ogg" id="63_hit"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/player_damage.ogg" id="64_player_damage"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/pickup.ogg" id="65_pickup"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/level_up.ogg" id="66_level_up"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/ability_activate.ogg" id="67_ability_activate"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/ability_ready.ogg" id="68_ability_ready"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/boss_warning.ogg" id="69_boss_warning"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/boss_attack.ogg" id="70_boss_attack"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/ui_confirm.ogg" id="71_ui_confirm"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/pause.ogg" id="72_pause"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/resume.ogg" id="73_resume"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/victory.ogg" id="74_victory"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/defeat.ogg" id="75_defeat"]
+[ext_resource type="Script" path="res://scripts/vfx/combat_feedback.gd" id="76_feedback"]
 
 [node name="MovementSlice" type="Control"]
 layout_mode = 3
@@ -64,11 +109,26 @@ edge_inset = 20.0
 unique_name_in_owner = true
 script = ExtResource("7_run_controller")
 
+[node name="FriendRegistry" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("43_friend_registry")
+definitions = Array[ExtResource("44_magno")]([ExtResource("44_magno"), ExtResource("45_bea"), ExtResource("46_zat"), ExtResource("47_alea"), ExtResource("48_aleo"), ExtResource("49_lollo"), ExtResource("50_migi"), ExtResource("51_marghe")])
+
+[node name="GameDirector" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("37_game_director")
+profile = ExtResource("38_director_profile")
+
+[node name="BossEncounter" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("39_boss_encounter")
+boss_scene = ExtResource("40_first_boss")
+boss_definition = ExtResource("41_boss_definition")
+
 [node name="EnemySpawner" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("8_enemy_spawner")
 enemy_scene = ExtResource("9_base_enemy")
-spawn_profile = ExtResource("10_spawn_profile")
 
 [node name="TargetingSystem" type="Node" parent="."]
 unique_name_in_owner = true
@@ -77,6 +137,11 @@ script = ExtResource("11_targeting")
 [node name="AbilityEffectRegistry" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("20_ability_registry")
+definitions = Array[ExtResource("52_bea_ability")]([ExtResource("52_bea_ability"), ExtResource("53_zat_ability"), ExtResource("54_alea_ability"), ExtResource("55_aleo_ability"), ExtResource("56_lollo_ability"), ExtResource("57_migi_ability"), ExtResource("58_marghe_ability")])
+
+[node name="FriendPassiveController" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("59_passive_controller")
 
 [node name="ExperienceSystem" type="Node" parent="."]
 unique_name_in_owner = true
@@ -86,7 +151,7 @@ experience_curve = ExtResource("16_experience_curve")
 [node name="UpgradeRegistry" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("21_upgrade_registry")
-definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"), ExtResource("24_rapid_fire"), ExtResource("25_wide_magnet"), ExtResource("26_fallback_power"), ExtResource("27_fallback_haste"), ExtResource("28_fallback_reach")])
+definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"), ExtResource("24_rapid_fire"), ExtResource("25_wide_magnet"), ExtResource("31_anxiety_signature"), ExtResource("32_gossip_projectiles"), ExtResource("33_chronic_delay"), ExtResource("34_beer_signature"), ExtResource("35_damage_shockwave"), ExtResource("26_fallback_power"), ExtResource("27_fallback_haste"), ExtResource("28_fallback_reach")])
 
 [node name="UpgradeService" type="Node" parent="."]
 unique_name_in_owner = true
@@ -101,34 +166,69 @@ unique_name_in_owner = true
 script = ExtResource("14_experience_dropper")
 pickup_scene = ExtResource("15_experience_pickup")
 
+[node name="GameAudio" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("61_game_audio")
+shot_stream = ExtResource("62_shot")
+hit_stream = ExtResource("63_hit")
+player_damage_stream = ExtResource("64_player_damage")
+pickup_stream = ExtResource("65_pickup")
+level_up_stream = ExtResource("66_level_up")
+ability_activate_stream = ExtResource("67_ability_activate")
+ability_ready_stream = ExtResource("68_ability_ready")
+boss_warning_stream = ExtResource("69_boss_warning")
+boss_attack_stream = ExtResource("70_boss_attack")
+ui_confirm_stream = ExtResource("71_ui_confirm")
+pause_stream = ExtResource("72_pause")
+resume_stream = ExtResource("73_resume")
+victory_stream = ExtResource("74_victory")
+defeat_stream = ExtResource("75_defeat")
+
 [node name="World" type="Node2D" parent="."]
 
 [node name="Enemies" type="Node2D" parent="World"]
 unique_name_in_owner = true
+z_index = 2
 
 [node name="Projectiles" type="Node2D" parent="World"]
 unique_name_in_owner = true
+z_index = 6
+
+[node name="BossProjectiles" type="Node2D" parent="World"]
+unique_name_in_owner = true
+z_index = 10
 
 [node name="Pickups" type="Node2D" parent="World"]
 unique_name_in_owner = true
+z_index = -1
 
 [node name="AbilityEffects" type="Node2D" parent="World"]
 unique_name_in_owner = true
+z_index = 0
+
+[node name="CombatFeedback" type="Node2D" parent="World"]
+unique_name_in_owner = true
+z_index = 3
+script = ExtResource("76_feedback")
 
 [node name="Player" parent="World" instance=ExtResource("4_player")]
 unique_name_in_owner = true
+z_index = 4
 
 [node name="InputRouter" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("5_input_router")
 touch_joystick_path = NodePath("../UI/SafeAreaRoot/TouchJoystick")
-active_ability_button_path = NodePath("../UI/SafeAreaRoot/HUD/AbilityPanel/Content/Details/ActiveAbilityButton")
+active_ability_button_path = NodePath("../UI/SafeAreaRoot/HUD/AbilityPanel/Content/Details/StateRow/ActiveAbilityButton")
 
 [node name="PlatformLifecycle" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("18_lifecycle")
 
 [node name="UI" type="CanvasLayer" parent="."]
+
+[node name="VignetteEffect" parent="UI" instance=ExtResource("36_vignette_effect")]
+unique_name_in_owner = true
 
 [node name="SafeAreaRoot" type="Control" parent="UI"]
 unique_name_in_owner = true
@@ -137,11 +237,17 @@ mouse_filter = 2
 [node name="HUD" parent="UI/SafeAreaRoot" instance=ExtResource("17_hud")]
 unique_name_in_owner = true
 
+[node name="BossUI" parent="UI/SafeAreaRoot" instance=ExtResource("42_boss_ui")]
+unique_name_in_owner = true
+
 [node name="TouchJoystick" parent="UI/SafeAreaRoot" instance=ExtResource("6_touch_joystick")]
 unique_name_in_owner = true
 debug_mode_in_editor = true
 
 [node name="UpgradeOverlay" parent="UI/SafeAreaRoot" instance=ExtResource("29_upgrade_overlay")]
+unique_name_in_owner = true
+
+[node name="CharacterSelectOverlay" parent="UI/SafeAreaRoot" instance=ExtResource("60_character_select")]
 unique_name_in_owner = true
 
 [node name="PauseOverlay" parent="UI" instance=ExtResource("19_pause_overlay")]

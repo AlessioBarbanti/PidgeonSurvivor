@@ -92,6 +92,41 @@ $buildTools = Join-Path $env:ANDROID_HOME 'build-tools\36.1.0'
 Controllare package `com.ilgioco.friendshipsurvival`, API minima 31, target 36,
 `arm64-v8a`, landscape e assenza di permessi inattesi.
 
+### APK aggiornato ma processo di export ancora aperto
+
+Su Windows può accadere che Gradle abbia già scritto un APK completo mentre il
+processo `godot_console --export-debug "Android APK"` resta aperto senza nuovo
+output. La sola presenza del file non prova il successo. Prima di interrompere
+il processo, verificare che dimensione e data non cambino fra due letture:
+
+```powershell
+$apk = Resolve-Path exports\android\friendship-survival-debug.apk
+$before = Get-Item -LiteralPath $apk
+Start-Sleep -Seconds 2
+$after = Get-Item -LiteralPath $apk
+
+if ($before.Length -ne $after.Length -or
+    $before.LastWriteTimeUtc -ne $after.LastWriteTimeUtc) {
+    throw 'APK ancora in scrittura.'
+}
+```
+
+Eseguire quindi i controlli `aapt2` e `apksigner` sopra. L'export è recuperabile
+come completato soltanto se il manifest riporta package, `minSdk`, `targetSdk`
+e ABI attesi, la firma v2 è valida e l'ispezione ZIP contiene esclusivamente
+`lib/arm64-v8a/*.so`. Registrare dimensione, data e SHA-256 nelle note di
+verifica del backlog:
+
+```powershell
+Get-FileHash -Algorithm SHA256 -LiteralPath $apk
+```
+
+Se tutti i controlli passano ma la CLI resta aperta, individuare il solo
+processo il cui `CommandLine` contiene l'export Android corrente e terminarlo;
+non chiudere genericamente tutti i processi Godot o Java. Il daemon Gradle può
+restare vivo per riuso ed è normale; fermarlo con `android\gradlew.bat --stop`
+soltanto se nessun'altra build Gradle è in corso.
+
 Con un dispositivo ARM64 collegato e autorizzato:
 
 ```powershell

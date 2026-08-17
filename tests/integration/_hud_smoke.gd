@@ -65,9 +65,14 @@ func _validate_hud_values_and_clock() -> void:
 	_expect(not hud.get_pause_button().disabled, "PAUSA deve attivarsi in RUNNING.")
 	controller._process(62.9)
 	_expect(hud.get_time_text() == "01:02", "Il timer deve formattare il clock come MM:SS.")
+	var feedback_count_before := hud.get_health_feedback_count()
 	_expect(health.take_damage(25.0), "La fixture deve applicare un danno di prova.")
 	_expect_float_near(hud.get_health_value(), 75.0, "La barra vita deve reagire al segnale atomico.")
 	_expect(hud.get_health_text() == "VITA  75 / 100", "Il testo vita deve seguire la barra.")
+	_expect(
+		hud.get_health_feedback_count() == feedback_count_before + 1,
+		"Il danno deve produrre un solo impulso presentazionale sull'HUD."
+	)
 	_expect(experience.add_experience(5), "La fixture deve accreditare XP di prova.")
 	_expect_float_near(hud.get_experience_value(), 5.0, "La barra XP deve reagire alla progressione.")
 	_expect(hud.get_experience_text() == "5 / 10 XP", "Il testo XP deve mostrare il progresso.")
@@ -133,18 +138,21 @@ func _validate_responsive_layouts() -> void:
 		await _wait_processed_frame()
 
 		var xp_rect := hud.get_experience_panel_rect()
+		var top_band_rect := hud.get_top_band_rect()
 		var health_rect := hud.get_health_panel_rect()
+		var portrait_rect := hud.get_portrait_rect()
 		var timer_rect := hud.get_timer_slot_rect()
 		var pause_rect := hud.get_pause_button_rect()
 		var ability_rect := hud.get_ability_panel_rect()
 		var ability_button_rect := hud.get_active_ability_button_rect()
 		var expected_content := Rect2(
-			safe_rect.position + Vector2(18.0, 14.0),
-			safe_rect.size - Vector2(36.0, 28.0)
+			safe_rect.position + Vector2(12.0, 10.0),
+			safe_rect.size - Vector2(24.0, 22.0)
 		)
 		var profile_name := String(profile.name)
 		_expect_rect_inside(xp_rect, safe_rect, "%s: la barra XP deve restare nella safe area." % profile_name)
 		_expect_rect_inside(health_rect, safe_rect, "%s: la vita deve restare nella safe area." % profile_name)
+		_expect_rect_inside(portrait_rect, safe_rect, "%s: il ritratto deve restare nella safe area." % profile_name)
 		_expect_rect_inside(timer_rect, safe_rect, "%s: il timer deve restare nella safe area." % profile_name)
 		_expect_rect_inside(pause_rect, safe_rect, "%s: PAUSA deve restare nella safe area." % profile_name)
 		_expect_rect_inside(ability_rect, safe_rect, "%s: l'abilita deve restare nella safe area." % profile_name)
@@ -167,22 +175,41 @@ func _validate_responsive_layouts() -> void:
 			"%s: il timer deve restare centrato." % profile_name,
 			LAYOUT_TOLERANCE
 		)
-		_expect(
-			xp_rect.end.y <= health_rect.position.y + LAYOUT_TOLERANCE,
-			"%s: vita e XP non devono sovrapporsi." % profile_name
+		_expect_float_near(
+			top_band_rect.size.y,
+			64.0,
+			"%s: la fascia HUD deve restare compatta." % profile_name,
+			LAYOUT_TOLERANCE
 		)
 		_expect(
-			health_rect.size.x >= 240.0 - LAYOUT_TOLERANCE,
+			top_band_rect.end.y <= xp_rect.position.y + LAYOUT_TOLERANCE,
+			"%s: la linea XP deve seguire la fascia senza sovrapporla." % profile_name
+		)
+		_expect(
+			xp_rect.size.y >= 6.0 - LAYOUT_TOLERANCE
+			and xp_rect.size.y <= 8.0 + LAYOUT_TOLERANCE,
+			"%s: la linea XP deve essere alta 6-8 unita logiche." % profile_name
+		)
+		_expect(
+			health_rect.size.x >= 244.0 - LAYOUT_TOLERANCE,
 			"%s: la barra vita deve conservare una larghezza leggibile." % profile_name
 		)
 		_expect(
-			pause_rect.size.x >= 132.0 - LAYOUT_TOLERANCE
-			and pause_rect.size.y >= 56.0 - LAYOUT_TOLERANCE,
+			pause_rect.size.x >= 44.0 - LAYOUT_TOLERANCE
+			and pause_rect.size.y >= 44.0 - LAYOUT_TOLERANCE,
 			"%s: PAUSA deve conservare un target touch leggibile." % profile_name
 		)
 		_expect(
-			ability_button_rect.size.y >= 55.0 - LAYOUT_TOLERANCE,
+			ability_button_rect.size.x >= 44.0 - LAYOUT_TOLERANCE
+			and ability_button_rect.size.y >= 44.0 - LAYOUT_TOLERANCE,
 			"%s: ATTIVA deve conservare un target touch leggibile." % profile_name
+		)
+		_expect(
+			ability_rect.size.x >= 230.0 - LAYOUT_TOLERANCE
+			and ability_rect.size.x <= 250.0 + LAYOUT_TOLERANCE
+			and ability_rect.size.y >= 88.0 - LAYOUT_TOLERANCE
+			and ability_rect.size.y <= 96.0 + LAYOUT_TOLERANCE,
+			"%s: la card abilita deve rispettare l'ingombro B18B." % profile_name
 		)
 		_expect(
 			timer_rect.end.x <= pause_rect.position.x + LAYOUT_TOLERANCE,
@@ -241,6 +268,8 @@ func _validate_composed_hud() -> void:
 	_expect(hud.get_run_controller() == controller, "L'HUD composto deve osservare RunController.")
 	_expect(hud.get_health_component() == player.get_health_component(), "L'HUD composto deve osservare la salute Player.")
 	_expect(hud.get_experience_system() == experience, "L'HUD composto deve osservare ExperienceSystem.")
+	_expect(hud.get_friend_definition() == player.get_friend_definition(), "L'HUD composto deve osservare il profilo Player.")
+	_expect(hud.get_portrait_texture() != null, "L'HUD composto deve mostrare il ritratto Player.")
 	_expect(hud.get_health_text() == "VITA  100 / 100", "La scena composta deve mostrare la vita iniziale.")
 	_expect(hud.get_experience_text() == "0 / 10 XP", "La scena composta deve mostrare la soglia iniziale.")
 

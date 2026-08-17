@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="UpgradeDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/progression/upgrade_definition.gd" id="1_definition"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/upgrades/slow.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_definition")
+id = &"chronic_delay"
+title = "Ritardo Cronico"
+description = "Ogni 12 secondi rallenta del 50% tutti i nemici per 3 secondi."
+icon = ExtResource("2_icon")
+effect_id = &"chronic_delay"
+effect_parameters = {
+"duration_seconds": 3.0,
+"interval_seconds": 12.0,
+"slow_factor": 0.5
+}
+weight = 1.0
+max_rank = 1
+tags = Array[StringName]([&"signature", &"control", &"timed", &"slow"])

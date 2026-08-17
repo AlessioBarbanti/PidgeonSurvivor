@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ability_definition.gd" id="1_definition"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/abilities/cement.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_definition")
+id = &"aleo_cement_pour"
+title = "Colata di Cemento"
+description = "Crea una zona che rallenta e danneggia i nemici nel tempo."
+icon = ExtResource("2_icon")
+cooldown_seconds = 12.0
+duration_seconds = 4.0
+area_radius = 200.0
+damage = 3.0
+effect_id = &"cement_pour"
+effect_parameters = {
+"dot_tick": 0.5,
+"slow_factor": 0.5
+}
+tags = Array[StringName]([&"control", &"damage", &"persistent", &"copy_compatible"])

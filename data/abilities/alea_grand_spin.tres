@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ability_definition.gd" id="1_definition"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/abilities/grand_spin.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_definition")
+id = &"alea_grand_spin"
+title = "Gran Piroetta"
+description = "Colpisce ripetutamente i nemici vicini durante una rotazione."
+icon = ExtResource("2_icon")
+cooldown_seconds = 9.0
+duration_seconds = 1.2
+area_radius = 140.0
+damage = 5.0
+effect_id = &"grand_spin"
+effect_parameters = {
+"hits_per_second": 12.0
+}
+tags = Array[StringName]([&"radial", &"damage", &"melee", &"copy_compatible"])

@@ -8,11 +8,17 @@ const NO_POINTER := -1
 const DEBUG_MOUSE_POINTER := -2
 
 @export_range(0.0, 0.95, 0.01) var deadzone_ratio := 0.18
+## Raggio di acquisizione e normalizzazione: resta invariato per non cambiare
+## il comportamento touch quando la grafica viene resa più compatta.
 @export_range(16.0, 256.0, 1.0) var base_radius := 84.0:
 	set(value):
 		base_radius = maxf(value, 1.0)
 		queue_redraw()
-@export_range(8.0, 128.0, 1.0) var knob_radius := 32.0:
+@export_range(16.0, 128.0, 1.0) var visual_radius := 68.0:
+	set(value):
+		visual_radius = maxf(value, 1.0)
+		queue_redraw()
+@export_range(8.0, 128.0, 1.0) var knob_radius := 27.0:
 	set(value):
 		knob_radius = maxf(value, 1.0)
 		queue_redraw()
@@ -27,6 +33,10 @@ const DEBUG_MOUSE_POINTER := -2
 			_update_platform_visibility()
 
 @export_group("Appearance")
+@export_range(0.1, 1.0, 0.01) var idle_opacity := 0.38:
+	set(value):
+		idle_opacity = clampf(value, 0.1, 1.0)
+		queue_redraw()
 @export var base_color := Color(0.06, 0.1, 0.17, 0.62):
 	set(value):
 		base_color = value
@@ -92,9 +102,27 @@ func _gui_input(event: InputEvent) -> void:
 
 func _draw() -> void:
 	var center := size * 0.5
-	draw_circle(center, base_radius, base_color)
-	draw_arc(center, base_radius, 0.0, TAU, 64, outline_color, 3.0, true)
-	draw_circle(center + _knob_offset, knob_radius, knob_color)
+	var opacity_multiplier := 1.0 if is_active() else idle_opacity
+	var visible_base_color := _color_with_alpha_multiplier(base_color, opacity_multiplier)
+	var visible_outline_color := _color_with_alpha_multiplier(outline_color, opacity_multiplier)
+	var visible_knob_color := _color_with_alpha_multiplier(knob_color, opacity_multiplier)
+	var visual_offset := _knob_offset * (visual_radius / maxf(base_radius, 1.0))
+	draw_circle(center, visual_radius, visible_base_color)
+	draw_arc(center, visual_radius, 0.0, TAU, 48, visible_outline_color, 2.0, true)
+	for direction in [Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT]:
+		draw_line(
+			center + direction * (visual_radius - 7.0),
+			center + direction * (visual_radius - 2.0),
+			visible_outline_color,
+			2.0,
+			true
+		)
+	draw_circle(center + visual_offset, knob_radius, visible_knob_color)
+	draw_circle(
+		center + visual_offset,
+		maxf(knob_radius - 5.0, 1.0),
+		_color_with_alpha_multiplier(base_color, opacity_multiplier * 0.72)
+	)
 
 
 func reset_input() -> void:
@@ -109,6 +137,14 @@ func reset_input() -> void:
 
 func is_active() -> bool:
 	return _active_pointer != NO_POINTER
+
+
+func get_visual_radius() -> float:
+	return visual_radius
+
+
+func get_acquisition_rect() -> Rect2:
+	return Rect2(Vector2.ZERO, size)
 
 
 func _handle_screen_touch(event: InputEventScreenTouch) -> void:
@@ -200,3 +236,9 @@ func _update_platform_visibility() -> void:
 
 func _is_editor_debug_mode() -> bool:
 	return debug_mode_in_editor and OS.has_feature("editor")
+
+
+static func _color_with_alpha_multiplier(color: Color, multiplier: float) -> Color:
+	var result := color
+	result.a *= clampf(multiplier, 0.0, 1.0)
+	return result

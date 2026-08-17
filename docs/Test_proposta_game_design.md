@@ -414,9 +414,9 @@ Valore iniziale concettuale:
 
 L'effetto sui boss dovrà essere valutato separatamente durante il bilanciamento.
 
-## Attiva — Esana Inganno d'Ombra
+## Attiva — Reggeton time!
 
-Marghe genera un'illusione nella propria ultima posizione.
+Marghe genera nella propria ultima posizione un clone che balla reggaeton.
 
 I nemici che stavano inseguendo Marghe cambiano temporaneamente bersaglio e si dirigono verso la copia.
 

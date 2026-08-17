@@ -4,6 +4,8 @@ extends Node
 signal movement_vector_changed(value: Vector2)
 signal active_ability_requested()
 
+const TOUCH_ABILITY_SIGNAL := &"activation_requested"
+
 @export var touch_joystick_path: NodePath
 @export var active_ability_button_path: NodePath
 @export var enabled: bool = true:
@@ -93,7 +95,10 @@ func bind_active_ability_button(button: BaseButton) -> void:
 	if not is_instance_valid(_active_ability_button):
 		return
 
-	_active_ability_button.pressed.connect(request_active_ability)
+	if _active_ability_button.has_signal(TOUCH_ABILITY_SIGNAL):
+		_active_ability_button.connect(TOUCH_ABILITY_SIGNAL, request_active_ability)
+	else:
+		_active_ability_button.pressed.connect(request_active_ability)
 	_active_ability_button.tree_exiting.connect(
 		_on_active_ability_button_tree_exiting
 	)
@@ -198,7 +203,18 @@ func _unbind_active_ability_button() -> void:
 	if not is_instance_valid(_active_ability_button):
 		_active_ability_button = null
 		return
-	if _active_ability_button.pressed.is_connected(request_active_ability):
+	if (
+		_active_ability_button.has_signal(TOUCH_ABILITY_SIGNAL)
+		and _active_ability_button.is_connected(
+			TOUCH_ABILITY_SIGNAL,
+			request_active_ability
+		)
+	):
+		_active_ability_button.disconnect(
+			TOUCH_ABILITY_SIGNAL,
+			request_active_ability
+		)
+	elif _active_ability_button.pressed.is_connected(request_active_ability):
 		_active_ability_button.pressed.disconnect(request_active_ability)
 	if _active_ability_button.tree_exiting.is_connected(
 		_on_active_ability_button_tree_exiting

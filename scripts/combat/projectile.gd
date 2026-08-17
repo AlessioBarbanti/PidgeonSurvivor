@@ -3,6 +3,7 @@ extends Area2D
 
 signal hit_processed(target: BaseEnemy, damage: float)
 signal expired(projectile: Projectile)
+signal chain_jumped(from_target: BaseEnemy, to_target: BaseEnemy, damage: float)
 
 const ENEMY_HURTBOX_MASK := 1 << 1
 
@@ -22,6 +23,11 @@ const ENEMY_HURTBOX_MASK := 1 << 1
 		trail_color = value
 		queue_redraw()
 
+@export_range(1.0, 8.0, 0.1) var trail_length_multiplier := 4.2:
+	set(value):
+		trail_length_multiplier = maxf(value, 1.0)
+		queue_redraw()
+
 var damage := 0.0
 var direction := Vector2.RIGHT
 var speed := 0.0
@@ -30,6 +36,16 @@ var projectile_radius := 6.0
 
 var _run_controller: RunController
 var _spent := false
+var _chain_enabled := false
+var _chain_jumps_remaining := 0
+var _chain_damage_falloff := 1.0
+var _chain_radius := 0.0
+var _chain_current_damage := 0.0
+var _oscillation_amplitude := 0.0
+var _oscillation_frequency_hz := 0.0
+var _oscillation_phase := 0.0
+var _targeting_system: TargetingSystem
+var _hit_target_ids: Dictionary = {}
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 
@@ -52,21 +68,43 @@ func _physics_process(delta: float) -> void:
 
 	var safe_delta := maxf(delta, 0.0)
 	var movement_delta := minf(safe_delta, maxf(lifetime_remaining, 0.0))
-	global_position += direction * speed * movement_delta
+	var previous_phase := _oscillation_phase
+	_oscillation_phase += TAU * _oscillation_frequency_hz * movement_delta
+	var movement := direction * speed * movement_delta
+	if _oscillation_amplitude > 0.0:
+		movement += direction.orthogonal() * _oscillation_amplitude * (
+			sin(_oscillation_phase) - sin(previous_phase)
+		)
+	global_position += movement
 	lifetime_remaining -= safe_delta
 	if lifetime_remaining <= 0.0:
 		expire()
+		return
 
 
 func _draw() -> void:
 	var outline_width := maxf(projectile_radius * 0.45, 2.0)
-	draw_line(
-		Vector2(-projectile_radius * 2.8, 0.0),
-		Vector2(-projectile_radius * 0.65, 0.0),
-		trail_color,
-		maxf(projectile_radius * 0.8, 2.0),
-		true
-	)
+	var trail_length := projectile_radius * trail_length_multiplier
+	for layer in range(3):
+		var layer_ratio := float(layer) / 2.0
+		var layer_color := trail_color
+		layer_color.a *= lerpf(0.72, 0.24, layer_ratio)
+		var y_offset := (float(layer) - 1.0) * projectile_radius * 0.3
+		draw_line(
+			Vector2(-trail_length * lerpf(1.0, 0.7, layer_ratio), y_offset),
+			Vector2(-projectile_radius * 0.7, y_offset * 0.35),
+			layer_color,
+			maxf(projectile_radius * lerpf(0.72, 0.3, layer_ratio), 1.0),
+			true
+		)
+	for echo_index in range(2):
+		var echo_color := trail_color
+		echo_color.a *= 0.28 - float(echo_index) * 0.09
+		draw_circle(
+			Vector2(-trail_length * (0.5 + float(echo_index) * 0.3), 0.0),
+			maxf(projectile_radius * (0.42 - float(echo_index) * 0.1), 1.0),
+			echo_color
+		)
 	draw_circle(Vector2.ZERO, projectile_radius + outline_width, outline_color)
 	draw_circle(Vector2.ZERO, projectile_radius, body_color)
 
@@ -100,6 +138,44 @@ func initialize(
 	return lifetime_remaining > 0.0 and is_instance_valid(_run_controller)
 
 
+func configure_signature_effects(
+	chain_enabled: bool,
+	chain_jumps: int,
+	chain_damage_falloff: float,
+	chain_radius: float,
+	oscillation_amplitude: float,
+	oscillation_frequency_hz: float,
+	targeting_system: TargetingSystem = null
+) -> bool:
+	if (
+		chain_jumps < 0
+		or not is_finite(chain_damage_falloff)
+		or chain_damage_falloff <= 0.0
+		or chain_damage_falloff > 1.0
+		or not is_finite(chain_radius)
+		or chain_radius < 0.0
+		or (chain_enabled and (chain_jumps <= 0 or chain_radius <= 0.0))
+		or (chain_enabled and not is_instance_valid(targeting_system))
+		or not is_finite(oscillation_amplitude)
+		or oscillation_amplitude < 0.0
+		or not is_finite(oscillation_frequency_hz)
+		or oscillation_frequency_hz < 0.0
+		or (oscillation_amplitude > 0.0 and oscillation_frequency_hz <= 0.0)
+	):
+		return false
+	_chain_enabled = chain_enabled
+	_chain_jumps_remaining = chain_jumps
+	_chain_damage_falloff = chain_damage_falloff
+	_chain_radius = chain_radius
+	_chain_current_damage = damage
+	_oscillation_amplitude = oscillation_amplitude
+	_oscillation_frequency_hz = oscillation_frequency_hz
+	_oscillation_phase = 0.0
+	_targeting_system = targeting_system
+	_hit_target_ids.clear()
+	return true
+
+
 func try_hit(target: BaseEnemy) -> bool:
 	if (
 		_spent
@@ -111,14 +187,42 @@ func try_hit(target: BaseEnemy) -> bool:
 	):
 		return false
 
-	# Il latch precede il danno: callback duplicate o rientranti nello stesso frame
-	# non possono applicare due hit mentre queue_free e ancora differito.
-	_spent = true
-	_disable_immediately()
-	var damage_applied := target.take_damage(damage)
+	var target_instance_id := target.get_instance_id()
+	if _hit_target_ids.has(target_instance_id):
+		return false
+	_hit_target_ids[target_instance_id] = true
+	var hit_damage := _chain_current_damage if _chain_enabled else damage
+	# Il latch precede il danno: callback duplicate o rientranti non possono
+	# riutilizzare lo stesso bersaglio durante la catena.
+	if not _chain_enabled:
+		_spent = true
+		_disable_immediately()
+	var damage_applied := target.take_damage(hit_damage)
 	if damage_applied:
-		hit_processed.emit(target, damage)
-	queue_free()
+		hit_processed.emit(target, hit_damage)
+	if not _chain_enabled:
+		queue_free()
+		return damage_applied
+
+	if not damage_applied or _chain_jumps_remaining <= 0:
+		expire()
+		return damage_applied
+
+	_chain_jumps_remaining -= 1
+	_chain_current_damage *= _chain_damage_falloff
+	global_position = target.global_position
+	var next_target := _targeting_system.get_nearest_alive_excluding(
+		global_position,
+		_hit_target_ids
+	)
+	if (
+		next_target == null
+		or global_position.distance_to(next_target.global_position) > _chain_radius
+	):
+		expire()
+		return damage_applied
+	chain_jumped.emit(target, next_target, _chain_current_damage)
+	try_hit(next_target)
 	return damage_applied
 
 
@@ -137,6 +241,34 @@ func is_spent() -> bool:
 
 func get_run_controller() -> RunController:
 	return _run_controller if is_instance_valid(_run_controller) else null
+
+
+func is_chain_enabled() -> bool:
+	return _chain_enabled
+
+
+func get_chain_jumps_remaining() -> int:
+	return _chain_jumps_remaining
+
+
+func get_chain_damage_falloff() -> float:
+	return _chain_damage_falloff
+
+
+func get_chain_radius() -> float:
+	return _chain_radius
+
+
+func get_oscillation_amplitude() -> float:
+	return _oscillation_amplitude
+
+
+func get_oscillation_frequency_hz() -> float:
+	return _oscillation_frequency_hz
+
+
+func has_hit_target(target: BaseEnemy) -> bool:
+	return is_instance_valid(target) and _hit_target_ids.has(target.get_instance_id())
 
 
 func _on_area_entered(area: Area2D) -> void:

@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="FriendDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/content/friend_definition.gd" id="1_definition"]
+[ext_resource type="Texture2D" path="res://assets/art/third_party/eldiran_rpg_characters/RPGCharacterSprites32x32-transparent.png" id="2_sheet"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_portrait"]
+atlas = ExtResource("2_sheet")
+region = Rect2(32, 384, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_evil"]
+atlas = ExtResource("2_sheet")
+region = Rect2(32, 416, 32, 32)
+
+[resource]
+script = ExtResource("1_definition")
+id = &"lollo"
+display_name = "Lollo"
+role = "Velocità, caos e imprevedibilità."
+tags = Array[StringName]([&"mobility", &"random", &"copy"])
+passive_title = "Iperattività ADHD"
+passive_description = "Aumenta velocità di movimento e rapidità offensiva."
+passive_id = &"lollo_hyperactivity"
+passive_parameters = {
+"fire_rate_multiplier": 1.15,
+"move_speed_multiplier": 1.1
+}
+active_ability_id = &"lollo_random_cosplay"
+active_ability_title = "Cosplay Casuale"
+active_ability_description = "Usa casualmente l'attiva di un altro personaggio."
+evil_display_name = "Evil Lollo"
+portrait = SubResource("AtlasTexture_portrait")
+evil_portrait = SubResource("AtlasTexture_evil")
+portrait_placeholder = SubResource("AtlasTexture_portrait")
+evil_portrait_placeholder = SubResource("AtlasTexture_evil")
+portrait_source = "Eldiran, 32x32 RPG Character Sprites, CC0 1.0"
+portraits_are_placeholders = true
+content_approved = true
+portraits_approved = true
+approved_by = "Proprietario del progetto"
+approval_date = "2026-08-17"
+approval_reference = "Conferma esplicita nella sessione Codex del 17/08/2026."

@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="BossDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/bosses/boss_definition.gd" id="1_boss_definition"]
+[ext_resource type="Resource" path="res://data/friends/bea.tres" id="2_bea"]
+
+[resource]
+script = ExtResource("1_boss_definition")
+id = &"evil_bea"
+title = "Evil Bea"
+friend_profile = ExtResource("2_bea")
+quote = "Citazione personale in attesa di approvazione."
+quote_approved = false
+safe_quote_placeholder = "Il Boss entra nell'arena."
+health_max = 2400.0
+move_speed = 85.0
+collision_radius = 46.0
+contact_damage = 25.0
+experience_reward = 50
+initial_attack_delay = 1.5
+pattern_interval = 2.5
+radial_telegraph_duration = 0.75
+radial_projectile_count = 12
+radial_projectile_damage = 14.0
+radial_projectile_speed = 270.0
+radial_projectile_lifetime = 4.0
+radial_projectile_radius = 9.0
+targeted_telegraph_duration = 1.0
+targeted_blast_radius = 115.0
+targeted_blast_damage = 26.0
+body_color = Color(0.55, 0.17, 0.92, 1)
+outline_color = Color(0.08, 0.015, 0.16, 1)
+accent_color = Color(1, 0.72, 0.18, 1)
+telegraph_color = Color(1, 0.24, 0.18, 0.72)

@@ -2,7 +2,7 @@
 
 Fonte: [`prd.md`](./prd.md)  
 Decisioni: [`decision-log.md`](./decision-log.md)  
-Stato: B12 implementato e verificato con suite completa, export Windows e runtime automatizzato su Pixel 9/Android 17; la prova manuale touch/controller e i profili Android 12/API 31 e Android 16/API 36 restano aperti; B13 è il prossimo backlog
+Stato: B18B è implementato senza nuovi asset obbligatori: fascia HUD compatta, linea XP, card abilità ridotta, joystick solo visivamente più piccolo, pavimento procedurale e combat feedback presentazionale. Import, project smoke, 21 smoke ed export Windows/Android sono verdi senza errori o leak; il confronto Windows 16:9 e l'avvio sul Pixel 9 Android 17/API 37 sono registrati. Il freeze per B19 attende ancora i controlli percettivi gameplay 20:9/4:3, densità elevata e il gate multitouch fisico
 Obiettivo: trasformare il concept in un MVP completo, verificabile su Windows e Android; Web resta un target secondario
 
 Vincolo aggiuntivo ricevuto l'11 agosto 2026: Windows e Android sono piattaforme obbligatorie.
@@ -46,10 +46,10 @@ Queste decisioni sono assunzioni reversibili che consentono di iniziare senza bl
 | Arena | Camera fissa, Player confinato, anello di spawn appena fuori viewport | Compatibile con inseguimento, muri e rimbalzi |
 | Targeting | Nemico vivo più vicino | Corrisponde alla sezione tecnica del PRD ed è facile da verificare |
 | Vertical slice | Run obiettivo di 5–7 minuti; Boss a `04:00`; vittoria alla sua sconfitta | Consente di testare tutto il loop senza produrre troppo contenuto |
-| Contenuto MVP | 1 Player, 1 arma, 1 abilità attiva, 2 nemici base, 1 Boss con 2 pattern, almeno 6 upgrade | Quantità minima per verificare varietà e combinazioni |
+| Contenuto MVP | 1 Player Magno, 1 arma, 1 abilità attiva, 2 nemici base, 1 Boss con 2 pattern, almeno 6 upgrade | Quantità minima già verificata in M4; B17A amplia la prima pubblicazione a otto personaggi giocabili |
 | Curva XP | Soglia iniziale 10 XP, crescita lineare di 5 XP per livello | Baseline B08 leggibile e configurabile da dati, da ribilanciare con il playtest |
 | Carte | 3 ID distinti per offerta; una carta può ricomparire in seguito finché non è al rank massimo | Elimina duplicati nella scelta senza esaurire subito il catalogo |
-| Abilità attive | Framework e Onda d'Urto Tellurica nell'MVP; altre 7 abilità nella fase contenuti | B09A valida input, cooldown, HUD e runtime su un solo Player; B17A completa il catalogo senza interrompere B07–B09 |
+| Roster e abilità attive | Framework e Magno nell'MVP; selezione, otto passive e altre 7 abilità nella fase contenuti | B09A valida il framework; B17A rende giocabili tutti gli otto profili approvati senza riaprire il core loop M4 |
 | Salvataggio/meta-progressione | Fuori MVP | Non serve a validare il core loop |
 | Contenuti personali | Placeholder fino all'approvazione di nomi, citazioni, immagini e audio | Riduce rilavorazioni e rischi di pubblicazione |
 
@@ -69,8 +69,8 @@ Incluso:
 Escluso:
 
 - multiplayer, classifiche online e telemetria;
-- modalità portrait, mappe procedurali, più personaggi o più armi;
-- le altre sette abilità attive del catalogo, pianificate per la prima pubblicazione in B17A;
+- modalità portrait, mappe procedurali o più armi;
+- il roster completo e le altre sette abilità attive, esclusi dal solo MVP M4 ma inclusi nella prima pubblicazione tramite B17A;
 - meta-progressione, inventario permanente e salvataggi di run;
 - localizzazione completa e contenuti cosmetici non necessari al feedback di gioco.
 
@@ -115,6 +115,9 @@ Stati minimi: `BOOT`, `RUNNING`, `MANUAL_PAUSE`, `LEVEL_UP`, `BOSS_INTRO`, `VICT
 
 - Ogni personaggio possiede una sola `AbilityDefinition`, distinta dalle carte upgrade e attivabile tramite l'intenzione `active_ability` di `InputRouter`.
 - L'MVP implementa Magno con Onda d'Urto Tellurica come vertical slice; le altre sette definizioni ed effetti vengono completati in B17A.
+- B17A espone una selezione pre-run degli otto `FriendDefinition`: il profilo scelto assegna ritratto, passiva runtime e `AbilityDefinition`; il restart conserva il personaggio, mentre “Cambia personaggio” torna alla selezione dopo un terminale.
+- L'attiva di Marghe è presentata come `Reggeton time!`: il clone ballerino a tema reggaeton conserva durata, cooldown, deviazione dell'aggro e cleanup dell'originario effetto illusorio.
+- Ogni passiva usa parametri versionabili nel relativo `FriendDefinition`, si combina moltiplicativamente con gli upgrade e viene azzerata o ricostruita senza residui a ogni cambio profilo e restart.
 - `AbilityController` accetta l'attivazione soltanto in `RUNNING`, con cooldown terminato e requisiti dell'effetto validi. Una richiesta rifiutata non consuma il cooldown.
 - Cooldown, durata e tick periodici avanzano sul clock della run e restano fermi in pausa, `LEVEL_UP`, `BOSS_INTRO`, `VICTORY` e `DEFEAT`.
 - Lo sparo automatico continua durante un'abilità, salvo un'incompatibilità dichiarata dalla sua definizione.
@@ -144,9 +147,9 @@ Interpretazione iniziale degli upgrade del PRD:
 | Upgrade | Contratto proposto |
 |---|---|
 | L'Ansia | velocità `×1.35`, vita massima `×0.80`, percentuale di vita conservata, vignetta solo visiva |
-| Teoria complottista | il proiettile attraversa i nemici, non colpisce due volte lo stesso bersaglio e scade dopo 2 rimbalzi o a fine lifetime |
+| Gossip | il colpo salta da un nemico vivo al successivo entro un raggio configurabile, con danno progressivamente ridotto a ogni salto |
 | Ritardo cronico | ogni 12 s di gameplay applica ai nemici uno status `speed ×0.50` per 3 s |
-| Caffè corretto | frequenza `×1.25`; traiettoria sinusoidale con ampiezza configurabile |
+| Birra | frequenza `×1.25`; traiettoria sinusoidale con ampiezza configurabile |
 | Non ho tempo | a ogni danno effettivo emette un knockback radiale; non si riattiva durante l'invulnerabilità |
 
 ## 4. Architettura Godot proposta
@@ -307,17 +310,18 @@ Le stime sono in story point Fibonacci e servono per priorità e confronto, non 
 | M2 — Progressione e attiva | Drop, XP, HUD, livelli e prima abilità attiva | B07–B09A | 21 | `kill → pickup → level` affidabile; Onda d'Urto attivabile e leggibile su Windows/Android |
 | M3 — Carte | Catalogo, overlay touch e primi upgrade | B10–B12 | 18 | Loop completo fino a più scelte consecutive anche tramite tap |
 | M4 — Boss e run chiusa | Upgrade signature, Director, Boss e finali | B13–B16 | 24 | MVP completo, inclusa un'abilità attiva, dall'avvio a vittoria o sconfitta |
-| M5 — Release multipiattaforma | Catalogo abilità, contenuti, audiovisivo, QA e packaging | B17, B17A, B18–B20 | 36 | Otto abilità definite e build Windows/Android installabili da ambiente pulito |
+| M5 — Release multipiattaforma | Roster giocabile, contenuti, audiovisivo, identità visiva, QA e packaging | B17, B17A, B18, B18B, B19–B20 | 62 | Otto personaggi selezionabili con passive e abilità proprie; direzione visiva coerente e build Windows/Android installabili da ambiente pulito |
 | M6 — Web opzionale | Export single-thread e pubblicazione itch.io | B21 | 3 | Build browser verificata senza bloccare la release nativa |
 
-Totali di pianificazione: 94 SP per l'MVP feature-complete fino a M4, 130 SP per la candidata Windows/Android e ulteriori 3 SP opzionali per Web/itch.io. Le stime vanno ricalibrate con la velocità osservata in M1–M2.
+Totali di pianificazione: 94 SP per l'MVP feature-complete fino a M4, 156 SP per la candidata Windows/Android con roster completo e pass di identità visiva, più ulteriori 3 SP opzionali per Web/itch.io. Le stime vanno ricalibrate con la velocità osservata in M1–M2.
 
 Gate di prodotto:
 
 - dopo M1: verificare che movimento, leggibilità e “feel” del fuoco siano divertenti prima di ampliare i sistemi;
 - dopo M2: playtest del loop XP e dell'Onda d'Urto con tastiera, controller e touch, inclusi cooldown e pausa;
 - dopo M3: playtest del loop XP/carte e controllo delle combinazioni con l'abilità attiva;
-- dopo M4: freeze dell'infrastruttura; M5 accetta le altre sette abilità come contenuto sul framework validato, oltre a correzioni, accessibilità e release work.
+- dopo M4: freeze del core loop; M5 integra il roster completo sul framework validato, con selezione pre-run, passive, altre sette abilità, correzioni, accessibilità e release work;
+- prima di B19: freeze di HUD, controlli visivi, arena e combat feedback dopo B18B, così hardening e profiling misurano la presentazione destinata alla release.
 
 ## 6. Backlog ordinato
 
@@ -339,22 +343,68 @@ Priorità: `P0` indispensabile per l'MVP, `P1` indispensabile per la prima pubbl
 | B10 | Resource upgrade, registry e pesca | P0 | 5 | B01, B08 | ID validati, seed riproducibile, 3 offerte eleggibili uniche e fallback |
 | B11 | Overlay e navigazione completa | P0 | 8 | B09–B10 | Mouse/tastiera/controller/touch, target ampi, joystick nascosto e una sola scelta applicata |
 | B12 | Tre upgrade semplici di prova | P0 | 5 | B05, B10–B11 | Velocità, frequenza/danno e pickup rispettano stacking e cap |
-| B13 | Upgrade signature del PRD | P0 | 8 | B12 | Ricochet, slow, oscillazione, shockwave e vignetta combinabili senza conflitti |
+| B13 | Upgrade signature del PRD | P0 | 8 | B12 | Catena Gossip, slow, oscillazione Birra, shockwave e vignetta combinabili senza conflitti |
 | B14 | Game Director e scheduler Boss | P0 | 3 | B04, B09 | Una sola attivazione per soglia; pausa e restart non duplicano eventi |
 | B15 | Primo Boss completo | P0 | 8 | B05–B06, B14 | Due pattern telegrafati, HP, citazione sicura, morte e ricompensa |
 | B16 | Vittoria, bilanciamento e run completa | P0 | 5 | B09A, B12, B15 | Cinque run consecutive terminano correttamente senza stato residuo, inclusi cooldown ed effetti dell'abilità |
 | B17 | Contenuti definitivi degli amici | P1 | 5 | B10, B15 | Testi e asset sostituibili senza codice; approvazioni registrate |
-| B17A | Sette abilità attive restanti | P1 | 13 | B09A, B17 | Sette `AbilityDefinition` ed effetti completano il catalogo; compatibilità, Cosplay Casuale e cleanup sono verificati anche se il roster completo resta fuori dall'MVP |
+| B17A | Roster giocabile completo e sette attive restanti | P1 | 34 | B09A, B13, B16, B17 | Otto amici selezionabili prima della run con ritratto, passiva parametrica e abilità propria; le sette nuove `AbilityDefinition`, Cosplay Casuale, combinazione con upgrade, cambio personaggio e cleanup su due run sono verificati |
 | B18 | Art, VFX, audio, contrasto e volume | P1 | 5 | B09A, B11, B15 | Feedback leggibile; controlli volume/mute; nessun effetto o abilità nasconde gli attacchi |
-| B19 | Hardening Windows/Android e performance | P0 | 8 | B16, B17A | Android 12 minimo e Android 16 target, aspect ratio, touch, lifecycle, abilità e soak rispettano il budget |
+| B18B | Identità visiva, HUD compatto e combat feedback | P1 | 5 | B17A, B18 | HUD e controlli lasciano priorità al campo di gioco; arena non sembra una vista debug; colpi, danni e morti hanno feedback leggibile e coerente senza richiedere nuovi asset nella prima iterazione |
+| B19 | Hardening Windows/Android e performance | P0 | 8 | B16, B17A, B18B | Android 12 minimo e Android 16 target, aspect ratio, touch, lifecycle, abilità e soak rispettano il budget sulla presentazione finale |
 | B20 | Packaging Windows e Android | P0 | 5 | B16, B19 | ZIP Windows e APK release firmato avviabili; AAB Gradle generabile senza upload Play ||
 
 Parallelizzazione sicura:
 
 - dopo B01, il catalogo dati B10 può procedere mentre si implementa il combattimento B03–B06;
 - B09A parte soltanto dopo B09 e non modifica il perimetro di B07–B09;
-- dopo la stabilizzazione delle dimensioni UI e degli schemi dati, B17A e gli asset B17–B18 possono procedere per abilità in piccoli lotti;
+- dopo la stabilizzazione delle dimensioni UI e degli schemi dati, B17A procede per profilo completo (selezione + passiva + attiva) in piccoli lotti, mentre gli asset B18 restano sostituibili;
+- B18B congela gerarchia e ingombri visivi prima di B19; profiling, soak e matrice finale non iniziano su una UI destinata a essere ridisegnata;
 - B13 va integrato un effetto alla volta, con test combinatori, non come blocco unico a fine milestone.
+
+### B18B — Identità visiva e priorità al campo di gioco
+
+Direzione approvata: interfaccia leggibile e professionale, contenuto caricaturale
+e volutamente assurdo. La grammatica visiva è pixel-art arcade, non cyber-tech
+seria: pannelli scuri semplici, ciano riservato a sistema/informazioni, rosa a
+vita e danno, giallo-arancio ad abilità e cooldown, con pochi bordi colorati.
+
+Prima iterazione, senza introdurre nuovi asset obbligatori:
+
+- riunire il HUD in una fascia superiore compatta alta circa `64–72` unità
+  logiche: ritratto, livello e vita a sinistra, timer al centro e pausa a destra;
+- trasformare la progressione XP in una linea alta `6–8` unità logiche sotto la
+  fascia; non mostrare `ONDATA` finché il Director non possiede vere ondate
+  numerate;
+- ridurre il raggio visivo del joystick da `84` a circa `68` unità logiche e la
+  sua opacità a riposo, conservando invariati area touch e comportamento;
+- ridurre la card dell'abilità da circa `320×128` a `230–250×88–96` unità
+  logiche, mantenendo icona, stato, cooldown e un target touch ampio;
+- eliminare griglia regolare e grande rettangolo ciano dell'arena; introdurre
+  via codice variazioni tonali, giunti, macchie e crepe molto leggere, senza
+  ostacoli o dettagli che competano con attori, pickup e telegraph;
+- aggiungere hit flash temporizzato (`0,06–0,08 s`), reazione/squash al colpo,
+  pop e particelle alla morte, feedback del danno Player, scia del proiettile e
+  impulso quando l'abilità torna pronta;
+- mantenere il protagonista corrente come riferimento qualitativo. Nuovi sprite
+  pixel-art dei nemici vengono valutati dopo questa iterazione, sulla base del
+  miglioramento ancora necessario.
+
+Vincoli e gate di uscita:
+
+- tutte le misure sopra sono unità logiche del viewport Godot, non pixel fisici
+  del display, e non modificano collisioni, raggi o altre distanze gameplay;
+- icona pausa e pulsante abilità conservano target touch di almeno `44–48`
+  unità logiche; la riduzione del joystick è solo visiva e non restringe la sua
+  area di acquisizione;
+- HUD, Boss UI, overlay e controlli non si sovrappongono e restano nella safe
+  area a 16:9, 18:9, 20:9 e 4:3;
+- su device fisico il Player continua a muoversi tenendo il joystick con un dito
+  mentre il secondo attiva ripetutamente l'abilità;
+- hit, proiettili ostili e telegraph restano distinguibili durante Boss, abilità
+  persistenti e densità elevata;
+- smoke, screenshot prima/dopo, export Windows/Android e log privi di
+  `SCRIPT ERROR` o `FATAL EXCEPTION` precedono il freeze visivo per B19.
 
 ## 7. Strategia di test
 
@@ -367,6 +417,7 @@ Parallelizzazione sicura:
 - composizione dei modificatori, stacking, cap e rimozione degli effetti temporanei;
 - attivazione accettata/rifiutata, avanzamento del cooldown soltanto in `RUNNING` e segnale di prontezza emesso una sola volta;
 - risoluzione di `AbilityDefinition`, parametri e tag; Cosplay Casuale non copia sé stessa né abilità incompatibili;
+- risoluzione `FriendDefinition → passiva → AbilityDefinition`, selezione degli otto ID e seed deterministico per passive/copie casuali;
 - scheduler Boss con pausa, salti di soglia e restart;
 - priorità delle sorgenti `InputRouter`, deadzone, normalizzazione e reset completo del touch;
 - calcolo di playfield/safe rect da viewport 16:9, 18:9, 20:9 e 4:3;
@@ -379,9 +430,12 @@ Parallelizzazione sicura:
 - danno ripetuto, invulnerabilità, morte e restart;
 - Onda d'Urto da tastiera, controller e touch: una sola attivazione per pressione, danno e knockback nel raggio, HUD sincronizzato;
 - pausa, level-up, focus loss e restart durante cooldown o area persistente senza consumo di tempo, input bloccato o entità residue;
-- combinazioni fra piercing/rimbalzo, traiettoria oscillante e frequenza aumentata;
+- per ciascuno degli otto profili: selezione, applicazione della passiva, attiva corretta, combinazione con almeno un upgrade e seconda run senza stato residuo;
+- combinazioni fra catena Gossip, traiettoria oscillante e frequenza aumentata;
 - slow periodico mentre entra o muore un nemico;
 - Boss e nemici base presenti insieme;
+- HUD B18B compatto con XP, vita, timer, pausa e abilità sincronizzati durante resize, level-up, Boss intro, pausa e terminali;
+- hit flash, reazione, morte e abilità pronta non cambiano danno, collisioni, cooldown o cleanup della run;
 - joystick touch più pausa, cambio dito e annullamento del touch senza direzioni bloccate;
 - Home/blocco schermo durante combattimento e level-up, con ripresa solo su conferma;
 - due run consecutive senza segnali doppi o riferimenti alla run precedente.
@@ -393,11 +447,11 @@ Parallelizzazione sicura:
 | Windows | Tastiera, controller, finestra, resize, fullscreen e perdita focus |
 | Android device | Device fisico Android 12 vicino al minimo e device/emulatore Android 16; tap, drag, deadzone, multitouch, cambio dito e pulsante abilità mentre il joystick è attivo |
 | Android lifecycle | Back, Home, lock/unlock, chiamata/interruzione, background/resume e input azzerato |
-| Layout | 16:9, 18:9, 20:9, cutout/notch e tablet/emulatore 4:3; nessun controllo fuori safe area |
+| Layout | 16:9, 18:9, 20:9, cutout/notch e tablet/emulatore 4:3; HUD B18B compatto, nessun controllo fuori safe area e nessuna sovrapposizione con Boss UI/overlay |
 | Packaging | Installazione pulita/aggiornamento APK ARM64, firma release e generazione AAB senza upload |
 | Web opzionale | Chromium e Firefox soltanto in B21 |
 | Stabilità | 5 restart rapidi; soak termico 20 minuti su Android; ondate al cap entità |
-| Gameplay | vittoria, sconfitta, level-up multiplo, abilità pronta/in cooldown e Boss durante elevata densità |
+| Gameplay | selezione di tutti gli otto personaggi, vittoria, sconfitta, level-up multiplo, abilità pronta/in cooldown e Boss durante elevata densità |
 
 ## 8. Definition of Done
 
@@ -411,7 +465,7 @@ Un'attività è finita solo quando:
 - la feature P0 è verificata sia con tastiera/controller su Windows sia con touch su Android;
 - UI, HUD e controlli non usano coordinate schermo fisse e rispettano la safe area;
 - la scena può essere riavviata senza conservare nodi, timer o stato della run precedente;
-- una build Windows e un APK vengono verificati al termine di ogni milestone; Web è gate soltanto per B21;
+- una build Windows e un APK vengono verificati al termine di ogni milestone;
 - documentazione e decision log vengono aggiornati se cambia un contratto di gameplay.
 
 ## 9. Rischi e mitigazioni
@@ -428,7 +482,8 @@ Un'attività è finita solo quando:
 | Pausa globale blocca anche l'overlay | Media | Alta | `UpgradeOverlay` processato durante la pausa e test integrato già in M3 |
 | Boss e contenuti arrivano troppo tardi | Media | Alta | Boss framework in P0; placeholder e pattern grezzi prima degli asset finali |
 | Art/audio allargano lo scope | Alta | Media | Budget contenuti esplicito e feature freeze dopo M4 |
-| Citazioni o immagini non approvate | Media | Alta | Registro delle approvazioni e placeholder fino a B17 |
+| HUD compatto riduce usabilità touch | Media | Alta | Ingombro visivo ridotto senza restringere hit area; target da almeno `44–48` unità logiche e gate multitouch fisico prima di B19 |
+| Citazioni o immagini non approvate | Bassa | Alta | Registro B17 obbligatorio, getter con fallback e citazioni/audio personali assenti finché non vengono forniti |
 | Targeting lineare degrada con molte entità | Media | Media | Cap e profiler; target cache, poi partizionamento soltanto su evidenza |
 | Il PRD resta ambiguo durante il coding | Alta | Media | Decision log breve, contratti sopra e aggiornamento della specifica prima di M1 |
 
@@ -436,8 +491,11 @@ Un'attività è finita solo quando:
 
 Ordine operativo immediato:
 
-1. avviare B13 integrando un upgrade signature alla volta sopra il registry B12, iniziando da un effetto isolato e aggiungendo poi i test combinatori;
-2. chiudere il gate manuale B11–B12 con tap a dito, joystick ripristinato e coda multipla, quindi validare M2–M3 su Android 12/API 31, Android 16/API 36 e controller fisico prima di dichiarare chiuso il gate multipiattaforma M3.
+1. chiudere i gate manuali B18B sul gameplay 20:9 e 4:3 con Boss UI, level-up, pausa, terminali e densità elevata; il 16:9, la selezione Pixel 9 e i contratti geometrici sono già verificati;
+2. completare sul Pixel 9 i gate combinati B17A–B18B: cambio personaggio, keyguard, dash, area persistente, Cosplay Casuale e attivazioni ripetute mantenendo il joystick con l'altro dito;
+3. completare il gate percettivo B18 sul mix audio e svolgere una run reale con Boss a `04:00`/`2400 HP`, registrando durata e correzioni di bilanciamento sulla presentazione congelata;
+4. congelare B18B dopo i controlli fisici, conservando export e log già verdi come baseline tecnica;
+5. avviare B19 soltanto dopo il freeze B18B, chiudendo controller fisico, Android 12/API 31, Android 16/API 36, profiling e soak sulla build visivamente definitiva.
 
 Il setup host e gli artefatti generati il 12 agosto 2026 sono registrati in
 [`m0-verification.md`](./m0-verification.md).
@@ -465,3 +523,21 @@ Overlay safe-area, navigazione multipiattaforma e stato del gate B11 sono
 registrati in [`b11-verification.md`](./b11-verification.md).
 Stacking, cap e applicazione runtime degli upgrade statistici B12 sono
 registrati in [`b12-verification.md`](./b12-verification.md).
+Catena Gossip, slow periodico, oscillazione Birra, shockwave reattiva, vignetta
+e lo stato del gate B13 sono registrati in
+[`b13-verification.md`](./b13-verification.md).
+Game Director, profilo di spawn, scheduler a soglia singola e stato del gate B14
+sono registrati in [`b14-verification.md`](./b14-verification.md).
+Primo Boss, intro sicura, due pattern, HP, morte e ricompensa sono registrati in
+[`b15-verification.md`](./b15-verification.md).
+Vittoria, bilanciamento iniziale, cinque run consecutive e stato del gate B16
+sono registrati in [`b16-verification.md`](./b16-verification.md).
+Catalogo degli otto amici, controparti Evil, approvazioni e sprite CC0
+sostituibili sono registrati in [`b17-verification.md`](./b17-verification.md) e
+[`content-approvals.md`](./content-approvals.md).
+Roster selezionabile, passive runtime, otto abilità attive e stato del gate
+fisico B17A sono registrati in [`b17a-verification.md`](./b17a-verification.md).
+Icone dedicate, gerarchia VFX, cue CC0, mixer persistente e stato del gate B18
+sono registrati in [`b18-verification.md`](./b18-verification.md).
+HUD compatto, arena procedurale, feedback di combattimento e gate residui B18B
+sono registrati in [`b18b-verification.md`](./b18b-verification.md).

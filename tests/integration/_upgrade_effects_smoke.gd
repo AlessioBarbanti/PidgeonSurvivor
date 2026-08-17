@@ -1,6 +1,12 @@
 extends SceneTree
 
 const MOVEMENT_SLICE_SCENE := preload("res://scenes/game/movement_slice.tscn")
+const SWIFT_STEPS := preload("res://data/upgrades/swift_steps.tres")
+const RAPID_FIRE := preload("res://data/upgrades/rapid_fire.tres")
+const WIDE_MAGNET := preload("res://data/upgrades/wide_magnet.tres")
+const FALLBACK_POWER := preload("res://data/upgrades/fallback_power.tres")
+const FALLBACK_HASTE := preload("res://data/upgrades/fallback_haste.tres")
+const FALLBACK_REACH := preload("res://data/upgrades/fallback_reach.tres")
 const INITIAL_VIEWPORT_SIZE := Vector2i(1280, 720)
 const FLOAT_TOLERANCE := 0.001
 
@@ -30,6 +36,7 @@ func _validate_composed_upgrade_effects() -> void:
 	var controller := movement_slice.get_run_controller() as RunController
 	var experience := movement_slice.get_experience_system() as ExperienceSystem
 	var service := movement_slice.get_upgrade_service() as UpgradeService
+	var catalog := movement_slice.get_upgrade_registry() as UpgradeRegistry
 	var registry := movement_slice.get_upgrade_effect_registry() as UpgradeEffectRegistry
 	var player := movement_slice.get_node_or_null("World/Player") as Player
 	var weapon := movement_slice.get_weapon_controller() as WeaponController
@@ -43,6 +50,7 @@ func _validate_composed_upgrade_effects() -> void:
 		controller == null
 		or experience == null
 		or service == null
+		or catalog == null
 		or registry == null
 		or player == null
 		or weapon == null
@@ -61,6 +69,19 @@ func _validate_composed_upgrade_effects() -> void:
 	var ability := player.get_ability_controller()
 	if ability != null:
 		ability.set_process(false)
+	# B12 resta una regressione isolata: la scena completa valida prima il
+	# catalogo B13, poi questa fixture limita la pesca ai sei Resource B12.
+	catalog.definitions = [
+		SWIFT_STEPS,
+		RAPID_FIRE,
+		WIDE_MAGNET,
+		FALLBACK_POWER,
+		FALLBACK_HASTE,
+		FALLBACK_REACH,
+	]
+	_expect(catalog.rebuild_registry(), "La fixture B12 isolata deve avere un catalogo valido.")
+	service.reset_for_run(controller.get_seed())
+	_expect(registry.recalculate_effects(), "Il registry deve accettare il sottoinsieme B12.")
 	registry.effect_applied.connect(_on_effect_applied)
 
 	_expect(registry.has_valid_configuration(), "Il registry B12 deve accettare tutto il catalogo.")

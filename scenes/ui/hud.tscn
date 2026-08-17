@@ -1,94 +1,142 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://scripts/ui/touch_ability_button.gd" id="2_touch_ability"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_experience_panel"]
-bg_color = Color(0.025, 0.043, 0.075, 0.9)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.25, 0.72, 1, 0.72)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-content_margin_left = 12.0
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_top_band"]
+bg_color = Color(0.022, 0.035, 0.058, 0.94)
+border_width_bottom = 1
+border_color = Color(0.18, 0.31, 0.42, 0.72)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 10.0
 content_margin_top = 7.0
-content_margin_right = 12.0
-content_margin_bottom = 9.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_health_panel"]
-bg_color = Color(0.025, 0.043, 0.075, 0.88)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 0.35, 0.42, 0.72)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-content_margin_left = 12.0
-content_margin_top = 8.0
-content_margin_right = 12.0
-content_margin_bottom = 10.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_timer_panel"]
-bg_color = Color(0.025, 0.043, 0.075, 0.92)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 0.85, 0.24, 0.76)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-content_margin_left = 24.0
-content_margin_top = 6.0
-content_margin_right = 24.0
+content_margin_right = 8.0
 content_margin_bottom = 7.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_background"]
-bg_color = Color(0.008, 0.014, 0.027, 0.92)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_experience_fill"]
-bg_color = Color(0.13, 0.7, 1, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_health_fill"]
-bg_color = Color(0.96, 0.22, 0.32, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ability_panel"]
-bg_color = Color(0.025, 0.043, 0.075, 0.94)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_portrait"]
+bg_color = Color(0.055, 0.08, 0.12, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(1, 0.66, 0.2, 0.82)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-content_margin_left = 10.0
-content_margin_top = 9.0
-content_margin_right = 10.0
-content_margin_bottom = 10.0
+border_color = Color(0.26, 0.72, 0.86, 0.74)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+content_margin_left = 3.0
+content_margin_top = 3.0
+content_margin_right = 3.0
+content_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_health_panel"]
+bg_color = Color(0, 0, 0, 0)
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_timer_panel"]
+bg_color = Color(0.055, 0.071, 0.1, 0.92)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 16.0
+content_margin_top = 3.0
+content_margin_right = 16.0
+content_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_background"]
+bg_color = Color(0.006, 0.011, 0.02, 0.96)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_experience_fill"]
+bg_color = Color(0.16, 0.7, 0.9, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_health_fill"]
+bg_color = Color(0.98, 0.25, 0.42, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ability_panel"]
+bg_color = Color(0.025, 0.039, 0.063, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.58, 0.16, 0.84)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 7.0
+content_margin_top = 7.0
+content_margin_right = 7.0
+content_margin_bottom = 7.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ability_fill"]
-bg_color = Color(1, 0.58, 0.12, 1)
+bg_color = Color(1, 0.55, 0.12, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_action_normal"]
+bg_color = Color(0.1, 0.071, 0.035, 0.98)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 0.61, 0.2, 0.9)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_action_hover"]
+bg_color = Color(0.19, 0.12, 0.045, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.74, 0.32, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_action_pressed"]
+bg_color = Color(0.28, 0.15, 0.035, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.86, 0.48, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_action_disabled"]
+bg_color = Color(0.045, 0.05, 0.06, 0.86)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.29, 0.27, 0.58)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_right = 5
@@ -113,89 +161,96 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 14
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 14
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
 
 [node name="TopStack" type="VBoxContainer" parent="SafeMargins"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 0
 
-[node name="ExperiencePanel" type="PanelContainer" parent="SafeMargins/TopStack"]
+[node name="TopBand" type="PanelContainer" parent="SafeMargins/TopStack"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 47)
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_experience_panel")
+theme_override_styles/panel = SubResource("StyleBoxFlat_top_band")
 
-[node name="Content" type="VBoxContainer" parent="SafeMargins/TopStack/ExperiencePanel"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 3
-
-[node name="Header" type="HBoxContainer" parent="SafeMargins/TopStack/ExperiencePanel/Content"]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="LevelLabel" type="Label" parent="SafeMargins/TopStack/ExperiencePanel/Content/Header"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.48, 0.88, 1, 1)
-theme_override_font_sizes/font_size = 15
-text = "LV 1"
-
-[node name="Spacer" type="Control" parent="SafeMargins/TopStack/ExperiencePanel/Content/Header"]
-layout_mode = 2
-size_flags_horizontal = 3
-mouse_filter = 2
-
-[node name="ExperienceLabel" type="Label" parent="SafeMargins/TopStack/ExperiencePanel/Content/Header"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.86, 0.95, 1, 1)
-theme_override_font_sizes/font_size = 15
-text = "0 / 10 XP"
-
-[node name="ExperienceBar" type="ProgressBar" parent="SafeMargins/TopStack/ExperiencePanel/Content"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 11)
-layout_mode = 2
-mouse_filter = 2
-theme_override_styles/background = SubResource("StyleBoxFlat_bar_background")
-theme_override_styles/fill = SubResource("StyleBoxFlat_experience_fill")
-show_percentage = false
-
-[node name="InfoRow" type="HBoxContainer" parent="SafeMargins/TopStack"]
-custom_minimum_size = Vector2(0, 68)
+[node name="Content" type="HBoxContainer" parent="SafeMargins/TopStack/TopBand"]
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 12
 
-[node name="HealthPanel" type="PanelContainer" parent="SafeMargins/TopStack/InfoRow"]
+[node name="IdentityBlock" type="HBoxContainer" parent="SafeMargins/TopStack/TopBand/Content"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="PortraitFrame" type="PanelContainer" parent="SafeMargins/TopStack/TopBand/Content/IdentityBlock"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(240, 0)
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_portrait")
+
+[node name="Portrait" type="TextureRect" parent="SafeMargins/TopStack/TopBand/Content/IdentityBlock/PortraitFrame"]
+unique_name_in_owner = true
+texture_filter = 1
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HealthPanel" type="PanelContainer" parent="SafeMargins/TopStack/TopBand/Content/IdentityBlock"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(244, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_health_panel")
 
-[node name="Content" type="VBoxContainer" parent="SafeMargins/TopStack/InfoRow/HealthPanel"]
+[node name="Content" type="VBoxContainer" parent="SafeMargins/TopStack/TopBand/Content/IdentityBlock/HealthPanel"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 5
+theme_override_constants/separation = 1
 
-[node name="HealthLabel" type="Label" parent="SafeMargins/TopStack/InfoRow/HealthPanel/Content"]
+[node name="StatsRow" type="HBoxContainer" parent="SafeMargins/TopStack/TopBand/Content/IdentityBlock/HealthPanel/Content"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="LevelLabel" type="Label" parent="SafeMargins/TopStack/TopBand/Content/IdentityBlock/HealthPanel/Content/StatsRow"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.79, 0.82, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.55, 0.88, 0.96, 1)
+theme_override_font_sizes/font_size = 13
+text = "LV 1"
+
+[node name="Spacer" type="Control" parent="SafeMargins/TopStack/TopBand/Content/IdentityBlock/HealthPanel/Content/StatsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="ExperienceLabel" type="Label" parent="SafeMargins/TopStack/TopBand/Content/IdentityBlock/HealthPanel/Content/StatsRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.71, 0.83, 0.88, 1)
+theme_override_font_sizes/font_size = 12
+text = "0 / 10 XP"
+
+[node name="HealthLabel" type="Label" parent="SafeMargins/TopStack/TopBand/Content/IdentityBlock/HealthPanel/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.73, 0.8, 1)
+theme_override_font_sizes/font_size = 13
 text = "VITA  100 / 100"
 
-[node name="HealthBar" type="ProgressBar" parent="SafeMargins/TopStack/InfoRow/HealthPanel/Content"]
+[node name="HealthBar" type="ProgressBar" parent="SafeMargins/TopStack/TopBand/Content/IdentityBlock/HealthPanel/Content"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 16)
+custom_minimum_size = Vector2(0, 9)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_bar_background")
@@ -203,64 +258,88 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_health_fill")
 value = 100.0
 show_percentage = false
 
-[node name="TimerSlot" type="CenterContainer" parent="SafeMargins/TopStack/InfoRow"]
+[node name="TimerSlot" type="CenterContainer" parent="SafeMargins/TopStack/TopBand/Content"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(132, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="TimerPanel" type="PanelContainer" parent="SafeMargins/TopStack/InfoRow/TimerSlot"]
-custom_minimum_size = Vector2(144, 0)
+[node name="TimerPanel" type="PanelContainer" parent="SafeMargins/TopStack/TopBand/Content/TimerSlot"]
+custom_minimum_size = Vector2(116, 48)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_timer_panel")
 
-[node name="Content" type="VBoxContainer" parent="SafeMargins/TopStack/InfoRow/TimerSlot/TimerPanel"]
+[node name="Content" type="VBoxContainer" parent="SafeMargins/TopStack/TopBand/Content/TimerSlot/TimerPanel"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = -2
+theme_override_constants/separation = -4
 
-[node name="Caption" type="Label" parent="SafeMargins/TopStack/InfoRow/TimerSlot/TimerPanel/Content"]
+[node name="Caption" type="Label" parent="SafeMargins/TopStack/TopBand/Content/TimerSlot/TimerPanel/Content"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.48, 0.75, 0.82, 1)
+theme_override_font_sizes/font_size = 10
 text = "TEMPO"
 horizontal_alignment = 1
 
-[node name="TimeLabel" type="Label" parent="SafeMargins/TopStack/InfoRow/TimerSlot/TimerPanel/Content"]
+[node name="TimeLabel" type="Label" parent="SafeMargins/TopStack/TopBand/Content/TimerSlot/TimerPanel/Content"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.97, 0.83, 1)
-theme_override_font_sizes/font_size = 25
+theme_override_colors/font_color = Color(0.95, 0.98, 1, 1)
+theme_override_font_sizes/font_size = 23
 text = "00:00"
 horizontal_alignment = 1
 
-[node name="RightSlot" type="CenterContainer" parent="SafeMargins/TopStack/InfoRow"]
+[node name="RightSlot" type="CenterContainer" parent="SafeMargins/TopStack/TopBand/Content"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(240, 0)
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="PauseButton" type="Button" parent="SafeMargins/TopStack/InfoRow/RightSlot"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(132, 56)
+[node name="RightAlign" type="HBoxContainer" parent="SafeMargins/TopStack/TopBand/Content/RightSlot"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "PAUSA"
+size_flags_horizontal = 10
+mouse_filter = 2
+
+[node name="PauseButton" type="Button" parent="SafeMargins/TopStack/TopBand/Content/RightSlot/RightAlign"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+tooltip_text = "Pausa"
+theme_override_colors/font_color = Color(0.67, 0.9, 0.96, 1)
+theme_override_font_sizes/font_size = 24
+text = "Ⅱ"
+
+[node name="ExperiencePanel" type="PanelContainer" parent="SafeMargins/TopStack"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bar_background")
+
+[node name="ExperienceBar" type="ProgressBar" parent="SafeMargins/TopStack/ExperiencePanel"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_bar_background")
+theme_override_styles/fill = SubResource("StyleBoxFlat_experience_fill")
+show_percentage = false
 
 [node name="AbilityPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(320, 128)
+custom_minimum_size = Vector2(246, 94)
 layout_mode = 1
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -338.0
-offset_top = -142.0
-offset_right = -18.0
-offset_bottom = -14.0
+offset_left = -258.0
+offset_top = -106.0
+offset_right = -12.0
+offset_bottom = -12.0
 grow_horizontal = 0
 grow_vertical = 0
 mouse_filter = 1
@@ -268,11 +347,11 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_ability_panel")
 
 [node name="Content" type="HBoxContainer" parent="AbilityPanel"]
 layout_mode = 2
-theme_override_constants/separation = 9
+theme_override_constants/separation = 7
 
 [node name="AbilityIcon" type="TextureRect" parent="AbilityPanel/Content"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(54, 54)
+custom_minimum_size = Vector2(56, 56)
 layout_mode = 2
 mouse_filter = 2
 expand_mode = 3
@@ -286,31 +365,46 @@ theme_override_constants/separation = 3
 [node name="AbilityNameLabel" type="Label" parent="AbilityPanel/Content/Details"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.82, 0.38, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(1, 0.78, 0.35, 1)
+theme_override_font_sizes/font_size = 11
 text = "ONDA D'URTO TELLURICA"
 text_overrun_behavior = 3
 
-[node name="AbilityCooldownLabel" type="Label" parent="AbilityPanel/Content/Details"]
+[node name="StateRow" type="HBoxContainer" parent="AbilityPanel/Content/Details"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 5
+
+[node name="AbilityCooldownLabel" type="Label" parent="AbilityPanel/Content/Details/StateRow"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.94, 0.78, 1)
-theme_override_font_sizes/font_size = 13
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.91, 0.69, 1)
+theme_override_font_sizes/font_size = 12
 text = "PRONTA"
+vertical_alignment = 1
+
+[node name="ActiveAbilityButton" type="Button" parent="AbilityPanel/Content/Details/StateRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(58, 44)
+layout_mode = 2
+tooltip_text = "Attiva abilità"
+theme_override_colors/font_color = Color(1, 0.88, 0.62, 1)
+theme_override_colors/font_disabled_color = Color(0.53, 0.51, 0.47, 1)
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_action_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_action_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_action_pressed")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_action_disabled")
+text = "USA"
+script = ExtResource("2_touch_ability")
 
 [node name="AbilityCooldownBar" type="ProgressBar" parent="AbilityPanel/Content/Details"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 9)
+custom_minimum_size = Vector2(0, 7)
 layout_mode = 2
 mouse_filter = 2
 theme_override_styles/background = SubResource("StyleBoxFlat_bar_background")
 theme_override_styles/fill = SubResource("StyleBoxFlat_ability_fill")
 value = 100.0
 show_percentage = false
-
-[node name="ActiveAbilityButton" type="Button" parent="AbilityPanel/Content/Details"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 55)
-layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "ATTIVA\nPRONTA"

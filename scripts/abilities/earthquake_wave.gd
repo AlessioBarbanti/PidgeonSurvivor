@@ -67,6 +67,18 @@ func _draw() -> void:
 		lerpf(10.0, 3.0, progress),
 		true
 	)
+	for crack_index in 6:
+		var direction := Vector2.RIGHT.rotated(TAU * float(crack_index) / 6.0 + 0.22)
+		var tangent := direction.orthogonal()
+		var start := direction * visible_radius * 0.38
+		var middle := direction * visible_radius * 0.62 + tangent * visible_radius * 0.07
+		var end := direction * visible_radius * 0.88
+		draw_polyline(
+			PackedVector2Array([start, middle, end]),
+			Color(1.0, 0.94, 0.7, alpha * 0.72),
+			2.5,
+			true
+		)
 
 
 func get_radius() -> float:

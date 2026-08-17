@@ -1,0 +1,40 @@
+[gd_resource type="Resource" script_class="FriendDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/content/friend_definition.gd" id="1_definition"]
+[ext_resource type="Texture2D" path="res://assets/art/third_party/eldiran_rpg_characters/RPGCharacterSprites32x32-transparent.png" id="2_sheet"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_portrait"]
+atlas = ExtResource("2_sheet")
+region = Rect2(32, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_evil"]
+atlas = ExtResource("2_sheet")
+region = Rect2(32, 96, 32, 32)
+
+[resource]
+script = ExtResource("1_definition")
+id = &"magno"
+display_name = "Magno"
+role = "Mobilità e controllo delle orde."
+tags = Array[StringName]([&"mobility", &"control"])
+passive_title = "Flusso Aerodinamico Bovino"
+passive_description = "Aumenta la velocità di movimento base."
+passive_id = &"magno_aerodynamic_flow"
+passive_parameters = {
+"move_speed_multiplier": 1.15
+}
+active_ability_id = &"magno_earthquake_shockwave"
+active_ability_title = "Onda d'Urto Tellurica"
+active_ability_description = "Genera un'onda d'urto circolare che infligge danni e respinge i nemici vicini."
+evil_display_name = "Evil Magno"
+portrait = SubResource("AtlasTexture_portrait")
+evil_portrait = SubResource("AtlasTexture_evil")
+portrait_placeholder = SubResource("AtlasTexture_portrait")
+evil_portrait_placeholder = SubResource("AtlasTexture_evil")
+portrait_source = "Eldiran, 32x32 RPG Character Sprites, CC0 1.0"
+portraits_are_placeholders = true
+content_approved = true
+portraits_approved = true
+approved_by = "Proprietario del progetto"
+approval_date = "2026-08-17"
+approval_reference = "Conferma esplicita nella sessione Codex del 17/08/2026."

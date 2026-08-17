@@ -4,7 +4,12 @@ extends CharacterBody2D
 signal health_changed(player: Player, health_current: float, health_max: float)
 signal damaged(player: Player, amount: float, health_current: float)
 signal died(player: Player)
+signal friend_changed(definition: FriendDefinition)
 
+@export_group("Content")
+@export var friend_definition: FriendDefinition
+
+@export_group("Movement")
 @export_range(0.0, 2000.0, 1.0) var move_speed: float = 360.0
 
 @export_range(1.0, 1024.0, 1.0, "or_greater") var pickup_radius := 160.0:
@@ -39,6 +44,11 @@ signal died(player: Player)
 		outline_width = maxf(value, 0.0)
 		queue_redraw()
 
+@export_group("Combat Feedback")
+@export_range(0.0, 1.0, 0.005) var damage_flash_duration := 0.075
+@export_range(0.0, 1.0, 0.01) var damage_reaction_duration := 0.16
+@export_range(0.0, 0.5, 0.01) var damage_squash_strength := 0.13
+
 var movement_input := Vector2.ZERO:
 	set(value):
 		movement_input = value.limit_length(1.0)
@@ -46,17 +56,25 @@ var movement_input := Vector2.ZERO:
 var _arena_layout: ArenaLayout
 var _run_controller: RunController
 var _damage_flash_remaining := 0.0
+var _damage_reaction_remaining := 0.0
 var _death_handled := false
 var _base_health_max := 100.0
 var _base_move_speed := 360.0
 var _base_pickup_radius := 160.0
+var _character_move_speed_multiplier := 1.0
+var _character_pickup_radius_multiplier := 1.0
+var _character_health_max_multiplier := 1.0
 var _move_speed_multiplier := 1.0
 var _pickup_radius_multiplier := 1.0
+var _health_max_multiplier := 1.0
+var _passive_controller: FriendPassiveController
+var _portrait_base_scale := Vector2.ONE
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 @onready var _health_component: HealthComponent = %HealthComponent
 @onready var _weapon_controller: WeaponController = %WeaponController
 @onready var _ability_controller: AbilityController = %AbilityController
+@onready var _portrait_sprite: Sprite2D = %PortraitSprite
 
 
 func _ready() -> void:
@@ -66,8 +84,10 @@ func _ready() -> void:
 	_base_health_max = _health_component.health_max
 	_base_move_speed = move_speed
 	_base_pickup_radius = pickup_radius
+	_portrait_base_scale = _portrait_sprite.scale
 	_connect_health_component()
 	_connect_arena_layout()
+	_refresh_portrait()
 	_clamp_to_playfield()
 	queue_redraw()
 
@@ -88,15 +108,25 @@ func _physics_process(delta: float) -> void:
 
 	var safe_delta := maxf(delta, 0.0) if is_finite(delta) else 0.0
 	_damage_flash_remaining = maxf(_damage_flash_remaining - safe_delta, 0.0)
+	_damage_reaction_remaining = maxf(
+		_damage_reaction_remaining - safe_delta,
+		0.0
+	)
 	_health_component.advance_invulnerability(safe_delta)
 	velocity = movement_input * move_speed
 	move_and_slide()
 	_clamp_to_playfield()
-	if _damage_flash_remaining > 0.0 or _health_component.is_invulnerable():
+	_update_portrait_feedback()
+	if (
+		_damage_flash_remaining > 0.0
+		or _damage_reaction_remaining > 0.0
+		or _health_component.is_invulnerable()
+	):
 		queue_redraw()
 
 
 func _draw() -> void:
+	draw_set_transform(Vector2.ZERO, 0.0, get_visual_damage_scale())
 	var visible_body_color := body_color
 	if _damage_flash_remaining > 0.0:
 		visible_body_color = body_color.lerp(Color.WHITE, 0.82)
@@ -121,6 +151,7 @@ func _draw() -> void:
 	])
 	draw_colored_polygon(direction_marker, accent_color)
 	draw_circle(Vector2.ZERO, collision_radius * 0.14, outline_color)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	_draw_health_arc()
 
 
@@ -133,6 +164,27 @@ func clear_movement_input() -> void:
 	velocity = Vector2.ZERO
 
 
+func get_friend_definition() -> FriendDefinition:
+	return friend_definition
+
+
+func set_friend_definition(definition: FriendDefinition) -> bool:
+	if definition == null or not definition.is_valid():
+		return false
+	friend_definition = definition
+	_refresh_portrait()
+	friend_changed.emit(friend_definition)
+	return true
+
+
+func set_passive_controller(controller: FriendPassiveController) -> void:
+	_passive_controller = controller
+
+
+func get_passive_controller() -> FriendPassiveController:
+	return _passive_controller if is_instance_valid(_passive_controller) else null
+
+
 func take_contact_damage(amount: float) -> bool:
 	if (
 		not is_instance_valid(_run_controller)
@@ -141,17 +193,24 @@ func take_contact_damage(amount: float) -> bool:
 		or _death_handled
 	):
 		return false
-	return _health_component.take_damage(amount)
+	var resolved_amount := amount
+	if is_instance_valid(_passive_controller):
+		resolved_amount = _passive_controller.resolve_incoming_damage(amount)
+	if resolved_amount <= 0.0:
+		return false
+	return _health_component.take_damage(resolved_amount)
 
 
 func reset_for_run() -> void:
 	_death_handled = false
 	_damage_flash_remaining = 0.0
+	_damage_reaction_remaining = 0.0
 	reset_upgrade_stat_multipliers()
 	clear_movement_input()
 	if is_instance_valid(_health_component):
-		_health_component.set_health_max(_base_health_max)
+		_health_component.set_health_max(get_base_health_max())
 		_health_component.reset_to_max()
+	_update_portrait_feedback()
 	queue_redraw()
 
 
@@ -199,36 +258,67 @@ func get_pickup_radius() -> float:
 
 func set_upgrade_stat_multipliers(
 	move_speed_multiplier: float,
-	pickup_radius_multiplier: float
+	pickup_radius_multiplier: float,
+	health_max_multiplier: float = 1.0
 ) -> bool:
 	if (
 		not is_finite(move_speed_multiplier)
 		or move_speed_multiplier <= 0.0
 		or not is_finite(pickup_radius_multiplier)
 		or pickup_radius_multiplier <= 0.0
+		or not is_finite(health_max_multiplier)
+		or health_max_multiplier <= 0.0
 	):
 		return false
 
 	_move_speed_multiplier = move_speed_multiplier
 	_pickup_radius_multiplier = pickup_radius_multiplier
-	move_speed = _base_move_speed * _move_speed_multiplier
-	pickup_radius = _base_pickup_radius * _pickup_radius_multiplier
+	_health_max_multiplier = health_max_multiplier
+	_recalculate_effective_stats(true)
 	return true
+
+
+func set_character_stat_multipliers(
+	move_speed_multiplier: float,
+	pickup_radius_multiplier: float = 1.0,
+	health_max_multiplier: float = 1.0
+) -> bool:
+	if (
+		not is_finite(move_speed_multiplier)
+		or move_speed_multiplier <= 0.0
+		or not is_finite(pickup_radius_multiplier)
+		or pickup_radius_multiplier <= 0.0
+		or not is_finite(health_max_multiplier)
+		or health_max_multiplier <= 0.0
+	):
+		return false
+	_character_move_speed_multiplier = move_speed_multiplier
+	_character_pickup_radius_multiplier = pickup_radius_multiplier
+	_character_health_max_multiplier = health_max_multiplier
+	_recalculate_effective_stats(true)
+	return true
+
+
+func reset_character_stat_multipliers() -> void:
+	_character_move_speed_multiplier = 1.0
+	_character_pickup_radius_multiplier = 1.0
+	_character_health_max_multiplier = 1.0
+	_recalculate_effective_stats(true)
 
 
 func reset_upgrade_stat_multipliers() -> void:
 	_move_speed_multiplier = 1.0
 	_pickup_radius_multiplier = 1.0
-	move_speed = _base_move_speed
-	pickup_radius = _base_pickup_radius
+	_health_max_multiplier = 1.0
+	_recalculate_effective_stats(true)
 
 
 func get_base_move_speed() -> float:
-	return _base_move_speed
+	return _base_move_speed * _character_move_speed_multiplier
 
 
 func get_base_pickup_radius() -> float:
-	return _base_pickup_radius
+	return _base_pickup_radius * _character_pickup_radius_multiplier
 
 
 func get_move_speed_multiplier() -> float:
@@ -239,6 +329,22 @@ func get_pickup_radius_multiplier() -> float:
 	return _pickup_radius_multiplier
 
 
+func get_base_health_max() -> float:
+	return _base_health_max * _character_health_max_multiplier
+
+
+func get_health_max_multiplier() -> float:
+	return _health_max_multiplier
+
+
+func get_character_move_speed_multiplier() -> float:
+	return _character_move_speed_multiplier
+
+
+func get_character_health_max_multiplier() -> float:
+	return _character_health_max_multiplier
+
+
 func is_alive() -> bool:
 	return (
 		is_instance_valid(_health_component)
@@ -247,11 +353,66 @@ func is_alive() -> bool:
 	)
 
 
+func get_damage_flash_remaining() -> float:
+	return _damage_flash_remaining
+
+
+func get_damage_reaction_remaining() -> float:
+	return _damage_reaction_remaining
+
+
+func get_visual_damage_scale() -> Vector2:
+	if damage_reaction_duration <= 0.0 or _damage_reaction_remaining <= 0.0:
+		return Vector2.ONE
+	var strength := clampf(
+		_damage_reaction_remaining / damage_reaction_duration,
+		0.0,
+		1.0
+	)
+	return Vector2(
+		1.0 + damage_squash_strength * strength,
+		1.0 - damage_squash_strength * strength
+	)
+
+
 func _make_collision_shape_unique() -> void:
 	var circle_shape := CircleShape2D.new()
 	if _collision_shape.shape is CircleShape2D:
 		circle_shape = _collision_shape.shape.duplicate() as CircleShape2D
 	_collision_shape.shape = circle_shape
+
+
+func _refresh_portrait() -> void:
+	if not is_instance_valid(_portrait_sprite):
+		return
+	_portrait_sprite.texture = (
+		friend_definition.get_public_portrait()
+		if friend_definition != null
+		else null
+	)
+	_portrait_sprite.visible = _portrait_sprite.texture != null
+	_update_portrait_feedback()
+
+
+func _update_portrait_feedback() -> void:
+	if not is_instance_valid(_portrait_sprite):
+		return
+	_portrait_sprite.scale = _portrait_base_scale * get_visual_damage_scale()
+	_portrait_sprite.self_modulate = (
+		Color(1.0, 0.72, 0.8, 1.0)
+		if _damage_flash_remaining > 0.0
+		else Color.WHITE
+	)
+
+
+func _recalculate_effective_stats(preserve_health_ratio: bool) -> void:
+	move_speed = get_base_move_speed() * _move_speed_multiplier
+	pickup_radius = get_base_pickup_radius() * _pickup_radius_multiplier
+	if is_instance_valid(_health_component):
+		_health_component.set_health_max(
+			get_base_health_max() * _health_max_multiplier,
+			preserve_health_ratio
+		)
 
 
 func _sync_collision_radius() -> void:
@@ -340,7 +501,9 @@ func _on_health_changed(health_current: float, health_max: float) -> void:
 
 
 func _on_damaged(amount: float, health_current: float) -> void:
-	_damage_flash_remaining = 0.12
+	_damage_flash_remaining = maxf(damage_flash_duration, 0.0)
+	_damage_reaction_remaining = maxf(damage_reaction_duration, 0.0)
+	_update_portrait_feedback()
 	damaged.emit(self, amount, health_current)
 	queue_redraw()
 
@@ -355,6 +518,7 @@ func _on_died() -> void:
 
 
 func _on_invulnerability_changed(_active: bool, _remaining: float) -> void:
+	_update_portrait_feedback()
 	queue_redraw()
 
 

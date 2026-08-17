@@ -77,11 +77,21 @@ func unregister_target_by_instance_id(target_instance_id: int) -> bool:
 
 
 func get_nearest_alive(origin: Vector2) -> BaseEnemy:
+	return get_nearest_alive_excluding(origin, {})
+
+
+func get_nearest_alive_excluding(
+	origin: Vector2,
+	excluded_instance_ids: Dictionary
+) -> BaseEnemy:
 	_prune_invalid_targets()
 	var nearest: BaseEnemy
 	var nearest_distance_squared := INF
 	for target in _targets:
-		if not _is_target_alive(target):
+		if (
+			not _is_target_alive(target)
+			or excluded_instance_ids.has(target.get_instance_id())
+		):
 			continue
 		var distance_squared := origin.distance_squared_to(target.global_position)
 		if distance_squared < nearest_distance_squared:

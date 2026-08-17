@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ability_definition.gd" id="1_definition"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/abilities/fire_z.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_definition")
+id = &"bea_fire_z_trail"
+title = "Scia di Fuoco Z"
+description = "Scatta e lascia una scia di fuoco a Z che danneggia i nemici."
+icon = ExtResource("2_icon")
+cooldown_seconds = 10.0
+duration_seconds = 2.0
+area_radius = 0.0
+damage = 6.0
+effect_id = &"fire_z_trail"
+effect_parameters = {
+"dash_distance": 320.0,
+"trail_duration": 2.0,
+"trail_tick_interval": 0.25,
+"trail_width": 40.0,
+"zigzag_width": 120.0
+}
+tags = Array[StringName]([&"mobility", &"damage", &"persistent", &"copy_compatible"])

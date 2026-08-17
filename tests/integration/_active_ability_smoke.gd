@@ -228,9 +228,28 @@ func _validate_composed_ability() -> void:
 	_expect(hud.get_ability_cooldown_text() == "PRONTA", "L'HUD deve sincronizzarsi alla fine del cooldown.")
 
 	var touch_button := hud.get_active_ability_button()
-	touch_button.pressed.emit()
-	_expect(_activation_count == 2, "Il pulsante touch deve attivare la stessa abilita.")
+	_expect(
+		touch_button.has_signal(&"activation_requested"),
+		"Il pulsante gameplay deve usare il percorso touch stateless."
+	)
+	var joystick := movement_slice.get_node_or_null("UI/SafeAreaRoot/TouchJoystick") as TouchJoystick
+	joystick.show()
+	var joystick_position := joystick.size * 0.5 + Vector2.RIGHT * joystick.base_radius
+	var ability_position := touch_button.get_global_rect().get_center()
+	joystick._gui_input(_touch_event(0, true, joystick_position))
+	await process_frame
+	_expect(joystick.active_finger_index == 0, "Il primo dito deve mantenere il joystick durante l'abilita.")
+	await _dispatch_touch_tap(1, ability_position)
+	_expect(_activation_count == 2, "Il primo tap multitouch deve attivare l'abilita.")
 	_expect_float_near(ability.get_cooldown_remaining(), 8.0, "Il touch deve avviare lo stesso cooldown.")
+	ability._process(ability.get_cooldown_remaining())
+	_expect(ability.is_cooldown_ready(), "Il cooldown touch deve terminare con il joystick mantenuto.")
+	await _dispatch_touch_tap(1, ability_position)
+	_expect(_activation_count == 3, "Il secondo tap multitouch deve riattivare l'abilita.")
+	_expect(joystick.active_finger_index == 0, "I tap abilita non devono liberare il joystick.")
+	joystick._gui_input(_touch_event(0, false, joystick_position))
+	await process_frame
+	_expect(not joystick.is_active(), "Il rilascio finale deve liberare il joystick.")
 	_expect(registry.get_active_effect_count() >= 1, "Un effetto attivo deve esistere prima del restart.")
 
 	_expect(controller.request_defeat(), "La fixture deve raggiungere un terminale.")
@@ -253,7 +272,7 @@ func _validate_composed_ability() -> void:
 		input_router._process(0.0)
 		Input.action_release(&"active_ability")
 		input_router._process(0.0)
-		_expect(_activation_count == 3, "La seconda run deve avere una sola connessione input.")
+		_expect(_activation_count == 4, "La seconda run deve avere una sola connessione input.")
 		_expect_float_near(second_run_enemy.get_health_component().health_current, 20.0, "L'abilita deve funzionare nella seconda run.")
 
 	controller.prepare_restart()
@@ -296,6 +315,25 @@ func _expect(condition: bool, message: String) -> void:
 
 func _wait_processed_frame() -> void:
 	await process_frame
+	await process_frame
+
+
+func _dispatch_touch(index: int, pressed: bool, position: Vector2) -> void:
+	Input.parse_input_event(_touch_event(index, pressed, position))
+
+
+func _touch_event(index: int, pressed: bool, position: Vector2) -> InputEventScreenTouch:
+	var event := InputEventScreenTouch.new()
+	event.index = index
+	event.pressed = pressed
+	event.position = position
+	return event
+
+
+func _dispatch_touch_tap(index: int, position: Vector2) -> void:
+	_dispatch_touch(index, true, position)
+	await process_frame
+	_dispatch_touch(index, false, position)
 	await process_frame
 
 

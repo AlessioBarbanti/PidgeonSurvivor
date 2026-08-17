@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="UpgradeDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/progression/upgrade_definition.gd" id="1_definition"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/upgrades/beer.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_definition")
+id = &"beer_signature"
+title = "Birra"
+description = "Aumenta la frequenza di sparo e rende oscillante la traiettoria dei proiettili."
+icon = ExtResource("2_icon")
+effect_id = &"beer_signature"
+effect_parameters = {
+"fire_rate_multiplier": 1.25,
+"oscillation_amplitude": 18.0,
+"oscillation_frequency_hz": 3.0
+}
+weight = 1.0
+max_rank = 1
+tags = Array[StringName]([&"signature", &"weapon", &"projectile", &"oscillation"])
