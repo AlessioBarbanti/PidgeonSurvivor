@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/abilities/ability_definition.gd" id="1_definition"]
+[ext_resource type="Texture2D" path="res://assets/art/icon.svg" id="2_icon"]
+
+[resource]
+script = ExtResource("1_definition")
+id = &"magno_earthquake_shockwave"
+title = "Onda d'Urto Tellurica"
+description = "Danneggia e respinge i nemici vicini."
+icon = ExtResource("2_icon")
+cooldown_seconds = 8.0
+duration_seconds = 0.0
+area_radius = 220.0
+damage = 20.0
+effect_id = &"earthquake_shockwave"
+effect_parameters = {
+"knockback_force": 300.0,
+"stun_duration": 0.2,
+"visual_duration": 0.35
+}
+tags = Array[StringName]([&"radial", &"damage", &"crowd_control", &"copy_compatible"])

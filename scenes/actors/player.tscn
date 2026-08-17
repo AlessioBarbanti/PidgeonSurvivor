@@ -1,0 +1,41 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://scripts/combat/weapon_controller.gd" id="2_weapon"]
+[ext_resource type="Resource" path="res://data/weapons/default_weapon_profile.tres" id="3_weapon_profile"]
+[ext_resource type="PackedScene" path="res://scenes/combat/projectile.tscn" id="4_projectile"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="5_health"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_controller.gd" id="6_ability_controller"]
+[ext_resource type="Resource" path="res://data/abilities/magno_earthquake_shockwave.tres" id="7_ability"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_player"]
+radius = 24.0
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+z_index = 10
+collision_layer = 1
+collision_mask = 0
+motion_mode = 1
+script = ExtResource("1_player")
+
+[node name="CollisionShape" type="CollisionShape2D" parent="."]
+unique_name_in_owner = true
+shape = SubResource("CircleShape2D_player")
+
+[node name="HealthComponent" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("5_health")
+health_max = 100.0
+invulnerability_duration = 0.75
+
+[node name="WeaponController" type="Node2D" parent="."]
+unique_name_in_owner = true
+z_index = 1
+script = ExtResource("2_weapon")
+weapon_profile = ExtResource("3_weapon_profile")
+projectile_scene = ExtResource("4_projectile")
+
+[node name="AbilityController" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("6_ability_controller")
+ability_definition = ExtResource("7_ability")

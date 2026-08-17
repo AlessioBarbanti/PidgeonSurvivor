@@ -1,0 +1,24 @@
+# Godot caches and generated imports.
+/.godot/
+*.translation
+
+# Local exports and generated Android Gradle template.
+/exports/
+/android/build/
+/android/.gradle/
+/android/.build_version
+local.properties
+*.apk
+*.aab
+
+# Signing material must remain outside version control.
+*.keystore
+*.jks
+*.p12
+*.pfx
+
+# IDE and operating-system metadata.
+/.idea/
+/.vscode/
+.DS_Store
+Thumbs.db

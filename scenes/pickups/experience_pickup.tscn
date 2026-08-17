@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/progression/experience_pickup.gd" id="1_pickup"]
+
+[node name="ExperiencePickup" type="Node2D" groups=["experience_pickups"]]
+z_index = 4
+script = ExtResource("1_pickup")

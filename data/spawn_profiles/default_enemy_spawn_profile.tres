@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EnemySpawnProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/game/enemy_spawn_profile.gd" id="1_spawn_profile"]
+
+[resource]
+script = ExtResource("1_spawn_profile")
+base_spawn_interval = 1.0
+min_spawn_interval = 0.25
+spawn_acceleration = 0.0025
+initial_spawn_delay = 0.75
+max_alive_enemies = 80
+inner_spawn_margin = 48.0
+outer_spawn_margin = 160.0
+min_player_distance = 240.0
+spawn_sample_attempts = 12
+cleanup_interval = 1.0
+despawn_margin = 320.0

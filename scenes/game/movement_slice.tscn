@@ -1,0 +1,146 @@
+[gd_scene load_steps=30 format=3]
+
+[ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
+[ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
+[ext_resource type="Script" path="res://scripts/ui/arena_view.gd" id="3_arena_view"]
+[ext_resource type="PackedScene" path="res://scenes/actors/player.tscn" id="4_player"]
+[ext_resource type="Script" path="res://scripts/input/input_router.gd" id="5_input_router"]
+[ext_resource type="PackedScene" path="res://scenes/ui/touch_joystick.tscn" id="6_touch_joystick"]
+[ext_resource type="Script" path="res://scripts/game/run_controller.gd" id="7_run_controller"]
+[ext_resource type="Script" path="res://scripts/game/enemy_spawner.gd" id="8_enemy_spawner"]
+[ext_resource type="PackedScene" path="res://scenes/actors/base_enemy.tscn" id="9_base_enemy"]
+[ext_resource type="Resource" path="res://data/spawn_profiles/default_enemy_spawn_profile.tres" id="10_spawn_profile"]
+[ext_resource type="Script" path="res://scripts/combat/targeting_system.gd" id="11_targeting"]
+[ext_resource type="PackedScene" path="res://scenes/ui/end_screen.tscn" id="12_end_screen"]
+[ext_resource type="Script" path="res://scripts/progression/experience_system.gd" id="13_experience_system"]
+[ext_resource type="Script" path="res://scripts/progression/experience_dropper.gd" id="14_experience_dropper"]
+[ext_resource type="PackedScene" path="res://scenes/pickups/experience_pickup.tscn" id="15_experience_pickup"]
+[ext_resource type="Resource" path="res://data/progression/default_experience_curve.tres" id="16_experience_curve"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="17_hud"]
+[ext_resource type="Script" path="res://scripts/input/platform_lifecycle.gd" id="18_lifecycle"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_overlay.tscn" id="19_pause_overlay"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_effect_registry.gd" id="20_ability_registry"]
+[ext_resource type="Script" path="res://scripts/progression/upgrade_registry.gd" id="21_upgrade_registry"]
+[ext_resource type="Script" path="res://scripts/progression/upgrade_service.gd" id="22_upgrade_service"]
+[ext_resource type="Resource" path="res://data/upgrades/swift_steps.tres" id="23_swift_steps"]
+[ext_resource type="Resource" path="res://data/upgrades/rapid_fire.tres" id="24_rapid_fire"]
+[ext_resource type="Resource" path="res://data/upgrades/wide_magnet.tres" id="25_wide_magnet"]
+[ext_resource type="Resource" path="res://data/upgrades/fallback_power.tres" id="26_fallback_power"]
+[ext_resource type="Resource" path="res://data/upgrades/fallback_haste.tres" id="27_fallback_haste"]
+[ext_resource type="Resource" path="res://data/upgrades/fallback_reach.tres" id="28_fallback_reach"]
+[ext_resource type="PackedScene" path="res://scenes/ui/upgrade_overlay.tscn" id="29_upgrade_overlay"]
+
+[node name="MovementSlice" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_slice")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.02, 0.027, 0.047, 1)
+
+[node name="ArenaView" type="Node2D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("3_arena_view")
+
+[node name="ArenaLayout" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_arena_layout")
+edge_inset = 20.0
+
+[node name="RunController" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("7_run_controller")
+
+[node name="EnemySpawner" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("8_enemy_spawner")
+enemy_scene = ExtResource("9_base_enemy")
+spawn_profile = ExtResource("10_spawn_profile")
+
+[node name="TargetingSystem" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("11_targeting")
+
+[node name="AbilityEffectRegistry" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("20_ability_registry")
+
+[node name="ExperienceSystem" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("13_experience_system")
+experience_curve = ExtResource("16_experience_curve")
+
+[node name="UpgradeRegistry" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("21_upgrade_registry")
+definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"), ExtResource("24_rapid_fire"), ExtResource("25_wide_magnet"), ExtResource("26_fallback_power"), ExtResource("27_fallback_haste"), ExtResource("28_fallback_reach")])
+
+[node name="UpgradeService" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("22_upgrade_service")
+
+[node name="ExperienceDropper" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("14_experience_dropper")
+pickup_scene = ExtResource("15_experience_pickup")
+
+[node name="World" type="Node2D" parent="."]
+
+[node name="Enemies" type="Node2D" parent="World"]
+unique_name_in_owner = true
+
+[node name="Projectiles" type="Node2D" parent="World"]
+unique_name_in_owner = true
+
+[node name="Pickups" type="Node2D" parent="World"]
+unique_name_in_owner = true
+
+[node name="AbilityEffects" type="Node2D" parent="World"]
+unique_name_in_owner = true
+
+[node name="Player" parent="World" instance=ExtResource("4_player")]
+unique_name_in_owner = true
+
+[node name="InputRouter" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("5_input_router")
+touch_joystick_path = NodePath("../UI/SafeAreaRoot/TouchJoystick")
+active_ability_button_path = NodePath("../UI/SafeAreaRoot/HUD/AbilityPanel/Content/Details/ActiveAbilityButton")
+
+[node name="PlatformLifecycle" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("18_lifecycle")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="SafeAreaRoot" type="Control" parent="UI"]
+unique_name_in_owner = true
+mouse_filter = 2
+
+[node name="HUD" parent="UI/SafeAreaRoot" instance=ExtResource("17_hud")]
+unique_name_in_owner = true
+
+[node name="TouchJoystick" parent="UI/SafeAreaRoot" instance=ExtResource("6_touch_joystick")]
+unique_name_in_owner = true
+debug_mode_in_editor = true
+
+[node name="UpgradeOverlay" parent="UI/SafeAreaRoot" instance=ExtResource("29_upgrade_overlay")]
+unique_name_in_owner = true
+
+[node name="PauseOverlay" parent="UI" instance=ExtResource("19_pause_overlay")]
+unique_name_in_owner = true
+
+[node name="EndScreen" parent="UI" instance=ExtResource("12_end_screen")]
+unique_name_in_owner = true

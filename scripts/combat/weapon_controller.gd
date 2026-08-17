@@ -1,0 +1,205 @@
+class_name WeaponController
+extends Node2D
+
+signal projectile_fired(projectile: Projectile, target: BaseEnemy)
+
+@export var weapon_profile: WeaponProfile
+@export var projectile_scene: PackedScene
+
+@export_group("Visual")
+@export var weapon_color := Color(1.0, 0.91, 0.2, 1.0):
+	set(value):
+		weapon_color = value
+		queue_redraw()
+
+@export var outline_color := Color(0.015, 0.025, 0.06, 1.0):
+	set(value):
+		outline_color = value
+		queue_redraw()
+
+var _run_controller: RunController
+var _targeting_system: TargetingSystem
+var _projectile_parent: Node
+var _source: Node2D
+var _cooldown_remaining := 0.0
+var _last_aim_direction := Vector2.RIGHT
+var _invalid_projectile_scene_warning_emitted := false
+var _projectile_scene_valid := true
+
+
+func _ready() -> void:
+	queue_redraw()
+
+
+func _exit_tree() -> void:
+	_disconnect_run_controller()
+
+
+func _process(delta: float) -> void:
+	if not _has_valid_dependencies() or not _run_controller.is_running():
+		return
+
+	if _cooldown_remaining > 0.0:
+		_cooldown_remaining = maxf(_cooldown_remaining - maxf(delta, 0.0), 0.0)
+	if _cooldown_remaining <= 0.0:
+		try_fire()
+
+
+func _draw() -> void:
+	var length := 32.0
+	if weapon_profile != null:
+		length = maxf(weapon_profile.muzzle_offset, 12.0)
+	var start := Vector2(9.0, 0.0)
+	var finish := Vector2(length, 0.0)
+	draw_line(start, finish, outline_color, 10.0, true)
+	draw_line(start, finish, weapon_color, 5.0, true)
+	draw_circle(finish, 3.0, weapon_color)
+
+
+func configure(
+	run_controller: RunController,
+	targeting_system: TargetingSystem,
+	projectile_parent: Node,
+	source: Node2D = null
+) -> void:
+	_disconnect_run_controller()
+	_run_controller = run_controller
+	_targeting_system = targeting_system
+	_projectile_parent = projectile_parent
+	_source = source if is_instance_valid(source) else get_parent() as Node2D
+	_connect_run_controller()
+	reset_for_run(false)
+
+
+func try_fire() -> Projectile:
+	if (
+		not _has_valid_dependencies()
+		or not _run_controller.is_running()
+		or _cooldown_remaining > 0.0
+	):
+		return null
+
+	var target := _targeting_system.get_nearest_alive(_source.global_position)
+	if target == null:
+		return null
+
+	var offset_to_target := target.global_position - _source.global_position
+	var aim_direction := _last_aim_direction
+	var muzzle_offset := 0.0
+	if not offset_to_target.is_zero_approx():
+		aim_direction = offset_to_target.normalized()
+		muzzle_offset = minf(weapon_profile.muzzle_offset, offset_to_target.length())
+
+	var instance := projectile_scene.instantiate()
+	if not instance is Projectile:
+		if is_instance_valid(instance):
+			instance.free()
+		if not _invalid_projectile_scene_warning_emitted:
+			_invalid_projectile_scene_warning_emitted = true
+			_projectile_scene_valid = false
+			push_warning(
+				"WeaponController: projectile_scene deve avere Projectile come nodo root."
+			)
+		return null
+
+	var projectile := instance as Projectile
+	_projectile_parent.add_child(projectile)
+	projectile.global_position = _source.global_position + aim_direction * muzzle_offset
+	if not projectile.initialize(
+		aim_direction,
+		weapon_profile.damage,
+		weapon_profile.projectile_speed,
+		weapon_profile.projectile_lifetime,
+		weapon_profile.projectile_radius,
+		_run_controller
+	):
+		projectile.queue_free()
+		return null
+
+	_last_aim_direction = aim_direction
+	rotation = _last_aim_direction.angle()
+	_cooldown_remaining = weapon_profile.get_fire_interval()
+	queue_redraw()
+	projectile_fired.emit(projectile, target)
+	return projectile
+
+
+func reset_for_run(clear_existing_projectiles: bool = true) -> void:
+	_cooldown_remaining = 0.0
+	_last_aim_direction = Vector2.RIGHT
+	_invalid_projectile_scene_warning_emitted = false
+	_projectile_scene_valid = true
+	rotation = 0.0
+	queue_redraw()
+	if clear_existing_projectiles:
+		clear_projectiles()
+
+
+func clear_projectiles() -> void:
+	if not is_instance_valid(_projectile_parent):
+		return
+	for child in _projectile_parent.get_children():
+		if child is Projectile and not child.is_queued_for_deletion():
+			(child as Projectile).expire()
+
+
+func get_run_controller() -> RunController:
+	return _run_controller if is_instance_valid(_run_controller) else null
+
+
+func get_targeting_system() -> TargetingSystem:
+	return _targeting_system if is_instance_valid(_targeting_system) else null
+
+
+func get_projectile_parent() -> Node:
+	return _projectile_parent if is_instance_valid(_projectile_parent) else null
+
+
+func get_cooldown_remaining() -> float:
+	return _cooldown_remaining
+
+
+func is_ready_to_fire() -> bool:
+	return _cooldown_remaining <= 0.0
+
+
+func _has_valid_dependencies() -> bool:
+	return (
+		weapon_profile != null
+		and weapon_profile.shots_per_second > 0.0
+		and projectile_scene != null
+		and _projectile_scene_valid
+		and is_instance_valid(_run_controller)
+		and is_instance_valid(_targeting_system)
+		and is_instance_valid(_projectile_parent)
+		and _projectile_parent.is_inside_tree()
+		and is_instance_valid(_source)
+	)
+
+
+func _connect_run_controller() -> void:
+	if not is_instance_valid(_run_controller):
+		return
+	if not _run_controller.run_started.is_connected(_on_run_started):
+		_run_controller.run_started.connect(_on_run_started)
+	if not _run_controller.restart_prepared.is_connected(_on_restart_prepared):
+		_run_controller.restart_prepared.connect(_on_restart_prepared)
+
+
+func _disconnect_run_controller() -> void:
+	if not is_instance_valid(_run_controller):
+		_run_controller = null
+		return
+	if _run_controller.run_started.is_connected(_on_run_started):
+		_run_controller.run_started.disconnect(_on_run_started)
+	if _run_controller.restart_prepared.is_connected(_on_restart_prepared):
+		_run_controller.restart_prepared.disconnect(_on_restart_prepared)
+	_run_controller = null
+
+
+func _on_run_started(_seed_value: int) -> void:
+	reset_for_run()
+
+
+func _on_restart_prepared() -> void:
+	reset_for_run()
