@@ -542,6 +542,14 @@ func _validate_current_contract() -> bool:
 			)
 			if roster_ability == null or not roster_ability.is_valid():
 				failures.append("AbilityDefinition B17A mancante: %s." % friend_definition.id)
+			elif friend_definition.id == &"bea":
+				if (
+					roster_ability.title != "Powerslide"
+					or not is_equal_approx(roster_ability.duration_seconds, 4.0)
+					or roster_ability.icon == null
+					or roster_ability.icon.resource_path != "res://assets/art/icons/abilities/powerslide.svg"
+				):
+					failures.append("Powerslide B18D non rispetta dati, durata o icona approvati.")
 	var player_health := _player.get_health_component()
 	if player_health == null:
 		failures.append("Player privo di HealthComponent.")
@@ -941,11 +949,12 @@ func _validate_current_contract() -> bool:
 		print("B18_CONTRACT_OK")
 		print("B18B_CONTRACT_OK")
 		print("B18C_CONTRACT_OK")
+		print("B18D_CONTRACT_OK")
 		return true
 
 	for failure in failures:
 		push_error(failure)
-	printerr("B18C_CONTRACT_FAIL")
+	printerr("B18D_CONTRACT_FAIL")
 	return false
 
 

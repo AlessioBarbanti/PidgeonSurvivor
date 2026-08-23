@@ -63,6 +63,9 @@ func _validate_catalog_and_approvals() -> void:
 	var expected_ids: Array[StringName] = [
 		&"magno", &"bea", &"zat", &"alea", &"aleo", &"lollo", &"migi", &"marghe",
 	]
+	var expected_approval_dates := {
+		&"bea": "2026-08-24",
+	}
 	var seen_ability_ids: Dictionary = {}
 	for friend_id in expected_ids:
 		var definition := registry.resolve_definition(friend_id)
@@ -73,7 +76,7 @@ func _validate_catalog_and_approvals() -> void:
 		_expect(definition.is_publication_ready(), "Profilo non approvato: %s." % friend_id)
 		_expect(
 			definition.approved_by == "Proprietario del progetto"
-			and definition.approval_date == "2026-08-17"
+			and definition.approval_date == expected_approval_dates.get(friend_id, "2026-08-17")
 			and not definition.approval_reference.is_empty(),
 			"L'approvazione deve essere tracciabile per %s." % friend_id
 		)

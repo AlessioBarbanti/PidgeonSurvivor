@@ -36,8 +36,8 @@ passive_parameters = {
 "evasion_chance": 0.15
 }
 active_ability_id = &"bea_fire_z_trail"
-active_ability_title = "Scia di Fuoco Z"
-active_ability_description = "Scatto rapido che lascia una scia di fuoco a forma di Z; la scia danneggia i nemici."
+active_ability_title = "Powerslide"
+active_ability_description = "Si teletrasporta nell'ultima direzione guardata e lascia una scia di fuoco persistente."
 evil_display_name = "Evil Bea"
 portrait = SubResource("AtlasTexture_portrait")
 evil_portrait = SubResource("AtlasTexture_evil")
@@ -50,5 +50,5 @@ gameplay_walk_right_frames = Array[Texture2D]([SubResource("AtlasTexture_gamepla
 content_approved = true
 portraits_approved = true
 approved_by = "Proprietario del progetto"
-approval_date = "2026-08-17"
-approval_reference = "Conferma esplicita nella sessione Codex del 17/08/2026."
+approval_date = "2026-08-24"
+approval_reference = "Powerslide e relativo copy richiesti esplicitamente nel tracker gameplay e confermati per l'implementazione il 24/08/2026."

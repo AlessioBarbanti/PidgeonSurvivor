@@ -125,15 +125,18 @@ in base ai tag di compatibilità, in particolare per gli effetti di copia.
 - **Nota tecnica:** applicare separatamente danno e forza radiale; i layer di
   collisione devono escludere gli oggetti statici.
 
-#### Bea — Scia di Fuoco Z
+#### Bea — Powerslide
 
-- **Tipo:** dash con area persistente.
-- **Effetto:** esegue uno scatto e lascia una traccia che infligge danno
-  periodico ai nemici che la attraversano.
+- **Tipo:** teletrasporto direzionale con area persistente.
+- **Effetto:** fotografa l'ultimo vettore di movimento non nullo del Player,
+  lo teletrasporta in linea retta e lascia una traccia di fuoco che infligge
+  danno periodico ai nemici lungo il percorso.
 - **Parametri iniziali:** `cooldown_seconds: 10.0`, `dash_distance: 320`,
-  `trail_duration: 2.0`, `trail_tick_interval: 0.25`, `tick_damage: 6`.
-- **Nota tecnica:** la traccia è un'area istanziata che rileva entrata e uscita
-  dei nemici e applica i tick periodici.
+  `trail_duration: 4.0`, `trail_tick_interval: 0.25`, `tick_damage: 6`.
+- **Nota tecnica:** la distanza è un'unità logica del mondo Godot, non pixel
+  fisici. Il vettore di movimento è distinto dal lato orizzontale usato per
+  l'animazione; la posizione del joystick dopo l'attivazione non modifica il
+  percorso. Pausa e stati non `RUNNING` congelano scia e cooldown.
 
 #### Zat — Tempesta di Fulmini
 

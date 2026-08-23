@@ -1,6 +1,6 @@
 # Registro approvazioni contenuti
 
-Ultimo aggiornamento: 17 agosto 2026  
+Ultimo aggiornamento: 24 agosto 2026
 Ambito: nomi, testi, controparti Boss, ritratti placeholder e contenuti audio
 
 ## Approvazione del proprietario
@@ -8,6 +8,8 @@ Ambito: nomi, testi, controparti Boss, ritratti placeholder e contenuti audio
 Il proprietario del progetto ha approvato esplicitamente il 17 agosto 2026
 tutti i nomi e i testi attualmente presenti nel catalogo e ha confermato che i
 Boss sono le versioni malvagie degli amici, con convenzione `Evil <Nome>`.
+Il 24 agosto 2026 il profilo di Bea è stato aggiornato con il nome e il copy
+operativo di `Powerslide`, come richiesto nel tracker gameplay.
 
 Riferimento registrato nei `FriendDefinition`:
 
@@ -19,6 +21,7 @@ Riferimento registrato nei `FriendDefinition`:
 |---|---|---|
 | Magno, Bea, Zat, Alea, Aleo, Lollo, Migi, Marghe | Approvato | Nomi, ruoli, passive e descrizioni delle attive in `data/friends/*.tres` |
 | Reggeton time! | Approvato | Retheme reggaeton dell'attiva di Marghe; comportamento gameplay invariato |
+| Powerslide | Approvato | Nome, copy e icona inline-skate CC0 richiesti nel tracker gameplay; valori runtime registrati nel PRD |
 | Evil Magno, Evil Bea, Evil Zat, Evil Alea, Evil Aleo, Evil Lollo, Evil Migi, Evil Marghe | Approvato | Ogni profilo amico contiene la propria controparte Boss |
 | L'Ansia, Gossip, Ritardo Cronico, Birra, Non Ho Tempo Per Questo | Approvato | Titoli generici correnti, senza attribuzioni personali aggiuntive |
 | Ritratto hero/Evil CC0 | Approvato come placeholder | Asset temporanei sostituibili dai singoli `FriendDefinition` |

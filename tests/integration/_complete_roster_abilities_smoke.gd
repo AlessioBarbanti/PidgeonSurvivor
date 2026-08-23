@@ -241,7 +241,9 @@ func _validate_ability(
 		&"magno":
 			_expect(enemy.get_health_component().health_current < initial_health, "Magno deve danneggiare nel raggio.")
 		&"bea":
-			_expect(effect is FireZTrail, "Bea deve creare la Scia di Fuoco Z.")
+			_expect(effect is FireZTrail, "Bea deve creare Powerslide.")
+			if effect is FireZTrail:
+				(effect as FireZTrail)._process(0.1)
 			_expect(player.global_position.x > origin.x, "Bea deve scattare in avanti.")
 			_expect(enemy.get_health_component().health_current < initial_health, "La scia di Bea deve infliggere un tick.")
 		&"zat":

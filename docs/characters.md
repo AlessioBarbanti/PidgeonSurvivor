@@ -16,7 +16,7 @@ Boss: Evil Magno.
 
 Ruolo: Evasione e riposizionamento.  
 Passiva — Sesto Senso Equino: Probabilità di evitare completamente un colpo ricevuto.  
-Attiva — Scia di Fuoco Z: Scatto rapido che lascia una scia di fuoco a forma di Z; la scia danneggia i nemici.
+Attiva — Powerslide: Si teletrasporta nell'ultima direzione guardata e lascia una scia di fuoco persistente.
 Boss: Evil Bea.
 
 ## Zat

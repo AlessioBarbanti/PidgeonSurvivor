@@ -1,6 +1,9 @@
 class_name AbilityController
 extends Node
 
+const DEBUG_COOLDOWN_ARGUMENT := "--debug-ability-cooldown"
+const MINIMUM_DEBUG_COOLDOWN := 0.01
+
 signal cooldown_changed(cooldown_remaining: float, cooldown_total: float)
 signal readiness_changed(is_ready: bool)
 signal ability_activated(definition: AbilityDefinition)
@@ -14,6 +17,7 @@ var _effect_registry: AbilityEffectRegistry
 var _source: Node2D
 var _cooldown_remaining := 0.0
 var _ready_state := true
+var _debug_cooldown_override := 0.0
 
 
 func _exit_tree() -> void:
@@ -46,6 +50,7 @@ func configure(
 	_input_router = input_router
 	_effect_registry = effect_registry
 	_source = source if is_instance_valid(source) else get_parent() as Node2D
+	_debug_cooldown_override = _read_debug_cooldown_override()
 	if not _has_valid_dependencies():
 		return false
 	if not _effect_registry.register_definition(ability_definition):
@@ -122,6 +127,8 @@ func get_cooldown_remaining() -> float:
 
 
 func get_cooldown_total() -> float:
+	if _debug_cooldown_override > 0.0:
+		return _debug_cooldown_override
 	return ability_definition.cooldown_seconds if ability_definition != null else 0.0
 
 
@@ -167,3 +174,14 @@ func _disconnect_dependencies() -> void:
 
 func _on_restart_prepared() -> void:
 	reset_for_run()
+
+
+func _read_debug_cooldown_override() -> float:
+	for argument in OS.get_cmdline_args():
+		if not argument.begins_with(DEBUG_COOLDOWN_ARGUMENT + "="):
+			continue
+		var value_text := argument.trim_prefix(DEBUG_COOLDOWN_ARGUMENT + "=")
+		var value := value_text.to_float()
+		if is_finite(value) and value >= MINIMUM_DEBUG_COOLDOWN:
+			return value
+	return 0.0

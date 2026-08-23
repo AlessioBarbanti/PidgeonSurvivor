@@ -82,6 +82,7 @@ var _character_walk_frames: Array[Texture2D] = []
 var _character_walk_frame_index := 0
 var _character_walk_elapsed := 0.0
 var _character_is_walking := false
+var _last_movement_direction := DEFAULT_FACING_DIRECTION
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 @onready var _health_component: HealthComponent = %HealthComponent
@@ -156,6 +157,10 @@ func get_facing_direction() -> Vector2:
 	return _facing_direction
 
 
+func get_last_movement_direction() -> Vector2:
+	return _last_movement_direction
+
+
 func is_character_walking() -> bool:
 	return _character_is_walking
 
@@ -224,6 +229,7 @@ func reset_for_run() -> void:
 	reset_upgrade_stat_multipliers()
 	clear_movement_input()
 	_set_facing_direction(DEFAULT_FACING_DIRECTION)
+	_last_movement_direction = DEFAULT_FACING_DIRECTION
 	if is_instance_valid(_health_component):
 		_health_component.set_health_max(get_base_health_max())
 		_health_component.reset_to_max()
@@ -431,6 +437,9 @@ func _update_character_feedback() -> void:
 
 
 func _update_facing_from_movement(value: Vector2) -> void:
+	if value.is_zero_approx():
+		return
+	_last_movement_direction = value.normalized()
 	if absf(value.x) <= HORIZONTAL_FACING_EPSILON:
 		return
 	_set_facing_direction(Vector2.RIGHT if value.x > 0.0 else Vector2.LEFT)
@@ -451,7 +460,9 @@ func _set_facing_direction(value: Vector2) -> void:
 func _sync_character_animation_state() -> void:
 	if not is_instance_valid(_character_sprite):
 		return
-	var should_walk := not movement_input.is_zero_approx()
+	var should_walk := (
+		not movement_input.is_zero_approx()
+	)
 	if should_walk != _character_is_walking:
 		_character_is_walking = should_walk
 		_character_walk_frame_index = 0

@@ -244,9 +244,9 @@ Evasione e riposizionamento.
 
 Conferisce una probabilità di evitare completamente un colpo ricevuto.
 
-## Attiva — Scia di Fuoco Z
+## Attiva — Powerslide
 
-Bea esegue uno scatto rapido lasciando dietro di sé una scia di fuoco dalla traiettoria a forma di Z.
+Bea si teletrasporta rapidamente in linea retta lasciando dietro di sé una scia di fuoco.
 
 La scia:
 

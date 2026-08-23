@@ -17,7 +17,7 @@ Stati usati:
 | ID | Blocco | Stato | Dipendenze o gate aperti |
 |---|---|---|---|
 | B18C | Player animato e direzione persistente | IN VERIFICA | Conferma visiva finale e Android reale |
-| B18D | Powerslide di Bea | PRONTO | B18C; fissare il nuovo valore della durata a terra e registrare la licenza dell'icona |
+| B18D | Powerslide di Bea | IN VERIFICA | Runtime Android reale |
 | B18E | Fulmini di Zat | DA DEFINIRE | Cooldown definitivo e intensità/riduzione flash Android |
 | B18F | Abilità inseguitrice di Alea | PRONTO | B17A |
 | B18G | Rank delle abilità principali | DA DEFINIRE | Progressione dichiarativa specifica per tutte le otto abilità |
@@ -50,22 +50,29 @@ Dettagli ed evidenze: [`b18c-verification.md`](./b18c-verification.md).
 
 ## B18D — Powerslide di Bea
 
-Stato: `PRONTO`, con un valore di bilanciamento da fissare durante
-l'implementazione.
+Stato: `IN VERIFICA`.
 
-- [ ] Rinominare l'attiva da **Scia di Fuoco Z** a **Powerslide**.
-- [ ] Lanciare l'abilità nella direzione restituita da
-  `Player.get_facing_direction()`.
-- [ ] Non leggere la posizione del joystick al momento dell'attivazione.
-- [ ] Aumentare la durata dell'effetto a terra rispetto agli attuali `2 s`.
+- [x] Rinominare l'attiva da **Scia di Fuoco Z** a **Powerslide**.
+- [x] Teletrasportare il Player in linea retta nell'ultimo vettore restituito
+  da `Player.get_last_movement_direction()`.
+- [x] Non leggere la posizione del joystick dopo l'attivazione; origine e
+  destinazione vengono fotografate all'avvio.
+- [x] Aumentare la durata dell'effetto a terra da `2 s` a `4 s`.
 - [x] Distanza (`dash_distance`) e danno (`damage`) sono già dati configurabili.
-- [ ] Rendere configurabile anche la velocità o durata dello slide, senza
-  trasformare il movimento in una teleport istantanea.
-- [ ] Verificare che slide, scia e cooldown avanzino solo in
+- [x] Lasciare una scia rettilinea dietro al teletrasporto, senza zig-zag.
+- [x] Verificare che teletrasporto, scia e cooldown avanzino solo in
   `RunController.RUNNING` e vengano ripuliti al restart.
-- [ ] Sostituire l'icona con un pattino inline da una fonte compatibile e
+- [x] Sostituire l'icona con il pattino inline Pinhead CC0 e
   registrarne URL, autore e licenza.
-- [ ] Aggiungere smoke dedicato per direzione persistente, pausa e due run.
+- [x] Aggiungere smoke dedicato per direzione persistente, pausa e due run.
+- [x] Suite completa `23/23` e project smoke senza errori runtime.
+- [x] Export Windows e smoke dell'eseguibile con `B18D_CONTRACT_OK`.
+- [x] Export statico APK ARM64; non equivale a una verifica runtime Android.
+- [x] Verifica manuale Windows approvata il 24 agosto 2026: teletrasporto
+  rettilineo nell'ultimo vettore di movimento e scia persistente.
+- [ ] Test Android reale: joystick con un dito, Powerslide con il secondo.
+
+Dettagli ed evidenze: [`b18d-verification.md`](./b18d-verification.md).
 
 ## B18E — Fulmini di Zat
 
