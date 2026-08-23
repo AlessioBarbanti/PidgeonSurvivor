@@ -550,6 +550,13 @@ func _validate_current_contract() -> bool:
 					or roster_ability.icon.resource_path != "res://assets/art/icons/abilities/powerslide.svg"
 				):
 					failures.append("Powerslide B18D non rispetta dati, durata o icona approvati.")
+			elif friend_definition.id == &"alea":
+				if (
+					roster_ability.effect_id != AbilityEffectRegistry.GRAND_SPIN
+					or not is_equal_approx(roster_ability.duration_seconds, 1.2)
+					or not is_equal_approx(roster_ability.area_radius, 140.0)
+				):
+					failures.append("Gran Piroetta B18F non rispetta durata o area approvate.")
 	var player_health := _player.get_health_component()
 	if player_health == null:
 		failures.append("Player privo di HealthComponent.")
@@ -950,11 +957,12 @@ func _validate_current_contract() -> bool:
 		print("B18B_CONTRACT_OK")
 		print("B18C_CONTRACT_OK")
 		print("B18D_CONTRACT_OK")
+		print("B18F_CONTRACT_OK")
 		return true
 
 	for failure in failures:
 		push_error(failure)
-	printerr("B18D_CONTRACT_FAIL")
+	printerr("B18F_CONTRACT_FAIL")
 	return false
 
 

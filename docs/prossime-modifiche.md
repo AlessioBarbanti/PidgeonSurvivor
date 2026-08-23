@@ -19,7 +19,7 @@ Stati usati:
 | B18C | Player animato e direzione persistente | IN VERIFICA | Conferma visiva finale e Android reale |
 | B18D | Powerslide di Bea | IN VERIFICA | Runtime Android reale |
 | B18E | Fulmini di Zat | DA DEFINIRE | Cooldown definitivo e intensità/riduzione flash Android |
-| B18F | Abilità inseguitrice di Alea | PRONTO | B17A |
+| B18F | Abilità inseguitrice di Alea | IN VERIFICA | Runtime Android reale |
 | B18G | Rank delle abilità principali | DA DEFINIRE | Progressione dichiarativa specifica per tutte le otto abilità |
 | B18H | Nemici piccione | DA DEFINIRE | Asset base e variante speciale approvati |
 | B18I | XP confinato nell'arena | PRONTO | B07 e `ArenaLayout` |
@@ -101,12 +101,20 @@ Decisioni ancora aperte:
 
 ## B18F — Abilità inseguitrice di Alea
 
-Stato: `PRONTO`.
+Stato: `IN VERIFICA`.
 
-- [ ] Centrare l'effetto sul personaggio per tutta la durata.
-- [ ] Aggiornare la posizione dalla posizione corrente del Player, senza
+- [x] Centrare l'effetto sul personaggio per tutta la durata.
+- [x] Aggiornare la posizione dalla posizione corrente del Player, senza
   lasciarla ancorata al punto di lancio.
-- [ ] Verificare pausa, cambio di direzione, termine, restart e cambio profilo.
+- [x] Verificare pausa, cambio di direzione, termine, restart e cambio profilo
+  con uno smoke dedicato.
+- [x] Suite completa e project smoke (`24/24`).
+- [x] Export e smoke dell'eseguibile Windows.
+- [x] Verifica manuale Windows approvata il 24 agosto 2026.
+- [x] Export e controlli statici APK Android ARM64.
+- [ ] Runtime Android reale.
+
+Dettagli ed evidenze: [`b18f-verification.md`](./b18f-verification.md).
 
 ## B18G — Rank delle abilità principali
 

@@ -310,10 +310,10 @@ Le stime sono in story point Fibonacci e servono per priorità e confronto, non 
 | M2 — Progressione e attiva | Drop, XP, HUD, livelli e prima abilità attiva | B07–B09A | 21 | `kill → pickup → level` affidabile; Onda d'Urto attivabile e leggibile su Windows/Android |
 | M3 — Carte | Catalogo, overlay touch e primi upgrade | B10–B12 | 18 | Loop completo fino a più scelte consecutive anche tramite tap |
 | M4 — Boss e run chiusa | Upgrade signature, Director, Boss e finali | B13–B16 | 24 | MVP completo, inclusa un'abilità attiva, dall'avvio a vittoria o sconfitta |
-| M5 — Release multipiattaforma | Roster giocabile, contenuti, audiovisivo, identità visiva, QA e packaging | B17, B17A, B18–B18D, B19–B20 | 72 | Otto personaggi selezionabili con passive e abilità proprie; direzione visiva coerente e build Windows/Android installabili da ambiente pulito |
+| M5 — Release multipiattaforma | Roster giocabile, contenuti, audiovisivo, identità visiva, QA e packaging | B17, B17A, B18–B18F, B19–B20 | 75 | Otto personaggi selezionabili con passive e abilità proprie; direzione visiva coerente e build Windows/Android installabili da ambiente pulito |
 | M6 — Web opzionale | Export single-thread e pubblicazione itch.io | B21 | 3 | Build browser verificata senza bloccare la release nativa |
 
-Totali di pianificazione: 94 SP per l'MVP feature-complete fino a M4, 166 SP per la candidata Windows/Android con roster completo e pass di identità visiva, più ulteriori 3 SP opzionali per Web/itch.io. Le stime vanno ricalibrate con la velocità osservata in M1–M2.
+Totali di pianificazione: 94 SP per l'MVP feature-complete fino a M4, 169 SP per la candidata Windows/Android con roster completo e pass di identità visiva, più ulteriori 3 SP opzionali per Web/itch.io. Le stime vanno ricalibrate con la velocità osservata in M1–M2.
 
 Gate di prodotto:
 
@@ -321,7 +321,7 @@ Gate di prodotto:
 - dopo M2: playtest del loop XP e dell'Onda d'Urto con tastiera, controller e touch, inclusi cooldown e pausa;
 - dopo M3: playtest del loop XP/carte e controllo delle combinazioni con l'abilità attiva;
 - dopo M4: freeze del core loop; M5 integra il roster completo sul framework validato, con selezione pre-run, passive, altre sette abilità, correzioni, accessibilità e release work;
-- prima di B19: freeze di HUD, controlli visivi, arena, combat feedback, animazione direzionale e Powerslide dopo B18D, così hardening e profiling misurano la presentazione destinata alla release.
+- prima di B19: freeze di HUD, controlli visivi, arena, combat feedback, animazione direzionale e abilità B18D–B18F, così hardening e profiling misurano la presentazione destinata alla release.
 
 ## 6. Backlog ordinato
 
@@ -353,7 +353,8 @@ Priorità: `P0` indispensabile per l'MVP, `P1` indispensabile per la prima pubbl
 | B18B | Identità visiva, HUD compatto e combat feedback | P1 | 5 | B17A, B18 | HUD e controlli lasciano priorità al campo di gioco; arena non sembra una vista debug; colpi, danni e morti hanno feedback leggibile e coerente senza richiedere nuovi asset nella prima iterazione |
 | B18C | Player animato e direzione persistente | P1 | 5 | B17A, B18B | Cannoncino e fondo circolare rimossi; gli otto profili animano fasi laterali durante il movimento, mostrano una posa ferma al neutro ed espongono lato orizzontale e vettore dell'ultimo movimento alle abilità |
 | B18D | Powerslide direzionale di Bea | P1 | 5 | B17A, B18C | Nome e icona inline-skate; teletrasporto rettilineo nella direzione persistente e scia dati da 4 s; pausa, input successivo e restart non deviano né lasciano effetti residui |
-| B19 | Hardening Windows/Android e performance | P0 | 8 | B16, B17A, B18D | Android 12 minimo e Android 16 target, aspect ratio, touch, lifecycle, abilità e soak rispettano il budget sulla presentazione finale |
+| B18F | Gran Piroetta inseguitrice di Alea | P1 | 3 | B17A | L'area segue il Player per tutta la durata; pausa, termine, restart e cambio profilo non lasciano posizione o stato residuo |
+| B19 | Hardening Windows/Android e performance | P0 | 8 | B16, B17A, B18F | Android 12 minimo e Android 16 target, aspect ratio, touch, lifecycle, abilità e soak rispettano il budget sulla presentazione finale |
 | B20 | Packaging Windows e Android | P0 | 5 | B16, B19 | ZIP Windows e APK release firmato avviabili; AAB Gradle generabile senza upload Play ||
 
 Parallelizzazione sicura:
@@ -361,7 +362,7 @@ Parallelizzazione sicura:
 - dopo B01, il catalogo dati B10 può procedere mentre si implementa il combattimento B03–B06;
 - B09A parte soltanto dopo B09 e non modifica il perimetro di B07–B09;
 - dopo la stabilizzazione delle dimensioni UI e degli schemi dati, B17A procede per profilo completo (selezione + passiva + attiva) in piccoli lotti, mentre gli asset B18 restano sostituibili;
-- B18D consuma la direzione B18C senza riaprire `InputRouter`; profiling, soak e matrice finale non iniziano prima del gate fisico combinato;
+- B18D consuma la direzione B18C senza riaprire `InputRouter`; B18F estende il tipo area senza cambiare le aree statiche; profiling, soak e matrice finale non iniziano prima dei gate fisici combinati;
 - B13 va integrato un effetto alla volta, con test combinatori, non come blocco unico a fine milestone.
 
 ### B18B — Identità visiva e priorità al campo di gioco
@@ -494,10 +495,11 @@ Un'attività è finita solo quando:
 Ordine operativo immediato:
 
 1. chiudere insieme il gate visivo B18C su Windows e Pixel 9: camminata, posa ferma, flip, assenza del cannoncino, pausa e restart; poi creare commit e push dedicati;
-2. chiudere B18D su Windows e Pixel 9: direzione persistente, teletrasporto rettilineo, scia da `4 s`, pausa, restart e multitouch;
-3. riprendere i gate manuali B18B sul gameplay 20:9 e 4:3 con Boss UI, level-up, pausa, terminali e densità elevata;
-4. completare sul Pixel 9 i gate combinati B17A–B18D: cambio personaggio, keyguard, Powerslide, area persistente, Cosplay Casuale e attivazioni ripetute mantenendo il joystick con l'altro dito;
-5. completare il gate percettivo B18 sul mix audio e svolgere una run reale con Boss a `04:00`/`2400 HP`, poi avviare B19 soltanto dopo il freeze B18D.
+2. chiudere B18D su Pixel 9: direzione persistente, teletrasporto rettilineo, scia da `4 s`, pausa, restart e multitouch;
+3. chiudere B18F su Windows e Pixel 9: area centrata durante movimento, pausa, termine, restart e cambio profilo;
+4. riprendere i gate manuali B18B sul gameplay 20:9 e 4:3 con Boss UI, level-up, pausa, terminali e densità elevata;
+5. completare sul Pixel 9 i gate combinati B17A–B18F: cambio personaggio, keyguard, Powerslide, area persistente, Cosplay Casuale e attivazioni ripetute mantenendo il joystick con l'altro dito;
+6. completare il gate percettivo B18 sul mix audio e svolgere una run reale con Boss a `04:00`/`2400 HP`, poi avviare B19 soltanto dopo il freeze B18F.
 
 Il setup host e gli artefatti generati il 12 agosto 2026 sono registrati in
 [`m0-verification.md`](./m0-verification.md).

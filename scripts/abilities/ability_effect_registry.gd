@@ -171,7 +171,7 @@ func _execute_definition(
 			effect = _execute_area_effect(
 				definition,
 				source,
-				AbilityAreaEffect.AreaMode.PULSE_DAMAGE,
+				AbilityAreaEffect.AreaMode.FOLLOWING_PULSE_DAMAGE,
 				Color(1.0, 0.35, 0.72, 0.72)
 			)
 		CEMENT_POUR:

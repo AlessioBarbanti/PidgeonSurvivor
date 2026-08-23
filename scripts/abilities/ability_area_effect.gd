@@ -6,6 +6,7 @@ signal targets_affected(count: int)
 
 enum AreaMode {
 	PULSE_DAMAGE,
+	FOLLOWING_PULSE_DAMAGE,
 	GROUND_SLOW_DAMAGE,
 	FOLLOWING_SLOW,
 }
@@ -59,7 +60,7 @@ func initialize(
 	_effect_color = effect_color
 	_tick_damage = definition.damage
 	match _mode:
-		AreaMode.PULSE_DAMAGE:
+		AreaMode.PULSE_DAMAGE, AreaMode.FOLLOWING_PULSE_DAMAGE:
 			var hits_per_second := definition.get_effect_float(
 				&"hits_per_second",
 				1.0,
@@ -97,7 +98,10 @@ func _process(delta: float) -> void:
 	if _finished or not is_instance_valid(_run_controller) or not _run_controller.is_running():
 		return
 	var safe_delta := maxf(delta, 0.0) if is_finite(delta) else 0.0
-	if _mode == AreaMode.FOLLOWING_SLOW and is_instance_valid(_source):
+	if _follows_source():
+		if not is_instance_valid(_source):
+			_finish()
+			return
 		global_position = _source.global_position
 	if _mode in [AreaMode.GROUND_SLOW_DAMAGE, AreaMode.FOLLOWING_SLOW]:
 		_refresh_slow_targets()
@@ -136,7 +140,7 @@ func _draw_mode_pattern(progress: float) -> void:
 	var radius := _definition.area_radius
 	var pattern_color := Color(_effect_color, 0.32)
 	match _mode:
-		AreaMode.PULSE_DAMAGE:
+		AreaMode.PULSE_DAMAGE, AreaMode.FOLLOWING_PULSE_DAMAGE:
 			for spoke_index in 8:
 				var direction := Vector2.RIGHT.rotated(TAU * float(spoke_index) / 8.0 + progress)
 				draw_line(
@@ -183,6 +187,10 @@ func get_mode() -> AreaMode:
 	return _mode
 
 
+func is_following_source() -> bool:
+	return _follows_source()
+
+
 func _apply_damage_tick() -> void:
 	var affected := 0
 	for target in _targeting_system.get_alive_targets():
@@ -214,6 +222,10 @@ func _refresh_slow_targets() -> void:
 			target.remove_speed_modifier(_modifier_id)
 	_slowed_targets = inside
 	targets_affected.emit(_slowed_targets.size())
+
+
+func _follows_source() -> bool:
+	return _mode in [AreaMode.FOLLOWING_PULSE_DAMAGE, AreaMode.FOLLOWING_SLOW]
 
 
 func _clear_slow_targets() -> void:

@@ -154,8 +154,9 @@ in base ai tag di compatibilità, in particolare per gli effetti di copia.
   la durata.
 - **Parametri iniziali:** `cooldown_seconds: 9.0`, `duration_seconds: 1.2`,
   `damage_per_hit: 5`, `hits_per_second: 12`, `area_radius: 140`.
-- **Nota tecnica:** applicare il danno con aggiornamenti periodici per evitare
-  controlli di collisione eccessivi.
+- **Nota tecnica:** l'area si ricentra sulla posizione corrente del Player per
+  tutta la durata e applica il danno con aggiornamenti periodici; pausa e stati
+  non `RUNNING` congelano posizione, durata e tick.
 
 #### Aleo — Colata di Cemento
 
