@@ -1,7 +1,8 @@
 # Registro approvazioni contenuti
 
 Ultimo aggiornamento: 24 agosto 2026
-Ambito: nomi, testi, controparti Boss, ritratti placeholder e contenuti audio
+Ambito: nomi, testi, controparti Boss, ritratti placeholder, audio e direzione
+degli asset originali B18
 
 ## Approvazione del proprietario
 
@@ -25,6 +26,8 @@ Riferimento registrato nei `FriendDefinition`:
 | Evil Magno, Evil Bea, Evil Zat, Evil Alea, Evil Aleo, Evil Lollo, Evil Migi, Evil Marghe | Approvato | Ogni profilo amico contiene la propria controparte Boss |
 | L'Ansia, Gossip, Ritardo Cronico, Birra, Non Ho Tempo Per Questo | Approvato | Titoli generici correnti, senza attribuzioni personali aggiuntive |
 | Ritratto hero/Evil CC0 | Approvato come placeholder | Asset temporanei sostituibili dai singoli `FriendDefinition` |
+| Piccioni B18H base/speciale | Baseline operativa da produrre | Due sprite originali del progetto secondo silhouette, palette e animazione definite nel piano; nessuna fonte esterna |
+| Icone e VFX B18M | Baseline operativa da rifinire | Icone correnti conservate; VFX originali e procedurali secondo la grammatica delle otto abilità, con manifest prima del gate |
 | Citazioni personali dei Boss | Non fornite | La UI usa il placeholder neutro del `BossDefinition`; nessuna citazione personale viene inventata |
 | Audio o voce personale | Non fornito | Il campo resta nullo e il runtime rimane silenzioso |
 

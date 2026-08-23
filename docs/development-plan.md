@@ -2,8 +2,10 @@
 
 Fonte: [`prd.md`](./prd.md)  
 Decisioni: [`decision-log.md`](./decision-log.md)  
-Stato: B18B è implementato senza nuovi asset obbligatori: fascia HUD compatta, linea XP, card abilità ridotta, joystick solo visivamente più piccolo, pavimento procedurale e combat feedback presentazionale. Import, project smoke, 21 smoke ed export Windows/Android sono verdi senza errori o leak; il confronto Windows 16:9 e l'avvio sul Pixel 9 Android 17/API 37 sono registrati. Il freeze per B19 attende ancora i controlli percettivi gameplay 20:9/4:3, densità elevata e il gate multitouch fisico
+Stato: il ciclo operativo corrente è B18C–B18M. B18C, B18D, B18F e B18I sono in verifica; B18E, B18G, B18H, B18J, B18K, B18L e B18M hanno contratti sufficienti per iniziare. B19 resta bloccato fino al freeze dell'intero ciclo e alla chiusura dei gate Windows/Android pertinenti
 Obiettivo: trasformare il concept in un MVP completo, verificabile su Windows e Android; Web resta un target secondario
+
+Fonte di verità operativa: questo documento contiene roadmap, stato e ordine delle prossime attività. Eventuali note temporanee devono essere integrate qui e poi rimosse.
 
 Vincolo aggiuntivo ricevuto l'11 agosto 2026: Windows e Android sono piattaforme obbligatorie.
 
@@ -310,10 +312,10 @@ Le stime sono in story point Fibonacci e servono per priorità e confronto, non 
 | M2 — Progressione e attiva | Drop, XP, HUD, livelli e prima abilità attiva | B07–B09A | 21 | `kill → pickup → level` affidabile; Onda d'Urto attivabile e leggibile su Windows/Android |
 | M3 — Carte | Catalogo, overlay touch e primi upgrade | B10–B12 | 18 | Loop completo fino a più scelte consecutive anche tramite tap |
 | M4 — Boss e run chiusa | Upgrade signature, Director, Boss e finali | B13–B16 | 24 | MVP completo, inclusa un'abilità attiva, dall'avvio a vittoria o sconfitta |
-| M5 — Release multipiattaforma | Roster giocabile, contenuti, audiovisivo, identità visiva, QA e packaging | B17, B17A, B18–B18F, B19–B20 | 75 | Otto personaggi selezionabili con passive e abilità proprie; direzione visiva coerente e build Windows/Android installabili da ambiente pulito |
+| M5 — Release multipiattaforma | Roster giocabile, contenuti, audiovisivo, identità visiva, controlli, QA e packaging | B17, B17A, B18–B18M, B19–B20 | 113 | Otto personaggi selezionabili con passive e abilità proprie; ciclo B18C–B18M chiuso e build Windows/Android installabili da ambiente pulito |
 | M6 — Web opzionale | Export single-thread e pubblicazione itch.io | B21 | 3 | Build browser verificata senza bloccare la release nativa |
 
-Totali di pianificazione: 94 SP per l'MVP feature-complete fino a M4, 169 SP per la candidata Windows/Android con roster completo e pass di identità visiva, più ulteriori 3 SP opzionali per Web/itch.io. Le stime vanno ricalibrate con la velocità osservata in M1–M2.
+Totali di pianificazione: 94 SP per l'MVP feature-complete fino a M4, 207 SP per la candidata Windows/Android con roster completo e ciclo B18C–B18M, più ulteriori 3 SP opzionali per Web/itch.io. Le stime delle nuove slice sono iniziali e vanno ricalibrate dopo i primi smoke e playtest sui valori ora congelati.
 
 Gate di prodotto:
 
@@ -321,7 +323,7 @@ Gate di prodotto:
 - dopo M2: playtest del loop XP e dell'Onda d'Urto con tastiera, controller e touch, inclusi cooldown e pausa;
 - dopo M3: playtest del loop XP/carte e controllo delle combinazioni con l'abilità attiva;
 - dopo M4: freeze del core loop; M5 integra il roster completo sul framework validato, con selezione pre-run, passive, altre sette abilità, correzioni, accessibilità e release work;
-- prima di B19: freeze di HUD, controlli visivi, arena, combat feedback, animazione direzionale e abilità B18D–B18F, così hardening e profiling misurano la presentazione destinata alla release.
+- prima di B19: freeze dell'intero ciclo B18C–B18M, inclusi HUD e controlli touch definitivi, abilità corrette, rank, nemici, upgrade, asset e confinamento XP, così hardening e profiling misurano la presentazione destinata alla release.
 
 ## 6. Backlog ordinato
 
@@ -353,16 +355,26 @@ Priorità: `P0` indispensabile per l'MVP, `P1` indispensabile per la prima pubbl
 | B18B | Identità visiva, HUD compatto e combat feedback | P1 | 5 | B17A, B18 | HUD e controlli lasciano priorità al campo di gioco; arena non sembra una vista debug; colpi, danni e morti hanno feedback leggibile e coerente senza richiedere nuovi asset nella prima iterazione |
 | B18C | Player animato e direzione persistente | P1 | 5 | B17A, B18B | Cannoncino e fondo circolare rimossi; gli otto profili animano fasi laterali durante il movimento, mostrano una posa ferma al neutro ed espongono lato orizzontale e vettore dell'ultimo movimento alle abilità |
 | B18D | Powerslide direzionale di Bea | P1 | 5 | B17A, B18C | Nome e icona inline-skate; teletrasporto rettilineo nella direzione persistente e scia dati da 4 s; pausa, input successivo e restart non deviano né lasciano effetti residui |
+| B18E | Fulmini di Zat | P1 | 5 | B17A, B18B | Preavviso e flash accessibile sull'intero viewport precedono il danno ritardato a tutti i nemici validi; cooldown, pausa, Boss e cleanup rispettano i dati approvati |
 | B18F | Gran Piroetta inseguitrice di Alea | P1 | 3 | B17A | L'area segue il Player per tutta la durata; pausa, termine, restart e cambio profilo non lasciano posizione o stato residuo |
-| B19 | Hardening Windows/Android e performance | P0 | 8 | B16, B17A, B18F | Android 12 minimo e Android 16 target, aspect ratio, touch, lifecycle, abilità e soak rispettano il budget sulla presentazione finale |
-| B20 | Packaging Windows e Android | P0 | 5 | B16, B19 | ZIP Windows e APK release firmato avviabili; AAB Gradle generabile senza upload Play ||
+| B18G | Rank delle abilità principali | P1 | 8 | B10–B13, B17A | Tutte le otto abilità hanno cinque rank dichiarativi specifici, entrano nel level-up senza duplicati e si azzerano fra le run |
+| B18H | Nemici piccione | P1 | 3 | B04, B17, B18B | Le sfere rosse sono sostituite da asset uccello approvati per variante base e speciale senza cambiare comportamento, collisioni, danno o spawn |
+| B18I | XP confinato nell'arena | P1 | 3 | B04, B07 | Un drop nato fuori arena viene clampato nel playfield includendo il proprio raggio; centro, lati, angoli, 16:9/20:9/4:3 e restart sono verificati |
+| B18J | Potenziamento Grigliata estiva | P1 | 3 | B06, B10–B12 | Ogni rank aumenta gli HP massimi e cura subito la differenza; stacking, cap, pausa e reset usano dati dichiarativi e non lasciano residui |
+| B18K | Pulsante abilità con icona e cooldown circolare | P1 | 3 | B09A, B17A, B18B | L'icona selezionata è il target touch; riempimento circolare e secondi residui comunicano il cooldown senza ridurre il target sotto 44–48 unità logiche |
+| B18L | Joystick dinamico | P1 | 5 | B03, B06A, B18B | Il primo tocco valido crea e possiede il joystick fino al rilascio; HUD e overlay sono esclusi e un secondo dito può attivare l'abilità |
+| B18M | Migliorie grafiche delle abilità | P1 | 8 | B17A, B18E–B18F, B18H, B18K | Le otto abilità usano icone e VFX originali coerenti, registrati nel manifest e compatibili con priorità visive e budget Android |
+| B19 | Hardening Windows/Android e performance | P0 | 8 | B16, B17A, B18–B18M | Android 12 minimo e Android 16 target, aspect ratio, touch, lifecycle, abilità e soak rispettano il budget sulla presentazione finale |
+| B20 | Packaging Windows e Android | P0 | 5 | B16, B19 | ZIP Windows e APK release firmato avviabili; AAB Gradle generabile senza upload Play |
 
 Parallelizzazione sicura:
 
 - dopo B01, il catalogo dati B10 può procedere mentre si implementa il combattimento B03–B06;
 - B09A parte soltanto dopo B09 e non modifica il perimetro di B07–B09;
 - dopo la stabilizzazione delle dimensioni UI e degli schemi dati, B17A procede per profilo completo (selezione + passiva + attiva) in piccoli lotti, mentre gli asset B18 restano sostituibili;
-- B18D consuma la direzione B18C senza riaprire `InputRouter`; B18F estende il tipo area senza cambiare le aree statiche; profiling, soak e matrice finale non iniziano prima dei gate fisici combinati;
+- B18D consuma la direzione B18C senza riaprire `InputRouter`; B18F estende il tipo area senza cambiare le aree statiche; B18I riusa il clamp circolare di `ArenaLayout` senza cambiare spawn o magnete;
+- B18K e B18L possono procedere dopo i gate correnti con contratti touch separati ma una verifica multitouch comune; B18G e B18J condividono il framework level-up senza accoppiare i relativi dati; la produzione originale B18H e i VFX procedurali B18M possono avanzare in parallelo;
+- profiling, soak e matrice finale B19 non iniziano prima del freeze B18C–B18M e dei gate fisici combinati;
 - B13 va integrato un effetto alla volta, con test combinatori, non come blocco unico a fine milestone.
 
 ### B18B — Identità visiva e priorità al campo di gioco
@@ -409,6 +421,265 @@ Vincoli e gate di uscita:
 - smoke, screenshot prima/dopo, export Windows/Android e log privi di
   `SCRIPT ERROR` o `FATAL EXCEPTION` precedono il freeze visivo per B19.
 
+### Ciclo operativo B18C–B18M
+
+Questo è il ciclo da completare prima di B19. Gli stati hanno il seguente
+significato:
+
+- `DA DEFINIRE`: mancano decisioni o asset che cambiano l'implementazione;
+- `PRONTO`: requisiti sufficienti per iniziare;
+- `IN CORSO`: implementazione aperta nel worktree;
+- `IN VERIFICA`: codice e test automatici completati, gate manuali ancora aperti;
+- `COMPLETATO`: tutti i gate pertinenti sono chiusi, le evidenze sono registrate
+  e la modifica appartiene a un commit dedicato.
+
+| ID | Blocco | Stato | Dipendenze o gate aperti |
+|---|---|---|---|
+| B18C | Player animato e direzione persistente | IN VERIFICA | Conferma visiva finale Windows e Android reale |
+| B18D | Powerslide di Bea | IN VERIFICA | Runtime Android reale |
+| B18E | Fulmini di Zat | PRONTO | Gate accessibilità, viewport e runtime Android reale |
+| B18F | Abilità inseguitrice di Alea | IN VERIFICA | Runtime Android reale |
+| B18G | Rank delle abilità principali | PRONTO | Implementazione dei profili rank e integrazione level-up |
+| B18H | Nemici piccione | PRONTO | Produzione degli sprite originali base e speciale |
+| B18I | XP confinato nell'arena | IN VERIFICA | Runtime Android reale |
+| B18J | Grigliata estiva | PRONTO | Implementazione dati, cura del delta e reset |
+| B18K | Pulsante abilità con icona e cooldown circolare | PRONTO | Icone abilità disponibili; gate HUD/aspect ratio |
+| B18L | Joystick dinamico | PRONTO | Gate lifecycle e multitouch fisico obbligatorio |
+| B18M | Migliorie grafiche delle abilità | PRONTO | Produzione VFX procedurali e manifest degli asset originali |
+
+#### B18C — Player animato e direzione persistente
+
+Stato: `IN VERIFICA`.
+
+- [x] Rimuovere il cannoncino visibile e il vecchio fondo circolare azzurro.
+- [x] Animare il personaggio durante il movimento e mostrare una posa ferma al
+  neutro.
+- [x] Determinare destra/sinistra dall'ultimo movimento orizzontale non nullo e
+  conservare la direzione al neutro o durante il movimento verticale.
+- [x] Esporre alle abilità sia il lato tramite `Player.get_facing_direction()`
+  sia il vettore tramite `Player.get_last_movement_direction()`.
+- [x] Coprire Lollo, Migi e Marghe con un gait procedurale, perché il foglio CC0
+  contiene per loro una sola posa laterale valida.
+- [x] Smoke dedicato, suite completa `22/22`, project smoke ed export/smoke
+  Windows senza errori runtime.
+- [ ] Conferma visiva finale Windows dopo le correzioni a cannoncino/background.
+- [ ] Test Android reale su Pixel 9.
+
+Dettagli ed evidenze: [`b18c-verification.md`](./b18c-verification.md).
+
+#### B18D — Powerslide di Bea
+
+Stato: `IN VERIFICA`.
+
+- [x] Rinominare l'attiva da **Scia di Fuoco Z** a **Powerslide** e sostituire
+  l'icona con il pattino inline Pinhead CC0, registrandone provenienza e licenza.
+- [x] Fotografare origine e `Player.get_last_movement_direction()`
+  all'attivazione, quindi teletrasportare in linea retta senza rileggere il
+  joystick.
+- [x] Lasciare dietro al teletrasporto una scia rettilinea da `4 s`, senza
+  zig-zag; distanza (`dash_distance`) e danno (`damage`) restano dati.
+- [x] Teletrasporto, scia e cooldown avanzano solo in `RunController.RUNNING` e
+  vengono ripuliti al restart.
+- [x] Smoke dedicato per direzione persistente, pausa e due run; suite `23/23`,
+  project smoke, export e smoke Windows con `B18D_CONTRACT_OK`.
+- [x] Export statico APK ARM64, che non equivale a verifica runtime Android.
+- [x] Verifica manuale Windows approvata il 24 agosto 2026.
+- [ ] Test Android reale: joystick con un dito, Powerslide con il secondo.
+
+Dettagli ed evidenze: [`b18d-verification.md`](./b18d-verification.md).
+
+#### B18E — Fulmini di Zat
+
+Stato: `PRONTO`.
+
+Sequenza richiesta:
+
+1. attivazione;
+2. breve preavviso visivo;
+3. flash bianco tipo tuono su tutto il viewport logico;
+4. applicazione ritardata del danno a tutti i nemici validi;
+5. rimozione del flash e chiusura dell'effetto.
+
+Contratto definitivo:
+
+- [x] Colpisce anche i nemici entrati nell'arena dopo l'attivazione ma prima
+  dell'impatto.
+- [x] Infligge il `50%` della vita massima ai nemici e il `20%` ai Boss.
+- [x] Il flash copre l'intero viewport logico.
+- [x] Il cooldown di rank `1` è `60 s` di gameplay; il preavviso dura `0,45 s`,
+  l'impatto avviene una sola volta e il flash si chiude entro `0,30 s` senza
+  pulsazioni ripetute.
+- [x] Il flash usa alpha massimo `0,55` su Windows e `0,40` su Android, con
+  salita `0,06 s`, tenuta `0,06 s` e dissolvenza `0,18 s`.
+- [x] L'opzione persistente **Flash ridotti** porta l'alpha massimo a `0,15`,
+  elimina la tenuta e conserva preavviso, sagoma del fulmine, audio e danno.
+  È modificabile dal menu pausa e non cambia il bilanciamento.
+- [x] Target e percentuali sono fotografati all'impatto, non all'attivazione;
+  ogni bersaglio vivo viene processato una volta. Cooldown, preavviso e flash
+  avanzano soltanto in `RUNNING` e vengono rimossi a morte, cambio profilo o
+  restart.
+
+#### B18F — Abilità inseguitrice di Alea
+
+Stato: `IN VERIFICA`.
+
+- [x] Centrare l'effetto sul personaggio per tutta la durata, aggiornandolo
+  dalla posizione corrente del `Player` anziché dal punto di lancio.
+- [x] Verificare pausa, cambio di direzione, termine, restart e cambio profilo
+  con uno smoke dedicato.
+- [x] Suite completa e project smoke `24/24`, export e smoke Windows.
+- [x] Verifica manuale Windows approvata il 24 agosto 2026.
+- [x] Export e controlli statici APK Android ARM64.
+- [ ] Runtime Android reale.
+
+Dettagli ed evidenze: [`b18f-verification.md`](./b18f-verification.md).
+
+#### B18G — Rank delle abilità principali
+
+Stato: `PRONTO`.
+
+- [x] Ogni attiva parte al rank `1`; il level-up può offrire soltanto i quattro
+  passaggi `2–5` dell'abilità equipaggiata. Al rank `5` la carta non è più
+  eleggibile.
+- [x] La carta usa un solo ID autorevole derivato dall'abilità selezionata e non
+  può comparire due volte nella stessa offerta.
+- [x] Il rank resta solo nella run; non introduce meta-progressione.
+- [x] Ogni abilità ha una progressione specifica, anche mista: danno, area,
+  durata, cooldown, numero di colpi o altri effetti.
+- [x] Ogni rank è uno snapshot completo dichiarato nel `Resource`; non muta il
+  profilo condiviso. Un effetto o cooldown già iniziato conserva lo snapshot
+  dell'attivazione, mentre il nuovo rank vale dall'attivazione successiva.
+
+Valori autorevoli (`cd` in secondi; distanze e raggi in unità logiche mondo):
+
+| Attiva | R1 | R2 | R3 | R4 | R5 |
+|---|---|---|---|---|---|
+| Onda d'Urto Tellurica | `cd 8`, danno `20`, raggio `220`, knockback `300` | danno `26` | raggio `260` | `cd 7`, stun `0,25` | danno `36`, raggio `280`, knockback `380` |
+| Powerslide | `cd 10`, distanza `320`, scia `4 s`, danno `6`, larghezza `40` | danno `8` | distanza `380`, larghezza `48` | `cd 9`, scia `5 s` | distanza `440`, danno `11`, larghezza `56` |
+| Tempesta di Fulmini | `cd 60`, normali `50%`, Boss `20%` | normali `55%` | `cd 55`, Boss `22%` | normali `60%`, Boss `24%` | `cd 50`, normali `70%`, Boss `28%` |
+| Gran Piroetta | `cd 9`, `1,2 s`, danno `5`, `12 hit/s`, raggio `140` | danno `6` | `1,4 s`, raggio `165` | `cd 8`, `14 hit/s` | `1,6 s`, danno `8`, raggio `180` |
+| Colata di Cemento | `cd 12`, `4 s`, danno `3/0,5 s`, raggio `200`, velocità nemici `×0,50` | danno `4/0,5 s` | `5 s`, raggio `230` | `cd 11`, velocità `×0,40` | `6 s`, danno `6/0,5 s`, raggio `250` |
+| Cosplay Casuale | `cd 14`, copia rank `1` | `cd 13` | copia rank `2` | `cd 12`, non ripete l'ultima abilità se esiste un'alternativa | `cd 11`, copia rank `3`, stessa regola anti-ripetizione |
+| Rallentamento Zen | `cd 11`, `3,5 s`, raggio `260`, velocità nemici `×0,40` | `4,5 s` | raggio `300` | `cd 10`, velocità `×0,32` | `6 s`, raggio `340`, velocità `×0,25` |
+| Reggeton time! | `cd 13`, clone `3 s` | clone `4 s` | `cd 12` | clone `5 s` | `cd 10`, clone `6 s` |
+
+Le celle successive ereditano i valori non citati dalla colonna precedente.
+Cosplay risolve il profilo copiato al rank indicato, sempre con i filtri di
+compatibilità e anti-ricorsione; non assegna rank alle altre abilità.
+
+#### B18H — Nemici piccione
+
+Stato: `PRONTO`.
+
+- [x] Sostituire le sfere rosse con piccioni intesi come uccelli visibili.
+- [x] Comportamento, collisioni, danno e spawn restano invariati salvo nuova
+  decisione esplicita.
+- [x] Produrre internamente due sprite originali senza dipendenze di terzi:
+  **base**, piccione grigio-blu con petto chiaro, collo verde/viola e becco
+  arancio; **speciale**, stessa silhouette con piumaggio antracite, collare
+  magenta e accenti oro. Canvas sorgente `48×48`, silhouette leggibile a `40`
+  unità logiche, sfondo trasparente e bordo scuro da almeno `2` texel.
+- [x] Entrambe le varianti hanno posa neutra e due fasi d'ala; il flip segue il
+  verso orizzontale di inseguimento. L'animazione è solo presentazionale e si
+  ferma fuori da `RUNNING`.
+- [x] La variante base sostituisce il nemico ordinario. La speciale è un asset
+  pronto per profili futuri e fixture visuali, ma non entra nello spawn corrente
+  e non introduce statistiche o probabilità nascoste.
+
+#### B18I — XP confinato nell'arena
+
+Stato: `IN VERIFICA`.
+
+- [x] Correggere tramite il playfield di `ArenaLayout` la posizione dell'XP
+  generato da una morte fuori arena.
+- [x] Garantire una posizione valida e raggiungibile includendo il raggio del
+  pickup.
+- [x] Verificare centro, bordi, angoli, 16:9, 20:9, 4:3 e restart con
+  `B18I_XP_ARENA_CONFINEMENT_SMOKE_OK`.
+- [x] Regressione completa, project smoke, export e runtime Windows.
+- [x] Export e controlli statici APK Android ARM64.
+- [ ] Runtime Android reale su un device ARM64.
+
+Dettagli ed evidenze: [`b18i-verification.md`](./b18i-verification.md).
+
+#### B18J — Potenziamento Grigliata estiva
+
+Stato: `PRONTO`.
+
+- [x] `Grigliata estiva` è una carta comune con `max_rank = 5`; ogni rank
+  moltiplica gli HP massimi per `×1,15`. Il contributo cumulativo è quindi
+  `×1,15`, `×1,3225`, `×1,520875`, `×1,74900625`, `×2,0113571875`.
+- [x] Il contributo della sola carta ha cap dati `×2,05`; la formula si compone
+  moltiplicativamente con passive e altri upgrade secondo `PROG-006`.
+- [x] A ogni rank si fotografa il vecchio massimo, si ricalcola il nuovo e si
+  cura esattamente `max(0, nuovo_massimo - vecchio_massimo)`. Non si preserva la
+  percentuale di vita e non si resuscita un Player morto.
+- [x] La scelta viene applicata atomicamente una sola volta durante `LEVEL_UP`;
+  pausa e lifecycle non la riapplicano. Restart e cambio personaggio riportano
+  rank, moltiplicatore, massimo e vita ai valori iniziali della nuova run.
+
+#### B18K — Pulsante abilità con cooldown circolare
+
+Stato: `PRONTO`.
+
+- [ ] Usare l'icona dell'abilità selezionata come superficie di attivazione.
+- [ ] Mostrare un riempimento circolare durante il cooldown.
+- [ ] Mostrare il tempo residuo al centro.
+- [ ] Quando l'abilità è pronta, rimuovere il timer e rendere l'icona chiaramente
+  attivabile.
+- [ ] Conservare un target touch di almeno `44–48` unità logiche.
+
+#### B18L — Joystick dinamico
+
+Stato: `PRONTO`.
+
+- [ ] Il primo dito che tocca un'area di gioco valida determina origine e
+  comparsa del joystick.
+- [ ] Calcolare il movimento rispetto all'origine e mantenere l'ownership dello
+  stesso dito.
+- [ ] Nascondere il joystick al rilascio e ricrearlo al tocco successivo.
+- [ ] Ignorare i tocchi iniziati sopra HUD, pulsante abilità o overlay.
+- [ ] Conservare l'attivazione dell'abilità con un secondo dito.
+- [ ] Verificare neutral-to-rearm, pausa, focus, Home, lock, Back e restart.
+
+#### B18M — Migliorie grafiche delle abilità
+
+Stato: `PRONTO`.
+
+- [x] La baseline di release usa VFX originali disegnati con primitive Godot,
+  shader semplici e, soltanto quando serve, sprite originali del progetto. Non
+  è richiesta una ricerca di pacchetti animati esterni.
+- [x] Le otto icone SVG correnti sono definitive per questa release; Powerslide
+  conserva il pittogramma Pinhead CC0 già registrato. B18M può rifinirne
+  spessori e palette senza cambiare silhouette, viewBox o hit target B18K.
+- [x] Linguaggio VFX: Magno usa crepe e anelli tellurici; Bea scia a nastro con
+  scintille; Zat sagoma di fulmine, preavviso e flash accessibile; Alea archi
+  rotanti; Aleo pozza grigio-ciano con bordo e bolle; Lollo confetti più palette
+  dell'abilità copiata; Migi anelli concentrici e particelle lente; Marghe clone,
+  cassa e note musicali. Gli effetti alleati restano sotto telegraph e proiettili
+  ostili e non comunicano collisioni più ampie di quelle reali.
+- [x] Ogni nuovo file grafico deve essere registrato in un manifest con percorso,
+  origine, autore, licenza, trasformazioni e SHA-256. Per asset originali si usa
+  `origine: progetto IL GIOCO`, senza attribuzione esterna.
+- [x] Non esistono asset mancanti che richiedano generazione per la baseline,
+  quindi un file prompt non è un gate. Se in futuro si usa un generatore, prompt,
+  modello, data, output scelto e modifiche vanno versionati prima dell'import.
+- [x] Budget Android per una singola attivazione: massimo `1` overlay fullscreen,
+  `64` particelle vive e `2` draw call/materiali aggiuntivi per famiglia; il
+  profiling B19 può ridurre il budget senza modificare gameplay o timing.
+
+Gate comuni del ciclo:
+
+- smoke dedicati per direzione/animazione, Bea, Zat, Alea, rank, Grigliata
+  estiva, pulsante abilità e joystick dinamico;
+- nessun `SCRIPT ERROR` o `FATAL EXCEPTION`, anche con exit code `0`;
+- verifica Windows e Android, distinguendo sempre export statico da runtime;
+- su Android reale, movimento col joystick con un dito e attivazione
+  dell'abilità con il secondo;
+- pausa, ripresa esplicita, focus, Home/lock, Back e restart per ogni effetto
+  temporizzato o inseguitore;
+- verifica 16:9, 20:9 e 4:3 per UI, posizioni, direzioni, aree e flash.
+
 ## 7. Strategia di test
 
 ### Test unitari o di logica pura
@@ -421,8 +692,11 @@ Vincoli e gate di uscita:
 - attivazione accettata/rifiutata, avanzamento del cooldown soltanto in `RUNNING` e segnale di prontezza emesso una sola volta;
 - risoluzione di `AbilityDefinition`, parametri e tag; Cosplay Casuale non copia sé stessa né abilità incompatibili;
 - risoluzione `FriendDefinition → passiva → AbilityDefinition`, selezione degli otto ID e seed deterministico per passive/copie casuali;
+- valori e cap dei cinque rank per ciascuna abilità, eleggibilità senza duplicati e reset completo fra due run;
+- Fulmini di Zat: finestra preavviso/impatto, selezione dei nemici validi e danno percentuale distinto per Boss;
+- Grigliata estiva: aumento di `health_max`, cura esatta della differenza, stacking e cap;
 - scheduler Boss con pausa, salti di soglia e restart;
-- priorità delle sorgenti `InputRouter`, deadzone, normalizzazione e reset completo del touch;
+- priorità delle sorgenti `InputRouter`, deadzone, normalizzazione, ownership del dito, aree touch escluse e reset completo del touch;
 - calcolo di playfield/safe rect da viewport 16:9, 18:9, 20:9 e 4:3;
 - transizioni Back, focus loss e resume senza avanzamento del clock;
 - stesso seed → stessa sequenza di offerte e spawn configurati.
@@ -438,6 +712,11 @@ Vincoli e gate di uscita:
 - slow periodico mentre entra o muore un nemico;
 - Boss e nemici base presenti insieme;
 - HUD B18B compatto con XP, vita, timer, pausa e abilità sincronizzati durante resize, level-up, Boss intro, pausa e terminali;
+- B18E: preavviso, flash a viewport intero, ingresso tardivo dei nemici, danno percentuale, pausa e cleanup su due run;
+- B18G/B18J: offerta e applicazione dei rank, Grigliata estiva, cap, overflow di livello e seconda run pulita;
+- B18I: drop XP da centro, lati, angoli e morti fuori arena a 16:9, 20:9 e 4:3;
+- B18K: icona selezionata, riempimento circolare, secondi residui e transizione pronta/in cooldown senza cambiare il target touch;
+- B18L: creazione al primo tocco valido, ownership, rilascio, esclusione HUD/overlay e abilità attivata con il secondo dito;
 - hit flash, reazione, morte e abilità pronta non cambiano danno, collisioni, cooldown o cleanup della run;
 - joystick touch più pausa, cambio dito e annullamento del touch senza direzioni bloccate;
 - Home/blocco schermo durante combattimento e level-up, con ripresa solo su conferma;
@@ -448,13 +727,13 @@ Vincoli e gate di uscita:
 | Area | Casi |
 |---|---|
 | Windows | Tastiera, controller, finestra, resize, fullscreen e perdita focus |
-| Android device | Device fisico Android 12 vicino al minimo e device/emulatore Android 16; tap, drag, deadzone, multitouch, cambio dito e pulsante abilità mentre il joystick è attivo |
+| Android device | Device fisico Android 12 vicino al minimo e device/emulatore Android 16; joystick dinamico, tap, drag, deadzone, ownership, multitouch reale, cambio dito e pulsante abilità mentre il joystick è attivo |
 | Android lifecycle | Back, Home, lock/unlock, chiamata/interruzione, background/resume e input azzerato |
-| Layout | 16:9, 18:9, 20:9, cutout/notch e tablet/emulatore 4:3; HUD B18B compatto, nessun controllo fuori safe area e nessuna sovrapposizione con Boss UI/overlay |
+| Layout | 16:9, 18:9, 20:9, cutout/notch e tablet/emulatore 4:3; HUD B18B compatto, flash B18E a viewport intero, controlli B18K/B18L nella safe area e nessuna sovrapposizione con Boss UI/overlay |
 | Packaging | Installazione pulita/aggiornamento APK ARM64, firma release e generazione AAB senza upload |
 | Web opzionale | Chromium e Firefox soltanto in B21 |
 | Stabilità | 5 restart rapidi; soak termico 20 minuti su Android; ondate al cap entità |
-| Gameplay | selezione di tutti gli otto personaggi, vittoria, sconfitta, level-up multiplo, abilità pronta/in cooldown e Boss durante elevata densità |
+| Gameplay | selezione di tutti gli otto personaggi, vittoria, sconfitta, level-up multiplo, rank abilità, Grigliata estiva, abilità pronta/in cooldown e Boss durante elevata densità |
 
 ## 8. Definition of Done
 
@@ -465,7 +744,7 @@ Un'attività è finita solo quando:
 - i parametri di bilanciamento sono dati configurabili, non costanti disperse negli script;
 - il Player legge soltanto `InputRouter`; InputMap e touch producono lo stesso contratto di movimento;
 - l'abilità attiva riceve soltanto l'intenzione di `InputRouter`, usa parametri da `AbilityDefinition` e non avanza fuori da `RUNNING`;
-- la feature P0 è verificata sia con tastiera/controller su Windows sia con touch su Android;
+- ogni feature P0 o P1 destinata alla release è verificata sia con tastiera/controller su Windows sia con touch su Android;
 - UI, HUD e controlli non usano coordinate schermo fisse e rispettano la safe area;
 - la scena può essere riavviata senza conservare nodi, timer o stato della run precedente;
 - una build Windows e un APK vengono verificati al termine di ogni milestone;
@@ -486,6 +765,8 @@ Un'attività è finita solo quando:
 | Boss e contenuti arrivano troppo tardi | Media | Alta | Boss framework in P0; placeholder e pattern grezzi prima degli asset finali |
 | Art/audio allargano lo scope | Alta | Media | Budget contenuti esplicito e feature freeze dopo M4 |
 | HUD compatto riduce usabilità touch | Media | Alta | Ingombro visivo ridotto senza restringere hit area; target da almeno `44–48` unità logiche e gate multitouch fisico prima di B19 |
+| Flash di Zat è fastidioso o poco accessibile | Media | Alta | Intensità mobile e modalità ridotta definite prima di B18E; verifica su device fisico e flash limitato nel tempo |
+| Sprite piccione o VFX originali non risultano leggibili sul campo | Media | Media | Silhouette e palette congelate, fixture base/speciale, priorità dei layer e confronto Windows/Android prima del freeze; asset esterni non necessari |
 | Citazioni o immagini non approvate | Bassa | Alta | Registro B17 obbligatorio, getter con fallback e citazioni/audio personali assenti finché non vengono forniti |
 | Targeting lineare degrada con molte entità | Media | Media | Cap e profiler; target cache, poi partizionamento soltanto su evidenza |
 | Il PRD resta ambiguo durante il coding | Alta | Media | Decision log breve, contratti sopra e aggiornamento della specifica prima di M1 |
@@ -494,12 +775,13 @@ Un'attività è finita solo quando:
 
 Ordine operativo immediato:
 
-1. chiudere insieme il gate visivo B18C su Windows e Pixel 9: camminata, posa ferma, flip, assenza del cannoncino, pausa e restart; poi creare commit e push dedicati;
-2. chiudere B18D su Pixel 9: direzione persistente, teletrasporto rettilineo, scia da `4 s`, pausa, restart e multitouch;
-3. chiudere B18F su Windows e Pixel 9: area centrata durante movimento, pausa, termine, restart e cambio profilo;
-4. riprendere i gate manuali B18B sul gameplay 20:9 e 4:3 con Boss UI, level-up, pausa, terminali e densità elevata;
-5. completare sul Pixel 9 i gate combinati B17A–B18F: cambio personaggio, keyguard, Powerslide, area persistente, Cosplay Casuale e attivazioni ripetute mantenendo il joystick con l'altro dito;
-6. completare il gate percettivo B18 sul mix audio e svolgere una run reale con Boss a `04:00`/`2400 HP`, poi avviare B19 soltanto dopo il freeze B18F.
+1. chiudere in un'unica sessione Windows/Pixel 9 i gate B18C, B18D, B18F e B18I: animazione e posa, Powerslide, area inseguitrice, drop ai bordi, pausa, restart e multitouch; chiudere nello stesso pass i gate manuali residui B18B a 20:9 e 4:3;
+2. completare B18K, già `PRONTO`: icona come pulsante, cooldown circolare, secondi residui, stato pronto e target touch da almeno `44–48` unità logiche;
+3. completare B18L, già `PRONTO`: joystick generato dal primo tocco valido, ownership fino al rilascio, esclusione di HUD/overlay e attivazione dell'abilità con il secondo dito; chiudere i gate lifecycle e multitouch su Pixel 9;
+4. implementare e verificare B18E dal contratto congelato: `60 s` al rank `1`, preavviso `0,45 s`, flash singolo accessibile sull'intero viewport, target risolti all'impatto, percentuali normali/Boss, pausa e cleanup;
+5. implementare e verificare B18G e B18J sul framework level-up: snapshot specifici fino al rank `5`, offerte senza duplicati, aumento HP `×1,15` con cura del delta, stacking, cap e reset della run;
+6. completare B18H e B18M dalla direzione originale approvata: piccioni base/speciale, VFX procedurali e icone coerenti, con manifest e budget Android;
+7. eseguire il gate combinato B17A–B18M su Windows e Pixel 9, il gate percettivo B18 con Boss a `04:00`/`2400 HP` e la matrice 16:9/20:9/4:3; avviare B19 solo dopo il freeze documentato dell'intero ciclo.
 
 Il setup host e gli artefatti generati il 12 agosto 2026 sono registrati in
 [`m0-verification.md`](./m0-verification.md).
@@ -549,3 +831,7 @@ Animazione laterale del Player, ultima direzione valida e gate B18C sono
 registrati in [`b18c-verification.md`](./b18c-verification.md).
 Powerslide direzionale di Bea, asset CC0 e gate B18D sono registrati in
 [`b18d-verification.md`](./b18d-verification.md).
+Gran Piroetta inseguitrice di Alea e gate residuo Android sono registrati in
+[`b18f-verification.md`](./b18f-verification.md).
+Confinamento dei drop XP nel playfield e gate residuo Android sono registrati
+in [`b18i-verification.md`](./b18i-verification.md).

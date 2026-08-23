@@ -70,6 +70,11 @@ manipolano l'aggro possono sostituirlo temporaneamente.
 - la formula iniziale è
   `SpawnInterval = max(0.2, BaseInterval - (GameTime * 0.01))`.
 
+Se un nemico muore fuori dal playfield mentre sta entrando, il relativo drop XP
+viene ricondotto da `ArenaLayout` dentro l'arena. Il clamp include il raggio di
+raccolta del pickup, espresso in unità logiche del mondo, così l'oggetto resta
+interamente visibile e raggiungibile su ogni aspect ratio.
+
 ### 3.3. Sistema di level up e upgrade (Carte Amici)
 
 Le definizioni dei potenziamenti sono dati e contengono almeno:
@@ -82,6 +87,14 @@ Le definizioni dei potenziamenti sono dati e contengono almeno:
 Al level up il sistema estrae tre elementi casuali non duplicati dalla lista e
 mostra la UI di pausa. Le carte potenziamento non sostituiscono e non
 determinano l'abilità attiva propria del personaggio.
+
+`Grigliata estiva` è una carta comune a cinque rank. Ogni rank moltiplica gli
+HP massimi per `×1,15`, fino al contributo cumulativo `×2,0113571875` e con cap
+dati `×2,05`. Quando il massimo cresce, il Player recupera immediatamente
+esattamente la differenza positiva fra nuovo e vecchio massimo; non viene
+preservata la percentuale di vita e un Player morto non viene resuscitato.
+L'effetto si compone moltiplicativamente con passive e altri upgrade e si azzera
+con restart o cambio personaggio.
 
 ### 3.4. Sistema delle abilità attive
 
@@ -140,12 +153,19 @@ in base ai tag di compatibilità, in particolare per gli effetti di copia.
 
 #### Zat — Tempesta di Fulmini
 
-- **Tipo:** danno multiplo ad area con bersagli casuali.
-- **Effetto:** genera una serie di fulmini contro nemici casuali entro il raggio.
-- **Parametri iniziali:** `cooldown_seconds: 12.0`, `strikes: 6`,
-  `strike_damage: 8`, `strike_interval: 0.08`, `targeting_radius: 800`.
-- **Nota tecnica:** sincronizzare i VFX con ogni colpo e usare il pooling per gli
-  effetti se il profiling lo richiede.
+- **Tipo:** danno globale percentuale con impatto ritardato.
+- **Effetto:** dopo un preavviso di `0,45 s`, un singolo fulmine produce un
+  flash sull'intero viewport logico e colpisce una volta tutti i nemici vivi
+  validi al momento dell'impatto, inclusi quelli entrati dopo l'attivazione.
+- **Parametri iniziali:** `cooldown_seconds: 60.0`,
+  `normal_max_health_damage_ratio: 0.50`,
+  `boss_max_health_damage_ratio: 0.20`, `warning_seconds: 0.45`.
+- **Accessibilità:** flash singolo con alpha massimo `0,55` su Windows e `0,40`
+  su Android, chiuso entro `0,30 s`; l'opzione persistente **Flash ridotti** usa
+  alpha `0,15`, nessuna tenuta e conserva preavviso, sagoma, audio e danno.
+- **Nota tecnica:** bersagli e danno sono risolti all'impatto. Cooldown,
+  preavviso e flash avanzano soltanto in `RUNNING`; pausa, morte, cambio profilo
+  e restart non producono impatti tardivi o overlay residui.
 
 #### Alea — Gran Piroetta
 
@@ -194,6 +214,24 @@ in base ai tag di compatibilità, in particolare per gli effetti di copia.
 
 I valori numerici sono una baseline di bilanciamento e devono poter essere
 modificati nei `Resource` senza cambiare il codice.
+
+#### Rank delle abilità attive
+
+Ogni personaggio inizia la run con la propria attiva al rank `1`. Il level-up
+può offrire soltanto i rank `2–5` dell'abilità equipaggiata; usa un solo ID per
+offerta, esclude i duplicati e rimuove la carta al cap. Ogni rank è uno snapshot
+completo nei dati: effetti e cooldown già avviati conservano lo snapshot
+dell'attivazione, mentre il nuovo rank vale dall'uso successivo. Restart e
+cambio personaggio riportano l'attiva al rank `1`.
+
+I valori completi e cumulativi sono la tabella B18G del piano di sviluppo. Le
+progressioni sono: danno/raggio/knockback per Magno; danno/distanza/scia per Bea;
+percentuali e cooldown per Zat; danno/durata/raggio/frequenza per Alea;
+danno/durata/raggio/slow per Aleo; rank copiato, cooldown e anti-ripetizione per
+Lollo; durata/raggio/slow per Migi; durata e cooldown del clone per Marghe.
+Cosplay non trasferisce rank: risolve temporaneamente il profilo copiato al rank
+`1`, `2` o `3` previsto dal proprio rank, con filtri anti-ricorsione e di
+compatibilità invariati.
 
 ### 3.5. Boss, vittoria e chiusura della run
 
@@ -301,6 +339,20 @@ devono essere leggibili anche durante le ondate più dense.
 Le aree e i VFX alleati sono renderizzati sotto attori e attacchi; telegraph e
 proiettili ostili hanno priorità visiva e non possono essere coperti da un'abilità.
 Forma, contorno e pattern affiancano sempre il colore come segnali distintivi.
+
+Il nemico ordinario non è più una sfera: usa un piccione-uccello originale del
+progetto, grigio-blu con collo verde/viola, becco arancio, bordo scuro e due fasi
+d'ala su canvas trasparente `48×48`. Una variante speciale antracite, magenta e
+oro con la stessa silhouette viene prodotta per fixture e profili futuri, ma non
+entra nello spawn corrente e non modifica statistiche, collisioni o AI.
+
+Le icone correnti delle otto attive sono la famiglia definitiva della release.
+I VFX sono originali e principalmente procedurali: anelli/crepe per Magno,
+nastro e scintille per Bea, fulmine/flash accessibile per Zat, archi rotanti per
+Alea, pozza e bolle per Aleo, confetti e palette copiata per Lollo, anelli e
+particelle lente per Migi, clone/cassa/note per Marghe. Ogni asset su file viene
+registrato con origine, autore, licenza, modifiche e hash; la baseline non
+dipende da pacchetti animati esterni o da generazione automatica.
 
 Il Player usa sprite laterali destra/sinistra: durante qualsiasi movimento
 alterna i frame di camminata, al neutro mostra la posa ferma e conserva l'ultima
