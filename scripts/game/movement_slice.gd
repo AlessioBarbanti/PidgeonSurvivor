@@ -532,6 +532,11 @@ func _validate_current_contract() -> bool:
 		for friend_definition in _friend_registry.get_definitions():
 			if not _friend_passive_controller.is_supported_definition(friend_definition):
 				failures.append("Passiva B17A non supportata: %s." % friend_definition.id)
+			if not friend_definition.has_directional_gameplay_animation():
+				failures.append(
+					"Animazione laterale Player mancante: %s."
+					% friend_definition.id
+				)
 			var roster_ability := _ability_effect_registry.resolve_definition(
 				friend_definition.active_ability_id
 			)
@@ -935,11 +940,12 @@ func _validate_current_contract() -> bool:
 		print("B17A_CONTRACT_OK")
 		print("B18_CONTRACT_OK")
 		print("B18B_CONTRACT_OK")
+		print("B18C_CONTRACT_OK")
 		return true
 
 	for failure in failures:
 		push_error(failure)
-	printerr("B18_CONTRACT_FAIL")
+	printerr("B18C_CONTRACT_FAIL")
 	return false
 
 

@@ -5,6 +5,7 @@ signal health_changed(player: Player, health_current: float, health_max: float)
 signal damaged(player: Player, amount: float, health_current: float)
 signal died(player: Player)
 signal friend_changed(definition: FriendDefinition)
+signal facing_direction_changed(direction: Vector2)
 
 @export_group("Content")
 @export var friend_definition: FriendDefinition
@@ -49,9 +50,15 @@ signal friend_changed(definition: FriendDefinition)
 @export_range(0.0, 1.0, 0.01) var damage_reaction_duration := 0.16
 @export_range(0.0, 0.5, 0.01) var damage_squash_strength := 0.13
 
+const DEFAULT_FACING_DIRECTION := Vector2.RIGHT
+const HORIZONTAL_FACING_EPSILON := 0.001
+
 var movement_input := Vector2.ZERO:
 	set(value):
 		movement_input = value.limit_length(1.0)
+		_update_facing_from_movement(movement_input)
+		if is_node_ready():
+			_sync_character_animation_state()
 
 var _arena_layout: ArenaLayout
 var _run_controller: RunController
@@ -68,13 +75,19 @@ var _move_speed_multiplier := 1.0
 var _pickup_radius_multiplier := 1.0
 var _health_max_multiplier := 1.0
 var _passive_controller: FriendPassiveController
-var _portrait_base_scale := Vector2.ONE
+var _character_base_scale := Vector2.ONE
+var _facing_direction := DEFAULT_FACING_DIRECTION
+var _character_idle_texture: Texture2D
+var _character_walk_frames: Array[Texture2D] = []
+var _character_walk_frame_index := 0
+var _character_walk_elapsed := 0.0
+var _character_is_walking := false
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 @onready var _health_component: HealthComponent = %HealthComponent
 @onready var _weapon_controller: WeaponController = %WeaponController
 @onready var _ability_controller: AbilityController = %AbilityController
-@onready var _portrait_sprite: Sprite2D = %PortraitSprite
+@onready var _character_sprite: Sprite2D = %CharacterSprite
 
 
 func _ready() -> void:
@@ -84,10 +97,10 @@ func _ready() -> void:
 	_base_health_max = _health_component.health_max
 	_base_move_speed = move_speed
 	_base_pickup_radius = pickup_radius
-	_portrait_base_scale = _portrait_sprite.scale
+	_character_base_scale = _character_sprite.scale
 	_connect_health_component()
 	_connect_arena_layout()
-	_refresh_portrait()
+	_refresh_character_visual()
 	_clamp_to_playfield()
 	queue_redraw()
 
@@ -116,7 +129,8 @@ func _physics_process(delta: float) -> void:
 	velocity = movement_input * move_speed
 	move_and_slide()
 	_clamp_to_playfield()
-	_update_portrait_feedback()
+	_advance_character_animation(safe_delta)
+	_update_character_feedback()
 	if (
 		_damage_flash_remaining > 0.0
 		or _damage_reaction_remaining > 0.0
@@ -126,32 +140,6 @@ func _physics_process(delta: float) -> void:
 
 
 func _draw() -> void:
-	draw_set_transform(Vector2.ZERO, 0.0, get_visual_damage_scale())
-	var visible_body_color := body_color
-	if _damage_flash_remaining > 0.0:
-		visible_body_color = body_color.lerp(Color.WHITE, 0.82)
-	elif (
-		is_instance_valid(_health_component)
-		and _health_component.is_invulnerable()
-	):
-		visible_body_color = body_color.lerp(Color.WHITE, 0.34)
-	draw_circle(
-		Vector2.ZERO,
-		collision_radius + outline_width,
-		outline_color
-	)
-	draw_circle(Vector2.ZERO, collision_radius, visible_body_color)
-
-	var marker_size := collision_radius * 0.58
-	var direction_marker := PackedVector2Array([
-		Vector2(0.0, -marker_size),
-		Vector2(marker_size * 0.72, marker_size * 0.55),
-		Vector2(0.0, marker_size * 0.22),
-		Vector2(-marker_size * 0.72, marker_size * 0.55),
-	])
-	draw_colored_polygon(direction_marker, accent_color)
-	draw_circle(Vector2.ZERO, collision_radius * 0.14, outline_color)
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	_draw_health_arc()
 
 
@@ -164,6 +152,34 @@ func clear_movement_input() -> void:
 	velocity = Vector2.ZERO
 
 
+func get_facing_direction() -> Vector2:
+	return _facing_direction
+
+
+func is_character_walking() -> bool:
+	return _character_is_walking
+
+
+func get_character_walk_frame_index() -> int:
+	return _character_walk_frame_index
+
+
+func get_character_texture() -> Texture2D:
+	return _character_sprite.texture if is_instance_valid(_character_sprite) else null
+
+
+func is_character_flipped_horizontally() -> bool:
+	return _character_sprite.flip_h if is_instance_valid(_character_sprite) else false
+
+
+func get_character_visual_offset() -> Vector2:
+	return _character_sprite.position if is_instance_valid(_character_sprite) else Vector2.ZERO
+
+
+func get_character_visual_rotation() -> float:
+	return _character_sprite.rotation if is_instance_valid(_character_sprite) else 0.0
+
+
 func get_friend_definition() -> FriendDefinition:
 	return friend_definition
 
@@ -172,7 +188,7 @@ func set_friend_definition(definition: FriendDefinition) -> bool:
 	if definition == null or not definition.is_valid():
 		return false
 	friend_definition = definition
-	_refresh_portrait()
+	_refresh_character_visual()
 	friend_changed.emit(friend_definition)
 	return true
 
@@ -207,10 +223,11 @@ func reset_for_run() -> void:
 	_damage_reaction_remaining = 0.0
 	reset_upgrade_stat_multipliers()
 	clear_movement_input()
+	_set_facing_direction(DEFAULT_FACING_DIRECTION)
 	if is_instance_valid(_health_component):
 		_health_component.set_health_max(get_base_health_max())
 		_health_component.reset_to_max()
-	_update_portrait_feedback()
+	_update_character_feedback()
 	queue_redraw()
 
 
@@ -382,27 +399,107 @@ func _make_collision_shape_unique() -> void:
 	_collision_shape.shape = circle_shape
 
 
-func _refresh_portrait() -> void:
-	if not is_instance_valid(_portrait_sprite):
+func _refresh_character_visual() -> void:
+	if not is_instance_valid(_character_sprite):
 		return
-	_portrait_sprite.texture = (
-		friend_definition.get_public_portrait()
+	_character_idle_texture = (
+		friend_definition.get_gameplay_idle_right()
 		if friend_definition != null
 		else null
 	)
-	_portrait_sprite.visible = _portrait_sprite.texture != null
-	_update_portrait_feedback()
+	_character_walk_frames = (
+		friend_definition.get_gameplay_walk_right_frames()
+		if friend_definition != null
+		else [] as Array[Texture2D]
+	)
+	_character_walk_frame_index = 0
+	_character_walk_elapsed = 0.0
+	_character_is_walking = false
+	_sync_character_animation_state()
+	_update_character_feedback()
 
 
-func _update_portrait_feedback() -> void:
-	if not is_instance_valid(_portrait_sprite):
+func _update_character_feedback() -> void:
+	if not is_instance_valid(_character_sprite):
 		return
-	_portrait_sprite.scale = _portrait_base_scale * get_visual_damage_scale()
-	_portrait_sprite.self_modulate = (
+	_character_sprite.scale = _character_base_scale * get_visual_damage_scale()
+	_character_sprite.self_modulate = (
 		Color(1.0, 0.72, 0.8, 1.0)
 		if _damage_flash_remaining > 0.0
 		else Color.WHITE
 	)
+
+
+func _update_facing_from_movement(value: Vector2) -> void:
+	if absf(value.x) <= HORIZONTAL_FACING_EPSILON:
+		return
+	_set_facing_direction(Vector2.RIGHT if value.x > 0.0 else Vector2.LEFT)
+
+
+func _set_facing_direction(value: Vector2) -> void:
+	var resolved := Vector2.RIGHT if value.x >= 0.0 else Vector2.LEFT
+	if resolved == _facing_direction:
+		if is_instance_valid(_character_sprite):
+			_character_sprite.flip_h = resolved == Vector2.LEFT
+		return
+	_facing_direction = resolved
+	if is_instance_valid(_character_sprite):
+		_character_sprite.flip_h = _facing_direction == Vector2.LEFT
+	facing_direction_changed.emit(_facing_direction)
+
+
+func _sync_character_animation_state() -> void:
+	if not is_instance_valid(_character_sprite):
+		return
+	var should_walk := not movement_input.is_zero_approx()
+	if should_walk != _character_is_walking:
+		_character_is_walking = should_walk
+		_character_walk_frame_index = 0
+		_character_walk_elapsed = 0.0
+	_apply_character_frame()
+
+
+func _advance_character_animation(delta: float) -> void:
+	_sync_character_animation_state()
+	if not _character_is_walking or _character_walk_frames.size() < 2:
+		return
+	var fps := (
+		friend_definition.gameplay_walk_fps
+		if friend_definition != null
+		else 8.0
+	)
+	var frame_duration := 1.0 / maxf(fps, 1.0)
+	_character_walk_elapsed += maxf(delta, 0.0)
+	while _character_walk_elapsed >= frame_duration:
+		_character_walk_elapsed -= frame_duration
+		_character_walk_frame_index = (
+			(_character_walk_frame_index + 1) % _character_walk_frames.size()
+		)
+	_apply_character_frame()
+
+
+func _apply_character_frame() -> void:
+	if not is_instance_valid(_character_sprite):
+		return
+	if _character_is_walking and not _character_walk_frames.is_empty():
+		_character_sprite.texture = _character_walk_frames[_character_walk_frame_index]
+		var gait_phase := _character_walk_frame_index % 4
+		_character_sprite.position = (
+			Vector2(0.0, -2.0)
+			if gait_phase == 1 or gait_phase == 3
+			else Vector2.ZERO
+		)
+		_character_sprite.rotation = (
+			-0.035 if gait_phase == 0
+			else 0.035 if gait_phase == 2
+			else 0.0
+		)
+	else:
+		_character_sprite.texture = _character_idle_texture
+		_character_sprite.position = Vector2.ZERO
+		_character_sprite.rotation = 0.0
+	_character_sprite.visible = _character_sprite.texture != null
+	_character_sprite.flip_h = _facing_direction == Vector2.LEFT
 
 
 func _recalculate_effective_stats(preserve_health_ratio: bool) -> void:
@@ -503,7 +600,7 @@ func _on_health_changed(health_current: float, health_max: float) -> void:
 func _on_damaged(amount: float, health_current: float) -> void:
 	_damage_flash_remaining = maxf(damage_flash_duration, 0.0)
 	_damage_reaction_remaining = maxf(damage_reaction_duration, 0.0)
-	_update_portrait_feedback()
+	_update_character_feedback()
 	damaged.emit(self, amount, health_current)
 	queue_redraw()
 
@@ -518,7 +615,7 @@ func _on_died() -> void:
 
 
 func _on_invulnerability_changed(_active: bool, _remaining: float) -> void:
-	_update_portrait_feedback()
+	_update_character_feedback()
 	queue_redraw()
 
 

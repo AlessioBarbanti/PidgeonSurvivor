@@ -24,7 +24,7 @@ friend_definition = ExtResource("8_friend")
 unique_name_in_owner = true
 shape = SubResource("CircleShape2D_player")
 
-[node name="PortraitSprite" type="Sprite2D" parent="."]
+[node name="CharacterSprite" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 z_index = 1
 scale = Vector2(1.65, 1.65)

@@ -28,6 +28,11 @@ extends Resource
 @export var portraits_are_placeholders := true
 @export var voice_clip: AudioStream
 
+@export_group("Gameplay Sprite")
+@export var gameplay_idle_right: Texture2D
+@export var gameplay_walk_right_frames: Array[Texture2D] = []
+@export_range(1.0, 30.0, 0.5) var gameplay_walk_fps := 8.0
+
 @export_group("Safe Copy Fallbacks")
 @export var safe_display_name := "Personaggio"
 @export_multiline var safe_role := "Profilo in aggiornamento."
@@ -193,6 +198,31 @@ func get_public_evil_portrait() -> Texture2D:
 
 func get_public_voice_clip() -> AudioStream:
 	return voice_clip if audio_approved else null
+
+
+func get_gameplay_idle_right() -> Texture2D:
+	return gameplay_idle_right if gameplay_idle_right != null else get_public_portrait()
+
+
+func get_gameplay_walk_right_frames() -> Array[Texture2D]:
+	var valid_frames: Array[Texture2D] = []
+	for frame in gameplay_walk_right_frames:
+		if frame != null:
+			valid_frames.append(frame)
+	if valid_frames.is_empty():
+		var idle_frame := get_gameplay_idle_right()
+		if idle_frame != null:
+			valid_frames.append(idle_frame)
+	return valid_frames
+
+
+func has_directional_gameplay_animation() -> bool:
+	return (
+		get_gameplay_idle_right() != null
+		and get_gameplay_walk_right_frames().size() >= 2
+		and is_finite(gameplay_walk_fps)
+		and gameplay_walk_fps > 0.0
+	)
 
 
 static func is_valid_id(value: StringName) -> bool:

@@ -6,17 +6,6 @@ signal projectile_fired(projectile: Projectile, target: BaseEnemy)
 @export var weapon_profile: WeaponProfile
 @export var projectile_scene: PackedScene
 
-@export_group("Visual")
-@export var weapon_color := Color(1.0, 0.91, 0.2, 1.0):
-	set(value):
-		weapon_color = value
-		queue_redraw()
-
-@export var outline_color := Color(0.015, 0.025, 0.06, 1.0):
-	set(value):
-		outline_color = value
-		queue_redraw()
-
 var _run_controller: RunController
 var _targeting_system: TargetingSystem
 var _projectile_parent: Node
@@ -40,10 +29,6 @@ var _projectile_oscillation_amplitude := 0.0
 var _projectile_oscillation_frequency_hz := 0.0
 
 
-func _ready() -> void:
-	queue_redraw()
-
-
 func _exit_tree() -> void:
 	_disconnect_run_controller()
 
@@ -56,17 +41,6 @@ func _process(delta: float) -> void:
 		_cooldown_remaining = maxf(_cooldown_remaining - maxf(delta, 0.0), 0.0)
 	if _cooldown_remaining <= 0.0:
 		try_fire()
-
-
-func _draw() -> void:
-	var length := 32.0
-	if weapon_profile != null:
-		length = maxf(weapon_profile.muzzle_offset, 12.0)
-	var start := Vector2(9.0, 0.0)
-	var finish := Vector2(length, 0.0)
-	draw_line(start, finish, outline_color, 10.0, true)
-	draw_line(start, finish, weapon_color, 5.0, true)
-	draw_circle(finish, 3.0, weapon_color)
 
 
 func configure(

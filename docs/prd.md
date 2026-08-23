@@ -298,6 +298,12 @@ Le aree e i VFX alleati sono renderizzati sotto attori e attacchi; telegraph e
 proiettili ostili hanno priorità visiva e non possono essere coperti da un'abilità.
 Forma, contorno e pattern affiancano sempre il colore come segnali distintivi.
 
+Il Player usa sprite laterali destra/sinistra: durante qualsiasi movimento
+alterna i frame di camminata, al neutro mostra la posa ferma e conserva l'ultima
+direzione orizzontale non nulla. La direzione è parte del contratto gameplay del
+Player: le abilità direzionali possono usarla senza leggere la posizione
+istantanea del joystick quando vengono attivate.
+
 La presentazione B18B usa una fascia superiore compatta da `64` unità logiche,
 seguita da una linea XP da `8`; ritratto, livello e vita occupano il lato sinistro,
 il timer resta centrato e pausa usa un target touch da almeno `44` unità. La card
