@@ -200,16 +200,14 @@ func _validate_responsive_layouts() -> void:
 			"%s: PAUSA deve conservare un target touch leggibile." % profile_name
 		)
 		_expect(
-			ability_button_rect.size.x >= 44.0 - LAYOUT_TOLERANCE
-			and ability_button_rect.size.y >= 44.0 - LAYOUT_TOLERANCE,
+			ability_button_rect.size.x >= 64.0 - LAYOUT_TOLERANCE
+			and ability_button_rect.size.y >= 64.0 - LAYOUT_TOLERANCE,
 			"%s: ATTIVA deve conservare un target touch leggibile." % profile_name
 		)
 		_expect(
-			ability_rect.size.x >= 230.0 - LAYOUT_TOLERANCE
-			and ability_rect.size.x <= 250.0 + LAYOUT_TOLERANCE
-			and ability_rect.size.y >= 88.0 - LAYOUT_TOLERANCE
-			and ability_rect.size.y <= 96.0 + LAYOUT_TOLERANCE,
-			"%s: la card abilita deve rispettare l'ingombro B18B." % profile_name
+			ability_rect.position.distance_to(ability_button_rect.position) <= LAYOUT_TOLERANCE
+			and ability_rect.size.distance_to(ability_button_rect.size) <= LAYOUT_TOLERANCE,
+			"%s: B18K deve lasciare soltanto l'icona senza card esterna." % profile_name
 		)
 		_expect(
 			timer_rect.end.x <= pause_rect.position.x + LAYOUT_TOLERANCE,

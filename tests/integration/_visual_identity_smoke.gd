@@ -99,21 +99,19 @@ func _validate_compact_hud(
 		"Pausa deve conservare un target touch di almeno 44 unita."
 	)
 	_expect(
-		ability_button.size.x >= 44.0 and ability_button.size.y >= 44.0,
-		"L'abilita deve conservare un target touch di almeno 44 unita."
+		ability_button.size.x >= 64.0 and ability_button.size.y >= 64.0,
+		"L'abilita deve conservare il target touch 64 x 64 B18K."
 	)
 	_expect(
-		ability_panel.size.x >= 230.0
-		and ability_panel.size.x <= 250.0
-		and ability_panel.size.y >= 88.0
-		and ability_panel.size.y <= 96.0,
-		"La card abilita deve restare nell'ingombro B18B."
+		ability_panel.position.distance_to(ability_button.position) <= FLOAT_TOLERANCE
+		and ability_panel.size.distance_to(ability_button.size) <= FLOAT_TOLERANCE,
+		"B18K deve mostrare soltanto l'icona senza card esterna."
 	)
 	_expect(hud.get_portrait_texture() != null, "Il ritratto corrente deve essere visibile nell'HUD.")
 	var joystick_rect := joystick.get_global_rect()
 	_expect(
 		not joystick_rect.intersects(ability_panel, true),
-		"Joystick e card abilita devono restare separati."
+		"Joystick e icona abilita devono restare separati."
 	)
 	if boss_ui != null:
 		var boss_rect := boss_ui.get_boss_health_panel_rect()

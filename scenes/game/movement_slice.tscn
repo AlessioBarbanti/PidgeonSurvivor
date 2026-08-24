@@ -219,7 +219,7 @@ z_index = 4
 unique_name_in_owner = true
 script = ExtResource("5_input_router")
 touch_joystick_path = NodePath("../UI/SafeAreaRoot/TouchJoystick")
-active_ability_button_path = NodePath("../UI/SafeAreaRoot/HUD/AbilityPanel/Content/Details/StateRow/ActiveAbilityButton")
+active_ability_button_path = NodePath("../UI/SafeAreaRoot/HUD/AbilityPanel/ActiveAbilityButton")
 
 [node name="PlatformLifecycle" type="Node" parent="."]
 unique_name_in_owner = true

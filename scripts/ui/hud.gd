@@ -17,11 +17,7 @@ signal pause_requested()
 @onready var _portrait: TextureRect = %Portrait
 @onready var _portrait_frame: Control = %PortraitFrame
 @onready var _ability_panel: Control = %AbilityPanel
-@onready var _ability_icon: TextureRect = %AbilityIcon
-@onready var _ability_name_label: Label = %AbilityNameLabel
-@onready var _ability_cooldown_label: Label = %AbilityCooldownLabel
-@onready var _ability_cooldown_bar: ProgressBar = %AbilityCooldownBar
-@onready var _active_ability_button: Button = %ActiveAbilityButton
+@onready var _active_ability_button: TouchAbilityButton = %ActiveAbilityButton
 
 var _run_controller: RunController
 var _health_component: HealthComponent
@@ -33,6 +29,9 @@ var _ability_ready_tween: Tween
 var _health_feedback_count := 0
 var _ability_ready_pulse_count := 0
 var _last_ability_ready := false
+var _ability_name_text := "ABILITÀ ATTIVA"
+var _ability_cooldown_text := "NON ASSEGNATA"
+var _ability_cooldown_value := 0.0
 
 
 func _ready() -> void:
@@ -175,7 +174,7 @@ func get_ability_panel_rect() -> Rect2:
 	return _ability_panel.get_global_rect() if is_instance_valid(_ability_panel) else Rect2()
 
 
-func get_active_ability_button() -> Button:
+func get_active_ability_button() -> TouchAbilityButton:
 	return _active_ability_button if is_instance_valid(_active_ability_button) else null
 
 
@@ -187,16 +186,27 @@ func get_active_ability_button_rect() -> Rect2:
 	)
 
 
+func is_touch_origin_excluded(viewport_position: Vector2) -> bool:
+	for control in [_top_band, _experience_panel, _ability_panel]:
+		if (
+			is_instance_valid(control)
+			and control.is_visible_in_tree()
+			and control.get_global_rect().has_point(viewport_position)
+		):
+			return true
+	return false
+
+
 func get_ability_name_text() -> String:
-	return _ability_name_label.text
+	return _ability_name_text
 
 
 func get_ability_cooldown_text() -> String:
-	return _ability_cooldown_label.text
+	return _ability_cooldown_text
 
 
 func get_ability_cooldown_value() -> float:
-	return _ability_cooldown_bar.value
+	return _ability_cooldown_value
 
 
 func get_health_feedback_count() -> int:
@@ -360,12 +370,7 @@ func _refresh_ability_definition() -> void:
 	if definition == null:
 		_show_default_ability()
 		return
-	_ability_name_label.text = definition.title.to_upper()
-	_ability_icon.texture = definition.icon
-	_ability_cooldown_bar.max_value = maxf(
-		definition.cooldown_seconds,
-		AbilityDefinition.MINIMUM_POSITIVE_VALUE
-	)
+	_ability_name_text = definition.title.to_upper()
 	_on_ability_cooldown_changed(
 		_ability_controller.get_cooldown_remaining(),
 		_ability_controller.get_cooldown_total()
@@ -374,13 +379,10 @@ func _refresh_ability_definition() -> void:
 
 
 func _show_default_ability() -> void:
-	_ability_name_label.text = "ABILITÀ ATTIVA"
-	_ability_icon.texture = null
-	_ability_cooldown_label.text = "NON ASSEGNATA"
-	_ability_cooldown_bar.max_value = 1.0
-	_ability_cooldown_bar.value = 0.0
-	_active_ability_button.text = "USA"
-	_active_ability_button.disabled = true
+	_ability_name_text = "ABILITÀ ATTIVA"
+	_ability_cooldown_text = "NON ASSEGNATA"
+	_ability_cooldown_value = 0.0
+	_active_ability_button.set_ability_visual(null, 0.0, 1.0, false)
 	_last_ability_ready = false
 
 
@@ -390,12 +392,11 @@ func _on_ability_cooldown_changed(
 ) -> void:
 	var safe_total := maxf(cooldown_total, AbilityDefinition.MINIMUM_POSITIVE_VALUE)
 	var safe_remaining := clampf(cooldown_remaining, 0.0, safe_total)
-	_ability_cooldown_bar.max_value = safe_total
-	_ability_cooldown_bar.value = safe_total - safe_remaining
+	_ability_cooldown_value = safe_total - safe_remaining
 	if safe_remaining <= 0.0:
-		_ability_cooldown_label.text = "PRONTA"
+		_ability_cooldown_text = "PRONTA"
 	else:
-		_ability_cooldown_label.text = "RICARICA  %.1f s" % safe_remaining
+		_ability_cooldown_text = "RICARICA"
 	_refresh_ability_state()
 
 
@@ -420,8 +421,7 @@ func _refresh_ability_state() -> void:
 	if not is_instance_valid(_active_ability_button):
 		return
 	if not is_instance_valid(_ability_controller):
-		_active_ability_button.disabled = true
-		_active_ability_button.text = "USA"
+		_active_ability_button.set_ability_visual(null, 0.0, 1.0, false)
 		return
 	var running := (
 		is_instance_valid(_run_controller)
@@ -430,13 +430,13 @@ func _refresh_ability_state() -> void:
 	var ready := (
 		_ability_controller.is_cooldown_ready()
 	)
-	_active_ability_button.disabled = not running or not ready
-	if not running:
-		_active_ability_button.text = "—"
-	elif ready:
-		_active_ability_button.text = "USA"
-	else:
-		_active_ability_button.text = "…"
+	var definition := _ability_controller.get_definition()
+	_active_ability_button.set_ability_visual(
+		definition.icon if definition != null else null,
+		_ability_controller.get_cooldown_remaining(),
+		_ability_controller.get_cooldown_total(),
+		running and ready
+	)
 
 
 func _play_ability_ready_pulse() -> void:

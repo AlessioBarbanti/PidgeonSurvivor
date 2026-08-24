@@ -900,12 +900,12 @@ func _validate_current_contract() -> bool:
 			failures.append("La linea XP B18B deve restare alta 6-8 unita logiche.")
 		var ability_panel_rect := _hud.get_ability_panel_rect()
 		if (
-			ability_panel_rect.size.x < 230.0
-			or ability_panel_rect.size.x > 250.0
-			or ability_panel_rect.size.y < 88.0
-			or ability_panel_rect.size.y > 96.0
+			ability_panel_rect.size.x < 63.0
+			or ability_panel_rect.size.x > 65.0
+			or ability_panel_rect.size.y < 63.0
+			or ability_panel_rect.size.y > 65.0
 		):
-			failures.append("La card abilita B18B deve restare circa 230-250 x 88-96.")
+			failures.append("B18K deve mostrare soltanto l'icona 64 x 64.")
 		if _hud.get_portrait_texture() == null:
 			failures.append("La fascia HUD B18B deve mostrare il ritratto corrente.")
 		if not _hud.get_experience_panel_rect().has_area():
@@ -915,10 +915,19 @@ func _validate_current_contract() -> bool:
 		if not _hud.get_active_ability_button_rect().has_area():
 			failures.append("HUD privo del pulsante abilita touch.")
 		elif (
-			_hud.get_active_ability_button_rect().size.x < 44.0
-			or _hud.get_active_ability_button_rect().size.y < 44.0
+			_hud.get_active_ability_button_rect().size.x < 64.0
+			or _hud.get_active_ability_button_rect().size.y < 64.0
 		):
-			failures.append("Il pulsante abilita B18B deve conservare un target touch di 44 unita.")
+			failures.append("Il pulsante abilita B18K deve conservare un target touch di 64 unita.")
+		var ability_button := _hud.get_active_ability_button()
+		if ability_button == null:
+			failures.append("B18K richiede un TouchAbilityButton valido.")
+		elif ability_button.get_ability_icon() != _ability_controller.get_definition().icon:
+			failures.append("Il pulsante B18K deve usare l'icona dell'abilita equipaggiata.")
+		elif not ability_button.text.is_empty():
+			failures.append("Il pulsante B18K non deve mostrare testo esterno all'icona.")
+		elif not ability_button.get_theme_stylebox("normal") is StyleBoxEmpty:
+			failures.append("Il pulsante B18K non deve disegnare un rettangolo di sfondo.")
 		if (
 			_hud.get_pause_button_rect().size.x < 44.0
 			or _hud.get_pause_button_rect().size.y < 44.0

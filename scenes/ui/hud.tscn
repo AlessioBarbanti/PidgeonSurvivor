@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 [ext_resource type="Script" path="res://scripts/ui/touch_ability_button.gd" id="2_touch_ability"]
@@ -71,76 +71,7 @@ corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ability_panel"]
-bg_color = Color(0.025, 0.039, 0.063, 0.95)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 0.58, 0.16, 0.84)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-content_margin_left = 7.0
-content_margin_top = 7.0
-content_margin_right = 7.0
-content_margin_bottom = 7.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ability_fill"]
-bg_color = Color(1, 0.55, 0.12, 1)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_action_normal"]
-bg_color = Color(0.1, 0.071, 0.035, 0.98)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(1, 0.61, 0.2, 0.9)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_action_hover"]
-bg_color = Color(0.19, 0.12, 0.045, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 0.74, 0.32, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_action_pressed"]
-bg_color = Color(0.28, 0.15, 0.035, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 0.86, 0.48, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_action_disabled"]
-bg_color = Color(0.045, 0.05, 0.06, 0.86)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.3, 0.29, 0.27, 0.58)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ability_button"]
 
 [node name="HUD" type="Control"]
 process_mode = 3
@@ -328,83 +259,40 @@ theme_override_styles/background = SubResource("StyleBoxFlat_bar_background")
 theme_override_styles/fill = SubResource("StyleBoxFlat_experience_fill")
 show_percentage = false
 
-[node name="AbilityPanel" type="PanelContainer" parent="."]
+[node name="AbilityPanel" type="Control" parent="."]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(246, 94)
+custom_minimum_size = Vector2(64, 64)
 layout_mode = 1
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -258.0
-offset_top = -106.0
+offset_left = -76.0
+offset_top = -76.0
 offset_right = -12.0
 offset_bottom = -12.0
 grow_horizontal = 0
 grow_vertical = 0
-mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_ability_panel")
-
-[node name="Content" type="HBoxContainer" parent="AbilityPanel"]
-layout_mode = 2
-theme_override_constants/separation = 7
-
-[node name="AbilityIcon" type="TextureRect" parent="AbilityPanel/Content"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(56, 56)
-layout_mode = 2
 mouse_filter = 2
-expand_mode = 3
-stretch_mode = 5
 
-[node name="Details" type="VBoxContainer" parent="AbilityPanel/Content"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 3
-
-[node name="AbilityNameLabel" type="Label" parent="AbilityPanel/Content/Details"]
+[node name="ActiveAbilityButton" type="Button" parent="AbilityPanel"]
 unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.78, 0.35, 1)
-theme_override_font_sizes/font_size = 11
-text = "ONDA D'URTO TELLURICA"
-text_overrun_behavior = 3
-
-[node name="StateRow" type="HBoxContainer" parent="AbilityPanel/Content/Details"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/separation = 5
-
-[node name="AbilityCooldownLabel" type="Label" parent="AbilityPanel/Content/Details/StateRow"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(1, 0.91, 0.69, 1)
-theme_override_font_sizes/font_size = 12
-text = "PRONTA"
-vertical_alignment = 1
-
-[node name="ActiveAbilityButton" type="Button" parent="AbilityPanel/Content/Details/StateRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(58, 44)
-layout_mode = 2
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 tooltip_text = "Attiva abilità"
 theme_override_colors/font_color = Color(1, 0.88, 0.62, 1)
 theme_override_colors/font_disabled_color = Color(0.53, 0.51, 0.47, 1)
 theme_override_font_sizes/font_size = 12
-theme_override_styles/normal = SubResource("StyleBoxFlat_action_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_action_hover")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_action_pressed")
-theme_override_styles/disabled = SubResource("StyleBoxFlat_action_disabled")
-text = "USA"
+theme_override_styles/normal = SubResource("StyleBoxEmpty_ability_button")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_ability_button")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_ability_button")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_ability_button")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_ability_button")
+expand_icon = true
+theme_override_constants/icon_max_width = 48
 script = ExtResource("2_touch_ability")
-
-[node name="AbilityCooldownBar" type="ProgressBar" parent="AbilityPanel/Content/Details"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 7)
-layout_mode = 2
-mouse_filter = 2
-theme_override_styles/background = SubResource("StyleBoxFlat_bar_background")
-theme_override_styles/fill = SubResource("StyleBoxFlat_ability_fill")
-value = 100.0
-show_percentage = false
