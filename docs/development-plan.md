@@ -2,7 +2,7 @@
 
 Fonte: [`prd.md`](./prd.md)  
 Decisioni: [`decision-log.md`](./decision-log.md)  
-Stato: il ciclo operativo corrente è B18C–B18M. B18C, B18D, B18F, B18H, B18I, B18K, B18L e B18M sono completati con tutti i gate pertinenti automatici, Windows e Pixel 9 chiusi. B18E, B18G e B18J sono in verifica con implementazione, regressioni, Windows ed export Android statico chiusi, ma attendono il rispettivo gate Pixel 9. B19 resta bloccato fino al freeze dell'intero ciclo e alla chiusura dei gate Windows/Android pertinenti
+Stato: il ciclo operativo corrente è B18C–B18M. B18C, B18D, B18F, B18H, B18I, B18K e B18L sono completati con tutti i gate pertinenti automatici, Windows e Pixel 9 chiusi. B18E, B18G e B18J sono in verifica con implementazione, regressioni, Windows ed export Android statico chiusi, ma attendono il rispettivo gate Pixel 9. Il refresh ImageGen B18M ha chiuso automatici, Windows e APK statico, ma riapre il gate percettivo Pixel 9 sulle nuove icone e animazioni. B19 resta bloccato fino al freeze dell'intero ciclo e alla chiusura dei gate Windows/Android pertinenti
 Obiettivo: trasformare il concept in un MVP completo, verificabile su Windows e Android; Web resta un target secondario
 
 Fonte di verità operativa: questo documento contiene roadmap, stato e ordine delle prossime attività. Eventuali note temporanee devono essere integrate qui e poi rimosse.
@@ -448,7 +448,7 @@ significato:
 | B18J | Grigliata estiva | IN VERIFICA | Gate automatici, Windows, Android statico e cold launch Pixel 9 chiusi; interazione manuale ancora da verificare |
 | B18K | Pulsante abilità con icona e cooldown circolare | COMPLETATO | Gate chiusi; commit dedicato `81b47f6` |
 | B18L | Joystick dinamico | COMPLETATO | Gate chiusi, inclusa regressione lock/resume; commit dedicato `d6625d7` |
-| B18M | Migliorie grafiche delle abilità | COMPLETATO | Gate automatici, Windows e Pixel 9 chiusi; commit dedicato `11329cf` |
+| B18M | Migliorie grafiche delle abilità | IN VERIFICA | Refresh ImageGen: automatici, Windows e APK statico chiusi; controllo percettivo Pixel 9 aperto |
 
 #### B18C — Player animato e direzione persistente
 
@@ -711,29 +711,31 @@ Dettagli ed evidenze: [`b18l-verification.md`](./b18l-verification.md).
 
 #### B18M — Migliorie grafiche delle abilità
 
-Stato: `COMPLETATO`.
+Stato: `IN VERIFICA` dopo il refresh ImageGen.
 
-- [x] La baseline di release usa VFX originali disegnati con primitive Godot,
-  shader semplici e, soltanto quando serve, sprite originali del progetto. Non
-  è richiesta una ricerca di pacchetti animati esterni.
-- [x] Le otto icone SVG correnti sono definitive per questa release; Powerslide
-  conserva il pittogramma Pinhead CC0 già registrato. B18M può rifinirne
-  spessori e palette senza cambiare silhouette, viewBox o hit target B18K.
+- [x] La baseline di release conserva VFX originali disegnati con primitive
+  Godot e aggiunge otto emblemi PNG RGBA `256×256` prodotti con OpenAI ImageGen
+  built-in. I vecchi derivati SVG runtime sono stati rimossi; la sorgente
+  Pinhead CC0 resta soltanto come storico documentato.
+- [x] Gli emblemi sostituiscono le icone in HUD e carte rank senza cambiare il
+  target B18K `64×64`; nome, label, card e sfondo rettangolare restano assenti.
+- [x] La stessa texture entra in un burst scene-local da `0,72 s` con profilo
+  distinto per abilità: impatto, scorrimento, tuono, rotazione, caduta, reveal,
+  respiro o beat. Il burst avanza soltanto in `RUNNING` e segue il cleanup
+  dell'effetto senza modificare gameplay o input.
 - [x] Linguaggio VFX: Magno usa crepe e anelli tellurici; Bea scia a nastro con
   scintille; Zat nube e onde del tuono, preavviso e flash accessibile; Alea archi
   rotanti; Aleo pozza grigio-ciano con bordo e bolle; Lollo confetti più palette
   dell'abilità copiata; Migi anelli concentrici e particelle lente; Marghe clone,
   cassa e note musicali. Gli effetti alleati restano sotto telegraph e proiettili
   ostili e non comunicano collisioni più ampie di quelle reali.
-- [x] Ogni nuovo file grafico deve essere registrato in un manifest con percorso,
-  origine, autore, licenza, trasformazioni e SHA-256. Per asset originali si usa
-  `origine: progetto IL GIOCO`, senza attribuzione esterna.
-- [x] Non esistono asset mancanti che richiedano generazione per la baseline,
-  quindi un file prompt non è un gate. Se in futuro si usa un generatore, prompt,
-  modello, data, output scelto e modifiche vanno versionati prima dell'import.
+- [x] Manifest aggiornato con generatore, prompt condiviso e soggetti specifici,
+  data, origine, autore, licenza, crop, margine, downscale, ottimizzazione e
+  SHA-256 per ogni PNG.
 - [x] Budget Android per una singola attivazione: massimo `1` overlay fullscreen,
-  `64` particelle vive e `2` draw call/materiali aggiuntivi per famiglia; il
-  profiling B19 può ridurre il budget senza modificare gameplay o timing.
+  `64` particelle vive, `1` emblema ImageGen e `2` materiali aggiuntivi per
+  famiglia; il profiling B19 può ridurre il budget senza modificare gameplay o
+  timing.
 - [x] Implementare le otto grammatiche con primitive `CanvasItem`: anelli e
   crepe, nastro e scintille, nube e onde, archi, pozza e bolle, confetti nella
   palette copiata, anelli e moti zen, clone/cassa/note. Collisioni, raggio,
@@ -741,13 +743,14 @@ Stato: `COMPLETATO`.
 - [x] Registrare sorgenti procedurali e icone definitive in
   [`assets/art/vfx/ASSET-MANIFEST.md`](../assets/art/vfx/ASSET-MANIFEST.md), con
   origine, autore, licenza, trasformazioni e SHA-256 verificati dallo smoke.
-- [x] Smoke `B18M_ABILITY_VISUALS_SMOKE_OK`, regressione completa `32/32`,
-  project smoke, export e runtime Windows con `B18M_CONTRACT_OK`.
-- [x] Export APK ARM64, controlli statici API `31`/`36`, firma v2, cold launch,
-  otto attivazioni e controllo percettivo a 20:9 sul Pixel 9; Home/ritorno
-  conserva la pausa esplicita e i log sono puliti. B18M non modifica il percorso
-  input; il gate fisico multitouch B18L resta autorevole e verrà ripetuto nel
-  gate combinato finale del ciclo.
+- [x] Refresh ImageGen: smoke `B18M_ABILITY_VISUALS_SMOKE_OK`, regressione
+  completa `32/32`, project smoke, export e runtime Windows con
+  `B18M_CONTRACT_OK`; export APK ARM64, API `31`/`36`, firma v2 e sola ABI
+  `arm64-v8a` chiusi.
+- [ ] Ripetere sul Pixel 9 il controllo percettivo a 20:9 delle nuove icone a
+  `42 px` e degli otto burst in movimento/densità elevata. La prova fisica è
+  rimandata esplicitamente; il precedente gate B18L resta autorevole per il
+  multitouch, ma non valida i nuovi asset.
 
 Dettagli ed evidenze: [`b18m-verification.md`](./b18m-verification.md).
 
@@ -861,7 +864,8 @@ Ordine operativo immediato:
 1. chiudere i gate manuali residui B18B a 20:9 e 4:3;
 2. chiudere il gate Pixel 9 di B18E già implementato: multitouch, flash standard/ridotto, 20:9, lifecycle e cleanup reale;
 3. chiudere i gate Pixel 9 di B18G e B18J già implementati: tap reali sui rank, aumento HP `×1,15` con cura del delta, stacking, cap, lifecycle e reset della run;
-4. eseguire il gate combinato B17A–B18M su Windows e Pixel 9, il gate percettivo B18 con Boss a `04:00`/`2400 HP` e la matrice 16:9/20:9/4:3; avviare B19 solo dopo il freeze documentato dell'intero ciclo.
+4. chiudere il nuovo gate percettivo Pixel 9 del refresh ImageGen B18M: otto icone HUD, otto burst, movimento e densità elevata a 20:9;
+5. eseguire il gate combinato B17A–B18M su Windows e Pixel 9, il gate percettivo B18 con Boss a `04:00`/`2400 HP` e la matrice 16:9/20:9/4:3; avviare B19 solo dopo il freeze documentato dell'intero ciclo.
 
 Il setup host e gli artefatti generati il 12 agosto 2026 sono registrati in
 [`m0-verification.md`](./m0-verification.md).

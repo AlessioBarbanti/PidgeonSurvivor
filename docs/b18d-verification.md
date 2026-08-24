@@ -22,10 +22,13 @@ Implementazione, commit dedicato e gate Windows/Pixel 9 completati il 24 agosto
 
 ## Icona
 
-L'icona originale `inline_skate.svg` proviene da Pinhead `v15.17.0`, licenza
-CC0 1.0. Originale, derivato con palette del progetto, URL, licenza e SHA-256
-sono conservati in
+L'icona originale usata per chiudere B18D, `inline_skate.svg`, proviene da
+Pinhead `v15.17.0`, licenza CC0 1.0. Originale, derivato storico con palette del
+progetto, URL, licenza e SHA-256 sono conservati in
 [`assets/art/third_party/pinhead_inline_skate/LICENSE.md`](../assets/art/third_party/pinhead_inline_skate/LICENSE.md).
+Il refresh B18M successivo usa `generated/powerslide.png`, prodotto con ImageGen
+e registrato nel manifest; la silhouette runtime resta esplicitamente un pattino
+inline.
 
 ## Test automatico dedicato
 

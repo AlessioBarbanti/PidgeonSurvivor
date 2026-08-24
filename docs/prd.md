@@ -355,16 +355,20 @@ d'ala su canvas trasparente `48×48`. Una variante speciale antracite, magenta e
 oro con la stessa silhouette viene prodotta per fixture e profili futuri, ma non
 entra nello spawn corrente e non modifica statistiche, collisioni o AI.
 
-Le icone correnti delle otto attive sono la famiglia definitiva della release.
-I VFX sono originali e principalmente procedurali: anelli/crepe per Magno,
-nastro e scintille per Bea, nube/onde e flash accessibile per Zat, archi rotanti per
-Alea, pozza e bolle per Aleo, confetti e palette copiata per Lollo, anelli e
-particelle lente per Migi, clone/cassa/note per Marghe. Ogni asset su file viene
-registrato con origine, autore, licenza, modifiche e hash; la baseline non
-dipende da pacchetti animati esterni o da generazione automatica.
+Le otto attive usano emblemi PNG originali, pixel-art e trasparenti, prodotti con
+OpenAI ImageGen e leggibili anche nel controllo HUD da `42 px`. La stessa texture
+compare in un breve burst di attivazione specifico per abilità; nome, card e
+sfondo rettangolare restano assenti. I VFX di area restano originali e
+principalmente procedurali: anelli/crepe per Magno, nastro e scintille per Bea,
+nube/onde e flash accessibile per Zat, archi rotanti per Alea, pozza e bolle per
+Aleo, confetti e palette copiata per Lollo, anelli e particelle lente per Migi,
+clone/cassa/note per Marghe. Ogni asset su file viene registrato con origine,
+autore, licenza, prompt, trasformazioni e SHA-256.
 L'implementazione usa un solo nodo `CanvasItem` per famiglia, più il breve
-accento figlio di Cosplay, zero materiali custom e il solo overlay fullscreen di
-Zat; per attivazione resta entro `64` elementi particellari logici.
+accento figlio di Cosplay e un solo emblema animato, zero materiali custom e il
+solo overlay fullscreen di Zat; per attivazione resta entro `64` elementi
+particellari logici. Collisioni, raggi, danni, durate e cooldown non dipendono
+dalla presentazione.
 
 Il Player usa sprite laterali destra/sinistra: durante qualsiasi movimento
 alterna i frame di camminata, al neutro mostra la posa ferma e conserva l'ultima
