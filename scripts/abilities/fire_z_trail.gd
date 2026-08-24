@@ -4,6 +4,10 @@ extends Node2D
 signal finished(effect: FireZTrail)
 signal targets_affected(count: int)
 
+const VISUAL_FAMILY_ID := &"powerslide_ribbon_and_sparks"
+const VISUAL_PARTICLE_COUNT := 16
+const VISUAL_MATERIAL_COUNT := 0
+
 var _source: Player
 var _definition: AbilityDefinition
 var _run_controller: RunController
@@ -86,16 +90,37 @@ func _draw() -> void:
 	)
 	draw_polyline(
 		_path_points,
-		Color(1.0, 0.15, 0.02, alpha * 0.35),
+		Color(0.32, 0.04, 0.2, alpha * 0.58),
 		_trail_width,
 		true
 	)
 	draw_polyline(
 		_path_points,
-		Color(1.0, 0.74, 0.08, alpha),
-		maxf(_trail_width * 0.24, 3.0),
+		Color(1.0, 0.42, 0.72, alpha),
+		maxf(_trail_width * 0.34, 4.0),
 		true
 	)
+	var origin := _path_points[0]
+	var destination := _path_points[1]
+	var direction := (destination - origin).normalized()
+	var normal := direction.orthogonal()
+	var elapsed := maxf(_trail_duration_total - _trail_duration_remaining, 0.0)
+	for spark_index in VISUAL_PARTICLE_COUNT:
+		var ratio := (float(spark_index) + 0.5) / float(VISUAL_PARTICLE_COUNT)
+		var phase := elapsed * 7.0 + float(spark_index) * 2.17
+		var center := origin.lerp(destination, ratio)
+		center += normal * sin(phase) * _trail_width * 0.42
+		var spark_size := 2.0 + float(spark_index % 3)
+		var spark_color := Color(1.0, 0.88, 0.36, alpha * (0.55 + 0.4 * sin(phase) ** 2))
+		draw_colored_polygon(
+			PackedVector2Array([
+				center + direction * spark_size * 1.8,
+				center + normal * spark_size,
+				center - direction * spark_size * 1.8,
+				center - normal * spark_size,
+			]),
+			spark_color
+		)
 
 
 func get_points() -> PackedVector2Array:
@@ -112,6 +137,26 @@ func get_duration_remaining() -> float:
 
 func get_trail_duration_remaining() -> float:
 	return _trail_duration_remaining
+
+
+func get_visual_family_id() -> StringName:
+	return VISUAL_FAMILY_ID
+
+
+func get_visual_particle_count() -> int:
+	return VISUAL_PARTICLE_COUNT
+
+
+func get_visual_material_count() -> int:
+	return VISUAL_MATERIAL_COUNT
+
+
+func get_visual_extent() -> float:
+	return _trail_width * 0.5
+
+
+func uses_fullscreen_overlay() -> bool:
+	return false
 
 
 func _build_straight_path(

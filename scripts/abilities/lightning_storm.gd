@@ -20,6 +20,9 @@ const DEFAULT_FLASH_FADE_SECONDS := 0.18
 const DEFAULT_WINDOWS_ALPHA := 0.55
 const DEFAULT_ANDROID_ALPHA := 0.40
 const DEFAULT_REDUCED_ALPHA := 0.15
+const VISUAL_FAMILY_ID := &"thunder_cloud_warning_and_waves"
+const VISUAL_PARTICLE_COUNT := 0
+const VISUAL_MATERIAL_COUNT := 0
 
 var _definition: AbilityDefinition
 var _run_controller: RunController
@@ -168,6 +171,22 @@ func get_impacted_target_ids() -> Array[int]:
 	return _impacted_target_ids.duplicate()
 
 
+func get_visual_family_id() -> StringName:
+	return VISUAL_FAMILY_ID
+
+
+func get_visual_particle_count() -> int:
+	return VISUAL_PARTICLE_COUNT
+
+
+func get_visual_material_count() -> int:
+	return VISUAL_MATERIAL_COUNT
+
+
+func uses_fullscreen_overlay() -> bool:
+	return true
+
+
 static func resolve_flash_max_alpha(
 	reduced_flashes: bool,
 	is_android: bool,
@@ -297,6 +316,17 @@ func _draw_thunder_warning() -> void:
 	var center := _origin if _origin.is_finite() else viewport_size * 0.5
 	var progress := 1.0 - _safe_phase_ratio()
 	var warning_color := Color(0.78, 0.9, 1.0, 0.25 + progress * 0.45)
+	var cloud_color := Color(0.18, 0.22, 0.38, 0.62 + progress * 0.18)
+	for cloud_index in 5:
+		var cloud_offset := Vector2(float(cloud_index - 2) * 16.0, -24.0 - absf(float(cloud_index - 2)) * 3.0)
+		draw_circle(center + cloud_offset, 18.0 - absf(float(cloud_index - 2)) * 1.5, cloud_color)
+	var bolt := PackedVector2Array([
+		center + Vector2(4.0, -18.0),
+		center + Vector2(-8.0, 4.0),
+		center + Vector2(2.0, 2.0),
+		center + Vector2(-5.0, 22.0),
+	])
+	draw_polyline(bolt, Color(1.0, 0.88, 0.28, 0.62 + progress * 0.34), 5.0, true)
 	for ring_index in range(3):
 		var radius := 40.0 + float(ring_index) * 34.0 + progress * 24.0
 		draw_arc(center, radius, -2.55, -0.58, 24, warning_color, 4.0, true)

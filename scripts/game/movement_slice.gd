@@ -1116,11 +1116,12 @@ func _validate_current_contract() -> bool:
 		print("B18J_CONTRACT_OK")
 		print("B18K_CONTRACT_OK")
 		print("B18L_CONTRACT_OK")
+		print("B18M_CONTRACT_OK")
 		return true
 
 	for failure in failures:
 		push_error(failure)
-	printerr("B18G_CONTRACT_FAIL")
+	printerr("B18M_CONTRACT_FAIL")
 	return false
 
 

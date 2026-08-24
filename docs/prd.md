@@ -362,6 +362,9 @@ Alea, pozza e bolle per Aleo, confetti e palette copiata per Lollo, anelli e
 particelle lente per Migi, clone/cassa/note per Marghe. Ogni asset su file viene
 registrato con origine, autore, licenza, modifiche e hash; la baseline non
 dipende da pacchetti animati esterni o da generazione automatica.
+L'implementazione usa un solo nodo `CanvasItem` per famiglia, più il breve
+accento figlio di Cosplay, zero materiali custom e il solo overlay fullscreen di
+Zat; per attivazione resta entro `64` elementi particellari logici.
 
 Il Player usa sprite laterali destra/sinistra: durante qualsiasi movimento
 alterna i frame di camminata, al neutro mostra la posa ferma e conserva l'ultima

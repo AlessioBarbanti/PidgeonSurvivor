@@ -314,7 +314,51 @@ func _execute_random_cosplay(
 	_previous_copied_ability_id = selected.id
 	var copy_rank := clampi(int(definition.effect_parameters.get("copy_rank", 1)), 1, 5)
 	var ranked_copy := selected.resolve_rank(copy_rank)
-	return _execute_definition(ranked_copy, source, false) if ranked_copy != null else null
+	if ranked_copy == null:
+		return null
+	var copied_effect := _execute_definition(ranked_copy, source, false)
+	if copied_effect == null:
+		return null
+	_attach_cosplay_accent(copied_effect, source, selected.effect_id)
+	return copied_effect
+
+
+func _attach_cosplay_accent(
+	copied_effect: Node2D,
+	source: Node2D,
+	copied_effect_id: StringName
+) -> void:
+	var accent := CosplayAccent.new()
+	accent.name = "CosplayAccent"
+	copied_effect.add_child(accent)
+	if not accent.initialize(
+		source.global_position,
+		_run_controller,
+		_get_cosplay_palette(copied_effect_id)
+	):
+		accent.queue_free()
+		return
+	copied_effect.set_meta(&"cosplay_source", RANDOM_COSPLAY)
+	copied_effect.set_meta(&"copied_effect_id", copied_effect_id)
+
+
+func _get_cosplay_palette(effect_id: StringName) -> Color:
+	match effect_id:
+		EARTHQUAKE_SHOCKWAVE:
+			return Color(1.0, 0.72, 0.2, 1.0)
+		FIRE_Z_TRAIL:
+			return Color(1.0, 0.35, 0.72, 1.0)
+		LIGHTNING_STORM:
+			return Color(0.65, 0.86, 1.0, 1.0)
+		GRAND_SPIN:
+			return Color(1.0, 0.32, 0.72, 1.0)
+		CEMENT_POUR:
+			return Color(0.55, 0.88, 0.9, 1.0)
+		ZEN_SLOWDOWN:
+			return Color(0.4, 0.94, 0.78, 1.0)
+		SHADOW_DECEPTION:
+			return Color(0.95, 0.18, 0.72, 1.0)
+	return Color(0.95, 0.3, 0.72, 1.0)
 
 
 func _execute_shadow_deception(

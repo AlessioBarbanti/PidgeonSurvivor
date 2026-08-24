@@ -34,7 +34,7 @@ correzione esplicita **Tempesta di Tuoni** della sessione odierna.
 | L'Ansia, Gossip, Ritardo Cronico, Birra, Non Ho Tempo Per Questo, Grigliata estiva | Approvato | Titoli generici correnti, senza attribuzioni personali aggiuntive |
 | Ritratto hero/Evil CC0 | Approvato come placeholder | Asset temporanei sostituibili dai singoli `FriendDefinition` |
 | Piccioni B18H base/speciale | Approvato e integrato | Due sprite originali OpenAI-assisted del progetto secondo silhouette, palette e animazione definite nel piano; manifest, trasformazioni e hash conservati, nessun input grafico di terzi |
-| Icone e VFX B18M | Baseline operativa da rifinire | Icone correnti conservate; VFX originali e procedurali secondo la grammatica delle otto abilità, con manifest prima del gate |
+| Icone e VFX B18M | Approvato e integrato | Otto icone definitive conservate; VFX originali e procedurali verificati per tutte le abilità su Windows e Pixel 9, con sorgenti, licenze e hash nel manifest dedicato |
 | Citazioni personali dei Boss | Non fornite | La UI usa il placeholder neutro del `BossDefinition`; nessuna citazione personale viene inventata |
 | Audio o voce personale | Non fornito | Il campo resta nullo e il runtime rimane silenzioso |
 

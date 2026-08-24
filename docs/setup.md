@@ -44,6 +44,20 @@ Godot:
 
 Lo smoke test deve stampare `SMOKE_OK` e terminare con codice `0`.
 
+### Manifest degli asset grafici
+
+Quando una slice aggiunge o modifica file grafici, icone o sorgenti VFX
+procedurali, aggiornare il relativo `ASSET-MANIFEST.md` con percorso, origine,
+autore, licenza, trasformazioni e SHA-256. Per calcolare l'hash dalla root:
+
+```powershell
+(Get-FileHash -Algorithm SHA256 '<percorso>').Hash.ToLowerInvariant()
+```
+
+Il manifest è documentazione di sorgente e non deve diventare una dipendenza
+del gioco esportato: gli smoke repository possono verificarlo, mentre i marker
+runtime devono controllare soltanto risorse incluse nel PCK/APK.
+
 ## Export di debug
 
 Gli output sono esclusi da Git. Dalla root del repository:

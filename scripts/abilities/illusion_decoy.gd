@@ -4,6 +4,10 @@ extends Node2D
 signal finished(effect: IllusionDecoy)
 signal targets_affected(count: int)
 
+const VISUAL_FAMILY_ID := &"reggeton_clone_speaker_and_notes"
+const VISUAL_PARTICLE_COUNT := 6
+const VISUAL_MATERIAL_COUNT := 0
+
 var _definition: AbilityDefinition
 var _run_controller: RunController
 var _targeting_system: TargetingSystem
@@ -86,10 +90,36 @@ func _draw() -> void:
 	draw_rect(speaker_rect, Color(0.95, 0.18, 0.72, alpha), false, 2.0, true)
 	draw_circle(Vector2(18.0, -4.0), 2.5 + beat, Color(0.3, 0.9, 1.0, alpha))
 	draw_circle(Vector2(18.0, 6.0), 3.5 + beat, line_color)
+	for note_index in VISUAL_PARTICLE_COUNT:
+		var lane := float(note_index % 3) - 1.0
+		var rise := fmod(elapsed * 18.0 + float(note_index) * 9.0, 44.0)
+		var note_origin := Vector2(18.0 + lane * 12.0 + sin(elapsed * 2.0 + note_index) * 3.0, -14.0 - rise)
+		var note_alpha := alpha * (1.0 - rise / 52.0)
+		var note_color := Color(0.35, 0.92, 1.0, note_alpha)
+		draw_circle(note_origin, 2.8, note_color)
+		draw_line(note_origin + Vector2(2.5, 0.0), note_origin + Vector2(2.5, -10.0), note_color, 2.0, true)
+		if note_index % 2 == 0:
+			draw_line(note_origin + Vector2(2.5, -10.0), note_origin + Vector2(8.0, -7.0), note_color, 2.0, true)
 
 
 func get_duration_remaining() -> float:
 	return _duration_remaining
+
+
+func get_visual_family_id() -> StringName:
+	return VISUAL_FAMILY_ID
+
+
+func get_visual_particle_count() -> int:
+	return VISUAL_PARTICLE_COUNT
+
+
+func get_visual_material_count() -> int:
+	return VISUAL_MATERIAL_COUNT
+
+
+func uses_fullscreen_overlay() -> bool:
+	return false
 
 
 func _redirect_targets() -> void:
