@@ -290,6 +290,31 @@ func _run() -> void:
 
 
 func _validate_layout_math() -> void:
+	_expect(
+		ArenaLayout.is_transient_portrait_window(
+			Vector2i(1080, 2424),
+			DisplayServer.SCREEN_LANDSCAPE,
+			true
+		),
+		"Il passaggio portrait transitorio del lock Android deve conservare il layout landscape stabile."
+	)
+	_expect(
+		not ArenaLayout.is_transient_portrait_window(
+			Vector2i(2424, 1080),
+			DisplayServer.SCREEN_LANDSCAPE,
+			true
+		),
+		"La finestra landscape finale deve aggiornare il layout."
+	)
+	_expect(
+		not ArenaLayout.is_transient_portrait_window(
+			Vector2i(1080, 2424),
+			DisplayServer.SCREEN_LANDSCAPE,
+			false
+		),
+		"Il primo layout non deve restare vuoto anche se Android parte temporaneamente in portrait."
+	)
+
 	var wide_playfield := ArenaLayout.calculate_playfield_rect(
 		Rect2(Vector2.ZERO, Vector2(2000.0, 900.0)),
 		16.0 / 9.0

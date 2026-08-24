@@ -69,11 +69,21 @@ func refresh_layout() -> void:
 
 	var viewport := get_viewport()
 	var viewport_rect := viewport.get_visible_rect()
+	var window_size := DisplayServer.window_get_size()
+	var configured_orientation := int(ProjectSettings.get_setting(
+		"display/window/handheld/orientation",
+		DisplayServer.SCREEN_LANDSCAPE
+	))
+	if is_transient_portrait_window(
+		window_size,
+		configured_orientation,
+		_playfield_rect.has_area()
+	):
+		return
 	var next_safe_area := viewport_rect
 	if respect_display_safe_area:
 		var display_safe_area := DisplayServer.get_display_safe_area()
 		var window_position := DisplayServer.window_get_position()
-		var window_size := DisplayServer.window_get_size()
 		next_safe_area = map_display_safe_area_with_screen_transform(
 			viewport_rect,
 			display_safe_area,
@@ -181,6 +191,19 @@ func clamp_circle_center(point: Vector2, radius: float) -> Vector2:
 	return Vector2(
 		clampf(point.x, minimum.x, maximum.x),
 		clampf(point.y, minimum.y, maximum.y)
+	)
+
+
+static func is_transient_portrait_window(
+	window_size: Vector2i,
+	configured_orientation: int,
+	has_stable_layout: bool
+) -> bool:
+	return (
+		has_stable_layout
+		and configured_orientation == DisplayServer.SCREEN_LANDSCAPE
+		and window_size.x > 0
+		and window_size.y > window_size.x
 	)
 
 

@@ -546,6 +546,8 @@ func _disconnect_arena_layout() -> void:
 
 
 func _on_playfield_changed(_playfield_rect: Rect2) -> void:
+	if is_instance_valid(_run_controller) and not _run_controller.is_running():
+		return
 	_clamp_to_playfield()
 
 

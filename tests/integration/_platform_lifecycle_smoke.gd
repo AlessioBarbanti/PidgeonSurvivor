@@ -165,12 +165,16 @@ func _validate_composed_pause_flow() -> void:
 	var joystick := movement_slice.get_node_or_null("UI/SafeAreaRoot/TouchJoystick") as TouchJoystick
 	var hud := movement_slice.get_node_or_null("UI/SafeAreaRoot/HUD") as GameHud
 	var overlay = movement_slice.get_node_or_null("UI/PauseOverlay")
+	var player := movement_slice.get_node_or_null("World/Player") as Player
+	var arena := movement_slice.get_node_or_null("ArenaLayout") as ArenaLayout
 	_expect(controller != null, "La scena B06A deve contenere RunController.")
 	_expect(router != null, "La scena B06A deve contenere InputRouter.")
 	_expect(lifecycle != null, "La scena B06A deve contenere PlatformLifecycle.")
 	_expect(joystick != null, "La scena B06A deve contenere TouchJoystick.")
 	_expect(hud != null, "La scena B06A deve contenere HUD.")
 	_expect(overlay != null, "La scena B06A deve contenere PauseOverlay.")
+	_expect(player != null, "La scena B06A deve contenere Player.")
+	_expect(arena != null, "La scena B06A deve contenere ArenaLayout.")
 	if (
 		controller == null
 		or router == null
@@ -178,6 +182,8 @@ func _validate_composed_pause_flow() -> void:
 		or joystick == null
 		or hud == null
 		or overlay == null
+		or player == null
+		or arena == null
 	):
 		paused = false
 		movement_slice.queue_free()
@@ -201,6 +207,23 @@ func _validate_composed_pause_flow() -> void:
 	_expect(not joystick.is_active(), "La pausa touch deve liberare il dito catturato.")
 	_expect(router.movement_vector == Vector2.ZERO, "La pausa touch deve azzerare il movimento.")
 	_expect(pause_button.disabled, "PAUSA deve essere disabilitato fuori da RUNNING.")
+
+	var position_before_layout_transition := Vector2(1100.0, 360.0)
+	player.global_position = position_before_layout_transition
+	var stable_playfield := arena.get_playfield_rect()
+	var transient_playfield := Rect2(Vector2(500.0, 0.0), Vector2(280.0, 720.0))
+	arena._playfield_rect = transient_playfield
+	arena.playfield_changed.emit(transient_playfield)
+	_expect(
+		player.global_position == position_before_layout_transition,
+		"Un layout portrait transitorio durante pausa/lock non deve spostare il Player."
+	)
+	arena._playfield_rect = stable_playfield
+	arena.playfield_changed.emit(stable_playfield)
+	_expect(
+		player.global_position == position_before_layout_transition,
+		"Il ripristino landscape prima del resume deve conservare la posizione del Player."
+	)
 
 	var resume_button := overlay.get_resume_button() as Button
 	if resume_button != null:

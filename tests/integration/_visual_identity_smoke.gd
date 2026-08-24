@@ -134,9 +134,10 @@ func _validate_joystick_contract(joystick: TouchJoystick) -> void:
 	_expect_float_near(joystick.base_radius, 84.0, "Il raggio input joystick non deve cambiare.")
 	_expect_float_near(joystick.get_visual_radius(), 68.0, "Il raggio visivo joystick deve essere 68.")
 	_expect(
-		joystick.get_acquisition_rect().size == Vector2(224.0, 224.0),
-		"L'area di acquisizione joystick deve restare 224 x 224."
+		joystick.dynamic_origin and joystick.get_acquisition_rect().size.x > 224.0,
+		"B18L deve sostituire l'area fissa con una zona dinamica piu ampia."
 	)
+	_expect(not joystick.is_visual_visible(), "Il floating joystick deve essere invisibile al neutro.")
 	_expect(joystick.idle_opacity < 0.5, "Il joystick inattivo deve essere meno opaco.")
 	var press := InputEventScreenTouch.new()
 	press.index = 31

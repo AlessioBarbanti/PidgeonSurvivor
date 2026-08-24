@@ -23,6 +23,14 @@ const DEBUG_MOUSE_POINTER := -2
 		knob_radius = maxf(value, 1.0)
 		queue_redraw()
 
+@export_group("Dynamic origin")
+@export var dynamic_origin := false:
+	set(value):
+		dynamic_origin = value
+		if is_node_ready():
+			_update_mouse_filter()
+			reset_input()
+
 @export_group("Visibility")
 @export var debug_mode_in_editor := false:
 	set(value):
@@ -61,11 +69,15 @@ var active_finger_index: int:
 var _active_pointer := NO_POINTER
 var _movement_vector := Vector2.ZERO
 var _knob_offset := Vector2.ZERO
+var _capture_enabled := false
+var _capture_rect := Rect2()
+var _origin_viewport_position := Vector2.ZERO
+var _origin_validator := Callable()
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	mouse_filter = Control.MOUSE_FILTER_STOP
+	_update_mouse_filter()
 	_update_platform_visibility()
 	queue_redraw()
 
@@ -100,7 +112,21 @@ func _gui_input(event: InputEvent) -> void:
 		_handle_debug_mouse_motion(event as InputEventMouseMotion)
 
 
+func _input(event: InputEvent) -> void:
+	if not dynamic_origin or not _capture_enabled:
+		return
+	if get_tree().paused or not is_visible_in_tree():
+		return
+
+	if event is InputEventScreenTouch:
+		_handle_dynamic_screen_touch(event as InputEventScreenTouch)
+	elif event is InputEventScreenDrag:
+		_handle_dynamic_screen_drag(event as InputEventScreenDrag)
+
+
 func _draw() -> void:
+	if dynamic_origin and not is_active():
+		return
 	var center := size * 0.5
 	var opacity_multiplier := 1.0 if is_active() else idle_opacity
 	var visible_base_color := _color_with_alpha_multiplier(base_color, opacity_multiplier)
@@ -135,6 +161,50 @@ func reset_input() -> void:
 	queue_redraw()
 
 
+func configure_dynamic_capture(
+	capture_rect: Rect2,
+	origin_validator: Callable = Callable()
+) -> void:
+	_capture_rect = capture_rect
+	_origin_validator = origin_validator
+	if is_active():
+		global_position = _origin_viewport_position - size * 0.5
+	if is_active() and not _capture_enabled:
+		reset_input()
+
+
+func set_capture_enabled(enabled: bool) -> void:
+	_capture_enabled = enabled
+	if not _capture_enabled:
+		reset_input()
+
+
+func is_capture_enabled() -> bool:
+	return _capture_enabled
+
+
+func get_capture_rect() -> Rect2:
+	return _capture_rect
+
+
+func get_origin_viewport_position() -> Vector2:
+	return _origin_viewport_position
+
+
+func is_visual_visible() -> bool:
+	return is_visible_in_tree() and (not dynamic_origin or is_active())
+
+
+func accepts_origin(viewport_position: Vector2) -> bool:
+	if not dynamic_origin or not _capture_enabled or not _capture_rect.has_area():
+		return false
+	if not _capture_rect.has_point(viewport_position):
+		return false
+	if _origin_validator.is_valid():
+		return bool(_origin_validator.call(viewport_position))
+	return true
+
+
 func is_active() -> bool:
 	return _active_pointer != NO_POINTER
 
@@ -144,6 +214,8 @@ func get_visual_radius() -> float:
 
 
 func get_acquisition_rect() -> Rect2:
+	if dynamic_origin:
+		return _capture_rect
 	return Rect2(Vector2.ZERO, size)
 
 
@@ -173,6 +245,38 @@ func _handle_screen_drag(event: InputEventScreenDrag) -> void:
 	accept_event()
 
 
+func _handle_dynamic_screen_touch(event: InputEventScreenTouch) -> void:
+	if event.canceled:
+		if event.index == _active_pointer:
+			reset_input()
+			_mark_viewport_input_handled()
+		return
+
+	if event.pressed:
+		if _active_pointer != NO_POINTER or not accepts_origin(event.position):
+			return
+		_active_pointer = event.index
+		_origin_viewport_position = event.position
+		global_position = _origin_viewport_position - size * 0.5
+		activity_changed.emit(true)
+		_update_dynamic_pointer(event.position)
+		_mark_viewport_input_handled()
+	elif event.index == _active_pointer:
+		reset_input()
+		_mark_viewport_input_handled()
+
+
+func _handle_dynamic_screen_drag(event: InputEventScreenDrag) -> void:
+	if event.index != _active_pointer:
+		return
+	_update_dynamic_pointer(event.position)
+	_mark_viewport_input_handled()
+
+
+func _update_dynamic_pointer(viewport_position: Vector2) -> void:
+	_update_offset(viewport_position - _origin_viewport_position)
+
+
 func _handle_debug_mouse_button(event: InputEventMouseButton) -> void:
 	if event.button_index != MOUSE_BUTTON_LEFT:
 		return
@@ -197,7 +301,10 @@ func _handle_debug_mouse_motion(event: InputEventMouseMotion) -> void:
 
 
 func _update_pointer(local_position: Vector2) -> void:
-	var raw_offset := local_position - size * 0.5
+	_update_offset(local_position - size * 0.5)
+
+
+func _update_offset(raw_offset: Vector2) -> void:
 	_knob_offset = raw_offset.limit_length(base_radius)
 
 	var normalized_distance := minf(_knob_offset.length() / base_radius, 1.0)
@@ -232,6 +339,21 @@ func _update_platform_visibility() -> void:
 	visible = should_be_visible
 	if not should_be_visible:
 		reset_input()
+
+
+func _update_mouse_filter() -> void:
+	# Il floating joystick usa _input per osservare l'intero viewport. Lasciare il
+	# Control in STOP intercetterebbe il secondo dito destinato all'abilita.
+	mouse_filter = (
+		Control.MOUSE_FILTER_IGNORE
+		if dynamic_origin
+		else Control.MOUSE_FILTER_STOP
+	)
+
+
+func _mark_viewport_input_handled() -> void:
+	if is_inside_tree():
+		get_viewport().set_input_as_handled()
 
 
 func _is_editor_debug_mode() -> bool:

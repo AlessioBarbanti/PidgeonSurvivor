@@ -54,6 +54,7 @@ func _ready() -> void:
 	_input_router.bind_active_ability_button(_hud.get_active_ability_button())
 	_input_router.movement_vector_changed.connect(_on_movement_vector_changed)
 	_arena_layout.playfield_changed.connect(_on_playfield_changed)
+	_run_controller.state_changed.connect(_on_run_state_changed_for_joystick)
 	_player.died.connect(_on_player_died)
 	_run_controller.run_ended.connect(_on_run_ended)
 	_boss_encounter.boss_defeated.connect(_on_boss_defeated)
@@ -208,6 +209,34 @@ func _on_playfield_changed(_playfield_rect: Rect2) -> void:
 	_apply_layout()
 
 
+func _on_run_state_changed_for_joystick(
+	_previous_state: RunController.RunState,
+	current_state: RunController.RunState
+) -> void:
+	_touch_joystick.set_capture_enabled(
+		current_state == RunController.RunState.RUNNING
+	)
+
+
+func _is_dynamic_joystick_origin_valid(viewport_position: Vector2) -> bool:
+	if not _run_controller.is_running():
+		return false
+	if _hud.is_touch_origin_excluded(viewport_position):
+		return false
+	if (
+		_boss_ui.is_boss_health_visible()
+		and _boss_ui.get_boss_health_panel_rect().has_point(viewport_position)
+	):
+		return false
+	return not (
+		_upgrade_overlay.visible
+		or _character_select_overlay.visible
+		or _pause_overlay.visible
+		or _end_screen.visible
+		or _boss_ui.is_intro_visible()
+	)
+
+
 func _apply_layout() -> void:
 	var safe_area := _arena_layout.get_safe_area_rect()
 	if not safe_area.has_area():
@@ -224,6 +253,14 @@ func _apply_layout() -> void:
 	)
 	_touch_joystick.position = joystick_rect.position - safe_area.position
 	_touch_joystick.size = joystick_rect.size
+	_touch_joystick.configure_dynamic_capture(
+		calculate_dynamic_joystick_capture_rect(
+			safe_area,
+			joystick_edge_padding,
+			gesture_navigation_padding
+		),
+		_is_dynamic_joystick_origin_valid
+	)
 	_arena_view.update_layout(
 		safe_area,
 		_arena_layout.get_playfield_rect()
@@ -248,6 +285,10 @@ func get_touch_joystick_viewport_rect() -> Rect2:
 		_safe_area_root.position + _touch_joystick.position,
 		_touch_joystick.size
 	)
+
+
+func get_touch_joystick_capture_rect() -> Rect2:
+	return _touch_joystick.get_capture_rect() if is_node_ready() else Rect2()
 
 
 static func calculate_bottom_left_control_rect(
@@ -276,6 +317,33 @@ static func calculate_bottom_left_control_rect(
 			safe_area.end.y - fitted_size.y - applied_padding.y
 		),
 		fitted_size
+	)
+
+
+static func calculate_dynamic_joystick_capture_rect(
+	safe_area: Rect2,
+	edge_padding: Vector2,
+	gesture_padding: Vector2
+) -> Rect2:
+	if not safe_area.has_area():
+		return Rect2(safe_area.position, Vector2.ZERO)
+
+	var left_margin := maxf(edge_padding.x, 0.0) + maxf(
+		gesture_padding.x,
+		0.0
+	)
+	var right_margin := left_margin
+	var top_margin := maxf(edge_padding.y, 0.0)
+	var bottom_margin := top_margin + maxf(gesture_padding.y, 0.0)
+	var available_size := safe_area.size - Vector2(
+		left_margin + right_margin,
+		top_margin + bottom_margin
+	)
+	if available_size.x <= 0.0 or available_size.y <= 0.0:
+		return Rect2(safe_area.get_center(), Vector2.ZERO)
+	return Rect2(
+		safe_area.position + Vector2(left_margin, top_margin),
+		available_size
 	)
 
 
@@ -511,6 +579,12 @@ func _validate_current_contract() -> bool:
 		failures.append("InputMap privo di active_ability.")
 	if not _arena_layout.get_playfield_rect().has_area():
 		failures.append("ArenaLayout non ha prodotto un playfield valido.")
+	if not _touch_joystick.dynamic_origin:
+		failures.append("B18L richiede il joystick dinamico.")
+	elif not _touch_joystick.get_capture_rect().has_area():
+		failures.append("B18L richiede una zona di acquisizione dinamica valida.")
+	elif _touch_joystick.mouse_filter != Control.MOUSE_FILTER_IGNORE:
+		failures.append("B18L non deve intercettare il secondo dito via GUI.")
 	if _player.get_arena_layout() != _arena_layout:
 		failures.append("Player non collegato ad ArenaLayout.")
 	if _player.get_run_controller() != _run_controller:
@@ -970,11 +1044,14 @@ func _validate_current_contract() -> bool:
 		print("B18C_CONTRACT_OK")
 		print("B18D_CONTRACT_OK")
 		print("B18F_CONTRACT_OK")
+		print("B18I_CONTRACT_OK")
+		print("B18K_CONTRACT_OK")
+		print("B18L_CONTRACT_OK")
 		return true
 
 	for failure in failures:
 		push_error(failure)
-	printerr("B18F_CONTRACT_FAIL")
+	printerr("B18L_CONTRACT_FAIL")
 	return false
 
 
