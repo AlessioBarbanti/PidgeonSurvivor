@@ -282,19 +282,15 @@ func _draw_death_burst(effect: Dictionary, progress: float) -> void:
 	color.a *= fade
 	draw_circle(center, radius * (1.0 - progress) * 0.82, color)
 	draw_arc(center, radius * (0.8 + progress * 1.45), 0.0, TAU, 24, color, 2.4, true)
+	if fade <= 0.001:
+		return
 	var seed_angle := _seed_angle(int(effect["seed"]))
 	for index in range(9):
 		var direction := Vector2.RIGHT.rotated(seed_angle + TAU * float(index) / 9.0)
 		var distance := radius * (0.4 + progress * (1.35 + 0.08 * float(index % 3)))
 		var particle_center := center + direction * distance
-		var tangent := direction.orthogonal() * radius * 0.12 * fade
 		var particle_size := radius * (0.2 + 0.06 * float(index % 2)) * fade
-		var triangle := PackedVector2Array([
-			particle_center + direction * particle_size,
-			particle_center - direction * particle_size * 0.55 + tangent,
-			particle_center - direction * particle_size * 0.55 - tangent,
-		])
-		draw_colored_polygon(triangle, color)
+		draw_circle(particle_center, maxf(particle_size * 0.7, 0.5), color)
 
 
 func _draw_player_damage(effect: Dictionary, progress: float) -> void:
