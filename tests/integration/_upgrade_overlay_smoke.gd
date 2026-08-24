@@ -214,8 +214,12 @@ func _validate_composed_input_and_queue() -> void:
 	_expect(not overlay.visible, "L'ultima conferma deve nascondere l'overlay.")
 	_expect(joystick.visible, "L'ultima conferma deve ripristinare il joystick.")
 	var acquired_rank_total := 0
-	for rank_value: Variant in service.get_ranks().values():
-		acquired_rank_total += int(rank_value)
+	for upgrade_id_value: Variant in service.get_ranks():
+		var definition := service.get_registry().resolve_definition(
+			StringName(str(upgrade_id_value))
+		)
+		var initial_rank := definition.initial_rank if definition != null else 0
+		acquired_rank_total += int(service.get_ranks()[upgrade_id_value]) - initial_rank
 	_expect(acquired_rank_total == 4, "Quattro eventi distinti devono produrre esattamente quattro rank.")
 
 	# Senza offerta attiva, click ripetuti e submit diretti non applicano altro.

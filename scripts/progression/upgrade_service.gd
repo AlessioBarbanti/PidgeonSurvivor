@@ -24,6 +24,7 @@ var _draw_count := 0
 var _current_offer: Array[UpgradeDefinition] = []
 var _active_offer_level := 0
 var _ranks: Dictionary = {}
+var _equipped_ability_id: StringName
 
 
 func _init() -> void:
@@ -78,6 +79,7 @@ func generate_offer(level: int) -> Array[UpgradeDefinition]:
 		return []
 
 	var primary_candidates := _registry.get_eligible_definitions(_ranks)
+	_filter_ability_rank_candidates(primary_candidates)
 	var next_offer := _draw_weighted_without_replacement(
 		primary_candidates,
 		mini(offer_size, primary_candidates.size())
@@ -146,7 +148,24 @@ func get_current_offer_ids() -> Array[StringName]:
 
 
 func get_rank(upgrade_id: StringName) -> int:
-	return UpgradeDefinition.get_rank_from(_ranks, upgrade_id)
+	var definition := _registry.resolve_definition(upgrade_id) if is_instance_valid(_registry) else null
+	return (
+		definition.get_current_rank(_ranks)
+		if definition != null
+		else UpgradeDefinition.get_rank_from(_ranks, upgrade_id)
+	)
+
+
+func set_equipped_ability_id(ability_id: StringName) -> bool:
+	if not ability_id.is_empty() and not UpgradeDefinition.is_valid_id(ability_id):
+		return false
+	_equipped_ability_id = ability_id
+	_clear_current_offer()
+	return true
+
+
+func get_equipped_ability_id() -> StringName:
+	return _equipped_ability_id
 
 
 func get_ranks() -> Dictionary:
@@ -210,6 +229,16 @@ func _remove_ids(
 		selected_ids[definition.id] = true
 	for index in range(candidates.size() - 1, -1, -1):
 		if selected_ids.has(candidates[index].id):
+			candidates.remove_at(index)
+
+
+func _filter_ability_rank_candidates(candidates: Array[UpgradeDefinition]) -> void:
+	for index in range(candidates.size() - 1, -1, -1):
+		var definition := candidates[index]
+		if definition.effect_id != &"ability_rank":
+			continue
+		var ability_id := StringName(str(definition.effect_parameters.get("ability_id", "")))
+		if ability_id != _equipped_ability_id:
 			candidates.remove_at(index)
 
 

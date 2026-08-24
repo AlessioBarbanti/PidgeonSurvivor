@@ -193,8 +193,8 @@ func _validate_composed_level_flow() -> void:
 			ability.set_process(false)
 
 	_expect(
-		registry.get_definitions().size() == 11,
-		"Il catalogo composto deve avere otto primarie e tre fallback."
+		registry.get_definitions().size() == 19,
+		"Il catalogo composto deve avere sedici primarie e tre fallback."
 	)
 	_expect(service.get_current_offer().is_empty(), "Una run senza level-up non deve anticipare carte.")
 	_expect(experience.add_experience(45), "La scena composta deve attraversare tre soglie.")
@@ -208,8 +208,10 @@ func _validate_composed_level_flow() -> void:
 			break
 
 	var acquired_rank_total := 0
-	for rank_value: Variant in service.get_ranks().values():
-		acquired_rank_total += int(rank_value)
+	for upgrade_id_value: Variant in service.get_ranks():
+		var definition := registry.resolve_definition(StringName(str(upgrade_id_value)))
+		var initial_rank := definition.initial_rank if definition != null else 0
+		acquired_rank_total += int(service.get_ranks()[upgrade_id_value]) - initial_rank
 	_expect(
 		controller.is_running()
 		and experience.pending_level_ups == 0

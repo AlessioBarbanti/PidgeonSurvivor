@@ -1,4 +1,4 @@
-[gd_scene load_steps=77 format=3]
+[gd_scene load_steps=85 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -76,6 +76,14 @@
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/defeat.ogg" id="75_defeat"]
 [ext_resource type="Script" path="res://scripts/vfx/combat_feedback.gd" id="76_feedback"]
 [ext_resource type="Script" path="res://scripts/app/visual_accessibility_settings.gd" id="77_accessibility"]
+[ext_resource type="Resource" path="res://data/upgrades/ability_rank_magno_earthquake_shockwave.tres" id="78_rank_magno"]
+[ext_resource type="Resource" path="res://data/upgrades/ability_rank_bea_fire_z_trail.tres" id="79_rank_bea"]
+[ext_resource type="Resource" path="res://data/upgrades/ability_rank_zat_lightning_storm.tres" id="80_rank_zat"]
+[ext_resource type="Resource" path="res://data/upgrades/ability_rank_alea_grand_spin.tres" id="81_rank_alea"]
+[ext_resource type="Resource" path="res://data/upgrades/ability_rank_aleo_cement_pour.tres" id="82_rank_aleo"]
+[ext_resource type="Resource" path="res://data/upgrades/ability_rank_lollo_random_cosplay.tres" id="83_rank_lollo"]
+[ext_resource type="Resource" path="res://data/upgrades/ability_rank_migi_zen_slowdown.tres" id="84_rank_migi"]
+[ext_resource type="Resource" path="res://data/upgrades/ability_rank_marghe_shadow_deception.tres" id="85_rank_marghe"]
 
 [node name="MovementSlice" type="Control"]
 layout_mode = 3
@@ -156,7 +164,7 @@ experience_curve = ExtResource("16_experience_curve")
 [node name="UpgradeRegistry" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("21_upgrade_registry")
-definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"), ExtResource("24_rapid_fire"), ExtResource("25_wide_magnet"), ExtResource("31_anxiety_signature"), ExtResource("32_gossip_projectiles"), ExtResource("33_chronic_delay"), ExtResource("34_beer_signature"), ExtResource("35_damage_shockwave"), ExtResource("26_fallback_power"), ExtResource("27_fallback_haste"), ExtResource("28_fallback_reach")])
+definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"), ExtResource("24_rapid_fire"), ExtResource("25_wide_magnet"), ExtResource("31_anxiety_signature"), ExtResource("32_gossip_projectiles"), ExtResource("33_chronic_delay"), ExtResource("34_beer_signature"), ExtResource("35_damage_shockwave"), ExtResource("78_rank_magno"), ExtResource("79_rank_bea"), ExtResource("80_rank_zat"), ExtResource("81_rank_alea"), ExtResource("82_rank_aleo"), ExtResource("83_rank_lollo"), ExtResource("84_rank_migi"), ExtResource("85_rank_marghe"), ExtResource("26_fallback_power"), ExtResource("27_fallback_haste"), ExtResource("28_fallback_reach")])
 
 [node name="UpgradeService" type="Node" parent="."]
 unique_name_in_owner = true

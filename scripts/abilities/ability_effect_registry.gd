@@ -30,6 +30,7 @@ var _visual_settings: VisualAccessibilitySettings
 var _active_effects: Array[Node2D] = []
 var _last_affected_count := 0
 var _last_copied_ability_id: StringName
+var _previous_copied_ability_id: StringName
 var _execution_serial := 0
 var _rng := RandomNumberGenerator.new()
 
@@ -121,6 +122,7 @@ func clear_active_effects() -> void:
 			effect.queue_free()
 	_last_affected_count = 0
 	_last_copied_ability_id = &""
+	_previous_copied_ability_id = &""
 
 
 func get_active_effect_count() -> int:
@@ -302,9 +304,17 @@ func _execute_random_cosplay(
 	var candidates := _get_cosplay_candidates(definition)
 	if candidates.is_empty():
 		return null
+	var avoid_repeat := definition.effect_parameters.get("avoid_repeat", false) as bool
+	if avoid_repeat and candidates.size() > 1 and not _previous_copied_ability_id.is_empty():
+		for index in range(candidates.size() - 1, -1, -1):
+			if candidates[index].id == _previous_copied_ability_id:
+				candidates.remove_at(index)
 	var selected := candidates[_rng.randi_range(0, candidates.size() - 1)]
 	_last_copied_ability_id = selected.id
-	return _execute_definition(selected, source, false)
+	_previous_copied_ability_id = selected.id
+	var copy_rank := clampi(int(definition.effect_parameters.get("copy_rank", 1)), 1, 5)
+	var ranked_copy := selected.resolve_rank(copy_rank)
+	return _execute_definition(ranked_copy, source, false) if ranked_copy != null else null
 
 
 func _execute_shadow_deception(

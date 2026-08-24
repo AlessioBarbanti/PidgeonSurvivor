@@ -2,7 +2,7 @@
 
 Fonte: [`prd.md`](./prd.md)  
 Decisioni: [`decision-log.md`](./decision-log.md)  
-Stato: il ciclo operativo corrente è B18C–B18M. B18C, B18D, B18F, B18I, B18K e B18L sono completati con tutti i gate automatici, Windows e Pixel 9 chiusi. B18E, B18G, B18H, B18J e B18M hanno contratti sufficienti per iniziare. B19 resta bloccato fino al freeze dell'intero ciclo e alla chiusura dei gate Windows/Android pertinenti
+Stato: il ciclo operativo corrente è B18C–B18M. B18C, B18D, B18F, B18I, B18K e B18L sono completati con tutti i gate automatici, Windows e Pixel 9 chiusi. B18E e B18G sono in verifica con implementazione, regressioni, Windows ed export Android statico chiusi, ma attendono il rispettivo gate Pixel 9. B18H, B18J e B18M hanno contratti sufficienti per iniziare. B19 resta bloccato fino al freeze dell'intero ciclo e alla chiusura dei gate Windows/Android pertinenti
 Obiettivo: trasformare il concept in un MVP completo, verificabile su Windows e Android; Web resta un target secondario
 
 Fonte di verità operativa: questo documento contiene roadmap, stato e ordine delle prossime attività. Eventuali note temporanee devono essere integrate qui e poi rimosse.
@@ -355,7 +355,7 @@ Priorità: `P0` indispensabile per l'MVP, `P1` indispensabile per la prima pubbl
 | B18B | Identità visiva, HUD compatto e combat feedback | P1 | 5 | B17A, B18 | HUD e controlli lasciano priorità al campo di gioco; arena non sembra una vista debug; colpi, danni e morti hanno feedback leggibile e coerente senza richiedere nuovi asset nella prima iterazione |
 | B18C | Player animato e direzione persistente | P1 | 5 | B17A, B18B | Cannoncino e fondo circolare rimossi; gli otto profili animano fasi laterali durante il movimento, mostrano una posa ferma al neutro ed espongono lato orizzontale e vettore dell'ultimo movimento alle abilità |
 | B18D | Powerslide direzionale di Bea | P1 | 5 | B17A, B18C | Nome e icona inline-skate; teletrasporto rettilineo nella direzione persistente e scia dati da 4 s; pausa, input successivo e restart non deviano né lasciano effetti residui |
-| B18E | Fulmini di Zat | P1 | 5 | B17A, B18B | Preavviso e flash accessibile sull'intero viewport precedono il danno ritardato a tutti i nemici validi; cooldown, pausa, Boss e cleanup rispettano i dati approvati |
+| B18E | Tuoni di Zat | P1 | 5 | B17A, B18B | Preavviso e flash accessibile sull'intero viewport precedono il danno ritardato a tutti i nemici validi; cooldown, pausa, Boss e cleanup rispettano i dati approvati |
 | B18F | Gran Piroetta inseguitrice di Alea | P1 | 3 | B17A | L'area segue il Player per tutta la durata; pausa, termine, restart e cambio profilo non lasciano posizione o stato residuo |
 | B18G | Rank delle abilità principali | P1 | 8 | B10–B13, B17A | Tutte le otto abilità hanno cinque rank dichiarativi specifici, entrano nel level-up senza duplicati e si azzerano fra le run |
 | B18H | Nemici piccione | P1 | 3 | B04, B17, B18B | Le sfere rosse sono sostituite da asset uccello approvati per variante base e speciale senza cambiare comportamento, collisioni, danno o spawn |
@@ -440,9 +440,9 @@ significato:
 |---|---|---|---|
 | B18C | Player animato e direzione persistente | COMPLETATO | Gate Windows e Pixel 9 chiusi il 24 agosto 2026 |
 | B18D | Powerslide di Bea | COMPLETATO | Gate Windows e Pixel 9 chiusi il 24 agosto 2026 |
-| B18E | Fulmini di Zat | PRONTO | Gate accessibilità, viewport e runtime Android reale |
+| B18E | Tuoni di Zat | IN VERIFICA | Gate automatici, Windows e Android statico chiusi; runtime Pixel 9 ancora da verificare |
 | B18F | Abilità inseguitrice di Alea | COMPLETATO | Gate Windows e Pixel 9 chiusi il 24 agosto 2026 |
-| B18G | Rank delle abilità principali | PRONTO | Implementazione dei profili rank e integrazione level-up |
+| B18G | Rank delle abilità principali | IN VERIFICA | Gate automatici, Windows e Android statico chiusi; runtime Pixel 9 ancora da verificare |
 | B18H | Nemici piccione | PRONTO | Produzione degli sprite originali base e speciale |
 | B18I | XP confinato nell'arena | COMPLETATO | Gate chiusi; commit dedicato `e58cbd0` |
 | B18J | Grigliata estiva | PRONTO | Implementazione dati, cura del delta e reset |
@@ -495,9 +495,9 @@ Stato: `COMPLETATO`.
 
 Dettagli ed evidenze: [`b18d-verification.md`](./b18d-verification.md).
 
-#### B18E — Fulmini di Zat
+#### B18E — Tuoni di Zat
 
-Stato: `PRONTO`.
+Stato: `IN VERIFICA`.
 
 Sequenza richiesta:
 
@@ -519,12 +519,18 @@ Contratto definitivo:
 - [x] Il flash usa alpha massimo `0,55` su Windows e `0,40` su Android, con
   salita `0,06 s`, tenuta `0,06 s` e dissolvenza `0,18 s`.
 - [x] L'opzione persistente **Flash ridotti** porta l'alpha massimo a `0,15`,
-  elimina la tenuta e conserva preavviso, sagoma del fulmine, audio e danno.
+  elimina la tenuta e conserva preavviso, onde del tuono, audio e danno.
   È modificabile dal menu pausa e non cambia il bilanciamento.
 - [x] Target e percentuali sono fotografati all'impatto, non all'attivazione;
   ogni bersaglio vivo viene processato una volta. Cooldown, preavviso e flash
   avanzano soltanto in `RUNNING` e vengono rimossi a morte, cambio profilo o
   restart.
+- [x] Smoke dedicato `B18E_ZAT_THUNDER_STORM_SMOKE_OK`, regressione completa
+  `28/28`, project smoke, export e runtime Windows, export Android statico.
+- [ ] Gate Pixel 9: multitouch, flash standard/ridotto, 20:9, lifecycle e
+  cleanup reale.
+
+Dettagli ed evidenze: [`b18e-verification.md`](./b18e-verification.md).
 
 #### B18F — Abilità inseguitrice di Alea
 
@@ -545,7 +551,7 @@ Dettagli ed evidenze: [`b18f-verification.md`](./b18f-verification.md).
 
 #### B18G — Rank delle abilità principali
 
-Stato: `PRONTO`.
+Stato: `IN VERIFICA`.
 
 - [x] Ogni attiva parte al rank `1`; il level-up può offrire soltanto i quattro
   passaggi `2–5` dell'abilità equipaggiata. Al rank `5` la carta non è più
@@ -565,7 +571,7 @@ Valori autorevoli (`cd` in secondi; distanze e raggi in unità logiche mondo):
 |---|---|---|---|---|---|
 | Onda d'Urto Tellurica | `cd 8`, danno `20`, raggio `220`, knockback `300` | danno `26` | raggio `260` | `cd 7`, stun `0,25` | danno `36`, raggio `280`, knockback `380` |
 | Powerslide | `cd 10`, distanza `320`, scia `4 s`, danno `6`, larghezza `40` | danno `8` | distanza `380`, larghezza `48` | `cd 9`, scia `5 s` | distanza `440`, danno `11`, larghezza `56` |
-| Tempesta di Fulmini | `cd 60`, normali `50%`, Boss `20%` | normali `55%` | `cd 55`, Boss `22%` | normali `60%`, Boss `24%` | `cd 50`, normali `70%`, Boss `28%` |
+| Tempesta di Tuoni | `cd 60`, normali `50%`, Boss `20%` | normali `55%` | `cd 55`, Boss `22%` | normali `60%`, Boss `24%` | `cd 50`, normali `70%`, Boss `28%` |
 | Gran Piroetta | `cd 9`, `1,2 s`, danno `5`, `12 hit/s`, raggio `140` | danno `6` | `1,4 s`, raggio `165` | `cd 8`, `14 hit/s` | `1,6 s`, danno `8`, raggio `180` |
 | Colata di Cemento | `cd 12`, `4 s`, danno `3/0,5 s`, raggio `200`, velocità nemici `×0,50` | danno `4/0,5 s` | `5 s`, raggio `230` | `cd 11`, velocità `×0,40` | `6 s`, danno `6/0,5 s`, raggio `250` |
 | Cosplay Casuale | `cd 14`, copia rank `1` | `cd 13` | copia rank `2` | `cd 12`, non ripete l'ultima abilità se esiste un'alternativa | `cd 11`, copia rank `3`, stessa regola anti-ripetizione |
@@ -575,6 +581,19 @@ Valori autorevoli (`cd` in secondi; distanze e raggi in unità logiche mondo):
 Le celle successive ereditano i valori non citati dalla colonna precedente.
 Cosplay risolve il profilo copiato al rank indicato, sempre con i filtri di
 compatibilità e anti-ricorsione; non assegna rank alle altre abilità.
+
+- [x] Cinque snapshot completi e immutabili dichiarati per ciascuna delle otto
+  abilità; applicazione runtime senza mutare le risorse condivise.
+- [x] Una sola carta autorevole per l'abilità equipaggiata, quattro passaggi
+  `2–5`, ID unico, cap, reset e cambio personaggio integrati nel level-up.
+- [x] Cooldown ed effetto già iniziati conservano lo snapshot di attivazione;
+  Cosplay copia il rank dichiarato e applica l'anti-ripetizione dai rank `4–5`.
+- [x] Smoke `B18G_ABILITY_RANKS_SMOKE_OK`, regressione completa `29/29`, project
+  smoke, export e runtime Windows, export Android statico ARM64.
+- [ ] Gate Pixel 9: tap reali sui passaggi rank, scomparsa al cap, nuovo profilo
+  dalla successiva attivazione, lifecycle, restart e cambio personaggio puliti.
+
+Dettagli ed evidenze: [`b18g-verification.md`](./b18g-verification.md).
 
 #### B18H — Nemici piccione
 
@@ -685,7 +704,7 @@ Stato: `PRONTO`.
   conserva il pittogramma Pinhead CC0 già registrato. B18M può rifinirne
   spessori e palette senza cambiare silhouette, viewBox o hit target B18K.
 - [x] Linguaggio VFX: Magno usa crepe e anelli tellurici; Bea scia a nastro con
-  scintille; Zat sagoma di fulmine, preavviso e flash accessibile; Alea archi
+  scintille; Zat nube e onde del tuono, preavviso e flash accessibile; Alea archi
   rotanti; Aleo pozza grigio-ciano con bordo e bolle; Lollo confetti più palette
   dell'abilità copiata; Migi anelli concentrici e particelle lente; Marghe clone,
   cassa e note musicali. Gli effetti alleati restano sotto telegraph e proiettili
@@ -725,7 +744,7 @@ Gate comuni del ciclo:
 - risoluzione di `AbilityDefinition`, parametri e tag; Cosplay Casuale non copia sé stessa né abilità incompatibili;
 - risoluzione `FriendDefinition → passiva → AbilityDefinition`, selezione degli otto ID e seed deterministico per passive/copie casuali;
 - valori e cap dei cinque rank per ciascuna abilità, eleggibilità senza duplicati e reset completo fra due run;
-- Fulmini di Zat: finestra preavviso/impatto, selezione dei nemici validi e danno percentuale distinto per Boss;
+- Tuoni di Zat: finestra preavviso/impatto, selezione dei nemici validi e danno percentuale distinto per Boss;
 - Grigliata estiva: aumento di `health_max`, cura esatta della differenza, stacking e cap;
 - scheduler Boss con pausa, salti di soglia e restart;
 - priorità delle sorgenti `InputRouter`, deadzone, normalizzazione, ownership del dito, aree touch escluse e reset completo del touch;
@@ -811,8 +830,8 @@ Ordine operativo immediato:
    regressione lock/resume emersa e chiusa sul Pixel 9; i gate tecnici e manuali
    delle tre slice sono già chiusi;
 2. chiudere i gate manuali residui B18B a 20:9 e 4:3;
-3. implementare e verificare B18E dal contratto congelato: `60 s` al rank `1`, preavviso `0,45 s`, flash singolo accessibile sull'intero viewport, target risolti all'impatto, percentuali normali/Boss, pausa e cleanup;
-4. implementare e verificare B18G e B18J sul framework level-up: snapshot specifici fino al rank `5`, offerte senza duplicati, aumento HP `×1,15` con cura del delta, stacking, cap e reset della run;
+3. chiudere il gate Pixel 9 di B18E già implementato: multitouch, flash standard/ridotto, 20:9, lifecycle e cleanup reale;
+4. chiudere il gate Pixel 9 di B18G già implementato, quindi implementare e verificare B18J sul framework level-up: aumento HP `×1,15` con cura del delta, stacking, cap e reset della run;
 5. completare B18H e B18M dalla direzione originale approvata: piccioni base/speciale, VFX procedurali e icone coerenti, con manifest e budget Android;
 6. eseguire il gate combinato B17A–B18M su Windows e Pixel 9, il gate percettivo B18 con Boss a `04:00`/`2400 HP` e la matrice 16:9/20:9/4:3; avviare B19 solo dopo il freeze documentato dell'intero ciclo.
 
@@ -866,6 +885,8 @@ Powerslide direzionale di Bea, asset CC0 e gate B18D sono registrati in
 [`b18d-verification.md`](./b18d-verification.md).
 Gran Piroetta inseguitrice di Alea e gate residuo Android sono registrati in
 [`b18f-verification.md`](./b18f-verification.md).
+Rank dichiarativi delle otto abilità, integrazione level-up e gate residuo
+Android sono registrati in [`b18g-verification.md`](./b18g-verification.md).
 Confinamento dei drop XP nel playfield e gate residuo Android sono registrati
 in [`b18i-verification.md`](./b18i-verification.md).
 Pulsante-icona, cooldown radiale, timer centrale e gate residuo Android B18K

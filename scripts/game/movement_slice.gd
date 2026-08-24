@@ -135,19 +135,20 @@ func _ready() -> void:
 		_weapon_controller,
 		_targeting_system
 	)
+	_ability_controller.configure(
+		_run_controller,
+		_input_router,
+		_ability_effect_registry,
+		_player
+	)
 	_upgrade_effect_registry.configure(
 		_upgrade_service,
 		_upgrade_registry,
 		_player,
 		_weapon_controller,
 		_vignette_effect,
-		_ability_effects
-	)
-	_ability_controller.configure(
-		_run_controller,
-		_input_router,
-		_ability_effect_registry,
-		_player
+		_ability_effects,
+		_ability_controller
 	)
 	_equip_friend(&"magno")
 	_hud.configure(
@@ -548,6 +549,8 @@ func _equip_friend(friend_id: StringName) -> bool:
 		_hud.set_friend_definition(definition)
 	if not _ability_controller.equip_definition(ability_definition):
 		return false
+	if not _upgrade_service.set_equipped_ability_id(ability_definition.id):
+		return false
 	if not _friend_passive_controller.equip_definition(definition):
 		return false
 	return true
@@ -624,7 +627,17 @@ func _validate_current_contract() -> bool:
 			)
 			if roster_ability == null or not roster_ability.is_valid():
 				failures.append("AbilityDefinition B17A mancante: %s." % friend_definition.id)
-			elif friend_definition.id == &"bea":
+			elif roster_ability.rank_snapshots.size() != 5:
+				failures.append("AbilityDefinition B18G priva di cinque rank: %s." % friend_definition.id)
+			else:
+				for rank in range(1, 6):
+					var ranked_definition := roster_ability.resolve_rank(rank)
+					if ranked_definition == null or ranked_definition.get_resolved_rank() != rank:
+						failures.append(
+							"Snapshot B18G non valido per %s rank %d."
+							% [friend_definition.id, rank]
+						)
+			if roster_ability != null and friend_definition.id == &"bea":
 				if (
 					roster_ability.title != "Powerslide"
 					or not is_equal_approx(roster_ability.duration_seconds, 4.0)
@@ -632,7 +645,7 @@ func _validate_current_contract() -> bool:
 					or roster_ability.icon.resource_path != "res://assets/art/icons/abilities/powerslide.svg"
 				):
 					failures.append("Powerslide B18D non rispetta dati, durata o icona approvati.")
-			elif friend_definition.id == &"alea":
+			elif roster_ability != null and friend_definition.id == &"alea":
 				if (
 					roster_ability.effect_id != AbilityEffectRegistry.GRAND_SPIN
 					or not is_equal_approx(roster_ability.duration_seconds, 1.2)
@@ -818,6 +831,15 @@ func _validate_current_contract() -> bool:
 			or upgrade_definition.icon.resource_path.ends_with("/icon.svg")
 		):
 			failures.append("Icona upgrade B18 ancora generica: %s." % upgrade_definition.id)
+	var ability_rank_definitions := 0
+	for upgrade_definition in _upgrade_registry.get_definitions():
+		if upgrade_definition.effect_id != UpgradeEffectRegistry.ABILITY_RANK:
+			continue
+		ability_rank_definitions += 1
+		if not upgrade_definition.is_ability_rank_definition():
+			failures.append("Carta rank B18G non valida: %s." % upgrade_definition.id)
+	if ability_rank_definitions != 8:
+		failures.append("B18G richiede una carta rank autorevole per ciascuna delle otto abilita.")
 	if _upgrade_registry.get_fallback_definitions().size() < UpgradeService.DEFAULT_OFFER_SIZE:
 		failures.append("UpgradeRegistry privo di tre fallback distinti e ripetibili.")
 	if not _upgrade_service.has_valid_configuration():
@@ -826,6 +848,13 @@ func _validate_current_contract() -> bool:
 		failures.append("UpgradeService non collegato a UpgradeRegistry.")
 	if _upgrade_service.get_run_controller() != _run_controller:
 		failures.append("UpgradeService non collegato al RunController.")
+	if (
+		_ability_controller != null
+		and _upgrade_service.get_equipped_ability_id() != _ability_controller.get_definition().id
+	):
+		failures.append("UpgradeService B18G non sincronizzato con l'abilita equipaggiata.")
+	if _ability_controller != null and _ability_controller.get_ability_rank() != 1:
+		failures.append("Ogni run B18G deve iniziare con l'abilita al rank 1.")
 	if _upgrade_service.get_experience_system() != _experience_system:
 		failures.append("UpgradeService non collegato a ExperienceSystem.")
 	if not _upgrade_effect_registry.has_valid_configuration():
@@ -1061,6 +1090,7 @@ func _validate_current_contract() -> bool:
 		print("B18D_CONTRACT_OK")
 		print("B18E_CONTRACT_OK")
 		print("B18F_CONTRACT_OK")
+		print("B18G_CONTRACT_OK")
 		print("B18I_CONTRACT_OK")
 		print("B18K_CONTRACT_OK")
 		print("B18L_CONTRACT_OK")
@@ -1068,7 +1098,7 @@ func _validate_current_contract() -> bool:
 
 	for failure in failures:
 		push_error(failure)
-	printerr("B18L_CONTRACT_FAIL")
+	printerr("B18G_CONTRACT_FAIL")
 	return false
 
 

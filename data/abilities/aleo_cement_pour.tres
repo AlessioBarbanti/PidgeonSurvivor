@@ -1,7 +1,53 @@
-[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="AbilityDefinition" load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/abilities/ability_definition.gd" id="1_definition"]
 [ext_resource type="Texture2D" path="res://assets/art/icons/abilities/cement.svg" id="2_icon"]
+[ext_resource type="Script" path="res://scripts/abilities/ability_rank_snapshot.gd" id="3_rank"]
+
+[sub_resource type="Resource" id="Rank_1"]
+script = ExtResource("3_rank")
+rank = 1
+cooldown_seconds = 12.0
+duration_seconds = 4.0
+area_radius = 200.0
+damage = 3.0
+effect_parameters = {"dot_tick": 0.5, "slow_factor": 0.5}
+
+[sub_resource type="Resource" id="Rank_2"]
+script = ExtResource("3_rank")
+rank = 2
+cooldown_seconds = 12.0
+duration_seconds = 4.0
+area_radius = 200.0
+damage = 4.0
+effect_parameters = {"dot_tick": 0.5, "slow_factor": 0.5}
+
+[sub_resource type="Resource" id="Rank_3"]
+script = ExtResource("3_rank")
+rank = 3
+cooldown_seconds = 12.0
+duration_seconds = 5.0
+area_radius = 230.0
+damage = 4.0
+effect_parameters = {"dot_tick": 0.5, "slow_factor": 0.5}
+
+[sub_resource type="Resource" id="Rank_4"]
+script = ExtResource("3_rank")
+rank = 4
+cooldown_seconds = 11.0
+duration_seconds = 5.0
+area_radius = 230.0
+damage = 4.0
+effect_parameters = {"dot_tick": 0.5, "slow_factor": 0.4}
+
+[sub_resource type="Resource" id="Rank_5"]
+script = ExtResource("3_rank")
+rank = 5
+cooldown_seconds = 11.0
+duration_seconds = 6.0
+area_radius = 250.0
+damage = 6.0
+effect_parameters = {"dot_tick": 0.5, "slow_factor": 0.4}
 
 [resource]
 script = ExtResource("1_definition")
@@ -19,3 +65,4 @@ effect_parameters = {
 "slow_factor": 0.5
 }
 tags = Array[StringName]([&"control", &"damage", &"persistent", &"copy_compatible"])
+rank_snapshots = Array[ExtResource("3_rank")]([SubResource("Rank_1"), SubResource("Rank_2"), SubResource("Rank_3"), SubResource("Rank_4"), SubResource("Rank_5")])

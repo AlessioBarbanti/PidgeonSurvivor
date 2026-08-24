@@ -23,6 +23,7 @@ const GOSSIP_PROJECTILES := &"gossip_projectiles"
 const CHRONIC_DELAY := &"chronic_delay"
 const BEER_SIGNATURE := &"beer_signature"
 const DAMAGE_SHOCKWAVE := &"damage_shockwave"
+const ABILITY_RANK := &"ability_rank"
 const CHRONIC_DELAY_MODIFIER := &"upgrade_chronic_delay"
 
 const MINIMUM_MULTIPLIER := 0.001
@@ -43,6 +44,7 @@ var _run_controller: RunController
 var _targeting_system: TargetingSystem
 var _vignette_effect: VignetteEffect
 var _effect_parent: Node2D
+var _ability_controller: AbilityController
 var _effective_multipliers: Dictionary = {}
 var _signature_parameters: Dictionary = {}
 
@@ -90,7 +92,8 @@ func configure(
 	player: Player,
 	weapon_controller: WeaponController,
 	vignette_effect: VignetteEffect = null,
-	effect_parent: Node2D = null
+	effect_parent: Node2D = null,
+	ability_controller: AbilityController = null
 ) -> bool:
 	_disconnect_dependencies()
 	_upgrade_service = upgrade_service
@@ -109,6 +112,7 @@ func configure(
 	)
 	_vignette_effect = vignette_effect
 	_effect_parent = effect_parent
+	_ability_controller = ability_controller
 	_connect_dependencies()
 	if not has_valid_configuration():
 		return false
@@ -124,6 +128,7 @@ func has_valid_configuration() -> bool:
 		or not is_instance_valid(_player)
 		or not is_instance_valid(_weapon_controller)
 		or not is_instance_valid(_run_controller)
+		or not is_instance_valid(_ability_controller)
 		or _upgrade_service.get_run_controller() != _run_controller
 		or not _has_valid_caps()
 	):
@@ -227,6 +232,21 @@ func can_apply(definition: UpgradeDefinition) -> bool:
 					"visual_duration"
 				) > 0.0
 			)
+		ABILITY_RANK:
+			if not definition.is_ability_rank_definition():
+				return false
+			var ability_id := StringName(str(definition.effect_parameters.get("ability_id", "")))
+			var ability_registry := _ability_controller.get_effect_registry()
+			var ability_definition := (
+				ability_registry.resolve_definition(ability_id)
+				if is_instance_valid(ability_registry)
+				else null
+			)
+			return (
+				ability_definition != null
+				and ability_definition.is_valid()
+				and ability_definition.rank_snapshots.size() == 5
+			)
 		_:
 			return false
 
@@ -247,6 +267,8 @@ func recalculate_effects() -> bool:
 		if not can_apply(definition):
 			return false
 		match definition.effect_id:
+			ABILITY_RANK:
+				continue
 			ANXIETY_SIGNATURE:
 				_multiply_effect(
 					next_multipliers,
@@ -687,6 +709,7 @@ func _disconnect_dependencies() -> void:
 	_targeting_system = null
 	_vignette_effect = null
 	_effect_parent = null
+	_ability_controller = null
 
 
 func _on_upgrade_selected(
@@ -694,6 +717,17 @@ func _on_upgrade_selected(
 	new_rank: int,
 	_level: int
 ) -> void:
+	if definition.effect_id == ABILITY_RANK:
+		var ability_id := StringName(str(definition.effect_parameters.get("ability_id", "")))
+		if (
+			ability_id != _upgrade_service.get_equipped_ability_id()
+			or ability_id != _ability_controller.get_definition().id
+			or not _ability_controller.apply_rank(new_rank)
+		):
+			push_error("UpgradeEffectRegistry: impossibile applicare %s." % definition.id)
+			return
+		effect_applied.emit(definition, new_rank, get_effective_multipliers())
+		return
 	if not recalculate_effects():
 		push_error("UpgradeEffectRegistry: impossibile applicare %s." % definition.id)
 		return

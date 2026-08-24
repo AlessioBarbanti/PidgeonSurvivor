@@ -18,6 +18,9 @@ var _source: Node2D
 var _cooldown_remaining := 0.0
 var _ready_state := true
 var _debug_cooldown_override := 0.0
+var _activation_definition: AbilityDefinition
+var _ability_rank := 1
+var _active_cooldown_total := 0.0
 
 
 func _exit_tree() -> void:
@@ -51,6 +54,8 @@ func configure(
 	_effect_registry = effect_registry
 	_source = source if is_instance_valid(source) else get_parent() as Node2D
 	_debug_cooldown_override = _read_debug_cooldown_override()
+	if not _apply_rank_snapshot(1):
+		return false
 	if not _has_valid_dependencies():
 		return false
 	if not _effect_registry.register_definition(ability_definition):
@@ -67,18 +72,23 @@ func try_activate() -> bool:
 		not _has_valid_dependencies()
 		or not _run_controller.is_running()
 		or _cooldown_remaining > 0.0
-		or not _effect_registry.can_execute(ability_definition)
+		or _activation_definition == null
+		or not _effect_registry.can_execute(_activation_definition)
 	):
 		return false
 
-	var effect := _effect_registry.execute_effect(ability_definition, _source)
+	var activation_snapshot := _activation_definition.resolve_rank(_ability_rank)
+	if activation_snapshot == null:
+		return false
+	var effect := _effect_registry.execute_effect(activation_snapshot, _source)
 	if effect == null:
 		return false
 
-	_cooldown_remaining = get_cooldown_total()
-	cooldown_changed.emit(_cooldown_remaining, get_cooldown_total())
+	_active_cooldown_total = _resolve_ready_cooldown_total()
+	_cooldown_remaining = _active_cooldown_total
+	cooldown_changed.emit(_cooldown_remaining, _active_cooldown_total)
 	_update_ready_state()
-	ability_activated.emit(ability_definition)
+	ability_activated.emit(activation_snapshot)
 	return true
 
 
@@ -88,6 +98,26 @@ func equip_definition(definition: AbilityDefinition) -> bool:
 	if is_instance_valid(_effect_registry) and not _effect_registry.register_definition(definition):
 		return false
 	ability_definition = definition
+	if not _apply_rank_snapshot(1):
+		return false
+	reset_for_run()
+	definition_changed.emit(ability_definition)
+	return true
+
+
+func apply_rank(rank: int) -> bool:
+	if rank < 1 or rank > 5 or ability_definition == null:
+		return false
+	if not _apply_rank_snapshot(rank):
+		return false
+	cooldown_changed.emit(_cooldown_remaining, get_cooldown_total())
+	definition_changed.emit(ability_definition)
+	return true
+
+
+func reset_rank_for_run() -> bool:
+	if not _apply_rank_snapshot(1):
+		return false
 	reset_for_run()
 	definition_changed.emit(ability_definition)
 	return true
@@ -96,6 +126,7 @@ func equip_definition(definition: AbilityDefinition) -> bool:
 func reset_for_run() -> void:
 	var was_ready := _ready_state
 	_cooldown_remaining = 0.0
+	_active_cooldown_total = 0.0
 	_ready_state = true
 	cooldown_changed.emit(_cooldown_remaining, get_cooldown_total())
 	if not was_ready:
@@ -104,6 +135,14 @@ func reset_for_run() -> void:
 
 func get_definition() -> AbilityDefinition:
 	return ability_definition
+
+
+func get_activation_definition() -> AbilityDefinition:
+	return _activation_definition
+
+
+func get_ability_rank() -> int:
+	return _ability_rank
 
 
 func get_run_controller() -> RunController:
@@ -127,9 +166,7 @@ func get_cooldown_remaining() -> float:
 
 
 func get_cooldown_total() -> float:
-	if _debug_cooldown_override > 0.0:
-		return _debug_cooldown_override
-	return ability_definition.cooldown_seconds if ability_definition != null else 0.0
+	return _active_cooldown_total if _cooldown_remaining > 0.0 else _resolve_ready_cooldown_total()
 
 
 func is_cooldown_ready() -> bool:
@@ -140,6 +177,8 @@ func _has_valid_dependencies() -> bool:
 	return (
 		ability_definition != null
 		and ability_definition.is_valid()
+		and _activation_definition != null
+		and _activation_definition.is_valid()
 		and is_instance_valid(_run_controller)
 		and is_instance_valid(_input_router)
 		and is_instance_valid(_effect_registry)
@@ -173,7 +212,8 @@ func _disconnect_dependencies() -> void:
 
 
 func _on_restart_prepared() -> void:
-	reset_for_run()
+	if not reset_rank_for_run():
+		push_error("AbilityController: impossibile ripristinare il rank 1.")
 
 
 func _read_debug_cooldown_override() -> float:
@@ -185,3 +225,18 @@ func _read_debug_cooldown_override() -> float:
 		if is_finite(value) and value >= MINIMUM_DEBUG_COOLDOWN:
 			return value
 	return 0.0
+
+
+func _apply_rank_snapshot(rank: int) -> bool:
+	var resolved := ability_definition.resolve_rank(rank) if ability_definition != null else null
+	if resolved == null:
+		return false
+	_activation_definition = resolved
+	_ability_rank = rank
+	return true
+
+
+func _resolve_ready_cooldown_total() -> float:
+	if _debug_cooldown_override > 0.0:
+		return _debug_cooldown_override
+	return _activation_definition.cooldown_seconds if _activation_definition != null else 0.0
