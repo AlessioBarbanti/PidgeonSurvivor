@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c47e50w4ggl62"
-path="res://.godot/imported/cement.svg-a08aa557166c8c6340c77dce577c6c5f.ctex"
+uid="uid://cpeh1bw128e17"
+path="res://.godot/imported/zen.png-86954e0043cc15885a1313c72b9aab36.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/icons/abilities/cement.svg"
-dest_files=["res://.godot/imported/cement.svg-a08aa557166c8c6340c77dce577c6c5f.ctex"]
+source_file="res://assets/art/icons/abilities/generated/zen.png"
+dest_files=["res://.godot/imported/zen.png-86954e0043cc15885a1313c72b9aab36.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

@@ -59,7 +59,7 @@ func _run() -> void:
 	_expect(
 		definition != null
 		and definition.icon != null
-		and definition.icon.resource_path == "res://assets/art/icons/abilities/powerslide.svg",
+		and definition.icon.resource_path == "res://assets/art/icons/abilities/generated/powerslide.png",
 		"Powerslide deve usare l'icona inline-skate dedicata."
 	)
 	if definition == null:

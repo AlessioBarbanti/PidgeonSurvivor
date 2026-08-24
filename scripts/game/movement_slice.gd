@@ -642,7 +642,7 @@ func _validate_current_contract() -> bool:
 					roster_ability.title != "Powerslide"
 					or not is_equal_approx(roster_ability.duration_seconds, 4.0)
 					or roster_ability.icon == null
-					or roster_ability.icon.resource_path != "res://assets/art/icons/abilities/powerslide.svg"
+					or roster_ability.icon.resource_path != "res://assets/art/icons/abilities/generated/powerslide.png"
 				):
 					failures.append("Powerslide B18D non rispetta dati, durata o icona approvati.")
 			elif roster_ability != null and friend_definition.id == &"alea":

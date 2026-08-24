@@ -18,6 +18,7 @@ const SHADOW_DECEPTION := &"shadow_deception"
 
 const COPY_COMPATIBLE := &"copy_compatible"
 const DEFAULT_WAVE_DURATION := 0.35
+const ABILITY_ICON_BURST_SCRIPT := preload("res://scripts/abilities/ability_icon_burst.gd")
 
 @export var definitions: Array[AbilityDefinition] = []
 
@@ -202,8 +203,19 @@ func _execute_definition(
 		SHADOW_DECEPTION:
 			effect = _execute_shadow_deception(definition, source)
 	if effect != null and announce:
+		_attach_generated_icon_burst(effect, definition)
 		effect_executed.emit(definition, effect, _last_affected_count)
 	return effect
+
+
+func _attach_generated_icon_burst(effect: Node2D, definition: AbilityDefinition) -> void:
+	if definition.icon == null:
+		return
+	var burst := ABILITY_ICON_BURST_SCRIPT.new() as Node2D
+	burst.name = "AbilityIconBurst"
+	effect.add_child(burst)
+	if not burst.call("initialize", definition.icon, definition.effect_id, _run_controller):
+		burst.queue_free()
 
 
 func _execute_earthquake_shockwave(

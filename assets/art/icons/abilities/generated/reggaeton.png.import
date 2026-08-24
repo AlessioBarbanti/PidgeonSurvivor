@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cnuotbb0apsom"
-path="res://.godot/imported/powerslide.svg-f5428aaa96900414936a7fbdc4115269.ctex"
+uid="uid://dx5ftc6wnxh6d"
+path="res://.godot/imported/reggaeton.png-6236715ccd9bf92c806f95b0d9c859e4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/icons/abilities/powerslide.svg"
-dest_files=["res://.godot/imported/powerslide.svg-f5428aaa96900414936a7fbdc4115269.ctex"]
+source_file="res://assets/art/icons/abilities/generated/reggaeton.png"
+dest_files=["res://.godot/imported/reggaeton.png-6236715ccd9bf92c806f95b0d9c859e4.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

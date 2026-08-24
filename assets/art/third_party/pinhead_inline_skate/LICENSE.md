@@ -11,6 +11,8 @@
 - Runtime derivative SHA-256: `CEF3584D94220CB3DC499B601D48AA7DE7DD08A0B37B9EB9A8E885FE7F9B108E`
 
 The upstream icon is a public-domain dedication under CC0 1.0. The project
-keeps the original SVG unchanged in this folder. The runtime icon
-`assets/art/icons/abilities/powerslide.svg` adds the project's colored frame
-and palette around the same path.
+keeps the original SVG unchanged in this folder. The historical runtime icon
+`assets/art/icons/abilities/powerslide.svg` added the project's colored frame
+and palette around the same path. Since the 24 August 2026 ImageGen refresh,
+runtime uses `assets/art/icons/abilities/generated/powerslide.png`; this source
+remains only for provenance and project history.
