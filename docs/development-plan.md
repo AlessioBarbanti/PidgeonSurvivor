@@ -2,7 +2,7 @@
 
 Fonte: [`prd.md`](./prd.md)  
 Decisioni: [`decision-log.md`](./decision-log.md)  
-Stato: il ciclo operativo corrente è B18C–B18M. B18C, B18D, B18F, B18H, B18I, B18K e B18L sono completati con tutti i gate automatici, Windows e Pixel 9 chiusi; B18M è verificato e attende soltanto il commit dedicato. B18E, B18G e B18J sono in verifica con implementazione, regressioni, Windows ed export Android statico chiusi, ma attendono il rispettivo gate Pixel 9. B19 resta bloccato fino al freeze dell'intero ciclo e alla chiusura dei gate Windows/Android pertinenti
+Stato: il ciclo operativo corrente è B18C–B18M. B18C, B18D, B18F, B18H, B18I, B18K, B18L e B18M sono completati con tutti i gate pertinenti automatici, Windows e Pixel 9 chiusi. B18E, B18G e B18J sono in verifica con implementazione, regressioni, Windows ed export Android statico chiusi, ma attendono il rispettivo gate Pixel 9. B19 resta bloccato fino al freeze dell'intero ciclo e alla chiusura dei gate Windows/Android pertinenti
 Obiettivo: trasformare il concept in un MVP completo, verificabile su Windows e Android; Web resta un target secondario
 
 Fonte di verità operativa: questo documento contiene roadmap, stato e ordine delle prossime attività. Eventuali note temporanee devono essere integrate qui e poi rimosse.
@@ -448,7 +448,7 @@ significato:
 | B18J | Grigliata estiva | IN VERIFICA | Gate automatici, Windows, Android statico e cold launch Pixel 9 chiusi; interazione manuale ancora da verificare |
 | B18K | Pulsante abilità con icona e cooldown circolare | COMPLETATO | Gate chiusi; commit dedicato `81b47f6` |
 | B18L | Joystick dinamico | COMPLETATO | Gate chiusi, inclusa regressione lock/resume; commit dedicato `d6625d7` |
-| B18M | Migliorie grafiche delle abilità | VERIFICATO | Otto famiglie VFX, manifest, regressioni, Windows e Pixel 9 chiusi; attende il commit dedicato |
+| B18M | Migliorie grafiche delle abilità | COMPLETATO | Gate automatici, Windows e Pixel 9 chiusi; commit dedicato `11329cf` |
 
 #### B18C — Player animato e direzione persistente
 
@@ -711,7 +711,7 @@ Dettagli ed evidenze: [`b18l-verification.md`](./b18l-verification.md).
 
 #### B18M — Migliorie grafiche delle abilità
 
-Stato: `VERIFICATO`.
+Stato: `COMPLETATO`.
 
 - [x] La baseline di release usa VFX originali disegnati con primitive Godot,
   shader semplici e, soltanto quando serve, sprite originali del progetto. Non
@@ -858,14 +858,10 @@ Un'attività è finita solo quando:
 
 Ordine operativo immediato:
 
-1. creare commit dedicati per B18I, B18K e B18L, includendo nel commit B18L la
-   regressione lock/resume emersa e chiusa sul Pixel 9; i gate tecnici e manuali
-   delle tre slice sono già chiusi;
-2. chiudere i gate manuali residui B18B a 20:9 e 4:3;
-3. chiudere il gate Pixel 9 di B18E già implementato: multitouch, flash standard/ridotto, 20:9, lifecycle e cleanup reale;
-4. chiudere i gate Pixel 9 di B18G e B18J già implementati: tap reali sui rank, aumento HP `×1,15` con cura del delta, stacking, cap, lifecycle e reset della run;
-5. creare il commit dedicato B18M già verificato: VFX procedurali, manifest e budget Android;
-6. eseguire il gate combinato B17A–B18M su Windows e Pixel 9, il gate percettivo B18 con Boss a `04:00`/`2400 HP` e la matrice 16:9/20:9/4:3; avviare B19 solo dopo il freeze documentato dell'intero ciclo.
+1. chiudere i gate manuali residui B18B a 20:9 e 4:3;
+2. chiudere il gate Pixel 9 di B18E già implementato: multitouch, flash standard/ridotto, 20:9, lifecycle e cleanup reale;
+3. chiudere i gate Pixel 9 di B18G e B18J già implementati: tap reali sui rank, aumento HP `×1,15` con cura del delta, stacking, cap, lifecycle e reset della run;
+4. eseguire il gate combinato B17A–B18M su Windows e Pixel 9, il gate percettivo B18 con Boss a `04:00`/`2400 HP` e la matrice 16:9/20:9/4:3; avviare B19 solo dopo il freeze documentato dell'intero ciclo.
 
 Il setup host e gli artefatti generati il 12 agosto 2026 sono registrati in
 [`m0-verification.md`](./m0-verification.md).

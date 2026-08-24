@@ -6,9 +6,8 @@ Target obbligatori: Windows x64 e Android ARM64
 
 ## Stato
 
-`VERIFICATO`. Le otto famiglie VFX sono implementate, registrate e verificate
-automaticamente, su Windows e sul Pixel 9. Il blocco attende soltanto il commit
-dedicato per passare a `COMPLETATO`.
+`COMPLETATO`. Le otto famiglie VFX sono implementate, registrate e verificate
+automaticamente, su Windows e sul Pixel 9 nel commit dedicato `11329cf`.
 
 ## Contratto implementato
 
