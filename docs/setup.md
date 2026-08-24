@@ -69,6 +69,18 @@ godot_console --headless --path . `
   exports\android\friendship-survival-debug.aab
 ```
 
+Per lo smoke dell'eseguibile Windows esportato, separare le opzioni motore dagli
+argomenti letti da `OS.get_cmdline_user_args()` con `--`:
+
+```powershell
+.\exports\windows\FriendshipSurvival.exe `
+  --resolution 1280x720 -- `
+  --smoke-test --run-seed=1
+```
+
+Senza il separatore, Godot tratta `--smoke-test` come opzione motore e la scena
+non esegue l'auto-quit previsto dallo smoke.
+
 Il template Gradle generato vive in `android/build/` ed è escluso dal
 repository: va rigenerato quando cambia la patch di Godot. I preset mantengono
 `compileSdk=36` nel template 4.7.1, `minSdk=31`, `targetSdk=36` e la sola ABI

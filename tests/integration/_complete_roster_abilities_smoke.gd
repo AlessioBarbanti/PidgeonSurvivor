@@ -247,8 +247,18 @@ func _validate_ability(
 			_expect(player.global_position.x > origin.x, "Bea deve scattare in avanti.")
 			_expect(enemy.get_health_component().health_current < initial_health, "La scia di Bea deve infliggere un tick.")
 		&"zat":
-			_expect(effect is LightningStorm, "Zat deve creare la Tempesta di Fulmini.")
-			_expect(enemy.get_health_component().health_current < initial_health, "Il primo fulmine deve colpire subito.")
+			_expect(effect is ThunderStorm, "Zat deve creare la Tempesta di Tuoni.")
+			_expect_float_near(
+				enemy.get_health_component().health_current,
+				initial_health,
+				"Il preavviso del tuono deve precedere il danno."
+			)
+			if effect is ThunderStorm:
+				(effect as ThunderStorm)._process(0.45)
+			_expect(
+				enemy.get_health_component().health_current < initial_health,
+				"Il tuono deve colpire dopo il preavviso."
+			)
 		&"alea":
 			_expect(effect is AbilityAreaEffect, "Alea deve creare l'area di Piroetta.")
 			_expect(enemy.get_health_component().health_current < initial_health, "La Piroetta deve colpire subito.")
@@ -292,8 +302,8 @@ func _get_effect_progress(effect: Node2D) -> float:
 		return (effect as EarthquakeWave).get_elapsed()
 	if effect is FireZTrail:
 		return (effect as FireZTrail).get_duration_remaining()
-	if effect is LightningStorm:
-		return float((effect as LightningStorm).get_strikes_remaining())
+	if effect is ThunderStorm:
+		return (effect as ThunderStorm).get_phase_remaining()
 	if effect is AbilityAreaEffect:
 		return (effect as AbilityAreaEffect).get_duration_remaining()
 	if effect is IllusionDecoy:

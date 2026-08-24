@@ -23,7 +23,7 @@ Boss: Evil Bea.
 
 Ruolo: Gestione del danno e sopravvivenza.  
 Passiva — Guarigione Ritardata: Parte del danno diventa una quantità recuperabile nel tempo se il giocatore evita danni successivi.  
-Attiva — Tempesta di Fulmini: Serie di fulmini che colpiscono nemici multipli.
+Attiva — Tempesta di Tuoni: Un tuono colpisce tutti i nemici dopo un breve preavviso.
 Boss: Evil Zat.
 
 ## Alea

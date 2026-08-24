@@ -23,7 +23,7 @@ vittoria o sconfitta esegue prima il cleanup e poi riapre il roster.
 |---|---|---|
 | Magno | movimento `×1,15` | Onda d'Urto Tellurica |
 | Bea | evasione `15%` | Scia di Fuoco Z |
-| Zat | recupero differito `35%`, delay `3 s`, durata `4 s` | Tempesta di Fulmini |
+| Zat | recupero differito `35%`, delay `3 s`, durata `4 s` | Tempesta di Tuoni |
 | Alea | modificatore deterministico ogni `12 s` per `5 s` | Gran Piroetta |
 | Aleo | danno `-15%`, resistenza knockback dati `×0,50` | Colata di Cemento |
 | Lollo | movimento `×1,10`, fuoco `×1,15` | Cosplay Casuale |
@@ -31,7 +31,7 @@ vittoria o sconfitta esegue prima il cleanup e poi riapre il roster.
 | Marghe | HP nemici base `×0,95`, Boss esclusi | Reggeton time! |
 
 I moltiplicatori del personaggio e quelli degli upgrade restano separati e si
-compongono moltiplicativamente. Random di Bea, Alea, fulmini e Cosplay usa il
+compongono moltiplicativamente. Random di Bea, Alea, tuoni e Cosplay usa il
 seed della run. Cooldown, passive temporizzate, tick, aree, slow e illusioni
 avanzano soltanto in `RUNNING`.
 
@@ -59,7 +59,7 @@ B17A_COMPLETE_ROSTER_ABILITIES_SMOKE_OK
 Lo smoke attraversa il selettore per tutti gli otto ID, conferma una run per
 profilo, verifica ritratto, passiva, abilità assegnata, composizione con gli
 upgrade, pausa degli effetti e cleanup tramite `CAMBIA PERSONAGGIO`. Controlla
-inoltre dash e trail, fulmini, tick della Piroetta, slow/danno del Cemento,
+inoltre dash e trail, tuoni, tick della Piroetta, slow/danno del Cemento,
 filtro anti-ricorsione di Cosplay, aura Zen, clone e deviazione dell'aggro.
 
 La suite completa contiene 19 smoke. Ogni processo termina con codice `0`, ha

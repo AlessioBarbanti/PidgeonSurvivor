@@ -151,10 +151,10 @@ in base ai tag di compatibilità, in particolare per gli effetti di copia.
   l'animazione; la posizione del joystick dopo l'attivazione non modifica il
   percorso. Pausa e stati non `RUNNING` congelano scia e cooldown.
 
-#### Zat — Tempesta di Fulmini
+#### Zat — Tempesta di Tuoni
 
 - **Tipo:** danno globale percentuale con impatto ritardato.
-- **Effetto:** dopo un preavviso di `0,45 s`, un singolo fulmine produce un
+- **Effetto:** dopo un preavviso di `0,45 s`, un singolo tuono produce un
   flash sull'intero viewport logico e colpisce una volta tutti i nemici vivi
   validi al momento dell'impatto, inclusi quelli entrati dopo l'attivazione.
 - **Parametri iniziali:** `cooldown_seconds: 60.0`,
@@ -162,7 +162,7 @@ in base ai tag di compatibilità, in particolare per gli effetti di copia.
   `boss_max_health_damage_ratio: 0.20`, `warning_seconds: 0.45`.
 - **Accessibilità:** flash singolo con alpha massimo `0,55` su Windows e `0,40`
   su Android, chiuso entro `0,30 s`; l'opzione persistente **Flash ridotti** usa
-  alpha `0,15`, nessuna tenuta e conserva preavviso, sagoma, audio e danno.
+  alpha `0,15`, nessuna tenuta e conserva preavviso, onde, audio e danno.
 - **Nota tecnica:** bersagli e danno sono risolti all'impatto. Cooldown,
   preavviso e flash avanzano soltanto in `RUNNING`; pausa, morte, cambio profilo
   e restart non producono impatti tardivi o overlay residui.
@@ -357,7 +357,7 @@ entra nello spawn corrente e non modifica statistiche, collisioni o AI.
 
 Le icone correnti delle otto attive sono la famiglia definitiva della release.
 I VFX sono originali e principalmente procedurali: anelli/crepe per Magno,
-nastro e scintille per Bea, fulmine/flash accessibile per Zat, archi rotanti per
+nastro e scintille per Bea, nube/onde e flash accessibile per Zat, archi rotanti per
 Alea, pozza e bolle per Aleo, confetti e palette copiata per Lollo, anelli e
 particelle lente per Migi, clone/cassa/note per Marghe. Ogni asset su file viene
 registrato con origine, autore, licenza, modifiche e hash; la baseline non

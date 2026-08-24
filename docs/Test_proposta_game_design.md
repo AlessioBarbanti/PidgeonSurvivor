@@ -274,9 +274,9 @@ La meccanica deve creare un'alternanza tra:
 
 **momenti di rischio → fuga o riposizionamento → recupero.**
 
-## Attiva — Tempesta di Fulmini
+## Attiva — Tempesta di Tuoni
 
-Genera una serie di fulmini che colpiscono diversi nemici presenti sul campo.
+Genera un tuono che colpisce i nemici presenti sul campo dopo un breve preavviso.
 
 ⚡ L'attiva è principalmente orientata al danno e alla gestione di grandi quantità di avversari.
 

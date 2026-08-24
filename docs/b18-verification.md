@@ -10,7 +10,7 @@ densità su Windows/Pixel 9.
 - Le otto `AbilityDefinition` usano otto icone SVG dedicate; gli undici upgrade
   usano pittogrammi coerenti per effetto o signature e nessun contenuto gameplay
   punta più a `assets/art/icon.svg`.
-- Onda tellurica, fulmini, aree persistenti e telegraph mirato hanno contorni e
+- Onda tellurica, tuoni, aree persistenti e telegraph mirato hanno contorni e
   pattern geometrici aggiuntivi, quindi non dipendono soltanto dal colore.
 - Il mondo usa una gerarchia esplicita: pickup `-1`, VFX alleati `0`,
   nemici/telegraph `2`, Player `4`, proiettili alleati `6`, proiettili Boss `10`.
@@ -93,7 +93,7 @@ control sotto `exports/screenshots/`.
    è già coperta dallo smoke e l'interazione touch `30%`/mute dal Pixel 9.
 3. Su Pixel 9, mantenere il joystick con un dito e attivare con il secondo;
    confermare che VFX e audio non introducano input perso o frame spike visibili.
-4. Con area persistente, fulmini e Boss insieme, confermare che telegraph e
+4. Con area persistente, tuoni e Boss insieme, confermare che telegraph e
    proiettili ostili restino sempre distinguibili a 16:9, 20:9 e 4:3.
 
 Il test fisico esteso Android 12/API 31, Android 16/API 36 e controller Windows

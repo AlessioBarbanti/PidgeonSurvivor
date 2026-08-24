@@ -65,6 +65,7 @@ func _validate_catalog_and_approvals() -> void:
 	]
 	var expected_approval_dates := {
 		&"bea": "2026-08-24",
+		&"zat": "2026-08-24",
 	}
 	var seen_ability_ids: Dictionary = {}
 	for friend_id in expected_ids:

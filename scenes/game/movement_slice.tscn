@@ -1,4 +1,4 @@
-[gd_scene load_steps=76 format=3]
+[gd_scene load_steps=77 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -75,6 +75,7 @@
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/victory.ogg" id="74_victory"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/defeat.ogg" id="75_defeat"]
 [ext_resource type="Script" path="res://scripts/vfx/combat_feedback.gd" id="76_feedback"]
+[ext_resource type="Script" path="res://scripts/app/visual_accessibility_settings.gd" id="77_accessibility"]
 
 [node name="MovementSlice" type="Control"]
 layout_mode = 3
@@ -108,6 +109,10 @@ edge_inset = 20.0
 [node name="RunController" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("7_run_controller")
+
+[node name="VisualAccessibilitySettings" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("77_accessibility")
 
 [node name="FriendRegistry" type="Node" parent="."]
 unique_name_in_owner = true

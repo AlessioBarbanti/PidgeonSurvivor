@@ -26,6 +26,7 @@ var _run_controller: RunController
 var _targeting_system: TargetingSystem
 var _effect_parent: Node2D
 var _arena_layout: ArenaLayout
+var _visual_settings: VisualAccessibilitySettings
 var _active_effects: Array[Node2D] = []
 var _last_affected_count := 0
 var _last_copied_ability_id: StringName
@@ -46,13 +47,15 @@ func configure(
 	run_controller: RunController,
 	targeting_system: TargetingSystem,
 	effect_parent: Node2D,
-	arena_layout: ArenaLayout = null
+	arena_layout: ArenaLayout = null,
+	visual_settings: VisualAccessibilitySettings = null
 ) -> bool:
 	_disconnect_run_controller()
 	_run_controller = run_controller
 	_targeting_system = targeting_system
 	_effect_parent = effect_parent
 	_arena_layout = arena_layout
+	_visual_settings = visual_settings
 	_rebuild_definition_index()
 	_connect_run_controller()
 	return _has_valid_dependencies()
@@ -154,6 +157,10 @@ func get_arena_layout() -> ArenaLayout:
 	return _arena_layout if is_instance_valid(_arena_layout) else null
 
 
+func get_visual_settings() -> VisualAccessibilitySettings:
+	return _visual_settings if is_instance_valid(_visual_settings) else null
+
+
 func _execute_definition(
 	definition: AbilityDefinition,
 	source: Node2D,
@@ -243,18 +250,16 @@ func _execute_fire_z_trail(definition: AbilityDefinition, source: Node2D) -> Nod
 
 
 func _execute_lightning_storm(definition: AbilityDefinition, source: Node2D) -> Node2D:
-	var storm := LightningStorm.new()
-	storm.name = "LightningStorm"
+	var storm := ThunderStorm.new()
+	storm.name = "ThunderStorm"
 	_effect_parent.add_child(storm)
 	storm.targets_affected.connect(_on_targets_affected)
-	_execution_serial += 1
-	var effect_seed := _run_controller.get_seed() + _execution_serial * 7919
 	if not storm.initialize(
 		source.global_position,
 		definition,
 		_run_controller,
 		_targeting_system,
-		effect_seed
+		_visual_settings
 	):
 		storm.queue_free()
 		return null
@@ -367,8 +372,16 @@ func _can_execute_non_copy(definition: AbilityDefinition) -> bool:
 			)
 		LIGHTNING_STORM:
 			return (
-				definition.damage > 0.0
-				and int(definition.effect_parameters.get(&"strikes", 0)) > 0
+				definition.get_effect_float(
+					&"normal_max_health_damage_ratio",
+					0.0,
+					0.0
+				) > 0.0
+				and definition.get_effect_float(
+					&"boss_max_health_damage_ratio",
+					0.0,
+					0.0
+				) > 0.0
 			)
 		GRAND_SPIN, CEMENT_POUR:
 			return (
@@ -438,6 +451,8 @@ func _connect_run_controller() -> void:
 		_run_controller.run_started.connect(_on_run_started)
 	if not _run_controller.restart_prepared.is_connected(_on_restart_prepared):
 		_run_controller.restart_prepared.connect(_on_restart_prepared)
+	if not _run_controller.run_ended.is_connected(_on_run_ended):
+		_run_controller.run_ended.connect(_on_run_ended)
 
 
 func _disconnect_run_controller() -> void:
@@ -448,6 +463,8 @@ func _disconnect_run_controller() -> void:
 		_run_controller.run_started.disconnect(_on_run_started)
 	if _run_controller.restart_prepared.is_connected(_on_restart_prepared):
 		_run_controller.restart_prepared.disconnect(_on_restart_prepared)
+	if _run_controller.run_ended.is_connected(_on_run_ended):
+		_run_controller.run_ended.disconnect(_on_run_ended)
 	_run_controller = null
 
 
@@ -459,6 +476,10 @@ func _on_run_started(seed_value: int) -> void:
 func _on_restart_prepared() -> void:
 	clear_active_effects()
 	_execution_serial = 0
+
+
+func _on_run_ended(_final_state: RunController.RunState, _run_time: float) -> void:
+	clear_active_effects()
 
 
 func _on_targets_affected(count: int) -> void:

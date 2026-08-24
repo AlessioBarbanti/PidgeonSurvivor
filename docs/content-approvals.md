@@ -11,6 +11,9 @@ tutti i nomi e i testi attualmente presenti nel catalogo e ha confermato che i
 Boss sono le versioni malvagie degli amici, con convenzione `Evil <Nome>`.
 Il 24 agosto 2026 il profilo di Bea è stato aggiornato con il nome e il copy
 operativo di `Powerslide`, come richiesto nel tracker gameplay.
+Nella stessa data il proprietario ha corretto il nome dell'attiva di Zat in
+`Tempesta di Tuoni`: il contenuto pubblico e la presentazione non devono
+descriverla come una tempesta di fulmini; gli ID tecnici storici restano stabili.
 
 Riferimento registrato nei `FriendDefinition`:
 
@@ -18,11 +21,15 @@ Riferimento registrato nei `FriendDefinition`:
 - data: `2026-08-17`;
 - evidenza: conferma esplicita nella sessione Codex del 17/08/2026.
 
+Il solo profilo Zat registra invece data `2026-08-24` e il riferimento alla
+correzione esplicita **Tempesta di Tuoni** della sessione odierna.
+
 | Contenuto | Stato | Nota pubblica |
 |---|---|---|
 | Magno, Bea, Zat, Alea, Aleo, Lollo, Migi, Marghe | Approvato | Nomi, ruoli, passive e descrizioni delle attive in `data/friends/*.tres` |
 | Reggeton time! | Approvato | Retheme reggaeton dell'attiva di Marghe; comportamento gameplay invariato |
 | Powerslide | Approvato | Nome, copy e icona inline-skate CC0 richiesti nel tracker gameplay; valori runtime registrati nel PRD |
+| Tempesta di Tuoni | Approvato | Nome e copy corretti dal proprietario; nube, onde e flash comunicano il tuono senza cambiare gli ID tecnici storici |
 | Evil Magno, Evil Bea, Evil Zat, Evil Alea, Evil Aleo, Evil Lollo, Evil Migi, Evil Marghe | Approvato | Ogni profilo amico contiene la propria controparte Boss |
 | L'Ansia, Gossip, Ritardo Cronico, Birra, Non Ho Tempo Per Questo | Approvato | Titoli generici correnti, senza attribuzioni personali aggiuntive |
 | Ritratto hero/Evil CC0 | Approvato come placeholder | Asset temporanei sostituibili dai singoli `FriendDefinition` |

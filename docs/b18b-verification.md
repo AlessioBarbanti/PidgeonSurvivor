@@ -109,7 +109,7 @@ sono inferiti dall'avvio ADB e restano manuali.
 2. Sul Pixel 9, mantenere il joystick con un dito e attivare ripetutamente con il
    secondo usando Bea, Aleo/Migi e Lollo; non devono comparire input persi o frame
    spike visibili.
-3. Combinare Boss, area persistente, fulmini e densità elevata e confermare che
+3. Combinare Boss, area persistente, tuoni e densità elevata e confermare che
    telegraph e proiettili ostili restino distinguibili sopra burst e VFX alleati.
 4. Provare una run Windows interattiva a densità elevata e controllare che il
    polish non introduca stutter o oscuri il mix audio.

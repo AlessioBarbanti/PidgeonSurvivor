@@ -38,8 +38,8 @@ passive_parameters = {
 "recovery_duration": 4.0
 }
 active_ability_id = &"zat_lightning_storm"
-active_ability_title = "Tempesta di Fulmini"
-active_ability_description = "Serie di fulmini che colpiscono nemici multipli."
+active_ability_title = "Tempesta di Tuoni"
+active_ability_description = "Un tuono colpisce tutti i nemici dopo un breve preavviso."
 evil_display_name = "Evil Zat"
 portrait = SubResource("AtlasTexture_portrait")
 evil_portrait = SubResource("AtlasTexture_evil")
@@ -52,5 +52,5 @@ gameplay_walk_right_frames = Array[Texture2D]([SubResource("AtlasTexture_gamepla
 content_approved = true
 portraits_approved = true
 approved_by = "Proprietario del progetto"
-approval_date = "2026-08-17"
-approval_reference = "Conferma esplicita nella sessione Codex del 17/08/2026."
+approval_date = "2026-08-24"
+approval_reference = "Correzione esplicita Tempesta di Tuoni nella sessione Codex del 24/08/2026."

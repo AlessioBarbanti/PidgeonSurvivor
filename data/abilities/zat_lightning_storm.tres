@@ -6,17 +6,23 @@
 [resource]
 script = ExtResource("1_definition")
 id = &"zat_lightning_storm"
-title = "Tempesta di Fulmini"
-description = "Scatena sei fulmini contro bersagli casuali vicini."
+title = "Tempesta di Tuoni"
+description = "Dopo un breve preavviso, un tuono colpisce tutti i nemici presenti."
 icon = ExtResource("2_icon")
-cooldown_seconds = 12.0
+cooldown_seconds = 60.0
 duration_seconds = 0.0
-area_radius = 800.0
-damage = 8.0
+area_radius = 0.0
+damage = 0.0
 effect_id = &"lightning_storm"
 effect_parameters = {
-"strike_interval": 0.08,
-"strikes": 6,
-"targeting_radius": 800.0
+"android_flash_alpha": 0.4,
+"boss_max_health_damage_ratio": 0.2,
+"flash_fade_seconds": 0.18,
+"flash_hold_seconds": 0.06,
+"flash_rise_seconds": 0.06,
+"normal_max_health_damage_ratio": 0.5,
+"reduced_flash_alpha": 0.15,
+"warning_seconds": 0.45,
+"windows_flash_alpha": 0.55
 }
-tags = Array[StringName]([&"damage", &"multi_target", &"random", &"copy_compatible"])
+tags = Array[StringName]([&"damage", &"multi_target", &"global", &"copy_compatible"])

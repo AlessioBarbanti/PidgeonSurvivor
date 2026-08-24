@@ -10,6 +10,7 @@ const SETUP_VALIDATOR = preload("res://scripts/app/setup_validator.gd")
 
 @onready var _arena_layout: ArenaLayout = %ArenaLayout
 @onready var _run_controller: RunController = %RunController
+@onready var _visual_accessibility_settings: VisualAccessibilitySettings = %VisualAccessibilitySettings
 @onready var _friend_registry: FriendRegistry = %FriendRegistry
 @onready var _game_director: GameDirector = %GameDirector
 @onready var _boss_encounter: BossEncounter = %BossEncounter
@@ -67,6 +68,7 @@ func _ready() -> void:
 		_input_router,
 		_pause_overlay
 	)
+	_visual_accessibility_settings.configure(_pause_overlay)
 
 	_arena_layout.refresh_layout()
 	_player.set_arena_layout(_arena_layout)
@@ -91,7 +93,8 @@ func _ready() -> void:
 		_run_controller,
 		_targeting_system,
 		_ability_effects,
-		_arena_layout
+		_arena_layout,
+		_visual_accessibility_settings
 	)
 	_experience_system.set_run_controller(_run_controller)
 	_boss_encounter.configure(
@@ -451,6 +454,10 @@ func get_game_audio() -> GameAudio:
 	return _game_audio
 
 
+func get_visual_accessibility_settings() -> VisualAccessibilitySettings:
+	return _visual_accessibility_settings
+
+
 func get_pickup_parent() -> Node2D:
 	return _pickups
 
@@ -712,6 +719,15 @@ func _validate_current_contract() -> bool:
 			failures.append("PauseOverlay B18 privo del controllo volume.")
 		if _pause_overlay.get_mute_check_button() == null:
 			failures.append("PauseOverlay B18 privo del controllo mute.")
+		if _pause_overlay.get_reduced_flashes_check_button() == null:
+			failures.append("PauseOverlay B18E privo dell'opzione Flash ridotti.")
+	if _visual_accessibility_settings == null:
+		failures.append("VisualAccessibilitySettings B18E non presente.")
+	elif (
+		_ability_effect_registry.get_visual_settings()
+		!= _visual_accessibility_settings
+	):
+		failures.append("AbilityEffectRegistry B18E non collegato alle impostazioni visuali.")
 	if _enemy_spawner.spawn_profile == null:
 		failures.append("EnemySpawner privo del profilo dati.")
 	if _enemy_spawner.enemy_scene == null:
@@ -1043,6 +1059,7 @@ func _validate_current_contract() -> bool:
 		print("B18B_CONTRACT_OK")
 		print("B18C_CONTRACT_OK")
 		print("B18D_CONTRACT_OK")
+		print("B18E_CONTRACT_OK")
 		print("B18F_CONTRACT_OK")
 		print("B18I_CONTRACT_OK")
 		print("B18K_CONTRACT_OK")
