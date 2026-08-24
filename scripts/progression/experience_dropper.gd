@@ -15,6 +15,7 @@ var _run_controller: RunController
 var _enemy_spawner: EnemySpawner
 var _experience_system: ExperienceSystem
 var _player: Player
+var _arena_layout: ArenaLayout
 var _pickup_parent: Node
 var _active_pickups: Array[ExperiencePickup] = []
 var _observed_enemy_ids: Dictionary = {}
@@ -27,12 +28,14 @@ func configure(
 	enemy_spawner: EnemySpawner,
 	experience_system: ExperienceSystem,
 	player: Player,
+	arena_layout: ArenaLayout,
 	pickup_parent: Node
 ) -> void:
 	set_run_controller(run_controller)
 	bind_enemy_spawner(enemy_spawner)
 	_experience_system = experience_system
 	_player = player
+	_arena_layout = arena_layout
 	_pickup_parent = pickup_parent
 
 
@@ -88,7 +91,10 @@ func try_spawn_drop(enemy: BaseEnemy) -> ExperiencePickup:
 		enemy.get_experience_amount()
 	)
 	_pickup_parent.add_child(pickup)
-	pickup.global_position = enemy.global_position
+	pickup.global_position = _arena_layout.clamp_circle_center(
+		enemy.global_position,
+		pickup.get_confinement_radius()
+	)
 	pickup.collected.connect(_on_pickup_collected, CONNECT_ONE_SHOT)
 	pickup.tree_exiting.connect(
 		_on_pickup_tree_exiting.bind(pickup),
@@ -138,6 +144,10 @@ func get_player() -> Player:
 	return _player if is_instance_valid(_player) else null
 
 
+func get_arena_layout() -> ArenaLayout:
+	return _arena_layout if is_instance_valid(_arena_layout) else null
+
+
 func get_pickup_parent() -> Node:
 	return _pickup_parent if is_instance_valid(_pickup_parent) else null
 
@@ -153,6 +163,7 @@ func _has_valid_dependencies() -> bool:
 		and is_instance_valid(_run_controller)
 		and is_instance_valid(_experience_system)
 		and is_instance_valid(_player)
+		and is_instance_valid(_arena_layout)
 		and is_instance_valid(_pickup_parent)
 		and _pickup_parent.is_inside_tree()
 	)

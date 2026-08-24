@@ -3,6 +3,8 @@ extends Node2D
 
 signal collected(pickup: ExperiencePickup, amount: int)
 
+const VISUAL_RADIUS := 10.0
+
 @export_range(1, 1000000, 1, "or_greater") var experience_amount := 1:
 	set(value):
 		experience_amount = maxi(value, 1)
@@ -110,6 +112,10 @@ func get_target() -> Player:
 
 func get_run_controller() -> RunController:
 	return _run_controller if is_instance_valid(_run_controller) else null
+
+
+func get_confinement_radius() -> float:
+	return maxf(VISUAL_RADIUS, collect_radius)
 
 
 func _can_advance() -> bool:

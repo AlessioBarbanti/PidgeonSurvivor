@@ -115,6 +115,7 @@ func _ready() -> void:
 		_enemy_spawner,
 		_experience_system,
 		_player,
+		_arena_layout,
 		_pickups
 	)
 	_weapon_controller.configure(
@@ -822,6 +823,8 @@ func _validate_current_contract() -> bool:
 		failures.append("ExperienceDropper non collegato a ExperienceSystem.")
 	if _experience_dropper.get_player() != _player:
 		failures.append("ExperienceDropper non collegato al Player.")
+	if _experience_dropper.get_arena_layout() != _arena_layout:
+		failures.append("ExperienceDropper non collegato ad ArenaLayout.")
 	if _experience_dropper.get_pickup_parent() != _pickups:
 		failures.append("ExperienceDropper non collegato al contenitore Pickups.")
 	if _experience_dropper.pickup_scene != null:
