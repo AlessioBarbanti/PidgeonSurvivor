@@ -2,10 +2,8 @@
 
 ## Stato
 
-Implementazione completata il 24 agosto 2026. Smoke dedicato e regressione
-completa verdi; export Windows e APK ARM64 prodotti. Restano da chiudere la
-verifica runtime su Pixel 9; il comportamento Windows è stato approvato il
-24 agosto 2026 prima del commit dedicato.
+Implementazione, commit dedicato e gate Windows/Pixel 9 completati il 24 agosto
+2026. Smoke dedicato, regressione completa ed export sono verdi.
 
 ## Contratto implementato
 
@@ -69,17 +67,20 @@ argomento usano i valori normali.
 - export Android debug: completato con exit code `0`; l'APK è valido come
   controllo statico, contiene soltanto `arm64-v8a`, ha `minSdk 31` e
   `targetSdk 36`;
-- `adb devices -l`: nessun dispositivo collegato, quindi nessuna verifica
-  runtime Android è dichiarata.
+- installazione e cold launch sul Pixel 9 `tokay`, Android 17/API 37, riusciti;
+- joystick con un dito e Powerslide col secondo, direzione fotografata, scia
+  rettilinea, pausa, Home/lock, ripresa esplicita e restart approvati;
+- log runtime privi di `SCRIPT ERROR`, `FATAL EXCEPTION`, `ANR`, `SMOKE_FAIL` o
+  `CONTRACT_FAIL`.
 
 | Artefatto | Byte | SHA-256 |
 |---|---:|---|
 | `exports/windows/FriendshipSurvival.exe` | `103033344` | `47A4D4E119346D53E6A435986935BAC1C68E08DFEADF531F1422707F75061BCA` |
 | `exports/windows/FriendshipSurvival.pck` | `960672` | `665893FF2B94CD49427BEFE555F84BCDA2D7C5F4752A342BF2D893EB6BF23DB4` |
-| `exports/android/friendship-survival-debug.apk` | `84782578` | `4B76719FE0DC96A44E4F934C9DAADC65EEF68329E4C5F9A82E6465B36047E89C` |
+| `exports/android/friendship-survival-debug.apk` | `84819674` | `67D3F3ADC1FC8DFA955C89C5507AABA29C8EEEB315DEFF6B9D890CE03D95CD7D` |
 
-## Gate manuali aperti
+## Gate manuali chiusi
 
-- Pixel 9: direzione dopo rilascio joystick e attivazione con il secondo dito;
-- pausa, Home/lock, Back, ripresa esplicita e restart durante teletrasporto e scia;
-- controllo visivo 16:9, 20:9 e 4:3.
+Il Pixel 9 ha confermato direzione dopo rilascio, multitouch reale e scia
+indipendente dai cambi successivi del joystick. I layout restano coperti dagli
+smoke 16:9, 20:9 e 4:3; il commit della slice è `3a451c2`.

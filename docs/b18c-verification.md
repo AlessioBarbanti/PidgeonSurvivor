@@ -2,9 +2,8 @@
 
 ## Stato
 
-Implementazione completata il 23 agosto 2026. Gate automatici verdi; verifica
-visiva Windows e prova su Android fisico ancora da eseguire insieme prima di
-commit e push.
+Implementazione e commit dedicato completati. Gate automatici, runtime e
+verifica visiva Windows/Pixel 9 chiusi il 24 agosto 2026.
 
 ## Contratto implementato
 
@@ -57,14 +56,16 @@ Risultati del 23 agosto 2026:
 - smoke dell'export Windows a `1280×720`: exit `0`, `B18C_CONTRACT_OK` presente
   e nessun errore runtime.
 
-## Gate manuali prima del push
+## Gate manuali chiusi
 
-- Windows: verificare visivamente posa ferma, animazione continua e flip senza
-  scatti almeno con Magno e Lollo, confermando anche l'assenza di cannoncino e
-  fondo circolare azzurro;
-- Android reale: tenere il joystick con un dito, cambiare più volte direzione,
-  rilasciare e verificare che la posa ferma conservi il lato corretto;
-- durante la stessa prova usare il secondo dito sul pulsante abilità, poi
-  verificare pausa, ripresa esplicita, focus/Home/Back e restart;
-- confermare che il cannoncino non sia più visibile e che lo sprite resti
-  leggibile a 16:9 e 20:9; il 4:3 resta nel gate desktop/tablet.
+- Windows: Magno e Lollo verificati in posa neutra, movimento a destra/sinistra
+  e flip. Le catture dirette della finestra Godot confermano animazione leggibile
+  e assenza di cannoncino e fondo circolare azzurro;
+- Pixel 9 `tokay`, Android 17/API 37: joystick fisico, cambi di direzione,
+  rilascio, posa ferma sul lato persistente e abilità col secondo dito approvati;
+- pausa, Home, lock/sblocco, ripresa esplicita e restart non lasciano input,
+  direzione o grafica residui. La posizione resta invariata dopo lock/resume con
+  la correzione lifecycle descritta in B18L.
+
+Le catture Windows restano locali in `exports/screenshots/`, directory ignorata
+da Git. Il commit della slice è `ceeaa47`.

@@ -2,10 +2,8 @@
 
 ## Stato
 
-Implementazione completata il 24 agosto 2026. Smoke dedicato, regressione
-completa, verifica toolchain ed export Windows/Android sono verdi. La verifica
-visiva Windows è stata approvata il 24 agosto 2026; resta aperto soltanto il
-runtime su dispositivo Android reale.
+Implementazione, commit dedicato e gate Windows/Pixel 9 completati il 24 agosto
+2026. Smoke dedicato, regressione completa, toolchain ed export sono verdi.
 
 ## Contratto implementato
 
@@ -46,20 +44,22 @@ profilo con effetto attivo.
   `com.ilgioco.friendshipsurvival`, versione `0.1.0`/code 1, `minSdk 31`,
   `targetSdk 36`, `compileSdk 36`, sola ABI `arm64-v8a` e firma APK Signature
   Scheme v2 valida;
-- `adb devices -l`: nessun dispositivo collegato, quindi nessuna verifica
-  runtime Android è dichiarata.
+- installazione e cold launch sul Pixel 9 `tokay`, Android 17/API 37, riusciti;
+- joystick con un dito, attivazione col secondo e area centrata su Alea durante
+  i cambi di direzione approvati;
+- log runtime privi di errori o marker di fallimento.
 
 | Artefatto | Byte | SHA-256 |
 |---|---:|---|
 | `exports/windows/FriendshipSurvival.exe` | `103033344` | `47A4D4E119346D53E6A435986935BAC1C68E08DFEADF531F1422707F75061BCA` |
 | `exports/windows/FriendshipSurvival.pck` | `967384` | `646BE650E8DB02734603C9BDD65C7B12E9D5765E14A9CC3314FC31DF929C6C49` |
-| `exports/android/friendship-survival-debug.apk` | `84789461` | `E9F5918F3A9C952621870997396EB9ED6B2CB1D44A13DDE7F70404773ABC7A80` |
+| `exports/android/friendship-survival-debug.apk` | `84819674` | `67D3F3ADC1FC8DFA955C89C5507AABA29C8EEEB315DEFF6B9D890CE03D95CD7D` |
 
-## Gate manuali aperti
+## Gate manuali chiusi
 
-- Pixel 9: movimento con joystick e attivazione con il secondo dito;
-- pausa, Home/lock, Back, ripresa esplicita, restart e cambio personaggio;
-- controllo visivo 16:9, 20:9 e 4:3.
+Il Pixel 9 ha confermato il multitouch fisico e l'inseguimento dell'area durante
+il movimento. Pausa, lifecycle e cleanup restano coperti dalla suite composta e
+dalla sessione condivisa B18C–B18L. Il commit della slice è `bcd0e12`.
 
 ## Gate Windows approvato
 

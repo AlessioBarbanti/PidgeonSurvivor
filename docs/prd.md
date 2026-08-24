@@ -324,11 +324,20 @@ nemici vicini.
 - barra della vita in alto a sinistra;
 - barra dell'esperienza in alto, a tutta larghezza;
 - timer di gioco in alto al centro;
-- icona e nome dell'abilità attiva;
-- indicatore leggibile del cooldown residuo e feedback visivo/sonoro quando
-  l'abilità torna disponibile;
-- pulsante dell'abilità attiva su dispositivi touch, separato dal joystick e
-  posizionato nella safe area.
+- icona dell'abilità attiva come unico controllo visivo touch, separata dal
+  joystick e posizionata nella safe area;
+- indicatore radiale leggibile del cooldown residuo e feedback visivo/sonoro
+  quando l'abilità torna disponibile.
+
+Il pulsante touch B18K coincide con l'icona dell'abilità equipaggiata e misura
+`64×64` unità logiche. Durante il cooldown una maschera radiale rappresenta la
+frazione residua e mostra al centro i secondi interi arrotondati per eccesso;
+allo zero maschera e numero spariscono e un anello luminoso comunica che
+l'icona è nuovamente attivabile. Nome, label di stato, card e rettangolo del
+pulsante non vengono disegnati: fuori dal cooldown resta visibile soltanto
+l'icona. Il feedback osserva lo stesso clock gameplay di `AbilityController`:
+pausa, level up, Boss intro e terminali non consumano tempo, mentre il restart
+riparte senza residui.
 
 **Schermata level up:** pausa totale del gameplay con overlay scuro e tre
 riquadri selezionabili con mouse, tastiera, controller o touch.
@@ -362,12 +371,20 @@ istantanea del joystick quando vengono attivate.
 
 La presentazione B18B usa una fascia superiore compatta da `64` unità logiche,
 seguita da una linea XP da `8`; ritratto, livello e vita occupano il lato sinistro,
-il timer resta centrato e pausa usa un target touch da almeno `44` unità. La card
-dell'abilità misura `246×94` unità logiche e conserva lo stesso minimo touch.
-Il joystick mantiene area di acquisizione `224×224` e raggio input `84`, ma viene
-disegnato con raggio `68` e opacità ridotta a riposo. Il pavimento è procedurale e
-irregolare, privo di griglia o bordo ciano regolari; flash, squash, hit spark,
-particelle di morte e impulso di prontezza sono esclusivamente presentazionali.
+il timer resta centrato e pausa usa un target touch da almeno `44` unità. Il
+pulsante abilità B18K misura `64×64` unità logiche. Il joystick B18L non usa più
+una zona fissa: il primo tocco valido nella safe area ne determina l'origine,
+che resta posseduta dallo stesso dito fino a rilascio o cancellazione. HUD,
+pulsante abilità, Boss UI e overlay non sono origini valide; un secondo dito
+resta libero di attivare l'abilità. Deadzone e raggio input restano quelli della
+baseline (`84`), mentre il disegno usa raggio `68` e sparisce al neutro. Il
+lock Android può esporre per pochi frame una finestra portrait anche se il gioco
+è bloccato in landscape: quel layout transitorio non modifica il playfield già
+stabile e non riclampa il Player mentre la run è sospesa. Dopo sblocco la run
+resta in pausa fino a `RIPRENDI` e conserva posizione, direzione e input neutro.
+Il pavimento è procedurale e irregolare, privo di griglia o bordo ciano regolari;
+flash, squash, hit spark, particelle di morte e impulso di prontezza sono
+esclusivamente presentazionali.
 
 **Audio:** gli eventi di combattimento, progressione, abilità, Boss e terminali
 usano cue brevi su un bus SFX polifonico. Il menu di pausa offre volume lineare e

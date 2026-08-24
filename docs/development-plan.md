@@ -2,7 +2,7 @@
 
 Fonte: [`prd.md`](./prd.md)  
 Decisioni: [`decision-log.md`](./decision-log.md)  
-Stato: il ciclo operativo corrente è B18C–B18M. B18C, B18D, B18F e B18I sono in verifica; B18E, B18G, B18H, B18J, B18K, B18L e B18M hanno contratti sufficienti per iniziare. B19 resta bloccato fino al freeze dell'intero ciclo e alla chiusura dei gate Windows/Android pertinenti
+Stato: il ciclo operativo corrente è B18C–B18M. B18C, B18D, B18F, B18I, B18K e B18L sono completati con tutti i gate automatici, Windows e Pixel 9 chiusi. B18E, B18G, B18H, B18J e B18M hanno contratti sufficienti per iniziare. B19 resta bloccato fino al freeze dell'intero ciclo e alla chiusura dei gate Windows/Android pertinenti
 Obiettivo: trasformare il concept in un MVP completo, verificabile su Windows e Android; Web resta un target secondario
 
 Fonte di verità operativa: questo documento contiene roadmap, stato e ordine delle prossime attività. Eventuali note temporanee devono essere integrate qui e poi rimosse.
@@ -391,8 +391,9 @@ Prima iterazione, senza introdurre nuovi asset obbligatori:
 - trasformare la progressione XP in una linea alta `6–8` unità logiche sotto la
   fascia; non mostrare `ONDATA` finché il Director non possiede vere ondate
   numerate;
-- ridurre il raggio visivo del joystick da `84` a circa `68` unità logiche e la
-  sua opacità a riposo, conservando invariati area touch e comportamento;
+- ridurre il raggio visivo del joystick da `84` a circa `68` unità logiche; la
+  prima baseline conserva area touch e comportamento, poi B18L sostituisce la
+  zona fissa con l'origine dinamica senza cambiare deadzone o raggio input;
 - ridurre la card dell'abilità da circa `320×128` a `230–250×88–96` unità
   logiche, mantenendo icona, stato, cooldown e un target touch ampio;
 - eliminare griglia regolare e grande rettangolo ciano dell'arena; introdurre
@@ -430,26 +431,28 @@ significato:
 - `PRONTO`: requisiti sufficienti per iniziare;
 - `IN CORSO`: implementazione aperta nel worktree;
 - `IN VERIFICA`: codice e test automatici completati, gate manuali ancora aperti;
+- `VERIFICATO`: tutti i gate pertinenti sono chiusi e le evidenze sono registrate,
+  ma il worktree attende ancora il commit dedicato;
 - `COMPLETATO`: tutti i gate pertinenti sono chiusi, le evidenze sono registrate
   e la modifica appartiene a un commit dedicato.
 
 | ID | Blocco | Stato | Dipendenze o gate aperti |
 |---|---|---|---|
-| B18C | Player animato e direzione persistente | IN VERIFICA | Conferma visiva finale Windows e Android reale |
-| B18D | Powerslide di Bea | IN VERIFICA | Runtime Android reale |
+| B18C | Player animato e direzione persistente | COMPLETATO | Gate Windows e Pixel 9 chiusi il 24 agosto 2026 |
+| B18D | Powerslide di Bea | COMPLETATO | Gate Windows e Pixel 9 chiusi il 24 agosto 2026 |
 | B18E | Fulmini di Zat | PRONTO | Gate accessibilità, viewport e runtime Android reale |
-| B18F | Abilità inseguitrice di Alea | IN VERIFICA | Runtime Android reale |
+| B18F | Abilità inseguitrice di Alea | COMPLETATO | Gate Windows e Pixel 9 chiusi il 24 agosto 2026 |
 | B18G | Rank delle abilità principali | PRONTO | Implementazione dei profili rank e integrazione level-up |
 | B18H | Nemici piccione | PRONTO | Produzione degli sprite originali base e speciale |
-| B18I | XP confinato nell'arena | IN VERIFICA | Runtime Android reale |
+| B18I | XP confinato nell'arena | COMPLETATO | Gate chiusi; commit dedicato `e58cbd0` |
 | B18J | Grigliata estiva | PRONTO | Implementazione dati, cura del delta e reset |
-| B18K | Pulsante abilità con icona e cooldown circolare | PRONTO | Icone abilità disponibili; gate HUD/aspect ratio |
-| B18L | Joystick dinamico | PRONTO | Gate lifecycle e multitouch fisico obbligatorio |
+| B18K | Pulsante abilità con icona e cooldown circolare | COMPLETATO | Gate chiusi; commit dedicato `81b47f6` |
+| B18L | Joystick dinamico | COMPLETATO | Gate chiusi, inclusa regressione lock/resume; commit dedicato `d6625d7` |
 | B18M | Migliorie grafiche delle abilità | PRONTO | Produzione VFX procedurali e manifest degli asset originali |
 
 #### B18C — Player animato e direzione persistente
 
-Stato: `IN VERIFICA`.
+Stato: `COMPLETATO`.
 
 - [x] Rimuovere il cannoncino visibile e il vecchio fondo circolare azzurro.
 - [x] Animare il personaggio durante il movimento e mostrare una posa ferma al
@@ -462,14 +465,16 @@ Stato: `IN VERIFICA`.
   contiene per loro una sola posa laterale valida.
 - [x] Smoke dedicato, suite completa `22/22`, project smoke ed export/smoke
   Windows senza errori runtime.
-- [ ] Conferma visiva finale Windows dopo le correzioni a cannoncino/background.
-- [ ] Test Android reale su Pixel 9.
+- [x] Conferma visiva finale Windows dopo le correzioni a cannoncino/background:
+  posa neutra, movimento e flip verificati sulla build corrente.
+- [x] Test Android reale su Pixel 9: animazione, direzione persistente, pausa,
+  lock/resume, restart e multitouch approvati il 24 agosto 2026.
 
 Dettagli ed evidenze: [`b18c-verification.md`](./b18c-verification.md).
 
 #### B18D — Powerslide di Bea
 
-Stato: `IN VERIFICA`.
+Stato: `COMPLETATO`.
 
 - [x] Rinominare l'attiva da **Scia di Fuoco Z** a **Powerslide** e sostituire
   l'icona con il pattino inline Pinhead CC0, registrandone provenienza e licenza.
@@ -484,7 +489,9 @@ Stato: `IN VERIFICA`.
   project smoke, export e smoke Windows con `B18D_CONTRACT_OK`.
 - [x] Export statico APK ARM64, che non equivale a verifica runtime Android.
 - [x] Verifica manuale Windows approvata il 24 agosto 2026.
-- [ ] Test Android reale: joystick con un dito, Powerslide con il secondo.
+- [x] Test Android reale: joystick con un dito, Powerslide con il secondo,
+  scia rettilinea indipendente dall'input successivo, pausa e restart approvati
+  sul Pixel 9 il 24 agosto 2026.
 
 Dettagli ed evidenze: [`b18d-verification.md`](./b18d-verification.md).
 
@@ -521,7 +528,7 @@ Contratto definitivo:
 
 #### B18F — Abilità inseguitrice di Alea
 
-Stato: `IN VERIFICA`.
+Stato: `COMPLETATO`.
 
 - [x] Centrare l'effetto sul personaggio per tutta la durata, aggiornandolo
   dalla posizione corrente del `Player` anziché dal punto di lancio.
@@ -530,7 +537,9 @@ Stato: `IN VERIFICA`.
 - [x] Suite completa e project smoke `24/24`, export e smoke Windows.
 - [x] Verifica manuale Windows approvata il 24 agosto 2026.
 - [x] Export e controlli statici APK Android ARM64.
-- [ ] Runtime Android reale.
+- [x] Runtime Android reale: joystick con un dito, attivazione con il secondo e
+  area centrata su Alea durante il movimento approvati sul Pixel 9 il 24 agosto
+  2026.
 
 Dettagli ed evidenze: [`b18f-verification.md`](./b18f-verification.md).
 
@@ -588,7 +597,7 @@ Stato: `PRONTO`.
 
 #### B18I — XP confinato nell'arena
 
-Stato: `IN VERIFICA`.
+Stato: `COMPLETATO`.
 
 - [x] Correggere tramite il playfield di `ArenaLayout` la posizione dell'XP
   generato da una morte fuori arena.
@@ -598,7 +607,8 @@ Stato: `IN VERIFICA`.
   `B18I_XP_ARENA_CONFINEMENT_SMOKE_OK`.
 - [x] Regressione completa, project smoke, export e runtime Windows.
 - [x] Export e controlli statici APK Android ARM64.
-- [ ] Runtime Android reale su un device ARM64.
+- [x] Runtime Android reale su Pixel 9 ARM64: drop ai bordi interamente interni
+  e raggiungibili, raccolta e cleanup al restart approvati il 24 agosto 2026.
 
 Dettagli ed evidenze: [`b18i-verification.md`](./b18i-verification.md).
 
@@ -620,27 +630,49 @@ Stato: `PRONTO`.
 
 #### B18K — Pulsante abilità con cooldown circolare
 
-Stato: `PRONTO`.
+Stato: `COMPLETATO`.
 
-- [ ] Usare l'icona dell'abilità selezionata come superficie di attivazione.
-- [ ] Mostrare un riempimento circolare durante il cooldown.
-- [ ] Mostrare il tempo residuo al centro.
-- [ ] Quando l'abilità è pronta, rimuovere il timer e rendere l'icona chiaramente
+- [x] Usare l'icona dell'abilità selezionata come superficie di attivazione.
+- [x] Mostrare un riempimento circolare durante il cooldown.
+- [x] Mostrare il tempo residuo al centro.
+- [x] Quando l'abilità è pronta, rimuovere il timer e rendere l'icona chiaramente
   attivabile.
-- [ ] Conservare un target touch di almeno `44–48` unità logiche.
+- [x] Rimuovere nome, label di stato, card e sfondo rettangolare: fuori dal
+  cooldown deve restare visibile soltanto l'icona.
+- [x] Conservare un target touch di `64×64` unità logiche.
+- [x] Smoke dedicato, regressione `26/26`, project smoke, export e runtime
+  Windows con `B18K_CONTRACT_OK`; layout 16:9, 20:9 e 4:3 verificati.
+- [x] Export APK ARM64 e controlli statici API `31`/`36` e firma v2.
+- [x] Runtime touch Android reale: pausa, restart, cooldown circolare e
+  attivazioni ripetute col secondo dito mentre il joystick possiede il primo
+  approvati sul Pixel 9 il 24 agosto 2026.
+
+Dettagli ed evidenze: [`b18k-verification.md`](./b18k-verification.md).
 
 #### B18L — Joystick dinamico
 
-Stato: `PRONTO`.
+Stato: `COMPLETATO`.
 
-- [ ] Il primo dito che tocca un'area di gioco valida determina origine e
+- [x] Il primo dito che tocca un'area di gioco valida determina origine e
   comparsa del joystick.
-- [ ] Calcolare il movimento rispetto all'origine e mantenere l'ownership dello
+- [x] Calcolare il movimento rispetto all'origine e mantenere l'ownership dello
   stesso dito.
-- [ ] Nascondere il joystick al rilascio e ricrearlo al tocco successivo.
-- [ ] Ignorare i tocchi iniziati sopra HUD, pulsante abilità o overlay.
-- [ ] Conservare l'attivazione dell'abilità con un secondo dito.
-- [ ] Verificare neutral-to-rearm, pausa, focus, Home, lock, Back e restart.
+- [x] Nascondere il joystick al rilascio e ricrearlo al tocco successivo.
+- [x] Ignorare i tocchi iniziati sopra HUD, Boss UI, pulsante abilità o overlay.
+- [x] Conservare l'attivazione dell'abilità con un secondo dito senza lasciare
+  al `Control` una hit area GUI che lo intercetti.
+- [x] Smoke dedicato per ownership, secondo dito, neutral-to-rearm, pausa,
+  focus, cancellazione touch, restart e layout 16:9, 20:9 e 4:3.
+- [x] Regressione completa `27/27`, project smoke, export e runtime Windows con
+  `B18L_CONTRACT_OK`; export APK ARM64 e build Gradle pulita.
+- [x] Installazione e cold launch su Pixel 9 Android 17/API 37, drag floating a
+  un dito, Back, Home/ritorno, pausa esplicita e log runtime puliti.
+- [x] Gate manuale Pixel 9: due dita fisiche joystick più abilità, ripresa dopo
+  sblocco sicuro e restart senza direzioni o grafica residue. La prima prova ha
+  rilevato uno spostamento causato dal passaggio portrait transitorio del lock;
+  la correzione è coperta da smoke e la controprova fisica conserva la posizione.
+
+Dettagli ed evidenze: [`b18l-verification.md`](./b18l-verification.md).
 
 #### B18M — Migliorie grafiche delle abilità
 
@@ -775,13 +807,14 @@ Un'attività è finita solo quando:
 
 Ordine operativo immediato:
 
-1. chiudere in un'unica sessione Windows/Pixel 9 i gate B18C, B18D, B18F e B18I: animazione e posa, Powerslide, area inseguitrice, drop ai bordi, pausa, restart e multitouch; chiudere nello stesso pass i gate manuali residui B18B a 20:9 e 4:3;
-2. completare B18K, già `PRONTO`: icona come pulsante, cooldown circolare, secondi residui, stato pronto e target touch da almeno `44–48` unità logiche;
-3. completare B18L, già `PRONTO`: joystick generato dal primo tocco valido, ownership fino al rilascio, esclusione di HUD/overlay e attivazione dell'abilità con il secondo dito; chiudere i gate lifecycle e multitouch su Pixel 9;
-4. implementare e verificare B18E dal contratto congelato: `60 s` al rank `1`, preavviso `0,45 s`, flash singolo accessibile sull'intero viewport, target risolti all'impatto, percentuali normali/Boss, pausa e cleanup;
-5. implementare e verificare B18G e B18J sul framework level-up: snapshot specifici fino al rank `5`, offerte senza duplicati, aumento HP `×1,15` con cura del delta, stacking, cap e reset della run;
-6. completare B18H e B18M dalla direzione originale approvata: piccioni base/speciale, VFX procedurali e icone coerenti, con manifest e budget Android;
-7. eseguire il gate combinato B17A–B18M su Windows e Pixel 9, il gate percettivo B18 con Boss a `04:00`/`2400 HP` e la matrice 16:9/20:9/4:3; avviare B19 solo dopo il freeze documentato dell'intero ciclo.
+1. creare commit dedicati per B18I, B18K e B18L, includendo nel commit B18L la
+   regressione lock/resume emersa e chiusa sul Pixel 9; i gate tecnici e manuali
+   delle tre slice sono già chiusi;
+2. chiudere i gate manuali residui B18B a 20:9 e 4:3;
+3. implementare e verificare B18E dal contratto congelato: `60 s` al rank `1`, preavviso `0,45 s`, flash singolo accessibile sull'intero viewport, target risolti all'impatto, percentuali normali/Boss, pausa e cleanup;
+4. implementare e verificare B18G e B18J sul framework level-up: snapshot specifici fino al rank `5`, offerte senza duplicati, aumento HP `×1,15` con cura del delta, stacking, cap e reset della run;
+5. completare B18H e B18M dalla direzione originale approvata: piccioni base/speciale, VFX procedurali e icone coerenti, con manifest e budget Android;
+6. eseguire il gate combinato B17A–B18M su Windows e Pixel 9, il gate percettivo B18 con Boss a `04:00`/`2400 HP` e la matrice 16:9/20:9/4:3; avviare B19 solo dopo il freeze documentato dell'intero ciclo.
 
 Il setup host e gli artefatti generati il 12 agosto 2026 sono registrati in
 [`m0-verification.md`](./m0-verification.md).
@@ -835,3 +868,7 @@ Gran Piroetta inseguitrice di Alea e gate residuo Android sono registrati in
 [`b18f-verification.md`](./b18f-verification.md).
 Confinamento dei drop XP nel playfield e gate residuo Android sono registrati
 in [`b18i-verification.md`](./b18i-verification.md).
+Pulsante-icona, cooldown radiale, timer centrale e gate residuo Android B18K
+sono registrati in [`b18k-verification.md`](./b18k-verification.md).
+Joystick dinamico, ownership del primo dito e gate fisico condiviso B18K/B18L
+sono registrati in [`b18l-verification.md`](./b18l-verification.md).
