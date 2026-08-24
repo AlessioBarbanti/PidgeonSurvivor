@@ -40,6 +40,12 @@ signal speed_modifiers_changed(enemy: BaseEnemy, effective_multiplier: float)
 		outline_width = maxf(value, 0.0)
 		queue_redraw()
 
+@export_enum("Base", "Special") var visual_variant := 0:
+	set(value):
+		visual_variant = clampi(value, 0, 1)
+		if is_node_ready():
+			_sync_enemy_sprite_animation()
+
 @export_group("Combat Feedback")
 @export_range(0.0, 1.0, 0.01) var damage_flash_duration := 0.08
 @export_range(0.0, 1.0, 0.01) var hit_reaction_duration := 0.14
@@ -60,6 +66,7 @@ var _speed_modifiers: Dictionary = {}
 @onready var _hurtbox_collision_shape: CollisionShape2D = %HurtboxCollisionShape
 @onready var _contact_damage: ContactDamage = %ContactDamage
 @onready var _contact_collision_shape: CollisionShape2D = %ContactCollisionShape
+@onready var _enemy_sprite := get_node_or_null("EnemySprite") as AnimatedSprite2D
 
 
 func _ready() -> void:
@@ -72,6 +79,8 @@ func _ready() -> void:
 	_contact_damage.enable()
 	_connect_run_controller()
 	set_process(false)
+	_sync_enemy_sprite_animation()
+	_sync_enemy_sprite_feedback()
 	queue_redraw()
 
 
@@ -92,6 +101,7 @@ func _process(delta: float) -> void:
 		_hit_reaction_remaining - safe_delta,
 		0.0
 	)
+	_sync_enemy_sprite_feedback()
 	queue_redraw()
 	if (
 		is_zero_approx(_damage_flash_remaining)
@@ -117,40 +127,42 @@ func _physics_process(delta: float) -> void:
 	if offset_to_target.is_zero_approx():
 		velocity = Vector2.ZERO
 		return
+	_sync_enemy_sprite_facing(offset_to_target)
 
 	velocity = offset_to_target.normalized() * get_effective_move_speed()
 	move_and_slide()
 
 
 func _draw() -> void:
-	draw_set_transform(Vector2.ZERO, 0.0, get_visual_hit_scale())
-	var visible_body_color := body_color
-	if get_speed_multiplier() < 1.0 - 0.0001:
-		visible_body_color = visible_body_color.lerp(
-			Color(0.25, 0.68, 1.0, visible_body_color.a),
-			0.38
+	if not is_instance_valid(_enemy_sprite):
+		draw_set_transform(Vector2.ZERO, 0.0, get_visual_hit_scale())
+		var visible_body_color := body_color
+		if get_speed_multiplier() < 1.0 - 0.0001:
+			visible_body_color = visible_body_color.lerp(
+				Color(0.25, 0.68, 1.0, visible_body_color.a),
+				0.38
+			)
+		if _damage_flash_remaining > 0.0:
+			visible_body_color = visible_body_color.lerp(Color.WHITE, 0.82)
+		draw_circle(
+			Vector2.ZERO,
+			collision_radius + outline_width,
+			outline_color
 		)
-	if _damage_flash_remaining > 0.0:
-		visible_body_color = visible_body_color.lerp(Color.WHITE, 0.82)
-	draw_circle(
-		Vector2.ZERO,
-		collision_radius + outline_width,
-		outline_color
-	)
-	draw_circle(Vector2.ZERO, collision_radius, visible_body_color)
+		draw_circle(Vector2.ZERO, collision_radius, visible_body_color)
 
-	var eye_offset := Vector2(collision_radius * 0.35, -collision_radius * 0.2)
-	var eye_radius := collision_radius * 0.13
-	draw_circle(Vector2(-eye_offset.x, eye_offset.y), eye_radius, accent_color)
-	draw_circle(eye_offset, eye_radius, accent_color)
-	draw_line(
-		Vector2(-collision_radius * 0.4, collision_radius * 0.35),
-		Vector2(collision_radius * 0.4, collision_radius * 0.35),
-		outline_color,
-		maxf(outline_width * 0.75, 1.0),
-		true
-	)
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		var eye_offset := Vector2(collision_radius * 0.35, -collision_radius * 0.2)
+		var eye_radius := collision_radius * 0.13
+		draw_circle(Vector2(-eye_offset.x, eye_offset.y), eye_radius, accent_color)
+		draw_circle(eye_offset, eye_radius, accent_color)
+		draw_line(
+			Vector2(-collision_radius * 0.4, collision_radius * 0.35),
+			Vector2(collision_radius * 0.4, collision_radius * 0.35),
+			outline_color,
+			maxf(outline_width * 0.75, 1.0),
+			true
+		)
+		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	_draw_health_bar()
 
 
@@ -193,6 +205,7 @@ func set_speed_modifier(modifier_id: StringName, multiplier: float) -> bool:
 		return false
 	_speed_modifiers[modifier_id] = multiplier
 	speed_modifiers_changed.emit(self, get_speed_multiplier())
+	_sync_enemy_sprite_feedback()
 	queue_redraw()
 	return true
 
@@ -201,6 +214,7 @@ func remove_speed_modifier(modifier_id: StringName) -> bool:
 	if not _speed_modifiers.erase(modifier_id):
 		return false
 	speed_modifiers_changed.emit(self, get_speed_multiplier())
+	_sync_enemy_sprite_feedback()
 	queue_redraw()
 	return true
 
@@ -210,6 +224,7 @@ func clear_speed_modifiers() -> void:
 		return
 	_speed_modifiers.clear()
 	speed_modifiers_changed.emit(self, 1.0)
+	_sync_enemy_sprite_feedback()
 	queue_redraw()
 
 
@@ -258,6 +273,18 @@ func get_visual_hit_scale() -> Vector2:
 	)
 
 
+func get_visual_variant() -> int:
+	return visual_variant
+
+
+func set_visual_variant(value: int) -> void:
+	visual_variant = value
+
+
+func get_enemy_sprite() -> AnimatedSprite2D:
+	return _enemy_sprite if is_instance_valid(_enemy_sprite) else null
+
+
 func get_health_component() -> HealthComponent:
 	return _health_component if is_instance_valid(_health_component) else null
 
@@ -296,6 +323,7 @@ func set_run_controller(value: RunController) -> void:
 	_connect_run_controller()
 	if not is_instance_valid(_run_controller) or not _run_controller.is_running():
 		velocity = Vector2.ZERO
+	_sync_enemy_sprite_animation()
 
 
 func get_run_controller() -> RunController:
@@ -311,6 +339,7 @@ func clear_chase_dependencies() -> void:
 	velocity = Vector2.ZERO
 	_clear_knockback()
 	clear_speed_modifiers()
+	_sync_enemy_sprite_animation()
 
 
 func _can_chase_target() -> bool:
@@ -339,6 +368,7 @@ func _disconnect_run_controller() -> void:
 func _on_run_state_changed(_previous_state: int, _current_state: int) -> void:
 	if not is_instance_valid(_run_controller) or not _run_controller.is_running():
 		velocity = Vector2.ZERO
+	_sync_enemy_sprite_animation()
 
 
 func _make_collision_shapes_unique() -> void:
@@ -412,6 +442,7 @@ func _on_damaged(amount: float, health_current: float) -> void:
 		_damage_flash_remaining > 0.0
 		or _hit_reaction_remaining > 0.0
 	)
+	_sync_enemy_sprite_feedback()
 	damaged.emit(self, amount, health_current)
 	queue_redraw()
 
@@ -432,6 +463,37 @@ func _on_died() -> void:
 func _clear_knockback() -> void:
 	_knockback_velocity = Vector2.ZERO
 	_knockback_remaining = 0.0
+
+
+func _sync_enemy_sprite_animation() -> void:
+	if not is_instance_valid(_enemy_sprite):
+		return
+	var animation_name := &"special" if visual_variant == 1 else &"base"
+	if _enemy_sprite.animation != animation_name:
+		_enemy_sprite.animation = animation_name
+		_enemy_sprite.frame = 0
+	if is_instance_valid(_run_controller) and _run_controller.is_running():
+		_enemy_sprite.play(animation_name)
+	else:
+		_enemy_sprite.pause()
+
+
+func _sync_enemy_sprite_facing(offset_to_target: Vector2) -> void:
+	if not is_instance_valid(_enemy_sprite) or is_zero_approx(offset_to_target.x):
+		return
+	_enemy_sprite.flip_h = offset_to_target.x < 0.0
+
+
+func _sync_enemy_sprite_feedback() -> void:
+	if not is_instance_valid(_enemy_sprite):
+		return
+	_enemy_sprite.scale = get_visual_hit_scale()
+	if _damage_flash_remaining > 0.0:
+		_enemy_sprite.self_modulate = Color(1.35, 1.35, 1.35, 1.0)
+	elif get_speed_multiplier() < 1.0 - 0.0001:
+		_enemy_sprite.self_modulate = Color(0.66, 0.84, 1.0, 1.0)
+	else:
+		_enemy_sprite.self_modulate = Color.WHITE
 
 
 func _draw_health_bar() -> void:

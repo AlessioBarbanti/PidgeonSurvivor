@@ -1068,6 +1068,18 @@ func _validate_current_contract() -> bool:
 			var contact := enemy_candidate.get_node_or_null("ContactDamage")
 			if not contact is ContactDamage:
 				failures.append("BaseEnemy privo di ContactDamage.")
+			var enemy_sprite := (
+				enemy_candidate.get_node_or_null("EnemySprite") as AnimatedSprite2D
+			)
+			if enemy_sprite == null:
+				failures.append("B18H richiede il piccione animato sul nemico ordinario.")
+			elif (
+				not enemy_sprite.sprite_frames.has_animation(&"base")
+				or not enemy_sprite.sprite_frames.has_animation(&"special")
+				or enemy_sprite.sprite_frames.get_frame_count(&"base") != 3
+				or enemy_sprite.sprite_frames.get_frame_count(&"special") != 3
+			):
+				failures.append("B18H richiede tre pose per i piccioni base e speciale.")
 		else:
 			failures.append("La scena nemico non istanzia BaseEnemy.")
 		if is_instance_valid(enemy_candidate):
@@ -1099,6 +1111,7 @@ func _validate_current_contract() -> bool:
 		print("B18E_CONTRACT_OK")
 		print("B18F_CONTRACT_OK")
 		print("B18G_CONTRACT_OK")
+		print("B18H_CONTRACT_OK")
 		print("B18I_CONTRACT_OK")
 		print("B18J_CONTRACT_OK")
 		print("B18K_CONTRACT_OK")

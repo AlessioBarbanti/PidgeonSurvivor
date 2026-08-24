@@ -2,7 +2,7 @@
 
 Fonte: [`prd.md`](./prd.md)  
 Decisioni: [`decision-log.md`](./decision-log.md)  
-Stato: il ciclo operativo corrente è B18C–B18M. B18C, B18D, B18F, B18I, B18K e B18L sono completati con tutti i gate automatici, Windows e Pixel 9 chiusi. B18E, B18G e B18J sono in verifica con implementazione, regressioni, Windows ed export Android statico chiusi, ma attendono il rispettivo gate Pixel 9. B18H e B18M hanno contratti sufficienti per iniziare. B19 resta bloccato fino al freeze dell'intero ciclo e alla chiusura dei gate Windows/Android pertinenti
+Stato: il ciclo operativo corrente è B18C–B18M. B18C, B18D, B18F, B18H, B18I, B18K e B18L sono completati con tutti i gate automatici, Windows e Pixel 9 chiusi. B18E, B18G e B18J sono in verifica con implementazione, regressioni, Windows ed export Android statico chiusi, ma attendono il rispettivo gate Pixel 9. B18M ha un contratto sufficiente per iniziare. B19 resta bloccato fino al freeze dell'intero ciclo e alla chiusura dei gate Windows/Android pertinenti
 Obiettivo: trasformare il concept in un MVP completo, verificabile su Windows e Android; Web resta un target secondario
 
 Fonte di verità operativa: questo documento contiene roadmap, stato e ordine delle prossime attività. Eventuali note temporanee devono essere integrate qui e poi rimosse.
@@ -443,7 +443,7 @@ significato:
 | B18E | Tuoni di Zat | IN VERIFICA | Gate automatici, Windows e Android statico chiusi; runtime Pixel 9 ancora da verificare |
 | B18F | Abilità inseguitrice di Alea | COMPLETATO | Gate Windows e Pixel 9 chiusi il 24 agosto 2026 |
 | B18G | Rank delle abilità principali | IN VERIFICA | Gate automatici, Windows e Android statico chiusi; runtime Pixel 9 ancora da verificare |
-| B18H | Nemici piccione | PRONTO | Produzione degli sprite originali base e speciale |
+| B18H | Nemici piccione | COMPLETATO | Gate automatici, Windows e Pixel 9 chiusi il 24 agosto 2026 |
 | B18I | XP confinato nell'arena | COMPLETATO | Gate chiusi; commit dedicato `e58cbd0` |
 | B18J | Grigliata estiva | IN VERIFICA | Gate automatici, Windows, Android statico e cold launch Pixel 9 chiusi; interazione manuale ancora da verificare |
 | B18K | Pulsante abilità con icona e cooldown circolare | COMPLETATO | Gate chiusi; commit dedicato `81b47f6` |
@@ -597,7 +597,7 @@ Dettagli ed evidenze: [`b18g-verification.md`](./b18g-verification.md).
 
 #### B18H — Nemici piccione
 
-Stato: `PRONTO`.
+Stato: `COMPLETATO`.
 
 - [x] Sostituire le sfere rosse con piccioni intesi come uccelli visibili.
 - [x] Comportamento, collisioni, danno e spawn restano invariati salvo nuova
@@ -613,6 +613,14 @@ Stato: `PRONTO`.
 - [x] La variante base sostituisce il nemico ordinario. La speciale è un asset
   pronto per profili futuri e fixture visuali, ma non entra nello spawn corrente
   e non introduce statistiche o probabilità nascoste.
+- [x] Asset originali OpenAI-assisted registrati con prompt, trasformazioni e
+  SHA-256; smoke `B18H_PIGEON_ENEMIES_SMOKE_OK`, regressione `31/31`, project
+  smoke, export e runtime Windows completati senza errori.
+- [x] Export APK ARM64, controlli statici API `31`/`36` e firma v2 completati.
+- [x] Runtime Pixel 9 a 20:9: piccioni leggibili, flip coerente, cold launch e
+  log del processo puliti il 24 agosto 2026.
+
+Dettagli ed evidenze: [`b18h-verification.md`](./b18h-verification.md).
 
 #### B18I — XP confinato nell'arena
 
@@ -840,7 +848,7 @@ Ordine operativo immediato:
 2. chiudere i gate manuali residui B18B a 20:9 e 4:3;
 3. chiudere il gate Pixel 9 di B18E già implementato: multitouch, flash standard/ridotto, 20:9, lifecycle e cleanup reale;
 4. chiudere i gate Pixel 9 di B18G e B18J già implementati: tap reali sui rank, aumento HP `×1,15` con cura del delta, stacking, cap, lifecycle e reset della run;
-5. completare B18H e B18M dalla direzione originale approvata: piccioni base/speciale, VFX procedurali e icone coerenti, con manifest e budget Android;
+5. completare B18M dalla direzione originale approvata: VFX procedurali e icone coerenti, con manifest e budget Android; B18H è chiuso;
 6. eseguire il gate combinato B17A–B18M su Windows e Pixel 9, il gate percettivo B18 con Boss a `04:00`/`2400 HP` e la matrice 16:9/20:9/4:3; avviare B19 solo dopo il freeze documentato dell'intero ciclo.
 
 Il setup host e gli artefatti generati il 12 agosto 2026 sono registrati in
@@ -895,6 +903,8 @@ Gran Piroetta inseguitrice di Alea e gate residuo Android sono registrati in
 [`b18f-verification.md`](./b18f-verification.md).
 Rank dichiarativi delle otto abilità, integrazione level-up e gate residuo
 Android sono registrati in [`b18g-verification.md`](./b18g-verification.md).
+Piccioni base/speciale, animazione presentazionale e gate Windows/Pixel 9 sono
+registrati in [`b18h-verification.md`](./b18h-verification.md).
 Confinamento dei drop XP nel playfield e gate residuo Android sono registrati
 in [`b18i-verification.md`](./b18i-verification.md).
 Grigliata estiva, cura del delta e gate residuo Android sono registrati in

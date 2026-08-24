@@ -33,7 +33,7 @@ correzione esplicita **Tempesta di Tuoni** della sessione odierna.
 | Evil Magno, Evil Bea, Evil Zat, Evil Alea, Evil Aleo, Evil Lollo, Evil Migi, Evil Marghe | Approvato | Ogni profilo amico contiene la propria controparte Boss |
 | L'Ansia, Gossip, Ritardo Cronico, Birra, Non Ho Tempo Per Questo, Grigliata estiva | Approvato | Titoli generici correnti, senza attribuzioni personali aggiuntive |
 | Ritratto hero/Evil CC0 | Approvato come placeholder | Asset temporanei sostituibili dai singoli `FriendDefinition` |
-| Piccioni B18H base/speciale | Baseline operativa da produrre | Due sprite originali del progetto secondo silhouette, palette e animazione definite nel piano; nessuna fonte esterna |
+| Piccioni B18H base/speciale | Approvato e integrato | Due sprite originali OpenAI-assisted del progetto secondo silhouette, palette e animazione definite nel piano; manifest, trasformazioni e hash conservati, nessun input grafico di terzi |
 | Icone e VFX B18M | Baseline operativa da rifinire | Icone correnti conservate; VFX originali e procedurali secondo la grammatica delle otto abilità, con manifest prima del gate |
 | Citazioni personali dei Boss | Non fornite | La UI usa il placeholder neutro del `BossDefinition`; nessuna citazione personale viene inventata |
 | Audio o voce personale | Non fornito | Il campo resta nullo e il runtime rimane silenzioso |
@@ -52,6 +52,18 @@ famiglia visuale 64×64 delle carte upgrade e senza sorgenti esterne:
 - licenza: asset proprietario del progetto;
 - trasformazioni: nessuna derivazione esterna;
 - SHA-256: `C481A1809DC7EC6A61A68CD76B83A402DEA3C015AFB051AF21EC8C48107AF172`.
+
+## Sprite originali B18H
+
+I piccioni base e speciale sono asset originali commissionati dal progetto con
+il tool integrato di generazione immagini OpenAI, senza immagini sorgente o
+personaggi di terzi. Le strisce finali sono PNG RGBA `144x48` con tre canvas
+`48x48`: posa neutra, ali alte e ali basse. La variante base entra nello spawn
+ordinario; la speciale resta disponibile soltanto per fixture e profili futuri.
+
+Prompt normalizzati, trasformazioni nearest-neighbor, stato d'uso e SHA-256 sono
+registrati in
+[`assets/art/enemies/pigeons/ASSET-MANIFEST.md`](../assets/art/enemies/pigeons/ASSET-MANIFEST.md).
 
 ## Sprite placeholder CC0
 
