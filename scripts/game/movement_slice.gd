@@ -840,6 +840,14 @@ func _validate_current_contract() -> bool:
 			failures.append("Carta rank B18G non valida: %s." % upgrade_definition.id)
 	if ability_rank_definitions != 8:
 		failures.append("B18G richiede una carta rank autorevole per ciascuna delle otto abilita.")
+	var summer_grill := _upgrade_registry.resolve_definition(&"summer_grill")
+	if (
+		summer_grill == null
+		or summer_grill.effect_id != UpgradeEffectRegistry.SUMMER_GRILL
+		or summer_grill.max_rank != 5
+		or not _upgrade_effect_registry.can_apply(summer_grill)
+	):
+		failures.append("B18J richiede Grigliata estiva dati a cinque rank.")
 	if _upgrade_registry.get_fallback_definitions().size() < UpgradeService.DEFAULT_OFFER_SIZE:
 		failures.append("UpgradeRegistry privo di tre fallback distinti e ripetibili.")
 	if not _upgrade_service.has_valid_configuration():
@@ -1092,6 +1100,7 @@ func _validate_current_contract() -> bool:
 		print("B18F_CONTRACT_OK")
 		print("B18G_CONTRACT_OK")
 		print("B18I_CONTRACT_OK")
+		print("B18J_CONTRACT_OK")
 		print("B18K_CONTRACT_OK")
 		print("B18L_CONTRACT_OK")
 		return true

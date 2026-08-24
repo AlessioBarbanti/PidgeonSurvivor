@@ -1,4 +1,4 @@
-[gd_scene load_steps=85 format=3]
+[gd_scene load_steps=86 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -84,6 +84,7 @@
 [ext_resource type="Resource" path="res://data/upgrades/ability_rank_lollo_random_cosplay.tres" id="83_rank_lollo"]
 [ext_resource type="Resource" path="res://data/upgrades/ability_rank_migi_zen_slowdown.tres" id="84_rank_migi"]
 [ext_resource type="Resource" path="res://data/upgrades/ability_rank_marghe_shadow_deception.tres" id="85_rank_marghe"]
+[ext_resource type="Resource" path="res://data/upgrades/summer_grill.tres" id="86_summer_grill"]
 
 [node name="MovementSlice" type="Control"]
 layout_mode = 3
@@ -164,7 +165,7 @@ experience_curve = ExtResource("16_experience_curve")
 [node name="UpgradeRegistry" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("21_upgrade_registry")
-definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"), ExtResource("24_rapid_fire"), ExtResource("25_wide_magnet"), ExtResource("31_anxiety_signature"), ExtResource("32_gossip_projectiles"), ExtResource("33_chronic_delay"), ExtResource("34_beer_signature"), ExtResource("35_damage_shockwave"), ExtResource("78_rank_magno"), ExtResource("79_rank_bea"), ExtResource("80_rank_zat"), ExtResource("81_rank_alea"), ExtResource("82_rank_aleo"), ExtResource("83_rank_lollo"), ExtResource("84_rank_migi"), ExtResource("85_rank_marghe"), ExtResource("26_fallback_power"), ExtResource("27_fallback_haste"), ExtResource("28_fallback_reach")])
+definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"), ExtResource("24_rapid_fire"), ExtResource("25_wide_magnet"), ExtResource("86_summer_grill"), ExtResource("31_anxiety_signature"), ExtResource("32_gossip_projectiles"), ExtResource("33_chronic_delay"), ExtResource("34_beer_signature"), ExtResource("35_damage_shockwave"), ExtResource("78_rank_magno"), ExtResource("79_rank_bea"), ExtResource("80_rank_zat"), ExtResource("81_rank_alea"), ExtResource("82_rank_aleo"), ExtResource("83_rank_lollo"), ExtResource("84_rank_migi"), ExtResource("85_rank_marghe"), ExtResource("26_fallback_power"), ExtResource("27_fallback_haste"), ExtResource("28_fallback_reach")])
 
 [node name="UpgradeService" type="Node" parent="."]
 unique_name_in_owner = true

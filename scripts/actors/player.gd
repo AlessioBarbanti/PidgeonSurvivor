@@ -282,7 +282,8 @@ func get_pickup_radius() -> float:
 func set_upgrade_stat_multipliers(
 	move_speed_multiplier: float,
 	pickup_radius_multiplier: float,
-	health_max_multiplier: float = 1.0
+	health_max_multiplier: float = 1.0,
+	preserve_health_ratio: bool = true
 ) -> bool:
 	if (
 		not is_finite(move_speed_multiplier)
@@ -297,7 +298,7 @@ func set_upgrade_stat_multipliers(
 	_move_speed_multiplier = move_speed_multiplier
 	_pickup_radius_multiplier = pickup_radius_multiplier
 	_health_max_multiplier = health_max_multiplier
-	_recalculate_effective_stats(true)
+	_recalculate_effective_stats(preserve_health_ratio)
 	return true
 
 

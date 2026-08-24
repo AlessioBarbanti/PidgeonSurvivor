@@ -2,7 +2,7 @@
 
 Fonte: [`prd.md`](./prd.md)  
 Decisioni: [`decision-log.md`](./decision-log.md)  
-Stato: il ciclo operativo corrente è B18C–B18M. B18C, B18D, B18F, B18I, B18K e B18L sono completati con tutti i gate automatici, Windows e Pixel 9 chiusi. B18E e B18G sono in verifica con implementazione, regressioni, Windows ed export Android statico chiusi, ma attendono il rispettivo gate Pixel 9. B18H, B18J e B18M hanno contratti sufficienti per iniziare. B19 resta bloccato fino al freeze dell'intero ciclo e alla chiusura dei gate Windows/Android pertinenti
+Stato: il ciclo operativo corrente è B18C–B18M. B18C, B18D, B18F, B18I, B18K e B18L sono completati con tutti i gate automatici, Windows e Pixel 9 chiusi. B18E, B18G e B18J sono in verifica con implementazione, regressioni, Windows ed export Android statico chiusi, ma attendono il rispettivo gate Pixel 9. B18H e B18M hanno contratti sufficienti per iniziare. B19 resta bloccato fino al freeze dell'intero ciclo e alla chiusura dei gate Windows/Android pertinenti
 Obiettivo: trasformare il concept in un MVP completo, verificabile su Windows e Android; Web resta un target secondario
 
 Fonte di verità operativa: questo documento contiene roadmap, stato e ordine delle prossime attività. Eventuali note temporanee devono essere integrate qui e poi rimosse.
@@ -445,7 +445,7 @@ significato:
 | B18G | Rank delle abilità principali | IN VERIFICA | Gate automatici, Windows e Android statico chiusi; runtime Pixel 9 ancora da verificare |
 | B18H | Nemici piccione | PRONTO | Produzione degli sprite originali base e speciale |
 | B18I | XP confinato nell'arena | COMPLETATO | Gate chiusi; commit dedicato `e58cbd0` |
-| B18J | Grigliata estiva | PRONTO | Implementazione dati, cura del delta e reset |
+| B18J | Grigliata estiva | IN VERIFICA | Gate automatici, Windows, Android statico e cold launch Pixel 9 chiusi; interazione manuale ancora da verificare |
 | B18K | Pulsante abilità con icona e cooldown circolare | COMPLETATO | Gate chiusi; commit dedicato `81b47f6` |
 | B18L | Joystick dinamico | COMPLETATO | Gate chiusi, inclusa regressione lock/resume; commit dedicato `d6625d7` |
 | B18M | Migliorie grafiche delle abilità | PRONTO | Produzione VFX procedurali e manifest degli asset originali |
@@ -633,7 +633,7 @@ Dettagli ed evidenze: [`b18i-verification.md`](./b18i-verification.md).
 
 #### B18J — Potenziamento Grigliata estiva
 
-Stato: `PRONTO`.
+Stato: `IN VERIFICA`.
 
 - [x] `Grigliata estiva` è una carta comune con `max_rank = 5`; ogni rank
   moltiplica gli HP massimi per `×1,15`. Il contributo cumulativo è quindi
@@ -646,6 +646,14 @@ Stato: `PRONTO`.
 - [x] La scelta viene applicata atomicamente una sola volta durante `LEVEL_UP`;
   pausa e lifecycle non la riapplicano. Restart e cambio personaggio riportano
   rank, moltiplicatore, massimo e vita ai valori iniziali della nuova run.
+- [x] Resource `summer_grill.tres`, effect ID dedicato, icona SVG originale e
+  composizione col registry upgrade integrati senza mutare le risorse condivise.
+- [x] Smoke `B18J_SUMMER_GRILL_SMOKE_OK`, regressione completa `30/30`, project
+  smoke, export e runtime Windows, export Android statico ARM64.
+- [ ] Gate Pixel 9: tap reali sui cinque rank, cura del delta, composizione con
+  `L'Ansia`, cap, lifecycle, restart e cambio personaggio puliti.
+
+Dettagli ed evidenze: [`b18j-verification.md`](./b18j-verification.md).
 
 #### B18K — Pulsante abilità con cooldown circolare
 
@@ -831,7 +839,7 @@ Ordine operativo immediato:
    delle tre slice sono già chiusi;
 2. chiudere i gate manuali residui B18B a 20:9 e 4:3;
 3. chiudere il gate Pixel 9 di B18E già implementato: multitouch, flash standard/ridotto, 20:9, lifecycle e cleanup reale;
-4. chiudere il gate Pixel 9 di B18G già implementato, quindi implementare e verificare B18J sul framework level-up: aumento HP `×1,15` con cura del delta, stacking, cap e reset della run;
+4. chiudere i gate Pixel 9 di B18G e B18J già implementati: tap reali sui rank, aumento HP `×1,15` con cura del delta, stacking, cap, lifecycle e reset della run;
 5. completare B18H e B18M dalla direzione originale approvata: piccioni base/speciale, VFX procedurali e icone coerenti, con manifest e budget Android;
 6. eseguire il gate combinato B17A–B18M su Windows e Pixel 9, il gate percettivo B18 con Boss a `04:00`/`2400 HP` e la matrice 16:9/20:9/4:3; avviare B19 solo dopo il freeze documentato dell'intero ciclo.
 
@@ -889,6 +897,8 @@ Rank dichiarativi delle otto abilità, integrazione level-up e gate residuo
 Android sono registrati in [`b18g-verification.md`](./b18g-verification.md).
 Confinamento dei drop XP nel playfield e gate residuo Android sono registrati
 in [`b18i-verification.md`](./b18i-verification.md).
+Grigliata estiva, cura del delta e gate residuo Android sono registrati in
+[`b18j-verification.md`](./b18j-verification.md).
 Pulsante-icona, cooldown radiale, timer centrale e gate residuo Android B18K
 sono registrati in [`b18k-verification.md`](./b18k-verification.md).
 Joystick dinamico, ownership del primo dito e gate fisico condiviso B18K/B18L

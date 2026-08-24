@@ -24,6 +24,7 @@ const CHRONIC_DELAY := &"chronic_delay"
 const BEER_SIGNATURE := &"beer_signature"
 const DAMAGE_SHOCKWAVE := &"damage_shockwave"
 const ABILITY_RANK := &"ability_rank"
+const SUMMER_GRILL := &"summer_grill"
 const CHRONIC_DELAY_MODIFIER := &"upgrade_chronic_delay"
 
 const MINIMUM_MULTIPLIER := 0.001
@@ -247,11 +248,28 @@ func can_apply(definition: UpgradeDefinition) -> bool:
 				and ability_definition.is_valid()
 				and ability_definition.rank_snapshots.size() == 5
 			)
+		SUMMER_GRILL:
+			var multiplier := _get_positive_number(
+				definition.effect_parameters,
+				"multiplier"
+			)
+			var contribution_cap := _get_positive_number(
+				definition.effect_parameters,
+				"cap"
+			)
+			return (
+				definition.max_rank == 5
+				and definition.initial_rank == 0
+				and not definition.repeatable
+				and not definition.fallback
+				and multiplier > 1.0
+				and contribution_cap >= multiplier
+			)
 		_:
 			return false
 
 
-func recalculate_effects() -> bool:
+func recalculate_effects(preserve_health_ratio: bool = true) -> bool:
 	if not has_valid_configuration():
 		return false
 
@@ -269,6 +287,21 @@ func recalculate_effects() -> bool:
 		match definition.effect_id:
 			ABILITY_RANK:
 				continue
+			SUMMER_GRILL:
+				var contribution := minf(
+					pow(
+						_get_positive_number(
+							definition.effect_parameters,
+							"multiplier"
+						),
+						rank
+					),
+					_get_positive_number(definition.effect_parameters, "cap")
+				)
+				next_multipliers[PLAYER_HEALTH_MAX_MULTIPLIER] = (
+					float(next_multipliers[PLAYER_HEALTH_MAX_MULTIPLIER])
+					* contribution
+				)
 			ANXIETY_SIGNATURE:
 				_multiply_effect(
 					next_multipliers,
@@ -326,7 +359,7 @@ func recalculate_effects() -> bool:
 			_get_cap(effect_id)
 		)
 
-	if not _apply_multipliers(next_multipliers):
+	if not _apply_multipliers(next_multipliers, preserve_health_ratio):
 		return false
 	if not _apply_signature_effects(next_signatures):
 		return false
@@ -412,12 +445,16 @@ func get_effect_parent() -> Node2D:
 	return _effect_parent if is_instance_valid(_effect_parent) else null
 
 
-func _apply_multipliers(multipliers: Dictionary) -> bool:
+func _apply_multipliers(
+	multipliers: Dictionary,
+	preserve_health_ratio: bool = true
+) -> bool:
 	return (
 		_player.set_upgrade_stat_multipliers(
 			float(multipliers[PLAYER_MOVE_SPEED_MULTIPLIER]),
 			float(multipliers[PLAYER_PICKUP_RADIUS_MULTIPLIER]),
-			float(multipliers[PLAYER_HEALTH_MAX_MULTIPLIER])
+			float(multipliers[PLAYER_HEALTH_MAX_MULTIPLIER]),
+			preserve_health_ratio
 		)
 		and _weapon_controller.set_upgrade_stat_multipliers(
 			float(multipliers[WEAPON_FIRE_RATE_MULTIPLIER]),
@@ -726,6 +763,21 @@ func _on_upgrade_selected(
 		):
 			push_error("UpgradeEffectRegistry: impossibile applicare %s." % definition.id)
 			return
+		effect_applied.emit(definition, new_rank, get_effective_multipliers())
+		return
+	if definition.effect_id == SUMMER_GRILL:
+		var health := _player.get_health_component()
+		if health == null:
+			push_error("UpgradeEffectRegistry: salute Player assente per %s." % definition.id)
+			return
+		var previous_health_max := health.health_max
+		var player_was_alive := health.is_alive()
+		if not recalculate_effects(false):
+			push_error("UpgradeEffectRegistry: impossibile applicare %s." % definition.id)
+			return
+		var gained_health_max := maxf(health.health_max - previous_health_max, 0.0)
+		if player_was_alive and gained_health_max > 0.0:
+			health.heal(gained_health_max)
 		effect_applied.emit(definition, new_rank, get_effective_multipliers())
 		return
 	if not recalculate_effects():

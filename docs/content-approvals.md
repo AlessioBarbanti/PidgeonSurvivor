@@ -31,7 +31,7 @@ correzione esplicita **Tempesta di Tuoni** della sessione odierna.
 | Powerslide | Approvato | Nome, copy e icona inline-skate CC0 richiesti nel tracker gameplay; valori runtime registrati nel PRD |
 | Tempesta di Tuoni | Approvato | Nome e copy corretti dal proprietario; nube, onde e flash comunicano il tuono senza cambiare gli ID tecnici storici |
 | Evil Magno, Evil Bea, Evil Zat, Evil Alea, Evil Aleo, Evil Lollo, Evil Migi, Evil Marghe | Approvato | Ogni profilo amico contiene la propria controparte Boss |
-| L'Ansia, Gossip, Ritardo Cronico, Birra, Non Ho Tempo Per Questo | Approvato | Titoli generici correnti, senza attribuzioni personali aggiuntive |
+| L'Ansia, Gossip, Ritardo Cronico, Birra, Non Ho Tempo Per Questo, Grigliata estiva | Approvato | Titoli generici correnti, senza attribuzioni personali aggiuntive |
 | Ritratto hero/Evil CC0 | Approvato come placeholder | Asset temporanei sostituibili dai singoli `FriendDefinition` |
 | Piccioni B18H base/speciale | Baseline operativa da produrre | Due sprite originali del progetto secondo silhouette, palette e animazione definite nel piano; nessuna fonte esterna |
 | Icone e VFX B18M | Baseline operativa da rifinire | Icone correnti conservate; VFX originali e procedurali secondo la grammatica delle otto abilità, con manifest prima del gate |
@@ -41,6 +41,17 @@ correzione esplicita **Tempesta di Tuoni** della sessione odierna.
 Il primo incontro della vertical slice usa `Evil Bea`. È una scelta dati:
 cambiare `friend_profile` in `data/bosses/first_boss.tres` seleziona un'altra
 controparte senza modificare GDScript.
+
+## Icona originale B18J
+
+L'icona di `Grigliata estiva` è un SVG originale del progetto, disegnato per la
+famiglia visuale 64×64 delle carte upgrade e senza sorgenti esterne:
+
+- file: `assets/art/icons/upgrades/summer_grill.svg`;
+- autore: progetto IL GIOCO;
+- licenza: asset proprietario del progetto;
+- trasformazioni: nessuna derivazione esterna;
+- SHA-256: `C481A1809DC7EC6A61A68CD76B83A402DEA3C015AFB051AF21EC8C48107AF172`.
 
 ## Sprite placeholder CC0
 
