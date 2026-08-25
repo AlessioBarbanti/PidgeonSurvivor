@@ -1,0 +1,4 @@
+interface:
+  display_name: "IL GIOCO Milestone"
+  short_description: "Implement and verify an IL GIOCO milestone"
+  default_prompt: "Use $il-gioco-milestone to implement and verify the next ready backlog milestone."
