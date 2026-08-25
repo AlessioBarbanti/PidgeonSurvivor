@@ -1,7 +1,7 @@
 extends Node2D
 
 const LOGICAL_ICON_SIZE := 92.0
-const BURST_DURATION := 0.72
+const BURST_DURATION := PresentationTimings.ABILITY_ICON_BURST_SECONDS
 
 var _effect_id: StringName
 var _run_controller: RunController
@@ -53,8 +53,10 @@ func _apply_animation(progress: float) -> void:
 	if not is_instance_valid(_sprite):
 		return
 	var t := clampf(progress, 0.0, 1.0)
-	var fade_in := smoothstep(0.0, 0.1, t)
-	var fade_out := 1.0 - smoothstep(0.58, 1.0, t)
+	var opacity := PresentationTimings.one_shot_opacity(
+		_elapsed,
+		BURST_DURATION
+	)
 	var scale_factor := Vector2.ONE
 	var offset := Vector2.ZERO
 	var angle := 0.0
@@ -95,7 +97,7 @@ func _apply_animation(progress: float) -> void:
 	_sprite.scale = scale_factor * _base_scale
 	_sprite.position = offset
 	_sprite.rotation = angle
-	_sprite.modulate = Color(1.0, 1.0, 1.0, fade_in * fade_out * 0.9)
+	_sprite.modulate = Color(1.0, 1.0, 1.0, opacity * 0.9)
 
 
 func get_effect_id() -> StringName:
@@ -108,6 +110,18 @@ func get_texture_path() -> String:
 
 func get_duration_remaining() -> float:
 	return maxf(BURST_DURATION - _elapsed, 0.0)
+
+
+func get_duration_total() -> float:
+	return BURST_DURATION
+
+
+func get_visual_opacity() -> float:
+	return _sprite.modulate.a if is_instance_valid(_sprite) else 0.0
+
+
+func is_non_interactive_tail() -> bool:
+	return true
 
 
 func get_visual_element_count() -> int:

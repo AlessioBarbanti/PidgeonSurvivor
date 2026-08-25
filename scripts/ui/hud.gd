@@ -23,8 +23,8 @@ var _health_component: HealthComponent
 var _experience_system: ExperienceSystem
 var _ability_controller: AbilityController
 var _friend_definition: FriendDefinition
-var _health_feedback_tween: Tween
-var _ability_ready_tween: Tween
+var _health_feedback_remaining := 0.0
+var _ability_ready_pulse_remaining := 0.0
 var _health_feedback_count := 0
 var _ability_ready_pulse_count := 0
 var _last_ability_ready := false
@@ -35,8 +35,26 @@ var _ability_cooldown_value := 0.0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	set_process(false)
 	_pause_button.pressed.connect(_on_pause_button_pressed)
 	_show_default_values()
+
+
+func _process(delta: float) -> void:
+	if not is_instance_valid(_run_controller) or not _run_controller.is_running():
+		return
+	var safe_delta := maxf(delta, 0.0) if is_finite(delta) else 0.0
+	_health_feedback_remaining = maxf(_health_feedback_remaining - safe_delta, 0.0)
+	_ability_ready_pulse_remaining = maxf(
+		_ability_ready_pulse_remaining - safe_delta,
+		0.0
+	)
+	_sync_visual_feedback()
+	if (
+		is_zero_approx(_health_feedback_remaining)
+		and is_zero_approx(_ability_ready_pulse_remaining)
+	):
+		set_process(false)
 
 
 func _exit_tree() -> void:
@@ -239,6 +257,14 @@ func get_ability_ready_pulse_count() -> int:
 	return _ability_ready_pulse_count
 
 
+func get_health_feedback_remaining() -> float:
+	return _health_feedback_remaining
+
+
+func get_ability_ready_pulse_remaining() -> float:
+	return _ability_ready_pulse_remaining
+
+
 static func format_run_time(run_time: float) -> String:
 	var safe_time := maxf(run_time, 0.0) if is_finite(run_time) else 0.0
 	var total_seconds := int(floor(safe_time))
@@ -262,6 +288,7 @@ func _refresh_from_sources() -> void:
 
 
 func _show_default_values() -> void:
+	_clear_visual_feedback()
 	_on_run_time_changed(0.0)
 	_set_pause_available(false)
 	_on_health_changed(0.0, 1.0)
@@ -270,6 +297,7 @@ func _show_default_values() -> void:
 
 
 func _disconnect_sources() -> void:
+	_clear_visual_feedback()
 	if is_instance_valid(_run_controller):
 		if _run_controller.run_time_changed.is_connected(_on_run_time_changed):
 			_run_controller.run_time_changed.disconnect(_on_run_time_changed)
@@ -323,6 +351,12 @@ func _on_run_state_changed(
 	current_state: RunController.RunState
 ) -> void:
 	_set_pause_available(current_state == RunController.RunState.RUNNING)
+	if current_state in [
+		RunController.RunState.BOOT,
+		RunController.RunState.VICTORY,
+		RunController.RunState.DEFEAT,
+	]:
+		_clear_visual_feedback()
 	_refresh_ability_state()
 
 
@@ -351,16 +385,9 @@ func _on_health_damaged(_amount: float, _health_current: float) -> void:
 	_health_feedback_count += 1
 	if not is_instance_valid(_health_panel):
 		return
-	if is_instance_valid(_health_feedback_tween):
-		_health_feedback_tween.kill()
-	_health_panel.self_modulate = Color(1.0, 0.52, 0.64, 1.0)
-	_health_feedback_tween = create_tween()
-	_health_feedback_tween.tween_property(
-		_health_panel,
-		"self_modulate",
-		Color.WHITE,
-		0.18
-	).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_health_feedback_remaining = PresentationTimings.HUD_HEALTH_FEEDBACK_SECONDS
+	set_process(true)
+	_sync_visual_feedback()
 
 
 func _on_progression_changed(
@@ -456,13 +483,37 @@ func _play_ability_ready_pulse() -> void:
 	_ability_ready_pulse_count += 1
 	if not is_instance_valid(_ability_panel):
 		return
-	if is_instance_valid(_ability_ready_tween):
-		_ability_ready_tween.kill()
-	_ability_panel.self_modulate = Color(1.0, 0.76, 0.38, 1.0)
-	_ability_ready_tween = create_tween()
-	_ability_ready_tween.tween_property(
-		_ability_panel,
-		"self_modulate",
-		Color.WHITE,
-		0.24
-	).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_ability_ready_pulse_remaining = PresentationTimings.ABILITY_READY_PULSE_SECONDS
+	set_process(true)
+	_sync_visual_feedback()
+
+
+func _sync_visual_feedback() -> void:
+	if is_instance_valid(_health_panel):
+		var health_progress := PresentationTimings.normalized_progress_from_remaining(
+			_health_feedback_remaining,
+			PresentationTimings.HUD_HEALTH_FEEDBACK_SECONDS
+		)
+		_health_panel.self_modulate = Color(1.0, 0.52, 0.64, 1.0).lerp(
+			Color.WHITE,
+			smoothstep(0.0, 1.0, health_progress)
+		)
+	if is_instance_valid(_ability_panel):
+		var ready_progress := PresentationTimings.normalized_progress_from_remaining(
+			_ability_ready_pulse_remaining,
+			PresentationTimings.ABILITY_READY_PULSE_SECONDS
+		)
+		_ability_panel.self_modulate = Color(1.0, 0.76, 0.38, 1.0).lerp(
+			Color.WHITE,
+			smoothstep(0.0, 1.0, ready_progress)
+		)
+
+
+func _clear_visual_feedback() -> void:
+	_health_feedback_remaining = 0.0
+	_ability_ready_pulse_remaining = 0.0
+	if is_instance_valid(_health_panel):
+		_health_panel.self_modulate = Color.WHITE
+	if is_instance_valid(_ability_panel):
+		_ability_panel.self_modulate = Color.WHITE
+	set_process(false)

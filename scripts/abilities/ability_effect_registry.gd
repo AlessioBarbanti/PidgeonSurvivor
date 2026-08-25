@@ -29,6 +29,9 @@ var _effect_parent: Node2D
 var _arena_layout: ArenaLayout
 var _visual_settings: VisualAccessibilitySettings
 var _active_effects: Array[Node2D] = []
+var _active_visual_tails: Array[Node2D] = []
+var _last_icon_burst: Node2D
+var _last_cosplay_accent: CosplayAccent
 var _last_affected_count := 0
 var _last_copied_ability_id: StringName
 var _previous_copied_ability_id: StringName
@@ -121,6 +124,13 @@ func clear_active_effects() -> void:
 	for effect in effects_to_clear:
 		if is_instance_valid(effect) and not effect.is_queued_for_deletion():
 			effect.queue_free()
+	var tails_to_clear := _active_visual_tails.duplicate()
+	_active_visual_tails.clear()
+	for tail in tails_to_clear:
+		if is_instance_valid(tail) and not tail.is_queued_for_deletion():
+			tail.queue_free()
+	_last_icon_burst = null
+	_last_cosplay_accent = null
 	_last_affected_count = 0
 	_last_copied_ability_id = &""
 	_previous_copied_ability_id = &""
@@ -134,6 +144,24 @@ func get_active_effect_count() -> int:
 func get_active_effects() -> Array[Node2D]:
 	_prune_active_effects()
 	return _active_effects.duplicate()
+
+
+func get_active_visual_tail_count() -> int:
+	_prune_active_visual_tails()
+	return _active_visual_tails.size()
+
+
+func get_active_visual_tails() -> Array[Node2D]:
+	_prune_active_visual_tails()
+	return _active_visual_tails.duplicate()
+
+
+func get_last_icon_burst() -> Node2D:
+	return _last_icon_burst if is_instance_valid(_last_icon_burst) else null
+
+
+func get_last_cosplay_accent() -> CosplayAccent:
+	return _last_cosplay_accent if is_instance_valid(_last_cosplay_accent) else null
 
 
 func get_last_affected_count() -> int:
@@ -209,13 +237,17 @@ func _execute_definition(
 
 
 func _attach_generated_icon_burst(effect: Node2D, definition: AbilityDefinition) -> void:
-	if definition.icon == null:
+	if definition.icon == null or not is_instance_valid(_effect_parent):
 		return
 	var burst := ABILITY_ICON_BURST_SCRIPT.new() as Node2D
 	burst.name = "AbilityIconBurst"
-	effect.add_child(burst)
+	_effect_parent.add_child(burst)
+	burst.global_position = effect.global_position
 	if not burst.call("initialize", definition.icon, definition.effect_id, _run_controller):
 		burst.queue_free()
+		return
+	_last_icon_burst = burst
+	_track_visual_tail(burst)
 
 
 func _execute_earthquake_shockwave(
@@ -342,14 +374,17 @@ func _attach_cosplay_accent(
 ) -> void:
 	var accent := CosplayAccent.new()
 	accent.name = "CosplayAccent"
-	copied_effect.add_child(accent)
+	_effect_parent.add_child(accent)
 	if not accent.initialize(
 		source.global_position,
 		_run_controller,
-		_get_cosplay_palette(copied_effect_id)
+		_get_cosplay_palette(copied_effect_id),
+		PresentationTimings.COSPLAY_ACCENT_SECONDS
 	):
 		accent.queue_free()
 		return
+	_last_cosplay_accent = accent
+	_track_visual_tail(accent)
 	copied_effect.set_meta(&"cosplay_source", RANDOM_COSPLAY)
 	copied_effect.set_meta(&"copied_effect_id", copied_effect_id)
 
@@ -484,6 +519,11 @@ func _track_effect(effect: Node2D) -> void:
 	effect.tree_exiting.connect(_on_effect_tree_exiting.bind(effect), CONNECT_ONE_SHOT)
 
 
+func _track_visual_tail(tail: Node2D) -> void:
+	_active_visual_tails.append(tail)
+	tail.tree_exiting.connect(_on_visual_tail_tree_exiting.bind(tail), CONNECT_ONE_SHOT)
+
+
 func _rebuild_definition_index() -> void:
 	_definitions_by_id.clear()
 	for definition in definitions:
@@ -508,6 +548,12 @@ func _prune_active_effects() -> void:
 	for index in range(_active_effects.size() - 1, -1, -1):
 		if not is_instance_valid(_active_effects[index]):
 			_active_effects.remove_at(index)
+
+
+func _prune_active_visual_tails() -> void:
+	for index in range(_active_visual_tails.size() - 1, -1, -1):
+		if not is_instance_valid(_active_visual_tails[index]):
+			_active_visual_tails.remove_at(index)
 
 
 func _connect_run_controller() -> void:
@@ -554,3 +600,11 @@ func _on_targets_affected(count: int) -> void:
 
 func _on_effect_tree_exiting(effect: Node2D) -> void:
 	_active_effects.erase(effect)
+
+
+func _on_visual_tail_tree_exiting(tail: Node2D) -> void:
+	_active_visual_tails.erase(tail)
+	if tail == _last_icon_burst:
+		_last_icon_burst = null
+	if tail == _last_cosplay_accent:
+		_last_cosplay_accent = null

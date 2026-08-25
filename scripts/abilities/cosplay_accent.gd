@@ -4,7 +4,7 @@ extends Node2D
 const VISUAL_FAMILY_ID := &"cosplay_confetti_and_copied_palette"
 const VISUAL_PARTICLE_COUNT := 18
 const VISUAL_MATERIAL_COUNT := 0
-const DEFAULT_DURATION_SECONDS := 0.65
+const DEFAULT_DURATION_SECONDS := PresentationTimings.COSPLAY_ACCENT_SECONDS
 
 var _run_controller: RunController
 var _palette := Color(0.95, 0.3, 0.72, 1.0)
@@ -50,7 +50,13 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	var progress := 1.0 - clampf(_duration_remaining / _duration_total, 0.0, 1.0)
-	var alpha := 1.0 - progress
+	var elapsed := _duration_total - _duration_remaining
+	var alpha := PresentationTimings.one_shot_opacity(
+		elapsed,
+		_duration_total,
+		minf(PresentationTimings.ONE_SHOT_ENTRY_SECONDS, _duration_total * 0.25),
+		minf(PresentationTimings.ONE_SHOT_EXIT_SECONDS, _duration_total * 0.4)
+	)
 	var burst_radius := lerpf(20.0, 82.0, progress)
 	draw_arc(
 		Vector2.ZERO,
@@ -75,6 +81,14 @@ func _draw() -> void:
 
 func get_duration_remaining() -> float:
 	return _duration_remaining
+
+
+func get_duration_total() -> float:
+	return _duration_total
+
+
+func is_non_interactive_tail() -> bool:
+	return true
 
 
 func get_palette() -> Color:

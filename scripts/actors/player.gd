@@ -46,8 +46,8 @@ signal facing_direction_changed(direction: Vector2)
 		queue_redraw()
 
 @export_group("Combat Feedback")
-@export_range(0.0, 1.0, 0.005) var damage_flash_duration := 0.075
-@export_range(0.0, 1.0, 0.01) var damage_reaction_duration := 0.16
+@export_range(0.0, 1.0, 0.005) var damage_flash_duration := PresentationTimings.PLAYER_DAMAGE_FLASH_SECONDS
+@export_range(0.0, 1.0, 0.01) var damage_reaction_duration := PresentationTimings.PLAYER_DAMAGE_REACTION_SECONDS
 @export_range(0.0, 0.5, 0.01) var damage_squash_strength := 0.13
 
 const DEFAULT_FACING_DIRECTION := Vector2.RIGHT

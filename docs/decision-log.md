@@ -179,8 +179,8 @@ Non comprende account sviluppatore, scheda store, policy, privacy form, closed t
 | VISUAL-002 | Baseline operativa | B18B sostituisce griglia e bordo ciano con variazioni tonali, giunti, macchie e crepe procedurali; `CombatFeedback` a `z_index=3` disegna hit spark, anelli e particelle di morte, mentre Player/nemici applicano flash `0,075–0,08 s` e squash solo nel draw | Il polish non modifica transform fisici, collisioni, danno o cooldown; il feedback si pulisce al restart e resta sotto Player e proiettili prioritari |
 | VISUAL-003 | Baseline operativa | B18C usa per ogni `FriendDefinition` una posa laterale destra e quattro fasi di camminata; dove il foglio CC0 offre più ritagli li alterna, mentre Lollo, Migi e Marghe animano l'unica posa valida con bob/inclinazione. Il Player ribalta gli sprite per la sinistra, non disegna più corpo circolare o cannoncino e conserva separatamente lato orizzontale e vettore dell'ultimo movimento | Il neutro e il movimento verticale non cancellano il vettore; pausa e focus azzerano il movimento senza cambiarlo, una nuova run riparte verso destra e le abilità scelgono il getter coerente con la propria direzione |
 | VISUAL-004 | Verificata | B18M conserva le otto icone correnti e realizza con primitive Godot le famiglie anelli/crepe, nastro/scintille, nube/onde, archi, pozza/bolle, confetti/palette copiata, anelli/moti zen e clone/cassa/note; sorgenti e icone sono registrate nel manifest con origine, autore, licenza, modifiche e SHA-256 | Nessun pacchetto animato, shader custom o prompt generativo entra nella build; gli effetti restano sotto i pericoli, usano zero materiali custom e rispettano per attivazione un overlay fullscreen e 64 elementi particellari logici, verificati su Pixel 9 a 20:9 senza cambiare geometria gameplay |
-| VISUAL-005 | In verifica | Gli otto emblemi ImageGen sostituiscono le icone SVG in HUD, carte rank e VFX; ogni attivazione aggiunge un solo burst da `0,72 s` con profilo distinto di impatto, scorrimento, tuono, rotazione, caduta, reveal, respiro o beat | Il burst avanza solo in `RUNNING`, usa zero materiali custom, resta sotto i pericoli e viene ripulito con l'effetto; smoke, Windows e APK statico sono chiusi, mentre il nuovo gate percettivo Pixel 9 è aperto |
-| VISUAL-006 | Confermata | B18R centralizza e allunga animazioni one-shot e VFX troppo brevi, inclusa la baseline burst B18M da `0,72 s`; i valori finali vengono congelati dopo confronto percettivo Windows/Pixel 9 | Danno, tick, collisioni, cooldown e raggi non cambiano; una coda visiva oltre l'effetto reale deve essere una dissolvenza chiaramente non interattiva e pausa/restart/cambio profilo conservano i normali contratti di freeze e cleanup |
+| VISUAL-005 | Baseline superata da B18R | Gli otto emblemi ImageGen sostituiscono le icone SVG in HUD, carte rank e VFX; la durata storica del burst era `0,72 s`, poi portata a `1,20 s` da VISUAL-006 senza cambiare gli otto profili | Il burst avanza solo in `RUNNING`, usa zero materiali custom, resta sotto i pericoli e la sua dissolvenza non interattiva è separata dalla durata gameplay |
+| VISUAL-006 | Verificata | B18R centralizza e congela i timing one-shot: burst `1,20 s`, reazioni Player/nemico `0,30`/`0,26 s`, morte `0,78 s`, impulso pronto `0,60 s`; i flash restano `0,075–0,08 s` | Danno, tick, collisioni, cooldown e raggi non cambiano; code visive sibling non interattive, freeze e cleanup sono coperti da smoke, regressione `42/42`, Windows, APK, Pixel 9 e confronto percettivo umano del 25 agosto 2026 |
 | VISUAL-007 | Confermata | Lo sfondo B18S è un raster ImageGen responsive a basso contrasto, senza griglia debug, bordo ciano, testo, personaggi, oggetti interattivi o falsi ostacoli | Crop e tile a 16:9–20:9/4:3 non cambiano il playfield B18Q; attori, pickup, telegraph e proiettili ostili mantengono priorità semantica e visiva |
 | VISUAL-008 | In verifica | Gli otto profili B18U usano una posa idle e due pose di locomozione registrate, mostrate nearest-neighbor con la sequenza B18C e il flip orizzontale esistente | La sostituzione non cambia scala, origine, hitbox, movimento, collisioni, passive, abilità o timing. Automatici, Windows, APK statico e dipendenza B18T/B18W sono chiusi; il controllo percettivo Pixel 9 in movimento resta aperto |
 
@@ -236,15 +236,17 @@ Rilevazione del 12 agosto 2026:
 La vertical slice ha ora una durata e valori Boss di baseline; restano aperti la loro conferma tramite playtest a parametri finali e il bilanciamento definitivo di curva XP, danno e cap degli upgrade. La regola di stacking è chiusa da PROG-006.
 Tutti i contratti di refinement B18C–B18W sono definiti. Il refresh ImageGen di
 B18M è implementato e verificato automaticamente, su Windows e tramite APK
-statico, ma riapre il controllo percettivo Pixel 9. Restano inoltre i gate Pixel
+statico; B18R ne ha chiuso il controllo percettivo dei timing. Restano i gate Pixel
 9 di B18E, B18G e B18J. B18N, B18O e B18P sono implementati e verificati sui
 gate pertinenti. B18S ha chiuso implementazione, automatici, Windows, APK e
-runtime Pixel 9 20:9; resta in verifica fino a B18Q/B18R e al confronto fisico
+runtime Pixel 9 20:9; resta in verifica fino a B18Q e al confronto fisico
 a luminosità controllata. B18T/B18W hanno chiuso implementazione, regressione
 `40/40`, project smoke, Windows, APK e percorso Pixel 9 ADB sull'artefatto
 finale, inclusi tap singolo, conferma, run, pausa e ritorno al carosello. Il kit
 usa ora otto icone passive raster dedicate, senza fallback ai ritratti; restano
 il tap con dito e il confronto percettivo manuale. B18U conserva le sorgenti HD fuori dagli export e attende il controllo
 percettivo in movimento. B18Q è implementato e attende il confronto percettivo
-manuale multi-aspect; B18R è pronto. Il gate combinato finale è B18V,
+manuale multi-aspect. B18R è completato con regressione `42/42`, Windows,
+Android e verifica umana; B18S richiede ancora il confronto finale dopo B18Q.
+Il gate combinato finale è B18V,
 come indicato nel piano di sviluppo.

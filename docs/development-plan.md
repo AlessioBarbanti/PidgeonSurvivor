@@ -2,7 +2,7 @@
 
 Fonte: [`prd.md`](./prd.md)  
 Decisioni: [`decision-log.md`](./decision-log.md)  
-Stato: il ciclo operativo corrente è B18C–B18W. B18C, B18D, B18F, B18H, B18I, B18K, B18L, B18N, B18O e B18P sono completati con tutti i gate pertinenti automatici, Windows e Pixel 9 chiusi. B18E, B18G e B18J sono in verifica con implementazione, regressioni, Windows ed export Android statico chiusi, ma attendono il rispettivo gate Pixel 9. Il refresh ImageGen B18M ha chiuso automatici, Windows e APK statico, ma riapre il gate percettivo Pixel 9 sulle nuove icone e animazioni. B18S è implementato con asset tracciato, regressione `37/37`, Windows, APK e runtime Pixel 9 20:9 verdi; resta in verifica fino alla chiusura delle dipendenze B18Q/B18R e al confronto fisico a luminosità controllata. B18T e B18W sono implementati con otto ritratti dati, gerarchia pixel-fantasy ricompattata, fondale, CTA e otto icone passive raster tracciati, smoke dedicati, regressione `40/40`, runtime Windows, APK statico e percorso Pixel 9 20:9 verdi; un singolo tap ADB avanza da Zat ad Alea, poi conferma, run, pausa e ritorno al carosello funzionano sull'artefatto finale. Restano il tap manuale con dito e il confronto percettivo fisico conclusivo. B18U ha ora chiuso la dipendenza funzionale B18T/B18W e resta in verifica per il controllo percettivo del cast in movimento e ad alta densità. B18Q è implementato con barre `XP`/`HP` full-width, playfield separato, smoke, regressioni, Windows, APK statico e percorso runtime Pixel 9 20:9 verdi; resta aperto il confronto percettivo manuale 16:9/18:9/20:9/4:3. B18R prosegue la progressione di accessibilità e presentazione; B18V assorbe hardening e performance prima del packaging B20
+Stato: il ciclo operativo corrente è B18C–B18W. B18C, B18D, B18F, B18H, B18I, B18K, B18L, B18N, B18O, B18P e B18R sono completati con tutti i gate pertinenti automatici, Windows e Pixel 9 chiusi. B18E, B18G e B18J sono in verifica con implementazione, regressioni, Windows ed export Android statico chiusi, ma attendono il rispettivo gate Pixel 9. Il refresh ImageGen B18M ha chiuso automatici, Windows e APK statico; B18R ne ha portato il burst a `1,20 s` e ha chiuso il gate percettivo dei nuovi timing il 25 agosto 2026. B18S è implementato con asset tracciato, regressione, Windows, APK e runtime Pixel 9 20:9 verdi; resta in verifica fino alla chiusura di B18Q e al confronto fisico finale a luminosità controllata. B18T e B18W sono implementati con otto ritratti dati, gerarchia pixel-fantasy ricompattata, fondale, CTA e otto icone passive raster tracciati, smoke dedicati, regressione `40/40`, runtime Windows, APK statico e percorso Pixel 9 20:9 verdi; un singolo tap ADB avanza da Zat ad Alea, poi conferma, run, pausa e ritorno al carosello funzionano sull'artefatto finale. Restano il tap manuale con dito e il confronto percettivo fisico conclusivo. B18U ha ora chiuso la dipendenza funzionale B18T/B18W e resta in verifica per il controllo percettivo del cast in movimento e ad alta densità. B18Q è implementato con barre `XP`/`HP` full-width, playfield separato, smoke, regressioni, Windows, APK statico e percorso runtime Pixel 9 20:9 verdi; resta aperto il confronto percettivo manuale 16:9/18:9/20:9/4:3. B18V assorbe hardening e performance prima del packaging B20
 Obiettivo: trasformare il concept in un MVP completo, verificabile su Windows e Android; Web resta un target secondario
 
 Identità pubblica confermata il 24 agosto 2026: `Pidgeon Survivor`, con il
@@ -477,8 +477,8 @@ significato:
 | B18O | Welcome screen | COMPLETATO | Gate automatici, Windows, APK statico e controllo percettivo 20:9 della variante finale sul Pixel 9 chiusi il 24 agosto 2026 |
 | B18P | Dimensioni configurabili dei controlli touch | COMPLETATO | Gate automatici, Windows, APK statico e multitouch reale Pixel 9 chiusi il 25 agosto 2026 |
 | B18Q | Arena separata dal HUD minimo | IN VERIFICA | Implementazione, automatici, Windows, APK statico e percorso Pixel 9 20:9 chiusi; confronto percettivo manuale multi-aspect aperto |
-| B18R | Durata e leggibilità di animazioni e VFX | PRONTO | Timing presentazionali separati dal gameplay e gate percettivi definiti |
-| B18S | Sfondo arena ImageGen | IN VERIFICA | Asset, automatici, Windows, APK e Pixel 9 20:9 chiusi; ripetere il gate dopo B18Q/B18R e a luminosità controllata |
+| B18R | Durata e leggibilità di animazioni e VFX | COMPLETATO | Timing centralizzati e separati dal gameplay; `42/42`, Windows, Android e verifica umana Windows/Pixel 9 chiusi il 25 agosto 2026 |
+| B18S | Sfondo arena ImageGen | IN VERIFICA | Asset, automatici, Windows, APK e Pixel 9 20:9 chiusi; B18R chiuso, ripetere il gate dopo B18Q e a luminosità controllata |
 | B18T | Carosello selezione personaggi | IN VERIFICA | Implementazione, `40/40`, Windows, APK e percorso Pixel 9 20:9 chiusi; tap ADB singolo corretto, tap manuale e confronto fisico aperti |
 | B18U | Sprite del cast coerenti | IN VERIFICA | Otto sprite e sorgenti HD tracciati; dipendenza funzionale B18T, automatici, Windows, APK e percorso reale del carosello chiusi; gate percettivo in movimento aperto |
 | B18V | Hardening Windows/Android e performance | BLOCCATO | Bloccato fino al freeze B18C–B18W e alla chiusura dei gate fisici combinati |
@@ -753,10 +753,11 @@ Stato: `IN VERIFICA` dopo il refresh ImageGen.
   Pinhead CC0 resta soltanto come storico documentato.
 - [x] Gli emblemi sostituiscono le icone in HUD e carte rank senza cambiare il
   target B18K `64×64`; nome, label, card e sfondo rettangolare restano assenti.
-- [x] La stessa texture entra in un burst scene-local da `0,72 s` con profilo
+- [x] La stessa texture entra in un burst scene-local, introdotto da B18M a
+  `0,72 s` e portato a `1,20 s` da B18R, con profilo
   distinto per abilità: impatto, scorrimento, tuono, rotazione, caduta, reveal,
-  respiro o beat. Il burst avanza soltanto in `RUNNING` e segue il cleanup
-  dell'effetto senza modificare gameplay o input.
+  respiro o beat. Il burst avanza soltanto in `RUNNING`; B18R ne separa la coda
+  non interattiva dall'effetto gameplay senza modificare gameplay o input.
 - [x] Linguaggio VFX: Magno usa crepe e anelli tellurici; Bea scia a nastro con
   scintille; Zat nube e onde del tuono, preavviso e flash accessibile; Alea archi
   rotanti; Aleo pozza grigio-ciano con bordo e bolle; Lollo confetti più palette
@@ -894,23 +895,26 @@ Dettagli ed evidenze: [`b18q-verification.md`](./b18q-verification.md).
 
 #### B18R — Durata e leggibilità di animazioni e VFX
 
-Stato: `PRONTO`.
+Stato: `COMPLETATO`.
 
-- [ ] Centralizzare i timing puramente presentazionali e allungare le animazioni
+- [x] Centralizzare i timing puramente presentazionali e allungare le animazioni
   one-shot oggi difficili da percepire: burst abilità B18M, entrate/uscite,
   reazioni, morte e impulso di prontezza. Walk cycle e animazioni continue
   restano sincronizzati al relativo stato.
-- [ ] Portare i burst principali oltre la breve baseline B18M da `0,72 s` e
-  congelare i valori soltanto dopo confronto percettivo Windows/Pixel 9 in
-  movimento e con densità elevata; hit flash resta breve per non coprire il campo.
-- [ ] Separare durata visiva e regole gameplay: danno, tick, cooldown, raggio e
+- [x] Portare i burst principali oltre la breve baseline B18M da `0,72 s`: il
+  valore finale `1,20 s` è stato approvato nel confronto percettivo umano
+  Windows/Pixel 9; hit flash resta breve a `0,075–0,08 s`.
+- [x] Separare durata visiva e regole gameplay: danno, tick, cooldown, raggio e
   collisioni non cambiano. Un'area non può apparire attiva dopo la fine reale;
-  eventuali code usano dissolvenze chiaramente non interattive.
-- [ ] Pausa, level-up, Boss intro e terminali congelano o ripuliscono gli effetti
+  le code usano dissolvenze sibling chiaramente non interattive.
+- [x] Pausa, level-up, Boss intro e terminali congelano o ripuliscono gli effetti
   secondo il loro contratto; restart e cambio personaggio non lasciano tween,
   timer o nodi residui.
-- [ ] Smoke sui timing e due run consecutive, confronto video/screenshot e gate
-  percettivo Windows/Pixel 9 prima del freeze.
+- [x] Smoke deterministico sui timing e due run consecutive, regressione `42/42`,
+  runtime Windows, APK Android, percorso reale Pixel 9 e gate percettivo umano
+  chiusi il 25 agosto 2026.
+
+Dettagli ed evidenze: [`b18r-verification.md`](./b18r-verification.md).
 
 #### B18S — Sfondo arena ImageGen
 
@@ -934,8 +938,8 @@ Stato: `IN VERIFICA`.
   performance/import/export e conferma che lo sfondo non suggerisca collisioni
   o zone percorribili diverse dal playfield B18Q. Confronto prima/dopo Windows,
   regressione, import/export e runtime Pixel 9 20:9 sono verdi; ripetere il
-  controllo percettivo a luminosità fisica controllata dopo la chiusura di
-  B18Q/B18R.
+  controllo percettivo a luminosità fisica controllata dopo la chiusura di B18Q;
+  la dipendenza B18R è chiusa.
 
 Dettagli ed evidenze: [`b18s-verification.md`](./b18s-verification.md).
 
@@ -1264,7 +1268,7 @@ Ordine operativo immediato:
 5. chiudere il gate manuale B18T/B18W già implementati: tap con dito e confronto percettivo della gerarchia, del pannello abilità, del Back separato e del CTA ornamentale sul Pixel 9;
 6. chiudere B18U dopo il gate manuale B18T/B18W: verificare gli otto sprite originali in movimento sul Pixel 9, mantenendo le sorgenti HD fuori dagli export;
 7. chiudere il gate manuale B18Q già implementato: barre `XP`/`HP`, playfield separato e confronto percettivo 16:9/18:9/20:9/4:3 su Windows e Pixel 9;
-8. completare B18R e chiudere il gate residuo B18S dopo B18Q: timing visivi più leggibili, confronto dello sfondo ImageGen a luminosità controllata e verifica del playfield finale;
+8. B18R è completato; chiudere il gate residuo B18S dopo B18Q con confronto dello sfondo ImageGen a luminosità controllata e verifica del playfield finale durante i VFX allungati;
 9. eseguire B18V soltanto dopo il freeze B18C–B18W: gate combinato Windows/Android, Boss a `04:00`/`2400 HP`, matrice 16:9/20:9/4:3, profiling e soak; quindi procedere a B20.
 
 Il setup host e gli artefatti generati il 12 agosto 2026 sono registrati in
@@ -1333,5 +1337,7 @@ Cambio personaggio dalla pausa, conferma modale e cleanup atomico B18N sono
 registrati in [`b18n-verification.md`](./b18n-verification.md).
 Welcome, impostazioni iniziali, ritorno dal selettore e cold launch B18O sono
 registrati in [`b18o-verification.md`](./b18o-verification.md).
+Timing centralizzati, code visive non interattive e gate percettivo B18R sono
+registrati in [`b18r-verification.md`](./b18r-verification.md).
 Sfondo arena ImageGen, crop responsive, manifest e gate residui B18S sono
 registrati in [`b18s-verification.md`](./b18s-verification.md).

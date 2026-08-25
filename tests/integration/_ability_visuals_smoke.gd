@@ -98,7 +98,7 @@ func _validate_visual_families_and_budgets() -> void:
 
 		var visual_node := effect
 		if definition.effect_id == AbilityEffectRegistry.RANDOM_COSPLAY:
-			visual_node = effect.get_node_or_null("CosplayAccent") as Node2D
+			visual_node = registry.get_last_cosplay_accent() as Node2D
 			_expect(visual_node is CosplayAccent, "Cosplay Casuale deve aggiungere confetti scene-local.")
 			_expect(
 				effect.get_meta(&"cosplay_source", &"") == AbilityEffectRegistry.RANDOM_COSPLAY,
@@ -112,7 +112,7 @@ func _validate_visual_families_and_budgets() -> void:
 			continue
 
 		_validate_visual_contract(visual_node, definition.effect_id)
-		_validate_generated_icon_burst(controller, effect, definition)
+		_validate_generated_icon_burst(controller, registry, effect, definition)
 		var family_id := StringName(visual_node.call("get_visual_family_id"))
 		family_ids[family_id] = true
 		var total_particles := int(effect.call("get_visual_particle_count"))
@@ -168,10 +168,11 @@ func _validate_visual_contract(visual_node: Node2D, effect_id: StringName) -> vo
 
 func _validate_generated_icon_burst(
 	controller: RunController,
+	registry: AbilityEffectRegistry,
 	effect: Node2D,
 	definition: AbilityDefinition
 ) -> void:
-	var burst := effect.get_node_or_null("AbilityIconBurst") as Node2D
+	var burst := registry.get_last_icon_burst()
 	_expect(burst != null, "%s deve mostrare l'emblema ImageGen animato." % definition.id)
 	_expect(
 		definition.icon != null
@@ -183,6 +184,14 @@ func _validate_generated_icon_burst(
 	)
 	if burst == null:
 		return
+	_expect(
+		burst.get_parent() == registry.get_effect_parent(),
+		"Il burst B18R deve vivere come coda visiva separata dall'effetto gameplay."
+	)
+	_expect(
+		float(burst.call("get_duration_total")) > 0.72,
+		"Il burst B18R deve superare la baseline B18M da 0,72 s."
+	)
 	_expect(
 		burst.has_method(&"get_texture_path")
 			and String(burst.call("get_texture_path")) == definition.icon.resource_path,

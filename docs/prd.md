@@ -478,9 +478,11 @@ pavimento B18S usa uno sfondo raster originale prodotto con ImageGen, responsive
 e a basso contrasto, privo di griglia, bordo ciano, testo, personaggi o falsi
 ostacoli; le variazioni procedurali restano un fallback presentazionale.
 Flash, squash, hit spark, particelle di morte e impulso di prontezza sono
-esclusivamente presentazionali. B18R allunga le animazioni one-shot e i burst
-troppo brevi per essere percepiti, ma non prolunga collisioni, danno, tick o
-cooldown e non lascia apparire attiva un'area già conclusa.
+esclusivamente presentazionali. B18R centralizza il burst abilità a `1,20 s`,
+le reazioni Player/nemico a `0,30`/`0,26 s`, la morte a `0,78 s` e l'impulso di
+prontezza a `0,60 s`; i flash restano brevi a `0,075–0,08 s`. Le code visive
+sono nodi sibling non interattivi e non prolungano collisioni, danno, tick,
+cooldown o raggi né lasciano apparire attiva un'area già conclusa.
 
 **Audio:** gli eventi di combattimento, progressione, abilità, Boss e terminali
 usano cue brevi su un bus SFX polifonico. Il menu di pausa offre volume lineare e

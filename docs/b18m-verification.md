@@ -43,15 +43,17 @@ non viene consumata dalla build.
 
 ## Animazioni di attivazione
 
-`ability_icon_burst.gd` mostra per `0,72 s` la stessa texture usata da HUD e
-carte rank. I profili sono distinti: impatto e tremore, scorrimento, pulse del
+`ability_icon_burst.gd` mostrava nella baseline B18M per `0,72 s` la stessa
+texture usata da HUD e carte rank. B18R ha poi portato il valore finale a
+`1,20 s`. I profili sono distinti: impatto e tremore, scorrimento, pulse del
 tuono, rotazione, caduta/squash, reveal, respiro e beat. Ogni effetto usa un solo
 emblema, zero materiali custom e `z_index=1`, quindi resta sotto nemici,
 telegraph, Player e proiettili prioritari.
 
-Il clock avanza soltanto in `RunController.RUNNING`; pausa, fine effetto, morte,
-cambio profilo e restart ripuliscono il nodo insieme al VFX genitore. Collisioni,
-raggio, danno, durata, cooldown, snapshot rank e routing touch sono invariati.
+Il clock avanza soltanto in `RunController.RUNNING`; B18R separa la dissolvenza
+come coda sibling non interattiva, mentre morte, cambio profilo e restart la
+ripuliscono. Collisioni, raggio, danno, durata, cooldown, snapshot rank e routing
+touch sono invariati.
 
 ## Verifica automatica
 

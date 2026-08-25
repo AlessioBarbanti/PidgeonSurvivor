@@ -47,8 +47,8 @@ signal speed_modifiers_changed(enemy: BaseEnemy, effective_multiplier: float)
 			_sync_enemy_sprite_animation()
 
 @export_group("Combat Feedback")
-@export_range(0.0, 1.0, 0.01) var damage_flash_duration := 0.08
-@export_range(0.0, 1.0, 0.01) var hit_reaction_duration := 0.14
+@export_range(0.0, 1.0, 0.01) var damage_flash_duration := PresentationTimings.ENEMY_DAMAGE_FLASH_SECONDS
+@export_range(0.0, 1.0, 0.01) var hit_reaction_duration := PresentationTimings.ENEMY_HIT_REACTION_SECONDS
 @export_range(0.0, 0.5, 0.01) var hit_squash_strength := 0.16
 
 var _target: Node2D

@@ -1122,6 +1122,29 @@ func _validate_current_contract() -> bool:
 			and _combat_feedback.z_index < _projectiles.z_index
 		):
 			failures.append("Il feedback B18B deve restare tra aree alleate e attori prioritari.")
+		if (
+			not is_equal_approx(
+				_combat_feedback.death_burst_duration,
+				PresentationTimings.DEATH_BURST_SECONDS
+			)
+			or not is_equal_approx(
+				_combat_feedback.player_damage_duration,
+				PresentationTimings.PLAYER_DAMAGE_BURST_SECONDS
+			)
+		):
+			failures.append("B18R richiede timing feedback centralizzati.")
+	if not PresentationTimings.is_valid():
+		failures.append("B18R richiede timing presentazionali validi e separati dal gameplay.")
+	if (
+		not is_equal_approx(
+			_player.damage_reaction_duration,
+			PresentationTimings.PLAYER_DAMAGE_REACTION_SECONDS
+		)
+		or _player.damage_flash_duration > 0.08
+	):
+		failures.append("B18R deve allungare la reazione Player mantenendo breve il flash.")
+	if _ability_effect_registry.get_active_visual_tail_count() != 0:
+		failures.append("B18R non deve iniziare una run con code visive residue.")
 	if _end_screen == null:
 		failures.append("EndScreen non presente.")
 	elif _end_screen.visible:
@@ -1341,6 +1364,7 @@ func _validate_current_contract() -> bool:
 		print("B18O_CONTRACT_OK")
 		print("B18P_CONTRACT_OK")
 		print("B18Q_CONTRACT_OK")
+		print("B18R_CONTRACT_OK")
 		print("B18S_CONTRACT_OK")
 		print("B18T_CONTRACT_OK")
 		print("B18U_CONTRACT_OK")

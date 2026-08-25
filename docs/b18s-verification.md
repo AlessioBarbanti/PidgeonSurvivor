@@ -8,8 +8,8 @@ Target obbligatori: Windows x64 e Android ARM64
 
 `IN VERIFICA`. Lo sfondo ImageGen, il crop responsive, la tracciabilità, gli
 automatici, il runtime Windows, l'APK statico e il passaggio Pixel 9 a 20:9 sono
-chiusi. B18S dipende però da B18Q e B18R, ancora `PRONTO`: dopo il loro freeze va
-ripetuto il confronto sul playfield definitivo e a luminosità fisica
+chiusi. B18R è completato; dopo il freeze di B18Q va ripetuto il confronto sul
+playfield definitivo, durante i VFX allungati, e a luminosità fisica
 controllata prima di marcare la slice `COMPLETATO`.
 
 ## Asset e integrazione
@@ -96,6 +96,6 @@ a luminosità controllata resta quindi esplicitamente aperta.
 ## Gate residui
 
 - chiudere B18Q e verificare che il crop segua il nuovo playfield sotto HUD/XP;
-- chiudere B18R e ricontrollare la priorità durante VFX allungati e densità alta;
+- B18R è chiuso; ricontrollare la priorità durante i VFX allungati e densità alta nel passaggio finale;
 - confrontare fisicamente luminosità bassa/alta su Windows e Pixel 9;
 - rieseguire il passaggio combinato 16:9/20:9/4:3 prima del freeze B18V.

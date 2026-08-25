@@ -18,9 +18,9 @@ storica documentata, ma non è più consumato dal runtime.
 | `scripts/abilities/fire_z_trail.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Nastro a due livelli e 16 scintille deterministiche | `c2a7a1a51197578b7b1d5545fe71515aa3e2bcfeedf430b6db1cb1caf465c541` |
 | `scripts/abilities/lightning_storm.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Nube, saetta, onde del tuono e overlay accessibile | `2c84564d1ada2fd92765baa225ca154321e66f6cdab9f86e0911c4e69220f987` |
 | `scripts/abilities/ability_area_effect.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Archi rotanti, pozza con bolle e campo zen con anelli e moti lenti | `f1e40c89f75fe38893e16853ad96d5180f383a239636865c8d519f8cb8e0c988` |
-| `scripts/abilities/cosplay_accent.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Burst da 18 coriandoli nella palette dell'abilità copiata | `eef04d3ce27d106d860e3bd56cccae78cc7a199ebaf0d7b01194fe10bb5a5f07` |
+| `scripts/abilities/cosplay_accent.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Coda B18R non interattiva da 18 coriandoli, con entrata/uscita centralizzate nella palette dell'abilità copiata | `8d62630788467479ff2fbbf1587f753c2212c32e8720e81e1379b80bd2b9cff1` |
 | `scripts/abilities/illusion_decoy.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Clone ballerino, cassa pulsante e sei note musicali | `01df1dc441abf245404b8cb6bf794753b6df77b2efb893c3c3d15acf74ace07d` |
-| `scripts/abilities/ability_icon_burst.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Otto profili di entrata, rotazione, squash, respiro e beat applicati agli emblemi ImageGen; clock solo `RUNNING` | `c30d255a18fa015b5635382d958793d4e13d23a9aebfb31a053022bd870bcd03` |
+| `scripts/abilities/ability_icon_burst.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Otto profili B18R da `1,20 s` con entrata/uscita centralizzate; coda non interattiva e clock solo `RUNNING` | `a963236264bfe3dfa1329c11a96649f105ab16e642065cf6cfd83134a61e32eb` |
 
 ## Emblemi ImageGen definitivi
 

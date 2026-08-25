@@ -7,9 +7,9 @@ const HIT_SPARK := &"hit_spark"
 const DEATH_BURST := &"death_burst"
 const PLAYER_DAMAGE := &"player_damage"
 
-@export_range(0.04, 1.0, 0.01) var hit_spark_duration := 0.14
-@export_range(0.08, 2.0, 0.01) var death_burst_duration := 0.38
-@export_range(0.08, 1.0, 0.01) var player_damage_duration := 0.24
+@export_range(0.04, 1.0, 0.01) var hit_spark_duration := PresentationTimings.HIT_SPARK_SECONDS
+@export_range(0.08, 2.0, 0.01) var death_burst_duration := PresentationTimings.DEATH_BURST_SECONDS
+@export_range(0.08, 1.0, 0.01) var player_damage_duration := PresentationTimings.PLAYER_DAMAGE_BURST_SECONDS
 @export var hit_color := Color(1.0, 0.83, 0.35, 0.92)
 @export var death_color := Color(1.0, 0.31, 0.46, 0.96)
 @export var player_damage_color := Color(1.0, 0.18, 0.38, 0.9)
@@ -86,6 +86,18 @@ func get_active_effect_count() -> int:
 
 func get_spawn_count(kind: StringName) -> int:
 	return int(_spawn_counts.get(kind, 0))
+
+
+func get_active_effect_remaining(kind: StringName) -> float:
+	var longest_remaining := 0.0
+	for effect in _effects:
+		if StringName(effect.get("kind", &"")) != kind:
+			continue
+		longest_remaining = maxf(
+			longest_remaining,
+			float(effect.get("duration", 0.0)) - float(effect.get("elapsed", 0.0))
+		)
+	return longest_remaining
 
 
 func clear_feedback() -> void:
