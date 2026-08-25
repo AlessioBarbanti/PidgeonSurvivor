@@ -5,6 +5,7 @@ signal play_requested()
 signal audio_volume_changed(value: float)
 signal audio_mute_toggled(muted: bool)
 signal reduced_flashes_toggled(enabled: bool)
+signal touch_control_scale_changed(control_id: StringName, value: float)
 
 @onready var _content_panel: Control = %ContentPanel
 @onready var _title_plaque: Control = %TitlePlaque
@@ -19,6 +20,10 @@ signal reduced_flashes_toggled(enabled: bool)
 @onready var _volume_value_label: Label = %VolumeValueLabel
 @onready var _mute_check_button: CheckButton = %MuteCheckButton
 @onready var _reduced_flashes_check_button: CheckButton = %ReducedFlashesCheckButton
+@onready var _ability_size_slider: HSlider = %AbilitySizeSlider
+@onready var _ability_size_value_label: Label = %AbilitySizeValueLabel
+@onready var _joystick_size_slider: HSlider = %JoystickSizeSlider
+@onready var _joystick_size_value_label: Label = %JoystickSizeValueLabel
 @onready var _close_settings_button: Button = %CloseSettingsButton
 
 var _syncing_controls := false
@@ -31,8 +36,12 @@ func _ready() -> void:
 	_volume_slider.value_changed.connect(_on_volume_changed)
 	_mute_check_button.toggled.connect(_on_mute_toggled)
 	_reduced_flashes_check_button.toggled.connect(_on_reduced_flashes_toggled)
+	_ability_size_slider.value_changed.connect(_on_ability_size_changed)
+	_joystick_size_slider.value_changed.connect(_on_joystick_size_changed)
 	_close_settings_button.pressed.connect(_close_settings)
 	_refresh_volume_label(_volume_slider.value)
+	_refresh_scale_label(_ability_size_value_label, _ability_size_slider.value)
+	_refresh_scale_label(_joystick_size_value_label, _joystick_size_slider.value)
 	hide_welcome()
 
 
@@ -86,6 +95,15 @@ func set_reduced_flashes(enabled: bool) -> void:
 	_syncing_controls = false
 
 
+func set_touch_control_scales(ability_scale: float, joystick_scale: float) -> void:
+	_syncing_controls = true
+	_ability_size_slider.value = TouchControlSettings.sanitize_ability_scale(ability_scale)
+	_joystick_size_slider.value = TouchControlSettings.sanitize_joystick_scale(joystick_scale)
+	_syncing_controls = false
+	_refresh_scale_label(_ability_size_value_label, _ability_size_slider.value)
+	_refresh_scale_label(_joystick_size_value_label, _joystick_size_slider.value)
+
+
 func is_settings_visible() -> bool:
 	return visible and is_instance_valid(_settings_panel) and _settings_panel.visible
 
@@ -120,6 +138,14 @@ func get_reduced_flashes_check_button() -> CheckButton:
 		if is_instance_valid(_reduced_flashes_check_button)
 		else null
 	)
+
+
+func get_ability_size_slider() -> HSlider:
+	return _ability_size_slider if is_instance_valid(_ability_size_slider) else null
+
+
+func get_joystick_size_slider() -> HSlider:
+	return _joystick_size_slider if is_instance_valid(_joystick_size_slider) else null
 
 
 func get_content_panel_rect() -> Rect2:
@@ -206,6 +232,23 @@ func _on_reduced_flashes_toggled(enabled: bool) -> void:
 		reduced_flashes_toggled.emit(enabled)
 
 
+func _on_ability_size_changed(value: float) -> void:
+	_refresh_scale_label(_ability_size_value_label, value)
+	if not _syncing_controls:
+		touch_control_scale_changed.emit(&"ability", value)
+
+
+func _on_joystick_size_changed(value: float) -> void:
+	_refresh_scale_label(_joystick_size_value_label, value)
+	if not _syncing_controls:
+		touch_control_scale_changed.emit(&"joystick", value)
+
+
 func _refresh_volume_label(value: float) -> void:
 	if is_instance_valid(_volume_value_label):
 		_volume_value_label.text = "%d%%" % roundi(clampf(value, 0.0, 1.0) * 100.0)
+
+
+func _refresh_scale_label(label: Label, value: float) -> void:
+	if is_instance_valid(label):
+		label.text = "%d%%" % roundi(value * 100.0)

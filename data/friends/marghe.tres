@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="FriendDefinition" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="FriendDefinition" load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/content/friend_definition.gd" id="1_definition"]
 [ext_resource type="Texture2D" path="res://assets/art/third_party/eldiran_rpg_characters/RPGCharacterSprites32x32-transparent.png" id="2_sheet"]
+[ext_resource type="Texture2D" path="res://assets/art/characters/players/marghe.png" id="3_gameplay"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_portrait"]
 atlas = ExtResource("2_sheet")
@@ -11,9 +12,17 @@ region = Rect2(32, 512, 32, 32)
 atlas = ExtResource("2_sheet")
 region = Rect2(32, 544, 32, 32)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_gameplay_walk_a"]
+atlas = ExtResource("3_gameplay")
+region = Rect2(0, 0, 32, 32)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_gameplay_idle"]
-atlas = ExtResource("2_sheet")
-region = Rect2(288, 512, 32, 32)
+atlas = ExtResource("3_gameplay")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gameplay_walk_b"]
+atlas = ExtResource("3_gameplay")
+region = Rect2(64, 0, 32, 32)
 
 [resource]
 script = ExtResource("1_definition")
@@ -39,7 +48,7 @@ evil_portrait_placeholder = SubResource("AtlasTexture_evil")
 portrait_source = "Eldiran, 32x32 RPG Character Sprites, CC0 1.0"
 portraits_are_placeholders = true
 gameplay_idle_right = SubResource("AtlasTexture_gameplay_idle")
-gameplay_walk_right_frames = Array[Texture2D]([SubResource("AtlasTexture_gameplay_idle"), SubResource("AtlasTexture_gameplay_idle"), SubResource("AtlasTexture_gameplay_idle"), SubResource("AtlasTexture_gameplay_idle")])
+gameplay_walk_right_frames = Array[Texture2D]([SubResource("AtlasTexture_gameplay_walk_a"), SubResource("AtlasTexture_gameplay_idle"), SubResource("AtlasTexture_gameplay_walk_b"), SubResource("AtlasTexture_gameplay_idle")])
 content_approved = true
 portraits_approved = true
 approved_by = "Proprietario del progetto"

@@ -11,6 +11,7 @@ const SETUP_VALIDATOR = preload("res://scripts/app/setup_validator.gd")
 @onready var _arena_layout: ArenaLayout = %ArenaLayout
 @onready var _run_controller: RunController = %RunController
 @onready var _visual_accessibility_settings: VisualAccessibilitySettings = %VisualAccessibilitySettings
+@onready var _touch_control_settings: TouchControlSettings = %TouchControlSettings
 @onready var _friend_registry: FriendRegistry = %FriendRegistry
 @onready var _game_director: GameDirector = %GameDirector
 @onready var _boss_encounter: BossEncounter = %BossEncounter
@@ -77,6 +78,8 @@ func _ready() -> void:
 	)
 	_platform_lifecycle.set_boot_back_handler(_on_boot_back_requested)
 	_visual_accessibility_settings.configure(_pause_overlay)
+	_touch_control_settings.configure(_welcome_screen, _pause_overlay)
+	_touch_control_settings.settings_changed.connect(_on_touch_control_settings_changed)
 
 	_arena_layout.refresh_layout()
 	_player.set_arena_layout(_arena_layout)
@@ -189,6 +192,10 @@ func _ready() -> void:
 	_welcome_screen.set_reduced_flashes(
 		_visual_accessibility_settings.is_reduced_flashes_enabled()
 	)
+	_apply_touch_control_settings(
+		_touch_control_settings.get_ability_scale(),
+		_touch_control_settings.get_joystick_scale()
+	)
 	_apply_layout()
 
 	var success := SETUP_VALIDATOR.print_result() and _validate_current_contract()
@@ -299,6 +306,16 @@ func _apply_layout() -> void:
 			"B09_SAFE safe_area=%s joystick_rect=%s gesture_padding=%s"
 			% [safe_area, joystick_rect, gesture_navigation_padding]
 		)
+
+
+func _apply_touch_control_settings(
+	ability_scale: float,
+	joystick_scale: float
+) -> void:
+	_hud.set_active_ability_scale(ability_scale, gesture_navigation_padding)
+	_touch_joystick.set_control_scale(joystick_scale)
+	if is_node_ready():
+		_apply_layout()
 
 
 func get_touch_joystick_viewport_rect() -> Rect2:
@@ -480,6 +497,10 @@ func get_game_audio() -> GameAudio:
 
 func get_visual_accessibility_settings() -> VisualAccessibilitySettings:
 	return _visual_accessibility_settings
+
+
+func get_touch_control_settings() -> TouchControlSettings:
+	return _touch_control_settings
 
 
 func get_pickup_parent() -> Node2D:
@@ -780,6 +801,11 @@ func _validate_current_contract() -> bool:
 			failures.append("PauseOverlay B18 privo del controllo mute.")
 		if _pause_overlay.get_reduced_flashes_check_button() == null:
 			failures.append("PauseOverlay B18E privo dell'opzione Flash ridotti.")
+		if (
+			_pause_overlay.get_ability_size_slider() == null
+			or _pause_overlay.get_joystick_size_slider() == null
+		):
+			failures.append("PauseOverlay B18P privo delle scale touch.")
 		if _pause_overlay.get_change_character_button() == null:
 			failures.append("PauseOverlay B18N privo di Cambia personaggio.")
 		if (
@@ -795,6 +821,11 @@ func _validate_current_contract() -> bool:
 		if _welcome_screen.get_settings_button() == null:
 			failures.append("WelcomeScreen B18O priva di IMPOSTAZIONI.")
 		if (
+			_welcome_screen.get_ability_size_slider() == null
+			or _welcome_screen.get_joystick_size_slider() == null
+		):
+			failures.append("WelcomeScreen B18P priva delle scale touch.")
+		if (
 			_welcome_screen.get_volume_slider() == null
 			or _welcome_screen.get_mute_check_button() == null
 			or _welcome_screen.get_reduced_flashes_check_button() == null
@@ -809,6 +840,23 @@ func _validate_current_contract() -> bool:
 		!= _visual_accessibility_settings
 	):
 		failures.append("AbilityEffectRegistry B18E non collegato alle impostazioni visuali.")
+	if _touch_control_settings == null:
+		failures.append("TouchControlSettings B18P non presente.")
+	else:
+		if (
+			_touch_control_settings.get_ability_scale()
+			< TouchControlSettings.MIN_ABILITY_SCALE
+			or _touch_control_settings.get_ability_scale()
+			> TouchControlSettings.MAX_ABILITY_SCALE
+		):
+			failures.append("La scala abilita B18P deve restare nell'intervallo sicuro.")
+		if (
+			_touch_control_settings.get_joystick_scale()
+			< TouchControlSettings.MIN_JOYSTICK_SCALE
+			or _touch_control_settings.get_joystick_scale()
+			> TouchControlSettings.MAX_JOYSTICK_SCALE
+		):
+			failures.append("La scala joystick B18P deve restare nell'intervallo sicuro.")
 	if _enemy_spawner.spawn_profile == null:
 		failures.append("EnemySpawner privo del profilo dati.")
 	if _enemy_spawner.enemy_scene == null:
@@ -1049,6 +1097,13 @@ func _validate_current_contract() -> bool:
 		failures.append("ArenaView B18B non deve usare la griglia debug regolare.")
 	elif _arena_view.get_floor_feature_budget().values().has(0):
 		failures.append("ArenaView B18B richiede variazioni, giunti, macchie e crepe.")
+	if _arena_view != null:
+		if not _arena_view.has_raster_background():
+			failures.append("ArenaView B18S privo dello sfondo raster ImageGen.")
+		elif _arena_view.uses_procedural_fallback():
+			failures.append("ArenaView B18S non deve usare il fallback procedurale nel runtime.")
+		if _arena_view.texture_filter != CanvasItem.TEXTURE_FILTER_NEAREST:
+			failures.append("ArenaView B18S deve preservare il campionamento pixel-art.")
 	if _combat_feedback == null:
 		failures.append("CombatFeedback B18B non presente.")
 	else:
@@ -1074,6 +1129,39 @@ func _validate_current_contract() -> bool:
 		failures.append("CharacterSelectOverlay B17A non presente.")
 	elif _character_select_overlay.get_roster_size() != 8:
 		failures.append("CharacterSelectOverlay B17A deve esporre otto profili.")
+	var character_sprite := _player.get_node_or_null("CharacterSprite") as Sprite2D
+	if character_sprite == null:
+		failures.append("B18U richiede lo sprite Player dati.")
+	elif character_sprite.texture_filter != CanvasItem.TEXTURE_FILTER_NEAREST:
+		failures.append("B18U deve mostrare le strisce Player con filtro nearest.")
+	for friend_definition in _friend_registry.get_definitions():
+		var expected_cast_path := (
+			"res://assets/art/characters/players/%s.png" % friend_definition.id
+		)
+		var cast_idle := friend_definition.get_gameplay_idle_right() as AtlasTexture
+		var cast_walk := friend_definition.get_gameplay_walk_right_frames()
+		if (
+			cast_idle == null
+			or cast_idle.atlas == null
+			or cast_idle.atlas.resource_path != expected_cast_path
+			or cast_idle.get_size() != Vector2(32.0, 32.0)
+		):
+			failures.append("B18U idle originale mancante per %s." % friend_definition.id)
+		if cast_walk.size() != 4:
+			failures.append("B18U richiede quattro fasi per %s." % friend_definition.id)
+			continue
+		for cast_frame in cast_walk:
+			var cast_atlas := cast_frame as AtlasTexture
+			if (
+				cast_atlas == null
+				or cast_atlas.atlas == null
+				or cast_atlas.atlas.resource_path != expected_cast_path
+				or cast_atlas.get_size() != Vector2(32.0, 32.0)
+			):
+				failures.append("B18U frame originale non valido per %s." % friend_definition.id)
+				break
+		if cast_walk[0] == cast_idle or cast_walk[2] == cast_idle or cast_walk[0] == cast_walk[2]:
+			failures.append("B18U richiede due passi distinti per %s." % friend_definition.id)
 	if _hud == null:
 		failures.append("HUD non presente.")
 	else:
@@ -1094,13 +1182,15 @@ func _validate_current_contract() -> bool:
 		if xp_line_rect.size.y < 6.0 or xp_line_rect.size.y > 8.5:
 			failures.append("La linea XP B18B deve restare alta 6-8 unita logiche.")
 		var ability_panel_rect := _hud.get_ability_panel_rect()
+		var expected_ability_size := (
+			TouchAbilityButton.BASE_TARGET_SIZE
+			* _touch_control_settings.get_ability_scale()
+		)
 		if (
-			ability_panel_rect.size.x < 63.0
-			or ability_panel_rect.size.x > 65.0
-			or ability_panel_rect.size.y < 63.0
-			or ability_panel_rect.size.y > 65.0
+			absf(ability_panel_rect.size.x - expected_ability_size) > 1.0
+			or absf(ability_panel_rect.size.y - expected_ability_size) > 1.0
 		):
-			failures.append("B18K deve mostrare soltanto l'icona 64 x 64.")
+			failures.append("B18P deve scalare insieme pannello e target abilita.")
 		if _hud.get_portrait_texture() == null:
 			failures.append("La fascia HUD B18B deve mostrare il ritratto corrente.")
 		if not _hud.get_experience_panel_rect().has_area():
@@ -1187,11 +1277,14 @@ func _validate_current_contract() -> bool:
 		print("B18M_CONTRACT_OK")
 		print("B18N_CONTRACT_OK")
 		print("B18O_CONTRACT_OK")
+		print("B18P_CONTRACT_OK")
+		print("B18S_CONTRACT_OK")
+		print("B18U_CONTRACT_OK")
 		return true
 
 	for failure in failures:
 		push_error(failure)
-	printerr("B18O_CONTRACT_FAIL")
+	printerr("B18U_CONTRACT_FAIL")
 	return false
 
 
@@ -1288,6 +1381,13 @@ func _on_welcome_audio_mute_toggled(muted: bool) -> void:
 
 func _on_welcome_reduced_flashes_toggled(enabled: bool) -> void:
 	_visual_accessibility_settings.set_reduced_flashes(enabled)
+
+
+func _on_touch_control_settings_changed(
+	ability_scale: float,
+	joystick_scale: float
+) -> void:
+	_apply_touch_control_settings(ability_scale, joystick_scale)
 
 
 func _on_pause_requested() -> void:

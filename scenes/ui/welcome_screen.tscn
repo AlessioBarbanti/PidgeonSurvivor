@@ -324,16 +324,80 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 focus_neighbor_top = NodePath("../MuteCheckButton")
-focus_neighbor_bottom = NodePath("../CloseSettingsButton")
+focus_neighbor_bottom = NodePath("../AbilitySizeRow/AbilitySizeSlider")
 theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
 theme_override_font_sizes/font_size = 17
 text = "FLASH RIDOTTI"
+
+[node name="AbilitySizeRow" type="HBoxContainer" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Caption" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/AbilitySizeRow"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "Icona abilità"
+
+[node name="AbilitySizeSlider" type="HSlider" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/AbilitySizeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 1.5
+step = 0.25
+value = 1.25
+focus_neighbor_top = NodePath("../../ReducedFlashesCheckButton")
+focus_neighbor_bottom = NodePath("../../JoystickSizeRow/JoystickSizeSlider")
+
+[node name="AbilitySizeValueLabel" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/AbilitySizeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(52, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.87, 0.42, 1)
+theme_override_font_sizes/font_size = 16
+text = "125%"
+horizontal_alignment = 2
+
+[node name="JoystickSizeRow" type="HBoxContainer" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Caption" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/JoystickSizeRow"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "Joystick"
+
+[node name="JoystickSizeSlider" type="HSlider" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/JoystickSizeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 48)
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.85
+max_value = 1.15
+step = 0.15
+value = 1.0
+focus_neighbor_top = NodePath("../../AbilitySizeRow/AbilitySizeSlider")
+focus_neighbor_bottom = NodePath("../../CloseSettingsButton")
+
+[node name="JoystickSizeValueLabel" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/JoystickSizeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(52, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.87, 0.42, 1)
+theme_override_font_sizes/font_size = 16
+text = "100%"
+horizontal_alignment = 2
 
 [node name="CloseSettingsButton" type="Button" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
-focus_neighbor_top = NodePath("../ReducedFlashesCheckButton")
+focus_neighbor_top = NodePath("../JoystickSizeRow/JoystickSizeSlider")
 focus_neighbor_bottom = NodePath("../VolumeRow/VolumeSlider")
 theme_override_colors/font_color = Color(0.82, 0.94, 1, 1)
 theme_override_colors/font_hover_color = Color(0.96, 0.99, 1, 1)

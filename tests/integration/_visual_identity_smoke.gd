@@ -123,6 +123,12 @@ func _validate_compact_hud(
 
 func _validate_arena_identity(arena_view: ArenaView) -> void:
 	_expect(not arena_view.uses_debug_grid(), "L'arena non deve usare la griglia debug regolare.")
+	if arena_view.has_raster_background():
+		_expect(
+			not arena_view.uses_procedural_fallback(),
+			"Lo sfondo raster B18S deve sostituire le variazioni procedurali nel runtime."
+		)
+		return
 	var features := arena_view.get_floor_feature_budget()
 	_expect(int(features.get("tonal_patches", 0)) >= 4, "Il pavimento richiede variazioni tonali.")
 	_expect(int(features.get("joints", 0)) >= 2, "Il pavimento richiede giunti irregolari.")

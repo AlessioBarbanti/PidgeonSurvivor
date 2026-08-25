@@ -78,7 +78,7 @@ func _run() -> void:
 	_expect(not player.is_character_walking(), "Il restart non deve lasciare un'animazione in corso.")
 	_expect(player.get_character_texture() == idle_texture, "Il restart deve ripristinare la posa ferma.")
 
-	_validate_lollo_single_pose_animation(player, friend_registry)
+	_validate_lollo_full_animation(player, friend_registry)
 
 	await _finish(movement_slice)
 
@@ -100,7 +100,7 @@ func _validate_roster_animation_data(friend_registry: FriendRegistry) -> void:
 		)
 
 
-func _validate_lollo_single_pose_animation(
+func _validate_lollo_full_animation(
 	player: Player,
 	friend_registry: FriendRegistry
 ) -> void:
@@ -111,17 +111,24 @@ func _validate_lollo_single_pose_animation(
 	_expect(player.set_friend_definition(lollo), "Il Player deve accettare il profilo di Lollo.")
 	player.clear_movement_input()
 	var idle_texture := lollo.get_gameplay_idle_right()
+	var walk_frames := lollo.get_gameplay_walk_right_frames()
 	player.set_movement_input(Vector2.RIGHT)
-	_expect(player.get_character_texture() == idle_texture, "Lollo non deve usare frame laterali trasparenti.")
-	var first_rotation := player.get_character_visual_rotation()
-	player._physics_process(1.0 / lollo.gameplay_walk_fps + 0.001)
-	_expect(player.get_character_texture() == idle_texture, "Il gait di Lollo deve conservare la posa laterale valida.")
 	_expect(
-		player.get_character_visual_offset() == Vector2(0.0, -2.0)
-		and not is_equal_approx(player.get_character_visual_rotation(), first_rotation),
-		"Il gait procedurale deve animare anche il singolo sprite laterale di Lollo."
+		player.get_character_texture() == walk_frames[0]
+		and walk_frames[0] != idle_texture,
+		"Lollo deve usare il nuovo passo laterale A B18U."
+	)
+	player._physics_process(1.0 / lollo.gameplay_walk_fps + 0.001)
+	_expect(player.get_character_texture() == walk_frames[1], "Il gait di Lollo deve avanzare al frame intermedio.")
+	player._physics_process(1.0 / lollo.gameplay_walk_fps + 0.001)
+	_expect(
+		player.get_character_texture() == walk_frames[2]
+		and walk_frames[2] != idle_texture
+		and walk_frames[2] != walk_frames[0],
+		"Il gait di Lollo deve raggiungere il nuovo passo laterale B B18U."
 	)
 	player.clear_movement_input()
+	_expect(player.get_character_texture() == idle_texture, "Lollo deve tornare all'idle B18U.")
 
 
 func _wait_processed_frame() -> void:

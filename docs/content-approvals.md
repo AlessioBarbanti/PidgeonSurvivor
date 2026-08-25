@@ -1,6 +1,6 @@
 # Registro approvazioni contenuti
 
-Ultimo aggiornamento: 24 agosto 2026
+Ultimo aggiornamento: 25 agosto 2026
 Ambito: nomi, testi, controparti Boss, ritratti placeholder, audio e direzione
 degli asset originali B18
 
@@ -36,8 +36,10 @@ correzione esplicita **Tempesta di Tuoni** della sessione odierna.
 | Piccioni B18H base/speciale | Approvato e integrato | Due sprite originali OpenAI-assisted del progetto secondo silhouette, palette e animazione definite nel piano; manifest, trasformazioni e hash conservati, nessun input grafico di terzi |
 | Icone e VFX B18M | Approvato e integrato; gate percettivo aperto | Otto emblemi PNG originali OpenAI ImageGen sostituiscono gli SVG e animano l'attivazione; prompt, trasformazioni, licenza e hash sono nel manifest. Automatici, Windows e APK statico chiusi; nuova verifica Pixel 9 rimandata |
 | Fondale e logo welcome B18O | Approvato e integrato | La reference pixel-art approvata dal proprietario è stata ripulita con OpenAI ImageGen built-in: nessuna UI resta nel fondale, gli otto archetipi sono ai bordi e il centro è protetto. `welcome_logo.png`, fornito dal proprietario, occupa il centro senza trasformazioni; autore, generatore e licenza a monte non dichiarati non vengono inventati. Nessuna foto o persona reale; prompt, origine, crop e SHA-256 sono nel manifest dedicato |
+| Sfondo arena B18S | Integrato per verifica; approvazione percettiva aperta | Due varianti originali OpenAI ImageGen built-in sono state confrontate; soltanto la texture materica non semantica scelta entra nel runtime come PNG RGB `768×512`. Prompt, autore, licenza, downscale nearest-neighbor e SHA-256 sono nel manifest; automatici, Windows, APK e Pixel 9 20:9 sono verdi, mentre il gate finale segue B18Q/B18R e luminosità controllata |
 | Identità pubblica | Approvata | Titolo esatto `Pidgeon Survivor`; sottotitolo esatto `It's grilling time!`. Il logo B18O fornito dal proprietario contiene già entrambe le stringhe corrette e resta invariato |
 | Icona applicazione | Approvata e integrata | Su richiesta del proprietario, master quadrato OpenAI ImageGen built-in con un piccione, occhiali pixel, collo iridescente e alone da griglia; nessun testo. Un secondo output trasparente è il foreground adattivo Android. Uso progetto/Windows/Android, prompt, trasformazioni e SHA-256 sono nel manifest dedicato |
+| Sprite Player B18U | Integrati per verifica; gate percettivo aperto | Otto archetipi fittizi OpenAI ImageGen built-in confrontati con il fondale welcome B18O e con la conversazione di approvazione del 24 agosto; Magno, Zat, Alea, Aleo e Marghe sono stati corretti per riallinearli. Le strisce runtime, le sorgenti HD trasparenti escluse dagli export, prompt, trasformazioni, licenza e SHA-256 sono nel manifest dedicato |
 | Citazioni personali dei Boss | Non fornite | La UI usa il placeholder neutro del `BossDefinition`; nessuna citazione personale viene inventata |
 | Audio o voce personale | Non fornito | Il campo resta nullo e il runtime rimane silenzioso |
 
@@ -67,6 +69,21 @@ ordinario; la speciale resta disponibile soltanto per fixture e profili futuri.
 Prompt normalizzati, trasformazioni nearest-neighbor, stato d'uso e SHA-256 sono
 registrati in
 [`assets/art/enemies/pigeons/ASSET-MANIFEST.md`](../assets/art/enemies/pigeons/ASSET-MANIFEST.md).
+
+## Sprite Player originali B18U
+
+Gli otto sprite gameplay sono asset originali del progetto generati con OpenAI
+ImageGen built-in e confrontati direttamente con il cast approvato della
+welcome B18O. Non rappresentano persone reali e non contengono marchi o loghi;
+Zat usa soltanto un simbolo medico generico a cuore.
+
+Le strisce runtime `96×32` contengono passo A, idle e passo B. Le corrispondenti
+sorgenti RGBA `1536×1024` sono conservate in
+`assets/art/characters/players/hd/` per riusi futuri, ma `.gdignore` e i filtri
+di export impediscono che entrino nel runtime o nei pacchetti distribuiti.
+Prompt finali, correzioni rispetto alla welcome, pipeline deterministica e hash
+sono registrati nel
+[manifest B18U](../assets/art/characters/players/ASSET-MANIFEST.md).
 
 ## Sprite placeholder CC0
 

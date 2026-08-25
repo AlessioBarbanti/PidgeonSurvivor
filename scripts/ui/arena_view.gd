@@ -3,6 +3,8 @@ extends Node2D
 
 @export var safe_area_color := Color(0.035, 0.047, 0.067, 1.0)
 @export var playfield_color := Color(0.07, 0.09, 0.115, 1.0)
+@export var background_texture: Texture2D
+@export var background_modulate := Color(0.82, 0.86, 0.92, 0.92)
 @export var tonal_patch_color := Color(0.11, 0.13, 0.15, 0.16)
 @export var joint_color := Color(0.2, 0.22, 0.23, 0.16)
 @export var stain_color := Color(0.025, 0.031, 0.038, 0.13)
@@ -31,6 +33,44 @@ func uses_debug_grid() -> bool:
 	return false
 
 
+func has_raster_background() -> bool:
+	return background_texture != null and background_texture.get_size().x > 0.0
+
+
+func uses_procedural_fallback() -> bool:
+	return not has_raster_background()
+
+
+func get_background_source_rect() -> Rect2:
+	if not has_raster_background():
+		return Rect2()
+	return calculate_background_source_rect(
+		_playfield_rect,
+		background_texture.get_size()
+	)
+
+
+static func calculate_background_source_rect(
+	destination_rect: Rect2,
+	texture_size: Vector2
+) -> Rect2:
+	if not destination_rect.has_area() or texture_size.x <= 0.0 or texture_size.y <= 0.0:
+		return Rect2()
+	var destination_aspect := destination_rect.size.x / destination_rect.size.y
+	var texture_aspect := texture_size.x / texture_size.y
+	if texture_aspect > destination_aspect:
+		var source_width := texture_size.y * destination_aspect
+		return Rect2(
+			Vector2((texture_size.x - source_width) * 0.5, 0.0),
+			Vector2(source_width, texture_size.y)
+		)
+	var source_height := texture_size.x / destination_aspect
+	return Rect2(
+		Vector2(0.0, (texture_size.y - source_height) * 0.5),
+		Vector2(texture_size.x, source_height)
+	)
+
+
 func get_floor_feature_budget() -> Dictionary:
 	return {
 		"tonal_patches": tonal_patch_count,
@@ -47,12 +87,22 @@ func _draw() -> void:
 		return
 
 	draw_rect(_playfield_rect, playfield_color, true)
-	var random := RandomNumberGenerator.new()
-	random.seed = _layout_seed()
-	_draw_tonal_patches(random)
-	_draw_broken_joints(random)
-	_draw_stains(random)
-	_draw_cracks(random)
+	if has_raster_background():
+		draw_texture_rect_region(
+			background_texture,
+			_playfield_rect,
+			get_background_source_rect(),
+			background_modulate,
+			false,
+			true
+		)
+	else:
+		var random := RandomNumberGenerator.new()
+		random.seed = _layout_seed()
+		_draw_tonal_patches(random)
+		_draw_broken_joints(random)
+		_draw_stains(random)
+		_draw_cracks(random)
 	# Il bordo scuro chiude il pavimento senza ricreare il rettangolo ciano debug.
 	draw_rect(_playfield_rect, edge_shadow_color, false, 2.0, true)
 

@@ -1,6 +1,6 @@
 # Decision log
 
-Ultimo aggiornamento: 24 agosto 2026
+Ultimo aggiornamento: 25 agosto 2026
 
 Ambito: decisioni che modificano scope, architettura, compatibilità o rilascio
 
@@ -75,7 +75,7 @@ Non comprende account sviluppatore, scheda store, policy, privacy form, closed t
 | INP-004 | Baseline operativa | `PlatformLifecycle` traduce Escape/Start, pulsante touch, Android Back, focus loss e app pause verso `RunController`; le interruzioni possono sospendere ma mai riprendere automaticamente | `MANUAL_PAUSE` mostra un overlay always-process e richiede Back/cancel o `RIPRENDI`; gli altri modali conservano la propria priorità e ogni touch viene azzerato |
 | INP-005 | Baseline operativa | B18L rende dinamica l'origine del joystick: il primo tocco valido nell'intera safe area utile, sottratti soltanto margini anti-gesture, HUD, Boss UI, abilità e overlay, possiede il controllo fino a rilascio/cancellazione | Il joystick è invisibile al neutro, conserva deadzone e raggio input `84`, accetta tocchi vicini ai bordi, non intercetta via GUI il secondo dito e viene azzerato fuori da `RUNNING`, su focus/app pause e al restart |
 | INP-006 | Baseline operativa | Con orientamento mobile landscape, `ArenaLayout` ignora un passaggio portrait transitorio durante lock/resume quando esiste già un playfield stabile; il Player non si riclampa su cambi layout fuori da `RUNNING` | Spegnimento, sblocco e rotazione interna del task non spostano il personaggio; il layout landscape finale viene applicato prima della ripresa esplicita e il primo frame `RUNNING` conserva il normale clamp arena |
-| INP-007 | Confermata | B18P rende regolabili e persistenti separatamente le dimensioni di icona abilità e joystick; il default abilità cresce rispetto alla baseline `64×64`/icona `42`, mentre il joystick scala disegno, deadzone e raggio di trascinamento senza restringere l'acquisizione dinamica | Le impostazioni sono disponibili da welcome e pausa, applicate senza riavvio e clampate a valori sicuri; ogni estremo deve conservare safe area, gesture edge e multitouch fisico joystick più abilità |
+| INP-007 | Baseline operativa | B18P offre tre taglie persistenti e indipendenti: abilità `100/125/150%` con default `80×80`/icona `53`, joystick `85/100/115%`; base, manopola, deadzone assoluta e raggio di trascinamento scalano senza restringere l'acquisizione dinamica | Welcome e pausa applicano subito i valori e normalizzano il file utente; safe area, gesture edge e multitouch fisico joystick più abilità sono chiusi sul Pixel 9 |
 | UI-001 | Baseline operativa | Gameplay e controlli derivano da viewport e safe area dinamici; i controlli edge aggiungono padding per le gesture | Nessuna coordinata 1280×720 è usata come limite runtime; cutout e gesture bar restano fuori dalla hit area del joystick |
 | UI-002 | Baseline operativa | Il HUD B09 è figlio full-rect di `SafeAreaRoot`, usa Container e osserva i segnali di salute, progressione e clock senza polling o stato gameplay proprio | Vita e XP si aggiornano atomicamente; il timer è centrato su 16:9–20:9 e 4:3 e resta fermo ogni volta che `RunController` non è in `RUNNING` |
 | UI-003 | Baseline operativa | `UpgradeOverlay` è always-process dentro `SafeAreaRoot`, presenta l'offerta autorevole di `UpgradeService` con tre `Button` a focus circolare e disarma tutte le carte prima di inoltrare una conferma | Mouse, frecce/WASD, tasti 1–3, controller e touch condividono lo stesso percorso atomico; il joystick viene azzerato/nascosto in `LEVEL_UP` e ripristinato solo alla chiusura dell'offerta |
@@ -168,6 +168,7 @@ Non comprende account sviluppatore, scheda store, policy, privacy form, closed t
 | ASSET-006 | Confermata | B18S usa OpenAI ImageGen built-in per creare lo sfondo raster originale dell'arena e stabilisce ImageGen come percorso preferito per futuri nuovi asset raster quando adatto; UI, geometrie deterministiche e sistemi vettoriali nativi restano prodotti con strumenti appropriati | La variante scelta entra nel repository con prompt finale, generatore, data, autore, licenza, trasformazioni e SHA-256; nessun asset runtime resta soltanto nell'output del generatore e ogni immagine deve superare contrasto, performance e verifica Windows/Android |
 | ASSET-007 | Confermata | La welcome B18O usa un fondale ImageGen `1634×919` derivato dalla reference pixel-art fornita e approvata dal proprietario; otto archetipi fittizi comunicano abilità ai bordi e il centro è ricostruito senza UI raster. Il logo RGBA `1536×1024` fornito dal proprietario è visualizzato proporzionalmente senza trasformazioni | Nessuna foto o persona reale è usata; il raster è dedicato al frontend e non anticipa B18S. Prompt, origini dichiarate, crop 16:9 e SHA-256 sono nel manifest; autore, generatore e licenza del logo non dichiarati non vengono inventati, mentre pulsanti e focus restano deterministici in Godot |
 | ASSET-008 | Confermata | L'icona applicazione usa un master ImageGen quadrato senza testo: un solo piccione con occhiali pixel, collo iridescente e alone da griglia sulla palette notte del brand | Il PNG è icona progetto, Windows e main icon Android; un secondo output ImageGen con trasparenza, centrato deterministicamente nella safe area, è il foreground adattivo sopra un fondale notte separato. Prompt, riferimento, trasformazioni, licenza e SHA-256 sono nel manifest; il monocromatico Android resta opzionale |
+| ASSET-009 | In verifica | B18U usa otto strisce Player originali ImageGen coerenti con gli archetipi e la palette approvati nella welcome B18O; le sorgenti RGBA `1536×1024` sono conservate per riuso futuro | Il runtime consuma soltanto derivati `96×32`; `hd/.gdignore` e i filtri dei tre preset tengono le sorgenti HD fuori da import, EXE e APK. Prompt, correzioni dalla welcome, trasformazioni, licenza e SHA-256 sono nel manifest dedicato |
 | AUDIO-001 | Baseline operativa | `GameAudio` è scene-local, ascolta segnali atomici, usa un pool di dodici `AudioStreamPlayer` sul bus `SFX` e persiste volume lineare più mute in `user://audio_settings.cfg` | Sparo e hit sono rate-limited solo nella presentazione, senza cambiare cadenze o danni; pausa e terminali possono completare i cue perché il mixer usa `PROCESS_MODE_ALWAYS` |
 | AUDIO-002 | Baseline operativa | Con il display driver `headless`, `GameAudio` valida stream, mute, rate-limit e segnali senza istanziare playback OGG; Windows e Android continuano a usare il pool reale | Gli smoke non lasciano playback o risorse audio pendenti allo shutdown e non fingono una verifica percettiva che il driver headless non può eseguire |
 | VISUAL-001 | Baseline operativa | I VFX alleati usano riempimenti traslucidi e pattern geometrici a `z_index=0`; nemici/telegraph, Player e proiettili salgono rispettivamente a `2`, `4`, `6`, mentre i proiettili Boss restano a `10` | Un'area persistente non può nascondere attori o attacchi ostili; forma e priorità di rendering mantengono leggibile il pericolo anche senza affidarsi soltanto al colore |
@@ -177,10 +178,12 @@ Non comprende account sviluppatore, scheda store, policy, privacy form, closed t
 | VISUAL-005 | In verifica | Gli otto emblemi ImageGen sostituiscono le icone SVG in HUD, carte rank e VFX; ogni attivazione aggiunge un solo burst da `0,72 s` con profilo distinto di impatto, scorrimento, tuono, rotazione, caduta, reveal, respiro o beat | Il burst avanza solo in `RUNNING`, usa zero materiali custom, resta sotto i pericoli e viene ripulito con l'effetto; smoke, Windows e APK statico sono chiusi, mentre il nuovo gate percettivo Pixel 9 è aperto |
 | VISUAL-006 | Confermata | B18R centralizza e allunga animazioni one-shot e VFX troppo brevi, inclusa la baseline burst B18M da `0,72 s`; i valori finali vengono congelati dopo confronto percettivo Windows/Pixel 9 | Danno, tick, collisioni, cooldown e raggi non cambiano; una coda visiva oltre l'effetto reale deve essere una dissolvenza chiaramente non interattiva e pausa/restart/cambio profilo conservano i normali contratti di freeze e cleanup |
 | VISUAL-007 | Confermata | Lo sfondo B18S è un raster ImageGen responsive a basso contrasto, senza griglia debug, bordo ciano, testo, personaggi, oggetti interattivi o falsi ostacoli | Crop e tile a 16:9–20:9/4:3 non cambiano il playfield B18Q; attori, pickup, telegraph e proiettili ostili mantengono priorità semantica e visiva |
+| VISUAL-008 | In verifica | Gli otto profili B18U usano una posa idle e due pose di locomozione registrate, mostrate nearest-neighbor con la sequenza B18C e il flip orizzontale esistente | La sostituzione non cambia scala, origine, hitbox, movimento, collisioni, passive, abilità o timing. Automatici, Windows e APK statico sono chiusi; dipendenza B18T e controllo percettivo Pixel 9 restano aperti |
 
-I preset di export escludono esplicitamente `exports/**` e `android/build/**`
-dal filtro `all_resources`, così anteprime e output generati locali non vengono
-reimpacchettati nel PCK o nell'APK.
+I preset di export escludono esplicitamente `exports/**`, `android/build/**` e
+le sorgenti B18U `assets/art/characters/players/hd/**` dal filtro
+`all_resources`, così anteprime, output generati locali e master artistici non
+vengono reimpacchettati nel PCK o nell'APK.
 
 ## Matrice minima di verifica
 
@@ -227,9 +230,13 @@ Rilevazione del 12 agosto 2026:
 | OPEN-005 | Prima di B20 | Decidere se aggiungere l'icona tematica Android monocromatica opzionale; icona principale/adattiva, nome e sottotitolo sono chiusi |
 
 La vertical slice ha ora una durata e valori Boss di baseline; restano aperti la loro conferma tramite playtest a parametri finali e il bilanciamento definitivo di curva XP, danno e cap degli upgrade. La regola di stacking è chiusa da PROG-006.
-Tutti i contratti di refinement B18C–B18T sono definiti. Il refresh ImageGen di
+Tutti i contratti di refinement B18C–B18U sono definiti. Il refresh ImageGen di
 B18M è implementato e verificato automaticamente, su Windows e tramite APK
 statico, ma riapre il controllo percettivo Pixel 9. Restano inoltre i gate Pixel
-9 di B18E, B18G e B18J. B18N e B18O sono implementati e verificati sui gate
-pertinenti; B18P–B18S sono pronti e il gate combinato finale è B18T, come
-indicato nel piano di sviluppo.
+9 di B18E, B18G e B18J. B18N, B18O e B18P sono implementati e verificati sui
+gate pertinenti. B18S ha chiuso implementazione, automatici, Windows, APK e
+runtime Pixel 9 20:9; resta in verifica fino a B18Q/B18R e al confronto fisico
+a luminosità controllata. B18U ha chiuso implementazione, regressione `38/38`,
+project smoke, Windows e APK statico, conservando le sorgenti HD fuori dagli
+export; attende B18T e il controllo percettivo Pixel 9. B18Q–B18R e B18T sono
+pronti; il gate combinato finale è B18V, come indicato nel piano di sviluppo.

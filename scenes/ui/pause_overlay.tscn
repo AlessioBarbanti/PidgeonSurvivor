@@ -14,9 +14,9 @@ corner_radius_top_right = 18
 corner_radius_bottom_right = 18
 corner_radius_bottom_left = 18
 content_margin_left = 42.0
-content_margin_top = 32.0
+content_margin_top = 18.0
 content_margin_right = 42.0
-content_margin_bottom = 32.0
+content_margin_bottom = 18.0
 
 [node name="PauseOverlay" type="Control"]
 process_mode = 3
@@ -57,7 +57,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_pause_panel")
 
 [node name="VBox" type="VBoxContainer" parent="PauseCenter/Panel"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 8
 
 [node name="TitleLabel" type="Label" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
@@ -132,14 +132,85 @@ text = "ACCESSIBILITÀ"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+focus_neighbor_bottom = NodePath("../AbilitySizeRow/AbilitySizeSlider")
 theme_override_font_sizes/font_size = 17
 text = "FLASH RIDOTTI"
+
+[node name="ControlsTitle" type="Label" parent="PauseCenter/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
+theme_override_font_sizes/font_size = 17
+text = "CONTROLLI TOUCH"
+
+[node name="AbilitySizeRow" type="HBoxContainer" parent="PauseCenter/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Caption" type="Label" parent="PauseCenter/Panel/VBox/AbilitySizeRow"]
+custom_minimum_size = Vector2(142, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.93, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "Icona abilità"
+
+[node name="AbilitySizeSlider" type="HSlider" parent="PauseCenter/Panel/VBox/AbilitySizeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 1.5
+step = 0.25
+value = 1.25
+focus_neighbor_top = NodePath("../../ReducedFlashesCheckButton")
+focus_neighbor_bottom = NodePath("../../JoystickSizeRow/JoystickSizeSlider")
+
+[node name="AbilitySizeValueLabel" type="Label" parent="PauseCenter/Panel/VBox/AbilitySizeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(52, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.78, 1)
+theme_override_font_sizes/font_size = 16
+text = "125%"
+horizontal_alignment = 2
+
+[node name="JoystickSizeRow" type="HBoxContainer" parent="PauseCenter/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Caption" type="Label" parent="PauseCenter/Panel/VBox/JoystickSizeRow"]
+custom_minimum_size = Vector2(142, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.93, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "Joystick"
+
+[node name="JoystickSizeSlider" type="HSlider" parent="PauseCenter/Panel/VBox/JoystickSizeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 42)
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.85
+max_value = 1.15
+step = 0.15
+value = 1.0
+focus_neighbor_top = NodePath("../../AbilitySizeRow/AbilitySizeSlider")
+focus_neighbor_bottom = NodePath("../../ResumeButton")
+
+[node name="JoystickSizeValueLabel" type="Label" parent="PauseCenter/Panel/VBox/JoystickSizeRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(52, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.78, 1)
+theme_override_font_sizes/font_size = 16
+text = "100%"
+horizontal_alignment = 2
 
 [node name="ResumeButton" type="Button" parent="PauseCenter/Panel/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
-focus_neighbor_top = NodePath("../ReducedFlashesCheckButton")
+focus_neighbor_top = NodePath("../JoystickSizeRow/JoystickSizeSlider")
 focus_neighbor_bottom = NodePath("../ChangeCharacterButton")
 theme_override_font_sizes/font_size = 20
 text = "RIPRENDI"

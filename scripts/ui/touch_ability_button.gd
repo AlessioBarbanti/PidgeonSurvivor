@@ -9,11 +9,14 @@ const COOLDOWN_RING_COLOR := Color(1.0, 0.67, 0.24, 0.96)
 const READY_RING_COLOR := Color(1.0, 0.87, 0.42, 1.0)
 const COOLDOWN_TEXT_COLOR := Color(1.0, 0.96, 0.82, 1.0)
 const COOLDOWN_FONT_SIZE := 18
+const BASE_TARGET_SIZE := 64.0
+const BASE_ICON_WIDTH := 42.0
 
 var _direct_touch_sequence_active := false
 var _cooldown_remaining := 0.0
 var _cooldown_total := 1.0
 var _action_available := false
+var _control_scale := 1.0
 
 
 func _ready() -> void:
@@ -21,7 +24,7 @@ func _ready() -> void:
 	expand_icon = true
 	icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
-	add_theme_constant_override("icon_max_width", 48)
+	_apply_control_scale()
 	pressed.connect(_on_native_pressed)
 	queue_redraw()
 
@@ -42,6 +45,19 @@ func set_ability_visual(
 
 func get_ability_icon() -> Texture2D:
 	return icon
+
+
+func set_control_scale(value: float) -> void:
+	_control_scale = TouchControlSettings.sanitize_ability_scale(value)
+	_apply_control_scale()
+
+
+func get_control_scale() -> float:
+	return _control_scale
+
+
+func get_icon_max_width() -> int:
+	return get_theme_constant("icon_max_width")
 
 
 func get_cooldown_fraction() -> float:
@@ -103,6 +119,9 @@ func _draw() -> void:
 
 
 func _draw_cooldown_sector(center: Vector2, radius: float, fraction: float) -> void:
+	if fraction >= 0.999:
+		draw_circle(center, radius, COOLDOWN_OVERLAY_COLOR)
+		return
 	var point_count := maxi(int(ceil(RADIAL_SEGMENTS * fraction)), 1)
 	var points := PackedVector2Array([center])
 	for point_index in range(point_count + 1):
@@ -118,11 +137,11 @@ func _draw_cooldown_text(center: Vector2) -> void:
 		return
 	draw_string(
 		ThemeDB.fallback_font,
-		Vector2(0.0, center.y + COOLDOWN_FONT_SIZE * 0.35),
+		Vector2(0.0, center.y + _get_cooldown_font_size() * 0.35),
 		seconds_text,
 		HORIZONTAL_ALIGNMENT_CENTER,
 		size.x,
-		COOLDOWN_FONT_SIZE,
+		_get_cooldown_font_size(),
 		COOLDOWN_TEXT_COLOR
 	)
 
@@ -149,3 +168,16 @@ func _on_native_pressed() -> void:
 
 func _finish_direct_touch_sequence() -> void:
 	_direct_touch_sequence_active = false
+
+
+func _apply_control_scale() -> void:
+	custom_minimum_size = Vector2.ONE * BASE_TARGET_SIZE * _control_scale
+	add_theme_constant_override(
+		"icon_max_width",
+		roundi(BASE_ICON_WIDTH * _control_scale)
+	)
+	queue_redraw()
+
+
+func _get_cooldown_font_size() -> int:
+	return maxi(roundi(COOLDOWN_FONT_SIZE * _control_scale), COOLDOWN_FONT_SIZE)

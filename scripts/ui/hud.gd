@@ -186,6 +186,19 @@ func get_active_ability_button_rect() -> Rect2:
 	)
 
 
+func set_active_ability_scale(scale_value: float, edge_padding: Vector2) -> void:
+	if not is_instance_valid(_ability_panel) or not is_instance_valid(_active_ability_button):
+		return
+	_active_ability_button.set_control_scale(scale_value)
+	var target_size := _active_ability_button.custom_minimum_size
+	var safe_padding := edge_padding.max(Vector2.ZERO)
+	_ability_panel.custom_minimum_size = target_size
+	_ability_panel.offset_right = -safe_padding.x
+	_ability_panel.offset_bottom = -safe_padding.y
+	_ability_panel.offset_left = _ability_panel.offset_right - target_size.x
+	_ability_panel.offset_top = _ability_panel.offset_bottom - target_size.y
+
+
 func is_touch_origin_excluded(viewport_position: Vector2) -> bool:
 	for control in [_top_band, _experience_panel, _ability_panel]:
 		if (

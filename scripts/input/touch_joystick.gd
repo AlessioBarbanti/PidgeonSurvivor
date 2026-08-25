@@ -6,6 +6,10 @@ signal activity_changed(active: bool)
 
 const NO_POINTER := -1
 const DEBUG_MOUSE_POINTER := -2
+const BASE_CONTROL_SIZE := 224.0
+const BASE_INPUT_RADIUS := 84.0
+const BASE_VISUAL_RADIUS := 68.0
+const BASE_KNOB_RADIUS := 27.0
 
 @export_range(0.0, 0.95, 0.01) var deadzone_ratio := 0.18
 ## Raggio di acquisizione e normalizzazione: resta invariato per non cambiare
@@ -73,6 +77,7 @@ var _capture_enabled := false
 var _capture_rect := Rect2()
 var _origin_viewport_position := Vector2.ZERO
 var _origin_validator := Callable()
+var _control_scale := 1.0
 
 
 func _ready() -> void:
@@ -211,6 +216,26 @@ func is_active() -> bool:
 
 func get_visual_radius() -> float:
 	return visual_radius
+
+
+func set_control_scale(value: float) -> void:
+	var sanitized := TouchControlSettings.sanitize_joystick_scale(value)
+	if is_equal_approx(_control_scale, sanitized):
+		return
+	_control_scale = sanitized
+	reset_input()
+	custom_minimum_size = Vector2.ONE * BASE_CONTROL_SIZE * _control_scale
+	base_radius = BASE_INPUT_RADIUS * _control_scale
+	visual_radius = BASE_VISUAL_RADIUS * _control_scale
+	knob_radius = BASE_KNOB_RADIUS * _control_scale
+
+
+func get_control_scale() -> float:
+	return _control_scale
+
+
+func get_deadzone_radius() -> float:
+	return base_radius * deadzone_ratio
 
 
 func get_acquisition_rect() -> Rect2:

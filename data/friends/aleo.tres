@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="FriendDefinition" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="FriendDefinition" load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/content/friend_definition.gd" id="1_definition"]
 [ext_resource type="Texture2D" path="res://assets/art/third_party/eldiran_rpg_characters/RPGCharacterSprites32x32-transparent.png" id="2_sheet"]
+[ext_resource type="Texture2D" path="res://assets/art/characters/players/aleo.png" id="3_gameplay"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_portrait"]
 atlas = ExtResource("2_sheet")
@@ -12,16 +13,16 @@ atlas = ExtResource("2_sheet")
 region = Rect2(32, 352, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gameplay_walk_a"]
-atlas = ExtResource("2_sheet")
-region = Rect2(256, 320, 32, 32)
+atlas = ExtResource("3_gameplay")
+region = Rect2(0, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gameplay_idle"]
-atlas = ExtResource("2_sheet")
-region = Rect2(288, 320, 32, 32)
+atlas = ExtResource("3_gameplay")
+region = Rect2(32, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gameplay_walk_b"]
-atlas = ExtResource("2_sheet")
-region = Rect2(320, 320, 32, 32)
+atlas = ExtResource("3_gameplay")
+region = Rect2(64, 0, 32, 32)
 
 [resource]
 script = ExtResource("1_definition")

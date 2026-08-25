@@ -304,6 +304,14 @@ essere sostituiti nei `.tres` senza cambiare codice. Citazioni personali e audio
 non forniti non vengono inventati e restano rispettivamente sul placeholder
 neutro o silenziosi.
 
+Gli sprite gameplay B18U sono invece otto strisce originali ImageGen `96×32`,
+una per profilo, derivate dalla direzione visuale approvata nella welcome B18O.
+Ogni striscia contiene passo A, idle e passo B su celle `32×32`; il Player usa
+nearest-neighbor, alterna quattro fasi di camminata e conserva facing e ultima
+direzione B18C. Le sorgenti trasparenti `1536×1024` sono conservate per riuso
+artistico ma escluse da import ed export. La sostituzione non modifica origine,
+scala, hitbox, velocità, collisioni, passive, abilità o timing gameplay.
+
 ## 4. Idee per i potenziamenti (Citazioni e Amici)
 
 ### “L'Ansia”
@@ -344,10 +352,11 @@ nemici vicini.
   quando l'abilità torna disponibile.
 
 La baseline B18K del pulsante touch coincide con l'icona dell'abilità equipaggiata
-e misura `64×64` unità logiche. B18P rende configurabili e persistenti le
-dimensioni del controllo abilità e del joystick e adotta per l'abilità un default
-più grande della baseline corrente: icona e hit target crescono insieme, perché
-la configurazione attuale è difficile da premere. Durante il cooldown una
+e misura `64×64` unità logiche. B18P espone tre taglie persistenti e indipendenti:
+abilità `100/125/150%`, con default `80×80` e icona `53`, e joystick
+`85/100/115%`, con default invariato al `100%`. Icona e hit target crescono
+insieme; i valori esterni all'intervallo o intermedi vengono normalizzati alla
+taglia sicura più vicina. Durante il cooldown una
 maschera radiale rappresenta la
 frazione residua e mostra al centro i secondi interi arrotondati per eccesso;
 allo zero maschera e numero spariscono e un anello luminoso comunica che
@@ -405,8 +414,10 @@ che resta posseduta dallo stesso dito fino a rilascio o cancellazione. HUD,
 pulsante abilità, Boss UI e overlay non sono origini valide; un secondo dito
 resta libero di attivare l'abilità. Deadzone e raggio input restano quelli della
 baseline (`84`), mentre il disegno usa raggio `68` e sparisce al neutro. Il
-profilo B18P può scalare base, manopola, deadzone e raggio di trascinamento senza
-restringere l'acquisizione dinamica o bloccare il secondo dito. Il
+profilo B18P scala insieme controllo, base visiva, manopola, deadzone assoluta e
+raggio di trascinamento senza restringere l'acquisizione dinamica o bloccare il
+secondo dito. Le impostazioni di welcome e pausa aggiornano il runtime senza
+riavvio e persistono in `user://touch_control_settings.cfg`. Il
 lock Android può esporre per pochi frame una finestra portrait anche se il gioco
 è bloccato in landscape: quel layout transitorio non modifica il playfield già
 stabile e non riclampa il Player mentre la run è sospesa. Dopo sblocco la run

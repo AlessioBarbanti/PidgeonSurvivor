@@ -1,4 +1,4 @@
-[gd_scene load_steps=87 format=3]
+[gd_scene load_steps=89 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -76,6 +76,8 @@
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/defeat.ogg" id="75_defeat"]
 [ext_resource type="Script" path="res://scripts/vfx/combat_feedback.gd" id="76_feedback"]
 [ext_resource type="Script" path="res://scripts/app/visual_accessibility_settings.gd" id="77_accessibility"]
+[ext_resource type="Script" path="res://scripts/app/touch_control_settings.gd" id="88_touch_settings"]
+[ext_resource type="Texture2D" path="res://assets/art/arena/arena_floor_imagegen.png" id="89_arena_floor"]
 [ext_resource type="Resource" path="res://data/upgrades/ability_rank_magno_earthquake_shockwave.tres" id="78_rank_magno"]
 [ext_resource type="Resource" path="res://data/upgrades/ability_rank_bea_fire_z_trail.tres" id="79_rank_bea"]
 [ext_resource type="Resource" path="res://data/upgrades/ability_rank_zat_lightning_storm.tres" id="80_rank_zat"]
@@ -109,7 +111,9 @@ color = Color(0.02, 0.027, 0.047, 1)
 
 [node name="ArenaView" type="Node2D" parent="."]
 unique_name_in_owner = true
+texture_filter = 1
 script = ExtResource("3_arena_view")
+background_texture = ExtResource("89_arena_floor")
 
 [node name="ArenaLayout" type="Node" parent="."]
 unique_name_in_owner = true
@@ -123,6 +127,10 @@ script = ExtResource("7_run_controller")
 [node name="VisualAccessibilitySettings" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("77_accessibility")
+
+[node name="TouchControlSettings" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("88_touch_settings")
 
 [node name="FriendRegistry" type="Node" parent="."]
 unique_name_in_owner = true
