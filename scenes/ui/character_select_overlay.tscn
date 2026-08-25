@@ -1,22 +1,210 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/character_select_overlay.gd" id="1_overlay"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/character_select/character_select_backdrop.png" id="2_backdrop"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/character_select/character_select_cta_base.png" id="3_cta"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.025, 0.043, 0.075, 0.98)
+bg_color = Color(0, 0, 0, 0)
+content_margin_left = 42.0
+content_margin_top = 28.0
+content_margin_right = 42.0
+content_margin_bottom = 44.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_info_panel"]
+bg_color = Color(0.009, 0.022, 0.037, 0.97)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.18, 0.23, 0.29, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+shadow_color = Color(0, 0, 0, 0.78)
+shadow_size = 6
+shadow_offset = Vector2(0, 4)
+content_margin_left = 16.0
+content_margin_top = 14.0
+content_margin_right = 16.0
+content_margin_bottom = 14.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_normal"]
+bg_color = Color(0.055, 0.06, 0.075, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 3
+border_color = Color(0.33, 0.31, 0.28, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_hover"]
+bg_color = Color(0.1, 0.105, 0.12, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 3
+border_color = Color(0.86, 0.69, 0.38, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_pressed"]
+bg_color = Color(0.025, 0.03, 0.04, 1)
+border_width_left = 2
+border_width_top = 4
+border_width_right = 2
+border_width_bottom = 1
+border_color = Color(0.56, 0.48, 0.35, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_focus"]
+bg_color = Color(0, 0, 0, 0)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
-border_color = Color(0.25, 0.72, 1, 0.82)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
-content_margin_left = 28.0
-content_margin_top = 22.0
-content_margin_right = 28.0
-content_margin_bottom = 22.0
+border_color = Color(0.46, 0.92, 1, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+expand_margin_left = 3.0
+expand_margin_top = 3.0
+expand_margin_right = 3.0
+expand_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_arrow_normal"]
+bg_color = Color(0.045, 0.047, 0.052, 0.98)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 4
+border_color = Color(0.48, 0.39, 0.24, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+shadow_color = Color(0, 0, 0, 0.72)
+shadow_size = 4
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_arrow_hover"]
+bg_color = Color(0.09, 0.075, 0.05, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.95, 0.7, 0.27, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cta_normal"]
+bg_color = Color(0.72, 0.25, 0.025, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 6
+border_color = Color(0.98, 0.64, 0.12, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0.2, 0.035, 0.005, 0.88)
+shadow_size = 6
+shadow_offset = Vector2(0, 6)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cta_hover"]
+bg_color = Color(0.88, 0.36, 0.035, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 6
+border_color = Color(1, 0.93, 0.5, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+shadow_color = Color(0.24, 0.045, 0.005, 0.9)
+shadow_size = 8
+shadow_offset = Vector2(0, 6)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cta_pressed"]
+bg_color = Color(0.52, 0.15, 0.012, 1)
+border_width_left = 4
+border_width_top = 7
+border_width_right = 4
+border_width_bottom = 3
+border_color = Color(0.95, 0.49, 0.08, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cta_focus"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.45, 0.94, 1, 1)
+corner_radius_top_left = 13
+corner_radius_top_right = 13
+corner_radius_bottom_right = 13
+corner_radius_bottom_left = 13
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cta"]
+atlas = ExtResource("3_cta")
+region = Rect2(0, 0, 754, 181)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cta_normal"]
+texture = SubResource("AtlasTexture_cta")
+texture_margin_left = 88.0
+texture_margin_top = 34.0
+texture_margin_right = 88.0
+texture_margin_bottom = 34.0
+expand_margin_left = 8.0
+expand_margin_top = 8.0
+expand_margin_right = 8.0
+expand_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cta_hover"]
+texture = SubResource("AtlasTexture_cta")
+texture_margin_left = 88.0
+texture_margin_top = 34.0
+texture_margin_right = 88.0
+texture_margin_bottom = 34.0
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+modulate_color = Color(1, 1, 0.86, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cta_pressed"]
+texture = SubResource("AtlasTexture_cta")
+texture_margin_left = 88.0
+texture_margin_top = 34.0
+texture_margin_right = 88.0
+texture_margin_bottom = 34.0
+expand_margin_left = 6.0
+expand_margin_top = 5.0
+expand_margin_right = 6.0
+expand_margin_bottom = 7.0
+modulate_color = Color(0.72, 0.72, 0.72, 1)
 
 [node name="CharacterSelectOverlay" type="Control"]
 process_mode = 3
@@ -29,7 +217,7 @@ grow_vertical = 2
 mouse_filter = 0
 script = ExtResource("1_overlay")
 
-[node name="Dimmer" type="ColorRect" parent="."]
+[node name="Backdrop" type="NinePatchRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -37,9 +225,14 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.006, 0.01, 0.02, 0.9)
+texture_filter = 1
+texture = ExtResource("2_backdrop")
+patch_margin_left = 78
+patch_margin_top = 70
+patch_margin_right = 78
+patch_margin_bottom = 70
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="Shade" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -47,98 +240,269 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+color = Color(0, 0.01, 0.025, 0.16)
+
+[node name="Center" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
 
 [node name="SelectionPanel" type="PanelContainer" parent="Center"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(820, 650)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="Content" type="VBoxContainer" parent="Center/SelectionPanel"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 4
+
+[node name="TopRow" type="HBoxContainer" parent="Center/SelectionPanel/Content"]
+layout_mode = 2
+
+[node name="BackButton" type="Button" parent="Center/SelectionPanel/Content/TopRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(138, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(1, 0.88, 0.65, 1)
+theme_override_colors/font_hover_color = Color(1, 0.95, 0.78, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_back_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_back_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_back_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_back_focus")
+text = "← Indietro"
+
+[node name="TopSpacer" type="Control" parent="Center/SelectionPanel/Content/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="Title" type="Label" parent="Center/SelectionPanel/Content"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.48, 0.88, 1, 1)
-theme_override_font_sizes/font_size = 28
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 34
 text = "SCEGLI IL PERSONAGGIO"
 horizontal_alignment = 1
 
-[node name="Subtitle" type="Label" parent="Center/SelectionPanel/Content"]
+[node name="MainRow" type="HBoxContainer" parent="Center/SelectionPanel/Content"]
+custom_minimum_size = Vector2(0, 368)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.76, 0.86, 0.94, 1)
-theme_override_font_sizes/font_size = 15
-text = "Ogni amico ha una passiva e un'abilità attiva proprie"
+size_flags_vertical = 1
+theme_override_constants/separation = 6
+
+[node name="CharacterColumn" type="VBoxContainer" parent="Center/SelectionPanel/Content/MainRow"]
+custom_minimum_size = Vector2(410, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="CarouselFrame" type="Control" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn"]
+custom_minimum_size = Vector2(0, 302)
+layout_mode = 2
+
+[node name="PreviousButton" type="Button" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn/CarouselFrame"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(46, 52)
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 0.0
+offset_top = -26.0
+offset_right = 46.0
+offset_bottom = 26.0
+grow_vertical = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.78, 0.35, 1)
+theme_override_colors/font_hover_color = Color(1, 0.92, 0.62, 1)
+theme_override_font_sizes/font_size = 19
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_arrow_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow_normal")
+text = "◀"
+
+[node name="NextButton" type="Button" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn/CarouselFrame"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(46, 52)
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -46.0
+offset_top = -26.0
+offset_right = 0.0
+offset_bottom = 26.0
+grow_horizontal = 0
+grow_vertical = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.78, 0.35, 1)
+theme_override_colors/font_hover_color = Color(1, 0.92, 0.62, 1)
+theme_override_font_sizes/font_size = 19
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_arrow_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow_normal")
+text = "▶"
+
+[node name="CarouselViewport" type="Control" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn/CarouselFrame"]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 48.0
+offset_right = -48.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[node name="IdentityBlock" type="VBoxContainer" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="NameLabel" type="Label" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn/IdentityBlock"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.84, 0.3, 1)
+theme_override_colors/font_shadow_color = Color(0.18, 0.04, 0, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 31
+text = "Magno"
 horizontal_alignment = 1
 
-[node name="RosterGrid" type="GridContainer" parent="Center/SelectionPanel/Content"]
+[node name="RoleLabel" type="Label" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn/IdentityBlock"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 22)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.74, 0.88, 0.96, 1)
+theme_override_font_sizes/font_size = 16
+text = "Ruolo"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="AbilityPanel" type="PanelContainer" parent="Center/SelectionPanel/Content/MainRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(380, 350)
+layout_mode = 2
+size_flags_horizontal = 1
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleBoxFlat_info_panel")
+
+[node name="AbilityContent" type="VBoxContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityPanel"]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="KitLabel" type="Label" parent="Center/SelectionPanel/Content/MainRow/AbilityPanel/AbilityContent"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.76, 0.62, 0.34, 1)
+theme_override_font_sizes/font_size = 15
+text = "KIT DI MAGNO"
+
+[node name="PassiveEyebrow" type="Label" parent="Center/SelectionPanel/Content/MainRow/AbilityPanel/AbilityContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.48, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "PASSIVA"
+
+[node name="PassiveHeader" type="HBoxContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityPanel/AbilityContent"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PassiveIcon" type="TextureRect" parent="Center/SelectionPanel/Content/MainRow/AbilityPanel/AbilityContent/PassiveHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(76, 76)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PassiveTitleLabel" type="Label" parent="Center/SelectionPanel/Content/MainRow/AbilityPanel/AbilityContent/PassiveHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.78, 0.32, 1)
+theme_override_font_sizes/font_size = 23
+text = "Passiva"
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="PassiveDescriptionLabel" type="Label" parent="Center/SelectionPanel/Content/MainRow/AbilityPanel/AbilityContent"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/h_separation = 10
-theme_override_constants/v_separation = 10
-columns = 4
+theme_override_colors/font_color = Color(0.72, 0.8, 0.86, 1)
+theme_override_font_sizes/font_size = 15
+text = "Descrizione passiva"
+autowrap_mode = 2
 
-[node name="Details" type="HBoxContainer" parent="Center/SelectionPanel/Content"]
-custom_minimum_size = Vector2(0, 150)
+[node name="Divider" type="HSeparator" parent="Center/SelectionPanel/Content/MainRow/AbilityPanel/AbilityContent"]
 layout_mode = 2
-theme_override_constants/separation = 16
 
-[node name="Portrait" type="TextureRect" parent="Center/SelectionPanel/Content/Details"]
+[node name="AbilityEyebrow" type="Label" parent="Center/SelectionPanel/Content/MainRow/AbilityPanel/AbilityContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.62, 0.2, 1)
+theme_override_font_sizes/font_size = 13
+text = "ABILITÀ"
+
+[node name="AbilityHeader" type="HBoxContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityPanel/AbilityContent"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="AbilityIcon" type="TextureRect" parent="Center/SelectionPanel/Content/MainRow/AbilityPanel/AbilityContent/AbilityHeader"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(128, 128)
+custom_minimum_size = Vector2(76, 76)
 layout_mode = 2
-expand_mode = 3
+expand_mode = 1
 stretch_mode = 5
 
-[node name="Copy" type="VBoxContainer" parent="Center/SelectionPanel/Content/Details"]
+[node name="AbilityTitleLabel" type="Label" parent="Center/SelectionPanel/Content/MainRow/AbilityPanel/AbilityContent/AbilityHeader"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 5
+theme_override_colors/font_color = Color(1, 0.82, 0.42, 1)
+theme_override_font_sizes/font_size = 23
+text = "Abilità"
+vertical_alignment = 1
+autowrap_mode = 2
 
-[node name="NameLabel" type="Label" parent="Center/SelectionPanel/Content/Details/Copy"]
+[node name="AbilityDescriptionLabel" type="Label" parent="Center/SelectionPanel/Content/MainRow/AbilityPanel/AbilityContent"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
-theme_override_font_sizes/font_size = 22
-text = "MAGNO"
-
-[node name="RoleLabel" type="Label" parent="Center/SelectionPanel/Content/Details/Copy"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.76, 0.9, 1, 1)
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.78, 0.82, 0.86, 1)
 theme_override_font_sizes/font_size = 15
-text = "Ruolo"
+text = "Descrizione abilità"
 autowrap_mode = 2
 
-[node name="PassiveLabel" type="Label" parent="Center/SelectionPanel/Content/Details/Copy"]
-unique_name_in_owner = true
+[node name="CtaRow" type="CenterContainer" parent="Center/SelectionPanel/Content"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "Passiva"
-autowrap_mode = 2
 
-[node name="AbilityLabel" type="Label" parent="Center/SelectionPanel/Content/Details/Copy"]
+[node name="ConfirmButton" type="Button" parent="Center/SelectionPanel/Content/CtaRow"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(510, 76)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.74, 0.38, 1)
-theme_override_font_sizes/font_size = 14
-text = "Attiva"
-autowrap_mode = 2
-
-[node name="ConfirmButton" type="Button" parent="Center/SelectionPanel/Content"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 62)
-layout_mode = 2
-focus_neighbor_bottom = NodePath("../BackButton")
-theme_override_font_sizes/font_size = 20
-text = "GIOCA"
-
-[node name="BackButton" type="Button" parent="Center/SelectionPanel/Content"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 56)
-layout_mode = 2
-focus_neighbor_top = NodePath("../ConfirmButton")
-theme_override_font_sizes/font_size = 18
-text = "INDIETRO"
+texture_filter = 1
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
+theme_override_colors/font_hover_color = Color(1, 0.98, 0.88, 1)
+theme_override_colors/font_shadow_color = Color(0.12, 0.025, 0, 0.95)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 3
+theme_override_styles/normal = SubResource("StyleBoxTexture_cta_normal")
+theme_override_styles/hover = SubResource("StyleBoxTexture_cta_hover")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_cta_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_cta_focus")
+text = "Gioca con Magno"

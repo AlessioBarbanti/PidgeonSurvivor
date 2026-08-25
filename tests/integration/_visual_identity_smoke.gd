@@ -88,11 +88,11 @@ func _validate_compact_hud(
 	var pause_button := hud.get_pause_button_rect()
 	var ability_panel := hud.get_ability_panel_rect()
 	var ability_button := hud.get_active_ability_button_rect()
-	_expect_float_near(top_band.size.y, 64.0, "La fascia HUD deve essere alta 64 unita.")
-	_expect_float_near(xp_line.size.y, 8.0, "La linea XP deve essere alta 8 unita.")
+	_expect_float_near(top_band.size.y, GameHud.GAMEPLAY_TOP_INSET, "La fascia HUD deve riservare l'inset B18Q.")
+	_expect_float_near(xp_line.size.y, 18.0, "La barra XP deve essere alta 18 unita.")
 	_expect(
-		top_band.end.y <= xp_line.position.y + FLOAT_TOLERANCE,
-		"La linea XP deve seguire la fascia compatta."
+		absf(top_band.position.y - xp_line.position.y) <= FLOAT_TOLERANCE,
+		"La barra XP deve aprire la fascia minimale."
 	)
 	_expect(
 		pause_button.size.x >= 44.0 and pause_button.size.y >= 44.0,
@@ -107,7 +107,7 @@ func _validate_compact_hud(
 		and ability_panel.size.distance_to(ability_button.size) <= FLOAT_TOLERANCE,
 		"B18K deve mostrare soltanto l'icona senza card esterna."
 	)
-	_expect(hud.get_portrait_texture() != null, "Il ritratto corrente deve essere visibile nell'HUD.")
+	_expect(hud.get_portrait_texture() == null, "B18Q deve rimuovere il ritratto dall'HUD.")
 	var joystick_rect := joystick.get_global_rect()
 	_expect(
 		not joystick_rect.intersects(ability_panel, true),

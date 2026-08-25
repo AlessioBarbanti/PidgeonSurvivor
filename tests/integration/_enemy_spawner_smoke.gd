@@ -483,7 +483,7 @@ func _validate_enemy_spawner() -> void:
 	spawner._process(0.02)
 	_expect(spawner.get_alive_count() == 1, "Il primo spawn deve avvenire al superamento del delay.")
 	_expect(not spawner.is_waiting_for_initial_spawn(), "Dopo il primo spawn deve iniziare la cadenza ordinaria.")
-	_validate_spawned_enemy(spawner.get_spawned_enemies()[0], target, controller, arena.get_viewport_rect(), profile)
+	_validate_spawned_enemy(spawner.get_spawned_enemies()[0], target, controller, arena.get_playfield_rect(), profile)
 
 	spawner._process(10.0)
 	_expect(spawner.get_alive_count() == 2, "Un delta grande deve produrre al massimo uno spawn per tick.")
@@ -626,7 +626,7 @@ func _validate_composed_scene() -> void:
 			spawner.get_spawned_enemies()[0],
 			target,
 			controller,
-			arena.get_viewport_rect(),
+			arena.get_playfield_rect(),
 			spawner.spawn_profile
 		)
 
@@ -658,7 +658,7 @@ func _validate_composed_scene() -> void:
 			spawner.get_spawned_enemies()[0],
 			target,
 			controller,
-			resized_viewport,
+			arena.get_playfield_rect(),
 			spawner.spawn_profile
 		)
 

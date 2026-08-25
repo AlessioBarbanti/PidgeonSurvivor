@@ -52,9 +52,9 @@ func _validate_hud_values_and_clock() -> void:
 		"L'HUD deve accettare sorgenti gameplay valide."
 	)
 	_expect(hud.get_time_text() == "00:00", "Il timer deve partire da 00:00.")
-	_expect(hud.get_health_text() == "VITA  100 / 100", "La vita iniziale deve essere leggibile.")
-	_expect(hud.get_level_text() == "LV 1", "Il livello iniziale deve essere leggibile.")
-	_expect(hud.get_experience_text() == "0 / 10 XP", "La prima soglia XP deve essere leggibile.")
+	_expect(hud.get_health_text().is_empty(), "B18Q deve rimuovere il testo vita.")
+	_expect(hud.get_level_text().is_empty(), "B18Q deve rimuovere il livello dall'HUD.")
+	_expect(hud.get_experience_text().is_empty(), "B18Q deve rimuovere il testo XP.")
 	_expect_float_near(hud.get_health_value(), 100.0, "La barra vita deve partire piena.")
 	_expect_float_near(hud.get_health_max(), 100.0, "La barra vita deve usare gli HP massimi.")
 	_expect_float_near(hud.get_experience_value(), 0.0, "La barra XP deve partire vuota.")
@@ -68,14 +68,14 @@ func _validate_hud_values_and_clock() -> void:
 	var feedback_count_before := hud.get_health_feedback_count()
 	_expect(health.take_damage(25.0), "La fixture deve applicare un danno di prova.")
 	_expect_float_near(hud.get_health_value(), 75.0, "La barra vita deve reagire al segnale atomico.")
-	_expect(hud.get_health_text() == "VITA  75 / 100", "Il testo vita deve seguire la barra.")
+	_expect(hud.get_health_text().is_empty(), "Il danno non deve ripristinare valori numerici vita.")
 	_expect(
 		hud.get_health_feedback_count() == feedback_count_before + 1,
 		"Il danno deve produrre un solo impulso presentazionale sull'HUD."
 	)
 	_expect(experience.add_experience(5), "La fixture deve accreditare XP di prova.")
 	_expect_float_near(hud.get_experience_value(), 5.0, "La barra XP deve reagire alla progressione.")
-	_expect(hud.get_experience_text() == "5 / 10 XP", "Il testo XP deve mostrare il progresso.")
+	_expect(hud.get_experience_text().is_empty(), "La progressione non deve ripristinare valori numerici XP.")
 
 	var paused_time := controller.get_run_time()
 	var paused_text := hud.get_time_text()
@@ -93,8 +93,9 @@ func _validate_hud_values_and_clock() -> void:
 	_expect(hud.get_time_text() == "01:03", "Il timer deve riprendere dallo stesso istante.")
 
 	_expect(experience.add_experience(5), "La soglia esatta deve produrre il level-up.")
-	_expect(hud.get_level_text() == "LV 2", "Il livello HUD deve aggiornarsi nello stesso evento.")
-	_expect(hud.get_experience_text() == "0 / 15 XP", "La barra deve adottare la soglia successiva.")
+	_expect(hud.get_level_text().is_empty(), "Il level-up non deve ripristinare il livello nell'HUD.")
+	_expect_float_near(hud.get_experience_value(), 0.0, "La barra deve ripartire vuota al nuovo livello.")
+	_expect_float_near(hud.get_experience_max(), 15.0, "La barra deve adottare la soglia successiva.")
 	var level_up_text := hud.get_time_text()
 	controller._process(10.0)
 	_expect(hud.get_time_text() == level_up_text, "LEVEL_UP deve lasciare fermo il timer HUD.")
@@ -108,8 +109,9 @@ func _validate_hud_values_and_clock() -> void:
 	_expect(hud.get_time_text() == terminal_text, "DEFEAT deve lasciare fermo il timer HUD.")
 	_expect(controller.restart_run(9002), "Il terminale deve accettare il restart.")
 	_expect(hud.get_time_text() == "00:00", "Il restart deve azzerare subito il timer HUD.")
-	_expect(hud.get_level_text() == "LV 1", "Il restart deve azzerare il livello HUD.")
-	_expect(hud.get_experience_text() == "0 / 10 XP", "Il restart deve azzerare la barra XP.")
+	_expect(hud.get_level_text().is_empty(), "Il restart non deve ripristinare il livello HUD.")
+	_expect_float_near(hud.get_experience_value(), 0.0, "Il restart deve azzerare la barra XP.")
+	_expect_float_near(hud.get_experience_max(), 10.0, "Il restart deve ripristinare la soglia XP.")
 	_expect(GameHud.format_run_time(-INF) == "00:00", "Il formatter deve difendersi da valori non finiti.")
 	_expect(GameHud.format_run_time(3605.9) == "60:05", "Il formatter non deve riciclare i minuti.")
 
@@ -140,32 +142,27 @@ func _validate_responsive_layouts() -> void:
 		var xp_rect := hud.get_experience_panel_rect()
 		var top_band_rect := hud.get_top_band_rect()
 		var health_rect := hud.get_health_panel_rect()
-		var portrait_rect := hud.get_portrait_rect()
 		var timer_rect := hud.get_timer_slot_rect()
 		var pause_rect := hud.get_pause_button_rect()
 		var ability_rect := hud.get_ability_panel_rect()
 		var ability_button_rect := hud.get_active_ability_button_rect()
-		var expected_content := Rect2(
-			safe_rect.position + Vector2(12.0, 10.0),
-			safe_rect.size - Vector2(24.0, 22.0)
-		)
 		var profile_name := String(profile.name)
 		_expect_rect_inside(xp_rect, safe_rect, "%s: la barra XP deve restare nella safe area." % profile_name)
 		_expect_rect_inside(health_rect, safe_rect, "%s: la vita deve restare nella safe area." % profile_name)
-		_expect_rect_inside(portrait_rect, safe_rect, "%s: il ritratto deve restare nella safe area." % profile_name)
+		_expect(not hud.get_portrait_rect().has_area(), "%s: B18Q deve rimuovere il ritratto." % profile_name)
 		_expect_rect_inside(timer_rect, safe_rect, "%s: il timer deve restare nella safe area." % profile_name)
 		_expect_rect_inside(pause_rect, safe_rect, "%s: PAUSA deve restare nella safe area." % profile_name)
 		_expect_rect_inside(ability_rect, safe_rect, "%s: l'abilita deve restare nella safe area." % profile_name)
 		_expect_rect_inside(ability_button_rect, safe_rect, "%s: il touch abilita deve restare nella safe area." % profile_name)
 		_expect_float_near(
 			xp_rect.position.x,
-			expected_content.position.x,
-			"%s: la barra XP deve partire dal margine sicuro." % profile_name,
+			safe_rect.position.x,
+			"%s: la barra XP deve partire dall'inizio della safe area." % profile_name,
 			LAYOUT_TOLERANCE
 		)
 		_expect_float_near(
 			xp_rect.size.x,
-			expected_content.size.x,
+			safe_rect.size.x,
 			"%s: la barra XP deve occupare tutta la larghezza utile." % profile_name,
 			LAYOUT_TOLERANCE
 		)
@@ -177,23 +174,28 @@ func _validate_responsive_layouts() -> void:
 		)
 		_expect_float_near(
 			top_band_rect.size.y,
-			64.0,
-			"%s: la fascia HUD deve restare compatta." % profile_name,
+			GameHud.GAMEPLAY_TOP_INSET,
+			"%s: la fascia HUD deve dichiarare l'intero inset gameplay." % profile_name,
 			LAYOUT_TOLERANCE
 		)
 		_expect(
-			top_band_rect.end.y <= xp_rect.position.y + LAYOUT_TOLERANCE,
-			"%s: la linea XP deve seguire la fascia senza sovrapporla." % profile_name
+			xp_rect.position.distance_to(safe_rect.position) <= LAYOUT_TOLERANCE,
+			"%s: la barra XP deve essere il primo elemento della fascia." % profile_name
 		)
 		_expect(
-			xp_rect.size.y >= 6.0 - LAYOUT_TOLERANCE
-			and xp_rect.size.y <= 8.0 + LAYOUT_TOLERANCE,
-			"%s: la linea XP deve essere alta 6-8 unita logiche." % profile_name
+			absf(xp_rect.size.y - 18.0) <= LAYOUT_TOLERANCE,
+			"%s: la barra XP deve essere alta 18 unita logiche." % profile_name
 		)
 		_expect(
-			health_rect.size.x >= 244.0 - LAYOUT_TOLERANCE,
-			"%s: la barra vita deve conservare una larghezza leggibile." % profile_name
+			absf(health_rect.position.y - xp_rect.end.y) <= LAYOUT_TOLERANCE
+			and absf(health_rect.position.x - safe_rect.position.x) <= LAYOUT_TOLERANCE
+			and absf(health_rect.size.x - safe_rect.size.x) <= LAYOUT_TOLERANCE,
+			"%s: la vita deve seguire XP e usare tutta la larghezza." % profile_name
 		)
+		_expect(absf(health_rect.size.y - 20.0) <= LAYOUT_TOLERANCE, "%s: la barra HP deve essere alta 20 unita logiche." % profile_name)
+		_expect(hud.get_experience_kind_text() == "XP" and hud.get_health_kind_text() == "HP", "%s: le barre devono avere soltanto i tag XP e HP." % profile_name)
+		_expect(timer_rect.position.y >= health_rect.end.y, "%s: il timer deve stare sotto le barre." % profile_name)
+		_expect(hud.find_child("TimerPanel", true, false) == null, "%s: il timer non deve avere card o sfondo." % profile_name)
 		_expect(
 			pause_rect.size.x >= 44.0 - LAYOUT_TOLERANCE
 			and pause_rect.size.y >= 44.0 - LAYOUT_TOLERANCE,
@@ -267,16 +269,16 @@ func _validate_composed_hud() -> void:
 	_expect(hud.get_health_component() == player.get_health_component(), "L'HUD composto deve osservare la salute Player.")
 	_expect(hud.get_experience_system() == experience, "L'HUD composto deve osservare ExperienceSystem.")
 	_expect(hud.get_friend_definition() == player.get_friend_definition(), "L'HUD composto deve osservare il profilo Player.")
-	_expect(hud.get_portrait_texture() != null, "L'HUD composto deve mostrare il ritratto Player.")
-	_expect(hud.get_health_text() == "VITA  100 / 100", "La scena composta deve mostrare la vita iniziale.")
-	_expect(hud.get_experience_text() == "0 / 10 XP", "La scena composta deve mostrare la soglia iniziale.")
+	_expect(hud.get_portrait_texture() == null, "B18Q deve rimuovere il ritratto Player dall'HUD composto.")
+	_expect(hud.get_health_text().is_empty(), "La scena composta non deve mostrare valori vita.")
+	_expect(hud.get_experience_text().is_empty(), "La scena composta non deve mostrare valori XP.")
 
 	controller._process(4.2)
 	_expect(hud.get_time_text() == "00:04", "La scena composta deve inoltrare il clock all'HUD.")
 	_expect(player.take_contact_damage(20.0), "La scena composta deve applicare danno di prova.")
-	_expect(hud.get_health_text() == "VITA  80 / 100", "La vita composta deve aggiornarsi senza polling.")
+	_expect_float_near(hud.get_health_value(), 80.0, "La vita composta deve aggiornarsi senza polling.")
 	_expect(experience.add_experience(3), "La scena composta deve accreditare XP di prova.")
-	_expect(hud.get_experience_text() == "3 / 10 XP", "Gli XP composti devono aggiornarsi senza polling.")
+	_expect_float_near(hud.get_experience_value(), 3.0, "Gli XP composti devono aggiornarsi senza polling.")
 
 	var safe_rect := arena.get_safe_area_rect()
 	_expect_rect_near(
@@ -293,8 +295,8 @@ func _validate_composed_hud() -> void:
 	controller.request_defeat()
 	_expect(movement_slice.restart_run(9003), "Il restart composto deve essere disponibile.")
 	_expect(hud.get_time_text() == "00:00", "Il restart composto deve azzerare il timer.")
-	_expect(hud.get_health_text() == "VITA  100 / 100", "Il restart composto deve ripristinare la vita HUD.")
-	_expect(hud.get_experience_text() == "0 / 10 XP", "Il restart composto deve ripristinare gli XP HUD.")
+	_expect_float_near(hud.get_health_value(), 100.0, "Il restart composto deve ripristinare la vita HUD.")
+	_expect_float_near(hud.get_experience_value(), 0.0, "Il restart composto deve ripristinare gli XP HUD.")
 
 	controller.prepare_restart()
 	paused = false

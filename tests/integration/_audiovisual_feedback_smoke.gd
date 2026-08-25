@@ -131,21 +131,16 @@ func _validate_composed_feedback() -> void:
 	_expect(effects.z_index < boss_projectiles.z_index, "Le aree alleate non devono coprire i colpi Boss.")
 	_expect(boss_projectiles.z_index > projectiles.z_index, "I colpi Boss devono avere la priorita visiva massima.")
 
-	var top_band := hud.get_node("SafeMargins/TopStack/TopBand") as PanelContainer
-	var level_label := hud.get_node(
-		"SafeMargins/TopStack/TopBand/Content/IdentityBlock/HealthPanel/Content/StatsRow/LevelLabel"
-	) as Label
-	var panel_style := top_band.get_theme_stylebox("panel") as StyleBoxFlat
-	_expect(panel_style != null, "La fascia HUD deve avere un fondo opaco leggibile.")
-	if panel_style != null:
-		var contrast := _contrast_ratio(
-			level_label.get_theme_color("font_color"),
-			panel_style.bg_color
-		)
-		_expect(
-			contrast >= MINIMUM_TEXT_CONTRAST,
-			"Il testo primario HUD deve superare 4.5:1, ottenuto %.2f:1." % contrast
-		)
+	var time_label := hud.get_node("TopBand/TimerSlot/TimeLabel") as Label
+	_expect(hud.find_child("TimerPanel", true, false) == null, "Il timer B18Q deve restare senza card.")
+	var timer_contrast := _contrast_ratio(
+		time_label.get_theme_color("font_color"),
+		Color(0.02, 0.027, 0.047, 1.0)
+	)
+	_expect(
+		timer_contrast >= MINIMUM_TEXT_CONTRAST,
+		"Il cronometro HUD deve superare 4.5:1, ottenuto %.2f:1." % timer_contrast
+	)
 	_expect(
 		pause_overlay.get_volume_slider().custom_minimum_size.y >= 44.0,
 		"Lo slider volume deve restare un target touch ampio."

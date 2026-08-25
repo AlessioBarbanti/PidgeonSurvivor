@@ -3,19 +3,18 @@ extends Control
 
 signal pause_requested()
 
-@onready var _level_label: Label = %LevelLabel
-@onready var _experience_label: Label = %ExperienceLabel
+const GAMEPLAY_TOP_INSET := 88.0
+
 @onready var _experience_bar: ProgressBar = %ExperienceBar
-@onready var _health_label: Label = %HealthLabel
+@onready var _experience_kind_label: Label = %ExperienceKindLabel
 @onready var _health_bar: ProgressBar = %HealthBar
+@onready var _health_kind_label: Label = %HealthKindLabel
 @onready var _time_label: Label = %TimeLabel
 @onready var _top_band: Control = %TopBand
 @onready var _experience_panel: Control = %ExperiencePanel
 @onready var _health_panel: Control = %HealthPanel
 @onready var _timer_slot: Control = %TimerSlot
 @onready var _pause_button: Button = %PauseButton
-@onready var _portrait: TextureRect = %Portrait
-@onready var _portrait_frame: Control = %PortraitFrame
 @onready var _ability_panel: Control = %AbilityPanel
 @onready var _active_ability_button: TouchAbilityButton = %ActiveAbilityButton
 
@@ -97,8 +96,6 @@ func set_friend_definition(definition: FriendDefinition) -> bool:
 	if definition == null or not definition.is_valid():
 		return false
 	_friend_definition = definition
-	if is_instance_valid(_portrait):
-		_portrait.texture = definition.get_public_portrait()
 	return true
 
 
@@ -123,15 +120,23 @@ func get_experience_max() -> float:
 
 
 func get_health_text() -> String:
-	return _health_label.text
+	return ""
 
 
 func get_experience_text() -> String:
-	return _experience_label.text
+	return ""
 
 
 func get_level_text() -> String:
-	return _level_label.text
+	return ""
+
+
+func get_experience_kind_text() -> String:
+	return _experience_kind_label.text if is_instance_valid(_experience_kind_label) else ""
+
+
+func get_health_kind_text() -> String:
+	return _health_kind_label.text if is_instance_valid(_health_kind_label) else ""
 
 
 func get_time_text() -> String:
@@ -147,11 +152,15 @@ func get_top_band_rect() -> Rect2:
 
 
 func get_portrait_rect() -> Rect2:
-	return _portrait_frame.get_global_rect() if is_instance_valid(_portrait_frame) else Rect2()
+	return Rect2()
 
 
 func get_portrait_texture() -> Texture2D:
-	return _portrait.texture if is_instance_valid(_portrait) else null
+	return null
+
+
+func get_gameplay_top_inset() -> float:
+	return GAMEPLAY_TOP_INSET
 
 
 func get_health_panel_rect() -> Rect2:
@@ -257,8 +266,6 @@ func _show_default_values() -> void:
 	_set_pause_available(false)
 	_on_health_changed(0.0, 1.0)
 	_on_progression_changed(1, 0, 1, 0)
-	if is_instance_valid(_portrait):
-		_portrait.texture = null
 	_show_default_ability()
 
 
@@ -338,10 +345,6 @@ func _on_health_changed(health_current: float, health_max: float) -> void:
 	var safe_current := clampf(health_current, 0.0, safe_max)
 	_health_bar.max_value = safe_max
 	_health_bar.value = safe_current
-	_health_label.text = "VITA  %d / %d" % [
-		int(round(safe_current)),
-		int(round(safe_max)),
-	]
 
 
 func _on_health_damaged(_amount: float, _health_current: float) -> void:
@@ -361,16 +364,13 @@ func _on_health_damaged(_amount: float, _health_current: float) -> void:
 
 
 func _on_progression_changed(
-	level: int,
+	_level: int,
 	experience_current: int,
 	experience_required: int,
 	_experience_total: int
 ) -> void:
-	var safe_level := maxi(level, 1)
 	var safe_required := maxi(experience_required, 1)
 	var safe_current := clampi(experience_current, 0, safe_required)
-	_level_label.text = "LV %d" % safe_level
-	_experience_label.text = "%d / %d XP" % [safe_current, safe_required]
 	_experience_bar.max_value = safe_required
 	_experience_bar.value = safe_current
 

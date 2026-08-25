@@ -116,12 +116,12 @@ func try_spawn_enemy() -> BaseEnemy:
 	if get_alive_count() >= spawn_profile.max_alive_enemies:
 		return null
 
-	var viewport_rect := _arena_layout.get_viewport_rect()
-	if not viewport_rect.has_area():
+	var playfield_rect := _arena_layout.get_playfield_rect()
+	if not playfield_rect.has_area():
 		return null
 
 	var spawn_position := sample_spawn_position(
-		viewport_rect,
+		playfield_rect,
 		spawn_profile.inner_spawn_margin,
 		spawn_profile.get_effective_outer_spawn_margin(),
 		_target.global_position,
@@ -164,12 +164,11 @@ func cleanup_outside_despawn_rect() -> int:
 	if not is_instance_valid(_arena_layout) or spawn_profile == null:
 		return 0
 
-	var viewport_rect := _arena_layout.get_viewport_rect()
-	if not viewport_rect.has_area():
-		return 0
-	var despawn_rect := viewport_rect.grow(
+	var despawn_rect := _arena_layout.get_despawn_rect(
 		spawn_profile.get_effective_despawn_margin()
 	)
+	if not despawn_rect.has_area():
+		return 0
 	var removed_count := 0
 	for enemy in _spawned_enemies.duplicate():
 		if not is_instance_valid(enemy) or enemy.is_queued_for_deletion():

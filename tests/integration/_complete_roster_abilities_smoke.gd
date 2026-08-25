@@ -128,11 +128,13 @@ func _switch_character(movement_slice: Control, friend_id: StringName) -> void:
 	_expect(friend_button != null, "Il selettore deve esporre %s." % friend_id)
 	if friend_button == null:
 		return
-	_expect(
-		friend_button.size.x >= 180.0 and friend_button.size.y >= 88.0,
-		"Ogni profilo deve restare un target touch ampio."
-	)
 	friend_button.pressed.emit()
+	_expect(
+		friend_button.visible
+		and friend_button.size.x >= 44.0
+		and friend_button.size.y >= 44.0,
+		"Il profilo selezionato deve restare un target touch ampio durante la transizione."
+	)
 	_expect(
 		overlay.get_selected_definition() != null
 		and overlay.get_selected_definition().id == friend_id,

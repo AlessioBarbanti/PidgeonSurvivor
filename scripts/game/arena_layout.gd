@@ -18,6 +18,11 @@ signal playfield_changed(playfield_rect: Rect2)
 		respect_display_safe_area = value
 		_queue_refresh()
 
+@export_range(0.0, 256.0, 1.0) var top_reserved_height: float = 0.0:
+	set(value):
+		top_reserved_height = maxf(value, 0.0)
+		_queue_refresh()
+
 @export_range(1, 8, 1) var resume_refresh_frames: int = 2
 
 var _safe_area_rect := Rect2()
@@ -101,7 +106,8 @@ func refresh_layout() -> void:
 	next_safe_area = inset_rect(next_safe_area, edge_inset)
 	var next_playfield := calculate_playfield_rect(
 		next_safe_area,
-		target_aspect_ratio
+		target_aspect_ratio,
+		top_reserved_height
 	)
 	var changed := (
 		next_safe_area != _safe_area_rect
@@ -138,6 +144,14 @@ func get_playfield_center() -> Vector2:
 	return _playfield_rect.get_center()
 
 
+func set_top_reserved_height(value: float) -> void:
+	top_reserved_height = value
+
+
+func get_top_reserved_height() -> float:
+	return top_reserved_height
+
+
 func get_viewport_rect() -> Rect2:
 	if not is_inside_tree():
 		return Rect2()
@@ -145,31 +159,28 @@ func get_viewport_rect() -> Rect2:
 
 
 func get_spawn_inner_rect(inner_margin: float) -> Rect2:
-	var viewport_rect := get_viewport_rect()
-	if not viewport_rect.has_area():
-		return Rect2(viewport_rect.position, Vector2.ZERO)
-	return viewport_rect.grow(maxf(inner_margin, 0.0))
+	if not _playfield_rect.has_area():
+		return Rect2(_playfield_rect.position, Vector2.ZERO)
+	return _playfield_rect.grow(maxf(inner_margin, 0.0))
 
 
 func get_spawn_outer_rect(
 	inner_margin: float,
 	outer_margin: float
 ) -> Rect2:
-	var viewport_rect := get_viewport_rect()
-	if not viewport_rect.has_area():
-		return Rect2(viewport_rect.position, Vector2.ZERO)
+	if not _playfield_rect.has_area():
+		return Rect2(_playfield_rect.position, Vector2.ZERO)
 	var effective_margin := maxf(
 		maxf(inner_margin, 0.0),
 		maxf(outer_margin, 0.0)
 	)
-	return viewport_rect.grow(effective_margin)
+	return _playfield_rect.grow(effective_margin)
 
 
 func get_despawn_rect(despawn_margin: float) -> Rect2:
-	var viewport_rect := get_viewport_rect()
-	if not viewport_rect.has_area():
-		return Rect2(viewport_rect.position, Vector2.ZERO)
-	return viewport_rect.grow(maxf(despawn_margin, 0.0))
+	if not _playfield_rect.has_area():
+		return Rect2(_playfield_rect.position, Vector2.ZERO)
+	return _playfield_rect.grow(maxf(despawn_margin, 0.0))
 
 
 func clamp_circle_center(point: Vector2, radius: float) -> Vector2:
@@ -209,22 +220,36 @@ static func is_transient_portrait_window(
 
 static func calculate_playfield_rect(
 	bounds: Rect2,
-	desired_aspect_ratio: float
+	desired_aspect_ratio: float,
+	top_reserved: float = 0.0
 ) -> Rect2:
 	if not bounds.has_area():
 		return Rect2(bounds.position, Vector2.ZERO)
 
+	var available_bounds := subtract_top_band(bounds, top_reserved)
+	if not available_bounds.has_area():
+		return Rect2(available_bounds.position, Vector2.ZERO)
 	var aspect_ratio := maxf(desired_aspect_ratio, 0.1)
-	var fitted_size := bounds.size
-	var bounds_aspect_ratio := bounds.size.x / bounds.size.y
+	var fitted_size := available_bounds.size
+	var bounds_aspect_ratio := available_bounds.size.x / available_bounds.size.y
 	if bounds_aspect_ratio > aspect_ratio:
-		fitted_size.x = bounds.size.y * aspect_ratio
+		fitted_size.x = available_bounds.size.y * aspect_ratio
 	else:
-		fitted_size.y = bounds.size.x / aspect_ratio
+		fitted_size.y = available_bounds.size.x / aspect_ratio
 
 	return Rect2(
-		bounds.position + (bounds.size - fitted_size) * 0.5,
+		available_bounds.position + (available_bounds.size - fitted_size) * 0.5,
 		fitted_size
+	)
+
+
+static func subtract_top_band(bounds: Rect2, top_reserved: float) -> Rect2:
+	if not bounds.has_area():
+		return Rect2(bounds.position, Vector2.ZERO)
+	var applied_height := clampf(maxf(top_reserved, 0.0), 0.0, bounds.size.y)
+	return Rect2(
+		bounds.position + Vector2.DOWN * applied_height,
+		Vector2(bounds.size.x, bounds.size.y - applied_height)
 	)
 
 

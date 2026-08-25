@@ -81,6 +81,7 @@ func _ready() -> void:
 	_touch_control_settings.configure(_welcome_screen, _pause_overlay)
 	_touch_control_settings.settings_changed.connect(_on_touch_control_settings_changed)
 
+	_arena_layout.set_top_reserved_height(_hud.get_gameplay_top_inset())
 	_arena_layout.refresh_layout()
 	_player.set_arena_layout(_arena_layout)
 	_player.set_run_controller(_run_controller)
@@ -169,7 +170,7 @@ func _ready() -> void:
 		_ability_controller
 	)
 	_hud.set_friend_definition(_player.get_friend_definition())
-	_character_select_overlay.configure(_friend_registry)
+	_character_select_overlay.configure(_friend_registry, _ability_effect_registry)
 	_game_audio.configure(
 		_run_controller,
 		_player,
@@ -1129,6 +1130,44 @@ func _validate_current_contract() -> bool:
 		failures.append("CharacterSelectOverlay B17A non presente.")
 	elif _character_select_overlay.get_roster_size() != 8:
 		failures.append("CharacterSelectOverlay B17A deve esporre otto profili.")
+	else:
+		if _character_select_overlay.get_previous_button() == null:
+			failures.append("B18T richiede la navigazione precedente del carosello.")
+		if _character_select_overlay.get_next_button() == null:
+			failures.append("B18T richiede la navigazione successiva del carosello.")
+		if (
+			_character_select_overlay.get_confirm_button() == null
+			or _character_select_overlay.get_confirm_button().custom_minimum_size.y < 44.0
+		):
+			failures.append("B18T richiede una conferma separata con target minimo 44x44.")
+		if (
+			_character_select_overlay.get_back_button() == null
+			or _character_select_overlay.get_back_button().text != "← Indietro"
+		):
+			failures.append("B18W richiede Back distinto in alto con copy naturale.")
+		if _character_select_overlay.get_ability_panel_rect().size.x < 260.0:
+			failures.append("B18W richiede il pannello laterale dedicato a passiva e abilita.")
+		var selection_backdrop := _character_select_overlay.get_backdrop()
+		if (
+			selection_backdrop == null
+			or selection_backdrop.texture == null
+			or selection_backdrop.texture.resource_path
+			!= "res://assets/art/ui/character_select/character_select_backdrop.png"
+		):
+			failures.append("B18W richiede il fondale pixel-art tracciato del selettore.")
+		var cta_style := (
+			_character_select_overlay.get_confirm_button().get_theme_stylebox("normal")
+			as StyleBoxTexture
+		)
+		if (
+			cta_style == null
+			or cta_style.texture == null
+		):
+			failures.append("B18W richiede il CTA ornamentale ImageGen.")
+		for definition in _friend_registry.get_definitions():
+			var selection_portrait := definition.get_public_selection_portrait()
+			if selection_portrait == null or selection_portrait.get_size() != Vector2(256.0, 256.0):
+				failures.append("B18T richiede un ritratto carosello HD derivato per %s." % definition.id)
 	var character_sprite := _player.get_node_or_null("CharacterSprite") as Sprite2D
 	if character_sprite == null:
 		failures.append("B18U richiede lo sprite Player dati.")
@@ -1176,11 +1215,26 @@ func _validate_current_contract() -> bool:
 		if _hud.get_friend_definition() != _player.get_friend_definition():
 			failures.append("HUD B18B privo del profilo Player corrente.")
 		var top_band_rect := _hud.get_top_band_rect()
-		if top_band_rect.size.y < 63.0 or top_band_rect.size.y > 72.0:
-			failures.append("La fascia HUD B18B deve restare alta circa 64-72 unita logiche.")
+		if absf(top_band_rect.size.y - _hud.get_gameplay_top_inset()) > 1.0:
+			failures.append("La fascia HUD B18Q deve coincidere con l'inset gameplay dichiarato.")
 		var xp_line_rect := _hud.get_experience_panel_rect()
-		if xp_line_rect.size.y < 6.0 or xp_line_rect.size.y > 8.5:
-			failures.append("La linea XP B18B deve restare alta 6-8 unita logiche.")
+		var health_line_rect := _hud.get_health_panel_rect()
+		var safe_area_rect := _arena_layout.get_safe_area_rect()
+		if absf(xp_line_rect.size.y - 18.0) > 1.0:
+			failures.append("La barra XP B18Q deve essere alta 18 unita logiche.")
+		if absf(health_line_rect.size.y - 20.0) > 1.0:
+			failures.append("La barra vita B18Q deve essere alta 20 unita logiche.")
+		if _hud.get_experience_kind_text() != "XP" or _hud.get_health_kind_text() != "HP":
+			failures.append("Le barre B18Q devono mostrare soltanto i tag fissi XP e HP.")
+		if (
+			absf(xp_line_rect.position.x - safe_area_rect.position.x) > 1.0
+			or absf(xp_line_rect.size.x - safe_area_rect.size.x) > 1.0
+			or absf(health_line_rect.position.x - safe_area_rect.position.x) > 1.0
+			or absf(health_line_rect.size.x - safe_area_rect.size.x) > 1.0
+		):
+			failures.append("Le barre XP e vita B18Q devono occupare tutta la safe area.")
+		if _arena_layout.get_playfield_rect().position.y < top_band_rect.end.y - 1.0:
+			failures.append("Il playfield B18Q deve iniziare sotto l'intera fascia HUD.")
 		var ability_panel_rect := _hud.get_ability_panel_rect()
 		var expected_ability_size := (
 			TouchAbilityButton.BASE_TARGET_SIZE
@@ -1191,8 +1245,16 @@ func _validate_current_contract() -> bool:
 			or absf(ability_panel_rect.size.y - expected_ability_size) > 1.0
 		):
 			failures.append("B18P deve scalare insieme pannello e target abilita.")
-		if _hud.get_portrait_texture() == null:
-			failures.append("La fascia HUD B18B deve mostrare il ritratto corrente.")
+		if _hud.get_portrait_texture() != null or _hud.get_portrait_rect().has_area():
+			failures.append("B18Q deve rimuovere il ritratto Player dall'HUD.")
+		if (
+			not _hud.get_health_text().is_empty()
+			or not _hud.get_experience_text().is_empty()
+			or not _hud.get_level_text().is_empty()
+		):
+			failures.append("B18Q non deve mostrare livello, label o valori numerici.")
+		if _hud.find_child("TimerPanel", true, false) != null:
+			failures.append("Il cronometro B18Q deve essere flottante e senza card.")
 		if not _hud.get_experience_panel_rect().has_area():
 			failures.append("HUD privo di una barra XP con layout valido.")
 		if not _hud.get_pause_button_rect().has_area():
@@ -1278,8 +1340,11 @@ func _validate_current_contract() -> bool:
 		print("B18N_CONTRACT_OK")
 		print("B18O_CONTRACT_OK")
 		print("B18P_CONTRACT_OK")
+		print("B18Q_CONTRACT_OK")
 		print("B18S_CONTRACT_OK")
+		print("B18T_CONTRACT_OK")
 		print("B18U_CONTRACT_OK")
+		print("B18W_CONTRACT_OK")
 		return true
 
 	for failure in failures:

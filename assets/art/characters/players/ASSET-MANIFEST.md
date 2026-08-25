@@ -89,3 +89,25 @@ consumate dal runtime e Godot le mostra con filtro nearest.
 | `hd/lollo_source.png` | `1536x1024` | `597CF0546BBBD7176F61A931595DD0490727C77D5452E0044D8838E82072AEBE` |
 | `hd/migi_source.png` | `1536x1024` | `0922837FF4633230EFA8A79915872CF4D00EE0EC75B6F5CA65BAF096DFA1CAE8` |
 | `hd/marghe_source.png` | `1536x1024` | `E6E107A6BFB7ED6898A8EE84160FACB8900A615A673A5A7A10E64009A1FF56F8` |
+
+## Derivati frontend B18T
+
+Il carosello B18T usa la posa idle centrale delle stesse otto sorgenti HD. Lo
+script `tools/process-carousel-portrait.ps1` divide il master in tre celle,
+isola deterministicamente la componente opaca connessa piu grande della cella
+centrale e la ricampiona nearest-neighbor in un canvas trasparente `256x256`,
+con `14 px` di padding e allineamento al fondo. Non applica generazione,
+ritocco, recolor, compositing o VFX: autore, generatore, prompt, data e licenza
+restano quelli del master B18U. I master in `hd/` continuano a essere esclusi
+da import ed export; soltanto questi derivati UI vengono consumati dal runtime.
+
+| File carosello | Byte | SHA-256 |
+|---|---:|---|
+| `carousel/magno.png` | `63875` | `D534AFDFF2AD6B5C391A3807D896A089C8142074D0096AE1F5E2046C974B5AAA` |
+| `carousel/bea.png` | `48824` | `78DE548E7B528F165F4044383B8636A69A3B94BD920AA344C15D979A5C4367EC` |
+| `carousel/zat.png` | `40087` | `0116939E651A2A01A61A522CB776E9129E2DC2D70E071EAC6E15B7926B089653` |
+| `carousel/alea.png` | `29382` | `9BF32C220B2684B67B0761246BB5784405015156B057FB645C633BD90951138E` |
+| `carousel/aleo.png` | `50735` | `F9CDB34E261DCEE50560C3FA843ED96DFB76D15FDED703BB04D4D1CFC5CBB46E` |
+| `carousel/lollo.png` | `53550` | `3C1BE51F8655DCD764B7DC3ACBE926D6FFD40B9CC01D9ECDAA252928D92F6950` |
+| `carousel/migi.png` | `48357` | `18C847ED9A8A07860EC91C3FD52AE83E33F4A0636F6F69DC05E03C215F70B1B5` |
+| `carousel/marghe.png` | `52912` | `BEC1B185CFA52E9573D20D9993C9A13BA1A59493B9D6268F2B9A8D9914336197` |

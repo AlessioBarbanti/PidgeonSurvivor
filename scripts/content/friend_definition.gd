@@ -28,6 +28,10 @@ extends Resource
 @export var portraits_are_placeholders := true
 @export var voice_clip: AudioStream
 
+@export_group("Frontend Portrait")
+@export var selection_portrait: Texture2D
+@export var passive_icon: Texture2D
+
 @export_group("Gameplay Sprite")
 @export var gameplay_idle_right: Texture2D
 @export var gameplay_walk_right_frames: Array[Texture2D] = []
@@ -186,6 +190,14 @@ func get_public_evil_display_name() -> String:
 
 func get_public_portrait() -> Texture2D:
 	return portrait if portraits_approved and portrait != null else portrait_placeholder
+
+
+func get_public_selection_portrait() -> Texture2D:
+	return selection_portrait if selection_portrait != null else get_public_portrait()
+
+
+func get_public_passive_icon() -> Texture2D:
+	return passive_icon if passive_icon != null else get_public_selection_portrait()
 
 
 func get_public_evil_portrait() -> Texture2D:
