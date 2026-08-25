@@ -254,6 +254,27 @@ che blocca clock, danni, spawn e progressione. La schermata finale mostra Boss,
 tempo e ricompensa e consente una nuova run in-place. Il restart elimina Boss,
 proiettili, offerte, XP, cooldown ed effetti appartenenti alla run precedente.
 
+### 3.5A. Evoluzioni post-release: Boss Evil e Difesa Grigliata
+
+Dopo la release B20, il Boss di riferimento diventa il piccione speciale B18H.
+B22 aggiunge una sostituzione configurabile, con probabilità iniziale `25%` e
+scelta deterministica dal seed della run: al posto del piccione speciale può
+apparire un `Evil <Nome>` estratto casualmente dagli otto profili. In questa
+prima versione Evil riusa lo sprite del relativo Player con palette viola scura
+e accenti magenta ad alto contrasto; mantiene statistiche, hitbox e i due
+pattern del piccione Boss. Le abilità del personaggio non sono ancora disponibili
+ai Boss Evil e richiedono una successiva slice dati/comportamentale.
+
+B23 introduce una seconda modalità, **Difesa Grigliata**, accanto alla
+Sopravvivenza attuale. La modalità mette al centro del playfield una griglia con
+carne, con salute configurabile e HUD proprio; i nemici possono selezionarla e
+danneggiarla. La run termina in `DEFEAT` se la vita del Player o della griglia
+raggiunge zero. La modalità eredita per la prima versione progressione, pausa,
+lifecycle, Boss a `04:00` e vittoria dopo il Boss, ma conserva stato, seed,
+cleanup e target selection separati per evitare residui tra modalità e restart.
+La selezione della modalità resta in `BOOT`, integrata nel flusso di conferma
+del profilo e non avvia mai una run da sola.
+
 ### 3.6. Catalogo amici e controparti Evil
 
 Gli otto profili approvati sono Magno, Bea, Zat, Alea, Aleo, Lollo, Migi e
@@ -269,6 +290,26 @@ schermata sia dalla pausa; volume effetti, mute e Flash ridotti usano le stesse
 autorità persistenti nei due frontend. Back chiude prima le impostazioni e dal
 selettore riapre la welcome. La selezione resta in `BOOT`: nessun clock, spawn o
 input di gameplay avanza finché il giocatore non conferma un profilo. La
+selezione usa un carosello ciclico di otto profili con personaggio centrale e
+due mini-card adiacenti complete. Frecce, click, tastiera, D-pad/stick e swipe cambiano lo
+stesso indice senza confermare; la run parte soltanto dal CTA dedicato. Le pose
+idle del carosello sono derivati `256×256` delle sorgenti HD del cast, mentre i
+master `1536×1024` restano esclusi dagli export.
+
+Il raffinamento B18W usa un fondale notturno incorniciato, Back separato in alto
+a sinistra, card squadrate, frecce metalliche/oro, card centrale dominante e un
+kit laterale compatto per passiva e abilità, entrambe con icona e titolo dorato.
+Ogni profilo usa una propria icona passiva raster `128×128` derivata da un master
+RGBA escluso dagli export; prompt, sorgente, trasformazione e hash sono nel
+manifest delle passive.
+Il sottotitolo istruttivo è rimosso e `KIT DI <NOME>` collega esplicitamente il
+pannello al profilo. Nome e ruolo formano un blocco compatto immediatamente
+sotto il carosello e il CTA segue senza vuoti verticali. In basso rimane un solo CTA ornamentale compatto: la base ImageGen non
+contiene testo e Godot sovrappone dinamicamente `Gioca con <Nome>`, con
+maiuscola naturale. Il CTA non può coprire la cornice e non modifica le regole
+di navigazione o conferma del carosello.
+
+La
 presentazione iniziale usa un fondale pixel-art con otto archetipi fittizi che
 comunicano passive e abilità, più piccioni ai bordi e centro protetto senza UI
 incorporata. Il logo fornito dal proprietario e i pulsanti Godot ad alto
@@ -343,9 +384,15 @@ nemici vicini.
 
 **HUD in-game:**
 
-- barra della vita in alto a sinistra;
-- barra dell'esperienza in alto, a tutta larghezza;
-- timer di gioco in alto al centro;
+- barra dell'esperienza a tutta larghezza in alto, più corposa e arrotondata,
+  senza numeri e con il solo tag fisso `XP` a sinistra;
+- barra della vita a tutta larghezza subito sotto, senza ritratto Player,
+  livello o numeri, più corposa e arrotondata, con il solo tag fisso `HP` a
+  sinistra;
+- pulsante pausa flottante a destra nella fascia delle barre, senza interrompere
+  la loro larghezza visiva;
+- solo cronometro leggermente ingrandito, centrato e trasparente sotto le due
+  barre, senza label `Tempo` né sfondo;
 - icona dell'abilità attiva come unico controllo visivo touch, separata dal
   joystick e posizionata nella safe area;
 - indicatore radiale leggibile del cooldown residuo e feedback visivo/sonoro
@@ -403,10 +450,12 @@ direzione orizzontale non nulla. La direzione è parte del contratto gameplay de
 Player: le abilità direzionali possono usarla senza leggere la posizione
 istantanea del joystick quando vengono attivate.
 
-La presentazione B18B usa una fascia superiore compatta da `64` unità logiche,
-seguita da una linea XP da `8`; ritratto, livello e vita occupano il lato sinistro,
-il timer resta centrato e pausa usa un target touch da almeno `44` unità. Il
-pulsante abilità B18K parte da `64×64` unità logiche e B18P ne sostituisce il
+La presentazione B18Q sostituisce la precedente fascia compatta con XP e vita a
+tutta larghezza, più corpose e arrotondate, prive di ritratto, livello e valori
+numerici; i soli tag fissi `XP` e `HP` identificano le barre a sinistra. La pausa
+resta un controllo flottante a destra e il solo cronometro, più grande e senza
+sfondo, è centrato sotto le due barre. Il pulsante abilità B18K parte da `64×64`
+unità logiche e B18P ne sostituisce il
 default con una misura fisicamente più accessibile, regolabile nelle impostazioni.
 Il joystick B18L non usa più
 una zona fissa: il primo tocco valido nella safe area ne determina l'origine,
@@ -422,8 +471,9 @@ lock Android può esporre per pochi frame una finestra portrait anche se il gioc
 è bloccato in landscape: quel layout transitorio non modifica il playfield già
 stabile e non riclampa il Player mentre la run è sospesa. Dopo sblocco la run
 resta in pausa fino a `RIPRENDI` e conserva posizione, direzione e input neutro.
-Il playfield autorevole inizia sotto la fascia HUD e la linea XP: Player, pickup,
-spawn, Boss, telegraph e target non possono finire dietro vita o esperienza. Il
+Il playfield autorevole inizia sotto l'intera fascia HUD composta da XP, vita,
+pausa e cronometro: Player, pickup, spawn, Boss, telegraph e target non possono
+finire dietro l'interfaccia. Il
 pavimento B18S usa uno sfondo raster originale prodotto con ImageGen, responsive
 e a basso contrasto, privo di griglia, bordo ciano, testo, personaggi o falsi
 ostacoli; le variazioni procedurali restano un fallback presentazionale.
@@ -454,7 +504,8 @@ non vengono fornite e approvate.
    dedicati restano contenuti sostituibili.
 6. **Esperienza e presentazione di release:** welcome screen, cambio personaggio
    dalla pausa, controlli touch scalabili, playfield separato dal HUD, timing
-   visivi più leggibili e sfondo ImageGen; hardening B18T prima del packaging.
+   visivi più leggibili, carosello e sfondo ImageGen; hardening B18V prima del
+   packaging.
 
 Le descrizioni narrative, i ruoli e le passive dei personaggi sono mantenuti in
 [`characters.md`](./characters.md); questo documento è la fonte dei contratti e

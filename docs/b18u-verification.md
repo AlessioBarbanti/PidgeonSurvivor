@@ -74,7 +74,7 @@ godot_console --headless --path . --script tests/integration/_pause_change_chara
 Esito:
 
 - `_cast_sprites_smoke.gd`: `B18U_CAST_SPRITES_SMOKE_OK`;
-- regressione completa: `38/38` smoke verdi;
+- regressione completa aggiornata con B18T/B18W: `40/40` smoke verdi;
 - project smoke e toolchain Godot/JDK/Android: verdi;
 - nessun `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL` o `CONTRACT_FAIL`.
 
@@ -86,15 +86,14 @@ pose e trasparenza pulita.
 
 ## Windows
 
-L'export debug Windows x64 è completato. L'avvio headless dell'artefatto ha
-stampato `SMOKE_OK` e tutti i contratti fino a `B18U_CONTRACT_OK`; il processo è
-stato poi chiuso esplicitamente perché la build di gioco attende normalmente
-input e non è un test auto-terminante.
+L'export debug Windows x64 è completato. L'avvio headless con `--smoke-test` ha
+stampato `SMOKE_OK` e tutti i contratti fino a `B18W_CONTRACT_OK`, terminando con
+codice `0`.
 
 | Artefatto | Byte | SHA-256 |
 |---|---:|---|
 | `PidgeonSurvivor.exe` | `103115264` | `BFA5766944AD646D797F3FEB0172A0287A65CFD9FF08B1B1E449955985BC85FA` |
-| `PidgeonSurvivor.pck` | `9767152` | `1BFFCAFD1A3CBE4B51F40B30E11D52F03128C11E326D1B80BB72ACAFE0681D5A` |
+| `PidgeonSurvivor.pck` | `11366276` | `F8DB44FE1F83683BD4401C5E556F0FB033DC27706B1B179279EDA208CA53FD3E` |
 
 ## Android statico
 
@@ -106,14 +105,15 @@ L'export debug APK è completato e i controlli statici confermano:
 - firma APK Signature Scheme v2 valida;
 - nessuna sorgente `hd/*_source.png` inclusa.
 
-APK: `94275160` byte, SHA-256
-`49622E6E6F387DA7C5D43CF8CC444D86BD649F4853A5AC408ED01AD6DFEF4A11`.
+APK: `95837767` byte, SHA-256
+`DCC1275DECDCA537C917D885F20E4D876891B52F827BA1EBC09FE167420B1FA7`.
 
 ## Gate ancora aperti
 
-`adb devices -l` non rilevava dispositivi collegati. Non sono quindi chiusi il
-controllo percettivo in movimento e ad alta densità sul Pixel 9, il multitouch
-reale joystick più abilità e il confronto fisico 20:9. Anche il percorso
-welcome → carosello → run resta dipendente da B18T, ancora `PRONTO`; 16:9 e 4:3
-richiedono il confronto finale previsto dal piano. Per questi motivi B18U resta
-`IN VERIFICA` e B18V non viene sbloccato.
+Il 25 agosto il Pixel 9 è tornato disponibile durante B18T: installazione APK,
+cold launch, welcome → carosello → conferma → run e ritorno dalla pausa sono
+verdi a 20:9. Anche il singolo tap ADB su un'anteprima avanza una sola card. La
+dipendenza funzionale B18T/B18W è quindi chiusa. Restano aperti il
+controllo percettivo del cast in movimento e ad alta densità, il multitouch
+reale joystick più abilità e il confronto finale fisico 16:9/4:3 previsto dal
+piano. Per questi motivi B18U resta `IN VERIFICA` e B18V non viene sbloccato.
