@@ -8,6 +8,10 @@ const SETUP_VALIDATOR = preload("res://scripts/app/setup_validator.gd")
 @export var gesture_navigation_padding := Vector2(16.0, 32.0)
 @export var joystick_edge_padding := Vector2(24.0, 24.0)
 
+@export_group("Performance Hardening")
+@export var windows_performance_profile: PerformanceProfile
+@export var mobile_performance_profile: PerformanceProfile
+
 @onready var _arena_layout: ArenaLayout = %ArenaLayout
 @onready var _run_controller: RunController = %RunController
 @onready var _visual_accessibility_settings: VisualAccessibilitySettings = %VisualAccessibilitySettings
@@ -37,9 +41,11 @@ const SETUP_VALIDATOR = preload("res://scripts/app/setup_validator.gd")
 @onready var _ability_controller: AbilityController = _player.get_ability_controller()
 @onready var _input_router: InputRouter = %InputRouter
 @onready var _platform_lifecycle: PlatformLifecycle = %PlatformLifecycle
+@onready var _performance_stress_harness: PerformanceStressHarness = %PerformanceStressHarness
 @onready var _touch_joystick: TouchJoystick = %TouchJoystick
 @onready var _vignette_effect: VignetteEffect = %VignetteEffect
 @onready var _safe_area_root: Control = %SafeAreaRoot
+@onready var _performance_monitor: PerformanceMonitor = %PerformanceMonitor
 @onready var _hud: GameHud = %HUD
 @onready var _boss_ui: BossUI = %BossUI
 @onready var _upgrade_overlay: UpgradeOverlay = %UpgradeOverlay
@@ -198,12 +204,14 @@ func _ready() -> void:
 		_touch_control_settings.get_joystick_scale()
 	)
 	_apply_layout()
+	_configure_performance_hardening()
 
 	var success := SETUP_VALIDATOR.print_result() and _validate_current_contract()
 	if _should_auto_start_default_character():
 		_start_selected_run(_resolve_run_seed())
 	else:
 		_show_welcome_screen()
+	call_deferred("_start_b18v_stress_from_args")
 	print(
 		"B17A_READY os=%s viewport=%s window=%s display_safe=%s playfield=%s safe_area=%s friend=%s seed=%d"
 		% [
@@ -396,6 +404,10 @@ func get_enemy_spawner() -> EnemySpawner:
 	return _enemy_spawner
 
 
+func get_arena_layout() -> ArenaLayout:
+	return _arena_layout
+
+
 func get_game_director() -> GameDirector:
 	return _game_director
 
@@ -520,6 +532,18 @@ func get_platform_lifecycle() -> PlatformLifecycle:
 	return _platform_lifecycle
 
 
+func get_performance_monitor() -> PerformanceMonitor:
+	return _performance_monitor
+
+
+func get_performance_stress_harness() -> PerformanceStressHarness:
+	return _performance_stress_harness
+
+
+func get_active_performance_profile() -> PerformanceProfile:
+	return _resolve_performance_profile()
+
+
 func get_pause_overlay() -> PauseOverlay:
 	return _pause_overlay
 
@@ -560,6 +584,60 @@ func start_selected_run(seed_value: int = 0) -> bool:
 		return false
 	var resolved_seed := seed_value if seed_value != 0 else _resolve_run_seed()
 	return _start_selected_run(resolved_seed)
+
+
+func run_b18v_restart_profile_cycle(friend_id: StringName, seed_value: int) -> bool:
+	if not _run_controller.is_running() or seed_value == 0:
+		return false
+	_input_router.suspend_input()
+	_player.clear_movement_input()
+	_run_controller.prepare_restart()
+	if not select_friend_for_next_run(friend_id):
+		return false
+	return start_selected_run(seed_value)
+
+
+func _configure_performance_hardening() -> void:
+	var profile := _resolve_performance_profile()
+	if profile == null or not profile.is_valid():
+		push_error("B18V: PerformanceProfile non valido.")
+		return
+	_combat_feedback.set_max_active_effects(profile.max_transient_feedback)
+	var sources := {
+		&"arena": _arena_layout,
+		&"controller": _run_controller,
+		&"player": _player,
+		&"enemies": _enemies,
+		&"projectiles": _projectiles,
+		&"boss_projectiles": _boss_projectiles,
+		&"pickups": _pickups,
+		&"ability_registry": _ability_effect_registry,
+		&"feedback": _combat_feedback,
+		&"audio": _game_audio,
+		&"targeting": _targeting_system,
+	}
+	_performance_monitor.configure(profile, sources)
+	_performance_monitor.set_overlay_enabled(
+		OS.get_cmdline_user_args().has("--performance-overlay")
+	)
+	_performance_stress_harness.configure(self, profile, sources)
+
+
+func _resolve_performance_profile() -> PerformanceProfile:
+	if OS.get_name() == "Android":
+		return mobile_performance_profile
+	return windows_performance_profile
+
+
+func _start_b18v_stress_from_args() -> void:
+	var args := OS.get_cmdline_user_args()
+	if not args.has("--b18v-stress") and not args.has("--b18v-soak"):
+		return
+	if not _run_controller.is_running():
+		return
+	var duration := 1200.0 if args.has("--b18v-soak") else 60.0
+	if _performance_stress_harness.start(duration):
+		print("B18V_CONTRACT_OK")
 
 
 func _resolve_run_seed() -> int:
@@ -1327,6 +1405,15 @@ func _validate_current_contract() -> bool:
 			failures.append("La scena nemico non istanzia BaseEnemy.")
 		if is_instance_valid(enemy_candidate):
 			enemy_candidate.free()
+	var performance_profile := _resolve_performance_profile()
+	if performance_profile == null or not performance_profile.is_valid():
+		failures.append("B18V richiede un PerformanceProfile valido.")
+	if _performance_monitor == null or _performance_monitor.get_profile() != performance_profile:
+		failures.append("B18V richiede il monitor configurato con il profilo corrente.")
+	if _performance_stress_harness == null:
+		failures.append("B18V richiede lo stress harness scene-local.")
+	if _combat_feedback.max_active_effects != performance_profile.max_transient_feedback:
+		failures.append("B18V deve applicare il budget VFX dichiarativo.")
 
 	if failures.is_empty():
 		print("B03_CONTRACT_OK")
@@ -1369,11 +1456,12 @@ func _validate_current_contract() -> bool:
 		print("B18T_CONTRACT_OK")
 		print("B18U_CONTRACT_OK")
 		print("B18W_CONTRACT_OK")
+		print("B18V_CONTRACT_OK")
 		return true
 
 	for failure in failures:
 		push_error(failure)
-	printerr("B18U_CONTRACT_FAIL")
+	printerr("B18V_CONTRACT_FAIL")
 	return false
 
 

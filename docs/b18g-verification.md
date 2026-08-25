@@ -4,8 +4,9 @@ Data verifica: 24 agosto 2026
 Godot: `4.7.1.stable.official.a13da4feb`  
 Target obbligatori: Windows x64 e Android ARM64
 
-Stato: `IN VERIFICA`; implementazione, gate automatici, runtime Windows ed
-export Android statico chiusi. Resta aperta la verifica manuale su Pixel 9.
+Stato: `COMPLETATO`; implementazione, gate automatici, runtime Windows, export
+Android statico e verifica manuale su Pixel 9 sono chiusi. Il gate umano è stato
+completato il 25 agosto 2026.
 
 ## Contratto implementato
 
@@ -81,9 +82,9 @@ L'export debug APK è riuscito. I controlli statici confermano:
 `adb devices -l` non ha rilevato device collegati il 24 agosto 2026. L'export e
 l'ispezione APK non chiudono il gate runtime Android.
 
-## Gate Pixel 9 aperto
+## Gate Pixel 9 chiuso il 25 agosto 2026
 
-Sul device fisico restano da verificare:
+Sul device fisico sono stati verificati:
 
 - carta dell'unica abilità equipaggiata, passaggi `1→2→3→4→5` e scomparsa al
   cap, con tap reali nell'overlay;

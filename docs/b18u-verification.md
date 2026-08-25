@@ -1,7 +1,7 @@
 # Verifica B18U — Sprite del cast coerenti
 
 Data: 25 agosto 2026  
-Stato: **IN VERIFICA**
+Stato: **COMPLETATO**
 
 ## Risultato
 
@@ -108,12 +108,12 @@ L'export debug APK è completato e i controlli statici confermano:
 APK: `95837767` byte, SHA-256
 `DCC1275DECDCA537C917D885F20E4D876891B52F827BA1EBC09FE167420B1FA7`.
 
-## Gate ancora aperti
+## Gate chiusi il 25 agosto 2026
 
 Il 25 agosto il Pixel 9 è tornato disponibile durante B18T: installazione APK,
 cold launch, welcome → carosello → conferma → run e ritorno dalla pausa sono
 verdi a 20:9. Anche il singolo tap ADB su un'anteprima avanza una sola card. La
-dipendenza funzionale B18T/B18W è quindi chiusa. Restano aperti il
-controllo percettivo del cast in movimento e ad alta densità, il multitouch
-reale joystick più abilità e il confronto finale fisico 16:9/4:3 previsto dal
-piano. Per questi motivi B18U resta `IN VERIFICA` e B18V non viene sbloccato.
+dipendenza funzionale B18T/B18W è quindi chiusa. Il controllo percettivo del
+cast in movimento e ad alta densità, il multitouch reale joystick più abilità e
+il confronto finale fisico 16:9/4:3 sono stati completati. B18U è completato e
+B18V è sbloccato.

@@ -1,7 +1,7 @@
 # Verifica B18W — Raffinamento della selezione personaggi
 
 Data: 25 agosto 2026
-Stato: `IN VERIFICA`
+Stato: `COMPLETATO`
 
 B18W porta il carosello B18T verso la gerarchia del mockup approvato: fondale
 notturno incorniciato, Back compatto in alto a sinistra, card squadrate, mini-card
@@ -82,6 +82,6 @@ Prompt, provenienza, trasformazioni, dimensioni e hash sono registrati in
 - nessun `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL` o `CONTRACT_FAIL` nei
   log controllati.
 
-Resta aperta soltanto la valutazione manuale fisica con dito e percezione umana
-del dispositivo. Per questo B18W rimane `IN VERIFICA` e non viene dichiarato
-completato sulla sola base di screenshot e iniezione ADB.
+La valutazione manuale fisica con dito e percezione umana del dispositivo è
+stata completata il 25 agosto 2026. B18W è quindi completato sulla base della
+prova umana, mantenuta distinta da screenshot e iniezione ADB.

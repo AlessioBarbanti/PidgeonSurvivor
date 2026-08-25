@@ -6,11 +6,10 @@ Target obbligatori: Windows x64 e Android ARM64
 
 ## Stato
 
-`IN VERIFICA`. Il refresh sostituisce le otto icone SVG runtime con emblemi PNG
+`COMPLETATO`. Il refresh sostituisce le otto icone SVG runtime con emblemi PNG
 ImageGen e li riusa in brevi animazioni di attivazione. Smoke, regressione,
 toolchain, export/runtime Windows ed export Android statico sono verdi. La prova
-percettiva sul Pixel 9 è stata rimandata esplicitamente e resta il solo gate
-nuovo aperto per B18M.
+percettiva sul Pixel 9 è stata completata il 25 agosto 2026.
 
 Il precedente gate Pixel 9 del 24 agosto resta valido per primitive procedurali,
 layer, lifecycle e input della baseline `11329cf`, ma non certifica leggibilità e
@@ -90,10 +89,11 @@ L'export APK debug finale è riuscito. I controlli statici confermano:
 - orientamento landscape, activity ridimensionabile e sola ABI `arm64-v8a`;
 - firma APK Signature Scheme v2 valida.
 
-Come richiesto, l'APK non è stato installato e le nuove icone/animazioni non sono
-state provate fisicamente. Il gate Pixel 9 richiede ancora le otto attivazioni in
-movimento e densità elevata a 20:9, controllando leggibilità a `42 px`, priorità
-visive e assenza di residui dopo pausa/restart.
+Nella sessione automatica precedente l'APK non era stato installato e le nuove
+icone/animazioni non erano state provate fisicamente. Il 25 agosto 2026 il gate
+Pixel 9 è stato chiuso con le otto attivazioni in movimento e densità elevata a
+20:9, controllando leggibilità a `42 px`, priorità visive e assenza di residui
+dopo pausa/restart.
 
 ## Artefatti verificati
 

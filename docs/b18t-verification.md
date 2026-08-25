@@ -1,7 +1,7 @@
 # Verifica B18T — Carosello selezione personaggi
 
 Data: 25 agosto 2026
-Stato: `IN VERIFICA`
+Stato: `COMPLETATO`
 
 B18T sostituisce il selettore precedente con un carosello ciclico dati di otto
 profili. Card centrale, anteprime, frecce, tastiera, D-pad/stick, click e swipe
@@ -42,9 +42,9 @@ quindi un singolo tap ADB sull'anteprima destra: il risultato finale è Zat, non
 Alea. Il tap ora è affidato al `Button` nativo e il touch grezzo gestisce soltanto
 il riconoscimento dello swipe, evitando due avanzamenti sullo stesso rilascio.
 
-Resta aperto il gate manuale con dito e il confronto percettivo fisico
-conclusivo; l'iniezione ADB è evidenza di runtime sul dispositivo, non sostituisce
-una prova umana del gesto.
+Il gate manuale con dito e il confronto percettivo fisico conclusivo sono stati
+completati il 25 agosto 2026. L'iniezione ADB resta evidenza distinta di runtime
+sul dispositivo e non viene usata come sostituto della prova umana del gesto.
 
 ## Artefatti finali
 

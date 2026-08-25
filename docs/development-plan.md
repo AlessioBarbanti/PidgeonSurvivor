@@ -2,7 +2,7 @@
 
 Fonte: [`prd.md`](./prd.md)  
 Decisioni: [`decision-log.md`](./decision-log.md)  
-Stato: il ciclo operativo corrente è B18C–B18W. B18C, B18D, B18F, B18H, B18I, B18K, B18L, B18N, B18O, B18P e B18R sono completati con tutti i gate pertinenti automatici, Windows e Pixel 9 chiusi. B18E, B18G e B18J sono in verifica con implementazione, regressioni, Windows ed export Android statico chiusi, ma attendono il rispettivo gate Pixel 9. Il refresh ImageGen B18M ha chiuso automatici, Windows e APK statico; B18R ne ha portato il burst a `1,20 s` e ha chiuso il gate percettivo dei nuovi timing il 25 agosto 2026. B18S è implementato con asset tracciato, regressione, Windows, APK e runtime Pixel 9 20:9 verdi; resta in verifica fino alla chiusura di B18Q e al confronto fisico finale a luminosità controllata. B18T e B18W sono implementati con otto ritratti dati, gerarchia pixel-fantasy ricompattata, fondale, CTA e otto icone passive raster tracciati, smoke dedicati, regressione `40/40`, runtime Windows, APK statico e percorso Pixel 9 20:9 verdi; un singolo tap ADB avanza da Zat ad Alea, poi conferma, run, pausa e ritorno al carosello funzionano sull'artefatto finale. Restano il tap manuale con dito e il confronto percettivo fisico conclusivo. B18U ha ora chiuso la dipendenza funzionale B18T/B18W e resta in verifica per il controllo percettivo del cast in movimento e ad alta densità. B18Q è implementato con barre `XP`/`HP` full-width, playfield separato, smoke, regressioni, Windows, APK statico e percorso runtime Pixel 9 20:9 verdi; resta aperto il confronto percettivo manuale 16:9/18:9/20:9/4:3. B18V assorbe hardening e performance prima del packaging B20
+Stato: il ciclo funzionale e visivo B18C–B18U e B18W è completato. Tutti i gate automatici, Windows, Android statici e Pixel 9 già registrati restano chiusi; il 25 agosto 2026 sono state completate anche tutte le verifiche umane residue, inclusi interazione fisica, confronti percettivi multi-aspect, leggibilità di icone/VFX/cast, carosello e sfondo a luminosità controllata. B18V è `IN VERIFICA`: hardening automatico, export e APK statico sono verdi, mentre matrice emulata e soak fisico restano aperti. B20 resta bloccata dalla chiusura di B18V.
 Obiettivo: trasformare il concept in un MVP completo, verificabile su Windows e Android; Web resta un target secondario
 
 Identità pubblica confermata il 24 agosto 2026: `Pidgeon Survivor`, con il
@@ -333,7 +333,7 @@ Gate di prodotto:
 - dopo M2: playtest del loop XP e dell'Onda d'Urto con tastiera, controller e touch, inclusi cooldown e pausa;
 - dopo M3: playtest del loop XP/carte e controllo delle combinazioni con l'abilità attiva;
 - dopo M4: freeze del core loop; M5 integra il roster completo sul framework validato, con selezione pre-run, passive, altre sette abilità, correzioni, accessibilità e release work;
-- prima di B18V: freeze dell'intero ciclo B18C–B18W, inclusi flusso welcome/selezione/pausa, carosello profili, raffinamento della selezione, sprite del cast, HUD e controlli touch configurabili, playfield separato dal HUD, animazioni, sfondo, abilità, rank, nemici, upgrade, asset e confinamento XP, così hardening e profiling misurano la presentazione destinata alla release.
+- prima di B18V: freeze funzionale e visivo di B18C–B18U e B18W, inclusi flusso welcome/selezione/pausa, carosello profili, raffinamento della selezione, sprite del cast, HUD e controlli touch configurabili, playfield separato dal HUD, animazioni, sfondo, abilità, rank, nemici, upgrade, asset e confinamento XP, così hardening e profiling misurano la presentazione destinata alla release. Il freeze è chiuso dal 25 agosto 2026.
 
 ## 6. Backlog ordinato
 
@@ -382,7 +382,7 @@ Priorità: `P0` indispensabile per l'MVP, `P1` indispensabile per la prima pubbl
 | B18S | Sfondo arena ImageGen | P1 | 5 | B18Q, B18R | Uno sfondo raster originale generato con ImageGen migliora l'arena senza griglia, falsi ostacoli o perdita di contrasto; prompt, trasformazioni, licenza e hash sono registrati |
 | B18T | Carosello selezione personaggi | P1 | 5 | B17A, B18O | Carosello implementato: profilo centrale, anteprime, swipe e navigazione multipiattaforma, sempre in `BOOT` fino alla conferma |
 | B18U | Sprite del cast coerenti | P1 | 13 | B17A, B18C, B18M, B18T | Otto sprite Player originali rendono riconoscibili in gioco i ruoli della direzione visuale del cast, senza cambiare hitbox, movimento, passive o abilità |
-| B18V | Hardening Windows/Android e performance | P0 | 8 | B16, B17A, B18–B18W | Android 12 minimo e Android 16 target, aspect ratio, touch, lifecycle, abilità e soak rispettano il budget sulla presentazione finale |
+| B18V | Hardening Windows/Android e performance | P0 | 8 | B16, B17A, B18–B18U, B18W | Android 12 minimo e Android 16 target, aspect ratio, touch, lifecycle, abilità e soak rispettano il budget sulla presentazione finale |
 | B18W | Raffinamento della selezione personaggi | P1 | 5 | B18T, B18U, B18O | Il carosello esistente mette al centro il personaggio e le abilità, separa Back dalle frecce e riduce l'effetto da pannello di configurazione senza riaprire le regole `BOOT` |
 | B20 | Packaging Windows e Android | P0 | 5 | B16, B18V | ZIP Windows e APK release firmato avviabili con icona Pidgeon Survivor; AAB Gradle generabile senza upload Play e icona tematica Android opzionale decisa |
 | B21 | Web opzionale | P2 | 3 | B20 | Export Compatibility single-thread verificato in Chromium e Firefox senza modificare il percorso Windows/Android |
@@ -397,7 +397,7 @@ Parallelizzazione sicura:
 - B18D consuma la direzione B18C senza riaprire `InputRouter`; B18F estende il tipo area senza cambiare le aree statiche; B18I riusa il clamp circolare di `ArenaLayout` senza cambiare spawn o magnete;
 - B18K e B18L possono procedere dopo i gate correnti con contratti touch separati ma una verifica multitouch comune; B18G e B18J condividono il framework level-up senza accoppiare i relativi dati; la produzione originale B18H e i VFX procedurali B18M possono avanzare in parallelo;
 - B18N–B18O consolidano il flusso welcome → selezione → run → pausa; B18T realizza il carosello e B18W ne raffina il solo selettore senza riaprire le regole di avvio della run. B18P e B18Q stabilizzano controlli e playfield prima del passaggio percettivo B18R–B18S;
-- profiling, soak e matrice finale B18V non iniziano prima del freeze B18C–B18W e dei gate fisici combinati;
+- profiling, soak e matrice finale B18V iniziano sulla baseline congelata B18C–B18U/B18W dopo la chiusura dei gate fisici combinati;
 - B13 va integrato un effetto alla volta, con test combinatori, non come blocco unico a fine milestone.
 
 ### B18B — Identità visiva e priorità al campo di gioco
@@ -445,6 +445,9 @@ Vincoli e gate di uscita:
 - smoke, screenshot prima/dopo, export Windows/Android e log privi di
   `SCRIPT ERROR` o `FATAL EXCEPTION` precedono il freeze visivo per B18V.
 
+I gate manuali e percettivi residui B18B a 20:9 e 4:3 sono stati chiusi il
+25 agosto 2026 insieme al freeze visivo del ciclo.
+
 ### Ciclo operativo B18C–B18W
 
 Questo è il ciclo progressivo da completare prima del packaging B20. Gli stati hanno il seguente
@@ -464,25 +467,25 @@ significato:
 |---|---|---|---|
 | B18C | Player animato e direzione persistente | COMPLETATO | Gate Windows e Pixel 9 chiusi il 24 agosto 2026 |
 | B18D | Powerslide di Bea | COMPLETATO | Gate Windows e Pixel 9 chiusi il 24 agosto 2026 |
-| B18E | Tuoni di Zat | IN VERIFICA | Gate automatici, Windows e Android statico chiusi; runtime Pixel 9 ancora da verificare |
+| B18E | Tuoni di Zat | COMPLETATO | Gate automatici, Windows, Android statico e verifica manuale Pixel 9 chiusi il 25 agosto 2026 |
 | B18F | Abilità inseguitrice di Alea | COMPLETATO | Gate Windows e Pixel 9 chiusi il 24 agosto 2026 |
-| B18G | Rank delle abilità principali | IN VERIFICA | Gate automatici, Windows e Android statico chiusi; runtime Pixel 9 ancora da verificare |
+| B18G | Rank delle abilità principali | COMPLETATO | Gate automatici, Windows, Android statico e verifica manuale Pixel 9 chiusi il 25 agosto 2026 |
 | B18H | Nemici piccione | COMPLETATO | Gate automatici, Windows e Pixel 9 chiusi il 24 agosto 2026 |
 | B18I | XP confinato nell'arena | COMPLETATO | Gate chiusi; commit dedicato `e58cbd0` |
-| B18J | Grigliata estiva | IN VERIFICA | Gate automatici, Windows, Android statico e cold launch Pixel 9 chiusi; interazione manuale ancora da verificare |
+| B18J | Grigliata estiva | COMPLETATO | Gate automatici, Windows, Android statico e interazione manuale Pixel 9 chiusi il 25 agosto 2026 |
 | B18K | Pulsante abilità con icona e cooldown circolare | COMPLETATO | Gate chiusi; commit dedicato `81b47f6` |
 | B18L | Joystick dinamico | COMPLETATO | Gate chiusi, inclusa regressione lock/resume; commit dedicato `d6625d7` |
-| B18M | Migliorie grafiche delle abilità | IN VERIFICA | Refresh ImageGen: automatici, Windows e APK statico chiusi; controllo percettivo Pixel 9 aperto |
+| B18M | Migliorie grafiche delle abilità | COMPLETATO | Refresh ImageGen: automatici, Windows, APK statico e controllo percettivo Pixel 9 chiusi il 25 agosto 2026 |
 | B18N | Cambia personaggio dal menu pausa | COMPLETATO | Gate automatici, Windows, APK statico e runtime Pixel 9 chiusi il 24 agosto 2026 |
 | B18O | Welcome screen | COMPLETATO | Gate automatici, Windows, APK statico e controllo percettivo 20:9 della variante finale sul Pixel 9 chiusi il 24 agosto 2026 |
 | B18P | Dimensioni configurabili dei controlli touch | COMPLETATO | Gate automatici, Windows, APK statico e multitouch reale Pixel 9 chiusi il 25 agosto 2026 |
-| B18Q | Arena separata dal HUD minimo | IN VERIFICA | Implementazione, automatici, Windows, APK statico e percorso Pixel 9 20:9 chiusi; confronto percettivo manuale multi-aspect aperto |
+| B18Q | Arena separata dal HUD minimo | COMPLETATO | Automatici, Windows, APK statico, percorso Pixel 9 20:9 e confronto percettivo manuale multi-aspect chiusi il 25 agosto 2026 |
 | B18R | Durata e leggibilità di animazioni e VFX | COMPLETATO | Timing centralizzati e separati dal gameplay; `42/42`, Windows, Android e verifica umana Windows/Pixel 9 chiusi il 25 agosto 2026 |
-| B18S | Sfondo arena ImageGen | IN VERIFICA | Asset, automatici, Windows, APK e Pixel 9 20:9 chiusi; B18R chiuso, ripetere il gate dopo B18Q e a luminosità controllata |
-| B18T | Carosello selezione personaggi | IN VERIFICA | Implementazione, `40/40`, Windows, APK e percorso Pixel 9 20:9 chiusi; tap ADB singolo corretto, tap manuale e confronto fisico aperti |
-| B18U | Sprite del cast coerenti | IN VERIFICA | Otto sprite e sorgenti HD tracciati; dipendenza funzionale B18T, automatici, Windows, APK e percorso reale del carosello chiusi; gate percettivo in movimento aperto |
-| B18V | Hardening Windows/Android e performance | BLOCCATO | Bloccato fino al freeze B18C–B18W e alla chiusura dei gate fisici combinati |
-| B18W | Raffinamento della selezione personaggi | IN VERIFICA | Gerarchia pixel-fantasy, kit, otto icone passive e CTA implementati; automatici, Windows, APK e percorso Pixel 9 ADB chiusi, confronto fisico manuale aperto |
+| B18S | Sfondo arena ImageGen | COMPLETATO | Asset, automatici, Windows, APK, Pixel 9 e confronto percettivo a luminosità controllata chiusi il 25 agosto 2026 |
+| B18T | Carosello selezione personaggi | COMPLETATO | Implementazione, `40/40`, Windows, APK, percorso Pixel 9, tap manuale e confronto fisico chiusi il 25 agosto 2026 |
+| B18U | Sprite del cast coerenti | COMPLETATO | Otto sprite e sorgenti HD tracciati; automatici, Windows, APK, percorso reale e gate percettivo in movimento chiusi il 25 agosto 2026 |
+| B18V | Hardening Windows/Android e performance | IN VERIFICA | Profili, diagnostica, stress, smoke, regressione, runtime Windows ed APK statico verdi; matrice emulata e gate fisici Pixel 9 ancora aperti |
+| B18W | Raffinamento della selezione personaggi | COMPLETATO | Gerarchia pixel-fantasy, kit, otto icone passive e CTA; automatici, Windows, APK, percorso Pixel 9 e confronto fisico chiusi il 25 agosto 2026 |
 
 #### B18C — Player animato e direzione persistente
 
@@ -531,7 +534,7 @@ Dettagli ed evidenze: [`b18d-verification.md`](./b18d-verification.md).
 
 #### B18E — Tuoni di Zat
 
-Stato: `IN VERIFICA`.
+Stato: `COMPLETATO`.
 
 Sequenza richiesta:
 
@@ -561,8 +564,8 @@ Contratto definitivo:
   restart.
 - [x] Smoke dedicato `B18E_ZAT_THUNDER_STORM_SMOKE_OK`, regressione completa
   `28/28`, project smoke, export e runtime Windows, export Android statico.
-- [ ] Gate Pixel 9: multitouch, flash standard/ridotto, 20:9, lifecycle e
-  cleanup reale.
+- [x] Gate Pixel 9: multitouch, flash standard/ridotto, 20:9, lifecycle e
+  cleanup reale verificati manualmente il 25 agosto 2026.
 
 Dettagli ed evidenze: [`b18e-verification.md`](./b18e-verification.md).
 
@@ -585,7 +588,7 @@ Dettagli ed evidenze: [`b18f-verification.md`](./b18f-verification.md).
 
 #### B18G — Rank delle abilità principali
 
-Stato: `IN VERIFICA`.
+Stato: `COMPLETATO`.
 
 - [x] Ogni attiva parte al rank `1`; il level-up può offrire soltanto i quattro
   passaggi `2–5` dell'abilità equipaggiata. Al rank `5` la carta non è più
@@ -624,8 +627,9 @@ compatibilità e anti-ricorsione; non assegna rank alle altre abilità.
   Cosplay copia il rank dichiarato e applica l'anti-ripetizione dai rank `4–5`.
 - [x] Smoke `B18G_ABILITY_RANKS_SMOKE_OK`, regressione completa `29/29`, project
   smoke, export e runtime Windows, export Android statico ARM64.
-- [ ] Gate Pixel 9: tap reali sui passaggi rank, scomparsa al cap, nuovo profilo
-  dalla successiva attivazione, lifecycle, restart e cambio personaggio puliti.
+- [x] Gate Pixel 9: tap reali sui passaggi rank, scomparsa al cap, nuovo profilo
+  dalla successiva attivazione, lifecycle, restart e cambio personaggio puliti,
+  verificati manualmente il 25 agosto 2026.
 
 Dettagli ed evidenze: [`b18g-verification.md`](./b18g-verification.md).
 
@@ -675,7 +679,7 @@ Dettagli ed evidenze: [`b18i-verification.md`](./b18i-verification.md).
 
 #### B18J — Potenziamento Grigliata estiva
 
-Stato: `IN VERIFICA`.
+Stato: `COMPLETATO`.
 
 - [x] `Grigliata estiva` è una carta comune con `max_rank = 5`; ogni rank
   moltiplica gli HP massimi per `×1,15`. Il contributo cumulativo è quindi
@@ -692,8 +696,9 @@ Stato: `IN VERIFICA`.
   composizione col registry upgrade integrati senza mutare le risorse condivise.
 - [x] Smoke `B18J_SUMMER_GRILL_SMOKE_OK`, regressione completa `30/30`, project
   smoke, export e runtime Windows, export Android statico ARM64.
-- [ ] Gate Pixel 9: tap reali sui cinque rank, cura del delta, composizione con
-  `L'Ansia`, cap, lifecycle, restart e cambio personaggio puliti.
+- [x] Gate Pixel 9: tap reali sui cinque rank, cura del delta, composizione con
+  `L'Ansia`, cap, lifecycle, restart e cambio personaggio puliti, verificati
+  manualmente il 25 agosto 2026.
 
 Dettagli ed evidenze: [`b18j-verification.md`](./b18j-verification.md).
 
@@ -745,7 +750,7 @@ Dettagli ed evidenze: [`b18l-verification.md`](./b18l-verification.md).
 
 #### B18M — Migliorie grafiche delle abilità
 
-Stato: `IN VERIFICA` dopo il refresh ImageGen.
+Stato: `COMPLETATO` dopo il refresh ImageGen.
 
 - [x] La baseline di release conserva VFX originali disegnati con primitive
   Godot e aggiunge otto emblemi PNG RGBA `256×256` prodotti con OpenAI ImageGen
@@ -782,10 +787,9 @@ Stato: `IN VERIFICA` dopo il refresh ImageGen.
   completa `32/32`, project smoke, export e runtime Windows con
   `B18M_CONTRACT_OK`; export APK ARM64, API `31`/`36`, firma v2 e sola ABI
   `arm64-v8a` chiusi.
-- [ ] Ripetere sul Pixel 9 il controllo percettivo a 20:9 delle nuove icone a
-  `42 px` e degli otto burst in movimento/densità elevata. La prova fisica è
-  rimandata esplicitamente; il precedente gate B18L resta autorevole per il
-  multitouch, ma non valida i nuovi asset.
+- [x] Controllo percettivo Pixel 9 a 20:9 delle nuove icone a `42 px` e degli
+  otto burst in movimento/densità elevata completato il 25 agosto 2026. Il gate
+  B18L resta l'evidenza autorevole separata per il multitouch.
 
 Dettagli ed evidenze: [`b18m-verification.md`](./b18m-verification.md).
 
@@ -860,10 +864,9 @@ Dettagli ed evidenze: [`b18p-verification.md`](./b18p-verification.md).
 
 #### B18Q — Arena e HUD minimo a barre
 
-Stato: `IN VERIFICA`; implementazione, smoke dedicato, regressione completa
-`41/41`, project smoke, Windows, APK statico e percorso runtime Pixel 9 20:9
-chiusi. Restano il confronto percettivo manuale su Windows/Pixel 9 e la matrice
-visuale fisica 16:9, 18:9, 20:9 e 4:3.
+Stato: `COMPLETATO`; implementazione, smoke dedicato, regressione completa
+`41/41`, project smoke, Windows, APK statico, percorso runtime Pixel 9 20:9 e
+confronto percettivo manuale 16:9, 18:9, 20:9 e 4:3 chiusi.
 
 - [x] Ridurre il HUD superiore a due sole barre senza icona Player, livello o
   valori numerici: esperienza a tutta larghezza in alto e vita a tutta larghezza
@@ -888,8 +891,8 @@ visuale fisica 16:9, 18:9, 20:9 e 4:3.
   tutta larghezza, soli tag `XP`/`HP`, assenza di ritratto, valori e label
   `Tempo`, timer trasparente e pausa raggiungibile. Smoke, runtime Windows e
   percorso Pixel 9 20:9 via ADB sono verdi.
-- [ ] Completare la verifica percettiva e runtime manuale con interazione fisica
-  a 16:9, 18:9, 20:9 e 4:3 su Windows e Android fisico.
+- [x] Verifica percettiva e runtime manuale con interazione fisica a 16:9,
+  18:9, 20:9 e 4:3 su Windows e Android fisico completata il 25 agosto 2026.
 
 Dettagli ed evidenze: [`b18q-verification.md`](./b18q-verification.md).
 
@@ -918,7 +921,7 @@ Dettagli ed evidenze: [`b18r-verification.md`](./b18r-verification.md).
 
 #### B18S — Sfondo arena ImageGen
 
-Stato: `IN VERIFICA`.
+Stato: `COMPLETATO`.
 
 - [x] Usare OpenAI ImageGen built-in per produrre varianti originali dello
   sfondo raster dell'arena, coerenti con la pixel-art arcade caricaturale e prive
@@ -934,21 +937,21 @@ Stato: `IN VERIFICA`.
 - [x] Preferire ImageGen anche per futuri nuovi asset raster quando è adatto al
   risultato; continuare a usare primitive Godot o sorgenti native per UI,
   geometrie deterministiche e grafica vettoriale già appartenente a un sistema.
-- [ ] Verifica prima/dopo su Windows e Pixel 9 a luminosità diverse, regressione
+- [x] Verifica prima/dopo su Windows e Pixel 9 a luminosità diverse, regressione
   performance/import/export e conferma che lo sfondo non suggerisca collisioni
   o zone percorribili diverse dal playfield B18Q. Confronto prima/dopo Windows,
-  regressione, import/export e runtime Pixel 9 20:9 sono verdi; ripetere il
-  controllo percettivo a luminosità fisica controllata dopo la chiusura di B18Q;
-  la dipendenza B18R è chiusa.
+  regressione, import/export e runtime Pixel 9 20:9 sono verdi; il controllo
+  percettivo finale a luminosità fisica controllata è stato completato il
+  25 agosto 2026 dopo la chiusura di B18Q e B18R.
 
 Dettagli ed evidenze: [`b18s-verification.md`](./b18s-verification.md).
 
 #### B18T — Carosello selezione personaggi
 
-Stato: `IN VERIFICA`; implementazione, smoke dedicato, regressione `40/40`,
-project smoke, Windows, APK statico e percorso runtime Pixel 9 20:9 chiusi.
-Restano il tap manuale sulle anteprime e il confronto percettivo fisico; il
-raffinamento di gerarchia approvato è tracciato separatamente in B18W.
+Stato: `COMPLETATO`; implementazione, smoke dedicato, regressione `40/40`,
+project smoke, Windows, APK statico, percorso runtime Pixel 9 20:9, tap manuale
+sulle anteprime e confronto percettivo fisico chiusi. Il raffinamento di
+gerarchia approvato è tracciato separatamente in B18W.
 
 - [x] Sostituire la griglia/elenco di profili del selettore con un carosello
   ciclico di otto `FriendDefinition`: il profilo corrente è centrale e mostra
@@ -974,8 +977,9 @@ raffinamento di gerarchia approvato è tracciato separatamente in B18W.
 - [x] Eseguire regressione completa, project smoke, export Windows/Android e
   percorso runtime Pixel 9: cold launch → welcome → carosello → conferma → run,
   Back dal carosello e ritorno al carosello da pausa.
-- [ ] Chiudere il tap manuale sulle anteprime e il confronto percettivo fisico
-  sul Pixel 9; gli screenshot 20:9 e i percorsi touch/D-pad ADB sono già verdi.
+- [x] Tap manuale sulle anteprime e confronto percettivo fisico sul Pixel 9
+  chiusi il 25 agosto 2026; gli screenshot 20:9 e i percorsi touch/D-pad ADB
+  erano già verdi.
   La regressione fisica da evento emulato verifica Magno → Bea con D-pad e Bea
   → Zat con un solo tap, senza doppio avanzamento.
 
@@ -983,9 +987,9 @@ Dettagli ed evidenze: [`b18t-verification.md`](./b18t-verification.md).
 
 #### B18W — Raffinamento della selezione personaggi
 
-Stato: `IN VERIFICA`; implementazione, smoke dedicato, regressione `40/40`,
-project smoke, Windows, APK statico e percorso ADB Pixel 9 20:9 chiusi. Restano
-il controllo con dito e il confronto percettivo fisico sul dispositivo.
+Stato: `COMPLETATO`; implementazione, smoke dedicato, regressione `40/40`,
+project smoke, Windows, APK statico, percorso ADB Pixel 9 20:9, controllo con
+dito e confronto percettivo fisico sul dispositivo chiusi.
 
 - [x] Spostare `← Indietro` in alto a sinistra, con stile e icona chiaramente
   diversi dalle frecce di navigazione del carosello; rimuovere il grande
@@ -1010,13 +1014,13 @@ il controllo con dito e il confronto percettivo fisico sul dispositivo.
   assert di safe area, assenza di sovrapposizioni e card centrale predominante.
   Aggiungere smoke per focus, Back, frecce, swipe contro tap, CTA e aggiornamento
   atomico di nome, ruolo, passiva, abilità e icona per tutti gli otto profili.
-- [ ] Chiudere con regressione, project smoke, export Windows/Android e verifica
+- [x] Chiudere con regressione, project smoke, export Windows/Android e verifica
   percettiva Windows/Pixel 9: la selezione deve comunicare prima personaggio e
   abilità, non apparire come un pannello di configurazione, e conservare BOOT,
   multitouch e lifecycle.
 
-  Regressione, project smoke, export e percorso ADB sono verdi; la casella resta
-  aperta soltanto per la valutazione manuale fisica. Il CTA usa una placca
+  Regressione, project smoke, export e percorso ADB sono verdi; la valutazione
+  manuale fisica è stata completata il 25 agosto 2026. Il CTA usa una placca
   ImageGen senza testo larga al massimo il `55%` del pannello e conserva almeno
   `30` unità logiche dalla cornice inferiore; `Gioca con <Nome>` resta testo
   dinamico nativo. Il pass aggiuntivo pixel-fantasy rimuove il sottotitolo,
@@ -1032,10 +1036,10 @@ Dettagli ed evidenze: [`b18w-verification.md`](./b18w-verification.md).
 
 #### B18U — Sprite del cast coerenti
 
-Stato: `IN VERIFICA`; implementazione, regressione aggiornata `40/40`, project
-smoke, Windows, APK statico e dipendenza funzionale B18T/B18W chiusi. Restano aperti
-il controllo percettivo fisico del cast in movimento e ad alta densità sul
-Pixel 9 a 20:9, oltre al confronto finale 16:9/4:3.
+Stato: `COMPLETATO`; implementazione, regressione aggiornata `40/40`, project
+smoke, Windows, APK statico, dipendenza funzionale B18T/B18W, controllo
+percettivo fisico del cast in movimento e ad alta densità sul Pixel 9 a 20:9 e
+confronto finale 16:9/4:3 chiusi.
 
 - [x] Sostituire gli sprite Player provvisori degli otto `FriendDefinition` con
   asset raster originali coerenti con la sezione [Direzione visuale del cast](./characters.md#direzione-visuale-del-cast): Magno tellurico con richiami bovini, Bea pattinatrice, Zat infermiera elettrica, Alea ballerina, Aleo muratore, Lollo cosplayer retrofuturista, Migi con scudo a guscio e Marghe ballerina reggaeton con clone d'ombra.
@@ -1054,16 +1058,16 @@ Pixel 9 a 20:9, oltre al confronto finale 16:9/4:3.
   sostituzione dopo il carosello, restart e cambio personaggio senza riferimenti
   o frame residui; verificare che la geometria di collisione sia identica alla
   baseline B18C.
-- [ ] Eseguire regressione completa, project smoke, export Windows/Android e
+- [x] Eseguire regressione completa, project smoke, export Windows/Android e
   controllo percettivo Windows/Pixel 9 su 16:9, 20:9 e 4:3: il cast deve essere
   leggibile in movimento, durante abilità e ad alta densità senza degradare
   performance o multitouch.
 
   La parte automatica, il runtime Windows, il packaging Android statico e il
   percorso reale welcome → carosello → run sul Pixel 9 sono verdi; l'APK
-  contiene soltanto `arm64-v8a` e non include le sorgenti HD. La casella resta
-  aperta per il confronto percettivo del cast durante movimento, abilità e alta
-  densità, distinto dalla verifica frontend B18T.
+  contiene soltanto `arm64-v8a` e non include le sorgenti HD. Il confronto
+  percettivo del cast durante movimento, abilità e alta densità, distinto dalla
+  verifica frontend B18T, è stato completato il 25 agosto 2026.
 
 Le strisce runtime `96×32`, le sorgenti trasparenti `1536×1024` conservate in
 `assets/art/characters/players/hd/`, i prompt, le correzioni rispetto alla
@@ -1074,20 +1078,26 @@ Dettagli ed evidenze: [`b18u-verification.md`](./b18u-verification.md).
 
 #### B18V — Hardening Windows/Android e performance
 
-Stato: `BLOCCATO` fino al freeze B18C–B18W.
+Stato: `IN VERIFICA`; il freeze funzionale e visivo B18C–B18U/B18W e i relativi
+gate fisici preesistenti sono chiusi. Il contratto B18V è implementato e la parte
+automatica è verde; non sono ancora chiusi emulatore API 31/API 36, matrice
+funzionale fisica e soak Pixel 9.
 
-- [ ] Eseguire regressione completa, project smoke ed export puliti da ambiente
+- [x] Eseguire regressione completa, project smoke ed export puliti da ambiente
   documentato; cercare nei log `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL` e
-  `CONTRACT_FAIL` senza affidarsi al solo exit code.
+  `CONTRACT_FAIL` senza affidarsi al solo exit code. Focused smoke B18V, 43 smoke
+  di regressione, project smoke, export Windows, runtime Windows e ispezione APK
+  sono verdi; dettagli in [`b18v-verification.md`](./b18v-verification.md).
 - [ ] Chiudere la matrice Windows, Android 12/API 31 e Android 16/API 36 con
   16:9, 18:9, 20:9, cutout e 4:3, inclusi welcome, selezione, pausa, controlli
   scalati, lifecycle, abilità, Boss, vittoria, sconfitta e cambio personaggio.
 - [ ] Profilare densità massima, CPU/GPU, memoria, audio e VFX sulla
   presentazione congelata; completare soak termico Android da 20 minuti e almeno
   cinque restart/cambi profilo senza crescita o stato residuo.
-- [ ] Ridurre soltanto budget presentazionali configurabili quando necessario;
-  gameplay, timing autorevoli e contenuti approvati non cambiano durante
-  l'hardening senza una nuova decisione registrata.
+- [x] Definire e applicare soltanto budget presentazionali configurabili quando
+  necessario: profili fissi 60 FPS, stress 150/200/200 e coda FIFO dei feedback
+  transitori (300 Windows, 150 mobile); gameplay, timing autorevoli e contenuti
+  approvati non cambiano durante l'hardening senza una nuova decisione registrata.
 - [ ] Registrare evidenze fisiche distinte dai controlli APK statici; B20 può
   iniziare solo dopo la chiusura di tutti i gate pertinenti.
 
@@ -1261,15 +1271,13 @@ Un'attività è finita solo quando:
 
 Ordine operativo immediato:
 
-1. chiudere i gate manuali residui B18B a 20:9 e 4:3;
-2. chiudere il gate Pixel 9 di B18E già implementato: multitouch, flash standard/ridotto, 20:9, lifecycle e cleanup reale;
-3. chiudere i gate Pixel 9 di B18G e B18J già implementati: tap reali sui rank, aumento HP `×1,15` con cura del delta, stacking, cap, lifecycle e reset della run;
-4. chiudere il nuovo gate percettivo Pixel 9 del refresh ImageGen B18M: otto icone HUD, otto burst, movimento e densità elevata a 20:9;
-5. chiudere il gate manuale B18T/B18W già implementati: tap con dito e confronto percettivo della gerarchia, del pannello abilità, del Back separato e del CTA ornamentale sul Pixel 9;
-6. chiudere B18U dopo il gate manuale B18T/B18W: verificare gli otto sprite originali in movimento sul Pixel 9, mantenendo le sorgenti HD fuori dagli export;
-7. chiudere il gate manuale B18Q già implementato: barre `XP`/`HP`, playfield separato e confronto percettivo 16:9/18:9/20:9/4:3 su Windows e Pixel 9;
-8. B18R è completato; chiudere il gate residuo B18S dopo B18Q con confronto dello sfondo ImageGen a luminosità controllata e verifica del playfield finale durante i VFX allungati;
-9. eseguire B18V soltanto dopo il freeze B18C–B18W: gate combinato Windows/Android, Boss a `04:00`/`2400 HP`, matrice 16:9/20:9/4:3, profiling e soak; quindi procedere a B20.
+1. eseguire B18V sulla baseline B18C–B18U/B18W congelata: regressione completa e project smoke, export puliti Windows/Android, matrice Windows/API 31/API 36 a 16:9/18:9/20:9/cutout/4:3 e ricerca esplicita di `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL` e `CONTRACT_FAIL`;
+2. completare per B18V profiling CPU/GPU/memoria/audio/VFX alla densità massima, soak termico Android di 20 minuti e almeno cinque restart/cambi profilo, riducendo soltanto budget presentazionali configurabili se necessario;
+3. dopo la chiusura documentata di B18V, procedere a B20 con ZIP Windows, APK release firmato, AAB Gradle generabile senza upload e decisione finale sull'icona tematica Android opzionale.
+
+I gate manuali e percettivi precedentemente elencati per B18B, B18E, B18G,
+B18J, B18M, B18Q, B18S, B18T, B18U e B18W sono chiusi dal 25 agosto 2026 e
+non fanno più parte della prossima iterazione.
 
 Il setup host e gli artefatti generati il 12 agosto 2026 sono registrati in
 [`m0-verification.md`](./m0-verification.md).

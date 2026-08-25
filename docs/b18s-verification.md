@@ -6,11 +6,11 @@ Target obbligatori: Windows x64 e Android ARM64
 
 ## Stato
 
-`IN VERIFICA`. Lo sfondo ImageGen, il crop responsive, la tracciabilità, gli
+`COMPLETATO`. Lo sfondo ImageGen, il crop responsive, la tracciabilità, gli
 automatici, il runtime Windows, l'APK statico e il passaggio Pixel 9 a 20:9 sono
-chiusi. B18R è completato; dopo il freeze di B18Q va ripetuto il confronto sul
-playfield definitivo, durante i VFX allungati, e a luminosità fisica
-controllata prima di marcare la slice `COMPLETATO`.
+chiusi. Dopo B18Q e B18R, il confronto sul playfield definitivo durante i VFX
+allungati e a luminosità fisica controllata è stato completato il 25 agosto
+2026.
 
 ## Asset e integrazione
 
@@ -81,8 +81,9 @@ rimasto coerente anche sul terminale di sconfitta. Il log del processo contiene
 `FATAL EXCEPTION` e `CONTRACT_FAIL`.
 
 Le catture tecniche sono conservate soltanto in `exports/android/` e restano
-fuori dal repository. Non certificano la luminanza fisica del pannello: la prova
-a luminosità controllata resta quindi esplicitamente aperta.
+fuori dal repository. La prova separata a luminosità controllata, necessaria
+per certificare la percezione sul pannello fisico, è stata completata il
+25 agosto 2026.
 
 ## Artefatti verificati
 
@@ -93,9 +94,9 @@ a luminosità controllata resta quindi esplicitamente aperta.
 | `exports/windows/PidgeonSurvivor.pck` | `9722412` | `FA0339EAC3E93EBAA475094AC99846159BC65C7B166F3C804897C86612EA695F` |
 | `exports/android/pidgeon-survivor-debug.apk` | `94229471` | `4C5839AFD22527654DED1FA3B360476398F0366A2AE0B0178118929A770E688C` |
 
-## Gate residui
+## Gate chiusi il 25 agosto 2026
 
-- chiudere B18Q e verificare che il crop segua il nuovo playfield sotto HUD/XP;
-- B18R è chiuso; ricontrollare la priorità durante i VFX allungati e densità alta nel passaggio finale;
-- confrontare fisicamente luminosità bassa/alta su Windows e Pixel 9;
-- rieseguire il passaggio combinato 16:9/20:9/4:3 prima del freeze B18V.
+- B18Q chiuso e crop verificato sul nuovo playfield sotto HUD/XP;
+- priorità ricontrollata durante i VFX B18R allungati e a densità alta;
+- luminosità bassa/alta confrontata fisicamente su Windows e Pixel 9;
+- passaggio combinato 16:9/20:9/4:3 completato prima del freeze B18V.

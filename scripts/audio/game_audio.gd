@@ -232,6 +232,18 @@ func get_stream_for_cue(cue_id: StringName) -> AudioStream:
 	return null
 
 
+func get_active_voice_count() -> int:
+	var active_count := 0
+	for audio_player in _players:
+		if is_instance_valid(audio_player) and audio_player.playing:
+			active_count += 1
+	return active_count
+
+
+func get_voice_pool_size() -> int:
+	return _players.size()
+
+
 func play_cue(
 	cue_id: StringName,
 	volume_db: float = 0.0,

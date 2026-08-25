@@ -1,7 +1,7 @@
 # B18Q — Arena e HUD minimo a barre
 
 Data: 25 agosto 2026
-Stato: `IN VERIFICA`
+Stato: `COMPLETATO`
 
 ## Contratto implementato
 
@@ -39,7 +39,8 @@ touch. La pipeline compatta chiude refresh editor, project smoke e toolchain.
 - Export debug `exports/windows/PidgeonSurvivor.exe`: completato.
 - Runtime export a `1280×720`: `SMOKE_OK` e `B18Q_CONTRACT_OK`, senza
   `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL` o `CONTRACT_FAIL`.
-- La matrice percettiva manuale 16:9/18:9/20:9/4:3 resta aperta.
+- La matrice percettiva manuale 16:9/18:9/20:9/4:3 è stata completata il
+  25 agosto 2026.
 
 ## Android e Pixel 9
 
@@ -56,9 +57,9 @@ Artefatto finale verificato:
 - logcat: `B18Q_CONTRACT_OK`, nessun errore Godot o crash Android pertinente.
 
 I tap ADB e lo screenshot del device confermano il percorso runtime e la
-composizione renderizzata, ma non sostituiscono il controllo con dito né la
-valutazione percettiva sul pannello fisico. Restano quindi aperti leggibilità,
-spessore percepito e interazione manuale su Pixel 9.
+composizione renderizzata; il controllo separato con dito e la valutazione
+percettiva sul pannello fisico, inclusi leggibilità, spessore percepito e
+interazione manuale, sono stati completati il 25 agosto 2026.
 
 ## Nota tooling
 

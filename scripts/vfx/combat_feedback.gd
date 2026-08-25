@@ -13,6 +13,7 @@ const PLAYER_DAMAGE := &"player_damage"
 @export var hit_color := Color(1.0, 0.83, 0.35, 0.92)
 @export var death_color := Color(1.0, 0.31, 0.46, 0.96)
 @export var player_damage_color := Color(1.0, 0.18, 0.38, 0.9)
+@export_range(1, 1024, 1) var max_active_effects := 300
 
 var _run_controller: RunController
 var _enemy_spawner: EnemySpawner
@@ -82,6 +83,12 @@ func get_boss_encounter() -> BossEncounter:
 
 func get_active_effect_count() -> int:
 	return _effects.size()
+
+
+func set_max_active_effects(value: int) -> void:
+	max_active_effects = maxi(value, 1)
+	while _effects.size() > max_active_effects:
+		_effects.pop_front()
 
 
 func get_spawn_count(kind: StringName) -> int:
@@ -197,6 +204,8 @@ func _spawn_effect(
 	radius: float,
 	seed_value: int
 ) -> void:
+	while _effects.size() >= maxi(max_active_effects, 1):
+		_effects.pop_front()
 	_effects.append({
 		"kind": kind,
 		"position": world_position,

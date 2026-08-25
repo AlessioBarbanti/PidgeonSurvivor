@@ -1,9 +1,9 @@
 # B18 — Art, VFX, audio, contrasto e volume
 
 Data: 17 agosto 2026  
-Stato: implementazione e gate automatici completati; layout e controlli mixer
-verificati sul Pixel 9. Restano l'ascolto e il controllo percettivo ad alta
-densità su Windows/Pixel 9.
+Stato: `COMPLETATO`; implementazione e gate automatici completati, layout e
+controlli mixer verificati sul Pixel 9. Ascolto e controllo percettivo ad alta
+densità su Windows/Pixel 9 chiusi il 25 agosto 2026.
 
 ## Perimetro consegnato
 
@@ -84,9 +84,9 @@ SceneTree era fermo. Prima di chiudere il test sono stati ripristinati `80%` e
 audio attivo. Le schermate di prova restano negli artefatti esclusi dal source
 control sotto `exports/screenshots/`.
 
-## Gate manuale residuo
+## Gate manuale chiuso il 25 agosto 2026
 
-1. Su Windows, ascoltare una run con densità alta e verificare che sparo/hit non
+1. Su Windows, ascoltata una run con densità alta e verificato che sparo/hit non
    saturino level-up, abilità pronta e warning Boss.
 2. Su Windows, provare volume minimo, intermedio, massimo e mute; chiudere e
    riaprire il gioco e confermare la persistenza percepita. La persistenza dati
@@ -97,4 +97,4 @@ control sotto `exports/screenshots/`.
    proiettili ostili restino sempre distinguibili a 16:9, 20:9 e 4:3.
 
 Il test fisico esteso Android 12/API 31, Android 16/API 36 e controller Windows
-resta il gate pianificato di B18T.
+resta nel perimetro di hardening B18V.

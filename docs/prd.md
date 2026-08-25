@@ -482,7 +482,17 @@ esclusivamente presentazionali. B18R centralizza il burst abilità a `1,20 s`,
 le reazioni Player/nemico a `0,30`/`0,26 s`, la morte a `0,78 s` e l'impulso di
 prontezza a `0,60 s`; i flash restano brevi a `0,075–0,08 s`. Le code visive
 sono nodi sibling non interattivi e non prolungano collisioni, danno, tick,
-cooldown o raggi né lasciano apparire attiva un'area già conclusa.
+ cooldown o raggi né lasciano apparire attiva un'area già conclusa.
+
+**Hardening B18V:** `PerformanceProfile` è scene-local e fisso a 60 FPS, con
+stress da 150 nemici, 200 proiettili e 200 pickup sia su Windows sia su mobile.
+L'overlay diagnostico debug è invisibile di default e si abilita soltanto con
+`--performance-overlay`: mostra FPS/frame time, memoria, nodi, entità, VFX,
+voci audio e profilo. `--b18v-stress` emette `B18V_PERF_SAMPLE` e marker finali
+B18V. I soli fallback consentiti, nell'ordine, sono FIFO dei feedback transitori
+(300 Windows, 150 Android) e scala interna mobile fissa `0,85`, previa nuova
+verifica percettiva; non sono ammessi qualità dinamica né cambi a durate, raggi,
+cooldown, danni, spawn o pool audio da 12 voci.
 
 **Audio:** gli eventi di combattimento, progressione, abilità, Boss e terminali
 usano cue brevi su un bus SFX polifonico. Il menu di pausa offre volume lineare e

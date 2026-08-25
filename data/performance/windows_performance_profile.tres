@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PerformanceProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/platform/performance_profile.gd" id="1_profile"]
+
+[resource]
+script = ExtResource("1_profile")
+profile_id = &"windows"
+target_fps = 60
+render_scale = 1.0
+max_transient_feedback = 300
+stress_enemy_count = 150
+stress_projectile_count = 200
+stress_pickup_count = 200

@@ -1,10 +1,10 @@
 # B18B — Identità visiva, HUD compatto e combat feedback
 
 Data: 17 agosto 2026  
-Stato: implementazione, gate automatici, confronto Windows 16:9 ed export
-Windows/Android completati. L'APK è installato e avviato sul Pixel 9 con
-contratto verde. Restano i gate percettivi gameplay 20:9/4:3, densità elevata e
-multitouch fisico prima del freeze per B18T.
+Stato: `COMPLETATO`. Implementazione, gate automatici, confronto Windows 16:9,
+export Windows/Android e contratto Pixel 9 sono verdi. I gate percettivi
+gameplay 20:9/4:3, densità elevata e multitouch fisico sono stati completati il
+25 agosto 2026 prima del freeze per B18V.
 
 ## Perimetro consegnato
 
@@ -101,9 +101,9 @@ safe area; la schermata è conservata in
 errori script o crash. Il controllo gameplay e il gesto reale a due dita non
 sono inferiti dall'avvio ADB e restano manuali.
 
-## Gate manuali residui
+## Gate manuali chiusi il 25 agosto 2026
 
-1. Verificare sul Pixel 9 il gameplay 20:9 e su output reale 4:3: HUD, Boss UI,
+1. Verificato sul Pixel 9 il gameplay 20:9 e su output reale 4:3: HUD, Boss UI,
    level-up, pausa e terminali non devono sovrapporsi. Selezione e rettangoli sono
    già coperti, ma la qualità percettiva richiede il controllo in run.
 2. Sul Pixel 9, mantenere il joystick con un dito e attivare ripetutamente con il
@@ -113,8 +113,8 @@ sono inferiti dall'avvio ADB e restano manuali.
    telegraph e proiettili ostili restino distinguibili sopra burst e VFX alleati.
 4. Provare una run Windows interattiva a densità elevata e controllare che il
    polish non introduca stutter o oscuri il mix audio.
-5. Chiudere il gate percettivo audio B18 già elencato in
+5. Chiuso il gate percettivo audio B18 già elencato in
    [`b18-verification.md`](./b18-verification.md).
 
 Android 12/API 31, Android 16/API 36, controller fisico, profiling e soak restano
-nel perimetro B18T dopo il freeze della presentazione.
+nel perimetro B18V dopo il freeze della presentazione.

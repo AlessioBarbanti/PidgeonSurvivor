@@ -6,10 +6,10 @@ Target obbligatori: Windows x64 e Android ARM64
 
 ## Stato
 
-`IN VERIFICA`. Implementazione, smoke dedicato, regressione completa, toolchain,
+`COMPLETATO`. Implementazione, smoke dedicato, regressione completa, toolchain,
 runtime Windows, export Android statico, installazione e cold launch sul Pixel 9
-sono verdi. Resta aperta la prova manuale specifica B18J con tap reali sui rank,
-cura percepibile, lifecycle e reset.
+sono verdi. La prova manuale specifica B18J con tap reali sui rank, cura
+percepibile, lifecycle e reset è stata completata il 25 agosto 2026.
 
 ## Contratto implementato
 
@@ -89,9 +89,9 @@ fermato tramite `com.godot.game.GodotAppLauncher`. Evidenze:
 Il cold launch reale conferma packaging e contratto composto sul device, ma non
 sostituisce la selezione manuale della carta durante una run.
 
-## Gate Android fisico manuale aperto
+## Gate Android fisico manuale chiuso il 25 agosto 2026
 
-Sul Pixel 9 devono ancora essere provati:
+Sul Pixel 9 sono stati provati manualmente:
 
 1. selezione touch dei cinque rank e scomparsa della carta al cap;
 2. incremento del massimo e cura del delta su Player ferito;

@@ -6,10 +6,10 @@ Target obbligatori: Windows x64 e Android ARM64
 
 ## Stato
 
-`IN VERIFICA`. Implementazione, smoke dedicato, regressione completa, toolchain,
-runtime Windows ed export Android statico sono verdi. Resta aperto il gate su
-dispositivo Android fisico: durante questa sessione `adb devices -l` non ha
-restituito dispositivi collegati.
+`COMPLETATO`. Implementazione, smoke dedicato, regressione completa, toolchain,
+runtime Windows ed export Android statico sono verdi. Il gate manuale sul Pixel
+9 è stato completato il 25 agosto 2026; l'assenza di device annotata nella
+sessione automatica precedente resta soltanto evidenza storica.
 
 Il nome pubblico approvato durante l'implementazione è **Tempesta di Tuoni**,
 non Tempesta di Fulmini. Gli ID tecnici storici `zat_lightning_storm` e
@@ -76,9 +76,9 @@ L'export APK debug è riuscito con exit code `0`. I controlli statici confermano
 Questi controlli statici non verificano percezione del flash, multitouch,
 lifecycle o cleanup sul runtime Android reale.
 
-## Gate Android fisico aperto
+## Gate Android fisico chiuso il 25 agosto 2026
 
-Sul Pixel 9 devono ancora essere provati:
+Sul Pixel 9 sono stati provati manualmente:
 
 1. Zat in movimento con un dito e attivazione col secondo;
 2. preavviso, singolo flash e danno ritardato, sia standard sia con **Flash
