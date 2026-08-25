@@ -131,5 +131,14 @@ autowrap_mode = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 62)
 layout_mode = 2
+focus_neighbor_bottom = NodePath("../BackButton")
 theme_override_font_sizes/font_size = 20
 text = "GIOCA"
+
+[node name="BackButton" type="Button" parent="Center/SelectionPanel/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+focus_neighbor_top = NodePath("../ConfirmButton")
+theme_override_font_sizes/font_size = 18
+text = "INDIETRO"

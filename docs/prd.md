@@ -1,6 +1,8 @@
 # Documento di Requisiti di Progetto (PDR)
 
-**Nome progetto (provvisorio):** Friendship Survival: Arena Bullet Heaven  
+**Nome ufficiale:** Pidgeon Survivor
+
+**Sottotitolo ufficiale:** It's grilling time!
 **Genere:** Action 2D / Bullet Heaven / Arena Survival minimale  
 **Piattaforme:** Windows x64 e Android ARM64; Web browser come target secondario  
 **Engine:** Godot Engine 4.7.1 con GDScript
@@ -261,11 +263,23 @@ controparte Boss denominata `Evil <Nome>`. Il Player della vertical slice M4 è
 Magno; B17A rende selezionabili e giocabili tutti gli otto profili prima della
 run. Il primo incontro Boss continua a usare Evil Bea.
 
-La selezione resta in `BOOT`: nessun clock, spawn o input di gameplay avanza
-finché il giocatore non conferma un profilo. Il profilo scelto assegna ritratto,
-passiva e abilità; un restart rapido conserva la scelta, mentre l'azione
-“Cambia personaggio” da vittoria o sconfitta torna alla selezione dopo aver
-ripulito la run. Passive e upgrade si compongono senza mutare i dati base.
+Una welcome screen precede la selezione e non inizializza alcuna run. `GIOCA`
+apre il selettore, mentre le impostazioni restano raggiungibili sia da questa
+schermata sia dalla pausa; volume effetti, mute e Flash ridotti usano le stesse
+autorità persistenti nei due frontend. Back chiude prima le impostazioni e dal
+selettore riapre la welcome. La selezione resta in `BOOT`: nessun clock, spawn o
+input di gameplay avanza finché il giocatore non conferma un profilo. La
+presentazione iniziale usa un fondale pixel-art con otto archetipi fittizi che
+comunicano passive e abilità, più piccioni ai bordi e centro protetto senza UI
+incorporata. Il logo fornito dal proprietario e i pulsanti Godot ad alto
+contrasto restano elementi separati e responsive; entrando nelle impostazioni
+il logo scompare per non coprire i personaggi. Questo
+asset frontend resta distinto dallo sfondo arena B18S. Il profilo
+scelto assegna ritratto, passiva e abilità; un restart rapido conserva la scelta,
+mentre l'azione “Cambia personaggio” da vittoria, sconfitta o menu di pausa torna
+alla selezione dopo aver ripulito la run. Da una run attiva la scelta richiede
+conferma; annullarla mantiene la pausa e non riprende implicitamente. Passive e
+upgrade si compongono senza mutare i dati base.
 
 Baseline iniziali delle passive, tutte configurabili nei `.tres`:
 
@@ -329,8 +343,12 @@ nemici vicini.
 - indicatore radiale leggibile del cooldown residuo e feedback visivo/sonoro
   quando l'abilità torna disponibile.
 
-Il pulsante touch B18K coincide con l'icona dell'abilità equipaggiata e misura
-`64×64` unità logiche. Durante il cooldown una maschera radiale rappresenta la
+La baseline B18K del pulsante touch coincide con l'icona dell'abilità equipaggiata
+e misura `64×64` unità logiche. B18P rende configurabili e persistenti le
+dimensioni del controllo abilità e del joystick e adotta per l'abilità un default
+più grande della baseline corrente: icona e hit target crescono insieme, perché
+la configurazione attuale è difficile da premere. Durante il cooldown una
+maschera radiale rappresenta la
 frazione residua e mostra al centro i secondi interi arrotondati per eccesso;
 allo zero maschera e numero spariscono e un anello luminoso comunica che
 l'icona è nuovamente attivabile. Nome, label di stato, card e rettangolo del
@@ -379,19 +397,29 @@ istantanea del joystick quando vengono attivate.
 La presentazione B18B usa una fascia superiore compatta da `64` unità logiche,
 seguita da una linea XP da `8`; ritratto, livello e vita occupano il lato sinistro,
 il timer resta centrato e pausa usa un target touch da almeno `44` unità. Il
-pulsante abilità B18K misura `64×64` unità logiche. Il joystick B18L non usa più
+pulsante abilità B18K parte da `64×64` unità logiche e B18P ne sostituisce il
+default con una misura fisicamente più accessibile, regolabile nelle impostazioni.
+Il joystick B18L non usa più
 una zona fissa: il primo tocco valido nella safe area ne determina l'origine,
 che resta posseduta dallo stesso dito fino a rilascio o cancellazione. HUD,
 pulsante abilità, Boss UI e overlay non sono origini valide; un secondo dito
 resta libero di attivare l'abilità. Deadzone e raggio input restano quelli della
 baseline (`84`), mentre il disegno usa raggio `68` e sparisce al neutro. Il
+profilo B18P può scalare base, manopola, deadzone e raggio di trascinamento senza
+restringere l'acquisizione dinamica o bloccare il secondo dito. Il
 lock Android può esporre per pochi frame una finestra portrait anche se il gioco
 è bloccato in landscape: quel layout transitorio non modifica il playfield già
 stabile e non riclampa il Player mentre la run è sospesa. Dopo sblocco la run
 resta in pausa fino a `RIPRENDI` e conserva posizione, direzione e input neutro.
-Il pavimento è procedurale e irregolare, privo di griglia o bordo ciano regolari;
-flash, squash, hit spark, particelle di morte e impulso di prontezza sono
-esclusivamente presentazionali.
+Il playfield autorevole inizia sotto la fascia HUD e la linea XP: Player, pickup,
+spawn, Boss, telegraph e target non possono finire dietro vita o esperienza. Il
+pavimento B18S usa uno sfondo raster originale prodotto con ImageGen, responsive
+e a basso contrasto, privo di griglia, bordo ciano, testo, personaggi o falsi
+ostacoli; le variazioni procedurali restano un fallback presentazionale.
+Flash, squash, hit spark, particelle di morte e impulso di prontezza sono
+esclusivamente presentazionali. B18R allunga le animazioni one-shot e i burst
+troppo brevi per essere percepiti, ma non prolunga collisioni, danno, tick o
+cooldown e non lascia apparire attiva un'area già conclusa.
 
 **Audio:** gli eventi di combattimento, progressione, abilità, Boss e terminali
 usano cue brevi su un bus SFX polifonico. Il menu di pausa offre volume lineare e
@@ -413,6 +441,9 @@ non vengono fornite e approvate.
    parametriche e `Resource` in `res://data/abilities/` per le otto abilità;
    database definitivo di citazioni e potenziamenti, grafica, VFX e audio
    dedicati restano contenuti sostituibili.
+6. **Esperienza e presentazione di release:** welcome screen, cambio personaggio
+   dalla pausa, controlli touch scalabili, playfield separato dal HUD, timing
+   visivi più leggibili e sfondo ImageGen; hardening B18T prima del packaging.
 
 Le descrizioni narrative, i ruoli e le passive dei personaggi sono mantenuti in
 [`characters.md`](./characters.md); questo documento è la fonte dei contratti e

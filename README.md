@@ -1,4 +1,6 @@
-# Friendship Survival
+# Pidgeon Survivor
+
+*It's grilling time!*
 
 Prototipo 2D in Godot 4.7.1, organizzato a partire dal PRD in
 [`docs/prd.md`](docs/prd.md).

@@ -71,23 +71,23 @@ New-Item -ItemType Directory -Force exports\windows, exports\android | Out-Null
 
 godot_console --headless --path . `
   --export-debug "Windows Desktop" `
-  exports\windows\FriendshipSurvival.exe
+  exports\windows\PidgeonSurvivor.exe
 
 godot_console --headless --path . `
   --install-android-build-template `
   --export-debug "Android APK" `
-  exports\android\friendship-survival-debug.apk
+  exports\android\pidgeon-survivor-debug.apk
 
 godot_console --headless --path . `
   --export-debug "Android AAB (future)" `
-  exports\android\friendship-survival-debug.aab
+  exports\android\pidgeon-survivor-debug.aab
 ```
 
 Per lo smoke dell'eseguibile Windows esportato, separare le opzioni motore dagli
 argomenti letti da `OS.get_cmdline_user_args()` con `--`:
 
 ```powershell
-.\exports\windows\FriendshipSurvival.exe `
+.\exports\windows\PidgeonSurvivor.exe `
   --resolution 1280x720 -- `
   --smoke-test --run-seed=1
 ```
@@ -109,13 +109,14 @@ export. Se eseguito da solo, avvia l'editor headless senza completare il flusso.
 $buildTools = Join-Path $env:ANDROID_HOME 'build-tools\36.1.0'
 
 & "$buildTools\aapt2.exe" dump badging `
-  exports\android\friendship-survival-debug.apk
+  exports\android\pidgeon-survivor-debug.apk
 
 & "$buildTools\apksigner.bat" verify --verbose --print-certs `
-  exports\android\friendship-survival-debug.apk
+  exports\android\pidgeon-survivor-debug.apk
 ```
 
-Controllare package `com.ilgioco.friendshipsurvival`, API minima 31, target 36,
+Controllare package `com.ilgioco.pidgeonsurvivor`, nome applicazione
+`Pidgeon Survivor`, API minima 31, target 36,
 `arm64-v8a`, landscape e assenza di permessi inattesi.
 
 ### APK aggiornato ma processo di export ancora aperto
@@ -126,7 +127,7 @@ output. La sola presenza del file non prova il successo. Prima di interrompere
 il processo, verificare che dimensione e data non cambino fra due letture:
 
 ```powershell
-$apk = Resolve-Path exports\android\friendship-survival-debug.apk
+$apk = Resolve-Path exports\android\pidgeon-survivor-debug.apk
 $before = Get-Item -LiteralPath $apk
 Start-Sleep -Seconds 2
 $after = Get-Item -LiteralPath $apk
@@ -157,7 +158,7 @@ Con un dispositivo ARM64 collegato e autorizzato:
 
 ```powershell
 adb devices -l
-adb install -r exports\android\friendship-survival-debug.apk
+adb install -r exports\android\pidgeon-survivor-debug.apk
 ```
 
 ## Firma release e Google Play futuro

@@ -2,11 +2,17 @@ class_name PauseOverlay
 extends Control
 
 signal resume_requested()
+signal change_character_requested()
 signal audio_volume_changed(value: float)
 signal audio_mute_toggled(muted: bool)
 signal reduced_flashes_toggled(enabled: bool)
 
 @onready var _resume_button: Button = %ResumeButton
+@onready var _change_character_button: Button = %ChangeCharacterButton
+@onready var _pause_center: CenterContainer = %PauseCenter
+@onready var _confirmation_center: CenterContainer = %ConfirmationCenter
+@onready var _cancel_change_button: Button = %CancelChangeButton
+@onready var _confirm_change_button: Button = %ConfirmChangeButton
 @onready var _volume_slider: HSlider = %VolumeSlider
 @onready var _volume_value_label: Label = %VolumeValueLabel
 @onready var _mute_check_button: CheckButton = %MuteCheckButton
@@ -20,6 +26,9 @@ var _syncing_accessibility_controls := false
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_resume_button.pressed.connect(_on_resume_button_pressed)
+	_change_character_button.pressed.connect(_on_change_character_button_pressed)
+	_cancel_change_button.pressed.connect(_on_cancel_change_button_pressed)
+	_confirm_change_button.pressed.connect(_on_confirm_change_button_pressed)
 	_volume_slider.value_changed.connect(_on_volume_slider_value_changed)
 	_mute_check_button.toggled.connect(_on_mute_check_button_toggled)
 	_reduced_flashes_check_button.toggled.connect(_on_reduced_flashes_toggled)
@@ -27,10 +36,21 @@ func _ready() -> void:
 	hide_pause()
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	if (
+		event.is_echo()
+		or not is_change_confirmation_visible()
+		or not event.is_action_pressed(&"ui_cancel")
+	):
+		return
+	get_viewport().set_input_as_handled()
+	_cancel_change_character()
+
+
 func show_pause() -> void:
 	_accepting_resume = true
 	visible = true
-	_resume_button.disabled = false
+	_show_pause_controls()
 	_resume_button.call_deferred("grab_focus")
 
 
@@ -39,6 +59,13 @@ func hide_pause() -> void:
 	visible = false
 	if is_instance_valid(_resume_button):
 		_resume_button.disabled = true
+	if is_instance_valid(_change_character_button):
+		_change_character_button.disabled = true
+	if is_instance_valid(_pause_center):
+		_pause_center.visible = true
+	if is_instance_valid(_confirmation_center):
+		_confirmation_center.visible = false
+	_set_confirmation_buttons_disabled(true)
 
 
 func is_accepting_resume() -> bool:
@@ -47,6 +74,33 @@ func is_accepting_resume() -> bool:
 
 func get_resume_button() -> Button:
 	return _resume_button if is_instance_valid(_resume_button) else null
+
+
+func get_change_character_button() -> Button:
+	return _change_character_button if is_instance_valid(_change_character_button) else null
+
+
+func get_cancel_change_button() -> Button:
+	return _cancel_change_button if is_instance_valid(_cancel_change_button) else null
+
+
+func get_confirm_change_button() -> Button:
+	return _confirm_change_button if is_instance_valid(_confirm_change_button) else null
+
+
+func is_change_confirmation_visible() -> bool:
+	return (
+		is_accepting_resume()
+		and is_instance_valid(_confirmation_center)
+		and _confirmation_center.visible
+	)
+
+
+func handle_back_requested() -> bool:
+	if not is_change_confirmation_visible():
+		return false
+	_cancel_change_character()
+	return true
 
 
 func set_audio_settings(volume: float, muted: bool) -> void:
@@ -96,9 +150,54 @@ func get_reduced_flashes_check_button() -> CheckButton:
 
 
 func _on_resume_button_pressed() -> void:
-	if not is_accepting_resume():
+	if not is_accepting_resume() or is_change_confirmation_visible():
 		return
 	resume_requested.emit()
+
+
+func _on_change_character_button_pressed() -> void:
+	if not is_accepting_resume() or is_change_confirmation_visible():
+		return
+	_pause_center.visible = false
+	_confirmation_center.visible = true
+	_resume_button.disabled = true
+	_change_character_button.disabled = true
+	_set_confirmation_buttons_disabled(false)
+	_cancel_change_button.call_deferred("grab_focus")
+
+
+func _on_cancel_change_button_pressed() -> void:
+	if not is_change_confirmation_visible():
+		return
+	_cancel_change_character()
+
+
+func _on_confirm_change_button_pressed() -> void:
+	if not is_change_confirmation_visible() or _confirm_change_button.disabled:
+		return
+	_accepting_resume = false
+	_set_confirmation_buttons_disabled(true)
+	change_character_requested.emit()
+
+
+func _cancel_change_character() -> void:
+	_show_pause_controls()
+	_change_character_button.call_deferred("grab_focus")
+
+
+func _show_pause_controls() -> void:
+	_pause_center.visible = true
+	_confirmation_center.visible = false
+	_resume_button.disabled = false
+	_change_character_button.disabled = false
+	_set_confirmation_buttons_disabled(true)
+
+
+func _set_confirmation_buttons_disabled(disabled: bool) -> void:
+	if is_instance_valid(_cancel_change_button):
+		_cancel_change_button.disabled = disabled
+	if is_instance_valid(_confirm_change_button):
+		_confirm_change_button.disabled = disabled
 
 
 func _on_volume_slider_value_changed(value: float) -> void:

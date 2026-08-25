@@ -42,6 +42,7 @@ const SETUP_VALIDATOR = preload("res://scripts/app/setup_validator.gd")
 @onready var _hud: GameHud = %HUD
 @onready var _boss_ui: BossUI = %BossUI
 @onready var _upgrade_overlay: UpgradeOverlay = %UpgradeOverlay
+@onready var _welcome_screen: WelcomeScreen = %WelcomeScreen
 @onready var _character_select_overlay: CharacterSelectOverlay = %CharacterSelectOverlay
 @onready var _pause_overlay: PauseOverlay = %PauseOverlay
 @onready var _end_screen: EndScreen = %EndScreen
@@ -62,12 +63,19 @@ func _ready() -> void:
 	_hud.pause_requested.connect(_on_pause_requested)
 	_end_screen.restart_requested.connect(_on_restart_requested)
 	_end_screen.change_character_requested.connect(_on_change_character_requested)
+	_pause_overlay.change_character_requested.connect(_on_change_character_requested)
+	_welcome_screen.play_requested.connect(_on_welcome_play_requested)
+	_welcome_screen.audio_volume_changed.connect(_on_welcome_audio_volume_changed)
+	_welcome_screen.audio_mute_toggled.connect(_on_welcome_audio_mute_toggled)
+	_welcome_screen.reduced_flashes_toggled.connect(_on_welcome_reduced_flashes_toggled)
 	_character_select_overlay.friend_confirmed.connect(_on_friend_confirmed)
+	_character_select_overlay.back_requested.connect(_on_character_selection_back_requested)
 	_platform_lifecycle.configure(
 		_run_controller,
 		_input_router,
 		_pause_overlay
 	)
+	_platform_lifecycle.set_boot_back_handler(_on_boot_back_requested)
 	_visual_accessibility_settings.configure(_pause_overlay)
 
 	_arena_layout.refresh_layout()
@@ -170,13 +178,24 @@ func _ready() -> void:
 		_character_select_overlay,
 		_pause_overlay
 	)
+	_game_audio.settings_changed.connect(_welcome_screen.set_audio_settings)
+	_visual_accessibility_settings.settings_changed.connect(
+		_welcome_screen.set_reduced_flashes
+	)
+	_welcome_screen.set_audio_settings(
+		_game_audio.get_effects_volume(),
+		_game_audio.is_muted()
+	)
+	_welcome_screen.set_reduced_flashes(
+		_visual_accessibility_settings.is_reduced_flashes_enabled()
+	)
 	_apply_layout()
 
 	var success := SETUP_VALIDATOR.print_result() and _validate_current_contract()
 	if _should_auto_start_default_character():
 		_start_selected_run(_resolve_run_seed())
 	else:
-		_show_character_selection()
+		_show_welcome_screen()
 	print(
 		"B17A_READY os=%s viewport=%s window=%s display_safe=%s playfield=%s safe_area=%s friend=%s seed=%d"
 		% [
@@ -379,6 +398,10 @@ func get_character_select_overlay() -> CharacterSelectOverlay:
 	return _character_select_overlay
 
 
+func get_welcome_screen() -> WelcomeScreen:
+	return _welcome_screen
+
+
 func get_boss_encounter() -> BossEncounter:
 	return _boss_encounter
 
@@ -475,7 +498,7 @@ func get_platform_lifecycle() -> PlatformLifecycle:
 	return _platform_lifecycle
 
 
-func get_pause_overlay() -> Control:
+func get_pause_overlay() -> PauseOverlay:
 	return _pause_overlay
 
 
@@ -527,6 +550,14 @@ func _resolve_run_seed() -> int:
 
 
 func _should_auto_start_default_character() -> bool:
+	if (
+		OS.get_cmdline_user_args().has("--show-welcome")
+		or bool(ProjectSettings.get_setting(
+			"application/run/b18o_force_welcome_for_test",
+			false
+		))
+	):
+		return false
 	return (
 		DisplayServer.get_name() == "headless"
 		or OS.get_cmdline_user_args().has("--smoke-test")
@@ -560,6 +591,7 @@ func _start_selected_run(seed_value: int) -> bool:
 	if not _run_controller.start_run(seed_value):
 		return false
 	_character_select_overlay.hide_selection()
+	_welcome_screen.hide_welcome()
 	_hud.show()
 	_touch_joystick.show()
 	_player.global_position = _arena_layout.get_playfield_center()
@@ -572,10 +604,24 @@ func _show_character_selection() -> void:
 	_player.clear_movement_input()
 	_hud.hide()
 	_touch_joystick.hide()
+	_welcome_screen.hide_welcome()
 	var current_friend := _player.get_friend_definition()
 	_character_select_overlay.show_selection(
 		current_friend.id if current_friend != null else &"magno"
 	)
+	print("B18O_CHARACTER_SELECT_SHOWN")
+
+
+func _show_welcome_screen() -> void:
+	if _run_controller.get_state() != RunController.RunState.BOOT:
+		return
+	_input_router.suspend_input()
+	_player.clear_movement_input()
+	_hud.hide()
+	_touch_joystick.hide()
+	_character_select_overlay.hide_selection()
+	_welcome_screen.show_welcome()
+	print("B18O_WELCOME_SHOWN")
 
 
 func _validate_current_contract() -> bool:
@@ -734,6 +780,28 @@ func _validate_current_contract() -> bool:
 			failures.append("PauseOverlay B18 privo del controllo mute.")
 		if _pause_overlay.get_reduced_flashes_check_button() == null:
 			failures.append("PauseOverlay B18E privo dell'opzione Flash ridotti.")
+		if _pause_overlay.get_change_character_button() == null:
+			failures.append("PauseOverlay B18N privo di Cambia personaggio.")
+		if (
+			_pause_overlay.get_cancel_change_button() == null
+			or _pause_overlay.get_confirm_change_button() == null
+		):
+			failures.append("PauseOverlay B18N privo della conferma di abbandono run.")
+	if _welcome_screen == null:
+		failures.append("WelcomeScreen B18O non presente.")
+	else:
+		if _welcome_screen.get_play_button() == null:
+			failures.append("WelcomeScreen B18O priva di GIOCA.")
+		if _welcome_screen.get_settings_button() == null:
+			failures.append("WelcomeScreen B18O priva di IMPOSTAZIONI.")
+		if (
+			_welcome_screen.get_volume_slider() == null
+			or _welcome_screen.get_mute_check_button() == null
+			or _welcome_screen.get_reduced_flashes_check_button() == null
+		):
+			failures.append("WelcomeScreen B18O priva delle impostazioni correnti.")
+	if _character_select_overlay.get_back_button() == null:
+		failures.append("Il selettore B18O deve esporre INDIETRO.")
 	if _visual_accessibility_settings == null:
 		failures.append("VisualAccessibilitySettings B18E non presente.")
 	elif (
@@ -1117,11 +1185,13 @@ func _validate_current_contract() -> bool:
 		print("B18K_CONTRACT_OK")
 		print("B18L_CONTRACT_OK")
 		print("B18M_CONTRACT_OK")
+		print("B18N_CONTRACT_OK")
+		print("B18O_CONTRACT_OK")
 		return true
 
 	for failure in failures:
 		push_error(failure)
-	printerr("B18M_CONTRACT_FAIL")
+	printerr("B18O_CONTRACT_FAIL")
 	return false
 
 
@@ -1165,7 +1235,10 @@ func _on_restart_requested() -> void:
 
 
 func _on_change_character_requested() -> void:
-	if not _run_controller.is_terminal():
+	if (
+		not _run_controller.is_terminal()
+		and _run_controller.get_state() != RunController.RunState.MANUAL_PAUSE
+	):
 		return
 	_input_router.suspend_input()
 	_player.clear_movement_input()
@@ -1180,6 +1253,41 @@ func _on_friend_confirmed(friend_id: StringName) -> void:
 		return
 	if not start_selected_run():
 		_character_select_overlay.show_selection(friend_id)
+	else:
+		print("B18O_RUN_STARTED friend=%s" % friend_id)
+
+
+func _on_welcome_play_requested() -> void:
+	if _run_controller.get_state() != RunController.RunState.BOOT:
+		return
+	_game_audio.play_cue(GameAudio.UI_CONFIRM, -3.0)
+	_show_character_selection()
+
+
+func _on_character_selection_back_requested() -> void:
+	if _run_controller.get_state() == RunController.RunState.BOOT:
+		_show_welcome_screen()
+
+
+func _on_boot_back_requested() -> bool:
+	if _character_select_overlay.visible:
+		_show_welcome_screen()
+		return true
+	if _welcome_screen.visible:
+		return _welcome_screen.handle_back_requested()
+	return false
+
+
+func _on_welcome_audio_volume_changed(value: float) -> void:
+	_game_audio.set_effects_volume(value)
+
+
+func _on_welcome_audio_mute_toggled(muted: bool) -> void:
+	_game_audio.set_muted(muted)
+
+
+func _on_welcome_reduced_flashes_toggled(enabled: bool) -> void:
+	_visual_accessibility_settings.set_reduced_flashes(enabled)
 
 
 func _on_pause_requested() -> void:

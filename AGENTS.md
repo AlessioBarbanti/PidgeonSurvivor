@@ -16,8 +16,8 @@ godot --editor --path .
 godot_console --headless --path . --script tests/integration/_input_subsystem_smoke.gd
 godot_console --headless --path . --resolution 1280x720 --script tests/integration/_movement_slice_smoke.gd
 godot_console --headless --path . --script tests/integration/_enemy_spawner_smoke.gd
-godot_console --headless --path . --export-debug "Windows Desktop" exports/windows/FriendshipSurvival.exe
-godot_console --headless --path . --export-debug "Android APK" exports/android/friendship-survival-debug.apk
+godot_console --headless --path . --export-debug "Windows Desktop" exports/windows/PidgeonSurvivor.exe
+godot_console --headless --path . --export-debug "Android APK" exports/android/pidgeon-survivor-debug.apk
 ```
 
 The verification script checks Godot, JDK 17, Android SDK/NDK, templates, import, and the main-scene smoke test. See `docs/setup.md` before exporting Android.

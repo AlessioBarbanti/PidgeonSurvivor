@@ -61,6 +61,24 @@ Passiva — Sorriso Contagioso: Riduce la salute massima dei nemici (concetto: -
 Attiva — Reggeton time!: Genera un clone che balla reggaeton e devia l'aggro dei nemici.
 Boss: Evil Marghe.
 
+## Direzione visuale del cast
+
+Questi archetipi originali sono la direzione presentazionale approvata per il
+fondale della welcome B18O. Non rappresentano persone reali e traducono passive
+e abilità in silhouette immediatamente riconoscibili; non modificano i contratti
+gameplay dei profili.
+
+| Personaggio | Descrizione visuale |
+|---|---|
+| Magno | Energumeno tellurico con richiami bovini, posa pesante e onda d'urto che crepa il terreno. |
+| Bea | Pattinatrice agile senza casco, con capelli scuri lunghi e ricci e un capo sportivo viola durante un Powerslide basso, accompagnato da una breve scia di fuoco dietro i roller. |
+| Zat | Infermiera elettrica con taglio a caschetto e divisa bianco-ciano, simbolo medico generico a cuore, luce curativa e fulmine giallo-ciano. |
+| Alea | Ballerina classica nel pieno di una Gran Piroetta, circondata da un nastro circolare e un richiamo d'aquila. |
+| Aleo | Muratore robusto con casco, cazzuola, secchio e una piccola colata di cemento ai piedi. |
+| Lollo | Cosplayer iperattivo dai capelli scuri, con un costume originale da sopravvissuto retrofuturista post-apocalittico: tuta blu, dettagli gialli e accessori da wasteland senza marchi. |
+| Migi | Donna con occhiali e capelli neri, calma e concentrata dentro uno scudo ciano a guscio di tartaruga e onde rallentanti; non è vincolata a un archetipo monastico. |
+| Marghe | Ballerina reggaeton dalla corporatura morbida, con capelli neri molto lunghi, accenti magenta-oro e un clone d'ombra che replica la posa come VFX. |
+
 ---
 
 Note:

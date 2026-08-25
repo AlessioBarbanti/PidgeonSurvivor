@@ -97,4 +97,4 @@ control sotto `exports/screenshots/`.
    proiettili ostili restino sempre distinguibili a 16:9, 20:9 e 4:3.
 
 Il test fisico esteso Android 12/API 31, Android 16/API 36 e controller Windows
-resta il gate pianificato di B19.
+resta il gate pianificato di B18T.

@@ -1,8 +1,8 @@
-# Friendship Survivors — Documento guida di sviluppo
+# Pidgeon Survivor — Documento guida di sviluppo
 
 ## 1. Scopo del documento
 
-Questo documento raccoglie le principali **logiche di gioco e regole di business** di Friendship Survivors.
+Questo documento raccoglie le principali **logiche di gioco e regole di business** di Pidgeon Survivor.
 
 Non rappresenta ancora un Game Design Document definitivo. Il progetto si trova in una fase embrionale e diversi sistemi devono ancora essere progettati, testati e bilanciati.
 
@@ -21,7 +21,7 @@ Quando una meccanica non è ancora stata definita, il documento deve evitarne pe
 
 # 2. Concept generale
 
-**Friendship Survivors** è un action roguelite a orde nel quale il giocatore controlla uno dei membri di un gruppo di amici, trasformato in un personaggio giocabile.
+**Pidgeon Survivor** è un action roguelite a orde nel quale il giocatore controlla uno dei membri di un gruppo di amici, trasformato in un personaggio giocabile.
 
 Ogni partita consiste in una successione di **ondate di nemici**.
 
@@ -753,7 +753,7 @@ Se questo loop risulta divertente, gli altri sistemi possono essere costruiti pr
 
 # 28. Identità del progetto
 
-Friendship Survivors deve mantenere come elemento centrale il fatto che i personaggi siano versioni reinterpretate ed esagerate di persone reali appartenenti allo stesso gruppo di amici.
+Pidgeon Survivor deve mantenere come elemento centrale il fatto che i personaggi siano versioni reinterpretate ed esagerate di persone reali appartenenti allo stesso gruppo di amici.
 
 Le meccaniche possono quindi nascere da:
 
@@ -769,4 +769,4 @@ L'obiettivo non è solamente creare personaggi differenti dal punto di vista mec
 
 Ogni personaggio dovrebbe essere riconoscibile dal gruppo anche semplicemente osservandone **il modo in cui gioca**.
 
-Questa relazione tra personalità reale e gameplay rappresenta una delle principali identità di Friendship Survivors.
+Questa relazione tra personalità reale e gameplay rappresenta una delle principali identità di Pidgeon Survivor.

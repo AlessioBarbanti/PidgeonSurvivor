@@ -96,7 +96,7 @@ L'export debug Android termina con codice `0` e produce:
 
 `adb devices -l` non ha rilevato device collegati, quindi installazione e avvio
 fisico non sono stati ripetuti in questa sessione. B17 cambia dati e asset P1,
-non input o gameplay P0; il gate fisico completo resta pianificato in B19.
+non input o gameplay P0; il gate fisico completo resta pianificato in B18T.
 
 ## Ambito rimandato
 

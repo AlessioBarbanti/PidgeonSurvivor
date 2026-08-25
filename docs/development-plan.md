@@ -1,9 +1,17 @@
-# Piano di sviluppo — Friendship Survival: Arena Bullet Heaven
+# Piano di sviluppo — Pidgeon Survivor
 
 Fonte: [`prd.md`](./prd.md)  
 Decisioni: [`decision-log.md`](./decision-log.md)  
-Stato: il ciclo operativo corrente è B18C–B18M. B18C, B18D, B18F, B18H, B18I, B18K e B18L sono completati con tutti i gate pertinenti automatici, Windows e Pixel 9 chiusi. B18E, B18G e B18J sono in verifica con implementazione, regressioni, Windows ed export Android statico chiusi, ma attendono il rispettivo gate Pixel 9. Il refresh ImageGen B18M ha chiuso automatici, Windows e APK statico, ma riapre il gate percettivo Pixel 9 sulle nuove icone e animazioni. B19 resta bloccato fino al freeze dell'intero ciclo e alla chiusura dei gate Windows/Android pertinenti
+Stato: il ciclo operativo corrente è B18C–B18T. B18C, B18D, B18F, B18H, B18I, B18K, B18L, B18N e B18O sono completati con tutti i gate pertinenti automatici, Windows e Pixel 9 chiusi. B18E, B18G e B18J sono in verifica con implementazione, regressioni, Windows ed export Android statico chiusi, ma attendono il rispettivo gate Pixel 9. Il refresh ImageGen B18M ha chiuso automatici, Windows e APK statico, ma riapre il gate percettivo Pixel 9 sulle nuove icone e animazioni. B18P–B18S proseguono la progressione di accessibilità e presentazione; B18T assorbe hardening e performance prima del packaging B20
 Obiettivo: trasformare il concept in un MVP completo, verificabile su Windows e Android; Web resta un target secondario
+
+Identità pubblica confermata il 24 agosto 2026: `Pidgeon Survivor`, con il
+sottotitolo esatto `It's grilling time!`.
+Icona applicazione confermata il 25 agosto 2026: master ImageGen senza testo
+`assets/art/branding/pidgeon_survivor_app_icon.png`, usato come icona progetto,
+Windows e Android classica. Un secondo output ImageGen trasparente e centrato
+nella safe area è il foreground adattivo; il background notte è separato.
+L'icona tematica monocromatica Android resta opzionale per B20.
 
 Fonte di verità operativa: questo documento contiene roadmap, stato e ordine delle prossime attività. Eventuali note temporanee devono essere integrate qui e poi rimosse.
 
@@ -275,7 +283,7 @@ InputRouter.active_ability_requested
 
 Per `AbilityDefinition`, `UpgradeDefinition`, `EnemyDefinition`, `BossDefinition` e `SpawnProfile` sono preferibili `Resource` custom salvate come `.tres`: sono tipizzate, editabili nell'Inspector e versionabili. JSON resta utile solo se i contenuti devono essere gestiti fuori da Godot. In entrambi i casi, la logica degli effetti rimane in GDScript.
 
-La baseline condivisa usa Godot 4.7.1 Standard, GDScript e renderer Compatibility. Il preset Windows produce una build x64; il preset Android usa Gradle, package ID `com.ilgioco.friendshipsurvival`, `minSdk 31`, `targetSdk 36`, `compileSdk 36` e ABI release `arm64-v8a`. Produce APK di test/release e deve poter generare un AAB senza caricarlo su Google Play. JDK, Android SDK e firma vengono configurati in M0 senza salvare keystore o credenziali nel repository: [documentazione export Android](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_android.html). Godot gestisce touch tramite `InputEventScreenTouch` e `InputEventScreenDrag`, mentre l'InputMap resta il contratto per tastiera/gamepad: [documentazione input](https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html).
+La baseline condivisa usa Godot 4.7.1 Standard, GDScript e renderer Compatibility. Il preset Windows produce una build x64; il preset Android usa Gradle, package ID `com.ilgioco.pidgeonsurvivor`, `minSdk 31`, `targetSdk 36`, `compileSdk 36` e ABI release `arm64-v8a`. Produce APK di test/release e deve poter generare un AAB senza caricarlo su Google Play. JDK, Android SDK e firma vengono configurati in M0 senza salvare keystore o credenziali nel repository: [documentazione export Android](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_android.html). Godot gestisce touch tramite `InputEventScreenTouch` e `InputEventScreenDrag`, mentre l'InputMap resta il contratto per tastiera/gamepad: [documentazione input](https://docs.godotengine.org/en/stable/tutorials/inputs/input_examples.html).
 
 Android 12/API 31 è il minimo supportato, mentre Android 16/API 36 è il target di compilazione e comportamento. L'SDK Platform 36 e i Build Tools 36.x devono essere presenti nella toolchain: [setup Android 16](https://developer.android.com/about/versions/16/setup-sdk). Il valore API 36 prepara anche ai requisiti Google Play applicabili dal 31 agosto 2026, pur senza rendere lo store parte della prima release: [requisito ufficiale Google Play](https://developer.android.com/google/play/requirements/target-sdk).
 
@@ -312,10 +320,10 @@ Le stime sono in story point Fibonacci e servono per priorità e confronto, non 
 | M2 — Progressione e attiva | Drop, XP, HUD, livelli e prima abilità attiva | B07–B09A | 21 | `kill → pickup → level` affidabile; Onda d'Urto attivabile e leggibile su Windows/Android |
 | M3 — Carte | Catalogo, overlay touch e primi upgrade | B10–B12 | 18 | Loop completo fino a più scelte consecutive anche tramite tap |
 | M4 — Boss e run chiusa | Upgrade signature, Director, Boss e finali | B13–B16 | 24 | MVP completo, inclusa un'abilità attiva, dall'avvio a vittoria o sconfitta |
-| M5 — Release multipiattaforma | Roster giocabile, contenuti, audiovisivo, identità visiva, controlli, QA e packaging | B17, B17A, B18–B18M, B19–B20 | 113 | Otto personaggi selezionabili con passive e abilità proprie; ciclo B18C–B18M chiuso e build Windows/Android installabili da ambiente pulito |
+| M5 — Release multipiattaforma | Roster giocabile, contenuti, audiovisivo, identità visiva, controlli, QA e packaging | B17, B17A, B18–B18T, B20 | 139 | Otto personaggi selezionabili con passive e abilità proprie; ciclo B18C–B18T chiuso e build Windows/Android installabili da ambiente pulito |
 | M6 — Web opzionale | Export single-thread e pubblicazione itch.io | B21 | 3 | Build browser verificata senza bloccare la release nativa |
 
-Totali di pianificazione: 94 SP per l'MVP feature-complete fino a M4, 207 SP per la candidata Windows/Android con roster completo e ciclo B18C–B18M, più ulteriori 3 SP opzionali per Web/itch.io. Le stime delle nuove slice sono iniziali e vanno ricalibrate dopo i primi smoke e playtest sui valori ora congelati.
+Totali di pianificazione: 94 SP per l'MVP feature-complete fino a M4, 233 SP per la candidata Windows/Android con roster completo e ciclo B18C–B18T, più ulteriori 3 SP opzionali per Web/itch.io. Le stime delle nuove slice sono iniziali e vanno ricalibrate dopo i primi smoke e playtest sui valori ora congelati.
 
 Gate di prodotto:
 
@@ -323,7 +331,7 @@ Gate di prodotto:
 - dopo M2: playtest del loop XP e dell'Onda d'Urto con tastiera, controller e touch, inclusi cooldown e pausa;
 - dopo M3: playtest del loop XP/carte e controllo delle combinazioni con l'abilità attiva;
 - dopo M4: freeze del core loop; M5 integra il roster completo sul framework validato, con selezione pre-run, passive, altre sette abilità, correzioni, accessibilità e release work;
-- prima di B19: freeze dell'intero ciclo B18C–B18M, inclusi HUD e controlli touch definitivi, abilità corrette, rank, nemici, upgrade, asset e confinamento XP, così hardening e profiling misurano la presentazione destinata alla release.
+- prima di B18T: freeze dell'intero ciclo B18C–B18S, inclusi flusso welcome/selezione/pausa, HUD e controlli touch configurabili, playfield separato dal HUD, animazioni, sfondo, abilità, rank, nemici, upgrade, asset e confinamento XP, così hardening e profiling misurano la presentazione destinata alla release.
 
 ## 6. Backlog ordinato
 
@@ -332,7 +340,7 @@ Priorità: `P0` indispensabile per l'MVP, `P1` indispensabile per la prima pubbl
 | ID | Attività | Prio | SP | Dipende da | Criterio di accettazione sintetico |
 |---|---|---:|---:|---|---|
 | B01 | Chiudere decisioni e parametri di prodotto | P0 | 3 | — | Decisioni gameplay aperte chiuse; piattaforma registrata come API 31–36, ARM64, landscape, APK diretto e Play-ready |
-| B02 | Bootstrap, InputMap, lifecycle e preset export | P0 | 5 | B01 | `com.ilgioco.friendshipsurvival`: Gradle/API 36 genera APK ARM64 min API 31; Windows avviabile |
+| B02 | Bootstrap, InputMap, lifecycle e preset export | P0 | 5 | B01 | `com.ilgioco.pidgeonsurvivor`: Gradle/API 36 genera APK ARM64 min API 31; Windows avviabile |
 | B03 | Movimento Player, touch e limiti arena | P0 | 5 | B02 | Tastiera/controller/joystick touch, diagonale normalizzata, input azzerato su focus loss, Player confinato |
 | B04 | Nemico base, ArenaLayout e spawner | P0 | 5 | B02–B03 | Confini/spawn derivati dal rect dinamico, inseguimento, cap e stop fuori da `RUNNING` |
 | B05 | Targeting, arma, proiettile e danno | P0 | 5 | B03–B04 | Bersaglio vivo più vicino, nessun tiro senza target, una hit processata una volta |
@@ -364,8 +372,14 @@ Priorità: `P0` indispensabile per l'MVP, `P1` indispensabile per la prima pubbl
 | B18K | Pulsante abilità con icona e cooldown circolare | P1 | 3 | B09A, B17A, B18B | L'icona selezionata è il target touch; riempimento circolare e secondi residui comunicano il cooldown senza ridurre il target sotto 44–48 unità logiche |
 | B18L | Joystick dinamico | P1 | 5 | B03, B06A, B18B | Il primo tocco valido crea e possiede il joystick fino al rilascio; HUD e overlay sono esclusi e un secondo dito può attivare l'abilità |
 | B18M | Migliorie grafiche delle abilità | P1 | 8 | B17A, B18E–B18F, B18H, B18K | Le otto abilità usano icone e VFX originali coerenti, registrati nel manifest e compatibili con priorità visive e budget Android |
-| B19 | Hardening Windows/Android e performance | P0 | 8 | B16, B17A, B18–B18M | Android 12 minimo e Android 16 target, aspect ratio, touch, lifecycle, abilità e soak rispettano il budget sulla presentazione finale |
-| B20 | Packaging Windows e Android | P0 | 5 | B16, B19 | ZIP Windows e APK release firmato avviabili; AAB Gradle generabile senza upload Play |
+| B18N | Cambia personaggio dal menu pausa | P1 | 3 | B06A, B17A | La pausa offre `CAMBIA PERSONAGGIO`; dopo conferma ripulisce in modo atomico la run e torna alla selezione senza clock, input o stato residuo |
+| B18O | Welcome screen | P1 | 3 | B17A | All'avvio compare una schermata di benvenuto multipiattaforma prima della selezione; nessuna run viene inizializzata finché il giocatore non prosegue |
+| B18P | Dimensioni configurabili dei controlli touch | P1 | 5 | B18K–B18L, B18O | Dimensione dell'icona abilità e del joystick regolabili e persistenti; il nuovo default rende l'abilità più facile da premere senza rompere safe area o multitouch |
+| B18Q | Arena separata dal HUD vita/XP | P1 | 5 | B04, B09, B18B | Il playfield comincia sotto la fascia HUD e la linea XP; Player, pickup, Boss, spawn e target non entrano nell'area riservata all'interfaccia |
+| B18R | Durata e leggibilità di animazioni e VFX | P1 | 5 | B18C, B18M | Animazioni e feedback visivi restano percepibili più a lungo, senza alterare timing gameplay né mostrare aree attive oltre la loro durata reale |
+| B18S | Sfondo arena ImageGen | P1 | 5 | B18Q, B18R | Uno sfondo raster originale generato con ImageGen migliora l'arena senza griglia, falsi ostacoli o perdita di contrasto; prompt, trasformazioni, licenza e hash sono registrati |
+| B18T | Hardening Windows/Android e performance | P0 | 8 | B16, B17A, B18–B18S | Android 12 minimo e Android 16 target, aspect ratio, touch, lifecycle, abilità e soak rispettano il budget sulla presentazione finale |
+| B20 | Packaging Windows e Android | P0 | 5 | B16, B18T | ZIP Windows e APK release firmato avviabili con icona Pidgeon Survivor; AAB Gradle generabile senza upload Play e icona tematica Android opzionale decisa |
 
 Parallelizzazione sicura:
 
@@ -374,7 +388,8 @@ Parallelizzazione sicura:
 - dopo la stabilizzazione delle dimensioni UI e degli schemi dati, B17A procede per profilo completo (selezione + passiva + attiva) in piccoli lotti, mentre gli asset B18 restano sostituibili;
 - B18D consuma la direzione B18C senza riaprire `InputRouter`; B18F estende il tipo area senza cambiare le aree statiche; B18I riusa il clamp circolare di `ArenaLayout` senza cambiare spawn o magnete;
 - B18K e B18L possono procedere dopo i gate correnti con contratti touch separati ma una verifica multitouch comune; B18G e B18J condividono il framework level-up senza accoppiare i relativi dati; la produzione originale B18H e i VFX procedurali B18M possono avanzare in parallelo;
-- profiling, soak e matrice finale B19 non iniziano prima del freeze B18C–B18M e dei gate fisici combinati;
+- B18N–B18O consolidano il flusso welcome → selezione → run → pausa; B18P e B18Q stabilizzano controlli e playfield prima del passaggio percettivo B18R–B18S;
+- profiling, soak e matrice finale B18T non iniziano prima del freeze B18C–B18S e dei gate fisici combinati;
 - B13 va integrato un effetto alla volta, con test combinatori, non come blocco unico a fine milestone.
 
 ### B18B — Identità visiva e priorità al campo di gioco
@@ -420,14 +435,15 @@ Vincoli e gate di uscita:
 - hit, proiettili ostili e telegraph restano distinguibili durante Boss, abilità
   persistenti e densità elevata;
 - smoke, screenshot prima/dopo, export Windows/Android e log privi di
-  `SCRIPT ERROR` o `FATAL EXCEPTION` precedono il freeze visivo per B19.
+  `SCRIPT ERROR` o `FATAL EXCEPTION` precedono il freeze visivo per B18T.
 
-### Ciclo operativo B18C–B18M
+### Ciclo operativo B18C–B18T
 
-Questo è il ciclo da completare prima di B19. Gli stati hanno il seguente
+Questo è il ciclo progressivo da completare prima del packaging B20. Gli stati hanno il seguente
 significato:
 
 - `DA DEFINIRE`: mancano decisioni o asset che cambiano l'implementazione;
+- `BLOCCATO`: contratto definito, ma una dipendenza obbligatoria non è ancora chiusa;
 - `PRONTO`: requisiti sufficienti per iniziare;
 - `IN CORSO`: implementazione aperta nel worktree;
 - `IN VERIFICA`: codice e test automatici completati, gate manuali ancora aperti;
@@ -449,6 +465,13 @@ significato:
 | B18K | Pulsante abilità con icona e cooldown circolare | COMPLETATO | Gate chiusi; commit dedicato `81b47f6` |
 | B18L | Joystick dinamico | COMPLETATO | Gate chiusi, inclusa regressione lock/resume; commit dedicato `d6625d7` |
 | B18M | Migliorie grafiche delle abilità | IN VERIFICA | Refresh ImageGen: automatici, Windows e APK statico chiusi; controllo percettivo Pixel 9 aperto |
+| B18N | Cambia personaggio dal menu pausa | COMPLETATO | Gate automatici, Windows, APK statico e runtime Pixel 9 chiusi il 24 agosto 2026 |
+| B18O | Welcome screen | COMPLETATO | Gate automatici, Windows, APK statico e controllo percettivo 20:9 della variante finale sul Pixel 9 chiusi il 24 agosto 2026 |
+| B18P | Dimensioni configurabili dei controlli touch | PRONTO | Scala persistente, default più accessibile e invarianti multitouch definiti |
+| B18Q | Arena separata dal HUD vita/XP | PRONTO | Area riservata superiore e consumatori del playfield definiti |
+| B18R | Durata e leggibilità di animazioni e VFX | PRONTO | Timing presentazionali separati dal gameplay e gate percettivi definiti |
+| B18S | Sfondo arena ImageGen | PRONTO | Workflow generativo, tracciabilità e vincoli di leggibilità definiti |
+| B18T | Hardening Windows/Android e performance | BLOCCATO | Bloccato fino al freeze B18C–B18S e alla chiusura dei gate fisici combinati |
 
 #### B18C — Player animato e direzione persistente
 
@@ -734,7 +757,7 @@ Stato: `IN VERIFICA` dopo il refresh ImageGen.
   SHA-256 per ogni PNG.
 - [x] Budget Android per una singola attivazione: massimo `1` overlay fullscreen,
   `64` particelle vive, `1` emblema ImageGen e `2` materiali aggiuntivi per
-  famiglia; il profiling B19 può ridurre il budget senza modificare gameplay o
+  famiglia; il profiling B18T può ridurre il budget senza modificare gameplay o
   timing.
 - [x] Implementare le otto grammatiche con primitive `CanvasItem`: anelli e
   crepe, nastro e scintille, nube e onde, archi, pozza e bolle, confetti nella
@@ -754,10 +777,155 @@ Stato: `IN VERIFICA` dopo il refresh ImageGen.
 
 Dettagli ed evidenze: [`b18m-verification.md`](./b18m-verification.md).
 
+#### B18N — Cambia personaggio dal menu pausa
+
+Stato: `COMPLETATO`.
+
+- [x] Aggiungere `CAMBIA PERSONAGGIO` al solo menu di pausa manuale, con focus e
+  target touch coerenti con `RIPRENDI`; l'azione è disponibile con mouse,
+  tastiera, controller e touch.
+- [x] Chiedere conferma prima di abbandonare una run attiva. Back/cancel chiude
+  la conferma e lascia la run in pausa; non può provocare una ripresa implicita.
+- [x] Dopo la conferma, riusare lo stesso cleanup autorevole del cambio profilo
+  terminale e tornare al selettore in `BOOT`: nemici, Boss, proiettili, XP,
+  offerte, rank, cooldown, status, VFX, input e seed della run non sopravvivono.
+- [x] Smoke dedicato su pausa → annulla → riprendi e pausa → conferma →
+  selezione → nuova run; regressione completa, Windows export e Pixel 9 con log
+  privi di `SCRIPT ERROR`, `FATAL EXCEPTION` e touch bloccati.
+
+Dettagli ed evidenze: [`b18n-verification.md`](./b18n-verification.md).
+
+#### B18O — Welcome screen
+
+Stato: `COMPLETATO`.
+
+- [x] Mostrare all'avvio una welcome screen prima della selezione personaggio,
+  senza inizializzare clock, spawn, input gameplay o stato della run.
+- [x] Esporre almeno `GIOCA` e accesso alle impostazioni, con layout safe-area,
+  focus iniziale e navigazione tramite mouse, tastiera, controller, touch e Back.
+- [x] `GIOCA` apre il selettore; solo la conferma del personaggio crea la run.
+  Tornare indietro dal selettore riapre la welcome screen senza stato residuo.
+- [x] Smoke del flusso welcome → selezione → run e ritorno, matrice
+  16:9/20:9/4:3, export Windows/Android e cold launch reale su Pixel 9.
+- [x] Refresh visuale: reference pixel-art ripulita con ImageGen in un fondale
+  privo di UI raster e con gli otto archetipi fuori dal centro; logo fornito dal
+  proprietario e pulsanti arcade restano elementi distinti e responsive. Le
+  impostazioni nascondono il logo per non coprire il cast; prompt, origini, crop
+  e hash sono registrati senza anticipare B18S.
+- [x] Ripetere sul Pixel 9 il controllo percettivo 20:9 della variante finale:
+  Migi donna con occhiali e capelli neri, Marghe dai capelli neri molto lunghi e
+  corporatura morbida, Bea senza casco con capo viola e capelli lunghi ricci,
+  Lollo dai capelli scuri in costume retrofuturista e Zat con caschetto e divisa
+  bianco-ciano da infermiera.
+- [x] Verificare sul Pixel 9 la ricomposizione dalla reference e il logo finale:
+  welcome e impostazioni mantengono tutti gli otto volti fuori dai pannelli,
+  con centro leggibile e target interamente nella safe area.
+
+Dettagli ed evidenze: [`b18o-verification.md`](./b18o-verification.md).
+
+#### B18P — Dimensioni configurabili dei controlli touch
+
+Stato: `PRONTO`.
+
+- [ ] Aggiungere nelle impostazioni, raggiungibili da welcome screen e pausa,
+  due regolazioni indipendenti e persistenti per dimensione icona abilità e
+  joystick; valori non validi nel file utente vengono clampati a un intervallo
+  sicuro.
+- [ ] Aumentare il default dell'abilità rispetto alla baseline B18K `64×64` con
+  icona da `42`, facendo crescere insieme immagine e hit target. Il valore finale
+  viene congelato dopo il controllo fisico, perché l'attuale baseline è troppo
+  piccola e difficile da premere.
+- [ ] Per il joystick scalare coerentemente base, manopola, deadzone e raggio di
+  trascinamento; l'origine resta dinamica nell'intera safe area utile e la scala
+  non restringe l'acquisizione né intercetta il secondo dito.
+- [ ] Applicare le modifiche in anteprima e senza riavvio, senza sovrapporre HUD,
+  Boss UI, gesture edge o icona abilità agli estremi supportati.
+- [ ] Smoke di persistenza, clamp e geometria; matrice 16:9/20:9/4:3 e prova
+  Pixel 9 con joystick tenuto da un dito e attivazioni ripetute dell'abilità col
+  secondo per ogni scala supportata.
+
+#### B18Q — Arena separata dal HUD vita/XP
+
+Stato: `PRONTO`.
+
+- [ ] Fare derivare ad `ArenaLayout` il playfield dalla safe area meno una fascia
+  superiore riservata al HUD vita/timer/pausa e alla linea XP; nessun limite usa
+  coordinate fisse 1280×720.
+- [ ] Usare il nuovo rect autorevole per clamp di Player e drop XP, spawn,
+  despawn, ingressi, Boss, telegraph e target di attacchi: nessuna entità di
+  gameplay può finire dietro vita o XP.
+- [ ] Conservare l'invariante lock/resume B18L: layout portrait transitori non
+  riclappano il Player e il rect landscape stabile viene applicato prima della
+  ripresa esplicita.
+- [ ] Smoke dedicato su centro, lati, angoli, pickup e Boss; verifica visuale e
+  runtime a 16:9, 18:9, 20:9 e 4:3 su Windows e Android fisico.
+
+#### B18R — Durata e leggibilità di animazioni e VFX
+
+Stato: `PRONTO`.
+
+- [ ] Centralizzare i timing puramente presentazionali e allungare le animazioni
+  one-shot oggi difficili da percepire: burst abilità B18M, entrate/uscite,
+  reazioni, morte e impulso di prontezza. Walk cycle e animazioni continue
+  restano sincronizzati al relativo stato.
+- [ ] Portare i burst principali oltre la breve baseline B18M da `0,72 s` e
+  congelare i valori soltanto dopo confronto percettivo Windows/Pixel 9 in
+  movimento e con densità elevata; hit flash resta breve per non coprire il campo.
+- [ ] Separare durata visiva e regole gameplay: danno, tick, cooldown, raggio e
+  collisioni non cambiano. Un'area non può apparire attiva dopo la fine reale;
+  eventuali code usano dissolvenze chiaramente non interattive.
+- [ ] Pausa, level-up, Boss intro e terminali congelano o ripuliscono gli effetti
+  secondo il loro contratto; restart e cambio personaggio non lasciano tween,
+  timer o nodi residui.
+- [ ] Smoke sui timing e due run consecutive, confronto video/screenshot e gate
+  percettivo Windows/Pixel 9 prima del freeze.
+
+#### B18S — Sfondo arena ImageGen
+
+Stato: `PRONTO`.
+
+- [ ] Usare OpenAI ImageGen built-in per produrre varianti originali dello
+  sfondo raster dell'arena, coerenti con la pixel-art arcade caricaturale e prive
+  di testo, personaggi, oggetti interattivi, griglia debug, bordo ciano o falsi
+  ostacoli.
+- [ ] Progettare l'asset per crop/tile responsive a 16:9–20:9 e 4:3, con texture
+  a basso contrasto dietro il playfield; attori, pickup, telegraph e proiettili
+  ostili mantengono sempre la priorità visiva.
+- [ ] Salvare nel repository soltanto la variante scelta e gli eventuali
+  derivati runtime. Registrare nel manifest generatore, prompt finale, data,
+  autore, licenza del progetto, trasformazioni e SHA-256; non lasciare asset
+  consumati dal progetto nella sola cartella di output del generatore.
+- [ ] Preferire ImageGen anche per futuri nuovi asset raster quando è adatto al
+  risultato; continuare a usare primitive Godot o sorgenti native per UI,
+  geometrie deterministiche e grafica vettoriale già appartenente a un sistema.
+- [ ] Verifica prima/dopo su Windows e Pixel 9 a luminosità diverse, regressione
+  performance/import/export e conferma che lo sfondo non suggerisca collisioni
+  o zone percorribili diverse dal playfield B18Q.
+
+#### B18T — Hardening Windows/Android e performance
+
+Stato: `BLOCCATO` fino al freeze B18C–B18S.
+
+- [ ] Eseguire regressione completa, project smoke ed export puliti da ambiente
+  documentato; cercare nei log `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL` e
+  `CONTRACT_FAIL` senza affidarsi al solo exit code.
+- [ ] Chiudere la matrice Windows, Android 12/API 31 e Android 16/API 36 con
+  16:9, 18:9, 20:9, cutout e 4:3, inclusi welcome, selezione, pausa, controlli
+  scalati, lifecycle, abilità, Boss, vittoria, sconfitta e cambio personaggio.
+- [ ] Profilare densità massima, CPU/GPU, memoria, audio e VFX sulla
+  presentazione congelata; completare soak termico Android da 20 minuti e almeno
+  cinque restart/cambi profilo senza crescita o stato residuo.
+- [ ] Ridurre soltanto budget presentazionali configurabili quando necessario;
+  gameplay, timing autorevoli e contenuti approvati non cambiano durante
+  l'hardening senza una nuova decisione registrata.
+- [ ] Registrare evidenze fisiche distinte dai controlli APK statici; B20 può
+  iniziare solo dopo la chiusura di tutti i gate pertinenti.
+
 Gate comuni del ciclo:
 
 - smoke dedicati per direzione/animazione, Bea, Zat, Alea, rank, Grigliata
-  estiva, pulsante abilità e joystick dinamico;
+  estiva, pulsante abilità, joystick dinamico, flusso welcome/pausa, scale touch,
+  playfield riservato, timing visivi e sfondo;
 - nessun `SCRIPT ERROR` o `FATAL EXCEPTION`, anche con exit code `0`;
 - verifica Windows e Android, distinguendo sempre export statico da runtime;
 - su Android reale, movimento col joystick con un dito e attivazione
@@ -850,7 +1018,10 @@ Un'attività è finita solo quando:
 | Pausa globale blocca anche l'overlay | Media | Alta | `UpgradeOverlay` processato durante la pausa e test integrato già in M3 |
 | Boss e contenuti arrivano troppo tardi | Media | Alta | Boss framework in P0; placeholder e pattern grezzi prima degli asset finali |
 | Art/audio allargano lo scope | Alta | Media | Budget contenuti esplicito e feature freeze dopo M4 |
-| HUD compatto riduce usabilità touch | Media | Alta | Ingombro visivo ridotto senza restringere hit area; target da almeno `44–48` unità logiche e gate multitouch fisico prima di B19 |
+| HUD compatto riduce usabilità touch | Media | Alta | B18P ingrandisce il default e rende configurabili icona abilità e joystick senza restringere acquisizione o multitouch; gate fisico prima di B18T |
+| HUD e linea XP coprono l'arena attiva | Media | Alta | B18Q sottrae la fascia superiore dal rect autorevole di `ArenaLayout` e verifica tutti i consumatori a 16:9–20:9/4:3 |
+| Animazioni troppo brevi non comunicano l'azione | Media | Media | B18R centralizza e allunga i timing presentazionali, con confronto percettivo Windows/Pixel 9 senza alterare il gameplay |
+| Sfondo generato riduce leggibilità o suggerisce ostacoli falsi | Media | Alta | B18S impone texture a basso contrasto, assenza di elementi semantici, manifest completo e confronto prima/dopo sul campo reale |
 | Flash di Zat è fastidioso o poco accessibile | Media | Alta | Intensità mobile e modalità ridotta definite prima di B18E; verifica su device fisico e flash limitato nel tempo |
 | Sprite piccione o VFX originali non risultano leggibili sul campo | Media | Media | Silhouette e palette congelate, fixture base/speciale, priorità dei layer e confronto Windows/Android prima del freeze; asset esterni non necessari |
 | Citazioni o immagini non approvate | Bassa | Alta | Registro B17 obbligatorio, getter con fallback e citazioni/audio personali assenti finché non vengono forniti |
@@ -865,7 +1036,9 @@ Ordine operativo immediato:
 2. chiudere il gate Pixel 9 di B18E già implementato: multitouch, flash standard/ridotto, 20:9, lifecycle e cleanup reale;
 3. chiudere i gate Pixel 9 di B18G e B18J già implementati: tap reali sui rank, aumento HP `×1,15` con cura del delta, stacking, cap, lifecycle e reset della run;
 4. chiudere il nuovo gate percettivo Pixel 9 del refresh ImageGen B18M: otto icone HUD, otto burst, movimento e densità elevata a 20:9;
-5. eseguire il gate combinato B17A–B18M su Windows e Pixel 9, il gate percettivo B18 con Boss a `04:00`/`2400 HP` e la matrice 16:9/20:9/4:3; avviare B19 solo dopo il freeze documentato dell'intero ciclo.
+5. implementare progressivamente B18P–B18Q: scale touch persistenti con default abilità più grande e playfield separato dal HUD;
+6. completare il passaggio percettivo B18R–B18S: timing visivi più leggibili e nuovo sfondo raster prodotto con ImageGen, tracciato e verificato sul campo reale;
+7. eseguire B18T soltanto dopo il freeze B18C–B18S: gate combinato Windows/Android, Boss a `04:00`/`2400 HP`, matrice 16:9/20:9/4:3, profiling e soak; quindi procedere a B20.
 
 Il setup host e gli artefatti generati il 12 agosto 2026 sono registrati in
 [`m0-verification.md`](./m0-verification.md).
@@ -929,3 +1102,7 @@ Pulsante-icona, cooldown radiale, timer centrale e gate residuo Android B18K
 sono registrati in [`b18k-verification.md`](./b18k-verification.md).
 Joystick dinamico, ownership del primo dito e gate fisico condiviso B18K/B18L
 sono registrati in [`b18l-verification.md`](./b18l-verification.md).
+Cambio personaggio dalla pausa, conferma modale e cleanup atomico B18N sono
+registrati in [`b18n-verification.md`](./b18n-verification.md).
+Welcome, impostazioni iniziali, ritorno dal selettore e cold launch B18O sono
+registrati in [`b18o-verification.md`](./b18o-verification.md).

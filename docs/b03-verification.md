@@ -101,6 +101,6 @@ Il gate fisico ha verificato:
   coperti automaticamente, ma non l'hardware;
 - prova su Android 12/API 31, che resta il minimo supportato;
 - multitouch fisico con un dito sul joystick e uno su un futuro pulsante/overlay;
-- profiling e soak termico, pianificati in B19.
+- profiling e soak termico, pianificati in B18T.
 
 Gli artefatti e gli screenshot diagnostici sono locali e restano esclusi da Git.

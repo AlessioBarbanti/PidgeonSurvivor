@@ -2,6 +2,7 @@ class_name CharacterSelectOverlay
 extends Control
 
 signal friend_confirmed(friend_id: StringName)
+signal back_requested()
 
 @onready var _roster_grid: GridContainer = %RosterGrid
 @onready var _selection_panel: Control = %SelectionPanel
@@ -11,6 +12,7 @@ signal friend_confirmed(friend_id: StringName)
 @onready var _passive_label: Label = %PassiveLabel
 @onready var _ability_label: Label = %AbilityLabel
 @onready var _confirm_button: Button = %ConfirmButton
+@onready var _back_button: Button = %BackButton
 
 var _registry: FriendRegistry
 var _selected_definition: FriendDefinition
@@ -20,7 +22,19 @@ var _buttons_by_id: Dictionary = {}
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_confirm_button.pressed.connect(_on_confirm_pressed)
+	_back_button.pressed.connect(_on_back_pressed)
 	hide_selection()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if (
+		event.is_echo()
+		or not visible
+		or not event.is_action_pressed(&"ui_cancel")
+	):
+		return
+	get_viewport().set_input_as_handled()
+	_emit_back_requested()
 
 
 func configure(registry: FriendRegistry) -> bool:
@@ -36,6 +50,7 @@ func show_selection(default_friend_id: StringName = &"magno") -> void:
 		return
 	visible = true
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	_back_button.disabled = false
 	var definition := _registry.resolve_definition(default_friend_id)
 	if definition == null:
 		definition = _registry.get_definitions()[0]
@@ -50,6 +65,8 @@ func hide_selection() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if is_instance_valid(_confirm_button):
 		_confirm_button.disabled = true
+	if is_instance_valid(_back_button):
+		_back_button.disabled = true
 
 
 func get_selected_definition() -> FriendDefinition:
@@ -66,6 +83,10 @@ func get_roster_size() -> int:
 
 func get_confirm_button() -> Button:
 	return _confirm_button if is_instance_valid(_confirm_button) else null
+
+
+func get_back_button() -> Button:
+	return _back_button if is_instance_valid(_back_button) else null
 
 
 func get_selection_panel_rect() -> Rect2:
@@ -121,3 +142,15 @@ func _on_confirm_pressed() -> void:
 		return
 	_confirm_button.disabled = true
 	friend_confirmed.emit(_selected_definition.id)
+
+
+func _on_back_pressed() -> void:
+	_emit_back_requested()
+
+
+func _emit_back_requested() -> void:
+	if not visible or _back_button.disabled:
+		return
+	_back_button.disabled = true
+	_confirm_button.disabled = true
+	back_requested.emit()

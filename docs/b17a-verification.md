@@ -149,7 +149,7 @@ seguenti:
    movimento, almeno con Bea, Aleo/Migi e Lollo;
 3. controllare cooldown, pausa/ripresa esplicita, `RIPROVA` e
    `CAMBIA PERSONAGGIO` dopo un terminale;
-4. ripetere il controllo durante B19 su Android 12/API 31, Android 16/API 36 e
+4. ripetere il controllo durante B18T su Android 12/API 31, Android 16/API 36 e
    con controller Windows fisico.
 
 B18 resta responsabile della rifinitura di art, VFX e audio; gli sprite e le

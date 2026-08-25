@@ -86,8 +86,19 @@ if ($projectSettings -notmatch 'config/features=PackedStringArray\("4\.7"') {
 if ($projectSettings -notmatch 'textures/vram_compression/import_etc2_astc=true') {
     throw 'La compressione texture ETC2/ASTC richiesta da Android non è attiva.'
 }
-if ($projectSettings -notmatch 'config/icon="res://assets/art/icon\.svg"') {
+if ($projectSettings -notmatch 'config/icon="res://assets/art/branding/pidgeon_survivor_app_icon\.png"') {
     throw "L'icona progetto richiesta dall'export Android non è configurata."
+}
+$exportPresetsPath = Join-Path $repoRoot 'export_presets.cfg'
+$exportPresets = Get-Content -LiteralPath $exportPresetsPath -Raw
+if ($exportPresets -notmatch 'launcher_icons/main_192x192="res://assets/art/branding/pidgeon_survivor_app_icon\.png"') {
+    throw "La main icon Android Pidgeon Survivor non è configurata."
+}
+if ($exportPresets -notmatch 'launcher_icons/adaptive_foreground_432x432="res://assets/art/branding/pidgeon_survivor_adaptive_foreground\.png"') {
+    throw "Il foreground adattivo Android Pidgeon Survivor non è configurato."
+}
+if ($exportPresets -notmatch 'launcher_icons/adaptive_background_432x432="res://assets/art/branding/pidgeon_survivor_adaptive_background\.png"') {
+    throw "Il background adattivo Android Pidgeon Survivor non è configurato."
 }
 Write-Host '[OK] Impostazioni progetto Android'
 

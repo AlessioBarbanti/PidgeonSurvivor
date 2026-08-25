@@ -123,7 +123,7 @@ Il preset ARM64 non è stato alterato per aggirare il gate.
   simultanei, feedback hit leggibile e log privo di errori;
 - prova sul profilo minimo Android 12/API 31;
 - controller USB/Bluetooth reale su Windows;
-- soak e profiling della densità di proiettili, pianificati in B19.
+- soak e profiling della densità di proiettili, pianificati in B18T.
 
 Gli artefatti e le catture diagnostiche sono locali in directory ignorate e
 restano esclusi dal repository.

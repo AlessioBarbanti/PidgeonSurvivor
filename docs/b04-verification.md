@@ -108,6 +108,6 @@ restano esclusi da Git.
 
 - prova su Android 12/API 31, che resta il minimo supportato;
 - prova con un controller USB/Bluetooth reale su Windows;
-- soak termico di 20 minuti e profiling del cap, pianificati in B19;
+- soak termico di 20 minuti e profiling del cap, pianificati in B18T;
 - collisioni di combattimento: il nemico B04 è un inseguitore senza danno e B05
   aggiungerà targeting, arma, proiettile, hit e salute.

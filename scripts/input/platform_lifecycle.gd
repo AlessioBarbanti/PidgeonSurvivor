@@ -6,6 +6,7 @@ extends Node
 var _run_controller: RunController
 var _input_router: InputRouter
 var _pause_overlay: Control
+var _boot_back_handler := Callable()
 var _application_has_focus := true
 var _application_paused := false
 
@@ -67,13 +68,30 @@ func request_back() -> bool:
 		return false
 
 	match _run_controller.get_state():
+		RunController.RunState.BOOT:
+			_suspend_input()
+			return (
+				bool(_boot_back_handler.call())
+				if _boot_back_handler.is_valid()
+				else false
+			)
 		RunController.RunState.RUNNING:
 			return request_manual_pause()
 		RunController.RunState.MANUAL_PAUSE:
+			if (
+				is_instance_valid(_pause_overlay)
+				and _pause_overlay.has_method(&"handle_back_requested")
+				and bool(_pause_overlay.call(&"handle_back_requested"))
+			):
+				return true
 			return request_resume()
 		_:
 			_suspend_input()
 			return false
+
+
+func set_boot_back_handler(handler: Callable) -> void:
+	_boot_back_handler = handler
 
 
 func is_application_active() -> bool:

@@ -4,7 +4,7 @@ Data: 17 agosto 2026
 Stato: implementazione, gate automatici, confronto Windows 16:9 ed export
 Windows/Android completati. L'APK è installato e avviato sul Pixel 9 con
 contratto verde. Restano i gate percettivi gameplay 20:9/4:3, densità elevata e
-multitouch fisico prima del freeze per B19.
+multitouch fisico prima del freeze per B18T.
 
 ## Perimetro consegnato
 
@@ -117,4 +117,4 @@ sono inferiti dall'avvio ADB e restano manuali.
    [`b18-verification.md`](./b18-verification.md).
 
 Android 12/API 31, Android 16/API 36, controller fisico, profiling e soak restano
-nel perimetro B19 dopo il freeze della presentazione.
+nel perimetro B18T dopo il freeze della presentazione.

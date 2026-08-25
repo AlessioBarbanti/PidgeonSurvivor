@@ -40,7 +40,8 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.006, 0.01, 0.02, 0.78)
 
-[node name="Center" type="CenterContainer" parent="."]
+[node name="PauseCenter" type="CenterContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -49,50 +50,50 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="Panel" type="PanelContainer" parent="Center"]
+[node name="Panel" type="PanelContainer" parent="PauseCenter"]
 custom_minimum_size = Vector2(430, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_pause_panel")
 
-[node name="VBox" type="VBoxContainer" parent="Center/Panel"]
+[node name="VBox" type="VBoxContainer" parent="PauseCenter/Panel"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="TitleLabel" type="Label" parent="Center/Panel/VBox"]
+[node name="TitleLabel" type="Label" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.48, 0.88, 1, 1)
 theme_override_font_sizes/font_size = 38
 text = "IN PAUSA"
 horizontal_alignment = 1
 
-[node name="SummaryLabel" type="Label" parent="Center/Panel/VBox"]
+[node name="SummaryLabel" type="Label" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.86, 0.93, 1, 1)
 theme_override_font_sizes/font_size = 18
 text = "La partita riprende solo su tua conferma"
 horizontal_alignment = 1
 
-[node name="AudioSeparator" type="HSeparator" parent="Center/Panel/VBox"]
+[node name="AudioSeparator" type="HSeparator" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
 
-[node name="AudioTitle" type="Label" parent="Center/Panel/VBox"]
+[node name="AudioTitle" type="Label" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
 theme_override_font_sizes/font_size = 17
 text = "AUDIO"
 
-[node name="VolumeRow" type="HBoxContainer" parent="Center/Panel/VBox"]
+[node name="VolumeRow" type="HBoxContainer" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="VolumeCaption" type="Label" parent="Center/Panel/VBox/VolumeRow"]
+[node name="VolumeCaption" type="Label" parent="PauseCenter/Panel/VBox/VolumeRow"]
 custom_minimum_size = Vector2(142, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.86, 0.93, 1, 1)
 theme_override_font_sizes/font_size = 16
 text = "Volume effetti"
 
-[node name="VolumeSlider" type="HSlider" parent="Center/Panel/VBox/VolumeRow"]
+[node name="VolumeSlider" type="HSlider" parent="PauseCenter/Panel/VBox/VolumeRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(180, 44)
 layout_mode = 2
@@ -102,7 +103,7 @@ max_value = 1.0
 step = 0.05
 value = 0.8
 
-[node name="VolumeValueLabel" type="Label" parent="Center/Panel/VBox/VolumeRow"]
+[node name="VolumeValueLabel" type="Label" parent="PauseCenter/Panel/VBox/VolumeRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
@@ -111,34 +112,97 @@ theme_override_font_sizes/font_size = 16
 text = "80%"
 horizontal_alignment = 2
 
-[node name="MuteCheckButton" type="CheckButton" parent="Center/Panel/VBox"]
+[node name="MuteCheckButton" type="CheckButton" parent="PauseCenter/Panel/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
 text = "DISATTIVA SUONI"
 
-[node name="AccessibilitySeparator" type="HSeparator" parent="Center/Panel/VBox"]
+[node name="AccessibilitySeparator" type="HSeparator" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
 
-[node name="AccessibilityTitle" type="Label" parent="Center/Panel/VBox"]
+[node name="AccessibilityTitle" type="Label" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
 theme_override_font_sizes/font_size = 17
 text = "ACCESSIBILITÀ"
 
-[node name="ReducedFlashesCheckButton" type="CheckButton" parent="Center/Panel/VBox"]
+[node name="ReducedFlashesCheckButton" type="CheckButton" parent="PauseCenter/Panel/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
 text = "FLASH RIDOTTI"
 
-[node name="ResumeButton" type="Button" parent="Center/Panel/VBox"]
+[node name="ResumeButton" type="Button" parent="PauseCenter/Panel/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 focus_neighbor_top = NodePath("../ReducedFlashesCheckButton")
-focus_neighbor_bottom = NodePath(".")
+focus_neighbor_bottom = NodePath("../ChangeCharacterButton")
 theme_override_font_sizes/font_size = 20
 text = "RIPRENDI"
+
+[node name="ChangeCharacterButton" type="Button" parent="PauseCenter/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+focus_neighbor_top = NodePath("../ResumeButton")
+focus_neighbor_bottom = NodePath(".")
+theme_override_font_sizes/font_size = 20
+text = "CAMBIA PERSONAGGIO"
+
+[node name="ConfirmationCenter" type="CenterContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Panel" type="PanelContainer" parent="ConfirmationCenter"]
+custom_minimum_size = Vector2(430, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_pause_panel")
+
+[node name="VBox" type="VBoxContainer" parent="ConfirmationCenter/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TitleLabel" type="Label" parent="ConfirmationCenter/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
+theme_override_font_sizes/font_size = 30
+text = "CAMBIA PERSONAGGIO?"
+horizontal_alignment = 1
+
+[node name="SummaryLabel" type="Label" parent="ConfirmationCenter/Panel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.93, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "I progressi della run corrente saranno azzerati."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="CancelChangeButton" type="Button" parent="ConfirmationCenter/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+focus_neighbor_top = NodePath("../ConfirmChangeButton")
+focus_neighbor_bottom = NodePath("../ConfirmChangeButton")
+theme_override_font_sizes/font_size = 20
+text = "ANNULLA"
+
+[node name="ConfirmChangeButton" type="Button" parent="ConfirmationCenter/Panel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+focus_neighbor_top = NodePath("../CancelChangeButton")
+focus_neighbor_bottom = NodePath("../CancelChangeButton")
+theme_override_colors/font_color = Color(1, 0.82, 0.72, 1)
+theme_override_font_sizes/font_size = 20
+text = "CONFERMA"

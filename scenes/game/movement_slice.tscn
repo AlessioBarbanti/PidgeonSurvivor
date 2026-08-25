@@ -1,4 +1,4 @@
-[gd_scene load_steps=86 format=3]
+[gd_scene load_steps=87 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -85,6 +85,7 @@
 [ext_resource type="Resource" path="res://data/upgrades/ability_rank_migi_zen_slowdown.tres" id="84_rank_migi"]
 [ext_resource type="Resource" path="res://data/upgrades/ability_rank_marghe_shadow_deception.tres" id="85_rank_marghe"]
 [ext_resource type="Resource" path="res://data/upgrades/summer_grill.tres" id="86_summer_grill"]
+[ext_resource type="PackedScene" path="res://scenes/ui/welcome_screen.tscn" id="87_welcome_screen"]
 
 [node name="MovementSlice" type="Control"]
 layout_mode = 3
@@ -259,6 +260,9 @@ unique_name_in_owner = true
 debug_mode_in_editor = true
 
 [node name="UpgradeOverlay" parent="UI/SafeAreaRoot" instance=ExtResource("29_upgrade_overlay")]
+unique_name_in_owner = true
+
+[node name="WelcomeScreen" parent="UI/SafeAreaRoot" instance=ExtResource("87_welcome_screen")]
 unique_name_in_owner = true
 
 [node name="CharacterSelectOverlay" parent="UI/SafeAreaRoot" instance=ExtResource("60_character_select")]
