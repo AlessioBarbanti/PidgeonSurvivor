@@ -4,9 +4,7 @@ const MOVEMENT_SLICE_SCENE := preload("res://scenes/game/movement_slice.tscn")
 const SWIFT_STEPS := preload("res://data/upgrades/swift_steps.tres")
 const RAPID_FIRE := preload("res://data/upgrades/rapid_fire.tres")
 const WIDE_MAGNET := preload("res://data/upgrades/wide_magnet.tres")
-const FALLBACK_POWER := preload("res://data/upgrades/fallback_power.tres")
-const FALLBACK_HASTE := preload("res://data/upgrades/fallback_haste.tres")
-const FALLBACK_REACH := preload("res://data/upgrades/fallback_reach.tres")
+const MEAT_FORK_DAMAGE := preload("res://data/upgrades/meat_fork_damage.tres")
 const INITIAL_VIEWPORT_SIZE := Vector2i(1280, 720)
 const FLOAT_TOLERANCE := 0.001
 
@@ -75,9 +73,7 @@ func _validate_composed_upgrade_effects() -> void:
 		SWIFT_STEPS,
 		RAPID_FIRE,
 		WIDE_MAGNET,
-		FALLBACK_POWER,
-		FALLBACK_HASTE,
-		FALLBACK_REACH,
+		MEAT_FORK_DAMAGE,
 	]
 	_expect(catalog.rebuild_registry(), "La fixture B12 isolata deve avere un catalogo valido.")
 	service.reset_for_run(controller.get_seed())
@@ -163,12 +159,12 @@ func _validate_composed_upgrade_effects() -> void:
 	# Esaurite le primarie, i fallback restano distinti e applicano gli stessi
 	# effect_id. Potenza deve raggiungere anche i proiettili creati dopo la scelta.
 	_expect(
-		_grant_and_select(experience, service, &"fallback_power"),
+		_grant_and_select(experience, service, &"meat_fork_damage"),
 		"Il fallback Potenza deve essere selezionabile."
 	)
 	_expect_float_near(
 		weapon.get_effective_damage(),
-		base_damage * 1.05,
+		base_damage * 1.15,
 		"Potenza deve aumentare il danno effettivo senza mutare il Resource."
 	)
 	weapon._process(weapon.get_cooldown_remaining())
@@ -183,16 +179,16 @@ func _validate_composed_upgrade_effects() -> void:
 		)
 
 	_expect(
-		_grant_and_select(experience, service, &"fallback_reach"),
+		_grant_and_select(experience, service, &"wide_magnet"),
 		"Il fallback Portata deve essere selezionabile."
 	)
 	_expect_float_near(
 		player.get_pickup_radius(),
-		base_pickup_radius * expected_pickup_multiplier * 1.08,
+		base_pickup_radius * expected_pickup_multiplier * 1.15,
 		"Upgrade primario e fallback devono comporsi sullo stesso effetto."
 	)
 
-	var haste_rank_before_cap := service.get_rank(&"fallback_haste")
+	var haste_rank_before_cap := service.get_rank(&"rapid_fire")
 	var guard := 0
 	while (
 		registry.get_effective_multiplier(&"weapon_fire_rate_multiplier")
@@ -200,7 +196,7 @@ func _validate_composed_upgrade_effects() -> void:
 		and guard < 100
 	):
 		_expect(
-			_grant_and_select(experience, service, &"fallback_haste"),
+			_grant_and_select(experience, service, &"rapid_fire"),
 			"Il fallback Rapidita deve restare ripetibile fino al cap."
 		)
 		guard += 1
@@ -212,11 +208,11 @@ func _validate_composed_upgrade_effects() -> void:
 	)
 	var capped_fire_rate := weapon.get_effective_shots_per_second()
 	_expect(
-		_grant_and_select(experience, service, &"fallback_haste"),
+		_grant_and_select(experience, service, &"rapid_fire"),
 		"Un fallback ripetibile deve restare consumabile al cap."
 	)
 	_expect(
-		service.get_rank(&"fallback_haste") > haste_rank_before_cap,
+		service.get_rank(&"rapid_fire") > haste_rank_before_cap,
 		"I rank fallback devono restare tracciati oltre max_rank."
 	)
 	_expect_float_near(

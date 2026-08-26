@@ -31,8 +31,9 @@ La modalità built-in di OpenAI ImageGen ha prodotto un asset distinto per:
 Specifica condivisa: pixel-art arcade caricaturale, silhouette leggibile a
 `42 px`, composizione centrata, palette limitata, nessun testo, numero, cornice,
 card, marchio o watermark. Gli output built-in erano già PNG RGBA trasparenti;
-sono stati croppati sul bounding box alpha, ricentrati con circa `8%` di margine,
-ridotti Lanczos a `256×256` e ottimizzati. File finali:
+il 26 agosto 2026 il padding residuo è stato rimosso con un crop quadrato minimo
+sul bounding box alpha, senza deformare il soggetto, poi ricampionato Lanczos a
+`256×256` e ottimizzato. File finali:
 [`assets/art/icons/abilities/generated/`](../assets/art/icons/abilities/generated/).
 
 Prompt, origine, autore, licenza, trasformazioni e SHA-256 individuali sono nel

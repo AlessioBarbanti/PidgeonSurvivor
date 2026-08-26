@@ -20,6 +20,7 @@ var _pickup_parent: Node
 var _active_pickups: Array[ExperiencePickup] = []
 var _observed_enemy_ids: Dictionary = {}
 var _dropped_enemy_ids: Dictionary = {}
+var _experience_credit := 0.0
 var _invalid_scene_warning_emitted := false
 
 
@@ -72,6 +73,12 @@ func try_spawn_drop(enemy: BaseEnemy) -> ExperiencePickup:
 	var enemy_instance_id: int = enemy.get_instance_id()
 	if _dropped_enemy_ids.has(enemy_instance_id):
 		return null
+	var experience_amount := _consume_experience_reward(enemy)
+	# Anche una kill con credito frazionario e senza pickup visibile e' gia stata
+	# contabilizzata: un segnale died duplicato non puo anticipare il budget XP.
+	_dropped_enemy_ids[enemy_instance_id] = true
+	if experience_amount <= 0:
+		return null
 
 	var instance := pickup_scene.instantiate()
 	if not instance is ExperiencePickup:
@@ -88,7 +95,7 @@ func try_spawn_drop(enemy: BaseEnemy) -> ExperiencePickup:
 	pickup.configure(
 		_run_controller,
 		_player,
-		enemy.get_experience_amount()
+		experience_amount
 	)
 	_pickup_parent.add_child(pickup)
 	pickup.global_position = _arena_layout.clamp_circle_center(
@@ -100,7 +107,6 @@ func try_spawn_drop(enemy: BaseEnemy) -> ExperiencePickup:
 		_on_pickup_tree_exiting.bind(pickup),
 		CONNECT_ONE_SHOT
 	)
-	_dropped_enemy_ids[enemy_instance_id] = true
 	_active_pickups.append(pickup)
 	pickup_spawned.emit(pickup)
 	return pickup
@@ -175,6 +181,16 @@ func _prune_invalid_pickups() -> void:
 			_active_pickups.remove_at(index)
 
 
+func _consume_experience_reward(enemy: BaseEnemy) -> int:
+	var reward_value := enemy.get_experience_reward_value()
+	if not is_finite(reward_value) or reward_value <= 0.0:
+		return 0
+	var total_credit := maxf(_experience_credit + reward_value, 0.0)
+	var whole_amount := floori(total_credit + 0.00001)
+	_experience_credit = maxf(total_credit - float(whole_amount), 0.0)
+	return whole_amount
+
+
 func _disconnect_run_controller() -> void:
 	if not is_instance_valid(_run_controller):
 		_run_controller = null
@@ -245,4 +261,5 @@ func _on_restart_prepared() -> void:
 	_invalid_scene_warning_emitted = false
 	_observed_enemy_ids.clear()
 	_dropped_enemy_ids.clear()
+	_experience_credit = 0.0
 	clear_active_pickups()

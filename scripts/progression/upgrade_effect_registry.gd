@@ -261,7 +261,6 @@ func can_apply(definition: UpgradeDefinition) -> bool:
 				definition.max_rank == 5
 				and definition.initial_rank == 0
 				and not definition.repeatable
-				and not definition.fallback
 				and multiplier > 1.0
 				and contribution_cap >= multiplier
 			)

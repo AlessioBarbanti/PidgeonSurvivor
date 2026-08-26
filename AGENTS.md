@@ -19,7 +19,7 @@ godot_console --headless --path . --export-debug "Windows Desktop" exports/windo
 godot_console --headless --path . --export-debug "Android APK" exports/android/pidgeon-survivor-debug.apk
 ```
 
-The editor command imports and runs the project. The verification script checks Godot, JDK 17, Android tooling, templates, imports, and the main-scene smoke. Use `tools/run-milestone-checks.ps1` for a documented B-series verification sequence. Consult `docs/setup.md` before Android exports.
+The editor command imports and runs the project. The verification script checks Godot, JDK 17, Android tooling, templates, imports, and the main-scene smoke. Use `tools/run-milestone-checks.ps1 -Milestone B18X -Profile Focused|Relevant|Full|Release` for the documented B-series sequence; keep compact output and content-hash caching enabled unless diagnosing a failure. See `docs/verification-workflow.md` and consult `docs/setup.md` before Android exports.
 
 ## Coding Style & Naming Conventions
 

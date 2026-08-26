@@ -54,17 +54,6 @@ text = "LIVELLO 2"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="QueueLabel" type="Label" parent="SafeMargins/Layout"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 28)
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.78, 0.91, 1, 1)
-theme_override_font_sizes/font_size = 17
-text = "Scegli un potenziamento"
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="Cards" type="HBoxContainer" parent="SafeMargins/Layout"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -79,13 +68,3 @@ unique_name_in_owner = true
 
 [node name="UpgradeCard3" parent="SafeMargins/Layout/Cards" instance=ExtResource("2_card")]
 unique_name_in_owner = true
-
-[node name="InputHint" type="Label" parent="SafeMargins/Layout"]
-custom_minimum_size = Vector2(0, 28)
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.56, 0.7, 0.82, 1)
-theme_override_font_sizes/font_size = 14
-text = "1 / 2 / 3  -  FRECCE o WASD + INVIO  -  CONTROLLER  -  TAP"
-horizontal_alignment = 1
-vertical_alignment = 1

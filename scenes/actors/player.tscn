@@ -19,6 +19,7 @@ collision_mask = 0
 motion_mode = 1
 script = ExtResource("1_player")
 friend_definition = ExtResource("8_friend")
+visual_scale_multiplier = 1.25
 
 [node name="CollisionShape" type="CollisionShape2D" parent="."]
 unique_name_in_owner = true

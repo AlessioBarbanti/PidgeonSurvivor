@@ -81,21 +81,20 @@ func get_definitions() -> Array[UpgradeDefinition]:
 	return registered
 
 
-func get_eligible_definitions(
-	current_ranks: Dictionary,
-	include_fallback: bool = false
-) -> Array[UpgradeDefinition]:
+func get_eligible_definitions(current_ranks: Dictionary) -> Array[UpgradeDefinition]:
 	var eligible: Array[UpgradeDefinition] = []
 	for definition in get_definitions():
-		if definition.fallback != include_fallback:
-			continue
 		if definition.is_eligible(current_ranks):
 			eligible.append(definition)
 	return eligible
 
 
-func get_fallback_definitions() -> Array[UpgradeDefinition]:
-	return get_eligible_definitions({}, true)
+func get_repeatable_definitions() -> Array[UpgradeDefinition]:
+	var repeatable: Array[UpgradeDefinition] = []
+	for definition in get_definitions():
+		if definition.repeatable:
+			repeatable.append(definition)
+	return repeatable
 
 
 func get_validation_errors() -> Array[String]:

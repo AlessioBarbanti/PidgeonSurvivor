@@ -25,7 +25,7 @@ percepibile, lifecycle e reset è stata completata il 25 agosto 2026.
   commit del level-up; pausa e lifecycle non riapplicano l'effetto;
 - rank, moltiplicatore, massimo e vita ripristinati all'avvio della run
   successiva;
-- icona SVG originale del progetto registrata in `content-approvals.md`.
+- icona runtime raster del set B27, registrata nel manifest upgrade.
 
 ## Verifica automatica
 

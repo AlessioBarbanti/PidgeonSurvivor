@@ -25,6 +25,21 @@ const MINIMUM_INTERVAL_SECONDS := 0.01
 	set(value):
 		max_alive_enemies = maxi(value, 1)
 
+@export_group("Progression")
+## Baseline di cadenza usata per conservare il ritmo XP quando cambia la
+## densita. Il valore viene campionato allo spawn e non coinvolge i Boss.
+@export_range(0.01, 60.0, 0.01, "or_greater") var progression_reference_base_spawn_interval := 1.0:
+	set(value):
+		progression_reference_base_spawn_interval = maxf(value, MINIMUM_INTERVAL_SECONDS)
+
+@export_range(0.01, 60.0, 0.01, "or_greater") var progression_reference_min_spawn_interval := 0.25:
+	set(value):
+		progression_reference_min_spawn_interval = maxf(value, MINIMUM_INTERVAL_SECONDS)
+
+@export_range(0.0, 1.0, 0.0001, "or_greater") var progression_reference_spawn_acceleration := 0.0025:
+	set(value):
+		progression_reference_spawn_acceleration = maxf(value, 0.0)
+
 @export_group("Placement")
 @export_range(0.0, 2048.0, 1.0, "or_greater") var inner_spawn_margin := 48.0:
 	set(value):
@@ -58,6 +73,24 @@ func get_spawn_interval(run_time: float) -> float:
 		min_spawn_interval,
 		base_spawn_interval - sanitized_run_time * spawn_acceleration
 	)
+
+
+func get_progression_reference_spawn_interval(run_time: float) -> float:
+	var sanitized_run_time := maxf(run_time, 0.0)
+	return maxf(
+		progression_reference_min_spawn_interval,
+		progression_reference_base_spawn_interval
+			- sanitized_run_time * progression_reference_spawn_acceleration
+	)
+
+
+func get_experience_reward_scale(run_time: float) -> float:
+	var reference_interval := get_progression_reference_spawn_interval(run_time)
+	if reference_interval <= 0.0:
+		return 1.0
+	# Con uno spawn ogni N secondi, il valore XP per kill deve essere N / N_ref
+	# per mantenere lo stesso budget XP per secondo della baseline di riferimento.
+	return maxf(get_spawn_interval(run_time) / reference_interval, 0.0)
 
 
 func get_effective_outer_spawn_margin() -> float:

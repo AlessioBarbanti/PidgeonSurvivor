@@ -34,6 +34,7 @@ correzione esplicita **Tempesta di Tuoni** della sessione odierna.
 | L'Ansia, Gossip, Ritardo Cronico, Birra, Non Ho Tempo Per Questo, Grigliata estiva | Approvato | Titoli generici correnti, senza attribuzioni personali aggiuntive |
 | Ritratto hero/Evil CC0 | Approvato come placeholder | Asset temporanei sostituibili dai singoli `FriendDefinition` |
 | Piccioni B18H base/speciale | Approvato e integrato | Due sprite originali OpenAI-assisted del progetto secondo silhouette, palette e animazione definite nel piano; manifest, trasformazioni e hash conservati, nessun input grafico di terzi |
+| Varianti Boss B22 | Approvate come riuso | Il piccione speciale B18H è la baseline; gli otto Evil riusano gli sprite Player B18U già approvati con sola modulazione viola/magenta runtime. Nessun nuovo raster, citazione, voce, passiva o abilità personale entra in B22 |
 | Icone e VFX B18M | Approvato e integrato; timing B18R verificati | Otto emblemi PNG originali OpenAI ImageGen sostituiscono gli SVG e animano l'attivazione; prompt, trasformazioni, licenza e hash sono nel manifest. Il burst da `1,20 s` e le code non interattive hanno superato automatici, Windows, Android e verifica umana il 25 agosto 2026 |
 | Icone passive del roster B18W | Approvate e integrate | Otto PNG raster dedicati (Magno più sette master RGBA forniti dal proprietario) sostituiscono il fallback al ritratto nel kit. Prompt, origine, trasformazioni e hash sono in `assets/art/icons/passives/ASSET-MANIFEST.md`; confronto percettivo fisico chiuso il 25 agosto 2026 |
 | Fondale e logo welcome B18O | Approvato e integrato | La reference pixel-art approvata dal proprietario è stata ripulita con OpenAI ImageGen built-in: nessuna UI resta nel fondale, gli otto archetipi sono ai bordi e il centro è protetto. `welcome_logo.png`, fornito dal proprietario, occupa il centro senza trasformazioni; autore, generatore e licenza a monte non dichiarati non vengono inventati. Nessuna foto o persona reale; prompt, origine, crop e SHA-256 sono nel manifest dedicato |
@@ -44,20 +45,24 @@ correzione esplicita **Tempesta di Tuoni** della sessione odierna.
 | Citazioni personali dei Boss | Non fornite | La UI usa il placeholder neutro del `BossDefinition`; nessuna citazione personale viene inventata |
 | Audio o voce personale | Non fornito | Il campo resta nullo e il runtime rimane silenzioso |
 
-Il primo incontro della vertical slice usa `Evil Bea`. È una scelta dati:
-cambiare `friend_profile` in `data/bosses/first_boss.tres` seleziona un'altra
-controparte senza modificare GDScript.
+Da B22 `data/bosses/first_boss.tres` descrive il piccione speciale baseline.
+`BossEncounter` può derivarne in modo seed-deterministico uno degli otto
+`Evil <Nome>` senza modificare gli asset sorgente o attribuire contenuti
+personali non approvati.
 
-## Icona originale B18J
+## Icone upgrade B26/B27
 
-L'icona di `Grigliata estiva` è un SVG originale del progetto, disegnato per la
-famiglia visuale 64×64 delle carte upgrade e senza sorgenti esterne:
+Dieci master PNG RGBA sono stati forniti già generati dal proprietario in
+`assets/art/icons/upgrades/hd/`. Non sono stati forniti prompt, generatore,
+autore o licenza terza riproducibile: tali dati non vengono inventati. Il
+proprietario ne autorizza l'uso nel progetto; non sono dichiarate persone reali,
+marchi o sorgenti di terzi.
 
-- file: `assets/art/icons/upgrades/summer_grill.svg`;
-- autore: progetto IL GIOCO;
-- licenza: asset proprietario del progetto;
-- trasformazioni: nessuna derivazione esterna;
-- SHA-256: `C481A1809DC7EC6A61A68CD76B83A402DEA3C015AFB051AF21EC8C48107AF172`.
+`tools/process-upgrade-icon.ps1` individua la silhouette alpha, aggiunge `12`
+pixel di margine quadrato e riduce nearest-neighbor a `128×128` RGBA. Soltanto
+i derivati `generated/` sono referenziati dalle carte; master, trasformazioni,
+mapping e SHA-256 sono nel
+[`manifest upgrade`](../assets/art/icons/upgrades/ASSET-MANIFEST.md).
 
 ## Sprite originali B18H
 
@@ -65,7 +70,7 @@ I piccioni base e speciale sono asset originali commissionati dal progetto con
 il tool integrato di generazione immagini OpenAI, senza immagini sorgente o
 personaggi di terzi. Le strisce finali sono PNG RGBA `144x48` con tre canvas
 `48x48`: posa neutra, ali alte e ali basse. La variante base entra nello spawn
-ordinario; la speciale resta disponibile soltanto per fixture e profili futuri.
+ordinario; la speciale è il Boss baseline B22.
 
 Prompt normalizzati, trasformazioni nearest-neighbor, stato d'uso e SHA-256 sono
 registrati in

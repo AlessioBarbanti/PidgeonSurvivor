@@ -177,8 +177,16 @@ func _validate_composed_ability() -> void:
 	Input.action_release(&"active_ability")
 	input_router._process(0.0)
 	_expect(_activation_count == 1, "Una pressione tastiera deve produrre una sola attivazione.")
-	_expect_float_near(inside_health.health_current, 20.0, "Il nemico nel raggio deve subire 20 danni.")
-	_expect_float_near(outside_health.health_current, 40.0, "Il nemico fuori raggio non deve subire danno.")
+	_expect_float_near(
+		inside_health.health_current,
+		maxf(inside_health.health_max - 20.0, 0.0),
+		"Il nemico nel raggio deve subire 20 danni."
+	)
+	_expect_float_near(
+		outside_health.health_current,
+		outside_health.health_max,
+		"Il nemico fuori raggio non deve subire danno."
+	)
 	_expect_float_near(inside_enemy.get_knockback_remaining(), 0.2, "Il bersaglio interno deve ricevere knockback.")
 	_expect_float_near(outside_enemy.get_knockback_remaining(), 0.0, "Il bersaglio esterno non deve ricevere knockback.")
 	_expect(registry.get_last_affected_count() == 1, "Il registry deve contare un solo bersaglio.")
@@ -273,7 +281,12 @@ func _validate_composed_ability() -> void:
 		Input.action_release(&"active_ability")
 		input_router._process(0.0)
 		_expect(_activation_count == 4, "La seconda run deve avere una sola connessione input.")
-		_expect_float_near(second_run_enemy.get_health_component().health_current, 20.0, "L'abilita deve funzionare nella seconda run.")
+		var second_run_health := second_run_enemy.get_health_component()
+		_expect_float_near(
+			second_run_health.health_current,
+			maxf(second_run_health.health_max - 20.0, 0.0),
+			"L'abilita deve funzionare nella seconda run."
+		)
 
 	controller.prepare_restart()
 	paused = false

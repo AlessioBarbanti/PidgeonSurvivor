@@ -28,20 +28,21 @@ Prompt condiviso: icona e texture VFX pixel-art arcade caricaturale, silhouette
 netta leggibile a `42 px`, composizione quadrata centrata, margine uniforme,
 palette limitata, nessun testo, numero, cornice, card, marchio o watermark.
 Ogni richiesta ha usato uno sfondo cromatico uniforme; il built-in ha restituito
-direttamente PNG RGBA trasparenti. Trasformazioni comuni: crop sul bounding box
-alpha, ricentratura con circa `8%` di margine per lato, downscale Lanczos a
-`256×256` e ottimizzazione PNG.
+direttamente PNG RGBA trasparenti. Il 26 agosto 2026 il padding trasparente
+residuo è stato eliminato con un crop quadrato minimo sul bounding box alpha,
+senza deformare il soggetto; ogni immagine è stata quindi ricampionata Lanczos
+a `256×256` e ottimizzata PNG.
 
 | Percorso | Origine | Autore | Licenza | Prompt specifico e trasformazioni | SHA-256 |
 |---|---|---|---|---|---|
-| `assets/art/icons/abilities/generated/earthquake.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Roccia spaccata, due anelli d'impatto e polvere; trasformazioni comuni | `0ee0863fea71bbebba35faaad12048b8f72e74150a13c8b8ac74f6e3150f615b` |
-| `assets/art/icons/abilities/generated/powerslide.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Pattino inline, scia a Z e scintille; trasformazioni comuni | `37a0749e56ad6b239080c733879f47af3e65a2518474160f746dbf05983cd1e7` |
-| `assets/art/icons/abilities/generated/lightning.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Nube, singolo fulmine e onde del tuono; trasformazioni comuni | `0cfc33132b2a9302defc28a00a085e7b85711f3107339829dffbdeb3ffbf1cd2` |
-| `assets/art/icons/abilities/generated/grand_spin.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Gonna da piroetta, archi opposti e scintille; trasformazioni comuni | `e51d21c4b29bd3b5bb7eac2c912dea0945d56d063fbccbc9fd9287d13d5b081c` |
-| `assets/art/icons/abilities/generated/cement.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Secchio, colata e bolle di cemento; trasformazioni comuni | `5b80a05e9c538fa664aef5b5d9b70f554cdb452c9e2d79f508f244a6aea64306` |
-| `assets/art/icons/abilities/generated/cosplay.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Maschera, stella mistero e coriandoli; trasformazioni comuni | `b77e7437e431cd4c53594b7650fde9a903482529348a1036c238c9ff3878eddf` |
-| `assets/art/icons/abilities/generated/zen.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Loto, onde di respiro e moti; trasformazioni comuni | `af9262d7eec8236af8a025919b6a1fade6e1c3fa3b9f9627c43ac78c2e4157b5` |
-| `assets/art/icons/abilities/generated/reggaeton.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Cassa, silhouette danzante e note; trasformazioni comuni | `82ec7c628fd46dd35d3d6b9ff2d940bf8a448611b2696612c96b7957c409e0ca` |
+| `assets/art/icons/abilities/generated/earthquake.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Roccia spaccata, due anelli d'impatto e polvere; crop quadrato stretto, ricampionamento Lanczos e ottimizzazione PNG | `4e70c0709feeab212b9b98047644e502cb97ecb5d1243f8a6af6f45e2867554c` |
+| `assets/art/icons/abilities/generated/powerslide.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Pattino inline, scia a Z e scintille; crop quadrato stretto, ricampionamento Lanczos e ottimizzazione PNG | `0f5f63863cbc75484f6fc6588d359a850aacb925b951f3cccf473f3d430b18d7` |
+| `assets/art/icons/abilities/generated/lightning.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Nube, singolo fulmine e onde del tuono; crop quadrato stretto, ricampionamento Lanczos e ottimizzazione PNG | `b4855096b97e52894cfc13904d85520ad3db38381c684e0f68a4078d7b930603` |
+| `assets/art/icons/abilities/generated/grand_spin.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Gonna da piroetta, archi opposti e scintille; crop quadrato stretto, ricampionamento Lanczos e ottimizzazione PNG | `5bbb7d19d5b89d8353ee28433167298f5d7ca69863700f61ac1998a9f3722014` |
+| `assets/art/icons/abilities/generated/cement.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Secchio, colata e bolle di cemento; crop quadrato stretto, ricampionamento Lanczos e ottimizzazione PNG | `13475b5003ebef8949985c16321a839dbcda1302df916a1e50a5c7838a8f4dc4` |
+| `assets/art/icons/abilities/generated/cosplay.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Maschera, stella mistero e coriandoli; crop quadrato stretto, ricampionamento Lanczos e ottimizzazione PNG | `6b9e92a085ae43cc0ddb35b908977bdfbece064a47d4a503291cee6692ede2b2` |
+| `assets/art/icons/abilities/generated/zen.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Loto, onde di respiro e moti; crop quadrato stretto, ricampionamento Lanczos e ottimizzazione PNG | `dd51818ed667b92f56d131fca316f4b9f51035c0a8c111b368e062004c6ad483` |
+| `assets/art/icons/abilities/generated/reggaeton.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Cassa, silhouette danzante e note; crop quadrato stretto, ricampionamento Lanczos e ottimizzazione PNG | `f315f7ce9cab7f736742278c5e2817f32e6619b3f18382a90d0e5c77f1718555` |
 
 Il budget dichiarato è verificato da `_ability_visuals_smoke.gd`: per singola
 attivazione non più di un overlay fullscreen, 64 particelle logiche, un emblema

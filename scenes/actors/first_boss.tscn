@@ -28,12 +28,17 @@ script = ExtResource("1_first_boss")
 move_speed = 85.0
 experience_amount = 50
 collision_radius = 46.0
-body_color = Color(0.55, 0.17, 0.92, 1)
-outline_color = Color(0.08, 0.015, 0.16, 1)
-accent_color = Color(1, 0.72, 0.18, 1)
+body_color = Color(0.16, 0.12, 0.28, 1)
+outline_color = Color(0.035, 0.02, 0.075, 1)
+accent_color = Color(1, 0.68, 0.16, 1)
 outline_width = 6.0
 definition = ExtResource("5_boss_definition")
 projectile_scene = ExtResource("6_boss_projectile")
+
+[node name="BossSprite" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+z_index = 1
+texture_filter = 1
 
 [node name="CollisionShape" type="CollisionShape2D" parent="."]
 unique_name_in_owner = true

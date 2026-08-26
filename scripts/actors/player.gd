@@ -25,6 +25,16 @@ signal facing_direction_changed(direction: Vector2)
 		queue_redraw()
 
 @export_group("Visual")
+@export_range(1.0, 2.0, 0.05) var visual_scale_multiplier := 1.25:
+	set(value):
+		visual_scale_multiplier = (
+			clampf(value, 1.0, 2.0)
+			if is_finite(value)
+			else 1.0
+		)
+		if is_node_ready():
+			_update_character_feedback()
+
 @export var body_color := Color(0.05, 0.88, 1.0, 1.0):
 	set(value):
 		body_color = value
@@ -183,6 +193,14 @@ func get_character_visual_offset() -> Vector2:
 
 func get_character_visual_rotation() -> float:
 	return _character_sprite.rotation if is_instance_valid(_character_sprite) else 0.0
+
+
+func get_character_visual_scale() -> Vector2:
+	return _character_sprite.scale if is_instance_valid(_character_sprite) else Vector2.ONE
+
+
+func get_character_base_scale() -> Vector2:
+	return _character_base_scale
 
 
 func get_friend_definition() -> FriendDefinition:
@@ -429,7 +447,11 @@ func _refresh_character_visual() -> void:
 func _update_character_feedback() -> void:
 	if not is_instance_valid(_character_sprite):
 		return
-	_character_sprite.scale = _character_base_scale * get_visual_damage_scale()
+	_character_sprite.scale = (
+		_character_base_scale
+		* visual_scale_multiplier
+		* get_visual_damage_scale()
+	)
 	_character_sprite.self_modulate = (
 		Color(1.0, 0.72, 0.8, 1.0)
 		if _damage_flash_remaining > 0.0

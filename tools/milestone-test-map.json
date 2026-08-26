@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "patterns": ["project.godot", "export_presets.cfg"],
+      "run_all": true,
+      "smokes": []
+    },
+    {
+      "patterns": ["scripts/actors/player.gd", "scenes/actors/player.tscn", "data/friends/*", "assets/art/characters/players/*"],
+      "smokes": [
+        "tests/integration/_movement_slice_smoke.gd",
+        "tests/integration/_player_survival_smoke.gd",
+        "tests/integration/_player_direction_animation_smoke.gd",
+        "tests/integration/_cast_sprites_smoke.gd",
+        "tests/integration/_complete_roster_abilities_smoke.gd"
+      ]
+    },
+    {
+      "patterns": ["scripts/bosses/*", "scenes/actors/first_boss.tscn", "data/bosses/*"],
+      "smokes": [
+        "tests/integration/_boss_encounter_smoke.gd",
+        "tests/integration/_complete_run_smoke.gd",
+        "tests/integration/_evil_boss_variants_smoke.gd",
+        "tests/integration/_friend_content_smoke.gd"
+      ]
+    },
+    {
+      "patterns": ["scripts/actors/base_enemy.gd", "scenes/actors/base_enemy.tscn", "scripts/game/enemy_spawner.gd", "data/enemies/*"],
+      "smokes": [
+        "tests/integration/_enemy_spawner_smoke.gd",
+        "tests/integration/_combat_slice_smoke.gd",
+        "tests/integration/_pigeon_enemy_smoke.gd"
+      ]
+    },
+    {
+      "patterns": ["scripts/combat/*", "scenes/combat/*", "data/weapons/*", "scripts/components/hurtbox.gd", "scripts/components/contact_damage.gd"],
+      "smokes": [
+        "tests/integration/_combat_slice_smoke.gd",
+        "tests/integration/_player_survival_smoke.gd",
+        "tests/integration/_complete_run_smoke.gd"
+      ]
+    },
+    {
+      "patterns": ["scripts/abilities/*", "scenes/abilities/*", "data/abilities/*"],
+      "smokes": [
+        "tests/integration/_active_ability_smoke.gd",
+        "tests/integration/_ability_ranks_smoke.gd",
+        "tests/integration/_ability_visuals_smoke.gd",
+        "tests/integration/_complete_roster_abilities_smoke.gd"
+      ]
+    },
+    {
+      "patterns": ["scripts/upgrades/*", "data/upgrades/*", "assets/art/icons/upgrades/*"],
+      "smokes": [
+        "tests/integration/_upgrade_service_smoke.gd",
+        "tests/integration/_upgrade_overlay_smoke.gd",
+        "tests/integration/_upgrade_effects_smoke.gd",
+        "tests/integration/_signature_upgrades_smoke.gd",
+        "tests/integration/_summer_grill_smoke.gd"
+      ]
+    },
+    {
+      "patterns": ["scripts/game/arena_layout.gd", "scripts/ui/arena_view.gd", "assets/art/arena/*"],
+      "smokes": [
+        "tests/integration/_arena_hud_minimal_smoke.gd",
+        "tests/integration/_arena_background_smoke.gd",
+        "tests/integration/_movement_slice_smoke.gd",
+        "tests/integration/_xp_arena_confinement_smoke.gd"
+      ]
+    },
+    {
+      "patterns": ["scripts/game/movement_slice.gd", "scenes/game/movement_slice.tscn", "scripts/game/run_controller.gd"],
+      "smokes": [
+        "tests/integration/_movement_slice_smoke.gd",
+        "tests/integration/_complete_run_smoke.gd",
+        "tests/integration/_platform_lifecycle_smoke.gd",
+        "tests/integration/_welcome_flow_smoke.gd"
+      ]
+    },
+    {
+      "patterns": ["scripts/game/experience*", "scripts/game/level*", "scenes/game/experience*", "data/experience/*"],
+      "smokes": [
+        "tests/integration/_experience_pickup_smoke.gd",
+        "tests/integration/_level_progression_smoke.gd",
+        "tests/integration/_xp_arena_confinement_smoke.gd"
+      ]
+    },
+    {
+      "patterns": ["scripts/input/*", "scripts/platform/platform_lifecycle.gd", "scenes/ui/touch_joystick.tscn"],
+      "smokes": [
+        "tests/integration/_input_subsystem_smoke.gd",
+        "tests/integration/_dynamic_joystick_smoke.gd",
+        "tests/integration/_platform_lifecycle_smoke.gd"
+      ]
+    },
+    {
+      "patterns": ["scripts/ui/*", "scenes/ui/*", "assets/art/ui/*"],
+      "smokes": [
+        "tests/integration/_hud_smoke.gd",
+        "tests/integration/_arena_hud_minimal_smoke.gd",
+        "tests/integration/_upgrade_overlay_smoke.gd",
+        "tests/integration/_character_carousel_smoke.gd",
+        "tests/integration/_character_select_refinement_smoke.gd",
+        "tests/integration/_welcome_flow_smoke.gd"
+      ]
+    },
+    {
+      "patterns": ["scripts/app/*"],
+      "smokes": [
+        "tests/integration/_welcome_flow_smoke.gd",
+        "tests/integration/_pause_change_character_smoke.gd",
+        "tests/integration/_touch_control_settings_smoke.gd"
+      ]
+    },
+    {
+      "patterns": ["scripts/vfx/*", "assets/art/icons/abilities/*"],
+      "smokes": [
+        "tests/integration/_visual_identity_smoke.gd",
+        "tests/integration/_visual_timing_smoke.gd",
+        "tests/integration/_ability_visuals_smoke.gd",
+        "tests/integration/_audiovisual_feedback_smoke.gd"
+      ]
+    },
+    {
+      "patterns": ["scripts/audio/*", "assets/audio/*"],
+      "smokes": ["tests/integration/_audiovisual_feedback_smoke.gd"]
+    },
+    {
+      "patterns": ["scripts/platform/performance*", "data/performance/*"],
+      "smokes": ["tests/integration/_hardening_performance_smoke.gd"]
+    },
+    {
+      "patterns": ["assets/art/branding/*"],
+      "smokes": ["tests/integration/_app_icon_smoke.gd"]
+    }
+  ]
+}

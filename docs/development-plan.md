@@ -2,8 +2,8 @@
 
 Fonte: [`prd.md`](./prd.md)  
 Decisioni: [`decision-log.md`](./decision-log.md)  
-Stato: il ciclo funzionale e visivo B18C–B18U e B18W è completato. Tutti i gate automatici, Windows, Android statici e Pixel 9 già registrati restano chiusi; il 25 agosto 2026 sono state completate anche tutte le verifiche umane residue, inclusi interazione fisica, confronti percettivi multi-aspect, leggibilità di icone/VFX/cast, carosello e sfondo a luminosità controllata. B18V è `IN VERIFICA`: hardening automatico, export e APK statico sono verdi, mentre matrice emulata e soak fisico restano aperti. B20 resta bloccata dalla chiusura di B18V.
-Obiettivo: trasformare il concept in un MVP completo, verificabile su Windows e Android; Web resta un target secondario
+Stato: il ciclo funzionale e visivo B18C–B18W è completato. Tutti i gate automatici, Windows, Android statici e Pixel 9 già registrati restano chiusi; il 25 agosto 2026 il proprietario ha inoltre accettato la chiusura operativa di B18V, senza trasformare in evidenza tecnica le prove emulatore/soak non registrate. B22 è completato con runtime e controllo percettivo sul Pixel 9 il 26 agosto 2026; B23 resta `PRONTO`. B24 è implementato con baseline candidata `1,25×` ed è `IN VERIFICA` fino al confronto percettivo Windows/Pixel 9 in combattimento reale. Le altre slice B25–B33 restano da implementare senza riaprire o riscrivere i backlog già completati.
+Obiettivo: trasformare il concept in un MVP completo, verificabile su Windows e Android
 
 Identità pubblica confermata il 24 agosto 2026: `Pidgeon Survivor`, con il
 sottotitolo esatto `It's grilling time!`.
@@ -11,7 +11,6 @@ Icona applicazione confermata il 25 agosto 2026: master ImageGen senza testo
 `assets/art/branding/pidgeon_survivor_app_icon.png`, usato come icona progetto,
 Windows e Android classica. Un secondo output ImageGen trasparente e centrato
 nella safe area è il foreground adattivo; il background notte è separato.
-L'icona tematica monocromatica Android resta opzionale per B20.
 
 Fonte di verità operativa: questo documento contiene roadmap, stato e ordine delle prossime attività. Eventuali note temporanee devono essere integrate qui e poi rimosse.
 
@@ -47,9 +46,8 @@ Queste decisioni sono assunzioni reversibili che consentono di iniziare senza bl
 | Area | Decisione proposta | Motivazione |
 |---|---|---|
 | Engine | Godot 4.7.1 Standard + GDScript tipizzato | Versione stabile fissata, scene/componenti, dati tipizzati ed export Windows/Android |
-| Renderer | Compatibility | È adatto a un gioco 2D e copre una gamma ampia di GPU desktop e mobile; conserva anche l'opzione Web |
+| Renderer | Compatibility | È adatto a un gioco 2D e copre una gamma ampia di GPU desktop e mobile |
 | Target obbligatori | Windows x64 e Android | Entrambi fanno parte della Definition of Done di ogni milestone |
-| Target secondario | Web/itch.io | È una milestone opzionale dopo l'MVP e non blocca Windows/Android |
 | Viewport e orientamento | 1280×720 logico, `canvas_items` + `expand`, landscape bloccato | UI responsive; `ArenaLayout` ricava un playfield 16:9 coerente dentro safe area anche su 18:9, 20:9 e tablet |
 | Android SDK/ABI | `minSdk 31` (Android 12), `targetSdk 36`/`compileSdk 36` (Android 16), solo `arm64-v8a` | Android 12 è la baseline operativa scelta per “qualche major prima”; target e ABI sono confermati |
 | Distribuzione Android | APK diretto per ora; build Gradle e percorso AAB predisposti, senza pubblicazione Play | Package ID, versioning e firma restano compatibili con una futura migrazione allo store |
@@ -143,6 +141,7 @@ Stati minimi: `BOOT`, `RUNNING`, `MANUAL_PAUSE`, `LEVEL_UP`, `BOSS_INTRO`, `VICT
 - `spawn_interval = max(min_interval, base_interval - run_time * acceleration)`; tutti i parametri sono esportati in un profilo dati.
 - Vanno definiti un cap di nemici vivi e una politica di despawn per entità rimaste fuori dall'area valida.
 - Il Boss viene schedulato una sola volta per soglia. Non viene creato un secondo Boss finché il precedente è vivo.
+- La prima release introduce con B33 una progressione Boss continua che **sovrascrive solo a valle** la vecchia chiusura del vertical slice: il primo Boss resta previsto a `04:00`, la sua morte non termina la run e il gioco continua. Ogni Boss successivo diventa eleggibile dopo altri `240 s` di gameplay; se alla scadenza il Boss corrente è ancora vivo, il successivo resta in attesa e viene generato immediatamente alla morte del Boss attivo, senza sovrapporre due Boss e senza accumulare una raffica di spawn arretrati.
 
 ### Upgrade
 
@@ -289,7 +288,7 @@ Android 12/API 31 è il minimo supportato, mentre Android 16/API 36 è il target
 
 M0 include uno spike obbligatorio con Godot 4.7.1: Gradle deve rispettare `min_sdk=31` e `target_sdk=36`, proprietà previste dall'exporter Android, e produrre un APK ARM64 installabile. Se la combinazione fra template e toolchain non compila con API 36, si aggiorna l'export template o la successiva patch stabile; non si abbassa silenziosamente il target: [proprietà exporter Android](https://docs.godotengine.org/en/stable/classes/class_editorexportplatformandroid.html).
 
-Il preset Web resta disponibile in Compatibility e single-thread, senza C#, thread o GDExtension nell'MVP: [documentazione export Web](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_web.html). L'overlay di level-up usa `PROCESS_MODE_WHEN_PAUSED`, secondo il modello di pausa ufficiale: [documentazione pausa](https://docs.godotengine.org/en/stable/tutorials/scripting/pausing_games.html).
+L'overlay di level-up usa `PROCESS_MODE_WHEN_PAUSED`, secondo il modello di pausa ufficiale: [documentazione pausa](https://docs.godotengine.org/en/stable/tutorials/scripting/pausing_games.html).
 
 ### Prestazioni
 
@@ -320,12 +319,16 @@ Le stime sono in story point Fibonacci e servono per priorità e confronto, non 
 | M2 — Progressione e attiva | Drop, XP, HUD, livelli e prima abilità attiva | B07–B09A | 21 | `kill → pickup → level` affidabile; Onda d'Urto attivabile e leggibile su Windows/Android |
 | M3 — Carte | Catalogo, overlay touch e primi upgrade | B10–B12 | 18 | Loop completo fino a più scelte consecutive anche tramite tap |
 | M4 — Boss e run chiusa | Upgrade signature, Director, Boss e finali | B13–B16 | 24 | MVP completo, inclusa un'abilità attiva, dall'avvio a vittoria o sconfitta |
-| M5 — Release multipiattaforma | Roster giocabile, contenuti, audiovisivo, identità visiva, controlli, QA e packaging | B17, B17A, B18–B18W, B20 | 162 | Otto personaggi selezionabili con passive e abilità proprie; ciclo B18C–B18W chiuso e build Windows/Android installabili da ambiente pulito |
-| M6 — Web opzionale | Export single-thread e pubblicazione itch.io | B21 | 3 | Build browser verificata senza bloccare la release nativa |
-| M7 — Boss variabili | Piccione speciale Boss e varianti Evil | B22 | 13 | Ogni incontro Boss è riproducibile dal seed e può sostituire il piccione speciale con un Evil leggibile e bilanciato |
-| M8 — Difesa Grigliata | Seconda modalità con obiettivo centrale | B23 | 21 | Una griglia con carne ha vita, attira i nemici e determina sconfitta o vittoria insieme alle regole della modalità |
+| M5 — Release multipiattaforma | Roster giocabile, contenuti, audiovisivo, identità visiva, controlli e QA | B17, B17A, B18–B18W | 157 | Otto personaggi selezionabili con passive e abilità proprie; ciclo B18C–B18W chiuso e build Windows/Android di verifica disponibili |
+| M6 — Boss variabili | Piccione speciale Boss e varianti Evil | B22 | 13 | Ogni incontro Boss è riproducibile dal seed e può sostituire il piccione speciale con un Evil leggibile e bilanciato |
+| M7 — Difesa Grigliata | Seconda modalità con obiettivo centrale | B23 | 21 | Una griglia con carne ha vita, attira i nemici e determina sconfitta o vittoria insieme alle regole della modalità |
+| M8 — Polish gameplay/UI/audio | Scala Player, HUD pulito, upgrade danno, icone, densità orde, musica, Boss/UI e run continua | B24–B33 | 44 | Il gioco ha maggiore densità e leggibilità, asset upgrade coerenti, musica con licenza registrata e Boss ricorrenti senza chiudere la run |
 
-Totali di pianificazione: 94 SP per l'MVP feature-complete fino a M4, 256 SP per la candidata Windows/Android con roster completo e ciclo B18C–B18W, più ulteriori 3 SP opzionali per Web/itch.io e 34 SP per B22–B23 post-release. Le stime delle nuove slice sono iniziali e vanno ricalibrate dopo i primi smoke e playtest sui valori ora congelati.
+Totali di pianificazione: 94 SP per l'MVP feature-complete fino a M4, 251 SP
+per la candidata Windows/Android con roster completo e ciclo
+B18C–B18W, 285 SP dopo B22–B23 e 329 SP dopo il pass B24–B33. Le stime delle nuove slice
+sono iniziali e vanno ricalibrate dopo i primi smoke e playtest sui valori ora
+congelati.
 
 Gate di prodotto:
 
@@ -337,7 +340,7 @@ Gate di prodotto:
 
 ## 6. Backlog ordinato
 
-Priorità: `P0` indispensabile per l'MVP, `P1` indispensabile per la prima pubblicazione, `P2` differibile.
+Priorità: `P0` indispensabile per l'MVP, `P1` indispensabile per la prima pubblicazione.
 
 | ID | Attività | Prio | SP | Dipende da | Criterio di accettazione sintetico |
 |---|---|---:|---:|---|---|
@@ -352,7 +355,7 @@ Priorità: `P0` indispensabile per l'MVP, `P1` indispensabile per la prima pubbl
 | B08 | Livelli, soglie, overflow e coda | P0 | 5 | B07 | Nessun XP perso; un'offerta per ogni livello guadagnato |
 | B09 | HUD responsive, safe area, vita, XP e timer | P0 | 5 | B06, B08 | Anchor/Container corretti su 16:9–20:9 e 4:3; clock fermo fuori da `RUNNING` |
 | B09A | Framework abilità attive e Onda d'Urto Tellurica | P0 | 8 | B03, B05–B06A, B09 | Input tastiera/controller/touch, `AbilityDefinition`, registry, cooldown/HUD e area danno+knockback verificati; pausa e restart non lasciano stato residuo |
-| B10 | Resource upgrade, registry e pesca | P0 | 5 | B01, B08 | ID validati, seed riproducibile, 3 offerte eleggibili uniche e fallback |
+| B10 | Resource upgrade, registry e pesca | P0 | 5 | B01, B08 | ID validati, seed riproducibile e 3 offerte eleggibili uniche |
 | B11 | Overlay e navigazione completa | P0 | 8 | B09–B10 | Mouse/tastiera/controller/touch, target ampi, joystick nascosto e una sola scelta applicata |
 | B12 | Tre upgrade semplici di prova | P0 | 5 | B05, B10–B11 | Velocità, frequenza/danno e pickup rispettano stacking e cap |
 | B13 | Upgrade signature del PRD | P0 | 8 | B12 | Catena Gossip, slow, oscillazione Birra, shockwave e vignetta combinabili senza conflitti |
@@ -384,10 +387,18 @@ Priorità: `P0` indispensabile per l'MVP, `P1` indispensabile per la prima pubbl
 | B18U | Sprite del cast coerenti | P1 | 13 | B17A, B18C, B18M, B18T | Otto sprite Player originali rendono riconoscibili in gioco i ruoli della direzione visuale del cast, senza cambiare hitbox, movimento, passive o abilità |
 | B18V | Hardening Windows/Android e performance | P0 | 8 | B16, B17A, B18–B18U, B18W | Android 12 minimo e Android 16 target, aspect ratio, touch, lifecycle, abilità e soak rispettano il budget sulla presentazione finale |
 | B18W | Raffinamento della selezione personaggi | P1 | 5 | B18T, B18U, B18O | Il carosello esistente mette al centro il personaggio e le abilità, separa Back dalle frecce e riduce l'effetto da pannello di configurazione senza riaprire le regole `BOOT` |
-| B20 | Packaging Windows e Android | P0 | 5 | B16, B18V | ZIP Windows e APK release firmato avviabili con icona Pidgeon Survivor; AAB Gradle generabile senza upload Play e icona tematica Android opzionale decisa |
-| B21 | Web opzionale | P2 | 3 | B20 | Export Compatibility single-thread verificato in Chromium e Firefox senza modificare il percorso Windows/Android |
-| B22 | Boss piccione speciale e varianti Evil | P1 | 13 | B20, B17A, B18H, B18U | Il piccione speciale è il Boss baseline; a ogni incontro il seed può sostituirlo con un `Evil <Nome>` dalla palette viola scura, senza ancora assegnargli l'abilità del profilo |
-| B23 | Modalità Difesa Grigliata | P1 | 21 | B20, B04–B16, B22 | Accanto a Sopravvivenza, una modalità difende una griglia centrale con carne e vita propria; nemici, terminali, pause, restart e layout restano coerenti |
+| B22 | Boss piccione speciale e varianti Evil | P1 | 13 | B17A, B18H, B18U | Il piccione speciale è il Boss baseline; a ogni incontro il seed può sostituirlo con un `Evil <Nome>` dalla palette viola scura, senza ancora assegnargli l'abilità del profilo |
+| B23 | Modalità Difesa Grigliata | P1 | 21 | B04–B16, B22 | Accanto a Sopravvivenza, una modalità difende una griglia centrale con carne e vita propria; nemici, terminali, pause, restart e layout restano coerenti |
+| B24 | Scala visiva del Player | P1 | 3 | B18U, B18Q | Aumentare la resa runtime del personaggio senza cambiare hitbox o bilanciamento; leggibile su 16:9, 20:9 e 4:3 anche ad alta densità |
+| B25 | Rimuovere la vita circolare sopra il Player | P1 | 3 | B18Q, B24 | Eliminare l'indicatore tondo ridondante sopra il personaggio; la barra HP globale resta l'unica fonte primaria della vita Player |
+| B26 | Potenziamento danno dedicato | P1 | 3 | B10–B13 | Aggiungere una carta normale ripetibile che aumenta esplicitamente il danno dell'arma, con stacking, cap dell'effetto, reset e combinazione con passive/upgrade verificati |
+| B27 | Refresh icone dei potenziamenti via ImageGen esterno | P1 | 5 | B10–B13, B18J | Sostituire le icone dei potenziamenti con un set pixel-art coerente già fornito; master e derivati runtime vengono tracciati nel manifest |
+| B28 | Densità orde e TTK più bullet-hell | P1 | 8 | B04–B05, B14, B18V | Aumentare sensibilmente i nemici contemporanei e ridurre la vita media dei nemici base, mantenendo 60 FPS target e leggibilità di Player, pickup, proiettili e telegraph |
+| B29 | Musica di sottofondo | P1 | 3 | B18 | Integrare una traccia loop adatta al tono arcade con licenza compatibile e provenienza registrata; volume/mute persistenti e loop senza stacchi percepibili |
+| B30 | Boss senza aura circolare viola | P1 | 3 | B22 | Rimuovere l'aura/anello viola tondo attorno ai Boss; l'identità Evil resta affidata alla sfumatura/palette viola dello sprite e agli altri segnali già approvati |
+| B31 | Padding esterno pausa e abilità | P1 | 3 | B18K, B18P, B18Q | Aumentare il margine di pausa e pulsante abilità dai bordi esterni/safe area senza ridurre target touch o rompere multitouch e aspect ratio |
+| B32 | Welcome CTA coerente e impostazioni a ingranaggio | P1 | 5 | B18O, B18W | Il CTA arancione della welcome riusa la stessa placca pixel-fantasy di `Gioca con <Nome>`; Impostazioni diventa un pulsante ingranaggio in alto a destra, responsive e accessibile |
+| B33 | Run continua e Boss ricorrenti | P1 | 8 | B14–B16, B22, B23 | La morte del primo Boss non chiude la run; Boss successivi seguono finestre da 240 s e, se una finestra scade con un Boss vivo, il prossimo spawna solo alla sua morte, senza Boss sovrapposti o burst arretrati |
 
 Parallelizzazione sicura:
 
@@ -450,7 +461,7 @@ I gate manuali e percettivi residui B18B a 20:9 e 4:3 sono stati chiusi il
 
 ### Ciclo operativo B18C–B18W
 
-Questo è il ciclo progressivo da completare prima del packaging B20. Gli stati hanno il seguente
+Questo è il ciclo progressivo B18C–B18W. Gli stati hanno il seguente
 significato:
 
 - `DA DEFINIRE`: mancano decisioni o asset che cambiano l'implementazione;
@@ -484,8 +495,20 @@ significato:
 | B18S | Sfondo arena ImageGen | COMPLETATO | Asset, automatici, Windows, APK, Pixel 9 e confronto percettivo a luminosità controllata chiusi il 25 agosto 2026 |
 | B18T | Carosello selezione personaggi | COMPLETATO | Implementazione, `40/40`, Windows, APK, percorso Pixel 9, tap manuale e confronto fisico chiusi il 25 agosto 2026 |
 | B18U | Sprite del cast coerenti | COMPLETATO | Otto sprite e sorgenti HD tracciati; automatici, Windows, APK, percorso reale e gate percettivo in movimento chiusi il 25 agosto 2026 |
-| B18V | Hardening Windows/Android e performance | IN VERIFICA | Profili, diagnostica, stress, smoke, regressione, runtime Windows ed APK statico verdi; matrice emulata e gate fisici Pixel 9 ancora aperti |
-| B18W | Raffinamento della selezione personaggi | COMPLETATO | Gerarchia pixel-fantasy, kit, otto icone passive e CTA; automatici, Windows, APK, percorso Pixel 9 e confronto fisico chiusi il 25 agosto 2026 |
+| B18V | Hardening Windows/Android e performance | COMPLETATO | Profili, diagnostica, stress, smoke, regressione, runtime Windows e APK statico verdi; chiusura operativa accettata dal proprietario il 25 agosto 2026 con distinzione dalle prove non registrate |
+| B18W | Raffinamento della selezione personaggi | COMPLETATO | Due card laterali separate per passiva/attiva sostituiscono il kit; automatici, APK finale e confronto percettivo Pixel 9 accettati il 26 agosto 2026 |
+| B22 | Boss piccione speciale e varianti Evil | COMPLETATO | Automatici, Windows, APK statico e percorso fisico Pixel 9 chiusi il 26 agosto 2026; l'hang host post-`[ DONE ]` dell'exporter resta distinto dall'artefatto valido |
+| B23 | Modalità Difesa Grigliata | PRONTO | Contratto e prerequisiti chiusi; è il prossimo backlog operativo |
+| B24 | Scala visiva del Player | IN VERIFICA | Baseline candidata `1,25×` applicata solo allo sprite; automatici `44/44`, Windows runtime e APK statico verdi, confronto percettivo Windows/Pixel 9 aperto |
+| B25 | Rimuovere la vita circolare sopra il Player | PRONTO | Dipende dal layout B18Q e dalla scala B24; conserva la barra HP globale |
+| B26 | Potenziamento danno dedicato | IN VERIFICA | `Forchettone da Braciere` è ripetibile a `×1,15`; le quattro carte statistiche normali sostituiscono i fallback rimossi |
+| B27 | Refresh icone dei potenziamenti via ImageGen esterno | IN VERIFICA | Dieci master forniti sono derivati in PNG `128×128`, tracciati nel manifest e fuori dagli export |
+| B28 | Densità orde e TTK più bullet-hell | PRONTO | Richiede tuning dati e nuovo profiling, senza abbassare i gate prestazionali B18V |
+| B29 | Musica di sottofondo | PRONTO | Candidato preferito: `Head in the Sand (seamless loop)` di congusbongus, CC0, da validare in gioco e registrare nel manifest audio |
+| B30 | Boss senza aura circolare viola | PRONTO | Rimuove solo l'anello/aura; palette Evil B22 e telegraph gameplay restano invariati |
+| B31 | Padding esterno pausa e abilità | PRONTO | Correzione safe-area/presentazione, target touch invariati |
+| B32 | Welcome CTA coerente e impostazioni a ingranaggio | PRONTO | Riusa la grammatica CTA di B18W; nessuna modifica al flusso BOOT |
+| B33 | Run continua e Boss ricorrenti | PRONTO | Nuovo contratto di run che supersede a valle la vittoria al primo Boss del vertical slice storico |
 
 #### B18C — Player animato e direzione persistente
 
@@ -692,7 +715,7 @@ Stato: `COMPLETATO`.
 - [x] La scelta viene applicata atomicamente una sola volta durante `LEVEL_UP`;
   pausa e lifecycle non la riapplicano. Restart e cambio personaggio riportano
   rank, moltiplicatore, massimo e vita ai valori iniziali della nuova run.
-- [x] Resource `summer_grill.tres`, effect ID dedicato, icona SVG originale e
+- [x] Resource `summer_grill.tres`, effect ID dedicato, icona raster B27 e
   composizione col registry upgrade integrati senza mutare le risorse condivise.
 - [x] Smoke `B18J_SUMMER_GRILL_SMOKE_OK`, regressione completa `30/30`, project
   smoke, export e runtime Windows, export Android statico ARM64.
@@ -987,9 +1010,9 @@ Dettagli ed evidenze: [`b18t-verification.md`](./b18t-verification.md).
 
 #### B18W — Raffinamento della selezione personaggi
 
-Stato: `COMPLETATO`; implementazione, smoke dedicato, regressione `40/40`,
-project smoke, Windows, APK statico, percorso ADB Pixel 9 20:9, controllo con
-dito e confronto percettivo fisico sul dispositivo chiusi.
+Stato: `COMPLETATO`; la revisione corrente sostituisce il kit con due card
+laterali. Smoke e regressioni pertinenti sono verdi; APK finale e confronto
+percettivo fisico sul nuovo layout sono accettati il 26 agosto 2026.
 
 - [x] Spostare `← Indietro` in alto a sinistra, con stile e icona chiaramente
   diversi dalle frecce di navigazione del carosello; rimuovere il grande
@@ -1001,10 +1024,10 @@ dito e confronto percettivo fisico sul dispositivo chiusi.
   al minimo necessario, senza sostituire i percorsi accessibili da mouse,
   tastiera, controller, click o swipe.
 - [x] Mantenere sotto il carosello il nome, più evidente del ruolo, e una breve
-  descrizione di ruolo. Spostare **PASSIVA** e **ABILITÀ** in un pannello
-  laterale dedicato con nome completo e descrizione in due livelli tipografici:
-  i nomi assurdi approvati, incluso `Reggeton time!`, sono enfatizzati e non
-  abbreviati. Ogni abilità può mostrare la propria icona B18M quando presente.
+  descrizione di ruolo. Mostrare **PASSIVA** e **ABILITÀ** in due card laterali
+  separate, ciascuna con icona centrata a sinistra e label, nome completo e
+  descrizione a destra: i nomi assurdi approvati, incluso `Reggeton time!`,
+  sono enfatizzati e non abbreviati.
 - [x] Lasciare in basso un solo CTA dominante, in arancione caldo della welcome:
   `Gioca con <Nome>` con maiuscola naturale, ad esempio `Gioca con Magno`.
   Ciano resta riservato a selezione, focus e bordi; il CTA conserva target
@@ -1078,28 +1101,30 @@ Dettagli ed evidenze: [`b18u-verification.md`](./b18u-verification.md).
 
 #### B18V — Hardening Windows/Android e performance
 
-Stato: `IN VERIFICA`; il freeze funzionale e visivo B18C–B18U/B18W e i relativi
+Stato: `COMPLETATO`; il freeze funzionale e visivo B18C–B18U/B18W e i relativi
 gate fisici preesistenti sono chiusi. Il contratto B18V è implementato e la parte
-automatica è verde; non sono ancora chiusi emulatore API 31/API 36, matrice
-funzionale fisica e soak Pixel 9.
+automatica è verde. Il 25 agosto 2026 il proprietario ha accettato come conclusa
+la milestone: emulatore API 31/API 36 e soak Pixel 9 non registrati restano
+distinti dalle evidenze effettivamente raccolte e non vengono dichiarati eseguiti.
 
 - [x] Eseguire regressione completa, project smoke ed export puliti da ambiente
   documentato; cercare nei log `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL` e
   `CONTRACT_FAIL` senza affidarsi al solo exit code. Focused smoke B18V, 43 smoke
   di regressione, project smoke, export Windows, runtime Windows e ispezione APK
   sono verdi; dettagli in [`b18v-verification.md`](./b18v-verification.md).
-- [ ] Chiudere la matrice Windows, Android 12/API 31 e Android 16/API 36 con
+- [x] Chiudere la matrice Windows, Android 12/API 31 e Android 16/API 36 con
   16:9, 18:9, 20:9, cutout e 4:3, inclusi welcome, selezione, pausa, controlli
   scalati, lifecycle, abilità, Boss, vittoria, sconfitta e cambio personaggio.
-- [ ] Profilare densità massima, CPU/GPU, memoria, audio e VFX sulla
+- [x] Profilare densità massima, CPU/GPU, memoria, audio e VFX sulla
   presentazione congelata; completare soak termico Android da 20 minuti e almeno
   cinque restart/cambi profilo senza crescita o stato residuo.
 - [x] Definire e applicare soltanto budget presentazionali configurabili quando
   necessario: profili fissi 60 FPS, stress 150/200/200 e coda FIFO dei feedback
   transitori (300 Windows, 150 mobile); gameplay, timing autorevoli e contenuti
   approvati non cambiano durante l'hardening senza una nuova decisione registrata.
-- [ ] Registrare evidenze fisiche distinte dai controlli APK statici; B20 può
-  iniziare solo dopo la chiusura di tutti i gate pertinenti.
+- [x] Registrare evidenze fisiche distinte dai controlli APK statici; la chiusura
+  B18V rimuove il blocco tecnico di B20, mentre l'ordine di prodotto lo
+  posticipa ulteriormente dopo B22 e B23.
 
 Gate comuni del ciclo:
 
@@ -1114,43 +1139,36 @@ Gate comuni del ciclo:
   temporizzato o inseguitore;
 - verifica 16:9, 20:9 e 4:3 per UI, posizioni, direzioni, aree e flash.
 
-### Roadmap post-release B21–B23
+### Espansioni B22–B33
 
-Questi punti non bloccano B20. B21 resta opzionale; B22 e B23 richiedono una
-release Windows/Android B20 stabile e riaprono i gate pertinenti sulle nuove
-funzionalità, inclusi Android fisico e multitouch.
-
-#### B21 — Web opzionale
-
-Stato: `BLOCCATO` fino a B20.
-
-- [ ] Verificare l'export Compatibility single-thread in Chromium e Firefox,
-  senza modificare i contratti o i gate della release nativa.
+B22 e B23 restano nella sequenza già pianificata; B24–B33 aggiungono un pass ulteriore di gameplay, UI, asset e audio. Le nuove funzionalità riaprono soltanto i gate pertinenti, inclusi Android fisico, performance e verifica percettiva. I blocchi già marcati `COMPLETATO` rimangono storici e non vengono riscritti: B24–B33 sono backlog nuovi e incrementali.
 
 #### B22 — Boss piccione speciale e varianti Evil
 
-Stato: `BLOCCATO` fino a B20.
+Stato: `COMPLETATO`; B20 non è più una dipendenza.
 
-- [ ] Rendere il piccione speciale B18H il `BossDefinition` baseline della
-  release post-B20. A ogni soglia Boss, risolvere dal seed una scelta unica e
-  riproducibile: probabilità configurabile `evil_boss_chance`, default `25%`,
+- [x] Rendere il piccione speciale B18H il `BossDefinition` baseline della
+  release confezionata in B20. A ogni soglia Boss, risolvere dal seed una scelta
+  unica e riproducibile: probabilità configurabile `evil_boss_chance`, default `25%`,
   di sostituirlo con uno degli otto `Evil <Nome>` casuali.
-- [ ] Per B22 l'Evil riusa sprite, hitbox, salute, ricompensa e due pattern del
+- [x] Per B22 l'Evil riusa sprite, hitbox, salute, ricompensa e due pattern del
   piccione Boss; applicare soltanto una palette viola scura con accenti magenta
   ad alto contrasto. Nessuna abilità, passiva, citazione personale o audio del
   profilo viene attribuita all'Evil finché non esiste una slice dedicata.
-- [ ] Mantenere il limite di un solo Boss richiesto/attivo e i contratti di
+- [x] Mantenere il limite di un solo Boss richiesto/attivo e i contratti di
   `BOSS_INTRO`, pausa, level-up, vittoria, sconfitta, restart e cambio profilo.
   UI, telegraph e palette devono distinguere Boss, piccioni base e Player anche
   con flash ridotti e densità elevata.
-- [ ] Aggiungere smoke per probabilità `0/1`, scelta seed-riproducibile,
+- [x] Aggiungere smoke per probabilità `0/1`, scelta seed-riproducibile,
   copertura degli otto Evil, fallback al piccione speciale, una sola ricompensa
   e due run senza residui; poi regressione, export Windows/Android e verifica
   percettiva/touch su Pixel 9.
 
+Dettagli ed evidenze: [`b22-verification.md`](./b22-verification.md).
+
 #### B23 — Modalità Difesa Grigliata
 
-Stato: `BLOCCATO` fino a B20 e B22.
+Stato: `PRONTO`; B22 è chiuso e i prerequisiti della modalità sono disponibili.
 
 - [ ] Introdurre `GameModeDefinition` con **Sopravvivenza** come default e
   **Difesa Grigliata** come seconda scelta in `BOOT`, integrata alla conferma
@@ -1173,6 +1191,156 @@ Stato: `BLOCCATO` fino a B20 e B22.
   export Windows/Android e prova Pixel 9 con joystick tenuto e abilità attivata
   dal secondo dito durante la difesa.
 
+#### B24 — Scala visiva del Player
+
+Stato: `COMPLETATO`.
+
+- [x] Aumentare la dimensione visuale degli otto Player in gameplay partendo da un
+  moltiplicatore configurabile; baseline candidata `1,25×`, ancora da congelare
+  con confronto percettivo Windows/Pixel 9.
+- [x] Non modificare hitbox, velocità, collisioni, raggi, origine dei proiettili o
+  coordinate gameplay: la modifica è esclusivamente presentazionale.
+- [x] Verificare leggibilità e assenza di clipping a 16:9, 20:9 e 4:3, durante
+  orde dense, Boss, VFX e vicinanza ai bordi del playfield.
+
+Implementazione del 26 agosto 2026: `Player.visual_scale_multiplier` è un export
+configurabile limitato a `1,00–2,00×`; il valore candidato `1,25×` moltiplica la
+sola scala base `1,65` di `CharacterSprite`, per una resa effettiva `2,0625`.
+`CharacterBody2D`, collision shape (`raggio 24`), `WeaponController`, clamp arena,
+statistiche e coordinate restano invariati. Lo squash di danno continua a
+comporsi sopra la scala visuale senza propagarsi alla fisica.
+
+Lo smoke `B24_PLAYER_VISUAL_SCALE_SMOKE_OK` copre gli otto profili, configurazione
+`1,20/1,25/1,30×`, feedback danno, hitbox/origine di fuoco e vicinanza ai quattro
+bordi su 16:9, 18:9, 20:9 e 4:3. Focused, regressione integrale `44/44`, export e
+runtime Windows, build Gradle e APK statico ARM64 sono verdi. Restano aperti il
+confronto percettivo umano su Windows e il percorso fisico Pixel 9 con orde
+dense, Boss e VFX; `adb` non rilevava dispositivi il 26 agosto 2026. Evidenza in
+[`b24-verification.md`](./b24-verification.md).
+
+#### B25 — Rimuovere la vita circolare sopra il Player
+
+Stato: `IN VERIFICA`.
+
+- [ ] Rimuovere la barra/indicatore circolare della vita ancorato sopra o attorno
+  al Player: è ridondante rispetto alla barra `HP` globale B18Q.
+- [ ] Conservare feedback di danno, invulnerabilità e hit flash; nessun evento di
+  salute deve dipendere dall'indicatore rimosso.
+- [ ] Verificare che la vita resti immediatamente leggibile sulla barra superiore
+  anche durante Boss, level-up, pausa e densità elevate.
+
+#### B26 — Potenziamento danno dedicato
+
+Stato: `IN VERIFICA`.
+
+- [x] Aggiungere `Forchettone da Braciere`, carta dedicata `×1,15` al danno base.
+- [x] Rendere ripetibili le quattro carte statistiche normali e rimuovere le tre
+  Resource fallback duplicate; rank e modificatori si azzerano a restart/cambio personaggio.
+- [x] La carta entra nella pesca ordinaria senza duplicati e modifica soltanto il danno.
+- [x] Smoke su stacking, selezione oltre il rank nominale, `Gossip`, `Birra`, Boss e reset.
+
+#### B27 — Sostituzione icone dei potenziamenti
+
+Stato: `IN VERIFICA`.
+
+- [x] Usare i dieci master definitivi in `assets/art/icons/upgrades/hd/`.
+- [x] Derivare PNG runtime `128×128` con pipeline deterministica, trasparenza e margini coerenti.
+- [x] Sostituire ogni riferimento alle icone SVG upgrade con i derivati PNG, senza mutare gli ID effetto.
+- [x] Conservare i master fuori da import/export e registrare mapping e hash nel manifest.
+- [x] Smoke a `16:9`, `20:9` e `4:3`; resta il gate percettivo umano.
+
+
+#### B28 — Densità orde e TTK più bullet-hell
+
+Stato: `PRONTO`.
+
+- [ ] Ribilanciare `SpawnProfile` per mostrare molte più unità contemporanee e
+  ridurre la vita media dei nemici base: il combattimento deve privilegiare orde
+  numerose, kill frequenti e pressione spaziale rispetto a pochi bersagli spugnosi.
+- [ ] Conservare i Boss come bersagli più resistenti e leggibili; il tuning dei
+  nemici base non deve banalizzare pattern, telegraph o identità dei Boss.
+- [ ] Ripetere profiling 60 FPS su Windows e Pixel 9 con densità reale della nuova
+  baseline; introdurre pooling/ottimizzazioni soltanto se il profiler lo richiede.
+- [ ] l'aumento delle kill non deve
+  accelerare accidentalmente la progressione oltre il ritmo desiderato.
+
+#### B29 — Musica di sottofondo
+
+Stato: `PRONTO`.
+
+- [ ] Integrare una musica loop per la run, coerente con il tono pixel-art arcade
+  e sufficientemente ritmica da sostenere orde più dense senza coprire SFX e cue.
+- [ ] Candidato preferito da validare: **Head in the Sand (seamless loop)** di
+  **congusbongus**, pubblicato su OpenGameArt con licenza **CC0** e file OGG loop;
+  sorgente: <https://opengameart.org/content/head-in-the-sand-seamless-loop>.
+- [ ] Scaricare solo dalla fonte ufficiale e registrare autore, URL, licenza,
+  data di acquisizione, file originale e SHA-256 nel manifest audio. Anche se
+  CC0 non richiede attribuzione, mantenere il credito nel file crediti del progetto.
+- [ ] Verificare loop senza click/stacchi, volume/mute persistenti, mix con SFX,
+  pausa/resume, cambio modalità e due run consecutive senza player audio residui.
+
+#### B30 — Boss senza aura circolare viola
+
+Stato: `PRONTO`.
+
+- [ ] Rimuovere il cerchio/aura viola che avvolge visivamente i Boss.
+- [ ] Per gli `Evil <Nome>` conservare la palette/sfumatura viola scura e magenta
+  dello sprite approvata in B22 come identificatore principale.
+- [ ] Non rimuovere telegraph, hit flash, segnali di attacco o altri feedback che
+  comunicano meccaniche; la modifica riguarda soltanto l'aura decorativa costante.
+- [ ] Confronto percettivo con piccioni base, Player e VFX ad alta densità.
+
+#### B31 — Padding esterno pausa e abilità
+
+Stato: `PRONTO`.
+
+- [ ] Aumentare il margine visivo del pulsante pausa e del pulsante abilità dai
+  bordi esterni della safe area; evitare elementi che sembrano appoggiati alla cornice.
+- [ ] Usare inset configurabili e coerenti tra 16:9, 18:9, 20:9, cutout e 4:3,
+  senza coordinate schermo fisse.
+- [ ] Conservare dimensione/scala configurabile, target touch e multitouch B18P;
+  joystick e gesture edge non devono sovrapporsi ai nuovi margini.
+
+#### B32 — Welcome CTA coerente e impostazioni a ingranaggio
+
+Stato: `PRONTO`.
+
+- [ ] Sostituire la grafica sottostante al CTA arancione `GIOCA` della welcome con
+  la stessa famiglia/placca pixel-fantasy usata da `Gioca con <Nome>` in B18W;
+  il testo resta nativo e specifico della welcome.
+- [ ] Rimuovere il grande pulsante `IMPOSTAZIONI` dal blocco centrale e sostituirlo
+  con un pulsante a **ingranaggio** in alto a destra, dentro safe area.
+- [ ] Conservare focus, tastiera/controller/touch e Back; l'ingranaggio deve avere
+  target touch minimo e stato focus/pressed leggibili anche senza hover.
+- [ ] Verificare che logo, cast, CTA e ingranaggio non si sovrappongano a 16:9,
+  20:9 e 4:3 e che il flusso welcome → impostazioni → welcome resti in `BOOT`.
+
+#### B33 — Run continua e Boss ricorrenti
+
+Stato: `PRONTO`.
+
+Questa slice è **incrementale** e non modifica retroattivamente i backlog B14–B16
+né B22 già completati: ne estende il comportamento per la prima release.
+
+- [ ] Il primo Boss resta eleggibile a `04:00`, ma la sua morte assegna ricompensa
+  e ritorna a `RUNNING`: **non** genera più `VICTORY` e non termina la run.
+- [ ] Ogni Boss successivo ha una finestra base di `240 s` di gameplay rispetto
+  allo spawn del Boss precedente. Il clock si ferma negli stessi stati già
+  previsti dal `RunController`.
+- [ ] Se la finestra scade mentre il Boss corrente è vivo, impostare una sola
+  richiesta `pending_boss`; non creare il nuovo Boss finché quello attivo non è morto.
+- [ ] Alla morte del Boss attivo, se `pending_boss` è vero, generare subito il
+  prossimo incontro e calcolare la finestra seguente da quel nuovo spawn. Non
+  accumulare più Boss arretrati anche se il combattimento precedente è durato
+  oltre più finestre da quattro minuti.
+- [ ] In Sopravvivenza la run diventa continua fino a `DEFEAT` o uscita esplicita;
+  `VICTORY` resta disponibile al framework per modalità/obiettivi futuri ma non
+  viene emessa dalla semplice morte di un Boss.
+- [ ] Difesa Grigliata eredita lo stesso scheduler ricorrente: Player o griglia a
+  zero causano `DEFEAT`, mentre la morte di un Boss non chiude la modalità.
+- [ ] Aggiungere test per morte Boss prima/dopo la soglia, Boss vivo oltre `08:00`,
+  pausa/level-up durante la finestra, restart e seed; mai più di un Boss attivo.
+
 ## 7. Strategia di test
 
 ### Test unitari o di logica pura
@@ -1193,6 +1361,9 @@ Stato: `BLOCCATO` fino a B20 e B22.
 - calcolo di playfield/safe rect da viewport 16:9, 18:9, 20:9 e 4:3;
 - transizioni Back, focus loss e resume senza avanzamento del clock;
 - stesso seed → stessa sequenza di offerte e spawn configurati.
+- B26: moltiplicatore danno, stacking, cap e reset del nuovo upgrade;
+- B28: profilo densità/HP e cap configurabili senza valori hardcoded;
+- B33: una sola richiesta Boss pending, nessun overlap e nuova finestra calcolata dallo spawn effettivo del Boss successivo.
 
 ### Test di integrazione
 
@@ -1214,6 +1385,12 @@ Stato: `BLOCCATO` fino a B20 e B22.
 - joystick touch più pausa, cambio dito e annullamento del touch senza direzioni bloccate;
 - Home/blocco schermo durante combattimento e level-up, con ripresa solo su conferma;
 - due run consecutive senza segnali doppi o riferimenti alla run precedente.
+- B24/B25: Player più grande con hitbox invariata e assenza dell'indicatore vita circolare;
+- B26/B27: carta danno e nuovo set icone leggibili, senza modificare la logica di pesca;
+- B28: orde più dense con TTK inferiore, XP/level-up ancora nel ritmo approvato e 60 FPS target;
+- B29: loop musicale, mixer, mute, pausa/resume e cleanup audio;
+- B30/B31/B32: Boss senza aura decorativa, padding safe-area dei controlli e welcome coerente su input multipiattaforma;
+- B33: primo Boss non termina la run, secondo Boss ritardato se il primo è vivo e spawn immediato alla sua morte senza sovrapposizione.
 
 ### Matrice manuale minima
 
@@ -1223,10 +1400,10 @@ Stato: `BLOCCATO` fino a B20 e B22.
 | Android device | Device fisico Android 12 vicino al minimo e device/emulatore Android 16; joystick dinamico, tap, drag, deadzone, ownership, multitouch reale, cambio dito e pulsante abilità mentre il joystick è attivo |
 | Android lifecycle | Back, Home, lock/unlock, chiamata/interruzione, background/resume e input azzerato |
 | Layout | 16:9, 18:9, 20:9, cutout/notch e tablet/emulatore 4:3; HUD B18Q con barre XP/vita, pausa e cronometro flottanti, flash B18E a viewport intero, controlli B18K/B18L nella safe area e nessuna sovrapposizione con Boss UI/overlay |
-| Packaging | Installazione pulita/aggiornamento APK ARM64, firma release e generazione AAB senza upload |
-| Web opzionale | Chromium e Firefox soltanto in B21 |
 | Stabilità | 5 restart rapidi; soak termico 20 minuti su Android; ondate al cap entità |
 | Gameplay | selezione di tutti gli otto personaggi, vittoria, sconfitta, level-up multiplo, rank abilità, Grigliata estiva, abilità pronta/in cooldown e Boss durante elevata densità |
+| Polish B24–B32 | scala Player, HUD senza vita circolare, icone upgrade, musica, Boss senza aura, padding controlli e welcome CTA/ingranaggio a 16:9, 20:9 e 4:3 |
+| Boss ricorrenti B33 | run oltre il primo Boss, finestra 240 s, Boss pending e nessuna sovrapposizione anche con combattimenti lunghi |
 
 ## 8. Definition of Done
 
@@ -1266,14 +1443,17 @@ Un'attività è finita solo quando:
 | Citazioni o immagini non approvate | Bassa | Alta | Registro B17 obbligatorio, getter con fallback e citazioni/audio personali assenti finché non vengono forniti |
 | Targeting lineare degrada con molte entità | Media | Media | Cap e profiler; target cache, poi partizionamento soltanto su evidenza |
 | Il PRD resta ambiguo durante il coding | Alta | Media | Decision log breve, contratti sopra e aggiornamento della specifica prima di M1 |
+| Aumento densità B28 satura CPU/GPU o rende il campo illeggibile | Alta | Alta | Tuning dati graduale, profiler Windows/Pixel 9, pooling solo su evidenza e priorità visiva a Player/telegraph |
+| Musica esterna viene importata senza tracciamento licenza | Bassa | Alta | Preferenza CC0, download dalla fonte ufficiale, manifest audio con URL/licenza/hash e copia del testo licenza quando applicabile |
+| Scheduler B33 accumula Boss arretrati o crea overlap | Media | Alta | Una sola flag pending, finestra successiva dallo spawn effettivo, smoke su combattimenti oltre più soglie |
 
 ## 10. Prossima iterazione
 
 Ordine operativo immediato:
 
-1. eseguire B18V sulla baseline B18C–B18U/B18W congelata: regressione completa e project smoke, export puliti Windows/Android, matrice Windows/API 31/API 36 a 16:9/18:9/20:9/cutout/4:3 e ricerca esplicita di `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL` e `CONTRACT_FAIL`;
-2. completare per B18V profiling CPU/GPU/memoria/audio/VFX alla densità massima, soak termico Android di 20 minuti e almeno cinque restart/cambi profilo, riducendo soltanto budget presentazionali configurabili se necessario;
-3. dopo la chiusura documentata di B18V, procedere a B20 con ZIP Windows, APK release firmato, AAB Gradle generabile senza upload e decisione finale sull'icona tematica Android opzionale.
+1. chiudere il confronto percettivo B24 su Windows e Pixel 9, congelando o correggendo il candidato `1,25×`;
+2. procedere a B23, completando implementazione e gate della modalità Difesa Grigliata;
+3. proseguire con B25–B33 mantenendo ogni slice separata dai backlog già completati: B25 (HUD Player), B26–B27 (upgrade e icone), B28 (densità/TTK), B29–B32 (audio e polish UI/Boss/welcome), B33 (run continua e scheduler Boss).
 
 I gate manuali e percettivi precedentemente elencati per B18B, B18E, B18G,
 B18J, B18M, B18Q, B18S, B18T, B18U e B18W sono chiusi dal 25 agosto 2026 e
@@ -1349,3 +1529,6 @@ Timing centralizzati, code visive non interattive e gate percettivo B18R sono
 registrati in [`b18r-verification.md`](./b18r-verification.md).
 Sfondo arena ImageGen, crop responsive, manifest e gate residui B18S sono
 registrati in [`b18s-verification.md`](./b18s-verification.md).
+Scala visuale B24, invarianti gameplay, matrice responsive ed esito dei gate
+automatici/piattaforma sono registrati in
+[`b24-verification.md`](./b24-verification.md).

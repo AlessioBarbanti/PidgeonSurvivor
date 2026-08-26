@@ -54,7 +54,7 @@ func has_valid_configuration() -> bool:
 	return (
 		is_instance_valid(_registry)
 		and _registry.is_catalog_valid()
-		and _registry.get_fallback_definitions().size() >= offer_size
+		and _registry.get_repeatable_definitions().size() >= offer_size
 		and is_instance_valid(_run_controller)
 		and is_instance_valid(_experience_system)
 		and _experience_system.get_run_controller() == _run_controller
@@ -78,21 +78,9 @@ func generate_offer(level: int) -> Array[UpgradeDefinition]:
 	if level < 1 or not is_instance_valid(_registry):
 		return []
 
-	var primary_candidates := _registry.get_eligible_definitions(_ranks)
-	_filter_ability_rank_candidates(primary_candidates)
-	var next_offer := _draw_weighted_without_replacement(
-		primary_candidates,
-		mini(offer_size, primary_candidates.size())
-	)
-	if next_offer.size() < offer_size:
-		var fallback_candidates := _registry.get_eligible_definitions(_ranks, true)
-		_remove_ids(fallback_candidates, next_offer)
-		next_offer.append_array(
-			_draw_weighted_without_replacement(
-				fallback_candidates,
-				offer_size - next_offer.size()
-			)
-		)
+	var candidates := _registry.get_eligible_definitions(_ranks)
+	_filter_ability_rank_candidates(candidates)
+	var next_offer := _draw_weighted_without_replacement(candidates, offer_size)
 
 	_current_offer = next_offer
 	_active_offer_level = level
@@ -218,18 +206,6 @@ func _draw_weighted_without_replacement(
 		selected.append(available[selected_index])
 		available.remove_at(selected_index)
 	return selected
-
-
-func _remove_ids(
-	candidates: Array[UpgradeDefinition],
-	already_selected: Array[UpgradeDefinition]
-) -> void:
-	var selected_ids: Dictionary = {}
-	for definition in already_selected:
-		selected_ids[definition.id] = true
-	for index in range(candidates.size() - 1, -1, -1):
-		if selected_ids.has(candidates[index].id):
-			candidates.remove_at(index)
 
 
 func _filter_ability_rank_candidates(candidates: Array[UpgradeDefinition]) -> void:

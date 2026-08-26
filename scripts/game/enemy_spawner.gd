@@ -146,6 +146,9 @@ func try_spawn_enemy() -> BaseEnemy:
 	var enemy := instance as BaseEnemy
 	enemy.set_target(_target)
 	enemy.set_run_controller(_run_controller)
+	enemy.experience_reward_scale = spawn_profile.get_experience_reward_scale(
+		_run_controller.get_run_time()
+	)
 	_enemy_parent.add_child(enemy)
 	enemy.global_position = spawn_position
 	if not enemy.is_in_group(&"enemies"):

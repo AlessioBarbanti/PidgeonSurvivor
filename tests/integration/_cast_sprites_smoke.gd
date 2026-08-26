@@ -220,9 +220,10 @@ func _validate_collision_contract(player: Player) -> void:
 	)
 	_expect(
 		sprite != null
-		and sprite.scale.is_equal_approx(Vector2(1.65, 1.65))
+		and player.get_character_base_scale().is_equal_approx(Vector2(1.65, 1.65))
+		and sprite.scale.is_equal_approx(Vector2(2.0625, 2.0625))
 		and sprite.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST,
-		"B18U deve conservare scala e origine visuale B18C con filtro nearest."
+		"B18U deve conservare la scala base B18C e accettare il moltiplicatore visuale B24 con filtro nearest."
 	)
 
 

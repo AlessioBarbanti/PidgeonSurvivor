@@ -123,8 +123,18 @@ Controllare package `com.ilgioco.pidgeonsurvivor`, nome applicazione
 
 Su Windows può accadere che Gradle abbia già scritto un APK completo mentre il
 processo `godot_console --export-debug "Android APK"` resta aperto senza nuovo
-output. La sola presenza del file non prova il successo. Prima di interrompere
-il processo, verificare che dimensione e data non cambino fra due letture:
+output. Per i milestone usare il profilo `Release`: il runner osserva soltanto
+il processo avviato da quella esecuzione, attende che un APK nuovo rimanga
+stabile e lo termina prima dell'ispezione statica. L'esito diventa `RECOVERED`
+solo se tutti i controlli dell'APK passano:
+
+```powershell
+.\tools\run-milestone-checks.ps1 -Milestone B18X -Profile Release
+```
+
+Per una diagnosi manuale, la sola presenza del file non prova il successo.
+Prima di interrompere il processo, verificare che dimensione e data non cambino
+fra due letture:
 
 ```powershell
 $apk = Resolve-Path exports\android\pidgeon-survivor-debug.apk

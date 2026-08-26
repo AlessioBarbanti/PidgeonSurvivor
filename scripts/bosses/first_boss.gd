@@ -28,6 +28,12 @@ var _next_pattern_index := 0
 var _radial_volley_count := 0
 var _targeted_blast_count := 0
 var _active_projectiles: Array[BossProjectile] = []
+@onready var _boss_sprite := get_node_or_null("BossSprite") as Sprite2D
+
+
+func _ready() -> void:
+	super._ready()
+	_sync_boss_visual()
 
 
 func _exit_tree() -> void:
@@ -37,6 +43,7 @@ func _exit_tree() -> void:
 
 func _physics_process(delta: float) -> void:
 	super._physics_process(delta)
+	_sync_boss_facing()
 	_advance_attack_cycle(delta)
 
 
@@ -70,6 +77,7 @@ func configure_boss(
 	body_color = definition.body_color
 	outline_color = definition.outline_color
 	accent_color = definition.accent_color
+	_sync_boss_visual()
 	set_target(target)
 	set_run_controller(run_controller)
 
@@ -114,6 +122,14 @@ func get_definition() -> BossDefinition:
 	return definition
 
 
+func get_boss_visual_texture() -> Texture2D:
+	return _boss_sprite.texture if is_instance_valid(_boss_sprite) else null
+
+
+func get_boss_visual_modulate() -> Color:
+	return _boss_sprite.self_modulate if is_instance_valid(_boss_sprite) else Color.WHITE
+
+
 func get_active_pattern_id() -> StringName:
 	return _active_pattern_id
 
@@ -145,6 +161,35 @@ func get_active_projectile_count() -> int:
 
 func get_attack_cooldown_remaining() -> float:
 	return _attack_cooldown_remaining
+
+
+func _sync_boss_visual() -> void:
+	if not is_instance_valid(_boss_sprite) or definition == null:
+		return
+	_boss_sprite.texture = definition.get_visual_texture()
+	_boss_sprite.self_modulate = definition.sprite_modulate
+	var texture_size := (
+		_boss_sprite.texture.get_size()
+		if _boss_sprite.texture != null
+		else Vector2.ZERO
+	)
+	if texture_size.x > 0.0 and texture_size.y > 0.0:
+		var target_diameter := collision_radius * 1.9
+		var scale_factor := target_diameter / maxf(texture_size.x, texture_size.y)
+		_boss_sprite.scale = Vector2.ONE * clampf(scale_factor, 1.0, 4.0)
+	_boss_sprite.visible = _boss_sprite.texture != null
+	_sync_boss_facing()
+
+
+func _sync_boss_facing() -> void:
+	if not is_instance_valid(_boss_sprite):
+		return
+	var target := get_target()
+	if target == null:
+		return
+	var offset_to_target := target.global_position - global_position
+	if not is_zero_approx(offset_to_target.x):
+		_boss_sprite.flip_h = offset_to_target.x < 0.0
 
 
 func _advance_attack_cycle(delta: float) -> void:

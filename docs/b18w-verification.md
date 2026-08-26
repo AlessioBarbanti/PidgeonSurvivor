@@ -85,3 +85,56 @@ Prompt, provenienza, trasformazioni, dimensioni e hash sono registrati in
 La valutazione manuale fisica con dito e percezione umana del dispositivo è
 stata completata il 25 agosto 2026. B18W è quindi completato sulla base della
 prova umana, mantenuta distinta da screenshot e iniezione ADB.
+
+## Aggiornamento 26 agosto 2026 — gerarchia icone kit
+
+Il kit conserva l'ordine verticale originale: passiva sopra, abilità sotto.
+La passiva usa `94×94`, l'attiva `128×128`: la differenza compensa il padding
+trasparente interno delle icone attive e allinea la massa visiva. Lo smoke isolato
+`_ability_selection_icon_scale_smoke.gd` copre le tre geometrie `16:9`, `20:9`
+e `4:3`; la verifica percettiva sul dispositivo resta da rinnovare dopo questo
+pass UI.
+
+Il 26 agosto 2026 gli smoke `ABILITY_SELECTION_ICON_SCALE_SMOKE_OK` e
+`B18W_CHARACTER_SELECT_REFINEMENT_SMOKE_OK` sono verdi. L'APK aggiornato è
+stato installato e avviato sul Pixel 9; il controllo percettivo umano del nuovo
+bilanciamento paritario passiva/attiva resta aperto.
+
+Aggiornamento successivo del 26 agosto 2026: la passiva è stata calibrata a
+`94×94`, con attiva `128×128`, senza cambiare disposizione. Il nuovo APK ha
+avvio a freddo riuscito sul Pixel 9; l'ispezione visiva umana del layout
+aggiornato resta aperta.
+
+L'APK finale di questo pass ha SHA-256
+`09DCE7EC4C9A06A7C0395101BDA006E8322FAA71AED9FDE1F661F3A30CE7DE8E`,
+misura `96.379.884` byte ed è stato installato con cold launch riuscito sul
+Pixel 9.
+
+Calibrazione percettiva successiva: passiva `94×94`, attiva `128×128`; APK
+installato sul Pixel 9, SHA-256
+`D7DB4F26A1FF7B1CA5A83DE2EBC6778DD136FEDAFA911B64A5951163F3D7B8C6`,
+`96.379.920` byte. La conferma visiva umana resta richiesta.
+
+Ricalibrazione finale: passiva `94×94`, attiva `128×128`; APK installato con
+cold launch riuscito sul Pixel 9, SHA-256
+`441F03DC756EC6723ACA0544F84118BC46BDC3AEDA5BA9039A4DF14FA8D97C3E`,
+`96.379.924` byte.
+
+## Revisione 26 agosto 2026 — due card abilità
+
+`KIT DI <NOME>` e il pannello verticale unico sono rimossi. La sezione laterale
+usa due card indipendenti, Passiva e Abilità, con stesso stile, larghezza,
+padding e altezza. Ogni card dispone l'icona una sola volta a sinistra, centrata
+verticalmente rispetto a label, titolo dorato e descrizione a destra; non c'è
+un separatore interno. La passiva conserva `94×94` nella corsia icona `128×128`,
+mentre l'attiva conserva `128×128` per la compensazione del padding trasparente.
+
+Verifiche automatiche verdi: `B18W_CHARACTER_SELECT_REFINEMENT_SMOKE_OK`,
+`ABILITY_SELECTION_ICON_SCALE_SMOKE_OK`, `B18T_CHARACTER_CAROUSEL_SMOKE_OK`
+e `B17A_COMPLETE_ROSTER_ABILITIES_SMOKE_OK`. Restano aperti export/controllo
+statico dell'APK aggiornato e il confronto percettivo umano sul Pixel 9.
+
+L'APK delle due card è stato esportato, installato e avviato a freddo sul Pixel
+9: SHA-256 `0DF9FA57B2C1DD26F777A8CBAA3555BB80D56DBD6F3C2586FEBC90E1CAAE3C1D`,
+`96.387.235` byte. Il 26 agosto 2026 il proprietario ha confermato il risultato
+percettivo sul dispositivo; il gate del nuovo layout è chiuso.

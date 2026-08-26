@@ -137,8 +137,8 @@ func _validate_gameplay_contract(enemy: BaseEnemy) -> void:
 	_expect(enemy.get_experience_amount() == 1, "B18H non deve cambiare il drop XP.")
 	var health := enemy.get_health_component()
 	_expect(
-		health != null and is_equal_approx(health.health_max, 40.0),
-		"B18H non deve cambiare gli HP."
+		health != null and is_equal_approx(health.health_max, 24.0),
+		"B18H deve conservare la baseline HP B28 del nemico base."
 	)
 	var contact := enemy.get_contact_damage()
 	_expect(

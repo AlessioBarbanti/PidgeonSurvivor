@@ -1,7 +1,14 @@
 # B18V — Hardening Windows/Android e performance
 
 Ultimo aggiornamento: 25 agosto 2026
-Stato: **IN VERIFICA**
+Stato: **COMPLETATO**
+
+Il 25 agosto 2026 il proprietario del progetto ha chiesto esplicitamente di
+considerare B18V completato. Questa è una chiusura operativa della milestone:
+le evidenze automatiche e statiche sotto restano valide, mentre emulatori e
+soak fisico non registrati non vengono retroattivamente dichiarati eseguiti.
+Il prerequisito tecnico B18V di B20 è quindi sbloccato; il piano corrente
+posticipa comunque il packaging dopo B22 e B23.
 
 ## Contratto implementato
 
@@ -41,7 +48,7 @@ mediana 63 FPS e p95 frame time 19,23 ms. È un'osservazione tecnica, non una
 chiusura del budget: non certifica il requisito di assenza di sequenze ripetute
 oltre 33,3 ms né la validazione fisica Android.
 
-## Matrice e gate aperti
+## Matrice tecnica al momento della chiusura accettata
 
 | Ambiente | Stato | Gate rimanente |
 |---|---|---|
@@ -56,8 +63,11 @@ passare `--b18v-stress` attraverso l'activity launcher non ha inoltrato gli
 argomenti alla activity Godot non esportata; non viene trattato come test di
 stress né come evidenza fisica.
 
-Per chiudere B18V servono sul Pixel 9: mediana almeno 59 FPS, almeno 95% dei
+Il contratto originario richiedeva sul Pixel 9: mediana almeno 59 FPS, almeno 95% dei
 campioni a 55 FPS o più, nessuna sequenza ripetuta oltre 33,3 ms, nessun calo
 sostenuto oltre 10%, cleanup azzerato, pendenza memoria non oltre 1 MiB/min,
 memoria finale entro max(10%, 32 MiB) dal warm-up e nessuno stato termico
-severe/critical. Fino ad allora B20 non è `PRONTO`.
+severe/critical. Questi valori restano storico del gate non registrato e non
+sono attribuiti a una sessione inesistente; l'accettazione del proprietario ha
+chiuso il prerequisito tecnico B18V di B20. La roadmap mantiene B20
+`POSTICIPATO` dopo B22 e B23.

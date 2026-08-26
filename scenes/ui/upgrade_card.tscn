@@ -124,13 +124,13 @@ text = "POTENZIAMENTO"
 vertical_alignment = 1
 
 [node name="IconCenter" type="CenterContainer" parent="Margins/Content"]
-custom_minimum_size = Vector2(0, 82)
+custom_minimum_size = Vector2(0, 198)
 layout_mode = 2
 mouse_filter = 2
 
 [node name="Icon" type="TextureRect" parent="Margins/Content/IconCenter"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(76, 76)
+custom_minimum_size = Vector2(192, 192)
 layout_mode = 2
 mouse_filter = 2
 expand_mode = 3

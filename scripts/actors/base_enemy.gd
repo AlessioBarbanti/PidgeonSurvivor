@@ -12,6 +12,13 @@ signal speed_modifiers_changed(enemy: BaseEnemy, effective_multiplier: float)
 	set(value):
 		experience_amount = maxi(value, 1)
 
+## Moltiplicatore assegnato dallo spawn ordinario per conservare il budget XP
+## quando cresce la frequenza delle kill. I Boss non passano dallo spawner e
+## restano quindi al valore unitario dichiarato nei propri dati.
+@export_range(0.0, 64.0, 0.001, "or_greater") var experience_reward_scale := 1.0:
+	set(value):
+		experience_reward_scale = maxf(value, 0.0) if is_finite(value) else 0.0
+
 @export_range(1.0, 128.0, 0.5) var collision_radius: float = 20.0:
 	set(value):
 		collision_radius = maxf(value, 1.0)
@@ -299,6 +306,10 @@ func get_contact_damage() -> ContactDamage:
 
 func get_experience_amount() -> int:
 	return experience_amount
+
+
+func get_experience_reward_value() -> float:
+	return float(experience_amount) * experience_reward_scale
 
 
 func set_target(value: Node2D) -> void:

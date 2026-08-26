@@ -1,6 +1,9 @@
 extends Control
 
 const SETUP_VALIDATOR = preload("res://scripts/app/setup_validator.gd")
+const B22_PHYSICAL_VERIFICATION_FLAG := "user://b22_physical_verification.flag"
+const B22_PHYSICAL_VERIFICATION_SEED := 4
+const B22_PHYSICAL_AUTODEFEAT_DELAY_SECONDS := 8.0
 
 @export_group("Safe Area Controls")
 ## Extra left/bottom distance from the OS safe area for edge gestures.
@@ -124,7 +127,8 @@ func _ready() -> void:
 		_boss_projectiles,
 		_targeting_system,
 		_experience_system,
-		_boss_ui
+		_boss_ui,
+		_friend_registry
 	)
 	_upgrade_service.configure(
 		_upgrade_registry,
@@ -212,6 +216,7 @@ func _ready() -> void:
 	else:
 		_show_welcome_screen()
 	call_deferred("_start_b18v_stress_from_args")
+	call_deferred("_start_b22_physical_verification_from_flag")
 	print(
 		"B17A_READY os=%s viewport=%s window=%s display_safe=%s playfield=%s safe_area=%s friend=%s seed=%d"
 		% [
@@ -640,7 +645,86 @@ func _start_b18v_stress_from_args() -> void:
 		print("B18V_CONTRACT_OK")
 
 
+func _start_b22_physical_verification_from_flag() -> void:
+	if not _has_b22_physical_verification_flag():
+		return
+	var flag_path := ProjectSettings.globalize_path(B22_PHYSICAL_VERIFICATION_FLAG)
+	var removal_error := DirAccess.remove_absolute(flag_path)
+	if removal_error != OK:
+		push_error(
+			"B22 physical verification: impossibile consumare il flag monouso (%d)."
+			% removal_error
+		)
+		return
+	if not _run_controller.is_running():
+		push_error("B22 physical verification: run debug non avviata.")
+		return
+	var thresholds := _game_director.get_thresholds()
+	if thresholds.is_empty():
+		push_error("B22 physical verification: soglia Boss assente.")
+		return
+	if not _boss_encounter.boss_intro_completed.is_connected(
+		_on_b22_physical_verification_intro_completed
+	):
+		_boss_encounter.boss_intro_completed.connect(
+			_on_b22_physical_verification_intro_completed,
+			CONNECT_ONE_SHOT
+		)
+	print(
+		"B22_PHYSICAL_VERIFICATION_ARMED seed=%d threshold=%.2f"
+		% [_run_controller.get_seed(), thresholds[0]]
+	)
+	# Advance only the debug run clock through the normal Director signal path.
+	# Boss definition, scene, stats, patterns, UI, reward and terminal flow stay unchanged.
+	_run_controller._process(thresholds[0] + 0.01)
+	var definition := _boss_encounter.get_active_definition()
+	var boss := _boss_encounter.get_active_boss()
+	if (
+		_run_controller.get_state() != RunController.RunState.BOSS_INTRO
+		or not is_instance_valid(boss)
+		or definition == null
+	):
+		push_error("B22 physical verification: intro Boss non raggiunta.")
+		return
+	print(
+		"B22_PHYSICAL_BOSS_INTRO id=%s title=%s evil=%s"
+		% [definition.id, definition.get_safe_title(), definition.is_evil_variant()]
+	)
+
+
+func _on_b22_physical_verification_intro_completed(
+	boss: FirstBoss,
+	schedule_index: int
+) -> void:
+	print(
+		"B22_PHYSICAL_BOSS_ACTIVE schedule=%d pattern=%s"
+		% [schedule_index, boss.get_active_pattern_id()]
+	)
+	await get_tree().create_timer(B22_PHYSICAL_AUTODEFEAT_DELAY_SECONDS).timeout
+	if (
+		not is_instance_valid(boss)
+		or boss != _boss_encounter.get_active_boss()
+		or not _run_controller.is_running()
+	):
+		return
+	var health := boss.get_health_component()
+	if health == null or not boss.take_damage(health.health_current):
+		push_error("B22 physical verification: auto-defeat Boss fallita.")
+		return
+	print("B22_PHYSICAL_BOSS_AUTODEFEAT damage=%.1f" % health.health_max)
+
+
+func _has_b22_physical_verification_flag() -> bool:
+	return (
+		OS.is_debug_build()
+		and OS.get_name() == "Android"
+		and FileAccess.file_exists(B22_PHYSICAL_VERIFICATION_FLAG)
+	)
+
+
 func _resolve_run_seed() -> int:
+	if _has_b22_physical_verification_flag():
+		return B22_PHYSICAL_VERIFICATION_SEED
 	for argument in OS.get_cmdline_user_args():
 		if argument.begins_with("--run-seed="):
 			return int(argument.trim_prefix("--run-seed="))
@@ -650,6 +734,8 @@ func _resolve_run_seed() -> int:
 
 
 func _should_auto_start_default_character() -> bool:
+	if _has_b22_physical_verification_flag():
+		return true
 	if (
 		OS.get_cmdline_user_args().has("--show-welcome")
 		or bool(ProjectSettings.get_setting(
@@ -835,22 +921,20 @@ func _validate_current_contract() -> bool:
 			failures.append("BossEncounter non collegato alla UI Boss.")
 		if _boss_encounter.get_boss_projectile_parent() != _boss_projectiles:
 			failures.append("BossEncounter non collegato ai proiettili Boss.")
+		if _boss_encounter.get_friend_registry() != _friend_registry:
+			failures.append("BossEncounter B22 non collegato al catalogo amici.")
 		var boss_definition := _boss_encounter.boss_definition
 		if boss_definition == null or not boss_definition.is_valid():
 			failures.append("BossEncounter privo di BossDefinition valida.")
 		else:
 			if (
-				_friend_registry == null
-				or boss_definition.friend_profile == null
-				or _friend_registry.resolve_definition(boss_definition.friend_profile.id)
-				!= boss_definition.friend_profile
+				boss_definition.is_evil_variant()
+				or boss_definition.friend_profile != null
+				or boss_definition.id != &"special_pigeon"
 			):
-				failures.append("Il Boss B17 non usa una controparte Evil registrata.")
-			elif (
-				boss_definition.get_safe_title()
-				!= boss_definition.friend_profile.get_public_evil_display_name()
-			):
-				failures.append("Il titolo Boss non deriva dal profilo Evil dati.")
+				failures.append("B22 richiede il piccione speciale come Boss baseline.")
+			if not is_equal_approx(_boss_encounter.evil_boss_chance, 0.25):
+				failures.append("B22 richiede evil_boss_chance dati al 25%.")
 			if (
 				not boss_definition.quote_approved
 				and boss_definition.get_safe_quote() != boss_definition.safe_quote_placeholder
@@ -1043,8 +1127,8 @@ func _validate_current_contract() -> bool:
 		or not _upgrade_effect_registry.can_apply(summer_grill)
 	):
 		failures.append("B18J richiede Grigliata estiva dati a cinque rank.")
-	if _upgrade_registry.get_fallback_definitions().size() < UpgradeService.DEFAULT_OFFER_SIZE:
-		failures.append("UpgradeRegistry privo di tre fallback distinti e ripetibili.")
+	if _upgrade_registry.get_repeatable_definitions().size() < UpgradeService.DEFAULT_OFFER_SIZE:
+		failures.append("UpgradeRegistry privo di tre potenziamenti normali ripetibili.")
 	if not _upgrade_service.has_valid_configuration():
 		failures.append("UpgradeService non configurato per offerte da tre carte.")
 	if _upgrade_service.get_registry() != _upgrade_registry:

@@ -277,7 +277,7 @@ func _validate_ability(
 			_expect(effect is AbilityAreaEffect, "Migi deve creare l'aura Zen.")
 			_expect_float_near(enemy.get_speed_multiplier(), 0.4, "L'aura Zen deve rallentare del 60%.")
 		&"marghe":
-			_expect_float_near(initial_health, 38.0, "Marghe deve ridurre del 5% la salute dei nemici base.")
+			_expect_float_near(initial_health, 22.8, "Marghe deve ridurre del 5% la salute base B28.")
 			_expect(effect is IllusionDecoy, "Marghe deve creare un'illusione.")
 			_expect(enemy.get_target() == effect, "L'illusione deve deviare l'aggro.")
 	_validate_effect_pause(movement_slice.get_run_controller(), effect, friend_id)

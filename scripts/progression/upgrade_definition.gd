@@ -15,7 +15,6 @@ extends Resource
 @export_range(1, 100, 1, "or_greater") var max_rank := 1
 @export_range(0, 99, 1, "or_greater") var initial_rank := 0
 @export var repeatable := false
-@export var fallback := false
 @export var tags: Array[StringName] = []
 ## Maps another upgrade ID to the minimum rank required for this definition.
 @export var prerequisites: Dictionary = {}
@@ -32,7 +31,6 @@ func is_valid() -> bool:
 		or max_rank < 1
 		or initial_rank < 0
 		or initial_rank >= max_rank
-		or (fallback and not repeatable)
 	):
 		return false
 
@@ -70,7 +68,7 @@ func get_current_rank(current_ranks: Dictionary) -> int:
 
 
 func is_ability_rank_definition() -> bool:
-	if effect_id != &"ability_rank" or initial_rank != 1 or max_rank != 5 or repeatable or fallback:
+	if effect_id != &"ability_rank" or initial_rank != 1 or max_rank != 5 or repeatable:
 		return false
 	var ability_id := StringName(str(effect_parameters.get("ability_id", "")))
 	return (

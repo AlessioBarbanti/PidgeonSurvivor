@@ -3,6 +3,11 @@ extends Resource
 
 const MINIMUM_POSITIVE_VALUE := 0.001
 
+enum VisualKind {
+	SPECIAL_PIGEON,
+	EVIL_FRIEND,
+}
+
 @export var id: StringName = &"first_boss"
 @export var title := "IL CAPOSQUADRA OMBRA"
 @export var friend_profile: FriendDefinition
@@ -35,6 +40,9 @@ const MINIMUM_POSITIVE_VALUE := 0.001
 @export_range(0.0, 1000000.0, 0.1, "or_greater") var targeted_blast_damage := 26.0
 
 @export_group("Visual")
+@export var visual_kind := VisualKind.SPECIAL_PIGEON
+@export var portrait: Texture2D
+@export var sprite_modulate := Color.WHITE
 @export var body_color := Color(0.55, 0.17, 0.92, 1.0)
 @export var outline_color := Color(0.08, 0.015, 0.16, 1.0)
 @export var accent_color := Color(1.0, 0.72, 0.18, 1.0)
@@ -49,15 +57,25 @@ func get_safe_quote() -> String:
 
 
 func get_safe_title() -> String:
-	if friend_profile != null and friend_profile.is_valid():
+	if is_evil_variant() and friend_profile != null and friend_profile.is_valid():
 		return friend_profile.get_public_evil_display_name()
 	return title.strip_edges()
 
 
 func get_safe_portrait() -> Texture2D:
-	if friend_profile == null or not friend_profile.is_valid():
-		return null
-	return friend_profile.get_public_evil_portrait()
+	if is_evil_variant() and friend_profile != null and friend_profile.is_valid():
+		return friend_profile.get_public_evil_portrait()
+	return portrait
+
+
+func get_visual_texture() -> Texture2D:
+	if is_evil_variant() and friend_profile != null and friend_profile.is_valid():
+		return friend_profile.get_gameplay_idle_right()
+	return portrait
+
+
+func is_evil_variant() -> bool:
+	return visual_kind == VisualKind.EVIL_FRIEND
 
 
 func is_valid() -> bool:
@@ -65,6 +83,12 @@ func is_valid() -> bool:
 		not id.is_empty()
 		and not get_safe_title().is_empty()
 		and not get_safe_quote().is_empty()
+		and visual_kind >= VisualKind.SPECIAL_PIGEON
+		and visual_kind <= VisualKind.EVIL_FRIEND
+		and (
+			not is_evil_variant()
+			or (friend_profile != null and friend_profile.is_valid())
+		)
 		and is_finite(health_max)
 		and health_max > 0.0
 		and is_finite(move_speed)

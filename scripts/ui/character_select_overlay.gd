@@ -16,8 +16,7 @@ const EMULATED_MOUSE_SUPPRESSION_MSEC := 600
 @onready var _next_button: Button = %NextButton
 @onready var _name_label: Label = %NameLabel
 @onready var _role_label: Label = %RoleLabel
-@onready var _ability_panel: PanelContainer = %AbilityPanel
-@onready var _kit_label: Label = %KitLabel
+@onready var _ability_cards: Control = %AbilityCards
 @onready var _passive_icon: TextureRect = %PassiveIcon
 @onready var _passive_title_label: Label = %PassiveTitleLabel
 @onready var _passive_description_label: Label = %PassiveDescriptionLabel
@@ -195,11 +194,15 @@ func get_backdrop() -> NinePatchRect:
 
 
 func get_ability_panel_rect() -> Rect2:
-	return _global_rect(_ability_panel)
+	return _global_rect(_ability_cards)
 
 
 func get_ability_icon() -> Texture2D:
 	return _ability_icon.texture if is_instance_valid(_ability_icon) else null
+
+
+func get_ability_icon_rect() -> Rect2:
+	return _global_rect(_ability_icon)
 
 
 func get_passive_icon() -> Texture2D:
@@ -220,7 +223,6 @@ func get_role_rect() -> Rect2:
 
 func get_displayed_copy() -> Dictionary:
 	return {
-		"kit_title": _kit_label.text if is_instance_valid(_kit_label) else "",
 		"name": _name_label.text if is_instance_valid(_name_label) else "",
 		"role": _role_label.text if is_instance_valid(_role_label) else "",
 		"passive_title": _passive_title_label.text if is_instance_valid(_passive_title_label) else "",
@@ -294,7 +296,6 @@ func _select_index(index: int, animate: bool) -> void:
 	_selected_definition = definition
 	_name_label.text = definition.get_public_display_name()
 	_role_label.text = definition.get_public_role()
-	_kit_label.text = "KIT DI %s" % definition.get_public_display_name().to_upper()
 	_passive_icon.texture = definition.get_public_passive_icon()
 	_passive_icon.visible = _passive_icon.texture != null
 	_passive_title_label.text = definition.get_public_passive_title()

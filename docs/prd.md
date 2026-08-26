@@ -98,6 +98,17 @@ preservata la percentuale di vita e un Player morto non viene resuscitato.
 L'effetto si compone moltiplicativamente con passive e altri upgrade e si azzera
 con restart o cambio personaggio.
 
+`Forchettone da Braciere` è la carta danno comune dedicata: cinque rank da
+`×1,15` compongono il danno base dell'arma fino a `×2,0113571875`, nel cap
+runtime dichiarato per il danno. Non altera frequenza di fuoco, movimento,
+pickup o dati condivisi dell'arma; si combina con Gossip e Birra e si azzera a
+restart o cambio personaggio.
+
+Le sette icone refresh delle carte sono derivati PNG pixel-art `128×128`
+centrati con margine trasparente coerente; ID, pesi, rank, prerequisiti ed
+effetti restano invariati. Master e derivati sono tracciati nel
+[`manifest upgrade`](../assets/art/icons/upgrades/ASSET-MANIFEST.md).
+
 ### 3.4. Sistema delle abilità attive
 
 Ogni personaggio ha una sola abilità attiva assegnata dalla propria definizione.
@@ -254,12 +265,14 @@ che blocca clock, danni, spawn e progressione. La schermata finale mostra Boss,
 tempo e ricompensa e consente una nuova run in-place. Il restart elimina Boss,
 proiettili, offerte, XP, cooldown ed effetti appartenenti alla run precedente.
 
-### 3.5A. Evoluzioni post-release: Boss Evil e Difesa Grigliata
+### 3.5A. Evoluzioni prima del packaging finale: Boss Evil e Difesa Grigliata
 
-Dopo la release B20, il Boss di riferimento diventa il piccione speciale B18H.
-B22 aggiunge una sostituzione configurabile, con probabilità iniziale `25%` e
-scelta deterministica dal seed della run: al posto del piccione speciale può
-apparire un `Evil <Nome>` estratto casualmente dagli otto profili. In questa
+Prima del packaging finale B20, il Boss di riferimento diventa il piccione
+speciale B18H. B22 aggiunge una sostituzione configurabile, con probabilità
+iniziale `25%` e
+scelta deterministica da seed della run più indice della soglia: al posto del
+piccione speciale può apparire un `Evil <Nome>` estratto casualmente dagli otto
+profili. In questa
 prima versione Evil riusa lo sprite del relativo Player con palette viola scura
 e accenti magenta ad alto contrasto; mantiene statistiche, hitbox e i due
 pattern del piccione Boss. Le abilità del personaggio non sono ancora disponibili
@@ -275,6 +288,10 @@ cleanup e target selection separati per evitare residui tra modalità e restart.
 La selezione della modalità resta in `BOOT`, integrata nel flusso di conferma
 del profilo e non avvia mai una run da sola.
 
+B20 viene eseguito dopo B22 e B23 e confeziona entrambe le funzionalità nella
+prima release Windows/Android; non viene rimosso perché resta responsabile di
+ZIP Windows, firma APK e generazione AAB.
+
 ### 3.6. Catalogo amici e controparti Evil
 
 Gli otto profili approvati sono Magno, Bea, Zat, Alea, Aleo, Lollo, Migi e
@@ -282,7 +299,8 @@ Marghe. Ogni profilo dichiara in un `FriendDefinition` identità, ruolo, passiva
 parametri runtime della passiva, attiva, ID abilità, ritratto sostituibile e la
 controparte Boss denominata `Evil <Nome>`. Il Player della vertical slice M4 è
 Magno; B17A rende selezionabili e giocabili tutti gli otto profili prima della
-run. Il primo incontro Boss continua a usare Evil Bea.
+run. Da B22 ogni incontro parte dal piccione speciale baseline e può risolversi
+in uno degli otto Evil secondo probabilità dati e seed della run.
 
 Una welcome screen precede la selezione e non inizializza alcuna run. `GIOCA`
 apre il selettore, mentre le impostazioni restano raggiungibili sia da questa
@@ -298,12 +316,14 @@ master `1536×1024` restano esclusi dagli export.
 
 Il raffinamento B18W usa un fondale notturno incorniciato, Back separato in alto
 a sinistra, card squadrate, frecce metalliche/oro, card centrale dominante e un
-kit laterale compatto per passiva e abilità, entrambe con icona e titolo dorato.
+due card laterali compatte per passiva e abilità, ciascuna con icona, label,
+titolo dorato e descrizione.
 Ogni profilo usa una propria icona passiva raster `128×128` derivata da un master
 RGBA escluso dagli export; prompt, sorgente, trasformazione e hash sono nel
 manifest delle passive.
-Il sottotitolo istruttivo è rimosso e `KIT DI <NOME>` collega esplicitamente il
-pannello al profilo. Nome e ruolo formano un blocco compatto immediatamente
+Il sottotitolo istruttivo e `KIT DI <NOME>` sono rimossi. Ogni card abilità usa
+icona a sinistra centrata rispetto al blocco testuale a destra; nome e ruolo
+formano un blocco compatto immediatamente
 sotto il carosello e il CTA segue senza vuoti verticali. In basso rimane un solo CTA ornamentale compatto: la base ImageGen non
 contiene testo e Godot sovrappone dinamicamente `Gioca con <Nome>`, con
 maiuscola naturale. Il CTA non può coprire la cornice e non modifica le regole
@@ -351,7 +371,13 @@ Ogni striscia contiene passo A, idle e passo B su celle `32×32`; il Player usa
 nearest-neighbor, alterna quattro fasi di camminata e conserva facing e ultima
 direzione B18C. Le sorgenti trasparenti `1536×1024` sono conservate per riuso
 artistico ma escluse da import ed export. La sostituzione non modifica origine,
-scala, hitbox, velocità, collisioni, passive, abilità o timing gameplay.
+hitbox, velocità, collisioni, passive, abilità o timing gameplay. B24 aggiunge
+separatamente un moltiplicatore esclusivamente presentazionale alla scala base
+dello sprite: il candidato `1,25×` porta `CharacterSprite` da `1,65` a `2,0625`,
+senza scalare il `CharacterBody2D`, il raggio collisione `24`, l'origine di fuoco,
+i raggi, il clamp arena o qualsiasi coordinata/statistica gameplay. Il valore
+resta configurabile e sarà congelato soltanto dopo confronto percettivo su
+Windows e Pixel 9 con orde dense, Boss, VFX e bordi del playfield.
 
 ## 4. Idee per i potenziamenti (Citazioni e Amici)
 

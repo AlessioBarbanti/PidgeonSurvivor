@@ -16,7 +16,7 @@ func _run() -> void:
 	await process_frame
 	_validate_definition_and_registry()
 	await _validate_reproducible_draws()
-	await _validate_fallback_and_reset()
+	await _validate_repeatable_cards_and_reset()
 	await _validate_composed_level_flow()
 	await _finish()
 
@@ -27,13 +27,10 @@ func _validate_definition_and_registry() -> void:
 	if data_definition != null:
 		_expect(data_definition.id == &"swift_steps", "L'ID dati deve essere stabile.")
 		_expect(data_definition.effect_id == &"player_move_speed_multiplier", "L'effetto deve essere dichiarativo.")
-		_expect(data_definition.max_rank == 5 and not data_definition.repeatable, "Il rank massimo deve provenire dai dati.")
+		_expect(data_definition.max_rank == 5 and data_definition.repeatable, "Passo Leggero deve restare ripetibile oltre il rank nominale.")
 
 	var invalid_id := _make_definition(&"Invalid ID")
 	_expect(not invalid_id.is_valid(), "Gli ID non snake_case devono essere respinti.")
-	var invalid_fallback := _make_definition(&"invalid_fallback", true)
-	invalid_fallback.repeatable = false
-	_expect(not invalid_fallback.is_valid(), "Un fallback con cap deve essere respinto.")
 
 	var duplicate_a := _make_definition(&"duplicate")
 	var duplicate_b := _make_definition(&"duplicate")
@@ -85,7 +82,7 @@ func _collect_sequence(seed_value: int) -> Array[String]:
 		definition.max_rank = 10
 		definition.weight = float(index + 1)
 		definitions.append(definition)
-	definitions.append_array(_make_fallbacks())
+	definitions.append_array(_make_repeatables())
 
 	var fixture := await _create_fixture(definitions, seed_value)
 	var controller := fixture.get_node("RunController") as RunController
@@ -110,10 +107,10 @@ func _collect_sequence(seed_value: int) -> Array[String]:
 	return sequence
 
 
-func _validate_fallback_and_reset() -> void:
+func _validate_repeatable_cards_and_reset() -> void:
 	var primary := _make_definition(&"limited_primary")
 	var definitions: Array[UpgradeDefinition] = [primary]
-	definitions.append_array(_make_fallbacks())
+	definitions.append_array(_make_repeatables())
 	var fixture := await _create_fixture(definitions, 20202)
 	var controller := fixture.get_node("RunController") as RunController
 	var experience := fixture.get_node("ExperienceSystem") as ExperienceSystem
@@ -128,12 +125,12 @@ func _validate_fallback_and_reset() -> void:
 
 	var second_offer := service.get_current_offer()
 	_expect(_has_three_unique_ids(_ids(second_offer)), "Il fallback completo deve avere tre ID distinti.")
-	_expect(_all_fallback(second_offer), "Con la primaria al cap, l'offerta deve usare solo fallback.")
+	_expect(_all_repeatable(second_offer), "Con la primaria al cap, l'offerta deve usare carte normali ripetibili.")
 	var repeatable_id := second_offer[0].id if not second_offer.is_empty() else &""
 	_expect(service.select_upgrade(repeatable_id), "Il primo fallback deve essere selezionabile.")
 
 	var third_offer := service.get_current_offer()
-	_expect(_all_fallback(third_offer), "I fallback devono restare eleggibili nei livelli successivi.")
+	_expect(_all_repeatable(third_offer), "Le carte ripetibili devono restare eleggibili nei livelli successivi.")
 	_expect(_ids(third_offer).has(repeatable_id), "Il fallback acquisito deve poter ricomparire in un'altra offerta.")
 	_expect(service.select_upgrade(repeatable_id), "Lo stesso fallback deve poter superare max_rank perché ripetibile.")
 	_expect(service.get_rank(repeatable_id) == 2, "Il rank del fallback ripetibile deve avanzare due volte.")
@@ -193,8 +190,8 @@ func _validate_composed_level_flow() -> void:
 			ability.set_process(false)
 
 	_expect(
-		registry.get_definitions().size() == 20,
-		"Il catalogo composto deve avere diciassette primarie e tre fallback."
+		registry.get_definitions().size() == 18,
+		"Il catalogo composto deve avere diciotto carte normali."
 	)
 	_expect(service.get_current_offer().is_empty(), "Una run senza level-up non deve anticipare carte.")
 	_expect(experience.add_experience(45), "La scena composta deve attraversare tre soglie.")
@@ -202,7 +199,7 @@ func _validate_composed_level_flow() -> void:
 		var offer := service.get_current_offer()
 		_expect(service.get_active_offer_level() == expected_level, "Ogni livello accodato deve avere la propria offerta.")
 		_expect(_has_three_unique_ids(_ids(offer)), "La scena composta deve offrire tre ID unici.")
-		_expect(not _all_fallback(offer), "Le primarie eleggibili devono precedere i fallback.")
+		_expect(_has_three_unique_ids(_ids(offer)), "Ogni offerta composta deve restare completa senza fallback.")
 		if offer.is_empty() or not service.select_upgrade(offer[0].id):
 			_expect(false, "La scena composta deve poter registrare la scelta.")
 			break
@@ -260,7 +257,7 @@ func _create_fixture(
 	return fixture
 
 
-func _make_definition(upgrade_id: StringName, is_fallback: bool = false) -> UpgradeDefinition:
+func _make_definition(upgrade_id: StringName, is_repeatable: bool = false) -> UpgradeDefinition:
 	var definition := UpgradeDefinition.new()
 	definition.id = upgrade_id
 	definition.title = String(upgrade_id)
@@ -268,19 +265,16 @@ func _make_definition(upgrade_id: StringName, is_fallback: bool = false) -> Upgr
 	definition.effect_id = &"smoke_effect"
 	definition.weight = 1.0
 	definition.max_rank = 1
-	definition.repeatable = is_fallback
-	definition.fallback = is_fallback
-	var definition_tags: Array[StringName] = []
-	definition_tags.append(&"fallback" if is_fallback else &"test")
-	definition.tags = definition_tags
+	definition.repeatable = is_repeatable
+	definition.tags = [&"test"]
 	return definition
 
 
-func _make_fallbacks() -> Array[UpgradeDefinition]:
+func _make_repeatables() -> Array[UpgradeDefinition]:
 	return [
-		_make_definition(&"fallback_alpha", true),
-		_make_definition(&"fallback_beta", true),
-		_make_definition(&"fallback_gamma", true),
+		_make_definition(&"repeatable_alpha", true),
+		_make_definition(&"repeatable_beta", true),
+		_make_definition(&"repeatable_gamma", true),
 	]
 
 
@@ -298,11 +292,11 @@ func _has_three_unique_ids(ids: Array[StringName]) -> bool:
 	return ids.size() == UpgradeService.DEFAULT_OFFER_SIZE and unique_ids.size() == ids.size()
 
 
-func _all_fallback(definitions: Array[UpgradeDefinition]) -> bool:
+func _all_repeatable(definitions: Array[UpgradeDefinition]) -> bool:
 	if definitions.is_empty():
 		return false
 	for definition in definitions:
-		if not definition.fallback:
+		if not definition.repeatable:
 			return false
 	return true
 

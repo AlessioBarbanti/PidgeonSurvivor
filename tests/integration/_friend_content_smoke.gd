@@ -203,15 +203,15 @@ func _validate_composed_scene() -> void:
 		)
 	_expect(
 		boss_encounter != null
-		and boss_encounter.boss_definition.friend_profile == BEA
-		and boss_encounter.boss_definition.get_safe_title() == "Evil Bea",
-		"Il primo Boss dati deve essere la controparte Evil approvata di Bea."
+		and boss_encounter.boss_definition.id == &"special_pigeon"
+		and not boss_encounter.boss_definition.is_evil_variant()
+		and boss_encounter.boss_definition.get_safe_title() == "PICCIONE SPECIALE",
+		"Il Boss baseline B22 deve essere il piccione speciale approvato."
 	)
 	_expect(
 		boss_encounter != null
-		and boss_encounter.boss_definition.get_safe_portrait()
-		== (BEA as FriendDefinition).get_public_evil_portrait(),
-		"Il Boss deve riusare l'asset Evil sostituibile del profilo amico."
+		and boss_encounter.boss_definition.get_safe_portrait() != null,
+		"Il Boss baseline deve esporre il ritratto del piccione speciale."
 	)
 
 	var run_controller := movement_slice.get_run_controller() as RunController

@@ -69,7 +69,6 @@ func _validate_refined_selector() -> void:
 		var ability := abilities.resolve_definition(definition.active_ability_id)
 		var copy := selector.get_displayed_copy()
 		_expect(selector.get_selected_definition() == definition, "%s deve essere il profilo centrale." % expected_id)
-		_expect(copy.kit_title == "KIT DI %s" % definition.get_public_display_name().to_upper(), "%s deve collegare il kit al profilo centrale." % expected_id)
 		_expect(copy.name == definition.get_public_display_name(), "%s deve mantenere la maiuscola naturale." % expected_id)
 		_expect(copy.role == definition.get_public_role(), "%s deve aggiornare atomicamente il ruolo." % expected_id)
 		_expect(copy.passive_title == definition.get_public_passive_title(), "%s deve aggiornare il nome passiva." % expected_id)
@@ -129,6 +128,13 @@ func _validate_hierarchy(selector: CharacterSelectOverlay) -> void:
 	var carousel_rect := selector.get_carousel_rect()
 	var center_rect := selector.get_center_card_rect()
 	var ability_rect := selector.get_ability_panel_rect()
+	var ability_icon_rect := selector.get_ability_icon_rect()
+	var passive_card := selector.get_node_or_null("Center/SelectionPanel/Content/MainRow/AbilityCards/PassiveCard") as PanelContainer
+	var ability_card := selector.get_node_or_null("Center/SelectionPanel/Content/MainRow/AbilityCards/AbilityCard") as PanelContainer
+	var passive_icon_slot := selector.get_node_or_null("Center/SelectionPanel/Content/MainRow/AbilityCards/PassiveCard/PassiveContent/PassiveIconSlot") as CenterContainer
+	var passive_text := selector.get_node_or_null("Center/SelectionPanel/Content/MainRow/AbilityCards/PassiveCard/PassiveContent/PassiveText") as VBoxContainer
+	var ability_icon_slot := selector.get_node_or_null("Center/SelectionPanel/Content/MainRow/AbilityCards/AbilityCard/AbilityContent/AbilityIconSlot") as CenterContainer
+	var ability_text := selector.get_node_or_null("Center/SelectionPanel/Content/MainRow/AbilityCards/AbilityCard/AbilityContent/AbilityText") as VBoxContainer
 	var name_rect := selector.get_name_rect()
 	var role_rect := selector.get_role_rect()
 	var confirm_rect := selector.get_confirm_button().get_global_rect()
@@ -153,14 +159,26 @@ func _validate_hierarchy(selector: CharacterSelectOverlay) -> void:
 	_expect(back_rect.end.y <= title_rect.position.y, "Back non deve restare come azione inferiore.")
 	_expect(back_rect.size.x <= 140.0 and back_rect.size.y <= 44.0, "Back deve restare piccolo e discreto.")
 	_expect(not selector.has_node("Center/SelectionPanel/Content/Subtitle"), "Il sottotitolo istruttivo superfluo deve essere rimosso.")
+	_expect(not selector.has_node("Center/SelectionPanel/Content/MainRow/AbilityCards/KitLabel"), "L'intestazione KIT DI <NOME> deve essere rimossa.")
 	_expect(center_rect.size.x > selector.get_preview_card_rect(1).size.x, "La card centrale deve predominare sulle anteprime.")
 	_expect(carousel_rect.encloses(selector.get_preview_card_rect(-1)) and carousel_rect.encloses(selector.get_preview_card_rect(1)), "Le anteprime devono essere mini-card complete, non tagliate.")
-	_expect(ability_rect.position.x > carousel_rect.end.x, "Il pannello abilita deve essere laterale al carosello.")
+	_expect(ability_rect.position.x > carousel_rect.end.x, "Le card abilita devono essere laterali al carosello.")
 	_expect(ability_rect.position.x - carousel_rect.end.x <= 70.0, "Personaggio e kit devono dialogare senza una frattura eccessiva.")
-	_expect(ability_rect.size.x >= 370.0 and ability_rect.size.x <= 390.0, "Il pannello kit deve bilanciare il peso del carosello.")
-	_expect(ability_rect.size.y <= 400.0, "Il pannello kit non deve tornare a essere una scheda tecnica vuota.")
+	_expect(ability_rect.size.x >= 370.0 and ability_rect.size.x <= 390.0, "Le card abilita devono bilanciare il peso del carosello.")
+	_expect(ability_rect.size.y <= 390.0, "Le due card abilita devono restare compatte.")
+	_expect(passive_card != null and ability_card != null, "Passiva e abilita devono usare due riquadri separati.")
+	if passive_card != null and ability_card != null:
+		_expect(passive_card.get_global_rect().size.distance_to(ability_card.get_global_rect().size) <= 1.0, "Le due card devono avere la stessa dimensione (passiva=%s, attiva=%s)." % [passive_card.get_global_rect().size, ability_card.get_global_rect().size])
+		_expect(passive_card.get_global_rect().end.y < ability_card.get_global_rect().position.y, "Le card devono essere separate senza divisore interno.")
+	_expect(passive_icon_slot != null and passive_text != null and ability_icon_slot != null and ability_text != null, "Ogni card deve avere una corsia icona e un blocco testo.")
+	if passive_icon_slot != null and passive_text != null:
+		_expect(absf(passive_icon_slot.get_global_rect().get_center().y - passive_text.get_global_rect().get_center().y) <= 1.0, "L'icona passiva deve essere centrata rispetto al testo (icona=%s, testo=%s)." % [passive_icon_slot.get_global_rect().get_center().y, passive_text.get_global_rect().get_center().y])
+	if ability_icon_slot != null and ability_text != null:
+		_expect(absf(ability_icon_slot.get_global_rect().get_center().y - ability_text.get_global_rect().get_center().y) <= 1.0, "L'icona attiva deve essere centrata rispetto al testo.")
+	_expect(not selector.has_node("Center/SelectionPanel/Content/MainRow/AbilityCards/Divider"), "Le card non devono usare un separatore orizzontale interno.")
+	_expect(ability_icon_rect.size == Vector2(128.0, 128.0), "L'icona abilita deve essere 128x128 e non dominare il kit.")
 	_expect(role_rect.position.y - name_rect.end.y >= 6.0 and role_rect.position.y - name_rect.end.y <= 12.0, "Nome e ruolo devono formare un unico blocco compatto.")
-	_expect(confirm_rect.position.y - role_rect.end.y <= 34.0, "Il CTA deve seguire il blocco identità senza una terra di nessuno.")
+	_expect(confirm_rect.position.y - role_rect.end.y <= 34.0, "Il CTA deve seguire il blocco identità senza una terra di nessuno (gap=%s)." % (confirm_rect.position.y - role_rect.end.y))
 	_expect(confirm_rect.position.y >= ability_rect.end.y, "Il CTA deve chiudere la gerarchia in basso.")
 	_expect(panel_rect.encloses(back_rect) and panel_rect.encloses(confirm_rect), "Back e CTA devono restare nel pannello.")
 	_expect(confirm_rect.size.x <= panel_rect.size.x * 0.55, "Il CTA deve essere più corto senza perdere dominanza.")
@@ -204,11 +222,13 @@ func _validate_layouts(selector: CharacterSelectOverlay, arena_layout: ArenaLayo
 		var carousel_rect := selector.get_carousel_rect()
 		var center_rect := selector.get_center_card_rect()
 		var ability_rect := selector.get_ability_panel_rect()
+		var ability_icon_rect := selector.get_ability_icon_rect()
 		var confirm_rect := selector.get_confirm_button().get_global_rect()
-		_expect(safe_area.encloses(panel_rect), "%s: il pannello B18W deve restare nella safe area." % profile)
+		_expect(safe_area.encloses(panel_rect), "%s: il pannello B18W deve restare nella safe area (pannello=%s, safe=%s)." % [profile, panel_rect, safe_area])
 		_expect(carousel_rect.encloses(center_rect), "%s: il profilo centrale deve restare intero." % profile)
 		_expect(not center_rect.intersects(ability_rect), "%s: profilo e pannello abilita non devono sovrapporsi." % profile)
 		_expect(not ability_rect.intersects(confirm_rect), "%s: pannello abilita e CTA non devono sovrapporsi." % profile)
+		_expect(ability_icon_rect.size == Vector2(128.0, 128.0), "%s: icona abilita 128x128 deve restare leggibile." % profile)
 		_expect(safe_area.encloses(back_rect) and safe_area.encloses(confirm_rect), "%s: Back e CTA devono restare nella safe area." % profile)
 		_expect(confirm_rect.size.x >= 44.0 and confirm_rect.size.y >= 44.0, "%s: il CTA deve conservare il target 44x44." % profile)
 	root.content_scale_size = INITIAL_VIEWPORT_SIZE

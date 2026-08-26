@@ -176,6 +176,7 @@ func _populate_run_state(
 		return
 	enemy.set_physics_process(false)
 	enemy.global_position = player.global_position + Vector2(350.0, 0.0)
+	enemy.experience_reward_scale = 1.0
 	dropper.try_spawn_drop(enemy)
 	weapon.try_fire()
 	ability.try_activate()

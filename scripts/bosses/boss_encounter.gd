@@ -6,8 +6,17 @@ signal boss_intro_completed(boss: FirstBoss, schedule_index: int)
 signal boss_spawned(boss: FirstBoss, schedule_index: int)
 signal boss_defeated(boss: FirstBoss, experience_reward: int)
 
+const EVIL_BODY_COLOR := Color(0.24, 0.055, 0.34, 1.0)
+const EVIL_OUTLINE_COLOR := Color(0.055, 0.01, 0.09, 1.0)
+const EVIL_ACCENT_COLOR := Color(1.0, 0.14, 0.72, 1.0)
+const EVIL_TELEGRAPH_COLOR := Color(0.92, 0.12, 0.78, 0.78)
+const EVIL_SPRITE_MODULATE := Color(0.72, 0.34, 0.96, 1.0)
+const EVENT_SEED_SALT := 0x0B22B055
+const SCHEDULE_SEED_FACTOR := 0x045D9F3B
+
 @export var boss_scene: PackedScene
 @export var boss_definition: BossDefinition
+@export_range(0.0, 1.0, 0.01) var evil_boss_chance := 0.25
 
 var _run_controller: RunController
 var _game_director: GameDirector
@@ -18,7 +27,9 @@ var _boss_projectile_parent: Node
 var _targeting_system: TargetingSystem
 var _experience_system: ExperienceSystem
 var _boss_ui: BossUI
+var _friend_registry: FriendRegistry
 var _active_boss: FirstBoss
+var _active_definition: BossDefinition
 var _active_schedule_index := -1
 var _reward_granted := false
 var _last_experience_reward := 0
@@ -43,7 +54,8 @@ func configure(
 	boss_projectile_parent: Node,
 	targeting_system: TargetingSystem,
 	experience_system: ExperienceSystem,
-	boss_ui: BossUI
+	boss_ui: BossUI,
+	friend_registry: FriendRegistry
 ) -> bool:
 	_disconnect_dependencies()
 	_run_controller = run_controller
@@ -55,6 +67,7 @@ func configure(
 	_targeting_system = targeting_system
 	_experience_system = experience_system
 	_boss_ui = boss_ui
+	_friend_registry = friend_registry
 	_connect_dependencies()
 	reset_for_run()
 	return has_valid_configuration()
@@ -78,6 +91,8 @@ func has_valid_configuration() -> bool:
 		and is_instance_valid(_experience_system)
 		and _experience_system.get_run_controller() == _run_controller
 		and is_instance_valid(_boss_ui)
+		and is_instance_valid(_friend_registry)
+		and _friend_registry.is_catalog_valid()
 	)
 
 
@@ -92,7 +107,7 @@ func complete_intro() -> bool:
 	var schedule_index := _active_schedule_index
 	_boss_ui.hide_intro()
 	if not _run_controller.complete_boss_intro():
-		_boss_ui.show_intro(boss_definition)
+		_boss_ui.show_intro(_active_definition)
 		return false
 	boss_intro_completed.emit(boss, schedule_index)
 	return true
@@ -113,6 +128,67 @@ func get_active_boss() -> FirstBoss:
 
 func get_active_schedule_index() -> int:
 	return _active_schedule_index
+
+
+func get_active_definition() -> BossDefinition:
+	return _active_definition
+
+
+func get_friend_registry() -> FriendRegistry:
+	return _friend_registry if is_instance_valid(_friend_registry) else null
+
+
+func resolve_definition_for_event(seed_value: int, schedule_index: int) -> BossDefinition:
+	if boss_definition == null:
+		return null
+	var profiles: Array[FriendDefinition] = []
+	if is_instance_valid(_friend_registry):
+		profiles = _friend_registry.get_definitions()
+	return resolve_variant(
+		boss_definition,
+		profiles,
+		seed_value,
+		schedule_index,
+		evil_boss_chance
+	)
+
+
+static func resolve_variant(
+	baseline: BossDefinition,
+	profiles: Array[FriendDefinition],
+	run_seed: int,
+	schedule_index: int,
+	evil_chance: float
+) -> BossDefinition:
+	if baseline == null or not baseline.is_valid():
+		return null
+	var valid_profiles: Array[FriendDefinition] = []
+	for profile in profiles:
+		if profile != null and profile.is_valid():
+			valid_profiles.append(profile)
+	if valid_profiles.is_empty() or not is_finite(evil_chance):
+		return baseline
+
+	var rng := RandomNumberGenerator.new()
+	rng.seed = run_seed ^ EVENT_SEED_SALT ^ ((schedule_index + 1) * SCHEDULE_SEED_FACTOR)
+	var resolved_chance := clampf(evil_chance, 0.0, 1.0)
+	if resolved_chance <= 0.0 or (resolved_chance < 1.0 and rng.randf() >= resolved_chance):
+		return baseline
+
+	var selected_profile := valid_profiles[rng.randi_range(0, valid_profiles.size() - 1)]
+	var evil_definition := baseline.duplicate(true) as BossDefinition
+	if evil_definition == null:
+		return baseline
+	evil_definition.id = StringName("evil_%s" % selected_profile.id)
+	evil_definition.friend_profile = selected_profile
+	evil_definition.visual_kind = BossDefinition.VisualKind.EVIL_FRIEND
+	evil_definition.quote_approved = false
+	evil_definition.body_color = EVIL_BODY_COLOR
+	evil_definition.outline_color = EVIL_OUTLINE_COLOR
+	evil_definition.accent_color = EVIL_ACCENT_COLOR
+	evil_definition.telegraph_color = EVIL_TELEGRAPH_COLOR
+	evil_definition.sprite_modulate = EVIL_SPRITE_MODULATE
+	return evil_definition
 
 
 func get_last_experience_reward() -> int:
@@ -193,8 +269,17 @@ func _spawn_boss(schedule_index: int) -> FirstBoss:
 
 	var boss := instance as FirstBoss
 	_enemy_parent.add_child(boss)
+	_active_definition = resolve_definition_for_event(
+		_run_controller.get_seed(),
+		schedule_index
+	)
+	if _active_definition == null or not _active_definition.is_valid():
+		boss.queue_free()
+		_abort_intro_and_release_event()
+		push_error("BossEncounter: risoluzione B22 non valida.")
+		return null
 	if not boss.configure_boss(
-		boss_definition,
+		_active_definition,
 		_player,
 		_run_controller,
 		_boss_projectile_parent
@@ -207,7 +292,7 @@ func _spawn_boss(schedule_index: int) -> FirstBoss:
 	var spawn_position := calculate_spawn_position(
 		_arena_layout.get_playfield_rect(),
 		_player.global_position,
-		boss_definition.collision_radius
+		_active_definition.collision_radius
 	)
 	if not spawn_position.is_finite():
 		boss.queue_free()
@@ -228,8 +313,8 @@ func _spawn_boss(schedule_index: int) -> FirstBoss:
 	_active_boss.died.connect(_on_boss_died)
 	_active_boss.tree_exiting.connect(_on_boss_tree_exiting, CONNECT_ONE_SHOT)
 	_targeting_system.register_target(_active_boss)
-	_boss_ui.bind_boss(_active_boss, boss_definition)
-	_boss_ui.show_intro(boss_definition)
+	_boss_ui.bind_boss(_active_boss, _active_definition)
+	_boss_ui.show_intro(_active_definition)
 	boss_spawned.emit(_active_boss, schedule_index)
 	boss_intro_started.emit(_active_boss, schedule_index)
 	return _active_boss
@@ -248,12 +333,14 @@ func _clear_active_boss(queue_for_deletion: bool) -> void:
 		if queue_for_deletion and not boss.is_queued_for_deletion():
 			boss.queue_free()
 	_active_boss = null
+	_active_definition = null
 	_active_schedule_index = -1
 	if is_instance_valid(_boss_ui):
 		_boss_ui.reset_presentation()
 
 
 func _abort_intro_and_release_event() -> void:
+	_active_definition = null
 	if is_instance_valid(_boss_ui):
 		_boss_ui.reset_presentation()
 	if is_instance_valid(_game_director):
@@ -296,6 +383,7 @@ func _disconnect_dependencies() -> void:
 	_targeting_system = null
 	_experience_system = null
 	_boss_ui = null
+	_friend_registry = null
 
 
 func _on_boss_event_requested(
@@ -314,16 +402,20 @@ func _on_boss_died(boss: BaseEnemy) -> void:
 		return
 	_reward_granted = true
 	_targeting_system.unregister_target(_active_boss)
-	_last_defeated_title = boss_definition.get_safe_title()
+	var defeated_definition := _active_definition
+	if defeated_definition == null:
+		defeated_definition = boss_definition
+	_last_defeated_title = defeated_definition.get_safe_title()
 	_last_experience_reward = 0
-	if _experience_system.add_experience(boss_definition.experience_reward):
-		_last_experience_reward = boss_definition.experience_reward
+	if _experience_system.add_experience(defeated_definition.experience_reward):
+		_last_experience_reward = defeated_definition.experience_reward
 	_game_director.complete_active_boss_event()
 	boss_defeated.emit(_active_boss, _last_experience_reward)
 
 
 func _on_boss_tree_exiting() -> void:
 	_active_boss = null
+	_active_definition = null
 	_active_schedule_index = -1
 	if is_instance_valid(_boss_ui):
 		_boss_ui.clear_boss()

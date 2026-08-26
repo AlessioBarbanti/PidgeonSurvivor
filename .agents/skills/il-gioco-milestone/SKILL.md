@@ -19,16 +19,21 @@ Treat current repository documents and code as authoritative. Keep this skill pr
 1. Implement only the selected slice with typed, scene-local, signal-driven GDScript. Preserve established contracts, especially `RunController` ownership of logical time, pause, restart, and state transitions.
 2. When touching welcome, selection, pause, or modal flow, preserve `welcome -> selezione -> run -> pausa`; keep `BOOT` inactive until confirmation, and make cancel/Back close only the active modal.
 3. Add or update one deterministic `tests/integration/_*_smoke.gd` test with a unique `*_SMOKE_OK` marker and nonzero failure exit. Refresh the editor class/import cache before smoke tests after adding `class_name` scripts or imported assets.
-4. Run the focused smoke before regressions. Use the compact runner; it auto-discovers a focused smoke whose marker begins with the milestone ID when possible:
+4. Run the focused smoke before regressions. Use the smallest runner profile that matches the checkpoint; it auto-discovers a focused smoke whose marker begins with the milestone ID when possible:
 
    ```powershell
-   .\tools\run-milestone-checks.ps1 `
-     -Milestone B18X `
-     -RegressionSmoke tests/integration/_relevant_smoke.gd `
-     -RunProjectSmoke
+   # Inner loop: only the milestone smoke.
+   .\tools\run-milestone-checks.ps1 -Milestone B18X -Profile Focused
+
+   # Checkpoint: milestone smoke plus regressions selected from changed paths.
+   .\tools\run-milestone-checks.ps1 -Milestone B18X -Profile Relevant
+
+   # Final automatic gate, then release/export gate.
+   .\tools\run-milestone-checks.ps1 -Milestone B18X -Profile Full
+   .\tools\run-milestone-checks.ps1 -Milestone B18X -Profile Release
    ```
 
-5. Pass `-FocusedSmoke` when auto-discovery is ambiguous. Add `-ExportWindows` and `-ExportAndroid` only after headless checks pass. Inspect the compact summary and open the referenced full logs only for failing steps.
+5. Pass `-FocusedSmoke` or `-ChangedPath` when discovery is ambiguous. Successful smoke and export results are cached by content hash; use `-NoCache` only for a deliberate clean rerun. Inspect the compact summary and open the referenced full logs only for failing steps. Use `-OutputMode Detailed` only when step-level output is needed. The complete profile contract is in `docs/verification-workflow.md`.
 6. Treat exit code zero as insufficient when logs contain `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL`, or `CONTRACT_FAIL`.
 
 ## Apply platform gates honestly

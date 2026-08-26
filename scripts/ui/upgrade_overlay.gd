@@ -6,7 +6,7 @@ signal selection_submitted(upgrade_id: StringName)
 const CARD_COUNT := UpgradeService.DEFAULT_OFFER_SIZE
 
 @onready var _level_label: Label = %LevelLabel
-@onready var _queue_label: Label = %QueueLabel
+@onready var _queue_label := get_node_or_null("SafeMargins/Layout/QueueLabel") as Label
 @onready var _cards: Array[UpgradeCard] = [
 	%UpgradeCard1,
 	%UpgradeCard2,
@@ -183,11 +183,12 @@ func _show_offer(level: int, offers: Array[UpgradeDefinition]) -> void:
 	var experience_system := _upgrade_service.get_experience_system()
 	if is_instance_valid(experience_system):
 		pending_choices = maxi(experience_system.pending_level_ups, 1)
-	_queue_label.text = (
-		"Scegli un potenziamento"
-		if pending_choices == 1
-		else "Scegli un potenziamento  -  %d scelte in coda" % pending_choices
-	)
+		if _queue_label != null:
+			_queue_label.text = (
+				"Scegli un potenziamento"
+				if pending_choices == 1
+				else "Scegli un potenziamento  -  %d scelte in coda" % pending_choices
+			)
 	_hide_touch_joystick()
 	visible = true
 	_accepting_selection = true

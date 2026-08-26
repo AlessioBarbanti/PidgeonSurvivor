@@ -31,7 +31,7 @@ func configure(
 	_definition = definition
 	_offer_index = offer_index
 	_shortcut_label.text = "%d" % (offer_index + 1)
-	_type_label.text = "BONUS CONTINUO" if definition.fallback else "POTENZIAMENTO"
+	_type_label.text = "POTENZIAMENTO"
 	_icon.texture = definition.icon
 	_title_label.text = definition.title
 	_description_label.text = definition.description

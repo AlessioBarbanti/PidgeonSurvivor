@@ -257,6 +257,7 @@ func _validate_composed_drop_flow() -> void:
 	enemy.set_physics_process(false)
 	enemy.get_contact_damage().set_physics_process(false)
 	enemy.experience_amount = 5
+	enemy.experience_reward_scale = 1.0
 	enemy.global_position = player.global_position + Vector2(
 		player.get_pickup_radius() + 80.0,
 		0.0
@@ -328,6 +329,7 @@ func _validate_composed_drop_flow() -> void:
 		terminal_enemy.set_physics_process(false)
 		terminal_enemy.get_contact_damage().set_physics_process(false)
 		terminal_enemy.experience_amount = 7
+		terminal_enemy.experience_reward_scale = 1.0
 		terminal_enemy.global_position = player.global_position
 		var terminal_health := terminal_enemy.get_health_component()
 		_expect(

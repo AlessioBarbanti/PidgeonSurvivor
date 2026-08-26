@@ -6,9 +6,7 @@ const MOVEMENT_SLICE_SCENE := preload("res://scenes/game/movement_slice.tscn")
 const SWIFT_STEPS := preload("res://data/upgrades/swift_steps.tres")
 const RAPID_FIRE := preload("res://data/upgrades/rapid_fire.tres")
 const WIDE_MAGNET := preload("res://data/upgrades/wide_magnet.tres")
-const FALLBACK_POWER := preload("res://data/upgrades/fallback_power.tres")
-const FALLBACK_HASTE := preload("res://data/upgrades/fallback_haste.tres")
-const FALLBACK_REACH := preload("res://data/upgrades/fallback_reach.tres")
+const MEAT_FORK_DAMAGE := preload("res://data/upgrades/meat_fork_damage.tres")
 const INITIAL_VIEWPORT_SIZE := Vector2i(1280, 720)
 const LAYOUT_TOLERANCE := 1.0
 
@@ -81,6 +79,8 @@ func _validate_responsive_layouts() -> void:
 		_expect(cards.size() == 3, "%s: devono essere visibili tre carte." % profile_name)
 		for index in cards.size():
 			var card := cards[index]
+			var icon := card.get_node_or_null("Margins/Content/IconCenter/Icon") as TextureRect
+			var icon_center := card.get_node_or_null("Margins/Content/IconCenter") as CenterContainer
 			_expect_rect_inside(
 				card.get_global_rect(),
 				safe_rect,
@@ -99,6 +99,11 @@ func _validate_responsive_layouts() -> void:
 			_expect(
 				card.get_rank_text() == "RANGO 0  >  1",
 				"%s: la carta deve anticipare il nuovo rank." % profile_name
+			)
+			_expect(
+				icon != null and icon.custom_minimum_size == Vector2(192.0, 192.0)
+				and icon_center != null and icon_center.custom_minimum_size.y >= 198.0,
+				"%s: carta %d deve riservare un'area icona 192x192." % [profile_name, index + 1]
 			)
 		if cards.size() == 3:
 			_expect(
@@ -170,7 +175,7 @@ func _validate_composed_input_and_queue() -> void:
 	_expect(controller.get_state() == RunController.RunState.LEVEL_UP, "Le carte devono mettere in pausa il gameplay.")
 	_expect(paused, "LEVEL_UP deve sospendere il SceneTree.")
 	_expect(overlay.visible and overlay.get_displayed_level() == 2, "La prima offerta deve essere visibile per il livello 2.")
-	_expect("4 scelte in coda" in overlay.get_queue_text(), "L'overlay deve rendere visibile la coda multipla.")
+	_expect(overlay.get_queue_text().is_empty(), "L'overlay compatto non deve mostrare testo della coda.")
 	_expect(not joystick.visible, "Il joystick composto deve essere nascosto.")
 	_expect(input_router.is_input_suspended(), "L'input gameplay deve restare sospeso.")
 
@@ -255,9 +260,7 @@ func _create_overlay_fixture(safe_rect: Rect2, seed_value: int) -> Dictionary:
 		SWIFT_STEPS,
 		RAPID_FIRE,
 		WIDE_MAGNET,
-		FALLBACK_POWER,
-		FALLBACK_HASTE,
-		FALLBACK_REACH,
+		MEAT_FORK_DAMAGE,
 	]
 	registry.definitions = definitions
 	var service := UpgradeService.new()

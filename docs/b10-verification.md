@@ -20,9 +20,8 @@ l'overlay B11 o gli effetti gameplay B12:
   definizioni distinte;
 - le carte al rank massimo e quelle con prerequisiti non soddisfatti vengono
   filtrate prima della pesca;
-- se le primarie eleggibili sono meno di tre, il service completa l'offerta
-  con `fallback_power`, `fallback_haste` e `fallback_reach`, tre ID distinti e
-  ripetibili;
+- le quattro carte statistiche normali ripetibili mantengono sempre tre opzioni
+  distinte senza una categoria fallback;
 - ogni scelta aggiorna un solo rank, consuma una sola voce B08 e genera subito
   l'offerta successiva se la coda contiene altri livelli, senza un frame di
   gameplay intermedio;

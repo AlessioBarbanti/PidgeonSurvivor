@@ -1,4 +1,4 @@
-[gd_scene load_steps=89 format=3]
+[gd_scene load_steps=87 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -24,9 +24,6 @@
 [ext_resource type="Resource" path="res://data/upgrades/swift_steps.tres" id="23_swift_steps"]
 [ext_resource type="Resource" path="res://data/upgrades/rapid_fire.tres" id="24_rapid_fire"]
 [ext_resource type="Resource" path="res://data/upgrades/wide_magnet.tres" id="25_wide_magnet"]
-[ext_resource type="Resource" path="res://data/upgrades/fallback_power.tres" id="26_fallback_power"]
-[ext_resource type="Resource" path="res://data/upgrades/fallback_haste.tres" id="27_fallback_haste"]
-[ext_resource type="Resource" path="res://data/upgrades/fallback_reach.tres" id="28_fallback_reach"]
 [ext_resource type="PackedScene" path="res://scenes/ui/upgrade_overlay.tscn" id="29_upgrade_overlay"]
 [ext_resource type="Script" path="res://scripts/progression/upgrade_effect_registry.gd" id="30_upgrade_effect_registry"]
 [ext_resource type="Resource" path="res://data/upgrades/anxiety_signature.tres" id="31_anxiety_signature"]
@@ -92,6 +89,7 @@
 [ext_resource type="Resource" path="res://data/upgrades/ability_rank_marghe_shadow_deception.tres" id="85_rank_marghe"]
 [ext_resource type="Resource" path="res://data/upgrades/summer_grill.tres" id="86_summer_grill"]
 [ext_resource type="PackedScene" path="res://scenes/ui/welcome_screen.tscn" id="87_welcome_screen"]
+[ext_resource type="Resource" path="res://data/upgrades/meat_fork_damage.tres" id="94_meat_fork_damage"]
 
 [node name="MovementSlice" type="Control"]
 layout_mode = 3
@@ -180,7 +178,7 @@ experience_curve = ExtResource("16_experience_curve")
 [node name="UpgradeRegistry" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("21_upgrade_registry")
-definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"), ExtResource("24_rapid_fire"), ExtResource("25_wide_magnet"), ExtResource("86_summer_grill"), ExtResource("31_anxiety_signature"), ExtResource("32_gossip_projectiles"), ExtResource("33_chronic_delay"), ExtResource("34_beer_signature"), ExtResource("35_damage_shockwave"), ExtResource("78_rank_magno"), ExtResource("79_rank_bea"), ExtResource("80_rank_zat"), ExtResource("81_rank_alea"), ExtResource("82_rank_aleo"), ExtResource("83_rank_lollo"), ExtResource("84_rank_migi"), ExtResource("85_rank_marghe"), ExtResource("26_fallback_power"), ExtResource("27_fallback_haste"), ExtResource("28_fallback_reach")])
+definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"), ExtResource("24_rapid_fire"), ExtResource("25_wide_magnet"), ExtResource("94_meat_fork_damage"), ExtResource("86_summer_grill"), ExtResource("31_anxiety_signature"), ExtResource("32_gossip_projectiles"), ExtResource("33_chronic_delay"), ExtResource("34_beer_signature"), ExtResource("35_damage_shockwave"), ExtResource("78_rank_magno"), ExtResource("79_rank_bea"), ExtResource("80_rank_zat"), ExtResource("81_rank_alea"), ExtResource("82_rank_aleo"), ExtResource("83_rank_lollo"), ExtResource("84_rank_migi"), ExtResource("85_rank_marghe")])
 
 [node name="UpgradeService" type="Node" parent="."]
 unique_name_in_owner = true

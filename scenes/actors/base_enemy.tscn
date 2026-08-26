@@ -94,7 +94,7 @@ animation = &"base"
 [node name="HealthComponent" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("2_health")
-health_max = 40.0
+health_max = 24.0
 
 [node name="Hurtbox" type="Area2D" parent="."]
 unique_name_in_owner = true

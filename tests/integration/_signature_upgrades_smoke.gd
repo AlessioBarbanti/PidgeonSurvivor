@@ -6,9 +6,10 @@ const GOSSIP := preload("res://data/upgrades/gossip_projectiles.tres")
 const CHRONIC_DELAY := preload("res://data/upgrades/chronic_delay.tres")
 const BEER := preload("res://data/upgrades/beer_signature.tres")
 const DAMAGE_SHOCKWAVE := preload("res://data/upgrades/damage_shockwave.tres")
-const FALLBACK_POWER := preload("res://data/upgrades/fallback_power.tres")
-const FALLBACK_HASTE := preload("res://data/upgrades/fallback_haste.tres")
-const FALLBACK_REACH := preload("res://data/upgrades/fallback_reach.tres")
+const SWIFT_STEPS := preload("res://data/upgrades/swift_steps.tres")
+const RAPID_FIRE := preload("res://data/upgrades/rapid_fire.tres")
+const WIDE_MAGNET := preload("res://data/upgrades/wide_magnet.tres")
+const MEAT_FORK_DAMAGE := preload("res://data/upgrades/meat_fork_damage.tres")
 
 const INITIAL_VIEWPORT_SIZE := Vector2i(1280, 720)
 const FLOAT_TOLERANCE := 0.001
@@ -83,7 +84,7 @@ func _validate_signature_composition() -> void:
 	if ability != null:
 		ability.set_process(false)
 
-	# Isola le cinque signature e i tre fallback senza eludere la validazione
+	# Isola le cinque signature e le carte normali ripetibili senza eludere la validazione
 	# della scena completa, gia eseguita durante _ready().
 	catalog.definitions = [
 		ANXIETY,
@@ -91,9 +92,10 @@ func _validate_signature_composition() -> void:
 		CHRONIC_DELAY,
 		BEER,
 		DAMAGE_SHOCKWAVE,
-		FALLBACK_POWER,
-		FALLBACK_HASTE,
-		FALLBACK_REACH,
+		SWIFT_STEPS,
+		RAPID_FIRE,
+		WIDE_MAGNET,
+		MEAT_FORK_DAMAGE,
 	]
 	_expect(catalog.rebuild_registry(), "Il catalogo signature isolato deve essere valido.")
 	service.reset_for_run(controller.get_seed())
@@ -292,7 +294,7 @@ func _select_all_signatures(
 ) -> bool:
 	var remaining := signature_ids.duplicate()
 	var guard := 0
-	while not remaining.is_empty() and guard < signature_ids.size():
+	while not remaining.is_empty() and guard < 20:
 		if not experience.add_experience(experience.experience_required):
 			return false
 		var selected_id := StringName()
@@ -300,6 +302,11 @@ func _select_all_signatures(
 			if offered_id in remaining:
 				selected_id = offered_id
 				break
+		if String(selected_id).is_empty():
+			for offered_id in service.get_current_offer_ids():
+				if offered_id in [WIDE_MAGNET.id, MEAT_FORK_DAMAGE.id]:
+					selected_id = offered_id
+					break
 		if String(selected_id).is_empty() or not service.select_upgrade(selected_id):
 			return false
 		remaining.erase(selected_id)
@@ -354,7 +361,8 @@ func _on_effect_applied(
 	_new_rank: int,
 	_effective_multipliers: Dictionary
 ) -> void:
-	_applied_ids.append(definition.id)
+	if definition.id in [ANXIETY.id, GOSSIP.id, CHRONIC_DELAY.id, BEER.id, DAMAGE_SHOCKWAVE.id]:
+		_applied_ids.append(definition.id)
 
 
 func _on_damage_shockwave_emitted(affected_count: int) -> void:

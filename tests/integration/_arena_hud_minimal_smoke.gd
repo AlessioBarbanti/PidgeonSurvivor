@@ -150,6 +150,9 @@ func _validate_layout_profiles(
 			enemy.set_physics_process(false)
 			_expect(not EnemySpawner.is_point_in_rect_inclusive(playfield, enemy.global_position), "%s: lo spawn deve partire fuori dal playfield, non dai limiti viewport." % context)
 			enemy.global_position = Vector2(safe_area.get_center().x, safe_area.position.y)
+			# Fixture geometrica: il valore XP frazionario B28 non deve nascondere
+			# il pickup usato per verificare il clamp nell'arena.
+			enemy.experience_reward_scale = 1.0
 			var pickup := dropper.try_spawn_drop(enemy)
 			_expect(pickup != null, "%s: il drop XP deve essere creato." % context)
 			if pickup != null:
