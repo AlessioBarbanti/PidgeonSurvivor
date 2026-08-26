@@ -368,6 +368,28 @@ func get_damage_reaction_remaining() -> float:
 	return _damage_reaction_remaining
 
 
+func is_damage_blink_active() -> bool:
+	return (
+		is_instance_valid(_health_component)
+		and _health_component.is_invulnerable()
+	)
+
+
+func is_damage_blink_visible() -> bool:
+	if not is_damage_blink_active():
+		return true
+	var blink_interval := PresentationTimings.PLAYER_DAMAGE_BLINK_INTERVAL_SECONDS
+	var invulnerability_duration := _health_component.invulnerability_duration
+	if blink_interval <= 0.0 or invulnerability_duration <= 0.0:
+		return true
+	var elapsed := clampf(
+		invulnerability_duration - _health_component.invulnerability_remaining,
+		0.0,
+		invulnerability_duration
+	)
+	return (floori(elapsed / blink_interval) % 2) == 0
+
+
 func get_visual_damage_scale() -> Vector2:
 	if damage_reaction_duration <= 0.0 or _damage_reaction_remaining <= 0.0:
 		return Vector2.ONE
@@ -421,6 +443,10 @@ func _update_character_feedback() -> void:
 		Color(1.0, 0.72, 0.8, 1.0)
 		if _damage_flash_remaining > 0.0
 		else Color.WHITE
+	)
+	_character_sprite.visible = (
+		_character_sprite.texture != null
+		and is_damage_blink_visible()
 	)
 
 

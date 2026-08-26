@@ -10,7 +10,7 @@ const SFX_BUS_NAME := "SFX"
 const MUSIC_BUS_NAME := "Music"
 const PLAYER_POOL_SIZE := 12
 const MINIMUM_LINEAR_VOLUME := 0.0001
-const BACKGROUND_MUSIC_VOLUME_DB := -18.0
+const BACKGROUND_MUSIC_VOLUME_DB := -12.0
 
 const SHOT := &"shot"
 const HIT := &"hit"

@@ -105,6 +105,13 @@ func _validate_contact_damage() -> void:
 	_expect_float_near(health.health_current, 80.0, "Il contatto deve sottrarre il danno configurato.")
 	_expect(_player_damage_count == 1, "Il Player deve inoltrare un solo segnale di danno effettivo.")
 	_expect(not contact.try_damage(player), "Il contatto persistente deve rispettare l'invulnerabilita.")
+	_expect(player.is_damage_blink_active(), "L'invulnerabilita deve attivare il lampeggio Player.")
+	_expect(player.is_damage_blink_visible(), "Il lampeggio deve iniziare dal frame visibile.")
+	player._physics_process(PresentationTimings.PLAYER_DAMAGE_BLINK_INTERVAL_SECONDS + 0.01)
+	_expect(
+		not player.is_damage_blink_visible(),
+		"Il Player deve alternare visibilita durante l'invulnerabilita."
+	)
 
 	var paused_remaining := health.invulnerability_remaining
 	_expect(controller.request_manual_pause(), "La fixture deve entrare in pausa.")

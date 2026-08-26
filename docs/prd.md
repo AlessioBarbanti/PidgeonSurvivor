@@ -50,6 +50,10 @@ pulsante touch.
 - `pickup_radius` (area di raccolta automatica XP);
 - `active_ability_id`.
 
+Dopo un danno non letale il Player lampeggia a intervalli regolari per tutta la
+finestra reale di invulnerabilita: il feedback si ferma in pausa e non modifica
+hitbox, collisioni o durata del timer gameplay.
+
 **Logica di sparo automatico:**
 
 1. Ogni `attack_rate` secondi individua i nodi vivi nel gruppo `Enemies`.
@@ -533,7 +537,7 @@ sono ammessi soltanto dopo evidenza profiler Windows e Pixel 9.
 **Audio:** gli eventi di combattimento, progressione, abilità, Boss e terminali
 usano cue brevi su un bus SFX polifonico. La run usa inoltre il loop CC0
 `Super Wreck Roadway (loop)` di Umplix su un bus `Music` separato,
-attenuato di `18 dB` rispetto agli SFX e fermato fuori da `RUNNING`; pausa e
+attenuato di `12 dB` rispetto agli SFX e fermato fuori da `RUNNING`; pausa e
 modal riprendono dalla posizione corrente, mentre terminale e restart lo
 puliscono. Il menu offre volume audio lineare e mute, applicati a entrambi i bus
 anche durante la pausa e persistiti in `user://audio_settings.cfg`. Le voci

@@ -6,7 +6,7 @@ Stato: `IN VERIFICA`.
 ## Implementazione
 
 - `GameAudio` mantiene il pool SFX B18 e aggiunge un solo player scene-local sul
-  bus `Music`; il suo guadagno base è `-18 dB` rispetto agli SFX.
+  bus `Music`; il suo guadagno base è `-12 dB` rispetto agli SFX.
 - Il loop `Super Wreck Roadway (loop)` parte soltanto in `RUNNING`, si
   ferma e riprende dalla posizione corrente in pausa e modal, e viene azzerato
   a terminale, restart e teardown.

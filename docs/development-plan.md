@@ -1224,8 +1224,9 @@ Stato: `IN VERIFICA`.
 
 - [x] Rimuovere la barra/indicatore circolare della vita ancorato sopra o attorno
   al Player: è ridondante rispetto alla barra `HP` globale B18Q.
-- [x] Conservare feedback di danno, invulnerabilità e hit flash; nessun evento di
-  salute dipende dall'indicatore rimosso.
+- [x] Conservare feedback di danno, invulnerabilità, hit flash e lampeggio
+  ritmico del solo sprite per tutta la finestra di invulnerabilità; nessun
+  evento di salute dipende dall'indicatore rimosso.
 - [ ] Verificare percettivamente che la vita resti immediatamente leggibile sulla
   barra superiore durante Boss, level-up, pausa e densità elevate.
 
