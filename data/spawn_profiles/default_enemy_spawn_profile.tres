@@ -12,6 +12,7 @@ max_alive_enemies = 140
 progression_reference_base_spawn_interval = 1.0
 progression_reference_min_spawn_interval = 0.25
 progression_reference_spawn_acceleration = 0.0025
+progression_experience_multiplier = 1.50
 inner_spawn_margin = 48.0
 outer_spawn_margin = 160.0
 min_player_distance = 240.0

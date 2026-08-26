@@ -40,6 +40,12 @@ const MINIMUM_INTERVAL_SECONDS := 0.01
 	set(value):
 		progression_reference_spawn_acceleration = maxf(value, 0.0)
 
+## Bonus esplicito sul budget XP della baseline. Resta frazionario per kill e
+## non viene applicato ai Boss.
+@export_range(0.1, 4.0, 0.05, "or_greater") var progression_experience_multiplier := 1.5:
+	set(value):
+		progression_experience_multiplier = maxf(value, 0.1)
+
 @export_group("Placement")
 @export_range(0.0, 2048.0, 1.0, "or_greater") var inner_spawn_margin := 48.0:
 	set(value):
@@ -88,9 +94,12 @@ func get_experience_reward_scale(run_time: float) -> float:
 	var reference_interval := get_progression_reference_spawn_interval(run_time)
 	if reference_interval <= 0.0:
 		return 1.0
-	# Con uno spawn ogni N secondi, il valore XP per kill deve essere N / N_ref
-	# per mantenere lo stesso budget XP per secondo della baseline di riferimento.
-	return maxf(get_spawn_interval(run_time) / reference_interval, 0.0)
+	# Con uno spawn ogni N secondi, il valore XP per kill usa N / N_ref; il
+	# moltiplicatore mantiene il nuovo ritmo dichiarato senza tornare a 1 XP/kill.
+	return maxf(
+		get_spawn_interval(run_time) / reference_interval * progression_experience_multiplier,
+		0.0
+	)
 
 
 func get_effective_outer_spawn_margin() -> float:

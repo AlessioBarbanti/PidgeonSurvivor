@@ -500,14 +500,14 @@ significato:
 | B22 | Boss piccione speciale e varianti Evil | COMPLETATO | Automatici, Windows, APK statico e percorso fisico Pixel 9 chiusi il 26 agosto 2026; l'hang host post-`[ DONE ]` dell'exporter resta distinto dall'artefatto valido |
 | B23 | Modalità Difesa Grigliata | PRONTO | Contratto e prerequisiti chiusi; è il prossimo backlog operativo |
 | B24 | Scala visiva del Player | IN VERIFICA | Baseline candidata `1,25×` applicata solo allo sprite; automatici `44/44`, Windows runtime e APK statico verdi, confronto percettivo Windows/Pixel 9 aperto |
-| B25 | Rimuovere la vita circolare sopra il Player | PRONTO | Dipende dal layout B18Q e dalla scala B24; conserva la barra HP globale |
+| B25 | Rimuovere la vita circolare sopra il Player | IN VERIFICA | Indicatore Player rimosso; conserva la barra HP globale e restano i gate percettivi Windows/Pixel 9 |
 | B26 | Potenziamento danno dedicato | IN VERIFICA | `Forchettone da Braciere` è ripetibile a `×1,15`; le quattro carte statistiche normali sostituiscono i fallback rimossi |
 | B27 | Refresh icone dei potenziamenti via ImageGen esterno | IN VERIFICA | Dieci master forniti sono derivati in PNG `128×128`, tracciati nel manifest e fuori dagli export |
-| B28 | Densità orde e TTK più bullet-hell | PRONTO | Richiede tuning dati e nuovo profiling, senza abbassare i gate prestazionali B18V |
-| B29 | Musica di sottofondo | PRONTO | Candidato preferito: `Head in the Sand (seamless loop)` di congusbongus, CC0, da validare in gioco e registrare nel manifest audio |
+| B28 | Densità orde e TTK più bullet-hell | IN VERIFICA | Tuning, budget XP e smoke dedicato implementati; profiling runtime Windows/Pixel 9 a 60 FPS ancora aperto |
+| B29 | Musica di sottofondo | IN VERIFICA | `Super Wreck Roadway (loop)` CC0 di Umplix è integrata su bus Music separato; il cambio asset non riesegue automatici, Windows o APK su richiesta, ascolto Windows/Pixel 9 aperto |
 | B30 | Boss senza aura circolare viola | PRONTO | Rimuove solo l'anello/aura; palette Evil B22 e telegraph gameplay restano invariati |
 | B31 | Padding esterno pausa e abilità | PRONTO | Correzione safe-area/presentazione, target touch invariati |
-| B32 | Welcome CTA coerente e impostazioni a ingranaggio | PRONTO | Riusa la grammatica CTA di B18W; nessuna modifica al flusso BOOT |
+| B32 | Welcome CTA coerente e impostazioni a ingranaggio | IN VERIFICA | `GIOCA` riusa la placca pixel-fantasy B18W, fluttua senza riquadro esterno e non disegna outline focus; Impostazioni è un ingranaggio safe-area da `60×60`; focused/relevant e APK statico verdi, Pixel 9 accettato dal proprietario, restano Windows e Full |
 | B33 | Run continua e Boss ricorrenti | PRONTO | Nuovo contratto di run che supersede a valle la vittoria al primo Boss del vertical slice storico |
 
 #### B18C — Player animato e direzione persistente
@@ -1222,12 +1222,18 @@ dense, Boss e VFX; `adb` non rilevava dispositivi il 26 agosto 2026. Evidenza in
 
 Stato: `IN VERIFICA`.
 
-- [ ] Rimuovere la barra/indicatore circolare della vita ancorato sopra o attorno
+- [x] Rimuovere la barra/indicatore circolare della vita ancorato sopra o attorno
   al Player: è ridondante rispetto alla barra `HP` globale B18Q.
-- [ ] Conservare feedback di danno, invulnerabilità e hit flash; nessun evento di
-  salute deve dipendere dall'indicatore rimosso.
-- [ ] Verificare che la vita resti immediatamente leggibile sulla barra superiore
-  anche durante Boss, level-up, pausa e densità elevate.
+- [x] Conservare feedback di danno, invulnerabilità e hit flash; nessun evento di
+  salute dipende dall'indicatore rimosso.
+- [ ] Verificare percettivamente che la vita resti immediatamente leggibile sulla
+  barra superiore durante Boss, level-up, pausa e densità elevate.
+
+Implementazione del 27 agosto 2026: `Player` non disegna più l'arco salute
+locale e non conserva proprietà di presentazione residue per quell'indicatore.
+`HealthComponent` continua a emettere i segnali atomici verso `GameHud`, la cui
+barra `HP` B18Q resta l'unica fonte primaria della vita Player. Restano aperti i
+controlli percettivi Windows/Pixel 9 in combattimento reale.
 
 #### B26 — Potenziamento danno dedicato
 
@@ -1252,32 +1258,62 @@ Stato: `IN VERIFICA`.
 
 #### B28 — Densità orde e TTK più bullet-hell
 
-Stato: `PRONTO`.
+Stato: `IN VERIFICA`.
 
-- [ ] Ribilanciare `SpawnProfile` per mostrare molte più unità contemporanee e
+- [x] Ribilanciare `SpawnProfile` per mostrare molte più unità contemporanee e
   ridurre la vita media dei nemici base: il combattimento deve privilegiare orde
   numerose, kill frequenti e pressione spaziale rispetto a pochi bersagli spugnosi.
-- [ ] Conservare i Boss come bersagli più resistenti e leggibili; il tuning dei
+- [x] Conservare i Boss come bersagli più resistenti e leggibili; il tuning dei
   nemici base non deve banalizzare pattern, telegraph o identità dei Boss.
 - [ ] Ripetere profiling 60 FPS su Windows e Pixel 9 con densità reale della nuova
   baseline; introdurre pooling/ottimizzazioni soltanto se il profiler lo richiede.
-- [ ] l'aumento delle kill non deve
+- [x] L'aumento delle kill non deve
   accelerare accidentalmente la progressione oltre il ritmo desiderato.
+
+Implementazione iniziale del 26 agosto 2026, ricalibrata il 27 agosto: il profilo ordinario passa da cap `80` a
+`140`, intervallo `1,00 → 0,25 s` a `0,60 → 0,12 s` (accelerazione `0,003`) e
+delay iniziale `0,50 s`; la vita `BaseEnemy` passa da `40` a `24`. Il profilo
+conserva la curva di spawn pre-B28 come riferimento e assegna a ogni nemico
+ordinario un credito XP frazionario `1,50 × intervallo_corrente / intervallo_riferimento`.
+`ExperienceDropper` somma il credito e genera pickup soltanto per le unità intere:
+il budget XP al secondo è il `150%` della baseline, senza tornare a un XP intero
+per kill; Boss e la loro ricompensa dichiarata restano a scala `1,0`. Non è stato introdotto pooling:
+lo stress B18V a `150` nemici, `200` proiettili e `200` pickup resta sopra il
+nuovo cap reale di `140`.
+
+`B28_HORDE_DENSITY_SMOKE_OK` verifica valori, TTK, protezione Boss/telegraph,
+nuovo budget XP e credito reale su cinque kill. Sono verdi anche le
+regressioni isolate di spawn, combattimento, piccioni, XP, abilità, HUD arena,
+roster, pausa/cambio, Boss e hardening performance. Il runner `Relevant` completo
+resta bloccato da `_ability_selection_icon_scale_smoke.gd`, che non trova le
+icone abilità/passiva già mancanti nel worktree e non è causato da B28.
+L'export Windows è verde; il profiling runtime non è chiuso perché il wrapper
+console dell'export termina con `CreateProcess error 193`. Sul Pixel 9 il
+pacchetto APK presente è installabile e il percorso welcome → selezione → run è
+stato esercitato, senza errori fatali nei log; il profiling frame-time a 60 FPS
+con baseline B28 resta aperto, come anche la conferma di freschezza dell'APK
+dopo un export Android che ha riportato la scomparsa del daemon Gradle. Evidenza:
+[`b28-verification.md`](./b28-verification.md).
 
 #### B29 — Musica di sottofondo
 
-Stato: `PRONTO`.
+Stato: `IN VERIFICA`.
 
-- [ ] Integrare una musica loop per la run, coerente con il tono pixel-art arcade
+- [x] Integrare una musica loop per la run, coerente con il tono pixel-art arcade
   e sufficientemente ritmica da sostenere orde più dense senza coprire SFX e cue.
-- [ ] Candidato preferito da validare: **Head in the Sand (seamless loop)** di
-  **congusbongus**, pubblicato su OpenGameArt con licenza **CC0** e file OGG loop;
-  sorgente: <https://opengameart.org/content/head-in-the-sand-seamless-loop>.
-- [ ] Scaricare solo dalla fonte ufficiale e registrare autore, URL, licenza,
+- [x] Integrare il brano selezionato: **Super Wreck Roadway (loop)** di
+  **Umplix**, pubblicato su OpenGameArt con licenza **CC0**; la fonte pubblica
+  elenca il loop WAV, mentre l'OGG runtime è stato fornito dal proprietario:
+  <https://opengameart.org/content/super-wreck-roadway>.
+- [x] Scaricare solo dalla fonte ufficiale e registrare autore, URL, licenza,
   data di acquisizione, file originale e SHA-256 nel manifest audio. Anche se
   CC0 non richiede attribuzione, mantenere il credito nel file crediti del progetto.
-- [ ] Verificare loop senza click/stacchi, volume/mute persistenti, mix con SFX,
-  pausa/resume, cambio modalità e due run consecutive senza player audio residui.
+- [x] Lo smoke `B29_BACKGROUND_MUSIC_SMOKE_OK` verifica loop configurato, mixer
+  separato con musica sotto gli SFX, mute, pausa/resume, modal e cleanup su due
+  run consecutive.
+- [ ] Completare l'ascolto percettivo del loop senza click/stacchi e del mix a
+  densità B28 su Windows e Pixel 9; installare e provare l'APK corrente prima di
+  chiudere il gate Android fisico. Evidenza: [`b29-verification.md`](./b29-verification.md).
 
 #### B30 — Boss senza aura circolare viola
 
@@ -1303,17 +1339,21 @@ Stato: `PRONTO`.
 
 #### B32 — Welcome CTA coerente e impostazioni a ingranaggio
 
-Stato: `PRONTO`.
+Stato: `IN VERIFICA`.
 
-- [ ] Sostituire la grafica sottostante al CTA arancione `GIOCA` della welcome con
+- [x] Sostituire la grafica sottostante al CTA arancione `GIOCA` della welcome con
   la stessa famiglia/placca pixel-fantasy usata da `Gioca con <Nome>` in B18W;
   il testo resta nativo e specifico della welcome.
-- [ ] Rimuovere il grande pulsante `IMPOSTAZIONI` dal blocco centrale e sostituirlo
-  con un pulsante a **ingranaggio** in alto a destra, dentro safe area.
-- [ ] Conservare focus, tastiera/controller/touch e Back; l'ingranaggio deve avere
-  target touch minimo e stato focus/pressed leggibili anche senza hover.
-- [ ] Verificare che logo, cast, CTA e ingranaggio non si sovrappongano a 16:9,
+- [x] Rimuovere il grande pulsante `IMPOSTAZIONI` dal blocco centrale e sostituirlo
+  con un pulsante a **ingranaggio** in alto a destra, dentro safe area scostato dal bordo.
+- [x] Conservare navigazione focus, tastiera/controller/touch e Back senza
+  disegnare un riquadro focus; l'ingranaggio mantiene target touch minimo e
+  stato pressed leggibile anche senza hover.
+- [x] Verificare automaticamente che logo, cast, CTA e ingranaggio non si sovrappongano a 16:9,
   20:9 e 4:3 e che il flusso welcome → impostazioni → welcome resti in `BOOT`.
+
+Evidenza: [`b32-verification.md`](./b32-verification.md). Restano distinti il
+controllo percettivo/input Windows e il percorso touch reale su Android.
 
 #### B33 — Run continua e Boss ricorrenti
 
@@ -1532,3 +1572,5 @@ registrati in [`b18s-verification.md`](./b18s-verification.md).
 Scala visuale B24, invarianti gameplay, matrice responsive ed esito dei gate
 automatici/piattaforma sono registrati in
 [`b24-verification.md`](./b24-verification.md).
+CTA welcome B32, ingranaggio safe-area e gate rimanenti sono registrati in
+[`b32-verification.md`](./b32-verification.md).

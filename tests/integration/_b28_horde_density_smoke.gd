@@ -41,6 +41,7 @@ func _validate_baseline() -> void:
 	_expect(profile.max_alive_enemies == 140, "B28 deve alzare il cap vivo a 140 unita.")
 	_expect_float_near(profile.base_spawn_interval, 0.6, "B28 deve partire da una cadenza piu fitta.")
 	_expect_float_near(profile.min_spawn_interval, 0.12, "B28 deve raggiungere la cadenza bullet-hell.")
+	_expect_float_near(profile.progression_experience_multiplier, 1.5, "B28 deve aumentare il budget XP del 50%.")
 	_expect_float_near(base_health.health_max, 24.0, "B28 deve ridurre la vita base da 40 a 24.")
 	_expect(
 		boss.health_max >= base_health.health_max * 50.0
@@ -59,11 +60,11 @@ func _validate_baseline() -> void:
 
 	for run_time in [0.0, 60.0, 120.0, 160.0, 240.0]:
 		var xp_per_second := profile.get_experience_reward_scale(run_time) / profile.get_spawn_interval(run_time)
-		var reference_xp_per_second := 1.0 / profile.get_progression_reference_spawn_interval(run_time)
+		var target_xp_per_second := profile.progression_experience_multiplier / profile.get_progression_reference_spawn_interval(run_time)
 		_expect_float_near(
 			xp_per_second,
-			reference_xp_per_second,
-			"Il budget XP a %.0f s deve restare sulla baseline precedente." % run_time
+			target_xp_per_second,
+			"Il budget XP a %.0f s deve rispettare il bonus B28 dichiarato." % run_time
 		)
 
 	base_enemy.free()
@@ -111,6 +112,7 @@ func _validate_fractional_xp_budget() -> void:
 		granted_xp == expected_xp,
 		"Cinque kill base devono produrre %d XP compensati, ottenuti %d." % [expected_xp, granted_xp]
 	)
+	_expect(granted_xp >= 4, "Cinque kill base iniziali devono ora produrre almeno 4 XP.")
 
 	controller.prepare_restart()
 	paused = false

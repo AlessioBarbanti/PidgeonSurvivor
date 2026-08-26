@@ -1,6 +1,6 @@
 # Registro approvazioni contenuti
 
-Ultimo aggiornamento: 25 agosto 2026
+Ultimo aggiornamento: 27 agosto 2026
 Ambito: nomi, testi, controparti Boss, ritratti placeholder, audio e direzione
 degli asset originali B18
 
@@ -44,6 +44,8 @@ correzione esplicita **Tempesta di Tuoni** della sessione odierna.
 | Sprite Player B18U | Approvati e integrati | Otto archetipi fittizi OpenAI ImageGen built-in confrontati con il fondale welcome B18O e con la conversazione di approvazione del 24 agosto; Magno, Zat, Alea, Aleo e Marghe sono stati corretti per riallinearli. Le strisce runtime, le sorgenti HD trasparenti escluse dagli export, prompt, trasformazioni, licenza e SHA-256 sono nel manifest dedicato; gate percettivo chiuso il 25 agosto 2026 |
 | Citazioni personali dei Boss | Non fornite | La UI usa il placeholder neutro del `BossDefinition`; nessuna citazione personale viene inventata |
 | Audio o voce personale | Non fornito | Il campo resta nullo e il runtime rimane silenzioso |
+| Musica di sottofondo B29 | Integrata, verifica percettiva aperta | `Super Wreck Roadway (loop)` di Umplix, da OpenGameArt, CC0 1.0 Universal. La fonte pubblica espone il loop WAV; il proprietario ha fornito l'OGG runtime. URL, licenza, data di acquisizione, trasformazione dichiarata e SHA-256 sono in `assets/audio/third_party/super_wreck_roadway_loop.MANIFEST.md`; il credito volontario è in `docs/credits.md` |
+| Welcome B32 | Riuso nativo, verifica percettiva aperta | `GIOCA` riusa esclusivamente `character_select_cta_base.png`, già approvata per B18W; testo, ingranaggio, focus e pressed sono controlli Godot nativi. Non entra alcun nuovo raster né nuovo contenuto personale. |
 
 Da B22 `data/bosses/first_boss.tres` descrive il piccione speciale baseline.
 `BossEncounter` può derivarne in modo seed-deterministico uno degli otto

@@ -5,6 +5,7 @@ const INITIAL_VIEWPORT_SIZE := Vector2i(1280, 720)
 const WELCOME_BACKGROUND_PATH := "res://assets/art/ui/welcome/welcome_ability_cast_background.png"
 const WELCOME_LOGO_PATH := "res://assets/art/ui/welcome/welcome_logo.png"
 const WELCOME_MANIFEST_PATH := "res://assets/art/ui/welcome/ASSET-MANIFEST.md"
+const CHARACTER_SELECT_CTA_PATH := "res://assets/art/ui/character_select/character_select_cta_base.png"
 const WELCOME_BACKGROUND_SHA256 := "93f85fd7f2a76f889a56961ed17dde667e0c8621ee085fe402aa0349f17c24d0"
 const WELCOME_LOGO_SHA256 := "c2a63add4753ece374cf673d636d12cce55e55cd43624aed645bf8f5c347fa9f"
 const LAYOUT_PROFILES := [
@@ -85,13 +86,34 @@ func _validate_welcome_flow() -> void:
 	var play_button := welcome.get_play_button()
 	var settings_button := welcome.get_settings_button()
 	var close_settings_button := welcome.get_close_settings_button()
-	_expect(play_button != null and settings_button != null, "La welcome deve esporre GIOCA e IMPOSTAZIONI.")
+	_expect(play_button != null and settings_button != null, "La welcome deve esporre GIOCA e l'ingranaggio impostazioni.")
 	_expect(close_settings_button != null, "Le impostazioni devono esporre INDIETRO.")
 	if play_button == null or settings_button == null or close_settings_button == null:
 		await _dispose(movement_slice, controller)
 		return
 	for button in [play_button, settings_button, close_settings_button]:
 		_expect(button.custom_minimum_size.y >= 44.0, "Le azioni B18O devono conservare target touch validi.")
+	_expect(settings_button.tooltip_text == "Impostazioni", "L'ingranaggio B32 deve conservare un nome accessibile.")
+	for button in [play_button, settings_button, close_settings_button]:
+		_expect(
+			button.get_theme_stylebox("focus") is StyleBoxEmpty
+			and button.get_theme_stylebox("pressed") != null,
+			"I pulsanti B32 non devono disegnare un riquadro focus e devono conservare pressed."
+		)
+	var cta_style := play_button.get_theme_stylebox("normal") as StyleBoxTexture
+	var cta_atlas := cta_style.texture as AtlasTexture if cta_style != null else null
+	_expect(
+		cta_atlas != null
+		and cta_atlas.atlas != null
+		and cta_atlas.atlas.resource_path == CHARACTER_SELECT_CTA_PATH,
+		"GIOCA B32 deve riusare la placca pixel-fantasy del CTA B18W."
+	)
+	var actions_frame := welcome.get_actions_frame()
+	_expect(
+		actions_frame != null
+		and actions_frame.get_theme_stylebox("panel") is StyleBoxEmpty,
+		"Il CTA B32 deve restare flottante, senza un riquadro esterno."
+	)
 	await process_frame
 	_expect(root.gui_get_focus_owner() == play_button, "GIOCA deve ricevere il focus iniziale.")
 
@@ -207,19 +229,28 @@ func _validate_layout_profiles(movement_slice: Control, welcome: WelcomeScreen) 
 		var title_rect := welcome.get_title_plaque_rect()
 		var logo_rect := welcome.get_logo_rect()
 		var actions_rect := welcome.get_actions_frame_rect()
+		var gear_rect := welcome.get_settings_button_rect()
 		_expect(panel_rect.has_area(), "%s: il pannello welcome deve avere area." % profile)
 		_expect(title_rect.has_area(), "%s: l'insegna titolo deve avere area." % profile)
 		_expect(logo_rect.has_area(), "%s: il logo deve avere area." % profile)
 		_expect(actions_rect.has_area(), "%s: il pannello azioni deve avere area." % profile)
+		_expect(gear_rect.has_area(), "%s: l'ingranaggio deve avere area." % profile)
 		_expect(safe_area.encloses(panel_rect), "%s: la welcome deve restare nella safe area." % profile)
 		_expect(safe_area.encloses(title_rect), "%s: l'insegna deve restare nella safe area." % profile)
 		_expect(safe_area.encloses(logo_rect), "%s: il logo deve restare nella safe area." % profile)
 		_expect(safe_area.encloses(actions_rect), "%s: le azioni devono restare nella safe area." % profile)
+		_expect(safe_area.encloses(gear_rect), "%s: l'ingranaggio deve restare nella safe area." % profile)
 		_expect(panel_rect.size.x <= safe_area.size.x, "%s: la welcome non deve debordare in larghezza." % profile)
 		_expect(panel_rect.size.y <= safe_area.size.y, "%s: la welcome non deve debordare in altezza." % profile)
 		_expect(panel_rect.size.y <= safe_area.size.y * 0.72, "%s: la UI deve lasciare leggibile il cast inferiore." % profile)
 		_expect(title_rect.end.y <= actions_rect.position.y, "%s: insegna e azioni devono restare due blocchi distinti." % profile)
 		_expect(logo_rect.end.y <= actions_rect.position.y, "%s: il logo non deve sovrapporsi alle azioni." % profile)
+		_expect(
+			not gear_rect.intersects(title_rect)
+			and not gear_rect.intersects(logo_rect)
+			and not gear_rect.intersects(actions_rect),
+			"%s: logo, CTA e ingranaggio B32 non devono sovrapporsi." % profile
+		)
 	root.content_scale_size = INITIAL_VIEWPORT_SIZE
 	root.size = INITIAL_VIEWPORT_SIZE
 	await _wait_processed_frame()
@@ -249,6 +280,7 @@ func _finish() -> void:
 	await process_frame
 	if _failures.is_empty():
 		print("B18O_WELCOME_FLOW_SMOKE_OK")
+		print("B32_WELCOME_CTA_SETTINGS_SMOKE_OK")
 		quit(0)
 		return
 	for failure in _failures:

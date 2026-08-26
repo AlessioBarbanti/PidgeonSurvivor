@@ -7,8 +7,10 @@ signal cue_played(cue_id: StringName)
 const DEFAULT_SETTINGS_PATH := "user://audio_settings.cfg"
 const SETTINGS_SECTION := "audio"
 const SFX_BUS_NAME := "SFX"
+const MUSIC_BUS_NAME := "Music"
 const PLAYER_POOL_SIZE := 12
 const MINIMUM_LINEAR_VOLUME := 0.0001
+const BACKGROUND_MUSIC_VOLUME_DB := -18.0
 
 const SHOT := &"shot"
 const HIT := &"hit"
@@ -46,6 +48,9 @@ const DEFEAT := &"defeat"
 @export var victory_stream: AudioStream
 @export var defeat_stream: AudioStream
 
+@export_group("Background music")
+@export var background_music_stream: AudioStream
+
 @export_group("Diagnostics")
 ## Il driver headless non produce audio udibile e può trattenere playback OGG
 ## fino allo shutdown. Gli smoke verificano mapping e segnali senza allocarlo.
@@ -54,10 +59,13 @@ const DEFEAT := &"defeat"
 var _effects_volume := 0.8
 var _muted := false
 var _players: Array[AudioStreamPlayer] = []
+var _background_music_player: AudioStreamPlayer
 var _next_player_index := 0
 var _last_cue_ticks: Dictionary = {}
 var _ability_cooldown_armed := false
 var _configured := false
+var _background_music_active := false
+var _background_music_resume_position := 0.0
 
 var _run_controller: RunController
 var _player: Player
@@ -73,7 +81,9 @@ var _pause_overlay: PauseOverlay
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_ensure_sfx_bus()
+	_ensure_music_bus()
 	_build_player_pool()
+	_build_background_music_player()
 	_load_settings()
 	_apply_settings()
 
@@ -175,6 +185,7 @@ func stop_all() -> void:
 			continue
 		audio_player.stop()
 		audio_player.stream = null
+	stop_background_music()
 
 
 func has_complete_cue_set() -> bool:
@@ -197,6 +208,25 @@ func has_complete_cue_set() -> bool:
 		if get_stream_for_cue(cue_id) == null:
 			return false
 	return true
+
+
+func has_background_music() -> bool:
+	return background_music_stream != null
+
+
+func is_background_music_active() -> bool:
+	return _background_music_active
+
+
+func is_background_music_looping() -> bool:
+	if not background_music_stream is AudioStreamOggVorbis:
+		return false
+	var ogg_stream := background_music_stream as AudioStreamOggVorbis
+	return ogg_stream.loop
+
+
+func get_background_music_player() -> AudioStreamPlayer:
+	return _background_music_player
 
 
 func get_stream_for_cue(cue_id: StringName) -> AudioStream:
@@ -279,6 +309,15 @@ func _ensure_sfx_bus() -> void:
 		AudioServer.set_bus_send(bus_index, "Master")
 
 
+func _ensure_music_bus() -> void:
+	var bus_index := AudioServer.get_bus_index(MUSIC_BUS_NAME)
+	if bus_index < 0:
+		AudioServer.add_bus()
+		bus_index = AudioServer.bus_count - 1
+		AudioServer.set_bus_name(bus_index, MUSIC_BUS_NAME)
+		AudioServer.set_bus_send(bus_index, "Master")
+
+
 func _build_player_pool() -> void:
 	if not _players.is_empty():
 		return
@@ -289,6 +328,17 @@ func _build_player_pool() -> void:
 		audio_player.process_mode = Node.PROCESS_MODE_ALWAYS
 		add_child(audio_player)
 		_players.append(audio_player)
+
+
+func _build_background_music_player() -> void:
+	if is_instance_valid(_background_music_player):
+		return
+	_background_music_player = AudioStreamPlayer.new()
+	_background_music_player.name = "BackgroundMusicPlayer"
+	_background_music_player.bus = MUSIC_BUS_NAME
+	_background_music_player.volume_db = BACKGROUND_MUSIC_VOLUME_DB
+	_background_music_player.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(_background_music_player)
 
 
 func _acquire_player() -> AudioStreamPlayer:
@@ -303,8 +353,10 @@ func _acquire_player() -> AudioStreamPlayer:
 
 
 func _apply_settings() -> void:
-	var bus_index := AudioServer.get_bus_index(SFX_BUS_NAME)
-	if bus_index >= 0:
+	for bus_name in [SFX_BUS_NAME, MUSIC_BUS_NAME]:
+		var bus_index := AudioServer.get_bus_index(bus_name)
+		if bus_index < 0:
+			continue
 		AudioServer.set_bus_volume_db(
 			bus_index,
 			linear_to_db(maxf(_effects_volume, MINIMUM_LINEAR_VOLUME))
@@ -348,6 +400,16 @@ func _connect_once(source_signal: Signal, callable: Callable) -> void:
 
 
 func _on_run_state_changed(previous_state: RunController.RunState, current_state: RunController.RunState) -> void:
+	if current_state == RunController.RunState.RUNNING:
+		start_background_music()
+	elif previous_state == RunController.RunState.RUNNING:
+		pause_background_music()
+	elif current_state == RunController.RunState.BOOT or current_state in [
+		RunController.RunState.VICTORY,
+		RunController.RunState.DEFEAT,
+	]:
+		stop_background_music()
+
 	if current_state == RunController.RunState.MANUAL_PAUSE:
 		play_cue(PAUSE, -2.0)
 	elif previous_state == RunController.RunState.MANUAL_PAUSE and current_state == RunController.RunState.RUNNING:
@@ -355,6 +417,7 @@ func _on_run_state_changed(previous_state: RunController.RunState, current_state
 
 
 func _on_run_ended(final_state: RunController.RunState, _run_time: float) -> void:
+	stop_background_music()
 	if final_state == RunController.RunState.VICTORY:
 		play_cue(VICTORY, -1.0)
 	elif final_state == RunController.RunState.DEFEAT:
@@ -362,8 +425,42 @@ func _on_run_ended(final_state: RunController.RunState, _run_time: float) -> voi
 
 
 func _on_restart_prepared() -> void:
+	stop_background_music()
 	_ability_cooldown_armed = false
 	_last_cue_ticks.clear()
+
+
+func start_background_music() -> bool:
+	if background_music_stream == null:
+		return false
+	if background_music_stream is AudioStreamOggVorbis:
+		var ogg_stream := background_music_stream as AudioStreamOggVorbis
+		ogg_stream.loop = true
+	_background_music_active = true
+	if signal_only_in_headless and DisplayServer.get_name() == "headless":
+		return true
+	if not is_instance_valid(_background_music_player):
+		return false
+	_background_music_player.stream = background_music_stream
+	_background_music_player.play(_background_music_resume_position)
+	return true
+
+
+func pause_background_music() -> void:
+	if not _background_music_active:
+		return
+	if is_instance_valid(_background_music_player) and _background_music_player.playing:
+		_background_music_resume_position = _background_music_player.get_playback_position()
+		_background_music_player.stop()
+	_background_music_active = false
+
+
+func stop_background_music() -> void:
+	if is_instance_valid(_background_music_player):
+		_background_music_player.stop()
+		_background_music_player.stream = null
+	_background_music_active = false
+	_background_music_resume_position = 0.0
 
 
 func _on_player_damaged(_player_value: Player, _amount: float, _health_current: float) -> void:

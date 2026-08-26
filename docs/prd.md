@@ -303,7 +303,9 @@ run. Da B22 ogni incontro parte dal piccione speciale baseline e può risolversi
 in uno degli otto Evil secondo probabilità dati e seed della run.
 
 Una welcome screen precede la selezione e non inizializza alcuna run. `GIOCA`
-apre il selettore, mentre le impostazioni restano raggiungibili sia da questa
+usa la stessa placca pixel-fantasy senza testo del CTA `Gioca con <Nome>` del
+carosello B18W, ma conserva copy nativo della welcome; un ingranaggio da almeno
+`60×60` nella safe area in alto a destra apre le impostazioni. Le impostazioni restano raggiungibili sia da questa
 schermata sia dalla pausa; volume effetti, mute e Flash ridotti usano le stesse
 autorità persistenti nei due frontend. Back chiude prima le impostazioni e dal
 selettore riapre la welcome. La selezione resta in `BOOT`: nessun clock, spawn o
@@ -520,11 +522,23 @@ B18V. I soli fallback consentiti, nell'ordine, sono FIFO dei feedback transitori
 verifica percettiva; non sono ammessi qualità dinamica né cambi a durate, raggi,
 cooldown, danni, spawn o pool audio da 12 voci.
 
+**Densità B28:** il profilo ordinario usa cap `140`, intervallo `0,60 → 0,12 s`,
+accelerazione `0,003`, delay iniziale `0,50 s` e nemici base da `24 HP`. Il
+budget XP non segue ciecamente il numero di kill: allo spawn ogni nemico base
+riceve `1,50 × intervallo_corrente / intervallo_riferimento_pre_B28`; il dropper
+accumula il credito frazionario e consegna solo XP intero. Boss, ricompensa Boss,
+pattern e telegraph restano fuori da questa scala. Pooling o altre ottimizzazioni
+sono ammessi soltanto dopo evidenza profiler Windows e Pixel 9.
+
 **Audio:** gli eventi di combattimento, progressione, abilità, Boss e terminali
-usano cue brevi su un bus SFX polifonico. Il menu di pausa offre volume lineare e
-mute, applicati anche durante la pausa e persistiti in `user://audio_settings.cfg`.
-Le voci personali restano separate da questi effetti generici e silenziose finché
-non vengono fornite e approvate.
+usano cue brevi su un bus SFX polifonico. La run usa inoltre il loop CC0
+`Super Wreck Roadway (loop)` di Umplix su un bus `Music` separato,
+attenuato di `18 dB` rispetto agli SFX e fermato fuori da `RUNNING`; pausa e
+modal riprendono dalla posizione corrente, mentre terminale e restart lo
+puliscono. Il menu offre volume audio lineare e mute, applicati a entrambi i bus
+anche durante la pausa e persistiti in `user://audio_settings.cfg`. Le voci
+personali restano separate da questi effetti generici e silenziose finché non
+vengono fornite e approvate.
 
 ## 6. Roadmap di sviluppo
 

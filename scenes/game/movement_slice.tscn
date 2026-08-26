@@ -1,4 +1,4 @@
-[gd_scene load_steps=87 format=3]
+[gd_scene load_steps=88 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -90,6 +90,7 @@
 [ext_resource type="Resource" path="res://data/upgrades/summer_grill.tres" id="86_summer_grill"]
 [ext_resource type="PackedScene" path="res://scenes/ui/welcome_screen.tscn" id="87_welcome_screen"]
 [ext_resource type="Resource" path="res://data/upgrades/meat_fork_damage.tres" id="94_meat_fork_damage"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/super_wreck_roadway_loop.ogg" id="95_background_music"]
 
 [node name="MovementSlice" type="Control"]
 layout_mode = 3
@@ -210,6 +211,7 @@ pause_stream = ExtResource("72_pause")
 resume_stream = ExtResource("73_resume")
 victory_stream = ExtResource("74_victory")
 defeat_stream = ExtResource("75_defeat")
+background_music_stream = ExtResource("95_background_music")
 
 [node name="World" type="Node2D" parent="."]
 

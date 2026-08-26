@@ -42,6 +42,7 @@ func _ready() -> void:
 	_refresh_volume_label(_volume_slider.value)
 	_refresh_scale_label(_ability_size_value_label, _ability_size_slider.value)
 	_refresh_scale_label(_joystick_size_value_label, _joystick_size_slider.value)
+	_update_main_action_focus()
 	hide_welcome()
 
 
@@ -120,6 +121,12 @@ func get_settings_button() -> Button:
 	return _settings_button if is_instance_valid(_settings_button) else null
 
 
+func get_settings_button_rect() -> Rect2:
+	if not is_instance_valid(_settings_button):
+		return Rect2()
+	return Rect2(_settings_button.global_position, _settings_button.size)
+
+
 func get_close_settings_button() -> Button:
 	return _close_settings_button if is_instance_valid(_close_settings_button) else null
 
@@ -172,6 +179,10 @@ func get_actions_frame_rect() -> Rect2:
 	return Rect2(_actions_frame.global_position, _actions_frame.size)
 
 
+func get_actions_frame() -> PanelContainer:
+	return _actions_frame if is_instance_valid(_actions_frame) else null
+
+
 func get_background_texture() -> Texture2D:
 	return _background.texture if is_instance_valid(_background) else null
 
@@ -196,6 +207,7 @@ func _open_settings() -> void:
 	_title_plaque.visible = false
 	_play_button.disabled = true
 	_settings_button.disabled = true
+	_settings_button.visible = false
 	_close_settings_button.disabled = false
 	_volume_slider.call_deferred("grab_focus")
 
@@ -213,7 +225,18 @@ func _show_main_actions() -> void:
 	_settings_panel.visible = false
 	_play_button.disabled = false
 	_settings_button.disabled = false
+	_settings_button.visible = true
 	_close_settings_button.disabled = true
+	_update_main_action_focus()
+
+
+func _update_main_action_focus() -> void:
+	if not is_instance_valid(_play_button) or not is_instance_valid(_settings_button):
+		return
+	_play_button.focus_neighbor_top = _play_button.get_path_to(_settings_button)
+	_play_button.focus_neighbor_bottom = _play_button.get_path_to(_settings_button)
+	_settings_button.focus_neighbor_top = _settings_button.get_path_to(_play_button)
+	_settings_button.focus_neighbor_bottom = _settings_button.get_path_to(_play_button)
 
 
 func _on_volume_changed(value: float) -> void:

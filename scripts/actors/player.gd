@@ -22,7 +22,6 @@ signal facing_direction_changed(direction: Vector2)
 		collision_radius = maxf(value, 1.0)
 		if is_node_ready():
 			_sync_collision_radius()
-		queue_redraw()
 
 @export_group("Visual")
 @export_range(1.0, 2.0, 0.05) var visual_scale_multiplier := 1.25:
@@ -34,26 +33,6 @@ signal facing_direction_changed(direction: Vector2)
 		)
 		if is_node_ready():
 			_update_character_feedback()
-
-@export var body_color := Color(0.05, 0.88, 1.0, 1.0):
-	set(value):
-		body_color = value
-		queue_redraw()
-
-@export var outline_color := Color(0.015, 0.025, 0.06, 1.0):
-	set(value):
-		outline_color = value
-		queue_redraw()
-
-@export var accent_color := Color(1.0, 0.91, 0.2, 1.0):
-	set(value):
-		accent_color = value
-		queue_redraw()
-
-@export_range(0.0, 16.0, 0.5) var outline_width: float = 4.0:
-	set(value):
-		outline_width = maxf(value, 0.0)
-		queue_redraw()
 
 @export_group("Combat Feedback")
 @export_range(0.0, 1.0, 0.005) var damage_flash_duration := PresentationTimings.PLAYER_DAMAGE_FLASH_SECONDS
@@ -113,7 +92,6 @@ func _ready() -> void:
 	_connect_arena_layout()
 	_refresh_character_visual()
 	_clamp_to_playfield()
-	queue_redraw()
 
 
 func _exit_tree() -> void:
@@ -142,18 +120,6 @@ func _physics_process(delta: float) -> void:
 	_clamp_to_playfield()
 	_advance_character_animation(safe_delta)
 	_update_character_feedback()
-	if (
-		_damage_flash_remaining > 0.0
-		or _damage_reaction_remaining > 0.0
-		or _health_component.is_invulnerable()
-	):
-		queue_redraw()
-
-
-func _draw() -> void:
-	_draw_health_arc()
-
-
 func set_movement_input(value: Vector2) -> void:
 	movement_input = value
 
@@ -252,7 +218,6 @@ func reset_for_run() -> void:
 		_health_component.set_health_max(get_base_health_max())
 		_health_component.reset_to_max()
 	_update_character_feedback()
-	queue_redraw()
 
 
 func set_arena_layout(value: ArenaLayout) -> void:
@@ -630,7 +595,6 @@ func _disconnect_health_component() -> void:
 
 func _on_health_changed(health_current: float, health_max: float) -> void:
 	health_changed.emit(self, health_current, health_max)
-	queue_redraw()
 
 
 func _on_damaged(amount: float, health_current: float) -> void:
@@ -638,7 +602,6 @@ func _on_damaged(amount: float, health_current: float) -> void:
 	_damage_reaction_remaining = maxf(damage_reaction_duration, 0.0)
 	_update_character_feedback()
 	damaged.emit(self, amount, health_current)
-	queue_redraw()
 
 
 func _on_died() -> void:
@@ -647,12 +610,10 @@ func _on_died() -> void:
 	_death_handled = true
 	clear_movement_input()
 	died.emit(self)
-	queue_redraw()
 
 
 func _on_invulnerability_changed(_active: bool, _remaining: float) -> void:
 	_update_character_feedback()
-	queue_redraw()
 
 
 func _on_run_started(_seed_value: int) -> void:
@@ -669,29 +630,4 @@ func _clamp_to_playfield() -> void:
 	global_position = _arena_layout.clamp_circle_center(
 		global_position,
 		collision_radius
-	)
-
-
-func _draw_health_arc() -> void:
-	if not is_instance_valid(_health_component):
-		return
-	if _health_component.health_max <= 0.0:
-		return
-	var ratio := clampf(
-		_health_component.health_current / _health_component.health_max,
-		0.0,
-		1.0
-	)
-	if ratio >= 1.0 or ratio <= 0.0:
-		return
-	var radius := collision_radius + outline_width + 6.0
-	draw_arc(
-		Vector2.ZERO,
-		radius,
-		-PI * 0.5,
-		-PI * 0.5 + TAU * ratio,
-		48,
-		accent_color,
-		4.0,
-		true
 	)
