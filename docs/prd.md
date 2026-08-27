@@ -195,13 +195,18 @@ in base ai tag di compatibilità, in particolare per gli effetti di copia.
   tutta la durata e applica il danno con aggiornamenti periodici; pausa e stati
   non `RUNNING` congelano posizione, durata e tick.
 
-#### Aleo — Colata di Cemento
+#### Aleo — Shock Termico
 
-- **Tipo:** area di controllo sul terreno.
-- **Effetto:** rallenta i nemici e infligge danno nel tempo.
+- **Tipo:** area bifase di controllo e detonazione.
+- **Effetto:** una fase fredda brina i nemici nell'area e li rallenta, poi la
+  stessa area detona di calore; i bersagli ancora brinati subiscono il danno
+  moltiplicato.
 - **Parametri iniziali:** `cooldown_seconds: 12.0`, `area_radius: 200`,
-  `duration_seconds: 4.0`, `slow_factor: 0.5`, `dot_tick: 0.5`,
-  `dot_damage: 3`.
+  `duration_seconds: 1.2` (fase fredda), `damage: 14`, `slow_factor: 0.45`,
+  `shock_multiplier: 2.0`, `bloom_seconds: 0.35`.
+- **Nota tecnica:** la fase fredda applica un modificatore di velocità per
+  bersaglio e lo rimuove alla detonazione o all'uscita dall'area; pausa e stati
+  non `RUNNING` congelano fase, durata e detonazione.
 
 #### Lollo — Cosplay Casuale
 
@@ -244,7 +249,7 @@ cambio personaggio riportano l'attiva al rank `1`.
 I valori completi e cumulativi sono la tabella B18G del piano di sviluppo. Le
 progressioni sono: danno/raggio/knockback per Magno; danno/distanza/scia per Bea;
 percentuali e cooldown per Zat; danno/durata/raggio/frequenza per Alea;
-danno/durata/raggio/slow per Aleo; rank copiato, cooldown e anti-ripetizione per
+danno/durata/raggio/sbalzo per Aleo; rank copiato, cooldown e anti-ripetizione per
 Lollo; durata/raggio/slow per Migi; durata e cooldown del clone per Marghe.
 Cosplay non trasferisce rank: risolve temporaneamente il profilo copiato al rank
 `1`, `2` o `3` previsto dal proprio rank, con filtri anti-ricorsione e di
@@ -356,7 +361,7 @@ Baseline iniziali delle passive, tutte configurabili nei `.tres`:
 | Bea | probabilità di evasione `15%` |
 | Zat | `35%` del danno recuperabile dopo `3 s`, recupero in `4 s` |
 | Alea | effetto ogni `12 s` per `5 s`; `75%` positivo (`×1,20`) e `25%` negativo (`×0,90`) su movimento o fuoco |
-| Aleo | riduzione danno `15%`; resistenza knockback `×0,50` quando una sorgente applica spostamento al Player |
+| Aleo | sopra il `50%` HP danno inflitto `×1,20`; sotto il `50%` HP danno subito `-25%` e nemici entro `140 px` rallentati a `×0,70` |
 | Lollo | movimento `×1,10`, frequenza di fuoco `×1,15` |
 | Migi | riduzione danno `10%`; sotto `35%` HP scudo da un colpo per `4 s`, cooldown `20 s` |
 | Marghe | salute massima dei nemici base `×0,95`; Boss esclusi dalla baseline |

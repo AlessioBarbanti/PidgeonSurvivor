@@ -205,7 +205,32 @@ func _validate_passive(
 			_expect_float_near(player.get_character_move_speed_multiplier(), 1.0, "L'effetto Alea deve terminare.")
 			_expect_float_near(weapon.get_character_fire_rate_multiplier(), 1.0, "L'effetto arma Alea deve terminare.")
 		&"aleo":
-			_expect_float_near(passive.resolve_incoming_damage(20.0), 17.0, "Aleo deve ridurre il danno del 15%.")
+			_expect_float_near(
+				weapon.get_character_damage_multiplier(),
+				1.2,
+				"Aleo in riscaldamento deve infliggere +20% danno."
+			)
+			_expect_float_near(
+				passive.resolve_incoming_damage(20.0),
+				20.0,
+				"Aleo in riscaldamento non deve ridurre il danno subito."
+			)
+			var aleo_health := player.get_health_component()
+			_expect(
+				player.take_contact_damage(aleo_health.health_max * 0.6),
+				"La fixture deve portare Aleo sotto la soglia termica."
+			)
+			passive._process(0.1)
+			_expect_float_near(
+				weapon.get_character_damage_multiplier(),
+				1.0,
+				"Il raffrescamento deve annullare il bonus di danno."
+			)
+			_expect_float_near(
+				passive.resolve_incoming_damage(20.0),
+				15.0,
+				"Aleo in raffrescamento deve ridurre il danno del 25%."
+			)
 		&"lollo":
 			_expect_float_near(player.get_character_move_speed_multiplier(), 1.1, "Lollo deve avere +10% movimento.")
 			_expect_float_near(weapon.get_character_fire_rate_multiplier(), 1.15, "Lollo deve avere +15% frequenza.")
@@ -265,8 +290,23 @@ func _validate_ability(
 			_expect(effect is AbilityAreaEffect, "Alea deve creare l'area di Piroetta.")
 			_expect(enemy.get_health_component().health_current < initial_health, "La Piroetta deve colpire subito.")
 		&"aleo":
-			_expect(effect is AbilityAreaEffect, "Aleo deve creare la Colata di Cemento.")
-			_expect_float_near(enemy.get_speed_multiplier(), 0.5, "Il cemento deve rallentare del 50%.")
+			_expect(effect is ThermalShock, "Aleo deve creare lo Shock Termico.")
+			_expect_float_near(enemy.get_speed_multiplier(), 0.45, "La brina deve rallentare del 55%.")
+			_expect_float_near(
+				enemy.get_health_component().health_current,
+				initial_health,
+				"La fase fredda deve precedere il danno."
+			)
+			if effect is ThermalShock:
+				(effect as ThermalShock)._process(1.2)
+				_expect(
+					(effect as ThermalShock).get_frosted_on_detonation() == 1,
+					"Il bersaglio brinato deve essere contato allo shock."
+				)
+			_expect(
+				enemy.get_health_component().health_current < initial_health,
+				"Lo shock deve colpire alla fine della fase fredda."
+			)
 		&"lollo":
 			_expect(
 				not effects.get_last_copied_ability_id().is_empty()
@@ -310,6 +350,8 @@ func _get_effect_progress(effect: Node2D) -> float:
 		return (effect as AbilityAreaEffect).get_duration_remaining()
 	if effect is IllusionDecoy:
 		return (effect as IllusionDecoy).get_duration_remaining()
+	if effect is ThermalShock:
+		return (effect as ThermalShock).get_phase_remaining()
 	return 0.0
 
 

@@ -35,9 +35,9 @@ Boss: Evil Alea.
 
 ## Aleo
 
-Ruolo: Resistenza e controllo del territorio.  
-Passiva — Struttura Solida: Riduce una percentuale dei danni e aumenta la resistenza al knockback.  
-Attiva — Colata di Cemento: Crea una zona di cemento che rallenta e infligge danno nel tempo.
+Ruolo: Sbalzo termico — brucia quando sta bene, raffredda quando è in difficoltà.  
+Passiva — Termostato Interno: sopra metà salute lavora in riscaldamento e aumenta il danno inflitto; sotto metà passa in raffrescamento, riduce il danno subito e rallenta i nemici vicini.  
+Attiva — Shock Termico: Congela un'area per un istante, poi la fa esplodere di calore con danno raddoppiato sui nemici brinati.
 Boss: Evil Aleo.
 
 ## Lollo
@@ -64,9 +64,18 @@ Boss: Evil Marghe.
 ## Direzione visuale del cast
 
 Questi archetipi originali sono la direzione presentazionale approvata per il
-fondale della welcome B18O. Non rappresentano persone reali e traducono passive
-e abilità in silhouette immediatamente riconoscibili; non modificano i contratti
-gameplay dei profili.
+fondale della welcome B18O. Traducono passive e abilità in silhouette
+immediatamente riconoscibili e non modificano i contratti gameplay dei profili.
+Con l'eccezione di Aleo, non rappresentano persone reali: dal rework del 28
+agosto 2026 la sua direzione visuale è ispirata ai tratti di una persona reale,
+con consenso esplicito dichiarato dal proprietario del progetto, e resta una
+caricatura pixel-art e non una somiglianza fotografica.
+
+Il 28 agosto 2026 tutte e otto le strisce sprite sono state rigenerate dal
+proprietario in un passaggio di identità, insieme alle due icone di Aleo. La
+tabella qui sotto resta la direzione approvata; ciò che è effettivamente entrato
+nel runtime, con versioni promosse e hash, è in
+`assets/art/characters/players/ASSET-MANIFEST.md`.
 
 | Personaggio | Descrizione visuale |
 |---|---|
@@ -74,7 +83,7 @@ gameplay dei profili.
 | Bea | Pattinatrice agile senza casco, con capelli scuri lunghi e ricci e un capo sportivo viola durante un Powerslide basso, accompagnato da una breve scia di fuoco dietro i roller. |
 | Zat | Infermiera elettrica con taglio a caschetto e divisa bianco-ciano, simbolo medico generico a cuore, luce curativa e fulmine giallo-ciano. |
 | Alea | Ballerina classica nel pieno di una Gran Piroetta, circondata da un nastro circolare e un richiamo d'aquila. |
-| Aleo | Muratore robusto con casco, cazzuola, secchio e una piccola colata di cemento ai piedi. |
+| Aleo | Termotecnico giovane e robusto, occhiali e barba ramata, chiave regolabile e manometro alla cintura, metà aura ciano di brina e metà aura arancio di calore. |
 | Lollo | Cosplayer iperattivo dai capelli scuri, con un costume originale da sopravvissuto retrofuturista post-apocalittico: tuta blu, dettagli gialli e accessori da wasteland senza marchi. |
 | Migi | Donna con occhiali e capelli neri, calma e concentrata dentro uno scudo ciano a guscio di tartaruga e onde rallentanti; non è vincolata a un archetipo monastico. |
 | Marghe | Ballerina reggaeton dalla corporatura morbida, con capelli neri molto lunghi, accenti magenta-oro e un clone d'ombra che replica la posa come VFX. |

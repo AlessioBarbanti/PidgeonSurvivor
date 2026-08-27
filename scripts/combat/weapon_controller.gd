@@ -299,6 +299,10 @@ func get_character_fire_rate_multiplier() -> float:
 	return _character_fire_rate_multiplier
 
 
+func get_character_damage_multiplier() -> float:
+	return _character_damage_multiplier
+
+
 func get_effective_shots_per_second() -> float:
 	return get_base_shots_per_second() * _fire_rate_multiplier
 

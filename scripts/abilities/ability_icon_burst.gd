@@ -76,11 +76,12 @@ func _apply_animation(progress: float) -> void:
 		AbilityEffectRegistry.GRAND_SPIN:
 			scale_factor = Vector2.ONE * (0.72 + sin(minf(t * 1.25, 1.0) * PI) * 0.38)
 			angle = t * TAU * 1.35
-		AbilityEffectRegistry.CEMENT_POUR:
-			var drop := smoothstep(0.0, 0.5, t)
-			scale_factor = Vector2(0.82 + drop * 0.22, 1.18 - drop * 0.18)
-			offset.y = lerpf(-30.0, 8.0, drop)
-			angle = lerpf(-0.12, 0.02, drop)
+		AbilityEffectRegistry.THERMAL_SHOCK:
+			var contraction := smoothstep(0.0, 0.55, t)
+			var bloom := smoothstep(0.55, 0.82, t)
+			scale_factor = Vector2.ONE * (1.12 - contraction * 0.42 + bloom * 0.58)
+			offset.y = lerpf(-14.0, 2.0, contraction)
+			angle = sin(t * TAU * 3.0) * (1.0 - t) * 0.06
 		AbilityEffectRegistry.RANDOM_COSPLAY:
 			var reveal := sin(minf(t * 1.45, 1.0) * PI)
 			scale_factor = Vector2.ONE * (0.58 + reveal * 0.62)

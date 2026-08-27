@@ -24,9 +24,19 @@ Riferimento registrato nei `FriendDefinition`:
 Il solo profilo Zat registra invece data `2026-08-24` e il riferimento alla
 correzione esplicita **Tempesta di Tuoni** della sessione odierna.
 
+Il profilo Aleo registra data `2026-08-28`: il proprietario ha chiesto il rework
+del personaggio da muratore a termotecnico, sostituendo passiva e attiva con la
+coppia **Termostato Interno** / **Shock Termico**. La direzione visuale di Aleo
+è ora ispirata, con consenso esplicito dell'interessato dichiarato dal
+proprietario, ai tratti di una persona reale: resta una caricatura pixel-art e
+non una somiglianza fotografica, ma per Aleo non vale più la clausola
+«nessuna persona reale» applicata al resto del cast.
+
 | Contenuto | Stato | Nota pubblica |
 |---|---|---|
 | Magno, Bea, Zat, Alea, Aleo, Lollo, Migi, Marghe | Approvato | Nomi, ruoli, passive e descrizioni delle attive in `data/friends/*.tres` |
+| Termostato Interno / Shock Termico | Approvato e integrato | Rework termotecnico di Aleo del 28 agosto 2026: la passiva alterna riscaldamento e raffrescamento sulla soglia HP, l'attiva sostituisce Colata di Cemento con una detonazione bifase. Le due icone dedicate sono entrate nel runtime lo stesso giorno; prompt, trasformazioni e hash sono nei manifest passive e VFX |
+| Identity pass sprite del cast | Approvato e integrato | Il 28 agosto 2026 il proprietario ha rigenerato tutte e otto le strisce Player. Versione promossa per personaggio, trasformazioni deterministiche invariate e hash sono in `assets/art/characters/players/ASSET-MANIFEST.md`. Le copie su chroma e le versioni non promosse erano staging non versionato e sono state rimosse |
 | Reggeton time! | Approvato | Retheme reggaeton dell'attiva di Marghe; comportamento gameplay invariato |
 | Powerslide | Approvato | Nome, copy e icona inline-skate CC0 richiesti nel tracker gameplay; valori runtime registrati nel PRD |
 | Tempesta di Tuoni | Approvato | Nome e copy corretti dal proprietario; nube, onde e flash comunicano il tuono senza cambiare gli ID tecnici storici |

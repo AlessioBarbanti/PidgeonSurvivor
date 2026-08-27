@@ -10,7 +10,7 @@ const EXPECTED_PASSIVE_ICON_PATHS := {
 	&"bea": "res://assets/art/icons/passives/generated/bea_sixth_sense.png",
 	&"zat": "res://assets/art/icons/passives/generated/zat_delayed_healing.png",
 	&"alea": "res://assets/art/icons/passives/generated/alea_eagle_never_misses.png",
-	&"aleo": "res://assets/art/icons/passives/generated/aleo_solid_structure.png",
+	&"aleo": "res://assets/art/icons/passives/generated/aleo_internal_thermostat.png",
 	&"lollo": "res://assets/art/icons/passives/generated/lollo_hyperactivity.png",
 	&"migi": "res://assets/art/icons/passives/generated/migi_turtle_shell.png",
 	&"marghe": "res://assets/art/icons/passives/generated/marghe_contagious_smile.png",

@@ -3,6 +3,11 @@
 Le otto strisce Player sono asset raster originali prodotti il 25 agosto 2026
 con OpenAI ImageGen built-in per il progetto IL GIOCO. Nessuna fotografia,
 persona reale, marca, logo o personaggio di terzi e stato usato come soggetto.
+La dichiarazione vale per le otto strisce qui registrate. La striscia `aleo` e
+pero superata dal rework del 28 agosto 2026: la nuova direzione visuale del
+personaggio e ispirata, con consenso esplicito dichiarato dal proprietario, ai
+tratti di una persona reale, e resta una caricatura pixel-art. Il prompt di
+rigenerazione e in `docs/aleo-rework-art-prompts.md`.
 Origine: progetto IL GIOCO; autore: progetto IL GIOCO con assistenza OpenAI
 ImageGen; licenza: Licenza del progetto.
 
@@ -11,6 +16,39 @@ Il fondale approvato B18O
 del 24 agosto 2026 sono stati usati come riferimento visivo per identita,
 capelli, corporature, costumi e palette. Il fondale non e incorporato nei file
 Player e nessuna UI o scena della welcome entra nelle texture runtime.
+
+## Identity pass del 28 agosto 2026
+
+Le otto strisce sono state rigenerate dal proprietario del progetto in un
+passaggio di identita successivo alla baseline B18U. I master conferiti erano
+gia PNG RGBA trasparenti `1536x1024`, accompagnati da una copia intermedia su
+chroma per ogni candidato. Per ogni personaggio e stata promossa la versione
+piu recente:
+
+| Personaggio | Candidato promosso |
+|---|---|
+| `magno` | `magno_identity_v3_source.png` |
+| `bea` | `bea_identity_v5_source.png` |
+| `zat` | `zat_identity_v2_source.png` |
+| `alea` | `alea_identity_v3_source.png` |
+| `aleo` | `aleo_thermotechnician_v3_source.png` |
+| `lollo` | `lollo_identity_v2_source.png` |
+| `migi` | `migi_identity_v2_source.png` |
+| `marghe` | `marghe_identity_v3_source.png` |
+
+Le copie su chroma e le versioni non promosse erano materiale di staging non
+versionato e sono state rimosse dopo la promozione: per questo la tabella di
+integrita registra ora byte e SHA-256 del master HD trasparente al posto
+dell'output ImageGen su chroma della baseline B18U. Le trasformazioni
+deterministiche verso `96x32` e verso il carosello `256x256` sono invariate e
+sono state rieseguite con gli stessi script e gli stessi parametri.
+
+Per `aleo` il passaggio accompagna il rework gameplay da muratore a
+termotecnico: la sua direzione visuale e ispirata, con consenso esplicito
+dichiarato dal proprietario, ai tratti di una persona reale e resta una
+caricatura pixel-art. La clausola «nessuna persona realeº della baseline B18U
+continua a valere per gli altri sette profili. I prompt di questo passaggio per
+Aleo sono in `docs/aleo-rework-art-prompts.md`.
 
 ## Prompt condiviso
 
@@ -38,7 +76,7 @@ preservare tre pose, baseline, scala, pixel-art e chroma.
 | `bea` | Pattinatrice agile senza casco, capelli scuri lunghi e ricci, giacca viola, protezioni e roller, falcata da skating | Nessuna correzione: confronto diretto con Bea B18O positivo; scia e Powerslide restano VFX separati |
 | `zat` | Infermiera elettrica in bianco-ciano, simbolo medico generico a cuore, caschetto, passo rapido | Rimosso completamente il copricapo generato; caschetto teal e divisa sono allineati alla welcome, senza Croce Rossa |
 | `alea` | Ballerina classica, tutu leggibile, passi eleganti | Capelli portati al biondo caldo e costume a bianco-avorio con oro come nella welcome; nastro e aquila restano VFX separati |
-| `aleo` | Muratore con casco, cazzuola, piccolo secchio e stivali, passo robusto | Reso giovane e senza barba; gilet arancio sostituito da abito da lavoro verde oliva e giallo coerente con la welcome |
+| `aleo` | Muratore con casco, cazzuola, piccolo secchio e stivali, passo robusto | Reso giovane e senza barba; gilet arancio sostituito da abito da lavoro verde oliva e giallo coerente con la welcome. **Da rigenerare**: il rework del 28 agosto 2026 trasforma Aleo in un termotecnico; prompt aggiornato in [`docs/aleo-rework-art-prompts.md`](../../../../docs/aleo-rework-art-prompts.md) |
 | `lollo` | Cosplayer iperattivo con capelli scuri, tuta blu, dettagli gialli, goggles e accessori wasteland originali | Nessuna correzione: confronto diretto con Lollo B18O positivo; nessun numero, marchio o costume riconoscibile |
 | `migi` | Donna calma con capelli neri e occhiali, outfit teal, scudo a guscio compatto, passo deliberato | Nessuna correzione: confronto diretto con Migi B18O positivo; cupola e onde rallentanti restano VFX separati |
 | `marghe` | Ballerina reggaeton con capelli neri molto lunghi, magenta-oro e passo ritmico | Corporatura resa piu morbida e piena e palette spostata al viola, magenta e oro come nella welcome; clone d'ombra resta VFX separato |
@@ -66,29 +104,29 @@ consumate dal runtime e Godot le mostra con filtro nearest.
 
 ## File e integrita
 
-| File runtime | Byte sorgente | SHA-256 sorgente ImageGen | Byte runtime | SHA-256 runtime |
+| File runtime | Byte master HD | SHA-256 master HD | Byte runtime | SHA-256 runtime |
 |---|---:|---|---:|---|
-| `magno.png` | `1640981` | `2DB2A2D66519F0B1A1562B7E3A369C870A89619F5A4CF17CC16FE71043F6CB98` | `3416` | `1964FE0E1329BCFF44355EC1D940E84BFE434A3F4669F0188321B96B68F4D4FE` |
-| `bea.png` | `1556624` | `33A47A5353E7F187ED41F1235C9FCEB75B635EB44BF7CB1637EC01F476485B3B` | `2987` | `AC1ADF45DE9B303E9778BDFF1B916B3C210D031864709C182BDB30B1A1F1FDC2` |
-| `zat.png` | `1556043` | `61FE527A0BB5EB87FD53B09AC2C6E882FE7BAA8D6F57BA3813D9BA606218014A` | `2458` | `7CEC69B264AE522501DADDCDF471C0EF5DA037B2E3AB46FA1DF4A07592267EC6` |
-| `alea.png` | `1602487` | `B1CD6731D6EE22FCA9B46B4CF8E44BDE890B2C6696F114D5E73972A12632B4E1` | `1968` | `B5DF2382A8231C826C6B447D91E22CA2E1ECCE9C0B0AD9E19EE8971D283D08E2` |
-| `aleo.png` | `1729632` | `33E17636A5B07267CFE7D21F487A2927EB7A95464470620271A284C83909A574` | `3036` | `0430029F910D1988E194F9216C03F1A54B59D8C859BC08AA9867DCDB70E34870` |
-| `lollo.png` | `1511189` | `4164CB0BE7A59799C30076CF6A113592762A68829B8AF31EEB0CF884F63193FA` | `3013` | `11990611A90F250497EF9F910C598A8DD36465B3407F70B98171C156534FF7B7` |
-| `migi.png` | `1484023` | `D73463B27D8E09D8D8879A5A88C862ED9ADA408C1C89EB759FBD5E4A2126E5EF` | `2851` | `929331699DDF23E70B30B99E1557AC53E15CBB914D9BF18E1F9C3EFBB1FD32F3` |
-| `marghe.png` | `1591662` | `33561B0CA59C2546FB10C46A0BBD2EA2C01D8400E4869AAB7926FFE98D916A0C` | `3159` | `BC6ED19334215AD9E7F549A9DA0D98AF94674E2674753F0A926D3EB7E43E0BD7` |
+| `magno.png` | `1060810` | `2EA717859B91B420B97F8D9975D67A3C827BA94CC4355739A4DB4FE370F836A5` | `3162` | `BF3CDDC9AFAC4028A037B588DEF3A0E8C0F7562C6952662E772A9432240766BB` |
+| `bea.png` | `953157` | `3C6B26826B9A6B5708174AE6EDB42F1F652A120DE0B17C3405DCAB8CB756059D` | `2942` | `0646F8C7E1486C548A3C1F96090297E826EA5EC419B698AAC6C4A74144256CB3` |
+| `zat.png` | `810909` | `DD1EB3F249F37426E9573DE02C2E0292F32A932A0C2059F82325D1F92919780B` | `2390` | `A3B621F76C222873017A21E2206A072A71D908713B4A59BBAEA5AD7B9867E0FA` |
+| `alea.png` | `829661` | `61C760FA609852BA31F5C24CE43626EA41228AAC6DFC9371D78D83F65408FEA5` | `1853` | `5FA4E05D766D22F323B18BD2D61B0059CA5298C19B386A794C6EFB14FD8FDD51` |
+| `aleo.png` | `980832` | `53999B4B51D97A918B5AC8F68444417E07B8B17EA4837C239173C5DEF4C787DE` | `2743` | `2408BC57B90877DE4F34C99BB9A0FD6404E33B61A542A19263CCE7B2C99149C6` |
+| `lollo.png` | `862437` | `CA66A174E501BEAB30CA3076F3682CCE955E488EC6EB8BBFC3C7734FDC1CF424` | `2655` | `633751EE7DB25DDC92F3156BE4898124923894A4F6722D52045B2AC49F74BA31` |
+| `migi.png` | `810304` | `04EDEE8F99B5849384D268BD35CB4E498EA80BEA1FA961A67BD19B8D1DC75499` | `2821` | `CC2C6CFC7A7CE160AD0870FE3DC6166771242610CABE7A89F9E72EE6E1446430` |
+| `marghe.png` | `1110523` | `D20B2CBA8B5FEB9A70D62D5E5CBEDFAB96E0FC9BB4E1C954B9BDBEC782A1872C` | `3145` | `30CA08F5BF1E59F0D6856B69B487C77CF75A8F0314827C3FB62F73096349DB9C` |
 
 ## Sorgenti HD trasparenti conservate
 
 | File HD | Dimensioni | SHA-256 |
 |---|---:|---|
-| `hd/magno_source.png` | `1536x1024` | `07619CD1DA79DC81685814C0F159F0A6FD7B234BA4C129C84F29FF08B41E82F0` |
-| `hd/bea_source.png` | `1536x1024` | `9ACBBFB7A3B81E1F4A47FFFBEF47D2384A67DCD88C2815D22536AF66199243B8` |
-| `hd/zat_source.png` | `1536x1024` | `3DBD1945CE4765BA2B8605121675F1BA57425A2C0FE797FCB9D801594C6DE2D6` |
-| `hd/alea_source.png` | `1536x1024` | `636FE1DC8B03676E467FA510659B638F6719526067435FF404F37CAD862071D0` |
-| `hd/aleo_source.png` | `1536x1024` | `5FF2A5B140F2E5334AE34110D366C1AD164D0C1366D96D7B9AE05108986C76F4` |
-| `hd/lollo_source.png` | `1536x1024` | `597CF0546BBBD7176F61A931595DD0490727C77D5452E0044D8838E82072AEBE` |
-| `hd/migi_source.png` | `1536x1024` | `0922837FF4633230EFA8A79915872CF4D00EE0EC75B6F5CA65BAF096DFA1CAE8` |
-| `hd/marghe_source.png` | `1536x1024` | `E6E107A6BFB7ED6898A8EE84160FACB8900A615A673A5A7A10E64009A1FF56F8` |
+| `hd/magno_source.png` | `1536x1024` | `2EA717859B91B420B97F8D9975D67A3C827BA94CC4355739A4DB4FE370F836A5` |
+| `hd/bea_source.png` | `1536x1024` | `3C6B26826B9A6B5708174AE6EDB42F1F652A120DE0B17C3405DCAB8CB756059D` |
+| `hd/zat_source.png` | `1536x1024` | `DD1EB3F249F37426E9573DE02C2E0292F32A932A0C2059F82325D1F92919780B` |
+| `hd/alea_source.png` | `1536x1024` | `61C760FA609852BA31F5C24CE43626EA41228AAC6DFC9371D78D83F65408FEA5` |
+| `hd/aleo_source.png` | `1536x1024` | `53999B4B51D97A918B5AC8F68444417E07B8B17EA4837C239173C5DEF4C787DE` |
+| `hd/lollo_source.png` | `1536x1024` | `CA66A174E501BEAB30CA3076F3682CCE955E488EC6EB8BBFC3C7734FDC1CF424` |
+| `hd/migi_source.png` | `1536x1024` | `04EDEE8F99B5849384D268BD35CB4E498EA80BEA1FA961A67BD19B8D1DC75499` |
+| `hd/marghe_source.png` | `1536x1024` | `D20B2CBA8B5FEB9A70D62D5E5CBEDFAB96E0FC9BB4E1C954B9BDBEC782A1872C` |
 
 ## Derivati frontend B18T
 
@@ -103,11 +141,11 @@ da import ed export; soltanto questi derivati UI vengono consumati dal runtime.
 
 | File carosello | Byte | SHA-256 |
 |---|---:|---|
-| `carousel/magno.png` | `63875` | `D534AFDFF2AD6B5C391A3807D896A089C8142074D0096AE1F5E2046C974B5AAA` |
-| `carousel/bea.png` | `48824` | `78DE548E7B528F165F4044383B8636A69A3B94BD920AA344C15D979A5C4367EC` |
-| `carousel/zat.png` | `40087` | `0116939E651A2A01A61A522CB776E9129E2DC2D70E071EAC6E15B7926B089653` |
-| `carousel/alea.png` | `29382` | `9BF32C220B2684B67B0761246BB5784405015156B057FB645C633BD90951138E` |
-| `carousel/aleo.png` | `50735` | `F9CDB34E261DCEE50560C3FA843ED96DFB76D15FDED703BB04D4D1CFC5CBB46E` |
-| `carousel/lollo.png` | `53550` | `3C1BE51F8655DCD764B7DC3ACBE926D6FFD40B9CC01D9ECDAA252928D92F6950` |
-| `carousel/migi.png` | `48357` | `18C847ED9A8A07860EC91C3FD52AE83E33F4A0636F6F69DC05E03C215F70B1B5` |
-| `carousel/marghe.png` | `52912` | `BEC1B185CFA52E9573D20D9993C9A13BA1A59493B9D6268F2B9A8D9914336197` |
+| `carousel/magno.png` | `61363` | `C8930E629C57F598DB8B82E8710C7DE2D0CA52E8FB3749D75ADBED90F949FE26` |
+| `carousel/bea.png` | `46858` | `A3ECB4C23A252E033C32424B606367409F2FE350A9908A0E556A327930F8454A` |
+| `carousel/zat.png` | `40219` | `B7CE0D95801E6B3E92E6861D59C8ADA7B6BBAC2AEE917AB2F36788597B0BF2AB` |
+| `carousel/alea.png` | `29153` | `CE59D593AFA30667B75E5DD185595C45028109BA48E8FEDFFB267360FE434DF6` |
+| `carousel/aleo.png` | `49755` | `18951C313652C86D696B29B831A4CBD9FD136B3FA377FF3DA59EA8F11A044EC6` |
+| `carousel/lollo.png` | `48688` | `1C57686966A4C395616E9163C47DB6E7449F453CBC980B03D1D561EA9D8AA46E` |
+| `carousel/migi.png` | `48941` | `3249AE96796D4DE09A914D36F5E9F3EE2ACFBD08A0738F45A9A0A1BEA26310F4` |
+| `carousel/marghe.png` | `54744` | `922DFED4E24588698350040EFFF4460936EB84A59FE73EA94B73EE4A510007A9` |

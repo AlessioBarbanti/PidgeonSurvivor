@@ -6,16 +6,18 @@ signal damage_avoided(passive_id: StringName)
 signal delayed_healing_changed(recoverable_health: float)
 signal shield_changed(active: bool, remaining: float)
 signal random_effect_started(positive: bool, stat_id: StringName, multiplier: float)
+signal thermal_mode_changed(hot: bool)
 
 const MAGNO_AERODYNAMIC_FLOW := &"magno_aerodynamic_flow"
 const BEA_SIXTH_SENSE := &"bea_sixth_sense"
 const ZAT_DELAYED_HEALING := &"zat_delayed_healing"
 const ALEA_EAGLE_NEVER_MISSES := &"alea_eagle_never_misses"
-const ALEO_SOLID_STRUCTURE := &"aleo_solid_structure"
+const ALEO_INTERNAL_THERMOSTAT := &"aleo_internal_thermostat"
 const LOLLO_HYPERACTIVITY := &"lollo_hyperactivity"
 const MIGI_TURTLE_SHELL := &"migi_turtle_shell"
 const MARGHE_CONTAGIOUS_SMILE := &"marghe_contagious_smile"
 
+const ALEO_COLD_AURA_MODIFIER := &"aleo_cold_aura"
 const MARGHE_HEALTH_META := &"b17a_marghe_health_profile"
 const MINIMUM_MULTIPLIER := 0.001
 
@@ -36,6 +38,8 @@ var _alea_interval_remaining := 0.0
 var _alea_effect_remaining := 0.0
 var _alea_move_multiplier := 1.0
 var _alea_fire_multiplier := 1.0
+var _aleo_hot := true
+var _aleo_chilled_targets: Array[BaseEnemy] = []
 
 
 func _process(delta: float) -> void:
@@ -53,11 +57,14 @@ func _process(delta: float) -> void:
 			_advance_delayed_healing(safe_delta)
 		ALEA_EAGLE_NEVER_MISSES:
 			_advance_alea_effect(safe_delta)
+		ALEO_INTERNAL_THERMOSTAT:
+			_advance_aleo_thermostat()
 		MIGI_TURTLE_SHELL:
 			_advance_migi_shield(safe_delta)
 
 
 func _exit_tree() -> void:
+	_clear_aleo_cold_aura()
 	_disconnect_dependencies()
 
 
@@ -141,9 +148,16 @@ func resolve_incoming_damage(amount: float) -> float:
 		return 0.0
 
 	var reduction := 0.0
-	if _definition.passive_id in [ALEO_SOLID_STRUCTURE, MIGI_TURTLE_SHELL]:
+	if _definition.passive_id == MIGI_TURTLE_SHELL:
 		reduction = _definition.get_passive_float(
 			&"damage_reduction",
+			0.0,
+			0.0,
+			0.95
+		)
+	elif _definition.passive_id == ALEO_INTERNAL_THERMOSTAT and not _aleo_hot:
+		reduction = _definition.get_passive_float(
+			&"cold_damage_reduction",
 			0.0,
 			0.0,
 			0.95
@@ -159,7 +173,7 @@ func is_supported_definition(definition: FriendDefinition) -> bool:
 		BEA_SIXTH_SENSE,
 		ZAT_DELAYED_HEALING,
 		ALEA_EAGLE_NEVER_MISSES,
-		ALEO_SOLID_STRUCTURE,
+		ALEO_INTERNAL_THERMOSTAT,
 		LOLLO_HYPERACTIVITY,
 		MIGI_TURTLE_SHELL,
 		MARGHE_CONTAGIOUS_SMILE,
@@ -234,6 +248,67 @@ func _activate_alea_effect() -> void:
 	random_effect_started.emit(positive, stat_id, multiplier)
 
 
+func _advance_aleo_thermostat() -> void:
+	var hot := _resolve_aleo_hot_mode()
+	if hot != _aleo_hot:
+		_aleo_hot = hot
+		_apply_character_multipliers()
+		thermal_mode_changed.emit(_aleo_hot)
+	if _aleo_hot:
+		_clear_aleo_cold_aura()
+		return
+	_refresh_aleo_cold_aura()
+
+
+func _resolve_aleo_hot_mode() -> bool:
+	if not is_instance_valid(_player):
+		return true
+	var health := _player.get_health_component()
+	if health == null or health.health_max <= 0.0:
+		return true
+	var threshold := _definition.get_passive_float(&"hot_threshold", 0.5, 0.0, 1.0)
+	return health.health_current > health.health_max * threshold
+
+
+func _refresh_aleo_cold_aura() -> void:
+	var radius := _definition.get_passive_float(&"cold_aura_radius", 0.0, 0.0)
+	var slow_factor := _definition.get_passive_float(
+		&"cold_slow_factor",
+		1.0,
+		MINIMUM_MULTIPLIER,
+		1.0
+	)
+	if (
+		radius <= 0.0
+		or slow_factor >= 1.0
+		or not is_instance_valid(_player)
+		or not is_instance_valid(_targeting_system)
+	):
+		_clear_aleo_cold_aura()
+		return
+	var inside: Array[BaseEnemy] = []
+	for target in _targeting_system.get_alive_targets():
+		if not AbilityEffectRegistry.is_point_within_radius(
+			_player.global_position,
+			target.global_position,
+			radius
+		):
+			continue
+		target.set_speed_modifier(ALEO_COLD_AURA_MODIFIER, slow_factor)
+		inside.append(target)
+	for target in _aleo_chilled_targets:
+		if is_instance_valid(target) and not target in inside:
+			target.remove_speed_modifier(ALEO_COLD_AURA_MODIFIER)
+	_aleo_chilled_targets = inside
+
+
+func _clear_aleo_cold_aura() -> void:
+	for target in _aleo_chilled_targets:
+		if is_instance_valid(target):
+			target.remove_speed_modifier(ALEO_COLD_AURA_MODIFIER)
+	_aleo_chilled_targets.clear()
+
+
 func _advance_migi_shield(delta: float) -> void:
 	_shield_cooldown_remaining = maxf(_shield_cooldown_remaining - delta, 0.0)
 	if _shield_remaining <= 0.0:
@@ -264,8 +339,16 @@ func _apply_character_multipliers() -> void:
 		return
 	var move_multiplier := 1.0
 	var fire_multiplier := 1.0
+	var damage_multiplier := 1.0
 	if _definition != null:
 		match _definition.passive_id:
+			ALEO_INTERNAL_THERMOSTAT:
+				if _aleo_hot:
+					damage_multiplier = _definition.get_passive_float(
+						&"hot_damage_multiplier",
+						1.0,
+						MINIMUM_MULTIPLIER
+					)
 			MAGNO_AERODYNAMIC_FLOW:
 				move_multiplier = _definition.get_passive_float(
 					&"move_speed_multiplier",
@@ -287,7 +370,7 @@ func _apply_character_multipliers() -> void:
 				move_multiplier = _alea_move_multiplier
 				fire_multiplier = _alea_fire_multiplier
 	_player.set_character_stat_multipliers(move_multiplier)
-	_weapon_controller.set_character_stat_multipliers(fire_multiplier)
+	_weapon_controller.set_character_stat_multipliers(fire_multiplier, damage_multiplier)
 
 
 func _apply_marghe_health_modifier(target: BaseEnemy) -> void:
@@ -329,6 +412,8 @@ func _reset_runtime(seed_value: int) -> void:
 	_alea_effect_remaining = 0.0
 	_alea_move_multiplier = 1.0
 	_alea_fire_multiplier = 1.0
+	_clear_aleo_cold_aura()
+	_aleo_hot = true
 	_alea_interval_remaining = (
 		_definition.get_passive_float(
 			&"trigger_interval",

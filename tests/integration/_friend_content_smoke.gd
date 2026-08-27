@@ -64,6 +64,7 @@ func _validate_catalog_and_approvals() -> void:
 		&"magno", &"bea", &"zat", &"alea", &"aleo", &"lollo", &"migi", &"marghe",
 	]
 	var expected_approval_dates := {
+		&"aleo": "2026-08-28",
 		&"bea": "2026-08-24",
 		&"zat": "2026-08-24",
 	}

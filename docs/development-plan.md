@@ -643,7 +643,7 @@ Valori autorevoli (`cd` in secondi; distanze e raggi in unità logiche mondo):
 | Powerslide | `cd 10`, distanza `320`, scia `4 s`, danno `6`, larghezza `40` | danno `8` | distanza `380`, larghezza `48` | `cd 9`, scia `5 s` | distanza `440`, danno `11`, larghezza `56` |
 | Tempesta di Tuoni | `cd 60`, normali `50%`, Boss `20%` | normali `55%` | `cd 55`, Boss `22%` | normali `60%`, Boss `24%` | `cd 50`, normali `70%`, Boss `28%` |
 | Gran Piroetta | `cd 9`, `1,2 s`, danno `5`, `12 hit/s`, raggio `140` | danno `6` | `1,4 s`, raggio `165` | `cd 8`, `14 hit/s` | `1,6 s`, danno `8`, raggio `180` |
-| Colata di Cemento | `cd 12`, `4 s`, danno `3/0,5 s`, raggio `200`, velocità nemici `×0,50` | danno `4/0,5 s` | `5 s`, raggio `230` | `cd 11`, velocità `×0,40` | `6 s`, danno `6/0,5 s`, raggio `250` |
+| Shock Termico | `cd 12`, brina `1,2 s`, danno `14`, raggio `200`, velocità nemici `×0,45`, sbalzo `×2,0` | danno `18` | brina `1,4 s`, raggio `230` | `cd 11`, velocità `×0,35`, sbalzo `×2,2` | brina `1,6 s`, danno `26`, raggio `250`, sbalzo `×2,5` |
 | Cosplay Casuale | `cd 14`, copia rank `1` | `cd 13` | copia rank `2` | `cd 12`, non ripete l'ultima abilità se esiste un'alternativa | `cd 11`, copia rank `3`, stessa regola anti-ripetizione |
 | Rallentamento Zen | `cd 11`, `3,5 s`, raggio `260`, velocità nemici `×0,40` | `4,5 s` | raggio `300` | `cd 10`, velocità `×0,32` | `6 s`, raggio `340`, velocità `×0,25` |
 | Reggeton time! | `cd 13`, clone `3 s` | clone `4 s` | `cd 12` | clone `5 s` | `cd 10`, clone `6 s` |
@@ -798,7 +798,7 @@ Stato: `COMPLETATO` dopo il refresh ImageGen.
   non interattiva dall'effetto gameplay senza modificare gameplay o input.
 - [x] Linguaggio VFX: Magno usa crepe e anelli tellurici; Bea scia a nastro con
   scintille; Zat nube e onde del tuono, preavviso e flash accessibile; Alea archi
-  rotanti; Aleo pozza grigio-ciano con bordo e bolle; Lollo confetti più palette
+  rotanti; Aleo corona di brina contrattile che detona in un bloom di calore; Lollo confetti più palette
   dell'abilità copiata; Migi anelli concentrici e particelle lente; Marghe clone,
   cassa e note musicali. Gli effetti alleati restano sotto telegraph e proiettili
   ostili e non comunicano collisioni più ampie di quelle reali.
@@ -1075,7 +1075,7 @@ percettivo fisico del cast in movimento e ad alta densità sul Pixel 9 a 20:9 e
 confronto finale 16:9/4:3 chiusi.
 
 - [x] Sostituire gli sprite Player provvisori degli otto `FriendDefinition` con
-  asset raster originali coerenti con la sezione [Direzione visuale del cast](./characters.md#direzione-visuale-del-cast): Magno tellurico con richiami bovini, Bea pattinatrice, Zat infermiera elettrica, Alea ballerina, Aleo muratore, Lollo cosplayer retrofuturista, Migi con scudo a guscio e Marghe ballerina reggaeton con clone d'ombra.
+  asset raster originali coerenti con la sezione [Direzione visuale del cast](./characters.md#direzione-visuale-del-cast): Magno tellurico con richiami bovini, Bea pattinatrice, Zat infermiera elettrica, Alea ballerina, Aleo termotecnico (rework del 28 agosto 2026; arte da rigenerare), Lollo cosplayer retrofuturista, Migi con scudo a guscio e Marghe ballerina reggaeton con clone d'ombra.
 - [x] Rappresentare esclusivamente archetipi fittizi: nessuno sprite deve
   riprodurre persone reali, loghi o marchi. Il simbolo medico generico a cuore
   di Zat resta consentito; silhouette, palette e posa devono essere leggibili

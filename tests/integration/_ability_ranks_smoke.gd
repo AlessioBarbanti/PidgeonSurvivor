@@ -33,12 +33,12 @@ const EXPECTED_RANKS: Dictionary = {
 		[8.0, 1.4, 165.0, 6.0, {"hits_per_second": 14.0}],
 		[8.0, 1.6, 180.0, 8.0, {"hits_per_second": 14.0}],
 	],
-	&"aleo_cement_pour": [
-		[12.0, 4.0, 200.0, 3.0, {"slow_factor": 0.5}],
-		[12.0, 4.0, 200.0, 4.0, {"slow_factor": 0.5}],
-		[12.0, 5.0, 230.0, 4.0, {"slow_factor": 0.5}],
-		[11.0, 5.0, 230.0, 4.0, {"slow_factor": 0.4}],
-		[11.0, 6.0, 250.0, 6.0, {"slow_factor": 0.4}],
+	&"aleo_thermal_shock": [
+		[12.0, 1.2, 200.0, 14.0, {"shock_multiplier": 2.0, "slow_factor": 0.45}],
+		[12.0, 1.2, 200.0, 18.0, {"shock_multiplier": 2.0, "slow_factor": 0.45}],
+		[12.0, 1.4, 230.0, 18.0, {"shock_multiplier": 2.0, "slow_factor": 0.45}],
+		[11.0, 1.4, 230.0, 18.0, {"shock_multiplier": 2.2, "slow_factor": 0.35}],
+		[11.0, 1.6, 250.0, 26.0, {"shock_multiplier": 2.5, "slow_factor": 0.35}],
 	],
 	&"lollo_random_cosplay": [
 		[14.0, 0.0, 0.0, 0.0, {"copy_rank": 1, "avoid_repeat": false}],

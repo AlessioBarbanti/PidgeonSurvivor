@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" path="res://assets/art/third_party/eldiran_rpg_characters/RPGCharacterSprites32x32-transparent.png" id="2_sheet"]
 [ext_resource type="Texture2D" path="res://assets/art/characters/players/aleo.png" id="3_gameplay"]
 [ext_resource type="Texture2D" path="res://assets/art/characters/players/carousel/aleo.png" id="4_selection"]
-[ext_resource type="Texture2D" path="res://assets/art/icons/passives/generated/aleo_solid_structure.png" id="5_passive"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/passives/generated/aleo_internal_thermostat.png" id="5_passive"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_portrait"]
 atlas = ExtResource("2_sheet")
@@ -30,18 +30,21 @@ region = Rect2(64, 0, 32, 32)
 script = ExtResource("1_definition")
 id = &"aleo"
 display_name = "Aleo"
-role = "Resistenza e controllo del territorio."
-tags = Array[StringName]([&"survival", &"control"])
-passive_title = "Struttura Solida"
-passive_description = "Riduce una percentuale dei danni e aumenta la resistenza al knockback."
-passive_id = &"aleo_solid_structure"
+role = "Sbalzo termico: brucia quando sta bene, raffredda quando è in difficoltà."
+tags = Array[StringName]([&"survival", &"damage", &"control"])
+passive_title = "Termostato Interno"
+passive_description = "Sopra metà salute lavora in riscaldamento e aumenta il danno inflitto; sotto metà passa in raffrescamento, riduce il danno subito e rallenta i nemici vicini."
+passive_id = &"aleo_internal_thermostat"
 passive_parameters = {
-"damage_reduction": 0.15,
-"knockback_resistance": 0.5
+"cold_aura_radius": 140.0,
+"cold_damage_reduction": 0.25,
+"cold_slow_factor": 0.7,
+"hot_damage_multiplier": 1.2,
+"hot_threshold": 0.5
 }
-active_ability_id = &"aleo_cement_pour"
-active_ability_title = "Colata di Cemento"
-active_ability_description = "Crea una zona di cemento che rallenta e infligge danno nel tempo."
+active_ability_id = &"aleo_thermal_shock"
+active_ability_title = "Shock Termico"
+active_ability_description = "Congela un'area per un istante, poi la fa esplodere di calore con danno raddoppiato sui nemici brinati."
 evil_display_name = "Evil Aleo"
 portrait = SubResource("AtlasTexture_portrait")
 evil_portrait = SubResource("AtlasTexture_evil")
@@ -56,5 +59,5 @@ gameplay_walk_right_frames = Array[Texture2D]([SubResource("AtlasTexture_gamepla
 content_approved = true
 portraits_approved = true
 approved_by = "Proprietario del progetto"
-approval_date = "2026-08-17"
-approval_reference = "Conferma esplicita nella sessione Codex del 17/08/2026."
+approval_date = "2026-08-28"
+approval_reference = "Rework termotecnico approvato dal proprietario nella sessione Claude Code del 28/08/2026."

@@ -324,24 +324,30 @@ Durante la rotazione colpisce ripetutamente i nemici circostanti.
 
 ## Ruolo
 
-Resistenza e controllo del territorio.
+Sbalzo termico: brucia quando sta bene, raffredda quando è in difficoltà.
 
-## Passiva — Struttura Solida
+## Passiva — Termostato Interno
 
-Riduce una percentuale dei danni subiti e aumenta la resistenza agli effetti di spostamento.
+Aleo lavora come un impianto che si autoregola sulla propria salute.
 
-Aleo è quindi naturalmente più difficile da abbattere.
+* Sopra metà salute è in **riscaldamento**: aumenta il danno che infligge.
+* Sotto metà salute passa in **raffrescamento**: riduce il danno che subisce e
+  rallenta i nemici che gli stanno addosso.
 
-## Attiva — Colata di Cemento
+Non è quindi un semplice personaggio difensivo: cambia carattere a seconda di
+come sta andando la run.
 
-Crea una zona di cemento sul terreno.
+## Attiva — Shock Termico
 
-I nemici che entrano nella zona:
+Aleo congela un'area per un istante e poi la fa esplodere di calore.
 
-* vengono fortemente rallentati;
-* ricevono un leggero danno nel tempo.
+* La **fase fredda** brina i nemici nell'area e li rallenta fortemente, senza
+  fare danno.
+* La **detonazione** che segue infligge danno a tutti i nemici nell'area, e ai
+  bersagli ancora brinati lo infligge moltiplicato.
 
-La capacità consente ad Aleo di modificare temporaneamente il campo di battaglia.
+La capacità premia il piazzamento: la fase fredda impedisce ai nemici di uscire
+prima del colpo, ed è lo sbalzo fra le due fasi a produrre il danno vero.
 
 ---
 

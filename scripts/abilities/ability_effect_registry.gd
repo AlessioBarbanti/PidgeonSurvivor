@@ -11,7 +11,7 @@ const EARTHQUAKE_SHOCKWAVE := &"earthquake_shockwave"
 const FIRE_Z_TRAIL := &"fire_z_trail"
 const LIGHTNING_STORM := &"lightning_storm"
 const GRAND_SPIN := &"grand_spin"
-const CEMENT_POUR := &"cement_pour"
+const THERMAL_SHOCK := &"thermal_shock"
 const RANDOM_COSPLAY := &"random_cosplay"
 const ZEN_SLOWDOWN := &"zen_slowdown"
 const SHADOW_DECEPTION := &"shadow_deception"
@@ -212,13 +212,8 @@ func _execute_definition(
 				AbilityAreaEffect.AreaMode.FOLLOWING_PULSE_DAMAGE,
 				Color(1.0, 0.35, 0.72, 0.72)
 			)
-		CEMENT_POUR:
-			effect = _execute_area_effect(
-				definition,
-				source,
-				AbilityAreaEffect.AreaMode.GROUND_SLOW_DAMAGE,
-				Color(0.55, 0.58, 0.62, 0.75)
-			)
+		THERMAL_SHOCK:
+			effect = _execute_thermal_shock(definition, source)
 		RANDOM_COSPLAY:
 			effect = _execute_random_cosplay(definition, source)
 		ZEN_SLOWDOWN:
@@ -313,6 +308,29 @@ func _execute_lightning_storm(definition: AbilityDefinition, source: Node2D) -> 
 	return storm
 
 
+func _execute_thermal_shock(
+	definition: AbilityDefinition,
+	source: Node2D
+) -> Node2D:
+	var shock := ThermalShock.new()
+	shock.name = "ThermalShock"
+	_effect_parent.add_child(shock)
+	shock.targets_affected.connect(_on_targets_affected)
+	_execution_serial += 1
+	var modifier_id := StringName("ability_%s_%d" % [definition.id, _execution_serial])
+	if not shock.initialize(
+		source.global_position,
+		definition,
+		_run_controller,
+		_targeting_system,
+		modifier_id
+	):
+		shock.queue_free()
+		return null
+	_track_effect(shock)
+	return shock
+
+
 func _execute_area_effect(
 	definition: AbilityDefinition,
 	source: Node2D,
@@ -399,8 +417,8 @@ func _get_cosplay_palette(effect_id: StringName) -> Color:
 			return Color(0.65, 0.86, 1.0, 1.0)
 		GRAND_SPIN:
 			return Color(1.0, 0.32, 0.72, 1.0)
-		CEMENT_POUR:
-			return Color(0.55, 0.88, 0.9, 1.0)
+		THERMAL_SHOCK:
+			return Color(0.55, 0.88, 1.0, 1.0)
 		ZEN_SLOWDOWN:
 			return Color(0.4, 0.94, 0.78, 1.0)
 		SHADOW_DECEPTION:
@@ -484,7 +502,7 @@ func _can_execute_non_copy(definition: AbilityDefinition) -> bool:
 					0.0
 				) > 0.0
 			)
-		GRAND_SPIN, CEMENT_POUR:
+		GRAND_SPIN, THERMAL_SHOCK:
 			return (
 				definition.area_radius > 0.0
 				and definition.duration_seconds > 0.0
