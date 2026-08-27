@@ -242,7 +242,7 @@ tooltip_text = "Impostazioni"
 theme_override_colors/font_color = Color(1, 0.81, 0.36, 1)
 theme_override_colors/font_hover_color = Color(1, 0.94, 0.64, 1)
 theme_override_colors/font_pressed_color = Color(0.84, 0.93, 0.96, 1)
-theme_override_font_sizes/font_size = 34
+theme_type_variation = &"GlyphButtonL"
 theme_override_styles/normal = SubResource("StyleBoxFlat_gear_normal")
 theme_override_styles/hover = SubResource("StyleBoxFlat_gear_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_gear_pressed")
@@ -306,7 +306,7 @@ theme_override_colors/font_pressed_color = Color(1, 0.9, 0.7, 1)
 theme_override_colors/font_shadow_color = Color(0.12, 0.025, 0, 0.95)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 26
+theme_type_variation = &"ButtonPrimary"
 theme_override_styles/normal = SubResource("StyleBoxTexture_cta_normal")
 theme_override_styles/hover = SubResource("StyleBoxTexture_cta_hover")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_cta_pressed")
@@ -323,7 +323,7 @@ theme_override_constants/separation = 8
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.78, 0.18, 1)
 theme_override_colors/font_outline_color = Color(0.13, 0.025, 0.008, 1)
-theme_override_font_sizes/font_size = 21
+theme_type_variation = &"TitleS"
 theme_override_constants/outline_size = 5
 text = "IMPOSTAZIONI"
 horizontal_alignment = 1
@@ -336,7 +336,7 @@ theme_override_constants/separation = 12
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"BodyM"
 text = "Volume audio"
 
 [node name="VolumeSlider" type="HSlider" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/VolumeRow"]
@@ -355,7 +355,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.87, 0.42, 1)
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"ValueNumeric"
 text = "80%"
 horizontal_alignment = 2
 
@@ -366,7 +366,7 @@ layout_mode = 2
 focus_neighbor_top = NodePath("../VolumeRow/VolumeSlider")
 focus_neighbor_bottom = NodePath("../ReducedFlashesCheckButton")
 theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
-theme_override_font_sizes/font_size = 17
+theme_type_variation = &"CheckLabel"
 text = "DISATTIVA AUDIO"
 
 [node name="ReducedFlashesCheckButton" type="CheckButton" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel"]
@@ -376,7 +376,7 @@ layout_mode = 2
 focus_neighbor_top = NodePath("../MuteCheckButton")
 focus_neighbor_bottom = NodePath("../AbilitySizeRow/AbilitySizeSlider")
 theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
-theme_override_font_sizes/font_size = 17
+theme_type_variation = &"CheckLabel"
 text = "FLASH RIDOTTI"
 
 [node name="AbilitySizeRow" type="HBoxContainer" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel"]
@@ -387,7 +387,7 @@ theme_override_constants/separation = 12
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"BodyM"
 text = "Icona abilità"
 
 [node name="AbilitySizeSlider" type="HSlider" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/AbilitySizeRow"]
@@ -407,7 +407,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.87, 0.42, 1)
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"ValueNumeric"
 text = "125%"
 horizontal_alignment = 2
 
@@ -419,7 +419,7 @@ theme_override_constants/separation = 12
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"BodyM"
 text = "Joystick"
 
 [node name="JoystickSizeSlider" type="HSlider" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/JoystickSizeRow"]
@@ -439,7 +439,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.87, 0.42, 1)
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"ValueNumeric"
 text = "100%"
 horizontal_alignment = 2
 
@@ -451,7 +451,7 @@ focus_neighbor_top = NodePath("../JoystickSizeRow/JoystickSizeSlider")
 focus_neighbor_bottom = NodePath("../VolumeRow/VolumeSlider")
 theme_override_colors/font_color = Color(0.82, 0.94, 1, 1)
 theme_override_colors/font_hover_color = Color(0.96, 0.99, 1, 1)
-theme_override_font_sizes/font_size = 19
+theme_type_variation = &"ButtonStandard"
 theme_override_styles/normal = SubResource("StyleBoxFlat_secondary_normal")
 theme_override_styles/hover = SubResource("StyleBoxFlat_secondary_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_secondary_pressed")

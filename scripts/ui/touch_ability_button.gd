@@ -137,7 +137,7 @@ func _draw_cooldown_text(center: Vector2) -> void:
 	if seconds_text.is_empty():
 		return
 	draw_string(
-		ThemeDB.fallback_font,
+		get_theme_font(&"font", &"HudTimer"),
 		Vector2(0.0, center.y + _get_cooldown_font_size() * 0.35),
 		seconds_text,
 		HORIZONTAL_ALIGNMENT_CENTER,

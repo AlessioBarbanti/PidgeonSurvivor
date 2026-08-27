@@ -1671,3 +1671,6 @@ CTA welcome B32, ingranaggio safe-area e gate rimanenti sono registrati in
 [`b32-verification.md`](./b32-verification.md).
 Padding B31 per pausa/abilità, scala raddoppiata e gate rimanenti sono
 registrati in [`b31-verification.md`](./b31-verification.md).
+Il sistema tipografico di progetto B36, la scala condivisa che sostituisce i 64
+override locali e le due regressioni di layout corrette sono registrati in
+[`b36-verification.md`](./b36-verification.md).

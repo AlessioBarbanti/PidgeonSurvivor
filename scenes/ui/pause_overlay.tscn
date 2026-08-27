@@ -167,7 +167,7 @@ theme_override_constants/separation = 8
 [node name="TitleLabel" type="Label" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
-theme_override_font_sizes/font_size = 38
+theme_type_variation = &"TitleXL"
 text = "IN PAUSA"
 horizontal_alignment = 1
 
@@ -178,7 +178,7 @@ theme_override_styles/separator = SubResource("StyleBoxFlat_separator")
 [node name="AudioTitle" type="Label" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
-theme_override_font_sizes/font_size = 17
+theme_type_variation = &"TitleXS"
 text = "AUDIO"
 
 [node name="VolumeRow" type="HBoxContainer" parent="PauseCenter/Panel/VBox"]
@@ -189,7 +189,7 @@ theme_override_constants/separation = 12
 custom_minimum_size = Vector2(142, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"BodyM"
 text = "Volume audio"
 
 [node name="VolumeSlider" type="HSlider" parent="PauseCenter/Panel/VBox/VolumeRow"]
@@ -208,7 +208,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"ValueNumeric"
 text = "80%"
 horizontal_alignment = 2
 
@@ -217,7 +217,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
-theme_override_font_sizes/font_size = 17
+theme_type_variation = &"CheckLabel"
 text = "DISATTIVA AUDIO"
 script = ExtResource("3_toggle")
 
@@ -228,7 +228,7 @@ theme_override_styles/separator = SubResource("StyleBoxFlat_separator")
 [node name="AccessibilityTitle" type="Label" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
-theme_override_font_sizes/font_size = 17
+theme_type_variation = &"TitleXS"
 text = "ACCESSIBILITÀ"
 
 [node name="ReducedFlashesCheckButton" type="CheckButton" parent="PauseCenter/Panel/VBox"]
@@ -237,14 +237,14 @@ custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../AbilitySizeRow/AbilitySizeSlider")
 theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
-theme_override_font_sizes/font_size = 17
+theme_type_variation = &"CheckLabel"
 text = "FLASH RIDOTTI"
 script = ExtResource("3_toggle")
 
 [node name="ControlsTitle" type="Label" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
-theme_override_font_sizes/font_size = 17
+theme_type_variation = &"TitleXS"
 text = "CONTROLLI TOUCH"
 
 [node name="AbilitySizeRow" type="HBoxContainer" parent="PauseCenter/Panel/VBox"]
@@ -255,7 +255,7 @@ theme_override_constants/separation = 12
 custom_minimum_size = Vector2(142, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"BodyM"
 text = "Icona abilità"
 
 [node name="AbilitySizeSlider" type="HSlider" parent="PauseCenter/Panel/VBox/AbilitySizeRow"]
@@ -276,7 +276,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"ValueNumeric"
 text = "125%"
 horizontal_alignment = 2
 
@@ -288,7 +288,7 @@ theme_override_constants/separation = 12
 custom_minimum_size = Vector2(142, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"BodyM"
 text = "Joystick"
 
 [node name="JoystickSizeSlider" type="HSlider" parent="PauseCenter/Panel/VBox/JoystickSizeRow"]
@@ -309,7 +309,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"ValueNumeric"
 text = "100%"
 horizontal_alignment = 2
 
@@ -320,7 +320,7 @@ layout_mode = 2
 focus_neighbor_top = NodePath("../JoystickSizeRow/JoystickSizeSlider")
 focus_neighbor_bottom = NodePath("../ChangeCharacterButton")
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
-theme_override_font_sizes/font_size = 20
+theme_type_variation = &"ButtonStandard"
 theme_override_styles/normal = SubResource("StyleBoxFlat_primary_normal")
 theme_override_styles/hover = SubResource("StyleBoxFlat_primary_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_primary_pressed")
@@ -334,7 +334,7 @@ layout_mode = 2
 focus_neighbor_top = NodePath("../ResumeButton")
 focus_neighbor_bottom = NodePath(".")
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
-theme_override_font_sizes/font_size = 20
+theme_type_variation = &"ButtonStandard"
 theme_override_styles/normal = SubResource("StyleBoxFlat_secondary_normal")
 theme_override_styles/hover = SubResource("StyleBoxFlat_secondary_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_secondary_pressed")
@@ -364,14 +364,14 @@ theme_override_constants/separation = 16
 [node name="TitleLabel" type="Label" parent="ConfirmationCenter/Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
-theme_override_font_sizes/font_size = 30
+theme_type_variation = &"TitleL"
 text = "CAMBIA PERSONAGGIO?"
 horizontal_alignment = 1
 
 [node name="SummaryLabel" type="Label" parent="ConfirmationCenter/Panel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
-theme_override_font_sizes/font_size = 18
+theme_type_variation = &"BodyL"
 text = "I progressi della run corrente saranno azzerati."
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -383,7 +383,7 @@ layout_mode = 2
 focus_neighbor_top = NodePath("../ConfirmChangeButton")
 focus_neighbor_bottom = NodePath("../ConfirmChangeButton")
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
-theme_override_font_sizes/font_size = 20
+theme_type_variation = &"ButtonStandard"
 theme_override_styles/normal = SubResource("StyleBoxFlat_secondary_normal")
 theme_override_styles/hover = SubResource("StyleBoxFlat_secondary_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_secondary_pressed")
@@ -397,7 +397,7 @@ layout_mode = 2
 focus_neighbor_top = NodePath("../CancelChangeButton")
 focus_neighbor_bottom = NodePath("../CancelChangeButton")
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
-theme_override_font_sizes/font_size = 20
+theme_type_variation = &"ButtonStandard"
 theme_override_styles/normal = SubResource("StyleBoxFlat_primary_normal")
 theme_override_styles/hover = SubResource("StyleBoxFlat_primary_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_primary_pressed")

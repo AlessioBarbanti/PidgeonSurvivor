@@ -103,14 +103,14 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.92, 0.76, 1, 1)
-theme_override_font_sizes/font_size = 17
+theme_type_variation = &"TitleXS"
 text = "EVIL BEA"
 
 [node name="BossHealthLabel" type="Label" parent="BossHealthPanel/Content/Header"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.88, 0.58, 1)
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"ValueNumeric"
 text = "2400 / 2400"
 
 [node name="BossHealthBar" type="ProgressBar" parent="BossHealthPanel/Content"]
@@ -166,7 +166,7 @@ theme_override_constants/separation = 18
 [node name="Caption" type="Label" parent="IntroLayer/Center/IntroPanel/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.42, 0.32, 1)
-theme_override_font_sizes/font_size = 18
+theme_type_variation = &"Eyebrow"
 text = "BOSS IN ARRIVO"
 horizontal_alignment = 1
 
@@ -174,7 +174,7 @@ horizontal_alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.76, 1, 1)
-theme_override_font_sizes/font_size = 38
+theme_type_variation = &"TitleXL"
 text = "EVIL BEA"
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -184,7 +184,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 72)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.94, 0.8, 1)
-theme_override_font_sizes/font_size = 22
+theme_type_variation = &"BodyXL"
 text = "“Il Boss entra nell'arena.”"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -196,7 +196,7 @@ custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 focus_neighbor_top = NodePath(".")
 focus_neighbor_bottom = NodePath(".")
-theme_override_font_sizes/font_size = 20
+theme_type_variation = &"ButtonStandard"
 theme_override_styles/normal = SubResource("StyleBoxFlat_continue_normal")
 theme_override_styles/hover = SubResource("StyleBoxFlat_continue_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_continue_hover")

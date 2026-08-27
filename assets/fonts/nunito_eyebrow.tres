@@ -1,0 +1,12 @@
+[gd_resource type="FontVariation" format=3]
+
+[ext_resource type="FontFile" path="res://assets/fonts/Nunito-Variable.ttf" id="1_gw8vm"]
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSansSymbols2-Regular.ttf" id="2_plpom"]
+
+[resource]
+fallbacks = Array[Font]([ExtResource("2_plpom")])
+base_font = ExtResource("1_gw8vm")
+variation_opentype = {
+2003265652: 800.0
+}
+spacing_glyph = 1

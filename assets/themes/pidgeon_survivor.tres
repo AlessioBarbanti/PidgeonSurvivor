@@ -1,0 +1,77 @@
+[gd_resource type="Theme" format=3]
+
+[ext_resource type="FontVariation" path="res://assets/fonts/nunito_semibold.tres" id="1_qse4r"]
+[ext_resource type="FontVariation" path="res://assets/fonts/nunito_regular.tres" id="2_g4f2c"]
+[ext_resource type="FontVariation" path="res://assets/fonts/nunito_bold.tres" id="3_ephch"]
+[ext_resource type="FontVariation" path="res://assets/fonts/lilita_one_display.tres" id="4_8o2yo"]
+[ext_resource type="FontVariation" path="res://assets/fonts/nunito_eyebrow.tres" id="5_1fhdv"]
+
+[resource]
+default_font = ExtResource("1_qse4r")
+default_font_size = 16
+BodyL/base_type = &"Label"
+BodyL/constants/line_spacing = -2
+BodyL/font_sizes/font_size = 18
+BodyL/fonts/font = ExtResource("1_qse4r")
+BodyM/base_type = &"Label"
+BodyM/constants/line_spacing = -2
+BodyM/font_sizes/font_size = 16
+BodyM/fonts/font = ExtResource("1_qse4r")
+BodyS/base_type = &"Label"
+BodyS/constants/line_spacing = -2
+BodyS/font_sizes/font_size = 12
+BodyS/fonts/font = ExtResource("2_g4f2c")
+BodyXL/base_type = &"Label"
+BodyXL/constants/line_spacing = -2
+BodyXL/font_sizes/font_size = 20
+BodyXL/fonts/font = ExtResource("1_qse4r")
+ButtonCompact/base_type = &"Button"
+ButtonCompact/font_sizes/font_size = 16
+ButtonCompact/fonts/font = ExtResource("3_ephch")
+ButtonPrimary/base_type = &"Button"
+ButtonPrimary/font_sizes/font_size = 28
+ButtonPrimary/fonts/font = ExtResource("4_8o2yo")
+ButtonStandard/base_type = &"Button"
+ButtonStandard/font_sizes/font_size = 20
+ButtonStandard/fonts/font = ExtResource("4_8o2yo")
+CheckLabel/base_type = &"CheckButton"
+CheckLabel/font_sizes/font_size = 16
+CheckLabel/fonts/font = ExtResource("1_qse4r")
+Eyebrow/base_type = &"Label"
+Eyebrow/font_sizes/font_size = 13
+Eyebrow/fonts/font = ExtResource("5_1fhdv")
+GlyphButtonL/base_type = &"Button"
+GlyphButtonL/font_sizes/font_size = 32
+GlyphButtonL/fonts/font = ExtResource("4_8o2yo")
+GlyphButtonM/base_type = &"Button"
+GlyphButtonM/font_sizes/font_size = 26
+GlyphButtonM/fonts/font = ExtResource("4_8o2yo")
+GlyphButtonS/base_type = &"Button"
+GlyphButtonS/font_sizes/font_size = 20
+GlyphButtonS/fonts/font = ExtResource("4_8o2yo")
+HudTimer/base_type = &"Label"
+HudTimer/font_sizes/font_size = 28
+HudTimer/fonts/font = ExtResource("4_8o2yo")
+TitleL/base_type = &"Label"
+TitleL/constants/line_spacing = -5
+TitleL/font_sizes/font_size = 32
+TitleL/fonts/font = ExtResource("4_8o2yo")
+TitleM/base_type = &"Label"
+TitleM/constants/line_spacing = -4
+TitleM/font_sizes/font_size = 26
+TitleM/fonts/font = ExtResource("4_8o2yo")
+TitleS/base_type = &"Label"
+TitleS/constants/line_spacing = -4
+TitleS/font_sizes/font_size = 21
+TitleS/fonts/font = ExtResource("4_8o2yo")
+TitleXL/base_type = &"Label"
+TitleXL/constants/line_spacing = -6
+TitleXL/font_sizes/font_size = 36
+TitleXL/fonts/font = ExtResource("4_8o2yo")
+TitleXS/base_type = &"Label"
+TitleXS/constants/line_spacing = -3
+TitleXS/font_sizes/font_size = 17
+TitleXS/fonts/font = ExtResource("4_8o2yo")
+ValueNumeric/base_type = &"Label"
+ValueNumeric/font_sizes/font_size = 16
+ValueNumeric/fonts/font = ExtResource("3_ephch")

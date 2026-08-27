@@ -1,0 +1,8 @@
+[gd_resource type="FontVariation" format=3]
+
+[ext_resource type="FontFile" path="res://assets/fonts/LilitaOne-Regular.ttf" id="1_rs27r"]
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSansSymbols2-Regular.ttf" id="2_um4xh"]
+
+[resource]
+fallbacks = Array[Font]([ExtResource("2_um4xh")])
+base_font = ExtResource("1_rs27r")
