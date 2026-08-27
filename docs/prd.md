@@ -422,17 +422,19 @@ nemici vicini.
   livello o numeri, più corposa e arrotondata, con il solo tag fisso `HP` a
   sinistra;
 - pulsante pausa flottante a destra nella fascia delle barre, senza interrompere
-  la loro larghezza visiva;
+  la loro larghezza visiva e separato di `20` unità logiche dal bordo superiore/destro
+  della safe area;
 - solo cronometro leggermente ingrandito, centrato e trasparente sotto le due
   barre, senza label `Tempo` né sfondo;
 - icona dell'abilità attiva come unico controllo visivo touch, separata dal
-  joystick e posizionata nella safe area;
+  joystick e posizionata nella safe area con lo stesso inset esterno di `20`
+  unità, sommato ai margini obbligatori di gesture;
 - indicatore radiale leggibile del cooldown residuo e feedback visivo/sonoro
   quando l'abilità torna disponibile.
 
-La baseline B18K del pulsante touch coincide con l'icona dell'abilità equipaggiata
-e misura `64×64` unità logiche. B18P espone tre taglie persistenti e indipendenti:
-abilità `100/125/150%`, con default `80×80` e icona `53`, e joystick
+La baseline B31 del pulsante touch coincide con l'icona dell'abilità equipaggiata
+e misura `128×128` unità logiche. B18P espone tre taglie persistenti e indipendenti:
+abilità `100/125/150%`, con default `160×160` e icona `105`, e joystick
 `85/100/115%`, con default invariato al `100%`. Icona e hit target crescono
 insieme; i valori esterni all'intervallo o intermedi vengono normalizzati alla
 taglia sicura più vicina. Durante il cooldown una

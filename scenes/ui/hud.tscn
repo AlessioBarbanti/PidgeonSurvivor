@@ -188,8 +188,10 @@ custom_minimum_size = Vector2(48, 48)
 layout_mode = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -48.0
-offset_bottom = 48.0
+offset_left = -68.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 68.0
 grow_horizontal = 0
 tooltip_text = "Pausa"
 theme_override_colors/font_color = Color(0.67, 0.9, 0.96, 1)
@@ -203,23 +205,23 @@ text = "Ⅱ"
 
 [node name="AbilityPanel" type="Control" parent="."]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(64, 64)
+custom_minimum_size = Vector2(128, 128)
 layout_mode = 1
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -76.0
-offset_top = -76.0
-offset_right = -12.0
-offset_bottom = -12.0
+offset_left = -148.0
+offset_top = -148.0
+offset_right = -20.0
+offset_bottom = -20.0
 grow_horizontal = 0
 grow_vertical = 0
 mouse_filter = 2
 
 [node name="ActiveAbilityButton" type="Button" parent="AbilityPanel"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(64, 64)
+custom_minimum_size = Vector2(128, 128)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

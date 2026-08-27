@@ -4,6 +4,7 @@ extends Control
 signal pause_requested()
 
 const GAMEPLAY_TOP_INSET := 88.0
+const DEFAULT_CONTROL_EDGE_PADDING := Vector2(20.0, 20.0)
 
 @onready var _experience_bar: ProgressBar = %ExperienceBar
 @onready var _experience_kind_label: Label = %ExperienceKindLabel
@@ -224,6 +225,17 @@ func set_active_ability_scale(scale_value: float, edge_padding: Vector2) -> void
 	_ability_panel.offset_bottom = -safe_padding.y
 	_ability_panel.offset_left = _ability_panel.offset_right - target_size.x
 	_ability_panel.offset_top = _ability_panel.offset_bottom - target_size.y
+
+
+func set_pause_edge_padding(edge_padding: Vector2) -> void:
+	if not is_instance_valid(_pause_button):
+		return
+	var safe_padding := edge_padding.max(Vector2.ZERO)
+	var target_size := _pause_button.custom_minimum_size.max(Vector2.ZERO)
+	_pause_button.offset_left = -safe_padding.x - target_size.x
+	_pause_button.offset_right = -safe_padding.x
+	_pause_button.offset_top = safe_padding.y
+	_pause_button.offset_bottom = safe_padding.y + target_size.y
 
 
 func is_touch_origin_excluded(viewport_position: Vector2) -> bool:

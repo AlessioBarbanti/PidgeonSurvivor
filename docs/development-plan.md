@@ -506,7 +506,7 @@ significato:
 | B28 | Densità orde e TTK più bullet-hell | IN VERIFICA | Tuning, budget XP e smoke dedicato implementati; profiling runtime Windows/Pixel 9 a 60 FPS ancora aperto |
 | B29 | Musica di sottofondo | IN VERIFICA | `Super Wreck Roadway (loop)` CC0 di Umplix è integrata su bus Music separato; il cambio asset non riesegue automatici, Windows o APK su richiesta, ascolto Windows/Pixel 9 aperto |
 | B30 | Boss senza aura circolare viola | PRONTO | Rimuove solo l'anello/aura; palette Evil B22 e telegraph gameplay restano invariati |
-| B31 | Padding esterno pausa e abilità | PRONTO | Correzione safe-area/presentazione, target touch invariati |
+| B31 | Padding esterno pausa e abilità | IN VERIFICA | Inset configurabile `20` unità per pausa e abilità, sommato alle gesture per l'abilità; target base abilità raddoppiato a `128×128` (`160×160` default); smoke responsive/multitouch, export e prova Pixel 9 in corso |
 | B32 | Welcome CTA coerente e impostazioni a ingranaggio | IN VERIFICA | `GIOCA` riusa la placca pixel-fantasy B18W, fluttua senza riquadro esterno e non disegna outline focus; Impostazioni è un ingranaggio safe-area da `60×60`; focused/relevant e APK statico verdi, Pixel 9 accettato dal proprietario, restano Windows e Full |
 | B33 | Run continua e Boss ricorrenti | PRONTO | Nuovo contratto di run che supersede a valle la vittoria al primo Boss del vertical slice storico |
 
@@ -1329,14 +1329,16 @@ Stato: `PRONTO`.
 
 #### B31 — Padding esterno pausa e abilità
 
-Stato: `PRONTO`.
+Stato: `IN VERIFICA`.
 
-- [ ] Aumentare il margine visivo del pulsante pausa e del pulsante abilità dai
+- [x] Aumentare il margine visivo del pulsante pausa e del pulsante abilità dai
   bordi esterni della safe area; evitare elementi che sembrano appoggiati alla cornice.
-- [ ] Usare inset configurabili e coerenti tra 16:9, 18:9, 20:9, cutout e 4:3,
+- [x] Usare inset configurabili e coerenti tra 16:9, 18:9, 20:9, cutout e 4:3,
   senza coordinate schermo fisse.
-- [ ] Conservare dimensione/scala configurabile, target touch e multitouch B18P;
+- [x] Conservare dimensione/scala configurabile, target touch e multitouch B18P;
   joystick e gesture edge non devono sovrapporsi ai nuovi margini.
+- [x] Raddoppiare il target base dell'abilità da `64×64` a `128×128` unità;
+  le scale B18P restano `100/125/150%` e quindi producono `128/160/192`.
 
 #### B32 — Welcome CTA coerente e impostazioni a ingranaggio
 
@@ -1409,7 +1411,7 @@ né B22 già completati: ne estende il comportamento per la prima release.
 ### Test di integrazione
 
 - `kill → drop → pickup → level-up → pausa → scelta → resume`;
-- danno ripetuto, invulnerabilità, morte e restart;
+- danno ripetuto, invulnerabilità, morte e restart; 
 - Onda d'Urto da tastiera, controller e touch: una sola attivazione per pressione, danno e knockback nel raggio, HUD sincronizzato;
 - pausa, level-up, focus loss e restart durante cooldown o area persistente senza consumo di tempo, input bloccato o entità residue;
 - per ciascuno degli otto profili: selezione, applicazione della passiva, attiva corretta, combinazione con almeno un upgrade e seconda run senza stato residuo;
@@ -1575,3 +1577,5 @@ automatici/piattaforma sono registrati in
 [`b24-verification.md`](./b24-verification.md).
 CTA welcome B32, ingranaggio safe-area e gate rimanenti sono registrati in
 [`b32-verification.md`](./b32-verification.md).
+Padding B31 per pausa/abilità, scala raddoppiata e gate rimanenti sono
+registrati in [`b31-verification.md`](./b31-verification.md).

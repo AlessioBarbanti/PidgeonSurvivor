@@ -10,6 +10,9 @@ const B22_PHYSICAL_AUTODEFEAT_DELAY_SECONDS := 8.0
 ## Values are viewport units, so they stay independent from device pixels.
 @export var gesture_navigation_padding := Vector2(16.0, 32.0)
 @export var joystick_edge_padding := Vector2(24.0, 24.0)
+## Visual breathing room for HUD actions after the OS safe area.
+## The ability keeps this inset in addition to the mandatory gesture padding.
+@export var hud_control_edge_padding := Vector2(20.0, 20.0)
 
 @export_group("Performance Hardening")
 @export var windows_performance_profile: PerformanceProfile
@@ -326,7 +329,11 @@ func _apply_touch_control_settings(
 	ability_scale: float,
 	joystick_scale: float
 ) -> void:
-	_hud.set_active_ability_scale(ability_scale, gesture_navigation_padding)
+	_hud.set_pause_edge_padding(hud_control_edge_padding)
+	_hud.set_active_ability_scale(
+		ability_scale,
+		hud_control_edge_padding + gesture_navigation_padding
+	)
 	_touch_joystick.set_control_scale(joystick_scale)
 	if is_node_ready():
 		_apply_layout()
@@ -1447,10 +1454,10 @@ func _validate_current_contract() -> bool:
 		if not _hud.get_active_ability_button_rect().has_area():
 			failures.append("HUD privo del pulsante abilita touch.")
 		elif (
-			_hud.get_active_ability_button_rect().size.x < 64.0
-			or _hud.get_active_ability_button_rect().size.y < 64.0
+			_hud.get_active_ability_button_rect().size.x < TouchAbilityButton.BASE_TARGET_SIZE
+			or _hud.get_active_ability_button_rect().size.y < TouchAbilityButton.BASE_TARGET_SIZE
 		):
-			failures.append("Il pulsante abilita B18K deve conservare un target touch di 64 unita.")
+			failures.append("Il pulsante abilita B31 deve conservare il target touch base raddoppiato.")
 		var ability_button := _hud.get_active_ability_button()
 		if ability_button == null:
 			failures.append("B18K richiede un TouchAbilityButton valido.")

@@ -152,7 +152,11 @@ func _validate_welcome_preview(
 	await _wait_processed_frame()
 	_expect_float_near(settings.get_ability_scale(), 1.0, "La welcome deve applicare subito la scala abilita.")
 	_expect_float_near(settings.get_joystick_scale(), 1.15, "La welcome deve applicare subito la scala joystick.")
-	_expect_float_near(hud.get_active_ability_button_rect().size.x, 64.0, "La preview welcome deve aggiornare il target.")
+	_expect_float_near(
+		hud.get_active_ability_button_rect().size.x,
+		TouchAbilityButton.BASE_TARGET_SIZE,
+		"La preview welcome deve aggiornare il target raddoppiato."
+	)
 	_validate_joystick_geometry(joystick, 1.15)
 	_expect_float_near(pause_overlay.get_ability_size_slider().value, 1.0, "Welcome e pausa devono restare sincronizzate.")
 	_expect_float_near(pause_overlay.get_joystick_size_slider().value, 1.15, "La scala joystick deve sincronizzarsi con la pausa.")
@@ -182,9 +186,28 @@ func _validate_layout_profiles(
 		var capture_rect: Rect2 = movement_slice.get_touch_joystick_capture_rect()
 		_expect(safe_area.encloses(ability_rect), "%s: l'abilita massima deve restare nella safe area." % profile)
 		_expect(
-			safe_area.end.x - ability_rect.end.x >= 15.0
-			and safe_area.end.y - ability_rect.end.y >= 31.0,
-			"%s: l'abilita deve rispettare il margine anti-gesture." % profile
+			safe_area.end.x - ability_rect.end.x >= (
+				movement_slice.hud_control_edge_padding.x
+				+ movement_slice.gesture_navigation_padding.x
+				- FLOAT_TOLERANCE
+			)
+			and safe_area.end.y - ability_rect.end.y >= (
+				movement_slice.hud_control_edge_padding.y
+				+ movement_slice.gesture_navigation_padding.y
+				- FLOAT_TOLERANCE
+			),
+			"%s: l'abilita deve sommare inset esterno B31 e margine anti-gesture." % profile
+		)
+		var pause_rect := hud.get_pause_button_rect()
+		_expect(
+			pause_rect.size.x >= 48.0 - FLOAT_TOLERANCE
+			and pause_rect.size.y >= 48.0 - FLOAT_TOLERANCE,
+			"%s: B31 non deve ridurre il target pausa." % profile
+		)
+		_expect(
+			safe_area.end.x - pause_rect.end.x >= movement_slice.hud_control_edge_padding.x - FLOAT_TOLERANCE
+			and pause_rect.position.y - safe_area.position.y >= movement_slice.hud_control_edge_padding.y - FLOAT_TOLERANCE,
+			"%s: la pausa deve usare l'inset esterno B31." % profile
 		)
 		_expect(not ability_rect.intersects(hud.get_top_band_rect()), "%s: l'abilita non deve sovrapporre l'HUD alto." % profile)
 		_expect(safe_area.encloses(capture_rect), "%s: l'acquisizione joystick deve restare nella safe area." % profile)
@@ -254,7 +277,11 @@ func _validate_pause_preview(
 	pause_overlay.get_joystick_size_slider().value = TouchControlSettings.DEFAULT_JOYSTICK_SCALE
 	await _wait_processed_frame()
 	_expect(controller.get_state() == RunController.RunState.MANUAL_PAUSE, "Cambiare scala non deve riprendere la run.")
-	_expect_float_near(hud.get_active_ability_button_rect().size.x, 80.0, "La pausa deve applicare il nuovo default senza riavvio.")
+	_expect_float_near(
+		hud.get_active_ability_button_rect().size.x,
+		TouchAbilityButton.BASE_TARGET_SIZE * TouchControlSettings.DEFAULT_ABILITY_SCALE,
+		"La pausa deve applicare il nuovo default raddoppiato senza riavvio."
+	)
 	_validate_joystick_geometry(joystick, 1.0)
 	_expect_float_near(settings.get_ability_scale(), 1.25, "La pausa deve aggiornare l'autorita persistente.")
 	_expect_float_near(settings.get_joystick_scale(), 1.0, "La pausa deve aggiornare la scala joystick.")
@@ -368,6 +395,7 @@ func _finish(movement_slice: Node, controller: RunController) -> void:
 	_remove_test_settings()
 	if _failures.is_empty():
 		print("B18P_TOUCH_CONTROL_SETTINGS_SMOKE_OK")
+		print("B31_PAUSE_ABILITY_OUTER_PADDING_SMOKE_OK")
 		quit(0)
 		return
 	for failure in _failures:

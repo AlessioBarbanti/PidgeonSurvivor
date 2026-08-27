@@ -8,9 +8,9 @@ const COOLDOWN_OVERLAY_COLOR := Color(0.015, 0.022, 0.04, 0.82)
 const COOLDOWN_RING_COLOR := Color(1.0, 0.67, 0.24, 0.96)
 const READY_RING_COLOR := Color(1.0, 0.87, 0.42, 1.0)
 const COOLDOWN_TEXT_COLOR := Color(1.0, 0.96, 0.82, 1.0)
-const COOLDOWN_FONT_SIZE := 18
-const BASE_TARGET_SIZE := 64.0
-const BASE_ICON_WIDTH := 42.0
+const COOLDOWN_FONT_SIZE := 36
+const BASE_TARGET_SIZE := 128.0
+const BASE_ICON_WIDTH := 84.0
 
 var _direct_touch_sequence_active := false
 var _cooldown_remaining := 0.0

@@ -55,8 +55,8 @@ func _run() -> void:
 			"L'icona equipaggiata deve essere la superficie del pulsante."
 		)
 	_expect(
-		button.size.x >= 64.0 and button.size.y >= 64.0,
-		"Il target touch B18K deve misurare almeno 64 unita logiche."
+		button.size.x >= TouchAbilityButton.BASE_TARGET_SIZE and button.size.y >= TouchAbilityButton.BASE_TARGET_SIZE,
+		"Il target touch B31 deve misurare almeno la nuova taglia base raddoppiata."
 	)
 	var ability_rect := hud.get_ability_panel_rect()
 	var button_rect := hud.get_active_ability_button_rect()
