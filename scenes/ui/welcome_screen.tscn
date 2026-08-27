@@ -192,6 +192,7 @@ script = ExtResource("1_welcome")
 [node name="Background" type="TextureRect" parent="."]
 unique_name_in_owner = true
 top_level = true
+z_index = -10
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -205,6 +206,7 @@ stretch_mode = 6
 
 [node name="AtmosphereTint" type="ColorRect" parent="."]
 top_level = true
+z_index = -9
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
