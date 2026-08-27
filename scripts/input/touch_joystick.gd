@@ -1,6 +1,8 @@
 class_name TouchJoystick
 extends Control
 
+const Palette = preload("res://scripts/ui/pixel_arcade_palette.gd")
+
 signal vector_changed(value: Vector2)
 signal activity_changed(active: bool)
 
@@ -49,15 +51,15 @@ const BASE_KNOB_RADIUS := 27.0
 	set(value):
 		idle_opacity = clampf(value, 0.1, 1.0)
 		queue_redraw()
-@export var base_color := Color(0.06, 0.1, 0.17, 0.62):
+@export var base_color := Palette.JOYSTICK_BASE:
 	set(value):
 		base_color = value
 		queue_redraw()
-@export var outline_color := Color(0.38, 0.76, 1.0, 0.82):
+@export var outline_color := Palette.JOYSTICK_OUTLINE:
 	set(value):
 		outline_color = value
 		queue_redraw()
-@export var knob_color := Color(0.56, 0.86, 1.0, 0.9):
+@export var knob_color := Palette.JOYSTICK_KNOB:
 	set(value):
 		knob_color = value
 		queue_redraw()
@@ -140,6 +142,16 @@ func _draw() -> void:
 	var visual_offset := _knob_offset * (visual_radius / maxf(base_radius, 1.0))
 	draw_circle(center, visual_radius, visible_base_color)
 	draw_arc(center, visual_radius, 0.0, TAU, 48, visible_outline_color, 2.0, true)
+	draw_arc(
+		center,
+		maxf(visual_radius - 5.0, 1.0),
+		0.0,
+		TAU,
+		48,
+		_color_with_alpha_multiplier(Palette.METAL, opacity_multiplier),
+		1.0,
+		true
+	)
 	for direction in [Vector2.UP, Vector2.RIGHT, Vector2.DOWN, Vector2.LEFT]:
 		draw_line(
 			center + direction * (visual_radius - 7.0),
@@ -152,7 +164,7 @@ func _draw() -> void:
 	draw_circle(
 		center + visual_offset,
 		maxf(knob_radius - 5.0, 1.0),
-		_color_with_alpha_multiplier(base_color, opacity_multiplier * 0.72)
+		_color_with_alpha_multiplier(Palette.ORANGE_DEEP, opacity_multiplier * 0.72)
 	)
 
 

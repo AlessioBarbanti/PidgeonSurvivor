@@ -158,7 +158,7 @@ Interpretazione iniziale degli upgrade del PRD:
 | L'Ansia | velocità `×1.35`, vita massima `×0.80`, percentuale di vita conservata, vignetta solo visiva |
 | Gossip | il colpo salta da un nemico vivo al successivo entro un raggio configurabile, con danno progressivamente ridotto a ogni salto |
 | Ritardo cronico | ogni 12 s di gameplay applica ai nemici uno status `speed ×0.50` per 3 s |
-| Birra | frequenza `×1.25`; traiettoria sinusoidale con ampiezza configurabile |
+| Birra | frequenza `×1.25`; ogni colpo devia casualmente entro una dispersione angolare configurabile |
 | Non ho tempo | a ogni danno effettivo emette un knockback radiale; non si riattiva durante l'invulnerabilità |
 
 ## 4. Architettura Godot proposta
@@ -358,7 +358,7 @@ Priorità: `P0` indispensabile per l'MVP, `P1` indispensabile per la prima pubbl
 | B10 | Resource upgrade, registry e pesca | P0 | 5 | B01, B08 | ID validati, seed riproducibile e 3 offerte eleggibili uniche |
 | B11 | Overlay e navigazione completa | P0 | 8 | B09–B10 | Mouse/tastiera/controller/touch, target ampi, joystick nascosto e una sola scelta applicata |
 | B12 | Tre upgrade semplici di prova | P0 | 5 | B05, B10–B11 | Velocità, frequenza/danno e pickup rispettano stacking e cap |
-| B13 | Upgrade signature del PRD | P0 | 8 | B12 | Catena Gossip, slow, oscillazione Birra, shockwave e vignetta combinabili senza conflitti |
+| B13 | Upgrade signature del PRD | P0 | 8 | B12 | Catena Gossip, slow, dispersione Birra, shockwave e vignetta combinabili senza conflitti |
 | B14 | Game Director e scheduler Boss | P0 | 3 | B04, B09 | Una sola attivazione per soglia; pausa e restart non duplicano eventi |
 | B15 | Primo Boss completo | P0 | 8 | B05–B06, B14 | Due pattern telegrafati, HP, citazione sicura, morte e ricompensa |
 | B16 | Vittoria, bilanciamento e run completa | P0 | 5 | B09A, B12, B15 | Cinque run consecutive terminano correttamente senza stato residuo, inclusi cooldown ed effetti dell'abilità |
@@ -399,6 +399,8 @@ Priorità: `P0` indispensabile per l'MVP, `P1` indispensabile per la prima pubbl
 | B31 | Padding esterno pausa e abilità | P1 | 3 | B18K, B18P, B18Q | Aumentare il margine di pausa e pulsante abilità dai bordi esterni/safe area senza ridurre target touch o rompere multitouch e aspect ratio |
 | B32 | Welcome CTA coerente e impostazioni a ingranaggio | P1 | 5 | B18O, B18W | Il CTA arancione della welcome riusa la stessa placca pixel-fantasy di `Gioca con <Nome>`; Impostazioni diventa un pulsante ingranaggio in alto a destra, responsive e accessibile |
 | B33 | Run continua e Boss ricorrenti | P1 | 8 | B14–B16, B22, B23 | La morte del primo Boss non chiude la run; Boss successivi seguono finestre da 240 s e, se una finestra scade con un Boss vivo, il prossimo spawna solo alla sua morte, senza Boss sovrapposti o burst arretrati |
+| B34 | Coerenza UI pixel-fantasy arcade | P1 | 8 | B18W, B18P, B18Q, B31, B32 | Pausa, HUD e controlli touch condividono la grammatica pixel-fantasy arcade senza modificare playfield, input, target touch o flussi |
+| B35 | Prima ondata powerup grigliatori | P1 | 5 | B10–B13, B17A, B26–B27 | Introdurre velocità proiettili, difesa, valore XP e cooldown dell'attiva come modificatori configurabili e ripetibili, rinominando le carte storiche di fuoco e pickup |
 
 Parallelizzazione sicura:
 
@@ -507,8 +509,10 @@ significato:
 | B29 | Musica di sottofondo | IN VERIFICA | `Super Wreck Roadway (loop)` CC0 di Umplix è integrata su bus Music separato; il cambio asset non riesegue automatici, Windows o APK su richiesta, ascolto Windows/Pixel 9 aperto |
 | B30 | Boss senza aura circolare viola | PRONTO | Rimuove solo l'anello/aura; palette Evil B22 e telegraph gameplay restano invariati |
 | B31 | Padding esterno pausa e abilità | IN VERIFICA | Inset configurabile `20` unità per pausa e abilità, sommato alle gesture per l'abilità; target base abilità raddoppiato a `128×128` (`160×160` default); automatici, APK statico e installazione Pixel 9 verdi, prova touch/percettiva aperta |
-| B32 | Welcome CTA coerente e impostazioni a ingranaggio | IN VERIFICA | `GIOCA` riusa la placca pixel-fantasy B18W, fluttua senza riquadro esterno e non disegna outline focus; Impostazioni è un ingranaggio safe-area da `60×60`; focused/relevant e APK statico verdi, Pixel 9 accettato dal proprietario, restano Windows e Full |
+| B32 | Welcome CTA coerente e impostazioni a ingranaggio | COMPLETATO | `GIOCA` riusa la placca pixel-fantasy B18W, fluttua senza riquadro esterno e non disegna outline focus; Impostazioni è un ingranaggio safe-area da `60×60`; focused/relevant e APK statico verdi, Pixel 9 accettato dal proprietario, restano Windows e Full |
 | B33 | Run continua e Boss ricorrenti | PRONTO | Nuovo contratto di run che supersede a valle la vittoria al primo Boss del vertical slice storico |
+| B34 | Coerenza UI pixel-fantasy arcade | IN VERIFICA | Palette e ridisegno presentazionale implementati; APK statico, installazione/cold launch Pixel 9 e catture visuali verdi, senza smoke su richiesta; restano aperti multitouch e accettazione percettiva fisica |
+| B35 | Prima ondata powerup grigliatori | IN VERIFICA | Quattro Resource e modificatori runtime con cap/reset, sei derive `128×128` tracciate, refresh editor e smoke dedicato verdi; restano regressioni complete ed export Windows/Android |
 
 #### B18C — Player animato e direzione persistente
 
@@ -1318,7 +1322,7 @@ Stato: `IN VERIFICA`.
 
 #### B30 — Boss senza aura circolare viola
 
-Stato: `PRONTO`.
+Stato: `IN VERIFICA`.
 
 - [ ] Rimuovere il cerchio/aura viola che avvolge visivamente i Boss.
 - [ ] Per gli `Evil <Nome>` conservare la palette/sfumatura viola scura e magenta
@@ -1342,7 +1346,7 @@ Stato: `IN VERIFICA`.
 
 #### B32 — Welcome CTA coerente e impostazioni a ingranaggio
 
-Stato: `IN VERIFICA`.
+Stato: `COMPLETATO`.
 
 - [x] Sostituire la grafica sottostante al CTA arancione `GIOCA` della welcome con
   la stessa famiglia/placca pixel-fantasy usata da `Gioca con <Nome>` in B18W;
@@ -1386,7 +1390,7 @@ né B22 già completati: ne estende il comportamento per la prima release.
 
 #### B34 — Coerenza UI pixel-fantasy arcade
 
-Stato: `PRONTO`.
+Stato: `IN VERIFICA`.
 
 Questa slice di presentazione unifica **pausa, HUD e controlli touch** nella
 grammatica già approvata di welcome e selezione personaggio. Non riapre B18Q,
@@ -1394,48 +1398,48 @@ B18P, B18K/B18L, B18W, B31 o B32: conserva playfield autorevole, dimensioni e
 target touch, input, deadzone, cooldown, segnali, layout responsive e flussi
 `BOOT`/pausa già contrattualizzati.
 
-- [ ] Stabilire e applicare una gerarchia cromatica unica: blu molto scuro o
+- [x] Stabilire e applicare una gerarchia cromatica unica: blu molto scuro o
   nero-blu per fondi/pannelli, oro-arancio caldo per CTA e highlight principali,
   cyan solo per selezione, sistema e piccoli accenti, rosa/rosso per vita e
   pericolo, bianco/crema per testo principale e grigio freddo per quello
   secondario. Non usare grandi superfici o bordi cyan soltanto decorativi.
-- [ ] Applicare bordi pixel-fantasy più squadrati, con piccoli tagli agli angoli,
+- [x] Applicare bordi pixel-fantasy più squadrati, con piccoli tagli agli angoli,
   doppio bordo scuro/accento e leggere ombre o bevel; riservare metallo/oro agli
   elementi importanti. Evitare rettangoli moderni con thin outline uniforme e
   angoli molto arrotondati.
-- [ ] Formalizzare tre livelli di azione: primario come placca arancione/oro
+- [x] Formalizzare tre livelli di azione: primario come placca arancione/oro
   volumetrica (`Gioca`, `Gioca con <Nome>`, `Riprendi` e conferme); secondario
   scuro con bordo metallico/oro discreto; iconico quadrato o compatto, coerente
   con l'ingranaggio della welcome e mai ridotto a un outline cyan moderno.
-- [ ] Conservare titoli arcade/pixel o font compatibile; evitare il maiuscolo
+- [x] Conservare titoli arcade/pixel o font compatibile; evitare il maiuscolo
   sistematico nei CTA. Le label tecniche brevi (`PASSIVA`, `ABILITÀ`, `AUDIO`)
   possono restare uppercase, mentre il nome dell'abilità deve avere più peso.
-- [ ] Ridisegnare il menu pausa come pannello scuro pixel-fantasy coerente con
+- [x] Ridisegnare il menu pausa come pannello scuro pixel-fantasy coerente con
   il character select: `IN PAUSA` resta leggibile, il bordo cyan continuo è
   ridotto e dettagli metallici/oro sono discreti. `Riprendi` usa la famiglia
   primaria; `Cambia personaggio` è chiaramente secondario.
-- [ ] Reinterpretare slider e toggle della pausa: track scura, riempimento e
+- [x] Reinterpretare slider e toggle della pausa: track scura, riempimento e
   cursore arcade/pixel, percentuali leggibili; toggle compatti, squadrati o
   leggermente pixelati con stato attivo evidente. `AUDIO`, `ACCESSIBILITÀ` e
   `CONTROLLI TOUCH` usano label piccole, accenti oro/cyan controllati e
   separazioni leggere, senza grandi divisori bianchi o widget nativi.
-- [ ] Rafforzare con misura le barre `XP` e `HP`: restano sottili, orizzontali e
+- [x] Rafforzare con misura le barre `XP` e `HP`: restano sottili, orizzontali e
   secondarie rispetto al gioco, ma ricevono spessore/contenitore o bordo
   pixel-fantasy leggibile; non diventano linee colorate su nero né sottraggono
   playfield. Il timer resta centrale e pulito, con font e colore coerenti.
-- [ ] Ridisegnare il pulsante pausa come controllo iconico arcade compatto,
+- [x] Ridisegnare il pulsante pausa come controllo iconico arcade compatto,
   metallico/oro/scuro, con padding esterno configurabile B31 e target touch
   invariato; niente semplice riquadro cyan.
-- [ ] Trasformare il controllo abilità in un medaglione/pulsante arcade: icona
+- [x] Trasformare il controllo abilità in un medaglione/pulsante arcade: icona
   protagonista, cooldown circolare e tempo residuo invariati, accento principale
   oro/arancio e cyan solo se necessario. Conservare dimensione, padding B31,
   target touch B18P e leggibilità del cooldown.
-- [ ] Usare welcome e character select come riferimenti, senza aumentare la loro
+- [x] Usare welcome e character select come riferimenti, senza aumentare la loro
   decorazione: welcome conserva logo, cast laterale, CTA arancione e ingranaggio;
   la selezione conserva CTA, cornice esterna, titoli oro/cyan, card scure,
   frecce oro e pannelli abilità separati. L'ingranaggio è il riferimento dei
   futuri controlli iconici di sistema.
-- [ ] Rispettare il livello di decorazione: alto nella welcome, medio nella
+- [x] Rispettare il livello di decorazione: alto nella welcome, medio nella
   selezione personaggio, medio-basso in pausa, basso nell'HUD e minimo nei
   controlli touch. La coerenza deriva da palette, bordi, forme e gerarchia, non
   dall'aggiunta uniforme di ornamenti.
@@ -1444,6 +1448,29 @@ Il criterio percettivo è la sequenza `Welcome → Selezione personaggio → Gam
 → Pausa`: le schermate devono apparire parti dello stesso gioco pixel-art fantasy
 arcade e caricaturale, con blu notte come base e oro/arancio come linguaggio
 interattivo principale.
+
+Implementazione del 27 agosto 2026: la palette è raccolta in
+`pixel_arcade_palette.gd`; gli elementi della pausa usano controlli Godot
+disegnati localmente, l'abilità riceve un medaglione sibling non interattivo e
+il joystick conserva la sua geometria B18L con soli cambi di rendering. Non
+entrano font, raster o dipendenze esterne e `ActiveAbilityButton` mantiene lo
+`StyleBoxEmpty` B18K sotto il medaglione.
+
+Polish finale del 27 agosto 2026: le card passiva/abilità della selezione sono
+compattate a identica altezza, padding e allineamento, con icone ampliate; il
+blocco nome/ruolo/CTA usa meno spazio verticale. XP e HP guadagnano contrasto e
+bordo metallico senza cambiare le altezze B18Q né `GAMEPLAY_TOP_INSET`.
+Pausa, ingranaggio welcome, frecce e medaglione condividono il bevel
+scuro/oro; i margini esterni di pausa e abilità restano derivati dallo stesso
+padding B31 per ogni safe area.
+
+Per richiesta del proprietario questo checkpoint non aggiunge né esegue smoke.
+Sono stati svolti refresh headless dell'editor, breve avvio headless della scena
+principale, export/ispezione APK e installazione/cold launch sul Pixel 9; il
+bootstrap stampa marker storici durante ogni avvio, ma non è stato invocato
+alcun test script o runner milestone. Restano aperti il runtime Windows e la
+conferma percettiva/touch fisica, incluso il multitouch joystick più abilità.
+Evidenza: [`b34-verification.md`](./b34-verification.md).
 
 ## 7. Strategia di test
 
@@ -1468,7 +1495,7 @@ interattivo principale.
 - B26: moltiplicatore danno, stacking, cap e reset del nuovo upgrade;
 - B28: profilo densità/HP e cap configurabili senza valori hardcoded;
 - B33: una sola richiesta Boss pending, nessun overlap e nuova finestra calcolata dallo spawn effettivo del Boss successivo.
-- B34: palette/gerarchia dichiarate, varianti visive dei controlli e contenimento safe-area senza mutare i contratti di input o gameplay.
+- B34: ispezione statica di palette/gerarchia, varianti visive e contenimento safe-area senza mutare i contratti di input o gameplay; lo smoke è posticipato su richiesta.
 
 ### Test di integrazione
 
@@ -1477,7 +1504,7 @@ interattivo principale.
 - Onda d'Urto da tastiera, controller e touch: una sola attivazione per pressione, danno e knockback nel raggio, HUD sincronizzato;
 - pausa, level-up, focus loss e restart durante cooldown o area persistente senza consumo di tempo, input bloccato o entità residue;
 - per ciascuno degli otto profili: selezione, applicazione della passiva, attiva corretta, combinazione con almeno un upgrade e seconda run senza stato residuo;
-- combinazioni fra catena Gossip, traiettoria oscillante e frequenza aumentata;
+- combinazioni fra catena Gossip, dispersione Birra e frequenza aumentata;
 - slow periodico mentre entra o muore un nemico;
 - Boss e nemici base presenti insieme;
 - HUD B18Q minimo con barre XP/vita, pausa e solo cronometro sincronizzati durante resize, level-up, Boss intro, pausa e terminali;
@@ -1496,7 +1523,7 @@ interattivo principale.
 - B29: loop musicale, mixer, mute, pausa/resume e cleanup audio;
 - B30/B31/B32: Boss senza aura decorativa, padding safe-area dei controlli e welcome coerente su input multipiattaforma;
 - B33: primo Boss non termina la run, secondo Boss ritardato se il primo è vivo e spawn immediato alla sua morte senza sovrapposizione.
-- B34: pausa, HUD, pulsante abilità e joystick coerenti, con cooldown, Back/focus, resize e multitouch invariati.
+- B34: verifica automatica di pausa, HUD, pulsante abilità e joystick con cooldown, Back/focus, resize e multitouch invariati è posticipata su richiesta.
 
 ### Matrice manuale minima
 
@@ -1561,7 +1588,7 @@ Ordine operativo immediato:
 
 1. chiudere il confronto percettivo B24 su Windows e Pixel 9, congelando o correggendo il candidato `1,25×`;
 2. procedere a B23, completando implementazione e gate della modalità Difesa Grigliata;
-3. proseguire con B25–B34 mantenendo ogni slice separata dai backlog già completati: B25 (HUD Player), B26–B27 (upgrade e icone), B28 (densità/TTK), B29–B32 (audio e polish UI/Boss/welcome), B33 (run continua e scheduler Boss), B34 (coerenza pixel-fantasy arcade di pausa, HUD e controlli).
+3. proseguire con B25–B35 mantenendo ogni slice separata dai backlog già completati: B25 (HUD Player), B26–B27 (upgrade e icone), B28 (densità/TTK), B29–B32 (audio e polish UI/Boss/welcome), B33 (run continua e scheduler Boss), B34 (coerenza pixel-fantasy arcade di pausa, HUD e controlli), B35 (prima ondata powerup grigliatori).
 
 I gate manuali e percettivi precedentemente elencati per B18B, B18E, B18G,
 B18J, B18M, B18Q, B18S, B18T, B18U e B18W sono chiusi dal 25 agosto 2026 e
@@ -1593,7 +1620,7 @@ Overlay safe-area, navigazione multipiattaforma e stato del gate B11 sono
 registrati in [`b11-verification.md`](./b11-verification.md).
 Stacking, cap e applicazione runtime degli upgrade statistici B12 sono
 registrati in [`b12-verification.md`](./b12-verification.md).
-Catena Gossip, slow periodico, oscillazione Birra, shockwave reattiva, vignetta
+Catena Gossip, slow periodico, dispersione Birra, shockwave reattiva, vignetta
 e lo stato del gate B13 sono registrati in
 [`b13-verification.md`](./b13-verification.md).
 Game Director, profilo di spawn, scheduler a soglia singola e stato del gate B14

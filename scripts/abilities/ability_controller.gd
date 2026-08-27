@@ -21,6 +21,7 @@ var _debug_cooldown_override := 0.0
 var _activation_definition: AbilityDefinition
 var _ability_rank := 1
 var _active_cooldown_total := 0.0
+var _upgrade_cooldown_multiplier := 1.0
 
 
 func _exit_tree() -> void:
@@ -173,6 +174,21 @@ func is_cooldown_ready() -> bool:
 	return _cooldown_remaining <= 0.0
 
 
+func set_upgrade_cooldown_multiplier(multiplier: float) -> bool:
+	if not is_finite(multiplier) or multiplier <= 0.0:
+		return false
+	_upgrade_cooldown_multiplier = multiplier
+	return true
+
+
+func reset_upgrade_cooldown_multiplier() -> void:
+	_upgrade_cooldown_multiplier = 1.0
+
+
+func get_upgrade_cooldown_multiplier() -> float:
+	return _upgrade_cooldown_multiplier
+
+
 func _has_valid_dependencies() -> bool:
 	return (
 		ability_definition != null
@@ -239,4 +255,8 @@ func _apply_rank_snapshot(rank: int) -> bool:
 func _resolve_ready_cooldown_total() -> float:
 	if _debug_cooldown_override > 0.0:
 		return _debug_cooldown_override
-	return _activation_definition.cooldown_seconds if _activation_definition != null else 0.0
+	return (
+		_activation_definition.cooldown_seconds * _upgrade_cooldown_multiplier
+		if _activation_definition != null
+		else 0.0
+	)

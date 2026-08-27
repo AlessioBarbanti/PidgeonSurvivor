@@ -21,12 +21,13 @@ var _character_fire_rate_multiplier := 1.0
 var _character_damage_multiplier := 1.0
 var _fire_rate_multiplier := 1.0
 var _damage_multiplier := 1.0
+var _projectile_speed_multiplier := 1.0
 var _projectile_chain_enabled := false
 var _projectile_chain_jumps := 0
 var _projectile_chain_damage_falloff := 1.0
 var _projectile_chain_radius := 0.0
-var _projectile_oscillation_amplitude := 0.0
-var _projectile_oscillation_frequency_hz := 0.0
+var _projectile_aim_spread_degrees := 0.0
+var _aim_rng := RandomNumberGenerator.new()
 
 
 func _exit_tree() -> void:
@@ -58,6 +59,7 @@ func configure(
 	_arena_layout = arena_layout
 	_capture_base_stats()
 	_connect_run_controller()
+	_seed_aim_rng(_run_controller.get_seed() if is_instance_valid(_run_controller) else 0)
 	reset_for_run(false)
 
 
@@ -79,6 +81,7 @@ func try_fire() -> Projectile:
 	if not offset_to_target.is_zero_approx():
 		aim_direction = offset_to_target.normalized()
 		muzzle_offset = minf(weapon_profile.muzzle_offset, offset_to_target.length())
+	aim_direction = _apply_aim_spread(aim_direction)
 
 	var instance := projectile_scene.instantiate()
 	if not instance is Projectile:
@@ -98,7 +101,7 @@ func try_fire() -> Projectile:
 	if not projectile.initialize(
 		aim_direction,
 		get_effective_damage(),
-		weapon_profile.projectile_speed,
+		get_effective_projectile_speed(),
 		weapon_profile.projectile_lifetime,
 		weapon_profile.projectile_radius,
 		_run_controller
@@ -110,8 +113,7 @@ func try_fire() -> Projectile:
 		_projectile_chain_jumps,
 		_projectile_chain_damage_falloff,
 		_projectile_chain_radius,
-		_projectile_oscillation_amplitude,
-		_projectile_oscillation_frequency_hz,
+		_projectile_aim_spread_degrees,
 		_targeting_system
 	):
 		projectile.expire()
@@ -171,23 +173,28 @@ func is_ready_to_fire() -> bool:
 
 func set_upgrade_stat_multipliers(
 	fire_rate_multiplier: float,
-	damage_multiplier: float
+	damage_multiplier: float,
+	projectile_speed_multiplier: float = 1.0
 ) -> bool:
 	if (
 		not is_finite(fire_rate_multiplier)
 		or fire_rate_multiplier <= 0.0
 		or not is_finite(damage_multiplier)
 		or damage_multiplier <= 0.0
+		or not is_finite(projectile_speed_multiplier)
+		or projectile_speed_multiplier <= 0.0
 	):
 		return false
 	_fire_rate_multiplier = fire_rate_multiplier
 	_damage_multiplier = damage_multiplier
+	_projectile_speed_multiplier = projectile_speed_multiplier
 	return true
 
 
 func reset_upgrade_stat_multipliers() -> void:
 	_fire_rate_multiplier = 1.0
 	_damage_multiplier = 1.0
+	_projectile_speed_multiplier = 1.0
 	reset_projectile_upgrade_modifiers()
 
 
@@ -217,8 +224,7 @@ func set_projectile_upgrade_modifiers(
 	chain_jumps: int,
 	chain_damage_falloff: float,
 	chain_radius: float,
-	oscillation_amplitude: float,
-	oscillation_frequency_hz: float
+	aim_spread_degrees: float
 ) -> bool:
 	if (
 		chain_jumps < 0
@@ -228,19 +234,16 @@ func set_projectile_upgrade_modifiers(
 		or not is_finite(chain_radius)
 		or chain_radius < 0.0
 		or (chain_enabled and (chain_jumps <= 0 or chain_radius <= 0.0))
-		or not is_finite(oscillation_amplitude)
-		or oscillation_amplitude < 0.0
-		or not is_finite(oscillation_frequency_hz)
-		or oscillation_frequency_hz < 0.0
-		or (oscillation_amplitude > 0.0 and oscillation_frequency_hz <= 0.0)
+		or not is_finite(aim_spread_degrees)
+		or aim_spread_degrees < 0.0
+		or aim_spread_degrees >= 90.0
 	):
 		return false
 	_projectile_chain_enabled = chain_enabled
 	_projectile_chain_jumps = chain_jumps
 	_projectile_chain_damage_falloff = chain_damage_falloff
 	_projectile_chain_radius = chain_radius
-	_projectile_oscillation_amplitude = oscillation_amplitude
-	_projectile_oscillation_frequency_hz = oscillation_frequency_hz
+	_projectile_aim_spread_degrees = aim_spread_degrees
 	return true
 
 
@@ -249,8 +252,7 @@ func reset_projectile_upgrade_modifiers() -> void:
 	_projectile_chain_jumps = 0
 	_projectile_chain_damage_falloff = 1.0
 	_projectile_chain_radius = 0.0
-	_projectile_oscillation_amplitude = 0.0
-	_projectile_oscillation_frequency_hz = 0.0
+	_projectile_aim_spread_degrees = 0.0
 
 
 func is_projectile_chain_enabled() -> bool:
@@ -269,12 +271,8 @@ func get_projectile_chain_radius() -> float:
 	return _projectile_chain_radius
 
 
-func get_projectile_oscillation_amplitude() -> float:
-	return _projectile_oscillation_amplitude
-
-
-func get_projectile_oscillation_frequency_hz() -> float:
-	return _projectile_oscillation_frequency_hz
+func get_projectile_aim_spread_degrees() -> float:
+	return _projectile_aim_spread_degrees
 
 
 func get_base_shots_per_second() -> float:
@@ -293,6 +291,10 @@ func get_damage_multiplier() -> float:
 	return _damage_multiplier
 
 
+func get_projectile_speed_multiplier() -> float:
+	return _projectile_speed_multiplier
+
+
 func get_character_fire_rate_multiplier() -> float:
 	return _character_fire_rate_multiplier
 
@@ -303,6 +305,10 @@ func get_effective_shots_per_second() -> float:
 
 func get_effective_damage() -> float:
 	return get_base_damage() * _damage_multiplier
+
+
+func get_effective_projectile_speed() -> float:
+	return weapon_profile.projectile_speed * _projectile_speed_multiplier if weapon_profile != null else 0.0
 
 
 func get_effective_fire_interval() -> float:
@@ -353,7 +359,21 @@ func _disconnect_run_controller() -> void:
 	_run_controller = null
 
 
-func _on_run_started(_seed_value: int) -> void:
+func _apply_aim_spread(aim_direction: Vector2) -> Vector2:
+	if _projectile_aim_spread_degrees <= 0.0:
+		return aim_direction
+	var spread_radians := deg_to_rad(_projectile_aim_spread_degrees)
+	return aim_direction.rotated(_aim_rng.randf_range(-spread_radians, spread_radians))
+
+
+func _seed_aim_rng(seed_value: int) -> void:
+	# Stream locale: la stessa run e la stessa sequenza di colpi producono la
+	# stessa dispersione, senza consumare l'RNG della pesca o dello spawn.
+	_aim_rng.seed = seed_value ^ 0x42454552
+
+
+func _on_run_started(seed_value: int) -> void:
+	_seed_aim_rng(seed_value)
 	reset_for_run()
 
 

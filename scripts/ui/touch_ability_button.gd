@@ -4,10 +4,11 @@ extends Button
 signal activation_requested()
 
 const RADIAL_SEGMENTS := 48
-const COOLDOWN_OVERLAY_COLOR := Color(0.015, 0.022, 0.04, 0.82)
-const COOLDOWN_RING_COLOR := Color(1.0, 0.67, 0.24, 0.96)
-const READY_RING_COLOR := Color(1.0, 0.87, 0.42, 1.0)
-const COOLDOWN_TEXT_COLOR := Color(1.0, 0.96, 0.82, 1.0)
+const Palette = preload("res://scripts/ui/pixel_arcade_palette.gd")
+const COOLDOWN_OVERLAY_COLOR := Color(0.018, 0.031, 0.055, 0.82)
+const COOLDOWN_RING_COLOR := Palette.ORANGE
+const READY_RING_COLOR := Palette.GOLD
+const COOLDOWN_TEXT_COLOR := Palette.CREAM
 const COOLDOWN_FONT_SIZE := 36
 const BASE_TARGET_SIZE := 128.0
 const BASE_ICON_WIDTH := 84.0

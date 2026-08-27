@@ -25,10 +25,10 @@ corner_radius_bottom_left = 2
 shadow_color = Color(0, 0, 0, 0.78)
 shadow_size = 6
 shadow_offset = Vector2(0, 4)
-content_margin_left = 14.0
-content_margin_top = 10.0
-content_margin_right = 14.0
-content_margin_bottom = 10.0
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_normal"]
 bg_color = Color(0.055, 0.06, 0.075, 0.98)
@@ -297,7 +297,7 @@ text = "SCEGLI IL PERSONAGGIO"
 horizontal_alignment = 1
 
 [node name="MainRow" type="HBoxContainer" parent="Center/SelectionPanel/Content"]
-custom_minimum_size = Vector2(0, 368)
+custom_minimum_size = Vector2(0, 348)
 layout_mode = 2
 size_flags_vertical = 1
 theme_override_constants/separation = 6
@@ -309,20 +309,20 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
 [node name="CarouselFrame" type="Control" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn"]
-custom_minimum_size = Vector2(0, 302)
+custom_minimum_size = Vector2(0, 280)
 layout_mode = 2
 
 [node name="PreviousButton" type="Button" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn/CarouselFrame"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(46, 52)
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 1
 anchors_preset = 4
 anchor_top = 0.5
 anchor_bottom = 0.5
 offset_left = 0.0
-offset_top = -26.0
-offset_right = 46.0
-offset_bottom = 26.0
+offset_top = -24.0
+offset_right = 48.0
+offset_bottom = 24.0
 grow_vertical = 2
 focus_mode = 0
 theme_override_colors/font_color = Color(1, 0.78, 0.35, 1)
@@ -335,17 +335,17 @@ text = "◀"
 
 [node name="NextButton" type="Button" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn/CarouselFrame"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(46, 52)
+custom_minimum_size = Vector2(48, 48)
 layout_mode = 1
 anchors_preset = 6
 anchor_left = 1.0
 anchor_top = 0.5
 anchor_right = 1.0
 anchor_bottom = 0.5
-offset_left = -46.0
-offset_top = -26.0
+offset_left = -48.0
+offset_top = -24.0
 offset_right = 0.0
-offset_bottom = 26.0
+offset_bottom = 24.0
 grow_horizontal = 0
 grow_vertical = 2
 focus_mode = 0
@@ -372,7 +372,7 @@ mouse_filter = 1
 
 [node name="IdentityBlock" type="VBoxContainer" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 2
 
 [node name="NameLabel" type="Label" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn/IdentityBlock"]
 unique_name_in_owner = true
@@ -387,7 +387,7 @@ horizontal_alignment = 1
 
 [node name="RoleLabel" type="Label" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn/IdentityBlock"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 22)
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.74, 0.88, 0.96, 1)
 theme_override_font_sizes/font_size = 16
@@ -397,31 +397,31 @@ autowrap_mode = 2
 
 [node name="AbilityCards" type="VBoxContainer" parent="Center/SelectionPanel/Content/MainRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(380, 0)
+custom_minimum_size = Vector2(380, 348)
 layout_mode = 2
 size_flags_horizontal = 1
 size_flags_vertical = 4
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
 [node name="PassiveCard" type="PanelContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityCards"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(380, 176)
+custom_minimum_size = Vector2(380, 170)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_info_panel")
 
 [node name="PassiveContent" type="HBoxContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityCards/PassiveCard"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
 [node name="PassiveIconSlot" type="CenterContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityCards/PassiveCard/PassiveContent"]
-custom_minimum_size = Vector2(128, 128)
+custom_minimum_size = Vector2(136, 136)
 layout_mode = 2
 size_flags_vertical = 4
 
 [node name="PassiveIcon" type="TextureRect" parent="Center/SelectionPanel/Content/MainRow/AbilityCards/PassiveCard/PassiveContent/PassiveIconSlot"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(94, 94)
+custom_minimum_size = Vector2(108, 108)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
@@ -456,23 +456,23 @@ autowrap_mode = 2
 
 [node name="AbilityCard" type="PanelContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityCards"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(380, 176)
+custom_minimum_size = Vector2(380, 170)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_info_panel")
 
 [node name="AbilityContent" type="HBoxContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityCards/AbilityCard"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
 [node name="AbilityIconSlot" type="CenterContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityCards/AbilityCard/AbilityContent"]
-custom_minimum_size = Vector2(128, 128)
+custom_minimum_size = Vector2(136, 136)
 layout_mode = 2
 size_flags_vertical = 4
 
 [node name="AbilityIcon" type="TextureRect" parent="Center/SelectionPanel/Content/MainRow/AbilityCards/AbilityCard/AbilityContent/AbilityIconSlot"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(128, 128)
+custom_minimum_size = Vector2(136, 136)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
@@ -510,7 +510,7 @@ layout_mode = 2
 
 [node name="ConfirmButton" type="Button" parent="Center/SelectionPanel/Content/CtaRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(500, 76)
+custom_minimum_size = Vector2(500, 72)
 layout_mode = 2
 texture_filter = 1
 theme_override_font_sizes/font_size = 24

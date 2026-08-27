@@ -61,6 +61,12 @@
       ]
     },
     {
+      "patterns": ["scripts/progression/upgrade_*", "scripts/progression/experience_*"],
+      "smokes": [
+        "tests/integration/_powerup_first_wave_smoke.gd"
+      ]
+    },
+    {
       "patterns": ["scripts/game/arena_layout.gd", "scripts/ui/arena_view.gd", "assets/art/arena/*"],
       "smokes": [
         "tests/integration/_arena_hud_minimal_smoke.gd",

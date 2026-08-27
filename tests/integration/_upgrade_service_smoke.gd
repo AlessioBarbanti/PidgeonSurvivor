@@ -190,8 +190,8 @@ func _validate_composed_level_flow() -> void:
 			ability.set_process(false)
 
 	_expect(
-		registry.get_definitions().size() == 18,
-		"Il catalogo composto deve avere diciotto carte normali."
+		registry.get_definitions().size() == 22,
+		"Il catalogo composto deve avere ventidue carte normali dopo la prima ondata powerup."
 	)
 	_expect(service.get_current_offer().is_empty(), "Una run senza level-up non deve anticipare carte.")
 	_expect(experience.add_experience(45), "La scena composta deve attraversare tre soglie.")

@@ -44,6 +44,8 @@ var _active_level_up_level := 0
 var _pending_level_up_levels: Array[int] = []
 var _run_controller: RunController
 var _fallback_curve := ExperienceCurve.new()
+var _upgrade_value_multiplier := 1.0
+var _upgrade_value_credit := 0.0
 
 
 func set_run_controller(value: RunController) -> void:
@@ -72,10 +74,13 @@ func add_experience(amount: int) -> bool:
 	):
 		return false
 
-	_experience_total += amount
-	_experience_current += amount
+	var awarded_amount := _resolve_upgrade_value(amount)
+	if awarded_amount <= 0:
+		return false
+	_experience_total += awarded_amount
+	_experience_current += awarded_amount
 	_queue_reached_levels()
-	experience_added.emit(amount, _experience_current)
+	experience_added.emit(awarded_amount, _experience_current)
 	experience_changed.emit(_experience_current)
 	_emit_progression_changed()
 	_start_next_level_up()
@@ -118,7 +123,24 @@ func get_active_level_up_level() -> int:
 	return _active_level_up_level
 
 
+func set_upgrade_value_multiplier(multiplier: float) -> bool:
+	if not is_finite(multiplier) or multiplier <= 0.0:
+		return false
+	_upgrade_value_multiplier = multiplier
+	return true
+
+
+func reset_upgrade_value_multiplier() -> void:
+	_upgrade_value_multiplier = 1.0
+	_upgrade_value_credit = 0.0
+
+
+func get_upgrade_value_multiplier() -> float:
+	return _upgrade_value_multiplier
+
+
 func reset_for_run() -> void:
+	reset_upgrade_value_multiplier()
 	var experience_was_changed := _experience_current != 0
 	var level_was_changed := _level != 1
 	var pending_was_changed := (
@@ -164,6 +186,13 @@ func _disconnect_run_controller() -> void:
 
 func _get_curve() -> ExperienceCurve:
 	return experience_curve if experience_curve != null else _fallback_curve
+
+
+func _resolve_upgrade_value(amount: int) -> int:
+	var total_value := float(amount) * _upgrade_value_multiplier + _upgrade_value_credit
+	var whole_amount := floori(total_value + 0.00001)
+	_upgrade_value_credit = maxf(total_value - float(whole_amount), 0.0)
+	return whole_amount
 
 
 func _queue_reached_levels() -> void:

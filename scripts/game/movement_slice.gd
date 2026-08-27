@@ -1203,7 +1203,7 @@ func _validate_current_contract() -> bool:
 		_weapon_controller.is_projectile_chain_enabled()
 		or _weapon_controller.get_projectile_chain_jumps() != 0
 		or not is_zero_approx(
-			_weapon_controller.get_projectile_oscillation_amplitude()
+			_weapon_controller.get_projectile_aim_spread_degrees()
 		)
 	):
 		failures.append("La run deve iniziare senza modificatori proiettile B13.")

@@ -1,22 +1,127 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/pause_overlay.gd" id="1_pause"]
+[ext_resource type="Script" path="res://scripts/ui/pixel_arcade_slider.gd" id="2_slider"]
+[ext_resource type="Script" path="res://scripts/ui/pixel_arcade_toggle.gd" id="3_toggle"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pause_panel"]
-bg_color = Color(0.025, 0.043, 0.075, 0.96)
+bg_color = Color(0.018, 0.031, 0.055, 0.98)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
-border_color = Color(0.25, 0.72, 1, 0.9)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
+border_color = Color(0.345, 0.294, 0.204, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+corner_detail = 1
 content_margin_left = 42.0
 content_margin_top = 18.0
 content_margin_right = 42.0
 content_margin_bottom = 18.0
+shadow_color = Color(0.008, 0.014, 0.027, 0.96)
+shadow_size = 6
+shadow_offset = Vector2(2, 4)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_separator"]
+bg_color = Color(0.345, 0.294, 0.204, 0.72)
+content_margin_top = 1.0
+content_margin_bottom = 1.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_normal"]
+bg_color = Color(0.58, 0.18, 0.024, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.859, 0.69, 0.376, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+corner_detail = 1
+shadow_color = Color(0.12, 0.025, 0.008, 0.92)
+shadow_size = 3
+shadow_offset = Vector2(1, 3)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_hover"]
+bg_color = Color(0.82, 0.31, 0.03, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0.91, 0.7, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+corner_detail = 1
+shadow_color = Color(0.12, 0.025, 0.008, 0.92)
+shadow_size = 3
+shadow_offset = Vector2(1, 3)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_pressed"]
+bg_color = Color(0.43, 0.11, 0.012, 1)
+border_width_left = 2
+border_width_top = 3
+border_width_right = 2
+border_width_bottom = 1
+border_color = Color(0.859, 0.69, 0.376, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+corner_detail = 1
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary_normal"]
+bg_color = Color(0.055, 0.09, 0.145, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.345, 0.294, 0.204, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+corner_detail = 1
+shadow_color = Color(0.008, 0.014, 0.027, 0.8)
+shadow_size = 2
+shadow_offset = Vector2(1, 2)
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary_hover"]
+bg_color = Color(0.075, 0.12, 0.18, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.859, 0.69, 0.376, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+corner_detail = 1
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary_pressed"]
+bg_color = Color(0.027, 0.067, 0.122, 1)
+border_width_left = 2
+border_width_top = 3
+border_width_right = 2
+border_width_bottom = 1
+border_color = Color(0.345, 0.294, 0.204, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+corner_detail = 1
+anti_aliasing = false
 
 [node name="PauseOverlay" type="Control"]
 process_mode = 3
@@ -61,20 +166,14 @@ theme_override_constants/separation = 8
 
 [node name="TitleLabel" type="Label" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.48, 0.88, 1, 1)
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_override_font_sizes/font_size = 38
 text = "IN PAUSA"
 horizontal_alignment = 1
 
-[node name="SummaryLabel" type="Label" parent="PauseCenter/Panel/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.86, 0.93, 1, 1)
-theme_override_font_sizes/font_size = 18
-text = "La partita riprende solo su tua conferma"
-horizontal_alignment = 1
-
 [node name="AudioSeparator" type="HSeparator" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxFlat_separator")
 
 [node name="AudioTitle" type="Label" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
@@ -89,7 +188,7 @@ theme_override_constants/separation = 12
 [node name="VolumeCaption" type="Label" parent="PauseCenter/Panel/VBox/VolumeRow"]
 custom_minimum_size = Vector2(142, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.86, 0.93, 1, 1)
+theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_override_font_sizes/font_size = 16
 text = "Volume audio"
 
@@ -102,12 +201,13 @@ min_value = 0.0
 max_value = 1.0
 step = 0.05
 value = 0.8
+script = ExtResource("2_slider")
 
 [node name="VolumeValueLabel" type="Label" parent="PauseCenter/Panel/VBox/VolumeRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.95, 0.78, 1)
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_override_font_sizes/font_size = 16
 text = "80%"
 horizontal_alignment = 2
@@ -116,11 +216,14 @@ horizontal_alignment = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_override_font_sizes/font_size = 17
 text = "DISATTIVA AUDIO"
+script = ExtResource("3_toggle")
 
 [node name="AccessibilitySeparator" type="HSeparator" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxFlat_separator")
 
 [node name="AccessibilityTitle" type="Label" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
@@ -133,8 +236,10 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../AbilitySizeRow/AbilitySizeSlider")
+theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_override_font_sizes/font_size = 17
 text = "FLASH RIDOTTI"
+script = ExtResource("3_toggle")
 
 [node name="ControlsTitle" type="Label" parent="PauseCenter/Panel/VBox"]
 layout_mode = 2
@@ -149,7 +254,7 @@ theme_override_constants/separation = 12
 [node name="Caption" type="Label" parent="PauseCenter/Panel/VBox/AbilitySizeRow"]
 custom_minimum_size = Vector2(142, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.86, 0.93, 1, 1)
+theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_override_font_sizes/font_size = 16
 text = "Icona abilità"
 
@@ -164,12 +269,13 @@ step = 0.25
 value = 1.25
 focus_neighbor_top = NodePath("../../ReducedFlashesCheckButton")
 focus_neighbor_bottom = NodePath("../../JoystickSizeRow/JoystickSizeSlider")
+script = ExtResource("2_slider")
 
 [node name="AbilitySizeValueLabel" type="Label" parent="PauseCenter/Panel/VBox/AbilitySizeRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.95, 0.78, 1)
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_override_font_sizes/font_size = 16
 text = "125%"
 horizontal_alignment = 2
@@ -181,7 +287,7 @@ theme_override_constants/separation = 12
 [node name="Caption" type="Label" parent="PauseCenter/Panel/VBox/JoystickSizeRow"]
 custom_minimum_size = Vector2(142, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.86, 0.93, 1, 1)
+theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_override_font_sizes/font_size = 16
 text = "Joystick"
 
@@ -196,12 +302,13 @@ step = 0.15
 value = 1.0
 focus_neighbor_top = NodePath("../../AbilitySizeRow/AbilitySizeSlider")
 focus_neighbor_bottom = NodePath("../../ResumeButton")
+script = ExtResource("2_slider")
 
 [node name="JoystickSizeValueLabel" type="Label" parent="PauseCenter/Panel/VBox/JoystickSizeRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.95, 0.78, 1)
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_override_font_sizes/font_size = 16
 text = "100%"
 horizontal_alignment = 2
@@ -212,8 +319,13 @@ custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 focus_neighbor_top = NodePath("../JoystickSizeRow/JoystickSizeSlider")
 focus_neighbor_bottom = NodePath("../ChangeCharacterButton")
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_override_font_sizes/font_size = 20
-text = "RIPRENDI"
+theme_override_styles/normal = SubResource("StyleBoxFlat_primary_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_primary_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_primary_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_primary_hover")
+text = "Riprendi"
 
 [node name="ChangeCharacterButton" type="Button" parent="PauseCenter/Panel/VBox"]
 unique_name_in_owner = true
@@ -221,8 +333,13 @@ custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 focus_neighbor_top = NodePath("../ResumeButton")
 focus_neighbor_bottom = NodePath(".")
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_override_font_sizes/font_size = 20
-text = "CAMBIA PERSONAGGIO"
+theme_override_styles/normal = SubResource("StyleBoxFlat_secondary_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_secondary_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_secondary_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_secondary_hover")
+text = "Cambia personaggio"
 
 [node name="ConfirmationCenter" type="CenterContainer" parent="."]
 unique_name_in_owner = true
@@ -253,7 +370,7 @@ horizontal_alignment = 1
 
 [node name="SummaryLabel" type="Label" parent="ConfirmationCenter/Panel/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.86, 0.93, 1, 1)
+theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_override_font_sizes/font_size = 18
 text = "I progressi della run corrente saranno azzerati."
 horizontal_alignment = 1
@@ -265,8 +382,13 @@ custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 focus_neighbor_top = NodePath("../ConfirmChangeButton")
 focus_neighbor_bottom = NodePath("../ConfirmChangeButton")
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_override_font_sizes/font_size = 20
-text = "ANNULLA"
+theme_override_styles/normal = SubResource("StyleBoxFlat_secondary_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_secondary_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_secondary_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_secondary_hover")
+text = "Annulla"
 
 [node name="ConfirmChangeButton" type="Button" parent="ConfirmationCenter/Panel/VBox"]
 unique_name_in_owner = true
@@ -274,6 +396,10 @@ custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 focus_neighbor_top = NodePath("../CancelChangeButton")
 focus_neighbor_bottom = NodePath("../CancelChangeButton")
-theme_override_colors/font_color = Color(1, 0.82, 0.72, 1)
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_override_font_sizes/font_size = 20
-text = "CONFERMA"
+theme_override_styles/normal = SubResource("StyleBoxFlat_primary_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_primary_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_primary_pressed")
+theme_override_styles/focus = SubResource("StyleBoxFlat_primary_hover")
+text = "Conferma"

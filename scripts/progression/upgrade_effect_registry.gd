@@ -17,6 +17,10 @@ const PLAYER_PICKUP_RADIUS_MULTIPLIER := &"player_pickup_radius_multiplier"
 const PLAYER_HEALTH_MAX_MULTIPLIER := &"player_health_max_multiplier"
 const WEAPON_FIRE_RATE_MULTIPLIER := &"weapon_fire_rate_multiplier"
 const WEAPON_DAMAGE_MULTIPLIER := &"weapon_damage_multiplier"
+const WEAPON_PROJECTILE_SPEED_MULTIPLIER := &"weapon_projectile_speed_multiplier"
+const PLAYER_DAMAGE_TAKEN_MULTIPLIER := &"player_damage_taken_multiplier"
+const XP_VALUE_MULTIPLIER := &"xp_value_multiplier"
+const ACTIVE_ABILITY_COOLDOWN_MULTIPLIER := &"active_ability_cooldown_multiplier"
 
 const ANXIETY_SIGNATURE := &"anxiety_signature"
 const GOSSIP_PROJECTILES := &"gossip_projectiles"
@@ -36,6 +40,10 @@ const MINIMUM_MULTIPLIER := 0.001
 @export_range(0.01, 1.0, 0.01) var min_health_max_multiplier := 0.1
 @export_range(1.0, 20.0, 0.05, "or_greater") var max_fire_rate_multiplier := 3.0
 @export_range(1.0, 20.0, 0.05, "or_greater") var max_damage_multiplier := 5.0
+@export_range(1.0, 20.0, 0.05, "or_greater") var max_projectile_speed_multiplier := 3.0
+@export_range(0.01, 1.0, 0.01) var min_damage_taken_multiplier := 0.7
+@export_range(1.0, 10.0, 0.05, "or_greater") var max_xp_value_multiplier := 2.0
+@export_range(0.01, 1.0, 0.01) var min_active_ability_cooldown_multiplier := 0.65
 
 var _upgrade_service: UpgradeService
 var _upgrade_registry: UpgradeRegistry
@@ -46,6 +54,7 @@ var _targeting_system: TargetingSystem
 var _vignette_effect: VignetteEffect
 var _effect_parent: Node2D
 var _ability_controller: AbilityController
+var _experience_system: ExperienceSystem
 var _effective_multipliers: Dictionary = {}
 var _signature_parameters: Dictionary = {}
 
@@ -114,6 +123,11 @@ func configure(
 	_vignette_effect = vignette_effect
 	_effect_parent = effect_parent
 	_ability_controller = ability_controller
+	_experience_system = (
+		_upgrade_service.get_experience_system()
+		if is_instance_valid(_upgrade_service)
+		else null
+	)
 	_connect_dependencies()
 	if not has_valid_configuration():
 		return false
@@ -130,7 +144,9 @@ func has_valid_configuration() -> bool:
 		or not is_instance_valid(_weapon_controller)
 		or not is_instance_valid(_run_controller)
 		or not is_instance_valid(_ability_controller)
+		or not is_instance_valid(_experience_system)
 		or _upgrade_service.get_run_controller() != _run_controller
+		or _upgrade_service.get_experience_system() != _experience_system
 		or not _has_valid_caps()
 	):
 		return false
@@ -148,7 +164,11 @@ func can_apply(definition: UpgradeDefinition) -> bool:
 		PLAYER_PICKUP_RADIUS_MULTIPLIER, \
 		PLAYER_HEALTH_MAX_MULTIPLIER, \
 		WEAPON_FIRE_RATE_MULTIPLIER, \
-		WEAPON_DAMAGE_MULTIPLIER:
+		WEAPON_DAMAGE_MULTIPLIER, \
+		WEAPON_PROJECTILE_SPEED_MULTIPLIER, \
+		PLAYER_DAMAGE_TAKEN_MULTIPLIER, \
+		XP_VALUE_MULTIPLIER, \
+		ACTIVE_ABILITY_COOLDOWN_MULTIPLIER:
 			return _get_positive_number(definition.effect_parameters, "multiplier") > 0.0
 		ANXIETY_SIGNATURE:
 			return (
@@ -209,12 +229,12 @@ func can_apply(definition: UpgradeDefinition) -> bool:
 				) > 0.0
 				and _get_positive_number(
 					definition.effect_parameters,
-					"oscillation_amplitude"
+					"aim_spread_degrees"
 				) > 0.0
 				and _get_positive_number(
 					definition.effect_parameters,
-					"oscillation_frequency_hz"
-				) > 0.0
+					"aim_spread_degrees"
+				) < 90.0
 			)
 		DAMAGE_SHOCKWAVE:
 			return (
@@ -374,6 +394,10 @@ func reset_effects() -> void:
 		_player.reset_upgrade_stat_multipliers()
 	if is_instance_valid(_weapon_controller):
 		_weapon_controller.reset_upgrade_stat_multipliers()
+	if is_instance_valid(_experience_system):
+		_experience_system.reset_upgrade_value_multiplier()
+	if is_instance_valid(_ability_controller):
+		_ability_controller.reset_upgrade_cooldown_multiplier()
 	effects_reset.emit()
 	effects_recalculated.emit(get_effective_multipliers())
 
@@ -432,6 +456,10 @@ func get_run_controller() -> RunController:
 	return _run_controller if is_instance_valid(_run_controller) else null
 
 
+func get_experience_system() -> ExperienceSystem:
+	return _experience_system if is_instance_valid(_experience_system) else null
+
+
 func get_targeting_system() -> TargetingSystem:
 	return _targeting_system if is_instance_valid(_targeting_system) else null
 
@@ -453,11 +481,19 @@ func _apply_multipliers(
 			float(multipliers[PLAYER_MOVE_SPEED_MULTIPLIER]),
 			float(multipliers[PLAYER_PICKUP_RADIUS_MULTIPLIER]),
 			float(multipliers[PLAYER_HEALTH_MAX_MULTIPLIER]),
-			preserve_health_ratio
+			preserve_health_ratio,
+			float(multipliers[PLAYER_DAMAGE_TAKEN_MULTIPLIER])
 		)
 		and _weapon_controller.set_upgrade_stat_multipliers(
 			float(multipliers[WEAPON_FIRE_RATE_MULTIPLIER]),
-			float(multipliers[WEAPON_DAMAGE_MULTIPLIER])
+			float(multipliers[WEAPON_DAMAGE_MULTIPLIER]),
+			float(multipliers[WEAPON_PROJECTILE_SPEED_MULTIPLIER])
+		)
+		and _experience_system.set_upgrade_value_multiplier(
+			float(multipliers[XP_VALUE_MULTIPLIER])
+		)
+		and _ability_controller.set_upgrade_cooldown_multiplier(
+			float(multipliers[ACTIVE_ABILITY_COOLDOWN_MULTIPLIER])
 		)
 	)
 
@@ -487,20 +523,15 @@ func _apply_signature_effects(next_signatures: Dictionary) -> bool:
 		chain_jumps = int(gossip_parameters["chain_jumps"])
 		chain_damage_falloff = float(gossip_parameters["damage_falloff"])
 		chain_radius = float(gossip_parameters["chain_radius"])
-	var oscillation_amplitude := 0.0
-	var oscillation_frequency_hz := 0.0
+	var aim_spread_degrees := 0.0
 	if not beer_parameters.is_empty():
-		oscillation_amplitude = float(beer_parameters["oscillation_amplitude"])
-		oscillation_frequency_hz = float(
-			beer_parameters["oscillation_frequency_hz"]
-		)
+		aim_spread_degrees = float(beer_parameters["aim_spread_degrees"])
 	if not _weapon_controller.set_projectile_upgrade_modifiers(
 		chain_enabled,
 		chain_jumps,
 		chain_damage_falloff,
 		chain_radius,
-		oscillation_amplitude,
-		oscillation_frequency_hz
+		aim_spread_degrees
 	):
 		return false
 
@@ -606,12 +637,26 @@ func _get_cap(effect_id: StringName) -> float:
 			return max_fire_rate_multiplier
 		WEAPON_DAMAGE_MULTIPLIER:
 			return max_damage_multiplier
+		WEAPON_PROJECTILE_SPEED_MULTIPLIER:
+			return max_projectile_speed_multiplier
+		PLAYER_DAMAGE_TAKEN_MULTIPLIER, ACTIVE_ABILITY_COOLDOWN_MULTIPLIER:
+			return 1.0
+		XP_VALUE_MULTIPLIER:
+			return max_xp_value_multiplier
 		_:
 			return 1.0
 
 
 func _get_minimum(effect_id: StringName) -> float:
-	return min_health_max_multiplier if effect_id == PLAYER_HEALTH_MAX_MULTIPLIER else MINIMUM_MULTIPLIER
+	match effect_id:
+		PLAYER_HEALTH_MAX_MULTIPLIER:
+			return min_health_max_multiplier
+		PLAYER_DAMAGE_TAKEN_MULTIPLIER:
+			return min_damage_taken_multiplier
+		ACTIVE_ABILITY_COOLDOWN_MULTIPLIER:
+			return min_active_ability_cooldown_multiplier
+		_:
+			return MINIMUM_MULTIPLIER
 
 
 func _has_valid_caps() -> bool:
@@ -621,6 +666,8 @@ func _has_valid_caps() -> bool:
 		max_health_max_multiplier,
 		max_fire_rate_multiplier,
 		max_damage_multiplier,
+		max_projectile_speed_multiplier,
+		max_xp_value_multiplier,
 	]:
 		if not is_finite(cap) or cap < 1.0:
 			return false
@@ -628,6 +675,12 @@ func _has_valid_caps() -> bool:
 		is_finite(min_health_max_multiplier)
 		and min_health_max_multiplier > 0.0
 		and min_health_max_multiplier <= 1.0
+		and is_finite(min_damage_taken_multiplier)
+		and min_damage_taken_multiplier > 0.0
+		and min_damage_taken_multiplier <= 1.0
+		and is_finite(min_active_ability_cooldown_multiplier)
+		and min_active_ability_cooldown_multiplier > 0.0
+		and min_active_ability_cooldown_multiplier <= 1.0
 	)
 
 
@@ -638,6 +691,10 @@ func _supported_stat_effect_ids() -> Array[StringName]:
 		PLAYER_HEALTH_MAX_MULTIPLIER,
 		WEAPON_FIRE_RATE_MULTIPLIER,
 		WEAPON_DAMAGE_MULTIPLIER,
+		WEAPON_PROJECTILE_SPEED_MULTIPLIER,
+		PLAYER_DAMAGE_TAKEN_MULTIPLIER,
+		XP_VALUE_MULTIPLIER,
+		ACTIVE_ABILITY_COOLDOWN_MULTIPLIER,
 	]
 
 
@@ -742,6 +799,7 @@ func _disconnect_dependencies() -> void:
 	_player = null
 	_weapon_controller = null
 	_run_controller = null
+	_experience_system = null
 	_targeting_system = null
 	_vignette_effect = null
 	_effect_parent = null

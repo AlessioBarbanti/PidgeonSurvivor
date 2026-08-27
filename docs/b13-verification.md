@@ -18,7 +18,7 @@ data-driven a rank singolo:
   `×0,50` per 3 secondi; pausa e modali non consumano i timer e un nemico
   registrato durante il pulse riceve lo stesso status identificato;
 - **Birra** compone `frequenza ×1,25` e fotografa sui nuovi
-  proiettili una traiettoria sinusoidale da 18 unità a 3 Hz;
+  proiettili una dispersione casuale di `±24°`, derivata dal seed della run;
 - **Non Ho Tempo Per Questo** reagisce soltanto al danno Player effettivamente
   accettato, applica knockback entro 220 unità e crea un anello VFX scene-local.
 
@@ -42,12 +42,12 @@ godot_console --headless --path . --resolution 1280x720 `
 
 Lo smoke copre:
 
-- rifiuto di parametri mancanti, tipi errati, oscillazione nulla e signature
+- rifiuto di parametri mancanti, tipi errati, dispersione nulla e signature
   ripetibili;
 - acquisizione e composizione simultanea delle cinque carte;
 - rapporto HP preservato, vignetta e statistiche composte;
 - tre bersagli concatenati senza doppia hit, danno progressivamente ridotto e
-  deviazione sinusoidale;
+  deviazione angolare con rischio di mancare il bersaglio;
 - slow alla soglia, stop in pausa, rimozione dopo tre secondi e ingresso di un
   nuovo nemico durante il pulse;
 - shockwave e slow sullo stesso nemico, filtro per raggio e mancata
@@ -60,6 +60,25 @@ Esito dedicato:
 ```text
 B13_SIGNATURE_UPGRADES_SMOKE_OK
 ```
+
+### Aggiornamento Birra — 27 agosto 2026
+
+La sinusoide è stata sostituita da una dispersione iniziale di `±24°`: la
+cadenza resta `×1,25`, ma ogni colpo può mancare il bersaglio mirato. Lo stream
+RNG dell'arma è locale e derivato dal seed della run, perciò non altera pesca o
+spawn e la sequenza resta riproducibile. I rerun freschi focalizzati di B13 e
+B26 passano rispettivamente con `B13_SIGNATURE_UPGRADES_SMOKE_OK` e
+`B26_DAMAGE_UPGRADE_SMOKE_OK`.
+
+Il profilo Relevant B13 ha invece interrotto sulle sei asserzioni B18W di
+selezione personaggio già incompatibili con il worktree UI B34 (`icona abilità`,
+`blocco nome/ruolo`, `frecce`); nessun fallimento riguarda Birra o B13.
+
+L'APK `pidgeon-survivor-debug.apk` SHA-256
+`22809DD2757108629D71A16EA634042BA8B832C13E88B1DD8555D3894279E075` è stato
+validato staticamente (`minSdk 31`, `targetSdk 36`, `arm64-v8a`, firma v2) e
+installato con successo sul Pixel 9 il 27 agosto 2026. Avvio, selezione della
+carta Birra, percezione della dispersione e log runtime restano da eseguire.
 
 È stata rieseguita l'intera suite B03–B13: quattordici smoke test verdi, tutti
 con codice `0`, marker `*_SMOKE_OK` e nessun `SCRIPT ERROR` o
@@ -98,6 +117,6 @@ Android, non del nuovo APK rinominato.
   della vignetta, catena Gossip, traiettoria Birra e shockwave in un'orda reale;
 - ripetere il flusso con controller fisico e multitouch/joystick su Android;
 - eseguire i profili esatti Android 12/API 31 e Android 16/API 36;
-- ribilanciare falloff/raggio della catena Gossip, ampiezza/frequenza
-  dell'oscillazione, intensità della vignetta, raggio/forza della shockwave e
+- ribilanciare falloff/raggio della catena Gossip, dispersione Birra,
+  intensità della vignetta, raggio/forza della shockwave e
   intervallo dello slow dopo playtest.

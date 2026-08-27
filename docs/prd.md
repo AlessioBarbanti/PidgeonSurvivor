@@ -404,8 +404,9 @@ secondi.
 
 ### “Birra”
 
-Effetto: aumenta la frequenza di sparo del `25%`, ma rende la traiettoria dei
-proiettili leggermente oscillante.
+Effetto: aumenta la frequenza di sparo del `25%`, ma ogni nuovo proiettile
+riceve una dispersione angolare casuale di `±24°`: il colpo non è più garantito
+sul bersaglio mirato. La sequenza resta riproducibile per seed della run.
 
 ### “Non Ho Tempo Per Questo”
 
@@ -517,6 +518,23 @@ le reazioni Player/nemico a `0,30`/`0,26 s`, la morte a `0,78 s` e l'impulso di
 prontezza a `0,60 s`; i flash restano brevi a `0,075–0,08 s`. Le code visive
 sono nodi sibling non interattivi e non prolungano collisioni, danno, tick,
  cooldown o raggi né lasciano apparire attiva un'area già conclusa.
+
+**Coerenza UI B34:** pausa, HUD e controlli touch usano blu notte per fondi,
+oro/arancio per azioni, crema per testo primario, grigio freddo per testo
+secondario, cyan soltanto per sistema/selezione e rosa/rosso per salute o
+pericolo. Bordi e CTA sono squadrati/pixelati con ombre leggere; la pausa usa
+azioni primarie e secondarie distinte, mentre slider e toggle restano controlli
+nativi accessibili ma disegnati nella stessa grammatica. XP, HP, timer, inset,
+target pausa, dimensioni dell'abilità, cooldown, acquisizione joystick,
+deadzone, multitouch e tutti gli stati di `RunController` restano invariati.
+Il medaglione dell'abilità è un sibling non interattivo dietro al pulsante
+icona B18K, quindi non acquisisce touch né introduce una card o copy aggiuntivi.
+La selezione mantiene due card kit gemelle per altezza, padding e allineamento,
+con emblemi più presenti e spazio interno ridotto; il blocco nome/ruolo/CTA
+resta compatto. Pausa, ingranaggio, frecce e medaglione condividono il bordo
+scuro/oro e bevel pixelato, mentre il joystick conserva la variante trasparente
+con la stessa palette. Il padding esterno di pausa e abilità deriva dalla stessa
+configurazione B31 su 16:9, 20:9 e 4:3.
 
 **Hardening B18V:** `PerformanceProfile` è scene-local e fisso a 60 FPS, con
 stress da 150 nemici, 200 proiettili e 200 pickup sia su Windows sia su mobile.

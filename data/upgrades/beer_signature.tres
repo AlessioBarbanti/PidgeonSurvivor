@@ -7,14 +7,13 @@
 script = ExtResource("1_definition")
 id = &"beer_signature"
 title = "Birra"
-description = "Aumenta la frequenza di sparo e rende oscillante la traiettoria dei proiettili."
+description = "Aumenta la frequenza di sparo, ma ogni colpo puo deviare dal bersaglio."
 icon = ExtResource("2_icon")
 effect_id = &"beer_signature"
 effect_parameters = {
 "fire_rate_multiplier": 1.25,
-"oscillation_amplitude": 18.0,
-"oscillation_frequency_hz": 3.0
+"aim_spread_degrees": 24.0
 }
 weight = 1.0
 max_rank = 1
-tags = Array[StringName]([&"signature", &"weapon", &"projectile", &"oscillation"])
+tags = Array[StringName]([&"signature", &"weapon", &"projectile", &"aim_spread"])

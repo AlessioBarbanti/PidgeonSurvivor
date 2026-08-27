@@ -41,9 +41,7 @@ var _chain_jumps_remaining := 0
 var _chain_damage_falloff := 1.0
 var _chain_radius := 0.0
 var _chain_current_damage := 0.0
-var _oscillation_amplitude := 0.0
-var _oscillation_frequency_hz := 0.0
-var _oscillation_phase := 0.0
+var _aim_spread_degrees := 0.0
 var _targeting_system: TargetingSystem
 var _hit_target_ids: Dictionary = {}
 
@@ -68,14 +66,7 @@ func _physics_process(delta: float) -> void:
 
 	var safe_delta := maxf(delta, 0.0)
 	var movement_delta := minf(safe_delta, maxf(lifetime_remaining, 0.0))
-	var previous_phase := _oscillation_phase
-	_oscillation_phase += TAU * _oscillation_frequency_hz * movement_delta
-	var movement := direction * speed * movement_delta
-	if _oscillation_amplitude > 0.0:
-		movement += direction.orthogonal() * _oscillation_amplitude * (
-			sin(_oscillation_phase) - sin(previous_phase)
-		)
-	global_position += movement
+	global_position += direction * speed * movement_delta
 	lifetime_remaining -= safe_delta
 	if lifetime_remaining <= 0.0:
 		expire()
@@ -143,8 +134,7 @@ func configure_signature_effects(
 	chain_jumps: int,
 	chain_damage_falloff: float,
 	chain_radius: float,
-	oscillation_amplitude: float,
-	oscillation_frequency_hz: float,
+	aim_spread_degrees: float,
 	targeting_system: TargetingSystem = null
 ) -> bool:
 	if (
@@ -156,11 +146,9 @@ func configure_signature_effects(
 		or chain_radius < 0.0
 		or (chain_enabled and (chain_jumps <= 0 or chain_radius <= 0.0))
 		or (chain_enabled and not is_instance_valid(targeting_system))
-		or not is_finite(oscillation_amplitude)
-		or oscillation_amplitude < 0.0
-		or not is_finite(oscillation_frequency_hz)
-		or oscillation_frequency_hz < 0.0
-		or (oscillation_amplitude > 0.0 and oscillation_frequency_hz <= 0.0)
+		or not is_finite(aim_spread_degrees)
+		or aim_spread_degrees < 0.0
+		or aim_spread_degrees >= 90.0
 	):
 		return false
 	_chain_enabled = chain_enabled
@@ -168,9 +156,7 @@ func configure_signature_effects(
 	_chain_damage_falloff = chain_damage_falloff
 	_chain_radius = chain_radius
 	_chain_current_damage = damage
-	_oscillation_amplitude = oscillation_amplitude
-	_oscillation_frequency_hz = oscillation_frequency_hz
-	_oscillation_phase = 0.0
+	_aim_spread_degrees = aim_spread_degrees
 	_targeting_system = targeting_system
 	_hit_target_ids.clear()
 	return true
@@ -259,12 +245,8 @@ func get_chain_radius() -> float:
 	return _chain_radius
 
 
-func get_oscillation_amplitude() -> float:
-	return _oscillation_amplitude
-
-
-func get_oscillation_frequency_hz() -> float:
-	return _oscillation_frequency_hz
+func get_aim_spread_degrees() -> float:
+	return _aim_spread_degrees
 
 
 func has_hit_target(target: BaseEnemy) -> bool:

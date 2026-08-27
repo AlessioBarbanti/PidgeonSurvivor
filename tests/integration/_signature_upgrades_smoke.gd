@@ -153,8 +153,7 @@ func _validate_signature_composition() -> void:
 	_expect(weapon.get_projectile_chain_jumps() == 2, "Gossip deve dare due salti.")
 	_expect_float_near(weapon.get_projectile_chain_damage_falloff(), 0.65, "Gossip deve ridurre progressivamente il danno.")
 	_expect_float_near(weapon.get_projectile_chain_radius(), 260.0, "Gossip deve usare il raggio dati.")
-	_expect_float_near(weapon.get_projectile_oscillation_amplitude(), 18.0, "Birra deve impostare l'ampiezza.")
-	_expect_float_near(weapon.get_projectile_oscillation_frequency_hz(), 3.0, "Birra deve impostare la frequenza sinusoidale.")
+	_expect_float_near(weapon.get_projectile_aim_spread_degrees(), 24.0, "Birra deve impostare la dispersione dati.")
 
 	var near_enemy := _spawn_enemy(spawner, player.global_position + Vector2(100.0, 0.0))
 	var far_enemy := _spawn_enemy(spawner, player.global_position + Vector2(300.0, 0.0))
@@ -199,8 +198,8 @@ func _validate_signature_composition() -> void:
 	_expect(not effects.is_slow_pulse_active(), "Lo slow deve terminare dopo tre secondi RUNNING.")
 	_expect(not near_enemy.has_speed_modifier(SLOW_MODIFIER), "La fine del pulse deve rimuovere lo status locale.")
 
-	# Gossip e Birra convivono nello stesso snapshot: il colpo salta due volte
-	# e ogni passaggio usa il danno precedente moltiplicato per 0,65.
+	# Gossip e Birra convivono nello stesso snapshot: il colpo fotografa catena
+	# e dispersione, senza centrare automaticamente il bersaglio mirato.
 	var projectile := weapon.try_fire()
 	_expect(projectile != null, "L'arma combinata deve creare un proiettile.")
 	if projectile != null:
@@ -208,15 +207,11 @@ func _validate_signature_composition() -> void:
 		_expect(projectile.is_chain_enabled(), "Il nuovo proiettile deve avere la catena Gossip.")
 		_expect(projectile.get_chain_jumps_remaining() == 2, "Il nuovo proiettile deve avere due salti.")
 		_expect_float_near(projectile.get_chain_damage_falloff(), 0.65, "Il nuovo proiettile deve conservare il falloff.")
-		_expect_float_near(projectile.get_oscillation_amplitude(), 18.0, "Il nuovo proiettile deve oscillare.")
-		projectile.global_position = arena.get_playfield_center()
-		projectile.direction = Vector2.RIGHT
-		var y_before_wave := projectile.global_position.y
-		projectile._physics_process(1.0 / 12.0)
-		_expect_float_near(
-			absf(projectile.global_position.y - y_before_wave),
-			18.0,
-			"A un quarto di periodo la traiettoria deve deviare dell'ampiezza dati."
+		_expect_float_near(projectile.get_aim_spread_degrees(), 24.0, "Il nuovo proiettile deve conservare la dispersione.")
+		_expect(
+			absf(projectile.direction.angle_to(Vector2.RIGHT)) > deg_to_rad(1.0)
+			and absf(projectile.direction.angle_to(Vector2.RIGHT)) <= deg_to_rad(24.0),
+			"Birra deve deviare il colpo dal bersaglio, entro la dispersione dati."
 		)
 		var near_health_before := near_enemy.get_health_component().health_current
 		var far_health_before := far_enemy.get_health_component().health_current
@@ -274,7 +269,7 @@ func _validate_signature_composition() -> void:
 	_expect_float_near(weapon.get_effective_shots_per_second(), base_fire_rate, "Il restart deve ripristinare la frequenza.")
 	_expect(not weapon.is_projectile_chain_enabled(), "Il restart deve rimuovere Gossip.")
 	_expect(weapon.get_projectile_chain_jumps() == 0, "Il restart deve rimuovere i salti Gossip.")
-	_expect(is_zero_approx(weapon.get_projectile_oscillation_amplitude()), "Il restart deve rimuovere l'oscillazione.")
+	_expect(is_zero_approx(weapon.get_projectile_aim_spread_degrees()), "Il restart deve rimuovere la dispersione.")
 	_expect(not effects.is_slow_pulse_active(), "Il restart deve fermare lo slow.")
 	_expect(is_zero_approx(effects.get_slow_interval_remaining()), "Il restart deve azzerare lo scheduler slow.")
 	_expect(effects.get_active_shockwave_count() == 0, "Il restart deve eliminare i VFX shockwave.")
@@ -345,10 +340,9 @@ func _validate_rejected_definitions(effects: UpgradeEffectRegistry) -> void:
 	bad_beer.id = &"bad_beer"
 	bad_beer.effect_parameters = {
 		"fire_rate_multiplier": 1.25,
-		"oscillation_amplitude": 0.0,
-		"oscillation_frequency_hz": 3.0,
+		"aim_spread_degrees": 0.0,
 	}
-	_expect(not effects.can_apply(bad_beer), "Un'oscillazione nulla deve essere rifiutata.")
+	_expect(not effects.can_apply(bad_beer), "Una dispersione nulla deve essere rifiutata.")
 
 	var repeatable_signature := (DAMAGE_SHOCKWAVE as UpgradeDefinition).duplicate(true) as UpgradeDefinition
 	repeatable_signature.id = &"repeatable_signature"

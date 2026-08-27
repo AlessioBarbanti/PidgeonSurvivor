@@ -1,0 +1,20 @@
+extends RefCounted
+
+## Palette presentation-only condivisa da HUD, pausa e controlli touch B34.
+const NIGHT := Color(0.027, 0.067, 0.122, 1.0)
+const PANEL := Color(0.055, 0.090, 0.145, 1.0)
+const PANEL_DEEP := Color(0.018, 0.031, 0.055, 0.98)
+const OUTLINE_DARK := Color(0.008, 0.014, 0.027, 0.96)
+const METAL := Color(0.345, 0.294, 0.204, 1.0)
+const GOLD := Color(0.859, 0.690, 0.376, 1.0)
+const ORANGE := Color(0.961, 0.604, 0.141, 1.0)
+const ORANGE_DEEP := Color(0.580, 0.180, 0.024, 1.0)
+const CYAN := Color(0.459, 0.922, 1.0, 1.0)
+const HEALTH := Color(0.890, 0.145, 0.333, 1.0)
+const HEALTH_HIGHLIGHT := Color(1.0, 0.450, 0.560, 1.0)
+const DANGER := Color(0.941, 0.353, 0.310, 1.0)
+const CREAM := Color(1.0, 0.910, 0.700, 1.0)
+const SECONDARY_TEXT := Color(0.722, 0.784, 0.850, 1.0)
+const JOYSTICK_BASE := Color(0.027, 0.067, 0.122, 0.68)
+const JOYSTICK_OUTLINE := Color(0.859, 0.690, 0.376, 0.82)
+const JOYSTICK_KNOB := Color(1.0, 0.910, 0.700, 0.92)

@@ -154,7 +154,7 @@ func _validate_damage_upgrade(movement_slice: Control) -> void:
 				"Il proiettile deve fotografare il danno B26."
 			)
 			_expect(projectile.get_chain_jumps_remaining() == 2, "Gossip deve restare composto sul proiettile B26.")
-			_expect_float_near(projectile.get_oscillation_amplitude(), 18.0, "Birra deve restare composta sul proiettile B26.")
+			_expect_float_near(projectile.get_aim_spread_degrees(), 24.0, "Birra deve restare composta sul proiettile B26.")
 		target.queue_free()
 		await process_frame
 

@@ -1,0 +1,315 @@
+# Powerup — modifiche e nuovi potenziamenti
+
+Questo documento contiene esclusivamente le modifiche da applicare ai powerup già esistenti e le proposte per i nuovi potenziamenti da introdurre.
+
+## Modifiche ai potenziamenti esistenti
+
+Questa sezione raccoglie esclusivamente le modifiche proposte ai powerup già
+presenti nel catalogo attivo. La direzione visiva comune resta quella dei
+**grigliatori**: carne, utensili da barbecue, pirofile, brace, condimenti e
+oggetti da cucina. I piccioni restano associati ai nemici e non devono essere
+il soggetto principale delle icone dei powerup positivi.
+
+### A Tutta Brace!
+
+**ID esistente:** `rapid_fire`  
+
+L'icona di questa abilità è nel file `upgrade_a_tutta_brace.png`.
+
+**Nome attuale:** `Ritmo Serrato`  
+**Effetto:** invariato — `+10%` frequenza dello sparo automatico per rango.
+
+- rinominare `Ritmo Serrato` in **A Tutta Brace!**;
+- mantenere un'icona chiaramente legata alla grigliata, evitando armi moderne o
+  elementi meccanici fuori tema;
+- privilegiare una **brace molto viva** con una rapida sequenza di
+  scintille/fiammate, così da comunicare ritmo e intensità senza sembrare un
+  bonus generico alla velocità;
+- rango nominale `5`, ripetibile all'infinito.
+
+---
+
+### Pinza Lunga
+
+**ID esistente:** `wide_magnet`  
+
+L'icona di questa abilità è nel file `upgrade_pinza_lunga.png`.
+
+**Nome attuale:** `Campo Ampio`  
+**Effetto:** invariato — `+15%` raggio di raccolta XP per rango.
+
+- rinominare `Campo Ampio` in **Pinza Lunga**;
+- usare come identità visiva una **pinza da barbecue volutamente molto lunga**
+  che raggiunge un cristallo XP distante;
+- l'icona deve comunicare chiaramente **raccolta a distanza**, senza piccioni e
+  senza ricorrere a magneti o simboli tecnologici;
+- il powerup modifica soltanto il raggio di pickup e non il valore dei
+  cristalli raccolti.
+
+---
+
+## Nuovi potenziamenti
+
+I seguenti powerup ampliano il catalogo senza duplicare le statistiche già
+presenti. Salvo indicazione diversa, sono pensati come passivi ripetibili
+all'infinito. Il valore `max_rank = 5` resta il rango nominale/configurato
+della carta, non un limite effettivo alla scelta o allo stacking. I valori sono
+proposte di bilanciamento e restano configurabili.
+
+### Via dalla Griglia!
+
+**ID proposto:** `projectile_speed`  
+
+L'icona di questa abilità è nel file `upgrade_via_dalla_griglia.png`.
+
+**Effetto proposto:** `weapon_projectile_speed_multiplier`  
+**Ruolo:** velocità dei proiettili
+
+- `+10%` velocità dei proiettili alleati per rango;
+- rango nominale `5`; ripetibile all'infinito;
+- stacking moltiplicativo;
+- cap iniziale consigliato `3,0×`;
+- non modifica danno, frequenza di sparo, lifetime o comportamento speciale;
+- non influenza i proiettili dei Boss o degli altri nemici.
+
+**Descrizione carta:** “Aumenta del 10% la velocità dei proiettili per rango.”
+
+**Identità visiva:** carne o spiedino appena tolto dalla griglia e scagliato in
+avanti con una forte sensazione di movimento, scie di brace e calore. Deve
+comunicare rapidità senza introdurre razzi, motori o tecnologia fuori tema.
+
+---
+
+### Bis di Salsiccia
+
+**ID proposto:** `ability_cooldown`  
+
+L'icona di questa abilità è nel file `upgrade_bis_di_salsiccia.png`.
+
+**Effetto proposto:** `active_ability_cooldown_multiplier`  
+**Ruolo:** frequenza d'uso dell'abilità attiva
+
+- ogni rango moltiplica il cooldown base per `0,92` (`-8%` circa);
+- rango nominale `5`; ripetibile all'infinito;
+- ripetibile;
+- cap consigliato: il cooldown non può scendere sotto `0,65×` del valore base;
+- modifica soltanto il cooldown dell'abilità equipaggiata;
+- un'abilità già attivata conserva il proprio snapshot: il nuovo rango vale
+  dall'attivazione successiva.
+
+**Descrizione carta:** “Riduce dell'8% il tempo di ricarica dell'abilità per rango.”
+
+**Identità visiva:** due salsicce grigliate affiancate, oppure una seconda
+salsiccia appena aggiunta accanto alla prima, con un piccolo accento di
+movimento o brace. Deve comunicare immediatamente il concetto di **bis** e di
+nuovo utilizzo, evitando orologi, timer o simboli tecnici.
+
+---
+
+### Salamoia Bolognese
+
+**ID proposto:** `salamoia_bolognese_crit`  
+
+L'icona di questa abilità è nel file `upgrade_salamoia_bolognese.png`.
+
+**Effetto proposto:** `weapon_critical_chance`  
+**Ruolo:** colpi critici dell'arma automatica
+
+- `+5` punti percentuali di probabilità critica per rango;
+- rango nominale `5`; ripetibile all'infinito;
+- ripetibile;
+- danno critico iniziale proposto `1,75×`;
+- cap iniziale consigliato `35%` di probabilità critica complessiva;
+- si applica all'arma automatica del Player, non alle abilità salvo futura
+  compatibilità esplicita.
+
+**Descrizione carta:** “Aumenta di 5 punti percentuali la probabilità di colpo critico per rango.”
+
+**Identità visiva:** una ciotola di salamoia bolognese con sale, rosmarino e
+aromi riconoscibili, applicata a una bistecca rovente. Poche scintille di brace
+possono comunicare il colpo “perfetto”, senza trasformare il condimento in una
+pozione magica.
+
+---
+
+### Spiedo Passante
+
+**ID proposto:** `skewer_pierce`  
+
+L'icona di questa abilità è nel file `upgrade_spiedo_passante.png`.
+
+**Effetto proposto:** `weapon_pierce_count`  
+**Ruolo:** penetrazione dei proiettili
+
+- `+1` nemico attraversabile per rango;
+- rango nominale `5`; ripetibile all'infinito;
+- ripetibile;
+- ogni bersaglio successivo riceve l'`85%` del danno inflitto al bersaglio
+  precedente;
+- la penetrazione avviene prima di eventuali effetti di `Gossip`, così le due
+  meccaniche restano distinte e possono convivere;
+- cap iniziale: `5` attraversamenti aggiuntivi dalla sola carta.
+
+**Descrizione carta:** “I proiettili attraversano un nemico aggiuntivo per rango.”
+
+**Identità visiva:** un lungo spiedo da griglia che attraversa più pezzi di
+carne in fila. Deve comunicare immediatamente il concetto di attraversamento.
+
+---
+
+### Pirofila Rinforzata
+
+**ID proposto:** `reinforced_roasting_tray`  
+
+L'icona di questa abilità è nel file `upgrade_pirofila_rinforzata.png`.
+
+**Effetto proposto:** `player_damage_taken_multiplier`  
+**Ruolo:** difesa
+
+- ogni rango moltiplica il danno ricevuto per `0,94` (`-6%` circa);
+- rango nominale `5`; ripetibile all'infinito;
+- ripetibile;
+- stacking moltiplicativo;
+- cap consigliato: non scendere sotto `0,70×` del danno originale tramite
+  questa famiglia di modificatori;
+- non modifica invulnerabilità, knockback o vita massima.
+
+**Descrizione carta:** “Riduce del 6% i danni subiti per rango.”
+
+**Identità visiva:** una pirofila d'alluminio assurdamente rinforzata, con
+bordo spesso, placche, rivetti e ammaccature. Deve essere immediatamente
+leggibile come powerup difensivo e distinta dalla pirofila con carne fumante già
+presente nel gioco.
+
+---
+
+### Slow Cooker
+
+**ID proposto:** `slow_cooker_duration`  
+
+L'icona di questa abilità è nel file `upgrade_slow_cooker.png`.
+
+**Effetto proposto:** `active_ability_duration_multiplier`  
+**Ruolo:** durata degli effetti persistenti compatibili
+
+- `+10%` durata per rango;
+- rango nominale `5`; ripetibile all'infinito;
+- ripetibile;
+- viene offerto soltanto se l'abilità equipaggiata possiede un effetto
+  persistente la cui durata può essere aumentata;
+- non modifica cooldown, frequenza dei tick o danno per singolo tick;
+- non viene offerto per abilità istantanee o prive di una durata significativa.
+
+**Descrizione carta:** “Aumenta del 10% la durata degli effetti compatibili per rango.”
+
+**Identità visiva:** una slow cooker compatta piena di carne in cottura, con
+vapore caldo e una manopola ben visibile. Deve comunicare immediatamente
+l'idea di una cottura che dura a lungo.
+
+---
+
+### Il condimento di Barb
+
+**ID proposto:** `barb_seasoning_xp`  
+
+L'icona di questa abilità è nel file `upgrade_condimento_di_barb.png`.
+
+**Effetto proposto:** `xp_value_multiplier`  
+**Ruolo:** esperienza ottenuta
+
+- `+10%` XP ottenuta dai cristalli per rango;
+- rango nominale `5`; ripetibile all'infinito;
+- ripetibile;
+- stacking moltiplicativo;
+- cap iniziale consigliato `2,0×`;
+- aumenta il valore dell'XP ricevuta, non il raggio di raccolta;
+- resta quindi completamente distinto da `Pinza Lunga`.
+
+**Descrizione carta:** “Aumenta del 10% l'esperienza ottenuta dai cristalli per rango.”
+
+**Identità visiva:** un barattolino o una ciotola di condimento da grigliata
+riconoscibile come “speciale della casa”, con spezie e pochi accenti luminosi.
+Deve sembrare un condimento reale reso importante dall'estetica arcade, non
+una pozione magica.
+
+---
+
+### Pancetta Croccante
+
+**ID proposto:** `crispy_bacon_burn`  
+
+L'icona di questa abilità è nel file `upgrade_pancetta_croccante.png`.
+
+**Effetto proposto:** `weapon_burn_chance`  
+**Ruolo:** danno nel tempo / Scottatura
+
+- `+10` punti percentuali di probabilità di applicare **Scottatura** per rango;
+- rango nominale `5`; ripetibile all'infinito;
+- ripetibile;
+- la Scottatura infligge danno nel tempo per alcuni secondi;
+- una nuova applicazione sullo stesso nemico rinnova la durata, senza creare
+  stack illimitati dello stesso effetto;
+- la probabilità si applica ai colpi dell'arma automatica del Player;
+- non modifica direttamente il danno base, la frequenza di sparo o la
+  probabilità di critico;
+- il danno e la durata della Scottatura devono restare parametri configurabili
+  separatamente dal powerup.
+
+**Descrizione carta:** “I colpi hanno il 10% di probabilità in più per rango di applicare Scottatura.”
+
+**Identità visiva:** strisce di pancetta molto croccanti su una griglia rovente,
+con bordi leggermente bruciacchiati, piccole scintille e brace. L'icona deve
+comunicare immediatamente calore e bruciatura senza usare fiamme magiche o
+elementi legati ai piccioni.
+
+### Ordine consigliato di introduzione
+
+#### Stato prima ondata — implementata, in verifica
+
+Il 27 agosto 2026 sono entrati nel catalogo runtime `Via dalla Griglia!`,
+`Pirofila Rinforzata`, `Il condimento di Barb` e `Bis di Salsiccia`. I quattro
+effetti sono moltiplicatori configurabili, ricostruiti dai rank e azzerati a
+restart o cambio personaggio; velocità proiettile e cooldown sono snapshot
+dell'azione successiva, mentre difesa e XP agiscono sugli eventi successivi.
+`A Tutta Brace!` e `Pinza Lunga` aggiornano inoltre rispettivamente nome e
+icona delle carte storiche `rapid_fire` e `wide_magnet`. La seconda ondata
+resta una proposta non implementata.
+
+Prima ondata:
+
+1. **Via dalla Griglia!** — modifica una statistica semplice e leggibile;
+2. **Pirofila Rinforzata** — introduce una scelta difensiva diretta;
+3. **Il condimento di Barb** — aggiunge una scelta di progressione XP distinta
+   dal pickup range;
+4. **Bis di Salsiccia** — introduce il cooldown come nuova statistica universale
+   delle abilità attive.
+
+Seconda ondata:
+
+1. **Salamoia Bolognese** — apre una build critica;
+2. **Pancetta Croccante** — introduce una build basata su Scottatura e danno
+   nel tempo;
+3. **Spiedo Passante** — aggiunge una nuova interazione con orde dense e
+   `Gossip`;
+4. **Slow Cooker** — aggiunge una carta condizionale per le sole abilità che
+   possono realmente beneficiarne.
+
+### Vincoli comuni
+
+- nessun powerup positivo usa un piccione come simbolo principale;
+- tutti i valori restano dati configurabili e non hardcoded;
+- restart e cambio personaggio azzerano integralmente i nuovi modificatori;
+- i powerup ripetibili possono essere scelti all'infinito; `5` è il rango
+  nominale della definizione e non un limite effettivo;
+- una carta condizionale come `Slow Cooker` non entra nella pesca quando non
+  può produrre alcun beneficio;
+- i nuovi powerup non modificano implicitamente statistiche di nemici o Boss;
+- le icone devono essere leggibili senza testo e appartenere visivamente al
+  mondo dei grigliatori;
+- evitare sovrapposizioni semantiche tra icone: in particolare le due pirofile
+  devono essere immediatamente distinguibili per contenuto, silhouette e
+  trattamento visivo.
+
+Queste due sezioni costituiscono una proposta di design e non modificano il
+catalogo runtime finché le relative `UpgradeDefinition` e gli effetti non
+vengono implementati.

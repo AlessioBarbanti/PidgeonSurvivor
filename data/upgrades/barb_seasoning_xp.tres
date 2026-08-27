@@ -1,19 +1,19 @@
 [gd_resource type="Resource" script_class="UpgradeDefinition" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/progression/upgrade_definition.gd" id="1_definition"]
-[ext_resource type="Texture2D" path="res://assets/art/icons/upgrades/generated/a_tutta_brace.png" id="2_icon"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/upgrades/generated/condimento_di_barb.png" id="2_icon"]
 
 [resource]
 script = ExtResource("1_definition")
-id = &"rapid_fire"
-title = "A Tutta Brace!"
-description = "Aumenta la frequenza dello sparo automatico."
+id = &"barb_seasoning_xp"
+title = "Il condimento di Barb"
+description = "Aumenta del 10% l'esperienza ottenuta dai cristalli per rango."
 icon = ExtResource("2_icon")
-effect_id = &"weapon_fire_rate_multiplier"
+effect_id = &"xp_value_multiplier"
 effect_parameters = {
 "multiplier": 1.1
 }
 weight = 1.0
 max_rank = 5
 repeatable = true
-tags = Array[StringName]([&"stat", &"weapon"])
+tags = Array[StringName]([&"stat", &"xp", &"grill"])

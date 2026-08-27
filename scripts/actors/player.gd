@@ -63,6 +63,7 @@ var _character_health_max_multiplier := 1.0
 var _move_speed_multiplier := 1.0
 var _pickup_radius_multiplier := 1.0
 var _health_max_multiplier := 1.0
+var _damage_taken_multiplier := 1.0
 var _passive_controller: FriendPassiveController
 var _character_base_scale := Vector2.ONE
 var _facing_direction := DEFAULT_FACING_DIRECTION
@@ -201,6 +202,7 @@ func take_contact_damage(amount: float) -> bool:
 	var resolved_amount := amount
 	if is_instance_valid(_passive_controller):
 		resolved_amount = _passive_controller.resolve_incoming_damage(amount)
+	resolved_amount *= _damage_taken_multiplier
 	if resolved_amount <= 0.0:
 		return false
 	return _health_component.take_damage(resolved_amount)
@@ -266,7 +268,8 @@ func set_upgrade_stat_multipliers(
 	move_speed_multiplier: float,
 	pickup_radius_multiplier: float,
 	health_max_multiplier: float = 1.0,
-	preserve_health_ratio: bool = true
+	preserve_health_ratio: bool = true,
+	damage_taken_multiplier: float = 1.0
 ) -> bool:
 	if (
 		not is_finite(move_speed_multiplier)
@@ -275,12 +278,15 @@ func set_upgrade_stat_multipliers(
 		or pickup_radius_multiplier <= 0.0
 		or not is_finite(health_max_multiplier)
 		or health_max_multiplier <= 0.0
+		or not is_finite(damage_taken_multiplier)
+		or damage_taken_multiplier <= 0.0
 	):
 		return false
 
 	_move_speed_multiplier = move_speed_multiplier
 	_pickup_radius_multiplier = pickup_radius_multiplier
 	_health_max_multiplier = health_max_multiplier
+	_damage_taken_multiplier = damage_taken_multiplier
 	_recalculate_effective_stats(preserve_health_ratio)
 	return true
 
@@ -317,6 +323,7 @@ func reset_upgrade_stat_multipliers() -> void:
 	_move_speed_multiplier = 1.0
 	_pickup_radius_multiplier = 1.0
 	_health_max_multiplier = 1.0
+	_damage_taken_multiplier = 1.0
 	_recalculate_effective_stats(true)
 
 
@@ -342,6 +349,10 @@ func get_base_health_max() -> float:
 
 func get_health_max_multiplier() -> float:
 	return _health_max_multiplier
+
+
+func get_damage_taken_multiplier() -> float:
+	return _damage_taken_multiplier
 
 
 func get_character_move_speed_multiplier() -> float:
