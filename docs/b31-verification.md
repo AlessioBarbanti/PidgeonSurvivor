@@ -39,7 +39,15 @@ mentre il primo mantiene il joystick.
 
 ## Evidenza piattaforma
 
-Da aggiornare dopo il profilo Release e l'installazione dell'APK corrente sul
-Pixel 9. L'installazione non sostituisce la prova touch fisica o il controllo
-percettivo della nuova gerarchia visiva.
+L'APK corrente è stabile e supera l'ispezione statica Android:
 
+- `pidgeon-survivor-debug.apk`, `98.633.605` byte, SHA-256
+  `65990E33256D5AD3CA94D4CEAD901E1C35F527673C50131C1CBBD7E1B98FA155`;
+- package `com.ilgioco.pidgeonsurvivor`, label `Pidgeon Survivor`, min SDK
+  `31`, target SDK `36`, sola ABI `arm64-v8a`, firma v2 e launcher
+  `com.godot.game.GodotAppLauncher` validi;
+- installato il 27 agosto 2026 con `adb install -r` sul Pixel 9 collegato
+  `49140DLAQ0010Y`; `pm path` conferma il package installato.
+
+L'installazione non sostituisce la prova touch fisica o il controllo percettivo
+della nuova gerarchia visiva.
