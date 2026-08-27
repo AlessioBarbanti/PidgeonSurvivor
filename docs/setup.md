@@ -100,6 +100,15 @@ repository: va rigenerato quando cambia la patch di Godot. I preset mantengono
 `compileSdk=36` nel template 4.7.1, `minSdk=31`, `targetSdk=36` e la sola ABI
 ARM64.
 
+Dopo ogni `--install-android-build-template` (rigenerazione del template,
+prima installazione, aggiornamento della patch di Godot), aggiungere
+`org.gradle.daemon=false` in `android/build/gradle.properties`. Il daemon
+Gradle si stacca dal processo Godot che esporta ma su Windows eredita i suoi
+handle di stdout/stderr; qualunque cosa legga l'output di quel processo
+aspettando l'EOF (script, CI) resta appesa dopo `[ DONE ]` anche se la build e
+l'APK sono già completi. Senza daemon ogni export costa un avvio JVM a freddo
+in più, ma il processo termina davvero.
+
 `--install-android-build-template` è valido soltanto insieme a un comando di
 export. Se eseguito da solo, avvia l'editor headless senza completare il flusso.
 

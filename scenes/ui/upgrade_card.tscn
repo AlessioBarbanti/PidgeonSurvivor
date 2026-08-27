@@ -158,6 +158,17 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
+[node name="EffectSummaryLabel" type="Label" parent="Margins/Content"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.72, 0.3, 1)
+theme_type_variation = &"ValueNumeric"
+text = "+0% STATISTICA"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
 [node name="RankLabel" type="Label" parent="Margins/Content"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 46)
