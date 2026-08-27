@@ -507,7 +507,7 @@ significato:
 | B27 | Refresh icone dei potenziamenti via ImageGen esterno | IN VERIFICA | Dieci master forniti sono derivati in PNG `128×128`, tracciati nel manifest e fuori dagli export |
 | B28 | Densità orde e TTK più bullet-hell | IN VERIFICA | Tuning, budget XP e smoke dedicato implementati; profiling runtime Windows/Pixel 9 a 60 FPS ancora aperto |
 | B29 | Musica di sottofondo | IN VERIFICA | `Super Wreck Roadway (loop)` CC0 di Umplix è integrata su bus Music separato; il cambio asset non riesegue automatici, Windows o APK su richiesta, ascolto Windows/Pixel 9 aperto |
-| B30 | Boss senza aura circolare viola | PRONTO | Rimuove solo l'anello/aura; palette Evil B22 e telegraph gameplay restano invariati |
+| B30 | Boss senza aura circolare viola | IN VERIFICA | Cerchio di riserva rimosso dal fallback `BaseEnemy._draw()` per i Boss; automatici verdi, resta il confronto percettivo Windows/Pixel 9 |
 | B31 | Padding esterno pausa e abilità | IN VERIFICA | Inset configurabile `20` unità per pausa e abilità, sommato alle gesture per l'abilità; target base abilità raddoppiato a `128×128` (`160×160` default); automatici, APK statico e installazione Pixel 9 verdi, prova touch/percettiva aperta |
 | B32 | Welcome CTA coerente e impostazioni a ingranaggio | COMPLETATO | `GIOCA` riusa la placca pixel-fantasy B18W, fluttua senza riquadro esterno e non disegna outline focus; Impostazioni è un ingranaggio safe-area da `60×60`; focused/relevant e APK statico verdi, Pixel 9 accettato dal proprietario, restano Windows e Full |
 | B33 | Run continua e Boss ricorrenti | PRONTO | Nuovo contratto di run che supersede a valle la vittoria al primo Boss del vertical slice storico |
@@ -1324,12 +1324,35 @@ Stato: `IN VERIFICA`.
 
 Stato: `IN VERIFICA`.
 
-- [ ] Rimuovere il cerchio/aura viola che avvolge visivamente i Boss.
-- [ ] Per gli `Evil <Nome>` conservare la palette/sfumatura viola scura e magenta
-  dello sprite approvata in B22 come identificatore principale.
-- [ ] Non rimuovere telegraph, hit flash, segnali di attacco o altri feedback che
+- [x] Rimuovere il cerchio/aura viola che avvolge visivamente i Boss. La causa
+  era il fallback geometrico di `BaseEnemy._draw()`: disegnava sempre un
+  cerchio pieno in `body_color`/`outline_color` quando non trovava un nodo
+  `EnemySprite`, e il Boss usa invece un nodo `BossSprite` con nome diverso,
+  quindi il cerchio veniva disegnato dietro/attorno allo sprite a ogni frame.
+  `BaseEnemy` espone ora `has_visual_sprite()` (vero se esiste `EnemySprite`)
+  e `_draw()` salta il cerchio di riserva quando è vero; `FirstBoss`
+  sovrascrive `has_visual_sprite()` per riconoscere `BossSprite`, quindi il
+  Boss non disegna più il cerchio decorativo.
+- [x] Per gli `Evil <Nome>` conservare la palette/sfumatura viola scura e magenta
+  dello sprite approvata in B22 come identificatore principale: la modifica
+  non tocca `sprite_modulate`/`body_color` dei dati, solo il disegno del
+  cerchio di riserva; `EVIL_SPRITE_MODULATE` e `EVIL_BODY_COLOR` restano
+  invariati e coperti dallo smoke dedicato.
+- [x] Non rimuovere telegraph, hit flash, segnali di attacco o altri feedback che
   comunicano meccaniche; la modifica riguarda soltanto l'aura decorativa costante.
+  `_draw_active_telegraph()`, `_draw_boss_mark()` e `_draw_health_bar()` non
+  sono stati toccati.
 - [ ] Confronto percettivo con piccioni base, Player e VFX ad alta densità.
+
+Evidenza automatica: nuovo `tests/integration/_boss_no_circular_aura_smoke.gd`
+(`B30_BOSS_NO_CIRCULAR_AURA_SMOKE_OK`) verifica che il Boss baseline e la
+variante Evil dichiarino `has_visual_sprite() == true` (nessun `EnemySprite`
+di riserva) mantenendo texture e modulazione Evil corrette; un nemico base
+spawnato in confronto continua a dichiarare uno sprite visivo proprio, quindi
+il suo disegno non cambia. `run-milestone-checks.ps1 -Milestone B30 -Profile
+Relevant` è verde su focused B30 e regressione B15/B22/B04/B05/B16/B17/B18H
+il 27 agosto 2026. Restano aperti il confronto percettivo Windows/Pixel 9 e
+l'installazione dell'APK corrente prima della chiusura del gate.
 
 #### B31 — Padding esterno pausa e abilità
 

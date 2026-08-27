@@ -122,6 +122,10 @@ func get_definition() -> BossDefinition:
 	return definition
 
 
+func has_visual_sprite() -> bool:
+	return is_instance_valid(_boss_sprite)
+
+
 func get_boss_visual_texture() -> Texture2D:
 	return _boss_sprite.texture if is_instance_valid(_boss_sprite) else null
 

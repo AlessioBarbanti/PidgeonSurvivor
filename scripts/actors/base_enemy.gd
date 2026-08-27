@@ -141,7 +141,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _draw() -> void:
-	if not is_instance_valid(_enemy_sprite):
+	if not has_visual_sprite():
 		draw_set_transform(Vector2.ZERO, 0.0, get_visual_hit_scale())
 		var visible_body_color := body_color
 		if get_speed_multiplier() < 1.0 - 0.0001:
@@ -290,6 +290,14 @@ func set_visual_variant(value: int) -> void:
 
 func get_enemy_sprite() -> AnimatedSprite2D:
 	return _enemy_sprite if is_instance_valid(_enemy_sprite) else null
+
+
+## Vero se un nemico offre già un proprio sprite visivo, cosicché il corpo
+## e il contorno geometrici di riserva restino confinati ai nemici senza
+## un'illustrazione dedicata (i sottotipi con sprite proprio, come i Boss,
+## sovrascrivono questo metodo).
+func has_visual_sprite() -> bool:
+	return is_instance_valid(_enemy_sprite)
 
 
 func get_health_component() -> HealthComponent:
