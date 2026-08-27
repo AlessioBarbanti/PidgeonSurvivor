@@ -7,7 +7,8 @@
 script = ExtResource("1_definition")
 id = &"ability_rank_lollo_random_cosplay"
 title = "Cosplay Casuale"
-description = "Potenzia l'abilita attiva equipaggiata al rango successivo."
+description = "Potenzia la copia casuale dell'abilità attiva di un altro personaggio."
+effect_summary = "POTENZIA: RANGO COPIATO · RICARICA"
 icon = ExtResource("2_icon")
 effect_id = &"ability_rank"
 effect_parameters = {"ability_id": "lollo_random_cosplay"}

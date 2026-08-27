@@ -54,6 +54,7 @@ script = ExtResource("1_definition")
 id = &"bea_fire_z_trail"
 title = "Powerslide"
 description = "Si teletrasporta in linea retta nella direzione guardata e lascia una scia di fuoco persistente."
+effect_summary = "DANNO 6 · SCATTO 320 · SCIA 4 S · RICARICA 10 S"
 icon = ExtResource("2_icon")
 cooldown_seconds = 10.0
 duration_seconds = 4.0

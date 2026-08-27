@@ -54,6 +54,7 @@ script = ExtResource("1_definition")
 id = &"alea_grand_spin"
 title = "Gran Piroetta"
 description = "Colpisce ripetutamente i nemici vicini durante una rotazione."
+effect_summary = "DANNO 5 · 12 COLPI/S · RAGGIO 140 · RICARICA 9 S"
 icon = ExtResource("2_icon")
 cooldown_seconds = 9.0
 duration_seconds = 1.2

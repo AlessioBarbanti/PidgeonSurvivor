@@ -7,7 +7,8 @@
 script = ExtResource("1_definition")
 id = &"ability_rank_magno_earthquake_shockwave"
 title = "Onda d'Urto Tellurica"
-description = "Potenzia l'abilita attiva equipaggiata al rango successivo."
+description = "Potenzia l'onda d'urto che danneggia e respinge i nemici vicini."
+effect_summary = "POTENZIA: DANNO · AREA · SPINTA"
 icon = ExtResource("2_icon")
 effect_id = &"ability_rank"
 effect_parameters = {"ability_id": "magno_earthquake_shockwave"}

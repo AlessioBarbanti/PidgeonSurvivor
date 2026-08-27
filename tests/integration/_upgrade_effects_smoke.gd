@@ -7,6 +7,7 @@ const WIDE_MAGNET := preload("res://data/upgrades/wide_magnet.tres")
 const MEAT_FORK_DAMAGE := preload("res://data/upgrades/meat_fork_damage.tres")
 const INITIAL_VIEWPORT_SIZE := Vector2i(1280, 720)
 const FLOAT_TOLERANCE := 0.001
+const OFFER_RETRY_LIMIT := 40
 
 var _failures: Array[String] = []
 var _applied_effect_count := 0
@@ -131,11 +132,17 @@ func _validate_composed_upgrade_effects() -> void:
 	# Porta i tre upgrade primari al rank massimo. Il ricalcolo parte sempre
 	# dai valori base, quindi non accumula errori o mutazioni irreversibili.
 	for upgrade_id in [&"swift_steps", &"rapid_fire", &"wide_magnet"]:
-		while service.get_rank(upgrade_id) < 5:
+		var rank_guard := 0
+		while service.get_rank(upgrade_id) < 5 and rank_guard < 100:
 			_expect(
 				_grant_and_select(experience, service, upgrade_id),
 				"L'upgrade %s deve raggiungere il rank massimo." % upgrade_id
 			)
+			rank_guard += 1
+		_expect(
+			rank_guard < 100,
+			"L'upgrade %s deve raggiungere il rank massimo entro il guard." % upgrade_id
+		)
 
 	var expected_move_multiplier := pow(1.1, 5)
 	var expected_fire_multiplier := pow(1.1, 5)
@@ -156,8 +163,8 @@ func _validate_composed_upgrade_effects() -> void:
 		"Campo Ampio deve comporre cinque rank moltiplicativi."
 	)
 
-	# Esaurite le primarie, i fallback restano distinti e applicano gli stessi
-	# effect_id. Potenza deve raggiungere anche i proiettili creati dopo la scelta.
+	# Forchettone da Braciere deve raggiungere anche i proiettili creati dopo
+	# la scelta.
 	_expect(
 		_grant_and_select(experience, service, &"meat_fork_damage"),
 		"Il fallback Potenza deve essere selezionabile."
@@ -174,7 +181,7 @@ func _validate_composed_upgrade_effects() -> void:
 		latest_projectile.set_physics_process(false)
 		_expect_float_near(
 			latest_projectile.damage,
-			base_damage * 1.05,
+			base_damage * 1.15,
 			"Il nuovo proiettile deve ricevere il danno effettivo B12."
 		)
 
@@ -288,11 +295,18 @@ func _grant_and_select(
 	service: UpgradeService,
 	upgrade_id: StringName
 ) -> bool:
-	if not experience.add_experience(experience.experience_required):
-		return false
-	if upgrade_id not in service.get_current_offer_ids():
-		return false
-	return service.select_upgrade(upgrade_id)
+	# L'offerta espone tre ID su quattro definizioni tutte ripetibili, quindi il
+	# bersaglio puo' non essere pescato. In quel caso il livello viene chiuso
+	# senza applicare effetti e si ripesca: lasciare aperto il LEVEL_UP
+	# bloccherebbe ogni add_experience successiva, perche' richiede RUNNING.
+	for _attempt in range(OFFER_RETRY_LIMIT):
+		if not experience.add_experience(experience.experience_required):
+			return false
+		if upgrade_id in service.get_current_offer_ids():
+			return service.select_upgrade(upgrade_id)
+		if not experience.complete_level_up():
+			return false
+	return false
 
 
 func _validate_rejected_definitions(registry: UpgradeEffectRegistry) -> void:

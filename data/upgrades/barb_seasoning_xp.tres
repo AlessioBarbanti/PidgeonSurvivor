@@ -7,7 +7,8 @@
 script = ExtResource("1_definition")
 id = &"barb_seasoning_xp"
 title = "Il condimento di Barb"
-description = "Aumenta del 10% l'esperienza ottenuta dai cristalli per rango."
+description = "Aumenta l'esperienza ottenuta dai cristalli raccolti."
+effect_summary = "+10% XP RACCOLTA /RANGO"
 icon = ExtResource("2_icon")
 effect_id = &"xp_value_multiplier"
 effect_parameters = {

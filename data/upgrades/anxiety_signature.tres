@@ -7,7 +7,8 @@
 script = ExtResource("1_definition")
 id = &"anxiety_signature"
 title = "L'Ansia"
-description = "Velocità +35%, vita massima -20% e una vignetta scura ai bordi."
+description = "Aumenta molto la velocità di movimento, ma riduce la vita massima e offusca i bordi dello schermo."
+effect_summary = "+35% VELOCITÀ · -20% HP MAX"
 icon = ExtResource("2_icon")
 effect_id = &"anxiety_signature"
 effect_parameters = {

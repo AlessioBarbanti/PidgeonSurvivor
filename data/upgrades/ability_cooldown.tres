@@ -7,7 +7,8 @@
 script = ExtResource("1_definition")
 id = &"ability_cooldown"
 title = "Bis di Salsiccia"
-description = "Riduce dell'8% il tempo di ricarica dell'abilita per rango."
+description = "Riduce il tempo di ricarica dell'abilità attiva."
+effect_summary = "-8% RICARICA ABILITÀ /RANGO"
 icon = ExtResource("2_icon")
 effect_id = &"active_ability_cooldown_multiplier"
 effect_parameters = {

@@ -7,7 +7,8 @@
 script = ExtResource("1_definition")
 id = &"meat_fork_damage"
 title = "Forchettone da Braciere"
-description = "Aumenta del 15% il danno base dell'arma per rango."
+description = "Aumenta il danno base dell'arma."
+effect_summary = "+15% DANNO ARMA /RANGO"
 icon = ExtResource("2_icon")
 effect_id = &"weapon_damage_multiplier"
 effect_parameters = {

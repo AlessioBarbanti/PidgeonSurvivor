@@ -7,7 +7,8 @@
 script = ExtResource("1_definition")
 id = &"projectile_speed"
 title = "Via dalla Griglia!"
-description = "Aumenta del 10% la velocita dei proiettili per rango."
+description = "Aumenta la velocità dei proiettili."
+effect_summary = "+10% VELOCITÀ PROIETTILI /RANGO"
 icon = ExtResource("2_icon")
 effect_id = &"weapon_projectile_speed_multiplier"
 effect_parameters = {

@@ -7,7 +7,8 @@
 script = ExtResource("1_definition")
 id = &"summer_grill"
 title = "Grigliata estiva"
-description = "Aumenta gli HP massimi del 15% e cura subito la differenza."
+description = "Aumenta gli HP massimi e cura subito la differenza."
+effect_summary = "+15% HP MAX /RANGO · CURA IMMEDIATA"
 icon = ExtResource("2_icon")
 effect_id = &"summer_grill"
 effect_parameters = {

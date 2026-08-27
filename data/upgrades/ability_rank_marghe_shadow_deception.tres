@@ -7,7 +7,8 @@
 script = ExtResource("1_definition")
 id = &"ability_rank_marghe_shadow_deception"
 title = "Reggeton time!"
-description = "Potenzia l'abilita attiva equipaggiata al rango successivo."
+description = "Potenzia il clone che devia su di sé l'aggro dei nemici."
+effect_summary = "POTENZIA: DURATA CLONE · RICARICA"
 icon = ExtResource("2_icon")
 effect_id = &"ability_rank"
 effect_parameters = {"ability_id": "marghe_shadow_deception"}

@@ -47,3 +47,31 @@ segnalato il vincolo B18Q. La versione esportata ripristina le altezze
 contrattuali `18`/`20`, mantenendo il guadagno visivo tramite bordo, contrasto e
 label; il successivo avvio breve ha riportato `B18Q_CONTRACT_OK`. Non è stato
 eseguito alcuno smoke o runner B34.
+
+## Chiusura del 27 agosto 2026
+
+B34 passa a `COMPLETATO`. I gate che la nota lasciava aperti — multitouch,
+lifecycle e percezione umana — sono ora coperti:
+
+- **multitouch**: verificato personalmente dal proprietario sul Pixel 9. Non è
+  automatizzabile, perché SELinux nega `sendevent` su `/dev/input/event2` e
+  `adb shell input` gestisce un solo puntatore;
+- **lifecycle**: verificato sul device con run attiva. `KEYCODE_BACK` apre la
+  pausa; Home e rientro, poi blocco schermo e sblocco, lasciano la run **in
+  pausa** senza ripresa automatica, senza joystick residuo e con
+  `mCurrentFocus` di nuovo su `GodotAppLauncher`;
+- **smoke e runner**, che la nota dichiarava non eseguiti: `Full` è `PASS` con
+  `51/51` regressioni e `Release` con `57/57` step, Windows `2/2` e Android
+  `2/2`;
+- **percezione**: pausa, HUD e controlli condividono la grammatica pixel-fantasy
+  arcade — pannello e header dorati, slider arancioni con manopola squadrata,
+  checkbox ciano, barre `XP`/`HP` con soli tag fissi, cronometro flottante e
+  pausa in placca.
+
+Resta fuori grammatica il terminale `GAME OVER`, che usa un pannello piatto con
+bordo rosa e pulsanti grigi squadrati. È fuori dal perimetro dichiarato di B34
+(pausa, HUD, controlli touch), quindi non è una regressione, ma è l'elemento più
+vistosamente incoerente rimasto e la candidata naturale per un pass successivo.
+
+Evidenze complete in
+[`b24-b35-gate-closure-verification.md`](./b24-b35-gate-closure-verification.md).

@@ -51,3 +51,20 @@ L'APK corrente è stabile e supera l'ispezione statica Android:
 
 L'installazione non sostituisce la prova touch fisica o il controllo percettivo
 della nuova gerarchia visiva.
+
+## Chiusura del 27 agosto 2026
+
+B31 passa a `COMPLETATO`:
+
+- `Full` (`51/51`) e `Release` (`57/57`, Windows `2/2`, Android `2/2`) sono verdi
+  sull'APK corrente, SHA-256
+  `35A4AD938B17277D1642ACCFC67CFA94DD77EA5FAFF2E602F18A0765FA948202`;
+- il margine di pausa e pulsante abilità da bordi, safe area e playfield è stato
+  confermato su cattura Pixel 9 a 20:9, con icona abilità al `150%` di default;
+- **il proprietario ha verificato personalmente il multitouch sul Pixel 9**. Il
+  gate non è automatizzabile: SELinux nega `sendevent` su `/dev/input/event2`,
+  `adb root` non è disponibile su build di produzione e `adb shell input`
+  gestisce un solo puntatore.
+
+Evidenze complete in
+[`b24-b35-gate-closure-verification.md`](./b24-b35-gate-closure-verification.md).

@@ -26,10 +26,10 @@ func _run() -> void:
 		_expect(ability_icon != null, "%s: icona abilita assente." % viewport_size)
 		_expect(passive_icon != null, "%s: icona passiva assente." % viewport_size)
 		if ability_icon != null:
-			_expect(ability_icon.custom_minimum_size == Vector2(128.0, 128.0), "%s: icona abilita deve essere 128x128." % viewport_size)
+			_expect(ability_icon.custom_minimum_size == Vector2(136.0, 136.0), "%s: icona abilita deve essere 136x136." % viewport_size)
 			_expect(ability_icon.expand_mode == 1 and ability_icon.stretch_mode == 5, "%s: icona abilita deve conservare proporzioni e nitidezza." % viewport_size)
 		if passive_icon != null:
-			_expect(passive_icon.custom_minimum_size == Vector2(94.0, 94.0), "%s: icona passiva deve essere 94x94 per compensare il padding trasparente dell'attiva." % viewport_size)
+			_expect(passive_icon.custom_minimum_size == Vector2(108.0, 108.0), "%s: icona passiva deve essere 108x108 per compensare il padding trasparente dell'attiva." % viewport_size)
 			_expect(passive_icon.expand_mode == 1 and passive_icon.stretch_mode == 5, "%s: icona passiva deve conservare proporzioni e nitidezza." % viewport_size)
 		selector.queue_free()
 		await process_frame

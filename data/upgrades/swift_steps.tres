@@ -7,7 +7,8 @@
 script = ExtResource("1_definition")
 id = &"swift_steps"
 title = "Dai che si fredda!"
-description = "Aumenta la velocità di movimento del Player."
+description = "Aumenta la velocità di movimento."
+effect_summary = "+10% VELOCITÀ MOVIMENTO /RANGO"
 icon = ExtResource("2_icon")
 effect_id = &"player_move_speed_multiplier"
 effect_parameters = {

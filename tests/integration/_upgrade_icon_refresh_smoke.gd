@@ -58,7 +58,7 @@ func _validate_viewport(viewport_size: Vector2i) -> void:
 		if icon == null:
 			continue
 		var icon_rect := icon.get_global_rect()
-		_expect(icon_rect.size == Vector2(76.0, 76.0), "B27 deve mantenere il target icona 76x76 a %s." % viewport_size)
+		_expect(icon_rect.size == Vector2(192.0, 192.0), "B27 deve mantenere il target icona 192x192 a %s (ottenuto=%s)." % [viewport_size, icon_rect.size])
 		_expect(icon.get_parent() is CenterContainer, "B27 deve centrare ogni icona a %s." % viewport_size)
 
 	overlay.queue_free()

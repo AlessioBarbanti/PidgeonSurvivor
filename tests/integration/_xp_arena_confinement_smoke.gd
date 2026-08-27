@@ -10,6 +10,7 @@ const VIEWPORT_CASES: Array[Vector2i] = [
 ]
 const OUTSIDE_OFFSET := 120.0
 const FLOAT_TOLERANCE := 0.001
+const KILL_RETRY_LIMIT := 40
 
 var _failures: Array[String] = []
 
@@ -146,20 +147,27 @@ func _kill_enemy_at(
 	dropper: ExperienceDropper,
 	death_position: Vector2
 ) -> ExperiencePickup:
+	# B28 assegna a ogni kill un credito XP frazionario: il pickup compare solo
+	# quando il credito accumulato raggiunge un'unita'. B18I verifica dove atterra
+	# il drop, non che ogni morte ne produca uno, quindi la kill viene ripetuta
+	# nello stesso punto finche' il budget non emette il pickup.
 	var active_before := dropper.get_active_count()
-	var enemy := spawner.try_spawn_enemy()
-	if enemy == null:
-		return null
-	enemy.set_physics_process(false)
-	enemy.get_contact_damage().set_physics_process(false)
-	enemy.global_position = death_position
-	var health := enemy.get_health_component()
-	if health == null or not enemy.take_damage(health.health_current):
-		return null
-	var pickups := dropper.get_active_pickups()
-	if pickups.size() != active_before + 1:
-		return null
-	return pickups.back()
+	for _attempt in range(KILL_RETRY_LIMIT):
+		var enemy := spawner.try_spawn_enemy()
+		if enemy == null:
+			return null
+		enemy.set_physics_process(false)
+		enemy.get_contact_damage().set_physics_process(false)
+		enemy.global_position = death_position
+		var health := enemy.get_health_component()
+		if health == null or not enemy.take_damage(health.health_current):
+			return null
+		var pickups := dropper.get_active_pickups()
+		if pickups.size() == active_before + 1:
+			return pickups.back()
+		if pickups.size() != active_before:
+			return null
+	return null
 
 
 func _expect_circle_inside(

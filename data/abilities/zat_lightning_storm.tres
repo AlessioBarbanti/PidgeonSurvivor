@@ -54,6 +54,7 @@ script = ExtResource("1_definition")
 id = &"zat_lightning_storm"
 title = "Tempesta di Tuoni"
 description = "Dopo un breve preavviso, un tuono colpisce tutti i nemici presenti."
+effect_summary = "50% VITA MAX AI NEMICI · 20% AI BOSS · RICARICA 60 S"
 icon = ExtResource("2_icon")
 cooldown_seconds = 60.0
 duration_seconds = 0.0

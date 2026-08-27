@@ -3,7 +3,10 @@ extends Resource
 
 @export var id: StringName = &""
 @export var title := ""
+## Sentence describing what the upgrade does, without numbers.
 @export_multiline var description := ""
+## Compact stat line with the exact values, shown under the description.
+@export var effect_summary := ""
 @export var icon: Texture2D
 
 @export_group("Effect")

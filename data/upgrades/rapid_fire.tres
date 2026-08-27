@@ -8,6 +8,7 @@ script = ExtResource("1_definition")
 id = &"rapid_fire"
 title = "A Tutta Brace!"
 description = "Aumenta la frequenza dello sparo automatico."
+effect_summary = "+10% CADENZA DI FUOCO /RANGO"
 icon = ExtResource("2_icon")
 effect_id = &"weapon_fire_rate_multiplier"
 effect_parameters = {

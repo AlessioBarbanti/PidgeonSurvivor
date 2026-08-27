@@ -7,7 +7,8 @@
 script = ExtResource("1_definition")
 id = &"ability_rank_migi_zen_slowdown"
 title = "Rallentamento Zen"
-description = "Potenzia l'abilita attiva equipaggiata al rango successivo."
+description = "Potenzia la zona che rallenta fortemente i nemici vicini."
+effect_summary = "POTENZIA: AREA · DURATA · RALLENTAMENTO"
 icon = ExtResource("2_icon")
 effect_id = &"ability_rank"
 effect_parameters = {"ability_id": "migi_zen_slowdown"}

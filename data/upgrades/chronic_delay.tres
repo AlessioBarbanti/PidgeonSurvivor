@@ -7,7 +7,8 @@
 script = ExtResource("1_definition")
 id = &"chronic_delay"
 title = "Ritardo Cronico"
-description = "Ogni 12 secondi rallenta del 50% tutti i nemici per 3 secondi."
+description = "A intervalli regolari rallenta tutti i nemici per qualche secondo."
+effect_summary = "-50% VELOCITÀ NEMICI · 3 S OGNI 12 S"
 icon = ExtResource("2_icon")
 effect_id = &"chronic_delay"
 effect_parameters = {

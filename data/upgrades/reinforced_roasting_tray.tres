@@ -7,7 +7,8 @@
 script = ExtResource("1_definition")
 id = &"reinforced_roasting_tray"
 title = "Pirofila Rinforzata"
-description = "Riduce del 6% i danni subiti per rango."
+description = "Riduce i danni subiti."
+effect_summary = "-6% DANNI SUBITI /RANGO"
 icon = ExtResource("2_icon")
 effect_id = &"player_damage_taken_multiplier"
 effect_parameters = {

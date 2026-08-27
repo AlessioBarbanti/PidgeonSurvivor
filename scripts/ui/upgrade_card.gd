@@ -8,6 +8,7 @@ signal upgrade_chosen(upgrade_id: StringName)
 @onready var _icon: TextureRect = %Icon
 @onready var _title_label: Label = %TitleLabel
 @onready var _description_label: Label = %DescriptionLabel
+@onready var _effect_summary_label: Label = %EffectSummaryLabel
 @onready var _rank_label: Label = %RankLabel
 
 var _definition: UpgradeDefinition
@@ -35,11 +36,12 @@ func configure(
 	_icon.texture = definition.icon
 	_title_label.text = definition.title
 	_description_label.text = definition.description
+	_set_effect_summary(definition.effect_summary)
 	_rank_label.text = "RANGO %d  >  %d" % [
 		maxi(current_rank, 0),
 		maxi(current_rank, 0) + 1,
 	]
-	tooltip_text = "%s: %s" % [definition.title, definition.description]
+	tooltip_text = _build_tooltip(definition)
 	disabled = false
 	return true
 
@@ -56,6 +58,7 @@ func clear_card() -> void:
 	_icon.texture = null
 	_title_label.text = ""
 	_description_label.text = ""
+	_set_effect_summary("")
 	_rank_label.text = ""
 
 
@@ -79,8 +82,27 @@ func get_description_text() -> String:
 	return _description_label.text if is_instance_valid(_description_label) else ""
 
 
+func get_effect_summary_text() -> String:
+	return _effect_summary_label.text if is_instance_valid(_effect_summary_label) else ""
+
+
 func get_rank_text() -> String:
 	return _rank_label.text if is_instance_valid(_rank_label) else ""
+
+
+func _set_effect_summary(summary: String) -> void:
+	if not is_instance_valid(_effect_summary_label):
+		return
+	var trimmed := summary.strip_edges()
+	_effect_summary_label.text = trimmed
+	_effect_summary_label.visible = not trimmed.is_empty()
+
+
+func _build_tooltip(definition: UpgradeDefinition) -> String:
+	var summary := definition.effect_summary.strip_edges()
+	if summary.is_empty():
+		return "%s: %s" % [definition.title, definition.description]
+	return "%s: %s\n%s" % [definition.title, definition.description, summary]
 
 
 func _on_pressed() -> void:

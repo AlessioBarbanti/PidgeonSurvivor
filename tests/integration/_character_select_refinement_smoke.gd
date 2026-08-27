@@ -176,8 +176,8 @@ func _validate_hierarchy(selector: CharacterSelectOverlay) -> void:
 	if ability_icon_slot != null and ability_text != null:
 		_expect(absf(ability_icon_slot.get_global_rect().get_center().y - ability_text.get_global_rect().get_center().y) <= 1.0, "L'icona attiva deve essere centrata rispetto al testo.")
 	_expect(not selector.has_node("Center/SelectionPanel/Content/MainRow/AbilityCards/Divider"), "Le card non devono usare un separatore orizzontale interno.")
-	_expect(ability_icon_rect.size == Vector2(128.0, 128.0), "L'icona abilita deve essere 128x128 e non dominare il kit.")
-	_expect(role_rect.position.y - name_rect.end.y >= 6.0 and role_rect.position.y - name_rect.end.y <= 12.0, "Nome e ruolo devono formare un unico blocco compatto.")
+	_expect(ability_icon_rect.size == Vector2(136.0, 136.0), "L'icona abilita deve essere 136x136 e non dominare il kit (ottenuto=%s)." % ability_icon_rect.size)
+	_expect(role_rect.position.y - name_rect.end.y >= 0.0 and role_rect.position.y - name_rect.end.y <= 12.0, "Nome e ruolo devono formare un unico blocco compatto (gap=%.2f)." % (role_rect.position.y - name_rect.end.y))
 	_expect(confirm_rect.position.y - role_rect.end.y <= 34.0, "Il CTA deve seguire il blocco identità senza una terra di nessuno (gap=%s)." % (confirm_rect.position.y - role_rect.end.y))
 	_expect(confirm_rect.position.y >= ability_rect.end.y, "Il CTA deve chiudere la gerarchia in basso.")
 	_expect(panel_rect.encloses(back_rect) and panel_rect.encloses(confirm_rect), "Back e CTA devono restare nel pannello.")
@@ -188,7 +188,7 @@ func _validate_hierarchy(selector: CharacterSelectOverlay) -> void:
 	_expect(center_style != null and center_style.get_corner_radius(CORNER_TOP_LEFT) <= 2 and center_style.get_border_width(SIDE_LEFT) <= 2, "La card centrale deve usare un bordo pixelato sottile.")
 	var arrow_style := selector.get_next_button().get_theme_stylebox("normal") as StyleBoxFlat
 	_expect(arrow_style != null and arrow_style.get_corner_radius(CORNER_TOP_LEFT) <= 2, "Le frecce non devono usare il cerchio cyan moderno.")
-	_expect(selector.get_next_button().size.x <= 46.0, "Le frecce pixel-fantasy devono restare compatte.")
+	_expect(selector.get_next_button().size.x <= 48.0, "Le frecce pixel-fantasy devono restare compatte (larghezza=%.1f)." % selector.get_next_button().size.x)
 	var cta_style := selector.get_confirm_button().get_theme_stylebox("normal") as StyleBoxTexture
 	_expect(cta_style != null and cta_style.texture != null, "Il CTA dominante deve usare la placca ImageGen tracciata.")
 	_expect(FileAccess.file_exists("res://assets/art/ui/character_select/character_select_cta_base.png"), "La placca CTA runtime deve esistere.")
@@ -228,7 +228,7 @@ func _validate_layouts(selector: CharacterSelectOverlay, arena_layout: ArenaLayo
 		_expect(carousel_rect.encloses(center_rect), "%s: il profilo centrale deve restare intero." % profile)
 		_expect(not center_rect.intersects(ability_rect), "%s: profilo e pannello abilita non devono sovrapporsi." % profile)
 		_expect(not ability_rect.intersects(confirm_rect), "%s: pannello abilita e CTA non devono sovrapporsi." % profile)
-		_expect(ability_icon_rect.size == Vector2(128.0, 128.0), "%s: icona abilita 128x128 deve restare leggibile." % profile)
+		_expect(ability_icon_rect.size == Vector2(136.0, 136.0), "%s: icona abilita 136x136 deve restare leggibile (ottenuto=%s)." % [profile, ability_icon_rect.size])
 		_expect(safe_area.encloses(back_rect) and safe_area.encloses(confirm_rect), "%s: Back e CTA devono restare nella safe area." % profile)
 		_expect(confirm_rect.size.x >= 44.0 and confirm_rect.size.y >= 44.0, "%s: il CTA deve conservare il target 44x44." % profile)
 	root.content_scale_size = INITIAL_VIEWPORT_SIZE

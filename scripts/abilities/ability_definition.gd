@@ -5,7 +5,10 @@ const MINIMUM_POSITIVE_VALUE := 0.001
 
 @export var id: StringName = &""
 @export var title := ""
+## Sentence describing what the ability does, without numbers.
 @export_multiline var description := ""
+## Compact stat line with the rank 1 values.
+@export var effect_summary := ""
 @export var icon: Texture2D
 
 @export_group("Timing")
