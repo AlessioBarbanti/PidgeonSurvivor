@@ -22,7 +22,7 @@ radius = 46.0
 [node name="FirstBoss" type="CharacterBody2D" groups=["bosses", "enemies"]]
 z_index = 6
 collision_layer = 0
-collision_mask = 0
+collision_mask = 4
 motion_mode = 1
 script = ExtResource("1_first_boss")
 move_speed = 85.0

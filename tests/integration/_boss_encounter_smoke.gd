@@ -202,19 +202,14 @@ func _validate_composed_encounter() -> void:
 		"Il danno letale deve concludere il Boss una sola volta."
 	)
 	_expect(
-		controller.get_state() == RunController.RunState.VICTORY and paused,
-		"La morte del Boss deve chiudere la run in VICTORY."
+		not controller.is_terminal(),
+		"La morte del primo Boss non deve piu' chiudere la run (B33)."
 	)
 	_expect(
 		experience.experience_total == definition.experience_reward,
 		"La morte del Boss deve assegnare la ricompensa XP una sola volta."
 	)
-	_expect(end_screen.visible, "La vittoria deve mostrare EndScreen.")
-	_expect(end_screen.get_title_text() == "VITTORIA", "EndScreen deve distinguere la vittoria.")
-	_expect(
-		"+%d XP" % definition.experience_reward in end_screen.get_summary_text(),
-		"Il riepilogo vittoria deve mostrare la ricompensa."
-	)
+	_expect(not end_screen.visible, "La morte del Boss non deve mostrare EndScreen (B33).")
 
 	await _wait_processed_frame()
 	_expect(encounter.get_active_boss() == null, "Il Boss morto non deve restare attivo.")
@@ -225,9 +220,17 @@ func _validate_composed_encounter() -> void:
 	)
 	_expect(targeting.get_registered_count() == 1, "Il nemico base deve restare registrato fino al restart.")
 
-	_expect(movement_slice.restart_run(15002), "La vittoria deve consentire una nuova run.")
+	_expect(controller.request_defeat(), "Il test deve poter chiudere la run in DEFEAT per il restart.")
+	_expect(
+		controller.get_state() == RunController.RunState.DEFEAT and paused,
+		"DEFEAT deve fermare il gameplay."
+	)
+	_expect(end_screen.visible, "DEFEAT deve mostrare EndScreen.")
+	_expect(end_screen.get_title_text() == "GAME OVER", "EndScreen deve distinguere la sconfitta.")
+
+	_expect(movement_slice.restart_run(15002), "DEFEAT deve consentire una nuova run.")
 	await _wait_processed_frame()
-	_expect(controller.is_running() and not paused, "Il restart da VICTORY deve tornare in RUNNING.")
+	_expect(controller.is_running() and not paused, "Il restart da DEFEAT deve tornare in RUNNING.")
 	_expect(experience.experience_total == 0, "Il restart deve azzerare la ricompensa XP.")
 	_expect(spawner.get_alive_count() == 0, "Il restart deve eliminare i nemici della run precedente.")
 	_expect(targeting.get_registered_count() == 0, "Il restart deve svuotare il targeting.")

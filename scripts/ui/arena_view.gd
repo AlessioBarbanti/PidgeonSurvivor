@@ -5,6 +5,10 @@ extends Node2D
 @export var playfield_color := Color(0.07, 0.09, 0.115, 1.0)
 @export var background_texture: Texture2D
 @export var background_modulate := Color(0.82, 0.86, 0.92, 0.92)
+## Dimensione di ogni riquadro quando il pavimento raster copre un'arena
+## piu' grande del viewport: la texture (seamless) si ripete invece di
+## essere stirata su tutto il rettangolo, evitando la sfocatura.
+@export var background_tile_size := Vector2(768.0, 768.0)
 @export var tonal_patch_color := Color(0.11, 0.13, 0.15, 0.16)
 @export var joint_color := Color(0.2, 0.22, 0.23, 0.16)
 @export var stain_color := Color(0.025, 0.031, 0.038, 0.13)
@@ -88,14 +92,7 @@ func _draw() -> void:
 
 	draw_rect(_playfield_rect, playfield_color, true)
 	if has_raster_background():
-		draw_texture_rect_region(
-			background_texture,
-			_playfield_rect,
-			get_background_source_rect(),
-			background_modulate,
-			false,
-			true
-		)
+		_draw_tiled_background()
 	else:
 		var random := RandomNumberGenerator.new()
 		random.seed = _layout_seed()
@@ -105,6 +102,32 @@ func _draw() -> void:
 		_draw_cracks(random)
 	# Il bordo scuro chiude il pavimento senza ricreare il rettangolo ciano debug.
 	draw_rect(_playfield_rect, edge_shadow_color, false, 2.0, true)
+
+
+func _draw_tiled_background() -> void:
+	# A differenza di get_background_source_rect() (pensato per un'unica
+	# immagine di copertura), ogni riquadro ripete l'intera texture sorgente:
+	# ritagliarla sull'aspect ratio del rettangolo enorme del mondo
+	# produrrebbe un unico riquadro fuori scala ripetuto ovunque.
+	var source_rect := Rect2(Vector2.ZERO, background_texture.get_size())
+	var tile_size := Vector2(
+		maxf(background_tile_size.x, 1.0),
+		maxf(background_tile_size.y, 1.0)
+	)
+	var y := _playfield_rect.position.y
+	while y < _playfield_rect.end.y:
+		var x := _playfield_rect.position.x
+		while x < _playfield_rect.end.x:
+			draw_texture_rect_region(
+				background_texture,
+				Rect2(Vector2(x, y), tile_size),
+				source_rect,
+				background_modulate,
+				false,
+				true
+			)
+			x += tile_size.x
+		y += tile_size.y
 
 
 func _draw_tonal_patches(random: RandomNumberGenerator) -> void:

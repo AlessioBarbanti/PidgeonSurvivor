@@ -106,24 +106,15 @@ func _validate_five_complete_runs() -> void:
 			"Il Boss deve morire nella run %d." % (run_index + 1)
 		)
 		_expect(
-			controller.get_state() == RunController.RunState.VICTORY and paused,
-			"La run %d deve terminare in VICTORY." % (run_index + 1)
-		)
-		var terminal_time := controller.get_run_time()
-		controller._process(30.0)
-		_expect_float_near(
-			controller.get_run_time(),
-			terminal_time,
-			"VICTORY deve bloccare definitivamente il clock."
+			not controller.is_terminal(),
+			"La morte del Boss non deve piu' chiudere la run %d (B33)." % (run_index + 1)
 		)
 		_expect(
 			experience.experience_total == definition.experience_reward,
 			"La ricompensa Boss deve essere atomica in ogni run."
 		)
 		_expect(experience.pending_level_ups > 0, "La ricompensa deve conservare i level-up maturati.")
-		_expect(upgrade_service.get_current_offer().is_empty(), "VICTORY deve chiudere l'offerta upgrade.")
-		_expect(not upgrade_overlay.visible, "VICTORY deve nascondere l'overlay upgrade.")
-		_expect(end_screen.get_title_text() == "VITTORIA", "Il terminale deve mostrare VITTORIA.")
+		_expect(not end_screen.visible, "La morte del Boss non deve mostrare EndScreen (B33).")
 
 		await _wait_processed_frame()
 		_expect(encounter.get_active_boss() == null, "Il Boss morto non deve sopravvivere al terminale.")
@@ -132,6 +123,25 @@ func _validate_five_complete_runs() -> void:
 			movement_slice.get_boss_projectile_parent().get_child_count() == 0,
 			"I proiettili Boss devono sparire alla sua morte."
 		)
+
+		_expect(
+			controller.request_defeat(),
+			"Il test deve poter chiudere la run %d in DEFEAT per il restart." % (run_index + 1)
+		)
+		_expect(
+			controller.get_state() == RunController.RunState.DEFEAT and paused,
+			"La run %d deve terminare in DEFEAT su richiesta." % (run_index + 1)
+		)
+		var terminal_time := controller.get_run_time()
+		controller._process(30.0)
+		_expect_float_near(
+			controller.get_run_time(),
+			terminal_time,
+			"DEFEAT deve bloccare definitivamente il clock."
+		)
+		_expect(upgrade_service.get_current_offer().is_empty(), "DEFEAT deve chiudere l'offerta upgrade.")
+		_expect(not upgrade_overlay.visible, "DEFEAT deve nascondere l'overlay upgrade.")
+		_expect(end_screen.get_title_text() == "GAME OVER", "Il terminale deve mostrare GAME OVER.")
 
 		var next_seed := 16002 + run_index
 		_expect(

@@ -180,7 +180,8 @@ func _validate_two_runs(
 			"Il terminale deve ripulire i proiettili Boss."
 		)
 		if run_index == 0:
-			_expect(movement_slice.restart_run(220023), "La vittoria deve avviare una seconda run.")
+			_expect(controller.request_defeat(), "La fixture deve poter chiudere la run in DEFEAT per il restart.")
+			_expect(movement_slice.restart_run(220023), "Il DEFEAT deve avviare una seconda run.")
 			await _wait_processed_frame()
 			controller.set_process(false)
 			_expect(experience.experience_total == 0, "Il restart deve azzerare la ricompensa precedente.")

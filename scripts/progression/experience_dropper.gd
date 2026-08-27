@@ -16,6 +16,7 @@ var _enemy_spawner: EnemySpawner
 var _experience_system: ExperienceSystem
 var _player: Player
 var _arena_layout: ArenaLayout
+var _world_bounds := Rect2()
 var _pickup_parent: Node
 var _active_pickups: Array[ExperiencePickup] = []
 var _observed_enemy_ids: Dictionary = {}
@@ -38,6 +39,13 @@ func configure(
 	_player = player
 	_arena_layout = arena_layout
 	_pickup_parent = pickup_parent
+
+
+## Confinamento opzionale in un'arena piu' grande dello schermo (B38); senza
+## un rettangolo con area i pickup restano confinati al playfield di
+## `ArenaLayout` come prima di B38.
+func set_world_bounds(value: Rect2) -> void:
+	_world_bounds = value
 
 
 func set_run_controller(value: RunController) -> void:
@@ -98,7 +106,7 @@ func try_spawn_drop(enemy: BaseEnemy) -> ExperiencePickup:
 		experience_amount
 	)
 	_pickup_parent.add_child(pickup)
-	pickup.global_position = _arena_layout.clamp_circle_center(
+	pickup.global_position = _confine_pickup_position(
 		enemy.global_position,
 		pickup.get_confinement_radius()
 	)
@@ -161,6 +169,12 @@ func get_pickup_parent() -> Node:
 func _exit_tree() -> void:
 	_disconnect_enemy_spawner()
 	_disconnect_run_controller()
+
+
+func _confine_pickup_position(position: Vector2, radius: float) -> Vector2:
+	if _world_bounds.has_area():
+		return ArenaWorld.clamp_circle_center_in_rect(_world_bounds, position, radius)
+	return _arena_layout.clamp_circle_center(position, radius)
 
 
 func _has_valid_dependencies() -> bool:

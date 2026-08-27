@@ -16,6 +16,10 @@ var _active_event_index := -1
 var _boss_request_in_flight := false
 var _active_boss: Node
 var _requested_count := 0
+var _recurring_window_seconds := 0.0
+var _last_boss_spawn_run_time := 0.0
+var _recurring_pending := false
+var _recurring_count := 0
 
 
 func _init() -> void:
@@ -84,9 +88,17 @@ func reset_for_run(clear_tracked_boss: bool = true) -> void:
 		if profile != null
 		else PackedFloat32Array()
 	)
+	_recurring_window_seconds = (
+		profile.get_effective_recurring_boss_window()
+		if profile != null
+		else 0.0
+	)
 	_triggered_events.clear()
 	_pending_event_indices.clear()
 	_requested_count = 0
+	_recurring_pending = false
+	_recurring_count = 0
+	_last_boss_spawn_run_time = 0.0
 
 
 func register_active_boss(boss: Node, schedule_index: int = -1) -> bool:
@@ -151,6 +163,22 @@ func has_blocking_boss_event() -> bool:
 	return _active_event_index >= 0
 
 
+func get_recurring_window_seconds() -> float:
+	return _recurring_window_seconds
+
+
+func get_last_boss_spawn_run_time() -> float:
+	return _last_boss_spawn_run_time
+
+
+func is_boss_pending_after_active() -> bool:
+	return _recurring_pending
+
+
+func get_recurring_boss_count() -> int:
+	return _recurring_count
+
+
 func _exit_tree() -> void:
 	_disconnect_run_controller()
 	_clear_active_event(false)
@@ -181,24 +209,48 @@ func _evaluate_run_time(run_time: float) -> void:
 		_pending_event_indices.append(schedule_index)
 		boss_event_queued.emit(schedule_index, threshold_seconds)
 	_request_next_boss_event()
+	_evaluate_recurring_schedule(safe_run_time)
+	_request_next_boss_event()
+
+
+func _evaluate_recurring_schedule(run_time: float) -> void:
+	if (
+		_thresholds.is_empty()
+		or _triggered_events.size() < _thresholds.size()
+		or _recurring_pending
+		or _recurring_window_seconds <= 0.0
+	):
+		return
+	if run_time >= _last_boss_spawn_run_time + _recurring_window_seconds:
+		_recurring_pending = true
 
 
 func _request_next_boss_event() -> void:
 	if (
 		_active_event_index >= 0
-		or _pending_event_indices.is_empty()
 		or not is_instance_valid(_run_controller)
 		or not _run_controller.is_running()
 	):
 		return
 
-	_active_event_index = _pending_event_indices.pop_front()
+	if not _pending_event_indices.is_empty():
+		_active_event_index = _pending_event_indices.pop_front()
+	elif _recurring_pending:
+		_recurring_pending = false
+		_active_event_index = _thresholds.size() + _recurring_count
+		_recurring_count += 1
+	else:
+		return
+
 	_boss_request_in_flight = true
 	_requested_count += 1
-	boss_event_requested.emit(
-		_active_event_index,
+	_last_boss_spawn_run_time = _run_controller.get_run_time()
+	var threshold_for_signal := (
 		_thresholds[_active_event_index]
+		if _active_event_index < _thresholds.size()
+		else _last_boss_spawn_run_time
 	)
+	boss_event_requested.emit(_active_event_index, threshold_for_signal)
 
 
 func _clear_active_event(clear_tracked_boss: bool) -> void:

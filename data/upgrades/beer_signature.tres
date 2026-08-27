@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource("1_definition")
 id = &"beer_signature"
-title = "Birra"
+title = "Birre di classe di Lollo"
 description = "Aumenta la cadenza di fuoco, ma ogni colpo può deviare dal bersaglio."
 effect_summary = "+25% CADENZA · ±24° DISPERSIONE"
 icon = ExtResource("2_icon")

@@ -285,7 +285,12 @@ func _validate_composed_defeat_and_restart() -> void:
 		"Il restart composto deve ripristinare gli HP."
 	)
 	_expect(not player.get_health_component().is_invulnerable(), "Il restart non deve conservare invulnerabilita.")
-	_expect_vector_near(player.global_position, arena.get_playfield_center(), "Il restart deve ricentrare il Player.")
+	var arena_world := movement_slice.get_arena_world() as ArenaWorld
+	_expect_vector_near(
+		player.global_position,
+		arena_world.get_world_center() if arena_world != null else arena.get_playfield_center(),
+		"Il restart deve ricentrare il Player."
+	)
 	_expect(not router.is_input_suspended(), "Il restart neutro deve riarmare InputRouter.")
 	await process_frame
 	_expect(enemies.get_child_count() == 0, "Il restart deve liberare tutti i nemici entro fine frame.")

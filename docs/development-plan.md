@@ -401,6 +401,9 @@ Priorità: `P0` indispensabile per l'MVP, `P1` indispensabile per la prima pubbl
 | B33 | Run continua e Boss ricorrenti | P1 | 8 | B14–B16, B22, B23 | La morte del primo Boss non chiude la run; Boss successivi seguono finestre da 240 s e, se una finestra scade con un Boss vivo, il prossimo spawna solo alla sua morte, senza Boss sovrapposti o burst arretrati |
 | B34 | Coerenza UI pixel-fantasy arcade | P1 | 8 | B18W, B18P, B18Q, B31, B32 | Pausa, HUD e controlli touch condividono la grammatica pixel-fantasy arcade senza modificare playfield, input, target touch o flussi |
 | B35 | Prima ondata powerup grigliatori | P1 | 5 | B10–B13, B17A, B26–B27 | Introdurre velocità proiettili, difesa, valore XP e cooldown dell'attiva come modificatori configurabili e ripetibili, rinominando le carte storiche di fuoco e pickup |
+| B37 | Densità leggibile e direzione delle orde | P1 | 3 | B04–B05, B14, B28 | Ridurre l'effetto muro di piccioni con vita base più bassa e dispersione laterale di inseguimento, e introdurre uno scheduler di settori N/E/S/O che alterna 1-2 lati attivi con rari picchi multi-direzione |
+| B38 | Arena della grigliata, camera e ostacoli | P1 | 13 | B03–B05, B15, B18I, B37 | Sostituire l'arena "grande quanto lo schermo" con un mondo fisso più ampio, una Camera2D che segue il Player con dead-zone e bordi morbidi, ostacoli fisici ispirati alla vera zona grigliata e un pavimento di ghiaia |
+| B39 | Coscia di piccione — pickup di cura | P1 | 3 | B06, B07, B28, B38 | Aggiungere un pickup di cura raro, distinto dal cristallo XP, che cura il Player fino al massimo senza intaccare il budget XP esistente |
 
 Parallelizzazione sicura:
 
@@ -510,9 +513,12 @@ significato:
 | B30 | Boss senza aura circolare viola | IN VERIFICA | Cerchio di riserva rimosso dal fallback `BaseEnemy._draw()` per i Boss; automatici verdi, resta il confronto percettivo Windows/Pixel 9 |
 | B31 | Padding esterno pausa e abilità | IN VERIFICA | Inset configurabile `20` unità per pausa e abilità, sommato alle gesture per l'abilità; target base abilità raddoppiato a `128×128` (`160×160` default); automatici, APK statico e installazione Pixel 9 verdi, prova touch/percettiva aperta |
 | B32 | Welcome CTA coerente e impostazioni a ingranaggio | COMPLETATO | `GIOCA` riusa la placca pixel-fantasy B18W, fluttua senza riquadro esterno e non disegna outline focus; Impostazioni è un ingranaggio safe-area da `60×60`; focused/relevant e APK statico verdi, Pixel 9 accettato dal proprietario, restano Windows e Full |
-| B33 | Run continua e Boss ricorrenti | PRONTO | Nuovo contratto di run che supersede a valle la vittoria al primo Boss del vertical slice storico |
+| B33 | Run continua e Boss ricorrenti | IN VERIFICA | La morte del Boss non chiude più la run: ricompensa assegnata, `RUNNING` prosegue; Boss successivi ricorrenti ogni 240 s dallo spawn precedente con `pending_boss` singolo e nessun arretrato; automatici (`_game_director_smoke`, `_boss_encounter_smoke`, `_complete_run_smoke`, `_evil_boss_variants_smoke`, `_recurring_boss_smoke`) verdi; integrazione con B23 resta aperta finché quel backlog non parte |
 | B34 | Coerenza UI pixel-fantasy arcade | IN VERIFICA | Palette e ridisegno presentazionale implementati; APK statico, installazione/cold launch Pixel 9 e catture visuali verdi, senza smoke su richiesta; restano aperti multitouch e accettazione percettiva fisica |
 | B35 | Prima ondata powerup grigliatori | IN VERIFICA | Quattro Resource e modificatori runtime con cap/reset, sei derive `128×128` tracciate, refresh editor e smoke dedicato verdi; restano regressioni complete ed export Windows/Android |
+| B37 | Densità leggibile e direzione delle orde | IN VERIFICA | Vita base -25% (18 HP), offset di inseguimento per-nemico e scheduler di settori N/E/S/O implementati; runner Full 56/56 verde; restano percezione di gioco del varco apribile/direzione leggibile ed export/gate Windows e Android |
+| B38 | Arena della grigliata, camera e ostacoli | IN VERIFICA | ArenaWorld fisso 2400×1500, Camera2D con dead-zone/limiti, spawn/despawn Boss e nemici camera-relativi, confinamento Player/pickup nel mondo, 8 ostacoli reali con arte fornita dal proprietario e pavimento ghiaia; runner Full 57/57 verde; restano playtest percettivo e export/gate Windows e Android |
+| B39 | Coscia di piccione — pickup di cura | IN VERIFICA | `HealthPickup`/`HealthPickupDropper` implementati con drop_chance 4,5% indipendente dal credito XP; icona reale fornita dal proprietario (`assets/art/pickups/`), segnaposto a codice conservato come fallback; runner Full 58/58 verde; restano playtest percettivo e export/gate Windows e Android |
 
 #### B18C — Player animato e direzione persistente
 
@@ -1387,28 +1393,31 @@ controllo percettivo/input Windows e il percorso touch reale su Android.
 
 #### B33 — Run continua e Boss ricorrenti
 
-Stato: `PRONTO`.
+Stato: `IN VERIFICA`.
 
 Questa slice è **incrementale** e non modifica retroattivamente i backlog B14–B16
 né B22 già completati: ne estende il comportamento per la prima release.
 
-- [ ] Il primo Boss resta eleggibile a `04:00`, ma la sua morte assegna ricompensa
+- [x] Il primo Boss resta eleggibile a `04:00`, ma la sua morte assegna ricompensa
   e ritorna a `RUNNING`: **non** genera più `VICTORY` e non termina la run.
-- [ ] Ogni Boss successivo ha una finestra base di `240 s` di gameplay rispetto
+- [x] Ogni Boss successivo ha una finestra base di `240 s` di gameplay rispetto
   allo spawn del Boss precedente. Il clock si ferma negli stessi stati già
   previsti dal `RunController`.
-- [ ] Se la finestra scade mentre il Boss corrente è vivo, impostare una sola
+- [x] Se la finestra scade mentre il Boss corrente è vivo, impostare una sola
   richiesta `pending_boss`; non creare il nuovo Boss finché quello attivo non è morto.
-- [ ] Alla morte del Boss attivo, se `pending_boss` è vero, generare subito il
+- [x] Alla morte del Boss attivo, se `pending_boss` è vero, generare subito il
   prossimo incontro e calcolare la finestra seguente da quel nuovo spawn. Non
   accumulare più Boss arretrati anche se il combattimento precedente è durato
   oltre più finestre da quattro minuti.
-- [ ] In Sopravvivenza la run diventa continua fino a `DEFEAT` o uscita esplicita;
+- [x] In Sopravvivenza la run diventa continua fino a `DEFEAT` o uscita esplicita;
   `VICTORY` resta disponibile al framework per modalità/obiettivi futuri ma non
   viene emessa dalla semplice morte di un Boss.
 - [ ] Difesa Grigliata eredita lo stesso scheduler ricorrente: Player o griglia a
   zero causano `DEFEAT`, mentre la morte di un Boss non chiude la modalità.
-- [ ] Aggiungere test per morte Boss prima/dopo la soglia, Boss vivo oltre `08:00`,
+  _(resta da implementare quando B23 stesso viene avviato; B23 non esiste ancora
+  nel codice, lo scheduler ricorrente in `GameDirector` è già modalità-agnostico
+  e riusabile.)_
+- [x] Aggiungere test per morte Boss prima/dopo la soglia, Boss vivo oltre `08:00`,
   pausa/level-up durante la finestra, restart e seed; mai più di un Boss attivo.
 
 #### B34 — Coerenza UI pixel-fantasy arcade
@@ -1495,6 +1504,177 @@ alcun test script o runner milestone. Restano aperti il runtime Windows e la
 conferma percettiva/touch fisica, incluso il multitouch joystick più abilità.
 Evidenza: [`b34-verification.md`](./b34-verification.md).
 
+#### B37 — Densità leggibile e direzione delle orde
+
+Stato: `IN VERIFICA`.
+
+Richiesta ricevuta il 27 agosto 2026 dal proprietario: ridurre l'effetto "muro
+di piccioni" e rendere leggibile la provenienza delle orde, senza introdurre
+collisioni rigide tra nemici né cambiare la velocità base del Player.
+
+- [x] Ridurre gli HP base del nemico comune del 25% (`24 → 18`) come primo
+  valore di test in `scenes/actors/base_enemy.tscn`.
+- [x] Assegnare a ogni nemico, allo spawn, un piccolo offset di inseguimento
+  stabile (`BaseEnemy._pursuit_offset`, 8–28px, angolo casuale) pescato
+  dall'RNG seedato dello spawner: disperde il punto di avvicinamento in un
+  arco attorno al Player senza collisioni fisiche e conservando la
+  possibilità di sovrapposizione.
+- [x] Introdurre uno scheduler di settori N/E/S/O in `EnemySpawner`
+  (`_active_sectors`, `_roll_active_sectors`) che ruota senza sequenza fissa:
+  perlopiù un solo lato attivo, occasionalmente due, raramente un picco a 3-4
+  lati; `sample_spawn_position` accetta un nuovo parametro opzionale
+  `allowed_sides` che preserva il comportamento storico quando omesso.
+- [x] Aggiungere smoke dedicato `_b37_density_direction_smoke.gd` (HP, offset,
+  campionamento ristretto ai settori, rotazione) e allineare le baseline HP
+  storiche (`_b28_horde_density_smoke`, `_pigeon_enemy_smoke`,
+  `_combat_slice_smoke`, `_complete_roster_abilities_smoke`,
+  `_active_ability_smoke`) al nuovo valore di 18 HP.
+
+Implementazione del 27 agosto 2026. `EnemySpawnProfile` guadagna i gruppi
+`Dispersion` (`pursuit_offset_min_radius`/`max_radius`) e `Sectors`
+(`sector_hold_duration_min/max`, `sector_multi_chance`, `sector_spike_chance`)
+con default `8–28px` e finestra `6–12s`, `30%` di probabilità di doppio
+settore e `8%` di picco a 3-4 settori; nessun valore è hardcoded nello
+scheduler. `EnemySpawner.pick_sector_combination` è una funzione statica
+testabile che sceglie senza ripetizioni i lati attivi dall'RNG seedato dello
+spawner, mantenendo run deterministiche per seed.
+
+`B37_DENSITY_DIRECTION_SMOKE_OK` verifica HP, direzione con offset, campioni
+ristretti a un settore su tutti e quattro i lati, combinazione dei settori
+deterministica per seed e rotazione dello scheduler. Il runner `Full`
+(56/56 step, focused 1/1, regression 54/54, toolchain 1/1) è verde. Restano
+aperti: playtest percettivo del "varco apribile" e della leggibilità
+direzionale in gioco, ed export/gate Windows e Android non ancora eseguiti
+per questa slice.
+
+#### B38 — Arena della grigliata, camera e ostacoli
+
+Stato: `IN VERIFICA`.
+
+Richiesta ricevuta il 27 agosto 2026 dal proprietario: l'arena non deve più
+coincidere con lo schermo. Serve un mondo fisso più grande con una camera che
+segua il Player, ostacoli fisici ispirati alla vera zona della grigliata
+(camino, tavoli/panche, filo dei panni) e un pavimento di ghiaia coerente col
+tema, senza trasformare l'arena in un labirinto.
+
+- [x] Introdurre `ArenaWorld` (`scripts/game/arena_world.gd`), un rettangolo
+  di mondo fisso (`2400×1500`, centrato sull'origine) indipendente dal
+  rettangolo screen-space di `ArenaLayout`, che resta invariato per il suo
+  ruolo di safe-area/HUD.
+- [x] Aggiungere una `Camera2D` figlia del Player nella scena composta (non
+  nella scena base, per non toccare le anteprime di selezione personaggio):
+  `position_smoothing_enabled` e drag margin nativi `0.35` per lato tengono
+  l'inquadratura stabile al centro e la spostano solo vicino ai bordi
+  schermo; `limit_left/top/right/bottom` derivano da `ArenaWorld` cosicché la
+  visuale si fermi ai limiti reali dell'arena.
+- [x] Ripuntare Player, `ExperienceDropper` e il pavimento di `ArenaView` sul
+  rettangolo di `ArenaWorld` invece che sul playfield di `ArenaLayout`, con
+  fallback al comportamento storico quando `world_bounds` non è assegnato
+  (compatibilità piena con i fixture di test esistenti).
+- [x] `EnemySpawner` e `BossEncounter` campionano spawn/despawn relativi alla
+  vista corrente della camera (`get_visible_reference_rect()`, stessa
+  dimensione schermo di `ArenaLayout` ma centrata su
+  `Camera2D.get_screen_center_position()`), non più al rettangolo statico del
+  viewport: la sensazione "spawn appena fuori schermo" resta identica dentro
+  un mondo molto più grande.
+- [x] Nuovo layer fisico `Obstacle` (`project.godot`); Player, nemici e Boss
+  guadagnano il bit nella `collision_mask` (`4`) mantenendo invariata la
+  non-collisione reciproca fra loro (requisito B37). Nuovo segnaposto
+  riusabile `StaticObstacle` (`scripts/game/obstacles/static_obstacle.gd`,
+  `scenes/game/obstacles/static_obstacle.tscn`): `CollisionShape2D`
+  rettangolare dimensionata da `footprint_size`, con uno slot `texture`
+  pronto per l'arte definitiva.
+- [x] Il proprietario ha fornito sette master HD (camino, tavolo, panca,
+  filo dei panni, rete/recinzione, lavatoio in pietra, ghiaia); derivati via
+  `tools/process-arena-obstacle.ps1` (variante non quadrata di
+  `process-upgrade-icon.ps1`, aspect ratio naturale invece di canvas
+  forzato). Otto ostacoli piazzati in `World/Obstacles` rispecchiano il
+  layout della foto reale: camino a nord con due segmenti di recinzione ai
+  lati, due tavoli e una panca al centro con ampio spazio per girarci
+  attorno, filo dei panni e lavatoio a ovest. Corsie larghe ovunque, nessun
+  vicolo cieco: gli ostacoli deformano l'orda senza intrappolare il Player.
+- [x] Il pavimento raster passa dalla pietra B18S alla ghiaia fornita dal
+  proprietario; `ArenaView` ora ripete la texture (seamless) a riquadri
+  invece di stirarla su tutta l'arena, evitando la sfocatura su un rettangolo
+  molto più grande dello schermo. Provenienza e trasformazione (ritaglio
+  alpha, riduzione nearest-neighbor, oscuramento per restare recessiva
+  rispetto a Player/nemici/XP/pickup) sono in
+  [`assets/art/arena/ASSET-MANIFEST.md`](../assets/art/arena/ASSET-MANIFEST.md).
+
+Implementazione del 27 agosto 2026. `EnemySpawner.configure()` e
+`BossEncounter.configure()` guadagnano un parametro opzionale `camera`
+(default `null`): senza camera assegnata il comportamento resta
+bit-per-bit quello storico, usato da tutti i fixture di test esistenti.
+`Player.set_world_bounds()` ed `ExperienceDropper.set_world_bounds()` seguono
+lo stesso pattern opt-in. Nessun valore è hardcoded fuori da `ArenaWorld` e
+`EnemySpawnProfile`.
+
+`B38_ARENA_WORLD_SMOKE_OK` verifica la matematica di `ArenaWorld`, il
+segnaposto `StaticObstacle` (ridimensionamento della collision shape, blocco
+fisico effettivo di un corpo con maschera Obstacle), il riferimento
+camera-relativo di `EnemySpawner`, le maschere di collisione di
+Player/nemico/Boss e la composizione completa (limiti camera, otto ostacoli
+con texture assegnata, pavimento raster). Il runner `Full`
+(57/57 step, focused 1/1, regression 55/55, toolchain 1/1) è verde: oltre al
+nuovo smoke, sono state aggiornate le assunzioni obsolete di confinamento
+screen-space in `_movement_slice_smoke`, `_enemy_spawner_smoke`,
+`_xp_arena_confinement_smoke`, `_arena_hud_minimal_smoke`,
+`_player_survival_smoke`, `_arena_background_smoke` (nuova texture ghiaia) e
+le maschere hardcoded in `_cast_sprites_smoke`/`_player_visual_scale_smoke`.
+Restano aperti: playtest percettivo (kiting attorno agli ostacoli,
+leggibilità della camera, coerenza visiva con la foto di riferimento) ed
+export/gate Windows e Android non ancora eseguiti per questa slice.
+
+#### B39 — Coscia di piccione, pickup di cura
+
+Stato: `IN VERIFICA`.
+
+Richiesta ricevuta il 27 agosto 2026 dal proprietario: un pickup di cura raro
+("coscia di piccione", a tema con i grigliatori che trasformano i nemici in
+cibo), chiaramente distinto dal cristallo XP, che curi senza sforare il
+massimo e senza annullare la pressione delle orde.
+
+- [x] Nuovo `HealthPickup` (`scripts/progression/health_pickup.gd`,
+  `scenes/pickups/health_pickup.tscn`): stessa meccanica di calamita/raccolta
+  di `ExperiencePickup`, ma resta un semplice trasportatore di valore — non
+  applica la cura da solo, cosi' l'effetto resta responsabilita' del
+  dropper che ha accesso al Player.
+- [x] Nuovo `HealthPickupDropper` (`scripts/progression/health_pickup_dropper.gd`),
+  sibling indipendente di `ExperienceDropper` sullo stesso segnale
+  `enemy.died`: un roll a probabilita' bassa (`drop_chance = 4,5%`) genera un
+  pickup separato, senza toccare il credito XP frazionario di B28. Applica la
+  cura tramite `HealthComponent.heal()` esistente, che gia' cappa al massimo.
+- [x] Il pickup usa un proprio contenitore (`World/HealthPickups`) invece di
+  condividere `World/Pickups` con `ExperienceDropper`, per non rompere i
+  conteggi child-count assunti dallo smoke storico B07.
+- [x] Segnaposto visivo disegnato a codice (osso chiaro + "carne" grigliata
+  caricaturale con due segni di griglia), chiaramente distinto dal rombo XP;
+  slot `texture` pronto per l'arte definitiva, usato come fallback quando la
+  texture non e' assegnata.
+- [x] Il proprietario ha fornito il master `assets/art/pickups/hd/health_pickup.png`;
+  derivato via `tools/process-arena-obstacle.ps1` a `48×51` e assegnato come
+  `texture` di default in `health_pickup.tscn`. Provenienza e hash in
+  [`assets/art/pickups/ASSET-MANIFEST.md`](../assets/art/pickups/ASSET-MANIFEST.md).
+
+Implementazione del 27 agosto 2026. `HealthPickupDropper.configure()` segue
+lo stesso pattern opt-in di B38 (`set_world_bounds`, fallback al playfield di
+`ArenaLayout` quando non assegnato). Nessun valore e' hardcoded: `drop_chance`
+e `heal_amount` sono esportati sul nodo, coerenti con la convenzione dati del
+progetto.
+
+`B39_HEALTH_PICKUP_SMOKE_OK` verifica: il pickup non applica la cura da solo
+e segnala l'ammontare configurato; `HealthComponent.heal()` cappa il
+sovra-curato; il dropper con `drop_chance=1.0` genera esattamente un pickup a
+morte e applica l'`heal_amount` alla `HealthComponent` reale del Player;
+`drop_chance=0.0` non genera mai un pickup; la composizione della scena
+collega tutte le dipendenze e mantiene il drop rate basso. Il runner `Full`
+(58/58 step, focused 1/1, regression 56/56, toolchain 1/1) e' verde: il
+contenitore dedicato `World/HealthPickups` ha evitato di dover toccare le
+assunzioni gia' verificate di `_experience_pickup_smoke` (B07). Restano
+aperti: playtest percettivo
+(leggibilita' del pickup in corsa, sensazione del drop rate) ed export/gate
+Windows e Android non ancora eseguiti per questa slice.
+
 ## 7. Strategia di test
 
 ### Test unitari o di logica pura
@@ -1519,6 +1699,9 @@ Evidenza: [`b34-verification.md`](./b34-verification.md).
 - B28: profilo densità/HP e cap configurabili senza valori hardcoded;
 - B33: una sola richiesta Boss pending, nessun overlap e nuova finestra calcolata dallo spawn effettivo del Boss successivo.
 - B34: ispezione statica di palette/gerarchia, varianti visive e contenimento safe-area senza mutare i contratti di input o gameplay; lo smoke è posticipato su richiesta.
+- B37: HP base, offset di inseguimento, campionamento ristretto ai settori e rotazione dello scheduler senza sequenza fissa.
+- B38: geometria di `ArenaWorld` e clamp circolare parametrico, ridimensionamento della collision shape di `StaticObstacle`, riferimento di spawn camera-relativo con e senza camera assegnata.
+- B39: `HealthPickup` non applica la cura da solo, `HealthPickupDropper` rispetta `drop_chance`/`heal_amount` e non intacca il credito XP di B28.
 
 ### Test di integrazione
 

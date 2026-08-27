@@ -73,8 +73,15 @@ func _validate_viewport_case(viewport_size: Vector2i) -> void:
 		"ExperienceDropper deve usare l'ArenaLayout della scena."
 	)
 
-	var playfield := arena.get_playfield_rect()
-	_expect(playfield.has_area(), "Il playfield B18I deve essere valido.")
+	var arena_world := movement_slice.get_arena_world() as ArenaWorld
+	_expect(arena_world != null, "La fixture B18I deve contenere ArenaWorld.")
+	if arena_world == null:
+		await _release_fixture(movement_slice)
+		return
+	# Da B38 i pickup restano confinati nel mondo fisso di ArenaWorld, non
+	# piu' nel playfield ritagliato sul viewport di ArenaLayout.
+	var playfield := arena_world.get_world_rect()
+	_expect(playfield.has_area(), "Il mondo B18I deve essere valido.")
 	var center := playfield.get_center()
 	var death_positions: Array[Vector2] = [
 		center,
@@ -100,17 +107,19 @@ func _validate_viewport_case(viewport_size: Vector2i) -> void:
 			continue
 		pickup.set_physics_process(false)
 		var radius := pickup.get_confinement_radius()
-		var expected_position := arena.clamp_circle_center(death_position, radius)
+		var expected_position := ArenaWorld.clamp_circle_center_in_rect(
+			playfield, death_position, radius
+		)
 		_expect_vector_near(
 			pickup.global_position,
 			expected_position,
-			"Il drop deve usare il clamp circolare di ArenaLayout."
+			"Il drop deve usare il clamp circolare di ArenaWorld."
 		)
 		_expect_circle_inside(
 			pickup.global_position,
 			radius,
 			playfield,
-			"Il pickup deve restare interamente nel playfield %s." % viewport_size
+			"Il pickup deve restare interamente nel mondo (viewport %s)." % viewport_size
 		)
 		if death_position == center:
 			_expect_vector_near(

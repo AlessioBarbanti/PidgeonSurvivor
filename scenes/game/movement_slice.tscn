@@ -1,4 +1,4 @@
-[gd_scene load_steps=88 format=3]
+[gd_scene load_steps=100 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -95,6 +95,17 @@
 [ext_resource type="Resource" path="res://data/upgrades/reinforced_roasting_tray.tres" id="97_reinforced_tray"]
 [ext_resource type="Resource" path="res://data/upgrades/barb_seasoning_xp.tres" id="98_barb_xp"]
 [ext_resource type="Resource" path="res://data/upgrades/ability_cooldown.tres" id="99_ability_cooldown"]
+[ext_resource type="Script" path="res://scripts/game/arena_world.gd" id="100_arena_world"]
+[ext_resource type="PackedScene" path="res://scenes/game/obstacles/static_obstacle.tscn" id="101_static_obstacle"]
+[ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_fireplace.png" id="102_obstacle_fireplace"]
+[ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_wooden_table.png" id="103_obstacle_wooden_table"]
+[ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_bench.png" id="104_obstacle_bench"]
+[ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_clothesline.png" id="105_obstacle_clothesline"]
+[ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_steel_net.png" id="106_obstacle_steel_net"]
+[ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_stone_washbasin.png" id="107_obstacle_stone_washbasin"]
+[ext_resource type="Texture2D" path="res://assets/art/arena/generated/texture_gravel.png" id="108_texture_gravel"]
+[ext_resource type="Script" path="res://scripts/progression/health_pickup_dropper.gd" id="109_health_pickup_dropper"]
+[ext_resource type="PackedScene" path="res://scenes/pickups/health_pickup.tscn" id="110_health_pickup"]
 
 [node name="MovementSlice" type="Control"]
 layout_mode = 3
@@ -122,12 +133,19 @@ color = Color(0.02, 0.027, 0.047, 1)
 unique_name_in_owner = true
 texture_filter = 1
 script = ExtResource("3_arena_view")
-background_texture = ExtResource("89_arena_floor")
+background_texture = ExtResource("108_texture_gravel")
+background_modulate = Color(0.88, 0.86, 0.82, 0.95)
+background_tile_size = Vector2(320, 320)
 
 [node name="ArenaLayout" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("2_arena_layout")
 edge_inset = 20.0
+
+[node name="ArenaWorld" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("100_arena_world")
+world_size = Vector2(2400, 1500)
 
 [node name="RunController" type="Node" parent="."]
 unique_name_in_owner = true
@@ -198,6 +216,11 @@ unique_name_in_owner = true
 script = ExtResource("14_experience_dropper")
 pickup_scene = ExtResource("15_experience_pickup")
 
+[node name="HealthPickupDropper" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("109_health_pickup_dropper")
+pickup_scene = ExtResource("110_health_pickup")
+
 [node name="GameAudio" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("61_game_audio")
@@ -235,6 +258,10 @@ z_index = 10
 unique_name_in_owner = true
 z_index = -1
 
+[node name="HealthPickups" type="Node2D" parent="World"]
+unique_name_in_owner = true
+z_index = -1
+
 [node name="AbilityEffects" type="Node2D" parent="World"]
 unique_name_in_owner = true
 z_index = 0
@@ -247,6 +274,97 @@ script = ExtResource("76_feedback")
 [node name="Player" parent="World" instance=ExtResource("4_player")]
 unique_name_in_owner = true
 z_index = 4
+
+[node name="Camera2D" type="Camera2D" parent="World/Player"]
+unique_name_in_owner = true
+position_smoothing_enabled = true
+position_smoothing_speed = 6.0
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+drag_left_margin = 0.35
+drag_top_margin = 0.35
+drag_right_margin = 0.35
+drag_bottom_margin = 0.35
+
+[node name="Obstacles" type="Node2D" parent="World"]
+unique_name_in_owner = true
+z_index = 1
+texture_filter = 1
+
+[node name="Fireplace" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(0, -620)
+footprint_size = Vector2(260, 260)
+texture = ExtResource("102_obstacle_fireplace")
+
+[node name="FenceWest" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(-420, -690)
+footprint_size = Vector2(340, 90)
+texture = ExtResource("106_obstacle_steel_net")
+
+[node name="FenceEast" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(420, -690)
+footprint_size = Vector2(340, 90)
+texture = ExtResource("106_obstacle_steel_net")
+
+[node name="TableA" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(-260, 40)
+footprint_size = Vector2(150, 150)
+texture = ExtResource("103_obstacle_wooden_table")
+
+[node name="BenchA" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(-260, 330)
+footprint_size = Vector2(176, 126)
+texture = ExtResource("104_obstacle_bench")
+
+[node name="TableB" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(260, 40)
+footprint_size = Vector2(150, 150)
+texture = ExtResource("103_obstacle_wooden_table")
+
+[node name="BenchB" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(260, 330)
+footprint_size = Vector2(176, 126)
+texture = ExtResource("104_obstacle_bench")
+
+[node name="Clothesline" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(-950, 0)
+footprint_size = Vector2(150, 250)
+texture = ExtResource("105_obstacle_clothesline")
+
+[node name="ClotheslineB" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(950, 0)
+footprint_size = Vector2(150, 250)
+texture = ExtResource("105_obstacle_clothesline")
+
+[node name="StoneWashbasin" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(-950, -350)
+footprint_size = Vector2(110, 124)
+texture = ExtResource("107_obstacle_stone_washbasin")
+
+[node name="StoneWashbasinB" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(950, -350)
+footprint_size = Vector2(110, 124)
+texture = ExtResource("107_obstacle_stone_washbasin")
+
+[node name="TableC" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(-550, 340)
+footprint_size = Vector2(150, 150)
+texture = ExtResource("103_obstacle_wooden_table")
+
+[node name="BenchC" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(-550, 630)
+footprint_size = Vector2(176, 126)
+texture = ExtResource("104_obstacle_bench")
+
+[node name="TableD" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(550, 340)
+footprint_size = Vector2(150, 150)
+texture = ExtResource("103_obstacle_wooden_table")
+
+[node name="BenchD" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(550, 630)
+footprint_size = Vector2(176, 126)
+texture = ExtResource("104_obstacle_bench")
 
 [node name="InputRouter" type="Node" parent="."]
 unique_name_in_owner = true

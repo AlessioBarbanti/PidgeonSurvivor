@@ -4,6 +4,9 @@ extends Node
 signal enemy_spawned(enemy: BaseEnemy)
 signal enemy_removed(enemy_instance_id: int)
 
+## Lati dell'anello di spawn: 0=Nord, 1=Est, 2=Sud, 3=Ovest.
+const ALL_SECTORS: Array[int] = [0, 1, 2, 3]
+
 @export var enemy_scene: PackedScene
 @export var spawn_profile: EnemySpawnProfile
 
@@ -11,12 +14,16 @@ var _run_controller: RunController
 var _arena_layout: ArenaLayout
 var _target: Node2D
 var _enemy_parent: Node
+var _camera: Camera2D
 var _spawned_enemies: Array[BaseEnemy] = []
 var _rng := RandomNumberGenerator.new()
 var _spawn_elapsed := 0.0
 var _cleanup_elapsed := 0.0
 var _awaiting_initial_spawn := true
 var _invalid_scene_warning_emitted := false
+var _active_sectors: Array[int] = ALL_SECTORS.duplicate()
+var _sector_elapsed := 0.0
+var _sector_hold_duration := 0.0
 
 
 func _ready() -> void:
@@ -30,6 +37,10 @@ func _process(delta: float) -> void:
 	var safe_delta := maxf(delta, 0.0)
 	_spawn_elapsed += safe_delta
 	_cleanup_elapsed += safe_delta
+
+	_sector_elapsed += safe_delta
+	if _sector_elapsed >= _sector_hold_duration:
+		_roll_active_sectors()
 
 	var cleanup_interval := spawn_profile.get_effective_cleanup_interval()
 	if _cleanup_elapsed >= cleanup_interval:
@@ -61,12 +72,27 @@ func configure(
 	run_controller: RunController,
 	arena_layout: ArenaLayout,
 	target: Node2D,
-	enemy_parent: Node
+	enemy_parent: Node,
+	camera: Camera2D = null
 ) -> void:
 	set_run_controller(run_controller)
 	_arena_layout = arena_layout
 	_target = target
 	_enemy_parent = enemy_parent
+	_camera = camera
+
+
+## Rettangolo di riferimento per spawn/despawn: la stessa dimensione dello
+## schermo di `ArenaLayout`, ma centrato sulla vista corrente della camera
+## invece che sul rettangolo statico del viewport. Senza camera assegnata
+## (es. i fixture di test) il comportamento storico resta identico.
+func get_visible_reference_rect() -> Rect2:
+	var playfield_rect := _arena_layout.get_playfield_rect()
+	if not is_instance_valid(_camera) or not playfield_rect.has_area():
+		return playfield_rect
+	var half_size := playfield_rect.size * 0.5
+	var center := _camera.get_screen_center_position()
+	return Rect2(center - half_size, half_size * 2.0)
 
 
 func set_run_controller(value: RunController) -> void:
@@ -106,8 +132,13 @@ func reset_for_run(seed_value: int, clear_existing: bool = true) -> void:
 	_cleanup_elapsed = 0.0
 	_awaiting_initial_spawn = true
 	_invalid_scene_warning_emitted = false
+	_roll_active_sectors()
 	if clear_existing:
 		clear_spawned_enemies()
+
+
+func get_active_sectors() -> Array[int]:
+	return _active_sectors.duplicate()
 
 
 func try_spawn_enemy() -> BaseEnemy:
@@ -116,7 +147,7 @@ func try_spawn_enemy() -> BaseEnemy:
 	if get_alive_count() >= spawn_profile.max_alive_enemies:
 		return null
 
-	var playfield_rect := _arena_layout.get_playfield_rect()
+	var playfield_rect := get_visible_reference_rect()
 	if not playfield_rect.has_area():
 		return null
 
@@ -127,7 +158,8 @@ func try_spawn_enemy() -> BaseEnemy:
 		_target.global_position,
 		spawn_profile.min_player_distance,
 		spawn_profile.spawn_sample_attempts,
-		_rng
+		_rng,
+		_active_sectors
 	)
 	if not spawn_position.is_finite():
 		return null
@@ -145,6 +177,7 @@ func try_spawn_enemy() -> BaseEnemy:
 
 	var enemy := instance as BaseEnemy
 	enemy.set_target(_target)
+	enemy.set_pursuit_offset(_sample_pursuit_offset())
 	enemy.set_run_controller(_run_controller)
 	enemy.experience_reward_scale = spawn_profile.get_experience_reward_scale(
 		_run_controller.get_run_time()
@@ -167,7 +200,7 @@ func cleanup_outside_despawn_rect() -> int:
 	if not is_instance_valid(_arena_layout) or spawn_profile == null:
 		return 0
 
-	var despawn_rect := _arena_layout.get_despawn_rect(
+	var despawn_rect := get_visible_reference_rect().grow(
 		spawn_profile.get_effective_despawn_margin()
 	)
 	if not despawn_rect.has_area():
@@ -220,7 +253,8 @@ static func sample_spawn_position(
 	player_position: Vector2,
 	minimum_player_distance: float,
 	sample_attempts: int,
-	rng: RandomNumberGenerator
+	rng: RandomNumberGenerator,
+	allowed_sides: Array[int] = ALL_SECTORS
 ) -> Vector2:
 	if not viewport_rect.has_area() or rng == null:
 		return Vector2(INF, INF)
@@ -231,9 +265,10 @@ static func sample_spawn_position(
 	var attempts := maxi(sample_attempts, 1)
 	var outer_rect := viewport_rect.grow(safe_outer)
 	var required_distance_squared := safe_minimum_distance * safe_minimum_distance
+	var safe_allowed_sides := allowed_sides if allowed_sides.size() > 0 else ALL_SECTORS
 
 	for _attempt in range(attempts):
-		var side := rng.randi_range(0, 3)
+		var side := safe_allowed_sides[rng.randi_range(0, safe_allowed_sides.size() - 1)]
 		var depth := rng.randf_range(safe_inner, safe_outer)
 		var candidate := Vector2.ZERO
 		match side:
@@ -305,6 +340,24 @@ static func is_point_in_rect_inclusive(
 	)
 
 
+## Sceglie senza ripetizioni `count` settori tra i quattro disponibili usando
+## l'RNG fornito, cosicche' la combinazione resti deterministica per seed.
+static func pick_sector_combination(
+	count: int,
+	rng: RandomNumberGenerator
+) -> Array[int]:
+	var pool := ALL_SECTORS.duplicate()
+	var picked: Array[int] = []
+	if rng == null:
+		return picked
+	var safe_count := clampi(count, 1, pool.size())
+	for _index in range(safe_count):
+		var pick_index := rng.randi_range(0, pool.size() - 1)
+		picked.append(pool[pick_index])
+		pool.remove_at(pick_index)
+	return picked
+
+
 func _exit_tree() -> void:
 	_disconnect_run_controller()
 
@@ -334,6 +387,42 @@ func _prune_invalid_enemies() -> void:
 	for index in range(_spawned_enemies.size() - 1, -1, -1):
 		if not is_instance_valid(_spawned_enemies[index]):
 			_spawned_enemies.remove_at(index)
+
+
+## Ruota i settori di spawn attivi senza sequenza fissa: nella maggior parte
+## dei casi resta attivo un solo lato, occasionalmente due, raramente un picco
+## a 3-4 lati simultanei come impennata di difficolta.
+func _roll_active_sectors() -> void:
+	if spawn_profile == null:
+		_active_sectors = ALL_SECTORS.duplicate()
+		_sector_elapsed = 0.0
+		_sector_hold_duration = 1.0
+		return
+
+	var roll := _rng.randf()
+	var count := 1
+	if roll < spawn_profile.sector_spike_chance:
+		count = _rng.randi_range(3, 4)
+	elif roll < spawn_profile.sector_spike_chance + spawn_profile.sector_multi_chance:
+		count = 2
+
+	_active_sectors = pick_sector_combination(count, _rng)
+	_sector_hold_duration = _rng.randf_range(
+		spawn_profile.get_effective_sector_hold_duration_min(),
+		spawn_profile.get_effective_sector_hold_duration_max()
+	)
+	_sector_elapsed = 0.0
+
+
+func _sample_pursuit_offset() -> Vector2:
+	if spawn_profile == null:
+		return Vector2.ZERO
+	var radius := _rng.randf_range(
+		spawn_profile.get_effective_pursuit_offset_min_radius(),
+		spawn_profile.get_effective_pursuit_offset_max_radius()
+	)
+	var angle := _rng.randf_range(0.0, TAU)
+	return Vector2.RIGHT.rotated(angle) * radius
 
 
 func _disconnect_run_controller() -> void:

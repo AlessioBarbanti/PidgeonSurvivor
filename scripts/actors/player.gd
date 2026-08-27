@@ -50,6 +50,7 @@ var movement_input := Vector2.ZERO:
 			_sync_character_animation_state()
 
 var _arena_layout: ArenaLayout
+var _world_bounds := Rect2()
 var _run_controller: RunController
 var _damage_flash_remaining := 0.0
 var _damage_reaction_remaining := 0.0
@@ -234,6 +235,18 @@ func set_arena_layout(value: ArenaLayout) -> void:
 
 func get_arena_layout() -> ArenaLayout:
 	return _arena_layout
+
+
+## Confinamento opzionale in un'arena piu' grande dello schermo (B38). Finche'
+## non viene assegnato un rettangolo con area, il Player resta confinato nel
+## playfield di `ArenaLayout` come prima di B38.
+func set_world_bounds(value: Rect2) -> void:
+	_world_bounds = value
+	_clamp_to_playfield()
+
+
+func get_world_bounds() -> Rect2:
+	return _world_bounds
 
 
 func set_run_controller(value: RunController) -> void:
@@ -662,6 +675,13 @@ func _on_restart_prepared() -> void:
 
 
 func _clamp_to_playfield() -> void:
+	if _world_bounds.has_area():
+		global_position = ArenaWorld.clamp_circle_center_in_rect(
+			_world_bounds,
+			global_position,
+			collision_radius
+		)
+		return
 	if not is_instance_valid(_arena_layout):
 		return
 	global_position = _arena_layout.clamp_circle_center(

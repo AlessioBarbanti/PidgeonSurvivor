@@ -63,6 +63,38 @@ const MINIMUM_INTERVAL_SECONDS := 0.01
 	set(value):
 		spawn_sample_attempts = maxi(value, 1)
 
+@export_group("Dispersion")
+## Raggio min/max dell'offset di inseguimento assegnato a ogni nemico allo
+## spawn, cosicche' grandi gruppi non convergano sullo stesso pixel del target.
+@export_range(0.0, 256.0, 1.0, "or_greater") var pursuit_offset_min_radius := 8.0:
+	set(value):
+		pursuit_offset_min_radius = maxf(value, 0.0)
+
+@export_range(0.0, 256.0, 1.0, "or_greater") var pursuit_offset_max_radius := 28.0:
+	set(value):
+		pursuit_offset_max_radius = maxf(value, 0.0)
+
+@export_group("Sectors")
+## Durata min/max con cui uno stesso insieme di settori (N/E/S/O) resta
+## attivo prima di ruotare verso una nuova combinazione non prevedibile.
+@export_range(0.5, 120.0, 0.5, "or_greater") var sector_hold_duration_min := 6.0:
+	set(value):
+		sector_hold_duration_min = maxf(value, 0.5)
+
+@export_range(0.5, 120.0, 0.5, "or_greater") var sector_hold_duration_max := 12.0:
+	set(value):
+		sector_hold_duration_max = maxf(value, 0.5)
+
+## Probabilita che una rotazione apra 2 settori invece di 1.
+@export_range(0.0, 1.0, 0.01) var sector_multi_chance := 0.3:
+	set(value):
+		sector_multi_chance = clampf(value, 0.0, 1.0)
+
+## Probabilita che una rotazione apra un picco a 3-4 settori simultanei.
+@export_range(0.0, 1.0, 0.01) var sector_spike_chance := 0.08:
+	set(value):
+		sector_spike_chance = clampf(value, 0.0, 1.0)
+
 @export_group("Cleanup")
 @export_range(0.01, 60.0, 0.01, "or_greater") var cleanup_interval := 1.0:
 	set(value):
@@ -104,6 +136,22 @@ func get_experience_reward_scale(run_time: float) -> float:
 
 func get_effective_outer_spawn_margin() -> float:
 	return maxf(inner_spawn_margin, outer_spawn_margin)
+
+
+func get_effective_pursuit_offset_min_radius() -> float:
+	return minf(pursuit_offset_min_radius, pursuit_offset_max_radius)
+
+
+func get_effective_pursuit_offset_max_radius() -> float:
+	return maxf(pursuit_offset_min_radius, pursuit_offset_max_radius)
+
+
+func get_effective_sector_hold_duration_min() -> float:
+	return minf(sector_hold_duration_min, sector_hold_duration_max)
+
+
+func get_effective_sector_hold_duration_max() -> float:
+	return maxf(sector_hold_duration_min, sector_hold_duration_max)
 
 
 func get_effective_despawn_margin() -> float:

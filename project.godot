@@ -88,6 +88,7 @@ joypads/ignore_joypad_on_unfocused_application=true
 
 2d_physics/layer_1="Player Body"
 2d_physics/layer_2="Enemy Hurtbox"
+2d_physics/layer_3="Obstacle"
 
 [rendering]
 

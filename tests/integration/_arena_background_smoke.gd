@@ -1,9 +1,9 @@
 extends SceneTree
 
 const MOVEMENT_SLICE_SCENE := preload("res://scenes/game/movement_slice.tscn")
-const BACKGROUND_PATH := "res://assets/art/arena/arena_floor_imagegen.png"
+const BACKGROUND_PATH := "res://assets/art/arena/generated/texture_gravel.png"
 const MANIFEST_PATH := "res://assets/art/arena/ASSET-MANIFEST.md"
-const EXPECTED_SHA256 := "210523A96CF0370885BE49E937D85EBD035DF992D8FBC2089A89F36347A615BC"
+const EXPECTED_SHA256 := "8EF8E91C6EBBEF5B8D68EB2CFD3777C69C79EE713ABE701103D709D73E20CFED"
 const INITIAL_VIEWPORT_SIZE := Vector2i(1280, 720)
 const FLOAT_TOLERANCE := 0.01
 
@@ -56,7 +56,7 @@ func _validate_runtime_background(arena_view: ArenaView) -> void:
 	var texture := arena_view.background_texture
 	if texture == null:
 		return
-	_expect(texture.get_size() == Vector2(768.0, 512.0), "Il derivato runtime deve essere 768 x 512.")
+	_expect(texture.get_size() == Vector2(256.0, 256.0), "Il derivato runtime deve essere 256 x 256.")
 	_expect(
 		arena_view.background_modulate.r <= 0.9
 		and arena_view.background_modulate.g <= 0.9
@@ -103,7 +103,7 @@ func _validate_asset(imported_texture: Texture2D) -> void:
 	_expect(image != null and not image.is_empty(), "La texture importata deve esporre i pixel.")
 	if image == null or image.is_empty():
 		return
-	_expect(image.get_width() == 768 and image.get_height() == 512, "Dimensioni PNG B18S inattese.")
+	_expect(image.get_width() == 256 and image.get_height() == 256, "Dimensioni PNG B38 inattese.")
 	_expect(not image.detect_alpha(), "Lo sfondo opaco non deve allocare un canale alpha inutile.")
 
 	var luminance_sum := 0.0
@@ -124,12 +124,11 @@ func _validate_asset(imported_texture: Texture2D) -> void:
 	_expect(digest == EXPECTED_SHA256, "Lo SHA-256 del PNG deve corrispondere al manifest.")
 	var manifest := FileAccess.get_file_as_string(MANIFEST_PATH)
 	for required_text in [
-		"OpenAI ImageGen built-in",
-		"Licenza del progetto",
+		"forniti direttamente dal proprietario",
 		"nearest-neighbor",
 		EXPECTED_SHA256,
 	]:
-		_expect(manifest.contains(required_text), "Manifest B18S incompleto: %s." % required_text)
+		_expect(manifest.contains(required_text), "Manifest B38 incompleto: %s." % required_text)
 
 
 func _sha256_file(path: String) -> String:

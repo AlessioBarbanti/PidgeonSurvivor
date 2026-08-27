@@ -215,7 +215,7 @@ func _validate_collision_contract(player: Player) -> void:
 		and is_equal_approx(circle.radius, 24.0)
 		and is_equal_approx(player.collision_radius, 24.0)
 		and player.collision_layer == 1
-		and player.collision_mask == 0,
+		and player.collision_mask == 4,
 		"B18U non deve cambiare hitbox, layer o mask del Player."
 	)
 	_expect(

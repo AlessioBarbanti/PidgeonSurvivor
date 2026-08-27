@@ -42,7 +42,7 @@ func _validate_baseline() -> void:
 	_expect_float_near(profile.base_spawn_interval, 0.6, "B28 deve partire da una cadenza piu fitta.")
 	_expect_float_near(profile.min_spawn_interval, 0.12, "B28 deve raggiungere la cadenza bullet-hell.")
 	_expect_float_near(profile.progression_experience_multiplier, 1.5, "B28 deve aumentare il budget XP del 50%.")
-	_expect_float_near(base_health.health_max, 24.0, "B28 deve ridurre la vita base da 40 a 24.")
+	_expect_float_near(base_health.health_max, 18.0, "B37 deve ridurre la vita base da 24 a 18.")
 	_expect(
 		boss.health_max >= base_health.health_max * 50.0
 		and boss.radial_projectile_count > 0

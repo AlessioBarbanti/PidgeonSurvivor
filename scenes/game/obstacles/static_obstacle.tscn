@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/game/obstacles/static_obstacle.gd" id="1_obstacle"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_obstacle"]
+resource_local_to_scene = true
+size = Vector2(160, 80)
+
+[node name="StaticObstacle" type="StaticBody2D"]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1_obstacle")
+footprint_size = Vector2(160, 80)
+
+[node name="CollisionShape" type="CollisionShape2D" parent="."]
+unique_name_in_owner = true
+shape = SubResource("RectangleShape2D_obstacle")

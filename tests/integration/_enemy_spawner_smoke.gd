@@ -589,16 +589,25 @@ func _validate_composed_scene() -> void:
 	await _wait_processed_frame()
 
 	var arena := movement_slice.get_node_or_null("ArenaLayout") as ArenaLayout
+	var arena_world := movement_slice.get_node_or_null("ArenaWorld") as ArenaWorld
 	var controller := movement_slice.get_node_or_null("RunController") as RunController
 	var spawner := movement_slice.get_node_or_null("EnemySpawner") as EnemySpawner
 	var target := movement_slice.get_node_or_null("World/Player") as Player
 	var enemy_parent := movement_slice.get_node_or_null("World/Enemies") as Node2D
 	_expect(arena != null, "La scena composta deve contenere ArenaLayout.")
+	_expect(arena_world != null, "La scena composta deve contenere ArenaWorld.")
 	_expect(controller != null, "La scena composta deve contenere RunController.")
 	_expect(spawner != null, "La scena composta deve contenere EnemySpawner.")
 	_expect(target != null, "La scena composta deve contenere Player.")
 	_expect(enemy_parent != null, "La scena composta deve contenere il parent Enemies.")
-	if arena == null or controller == null or spawner == null or target == null or enemy_parent == null:
+	if (
+		arena == null
+		or arena_world == null
+		or controller == null
+		or spawner == null
+		or target == null
+		or enemy_parent == null
+	):
 		paused = false
 		movement_slice.queue_free()
 		await process_frame
@@ -626,7 +635,7 @@ func _validate_composed_scene() -> void:
 			spawner.get_spawned_enemies()[0],
 			target,
 			controller,
-			arena.get_playfield_rect(),
+			spawner.get_visible_reference_rect(),
 			spawner.spawn_profile
 		)
 
@@ -644,7 +653,9 @@ func _validate_composed_scene() -> void:
 	_expect(arena.get_playfield_rect().has_area(), "Il playfield deve restare valido dopo il resize.")
 	_expect_vector_near(
 		target.global_position,
-		arena.clamp_circle_center(target.global_position, target.collision_radius),
+		ArenaWorld.clamp_circle_center_in_rect(
+			arena_world.get_world_rect(), target.global_position, target.collision_radius
+		),
 		FLOAT_TOLERANCE,
 		"Il Player deve restare confinato dopo il resize."
 	)
@@ -658,7 +669,7 @@ func _validate_composed_scene() -> void:
 			spawner.get_spawned_enemies()[0],
 			target,
 			controller,
-			arena.get_playfield_rect(),
+			spawner.get_visible_reference_rect(),
 			spawner.spawn_profile
 		)
 

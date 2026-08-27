@@ -68,7 +68,7 @@ func _validate_presentation_only_contract(player: Player) -> void:
 		and is_equal_approx(circle.radius, EXPECTED_COLLISION_RADIUS)
 		and is_equal_approx(player.collision_radius, EXPECTED_COLLISION_RADIUS)
 		and player.collision_layer == 1
-		and player.collision_mask == 0,
+		and player.collision_mask == 4,
 		"B24 non deve scalare il body o cambiare hitbox, layer e mask."
 	)
 	_expect(

@@ -19,6 +19,8 @@ const B22_PHYSICAL_AUTODEFEAT_DELAY_SECONDS := 8.0
 @export var mobile_performance_profile: PerformanceProfile
 
 @onready var _arena_layout: ArenaLayout = %ArenaLayout
+@onready var _arena_world: ArenaWorld = %ArenaWorld
+@onready var _camera: Camera2D = %Camera2D
 @onready var _run_controller: RunController = %RunController
 @onready var _visual_accessibility_settings: VisualAccessibilitySettings = %VisualAccessibilitySettings
 @onready var _touch_control_settings: TouchControlSettings = %TouchControlSettings
@@ -34,6 +36,7 @@ const B22_PHYSICAL_AUTODEFEAT_DELAY_SECONDS := 8.0
 @onready var _upgrade_service: UpgradeService = %UpgradeService
 @onready var _upgrade_effect_registry: UpgradeEffectRegistry = %UpgradeEffectRegistry
 @onready var _experience_dropper: ExperienceDropper = %ExperienceDropper
+@onready var _health_pickup_dropper: HealthPickupDropper = %HealthPickupDropper
 @onready var _game_audio: GameAudio = %GameAudio
 @onready var _arena_view: ArenaView = %ArenaView
 @onready var _player: Player = %Player
@@ -41,6 +44,7 @@ const B22_PHYSICAL_AUTODEFEAT_DELAY_SECONDS := 8.0
 @onready var _projectiles: Node2D = %Projectiles
 @onready var _boss_projectiles: Node2D = %BossProjectiles
 @onready var _pickups: Node2D = %Pickups
+@onready var _health_pickups: Node2D = %HealthPickups
 @onready var _ability_effects: Node2D = %AbilityEffects
 @onready var _combat_feedback: CombatFeedback = %CombatFeedback
 @onready var _weapon_controller: WeaponController = _player.get_weapon_controller()
@@ -72,7 +76,6 @@ func _ready() -> void:
 	_run_controller.state_changed.connect(_on_run_state_changed_for_joystick)
 	_player.died.connect(_on_player_died)
 	_run_controller.run_ended.connect(_on_run_ended)
-	_boss_encounter.boss_defeated.connect(_on_boss_defeated)
 	_hud.pause_requested.connect(_on_pause_requested)
 	_end_screen.restart_requested.connect(_on_restart_requested)
 	_end_screen.change_character_requested.connect(_on_change_character_requested)
@@ -95,16 +98,24 @@ func _ready() -> void:
 
 	_arena_layout.set_top_reserved_height(_hud.get_gameplay_top_inset())
 	_arena_layout.refresh_layout()
+	var world_rect := _arena_world.get_world_rect()
+	_camera.limit_left = int(world_rect.position.x)
+	_camera.limit_top = int(world_rect.position.y)
+	_camera.limit_right = int(world_rect.end.x)
+	_camera.limit_bottom = int(world_rect.end.y)
 	_player.set_arena_layout(_arena_layout)
+	_player.set_world_bounds(world_rect)
 	_player.set_run_controller(_run_controller)
-	_player.global_position = _arena_layout.get_playfield_center()
+	_player.global_position = _arena_world.get_world_center()
+	_camera.reset_smoothing()
 	_player.set_movement_input(_input_router.movement_vector)
 	_game_director.configure(_run_controller, _enemy_spawner)
 	_enemy_spawner.configure(
 		_run_controller,
 		_arena_layout,
 		_player,
-		_enemies
+		_enemies,
+		_camera
 	)
 	_combat_feedback.configure(
 		_run_controller,
@@ -131,7 +142,8 @@ func _ready() -> void:
 		_targeting_system,
 		_experience_system,
 		_boss_ui,
-		_friend_registry
+		_friend_registry,
+		_camera
 	)
 	_upgrade_service.configure(
 		_upgrade_registry,
@@ -147,6 +159,15 @@ func _ready() -> void:
 		_arena_layout,
 		_pickups
 	)
+	_experience_dropper.set_world_bounds(world_rect)
+	_health_pickup_dropper.configure(
+		_run_controller,
+		_enemy_spawner,
+		_player,
+		_arena_layout,
+		_health_pickups
+	)
+	_health_pickup_dropper.set_world_bounds(world_rect)
 	_weapon_controller.configure(
 		_run_controller,
 		_targeting_system,
@@ -308,9 +329,10 @@ func _apply_layout() -> void:
 		),
 		_is_dynamic_joystick_origin_valid
 	)
+	var world_rect := _arena_world.get_world_rect()
 	_arena_view.update_layout(
-		safe_area,
-		_arena_layout.get_playfield_rect()
+		world_rect,
+		world_rect
 	)
 
 	if (
@@ -420,6 +442,14 @@ func get_arena_layout() -> ArenaLayout:
 	return _arena_layout
 
 
+func get_arena_world() -> ArenaWorld:
+	return _arena_world
+
+
+func get_camera() -> Camera2D:
+	return _camera
+
+
 func get_game_director() -> GameDirector:
 	return _game_director
 
@@ -516,6 +546,10 @@ func get_experience_dropper() -> ExperienceDropper:
 	return _experience_dropper
 
 
+func get_health_pickup_dropper() -> HealthPickupDropper:
+	return _health_pickup_dropper
+
+
 func get_game_audio() -> GameAudio:
 	return _game_audio
 
@@ -530,6 +564,10 @@ func get_touch_control_settings() -> TouchControlSettings:
 
 func get_pickup_parent() -> Node2D:
 	return _pickups
+
+
+func get_health_pickup_parent() -> Node2D:
+	return _health_pickups
 
 
 func get_end_screen() -> EndScreen:
@@ -580,7 +618,8 @@ func restart_run(seed_value: int = 0) -> bool:
 		)
 		return false
 
-	_player.global_position = _arena_layout.get_playfield_center()
+	_player.global_position = _arena_world.get_world_center()
+	_camera.reset_smoothing()
 	_input_router.resume_input()
 	return true
 
@@ -787,7 +826,8 @@ func _start_selected_run(seed_value: int) -> bool:
 	_welcome_screen.hide_welcome()
 	_hud.show()
 	_touch_joystick.show()
-	_player.global_position = _arena_layout.get_playfield_center()
+	_player.global_position = _arena_world.get_world_center()
+	_camera.reset_smoothing()
 	_input_router.resume_input()
 	return true
 
@@ -1566,14 +1606,6 @@ func _on_player_died(player: Player) -> void:
 
 func _on_run_ended(final_state: RunController.RunState, run_time: float) -> void:
 	_show_terminal_screen(final_state, run_time)
-
-
-func _on_boss_defeated(_boss: FirstBoss, _experience_reward: int) -> void:
-	if _run_controller.is_terminal():
-		return
-	_input_router.suspend_input()
-	_player.clear_movement_input()
-	_run_controller.request_victory()
 
 
 func _show_terminal_screen(

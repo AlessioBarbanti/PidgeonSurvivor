@@ -21,7 +21,8 @@
         "tests/integration/_player_survival_smoke.gd",
         "tests/integration/_player_direction_animation_smoke.gd",
         "tests/integration/_cast_sprites_smoke.gd",
-        "tests/integration/_complete_roster_abilities_smoke.gd"
+        "tests/integration/_complete_roster_abilities_smoke.gd",
+        "tests/integration/_b38_arena_world_smoke.gd"
       ]
     },
     {
@@ -34,7 +35,22 @@
         "tests/integration/_boss_encounter_smoke.gd",
         "tests/integration/_complete_run_smoke.gd",
         "tests/integration/_evil_boss_variants_smoke.gd",
-        "tests/integration/_friend_content_smoke.gd"
+        "tests/integration/_friend_content_smoke.gd",
+        "tests/integration/_recurring_boss_smoke.gd",
+        "tests/integration/_b38_arena_world_smoke.gd"
+      ]
+    },
+    {
+      "patterns": [
+        "scripts/game/game_director.gd",
+        "scripts/game/game_director_profile.gd",
+        "data/director_profiles/*"
+      ],
+      "smokes": [
+        "tests/integration/_game_director_smoke.gd",
+        "tests/integration/_boss_encounter_smoke.gd",
+        "tests/integration/_complete_run_smoke.gd",
+        "tests/integration/_recurring_boss_smoke.gd"
       ]
     },
     {
@@ -42,12 +58,17 @@
         "scripts/actors/base_enemy.gd",
         "scenes/actors/base_enemy.tscn",
         "scripts/game/enemy_spawner.gd",
-        "data/enemies/*"
+        "scripts/game/enemy_spawn_profile.gd",
+        "data/enemies/*",
+        "data/spawn_profiles/*"
       ],
       "smokes": [
         "tests/integration/_enemy_spawner_smoke.gd",
         "tests/integration/_combat_slice_smoke.gd",
-        "tests/integration/_pigeon_enemy_smoke.gd"
+        "tests/integration/_pigeon_enemy_smoke.gd",
+        "tests/integration/_b28_horde_density_smoke.gd",
+        "tests/integration/_b37_density_direction_smoke.gd",
+        "tests/integration/_b38_arena_world_smoke.gd"
       ]
     },
     {
@@ -97,12 +118,26 @@
         "scripts/progression/experience_*"
       ],
       "smokes": [
-        "tests/integration/_powerup_first_wave_smoke.gd"
+        "tests/integration/_powerup_first_wave_smoke.gd",
+        "tests/integration/_xp_arena_confinement_smoke.gd",
+        "tests/integration/_b38_arena_world_smoke.gd",
+        "tests/integration/_b39_health_pickup_smoke.gd"
+      ]
+    },
+    {
+      "patterns": [
+        "scripts/progression/health_pickup*",
+        "scenes/pickups/health_pickup.tscn"
+      ],
+      "smokes": [
+        "tests/integration/_b39_health_pickup_smoke.gd",
+        "tests/integration/_movement_slice_smoke.gd"
       ]
     },
     {
       "patterns": [
         "scripts/game/arena_layout.gd",
+        "scripts/game/arena_world.gd",
         "scripts/ui/arena_view.gd",
         "assets/art/arena/*"
       ],
@@ -110,7 +145,18 @@
         "tests/integration/_arena_hud_minimal_smoke.gd",
         "tests/integration/_arena_background_smoke.gd",
         "tests/integration/_movement_slice_smoke.gd",
-        "tests/integration/_xp_arena_confinement_smoke.gd"
+        "tests/integration/_xp_arena_confinement_smoke.gd",
+        "tests/integration/_b38_arena_world_smoke.gd"
+      ]
+    },
+    {
+      "patterns": [
+        "scripts/game/obstacles/*",
+        "scenes/game/obstacles/*"
+      ],
+      "smokes": [
+        "tests/integration/_b38_arena_world_smoke.gd",
+        "tests/integration/_movement_slice_smoke.gd"
       ]
     },
     {
@@ -123,7 +169,12 @@
         "tests/integration/_movement_slice_smoke.gd",
         "tests/integration/_complete_run_smoke.gd",
         "tests/integration/_platform_lifecycle_smoke.gd",
-        "tests/integration/_welcome_flow_smoke.gd"
+        "tests/integration/_welcome_flow_smoke.gd",
+        "tests/integration/_boss_encounter_smoke.gd",
+        "tests/integration/_recurring_boss_smoke.gd",
+        "tests/integration/_b38_arena_world_smoke.gd",
+        "tests/integration/_xp_arena_confinement_smoke.gd",
+        "tests/integration/_b39_health_pickup_smoke.gd"
       ]
     },
     {

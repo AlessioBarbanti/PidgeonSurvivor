@@ -35,10 +35,12 @@ func _run() -> void:
 	var encounter := movement_slice.get_boss_encounter() as BossEncounter
 	var weapon := movement_slice.get_weapon_controller() as WeaponController
 	var ability := movement_slice.get_ability_controller() as AbilityController
+	var arena_world := movement_slice.get_arena_world() as ArenaWorld
 
 	_expect(controller != null and arena != null and hud != null, "B18Q richiede controller, ArenaLayout e HUD.")
 	_expect(player != null and spawner != null and dropper != null, "B18Q richiede Player, spawn e drop XP composti.")
 	_expect(encounter != null, "B18Q richiede il consumatore Boss composto.")
+	_expect(arena_world != null, "B18Q richiede ArenaWorld composto.")
 	if (
 		controller == null
 		or arena == null
@@ -47,6 +49,7 @@ func _run() -> void:
 		or spawner == null
 		or dropper == null
 		or encounter == null
+		or arena_world == null
 	):
 		await _finish(movement_slice, controller)
 		return
@@ -60,7 +63,7 @@ func _run() -> void:
 		ability.set_process(false)
 
 	_validate_minimal_nodes(hud)
-	await _validate_layout_profiles(arena, hud, player, spawner, dropper, encounter)
+	await _validate_layout_profiles(arena, hud, player, spawner, dropper, encounter, arena_world)
 	_validate_authoritative_clock(controller, hud)
 	await _finish(movement_slice, controller)
 
@@ -86,7 +89,8 @@ func _validate_layout_profiles(
 	player: Player,
 	spawner: EnemySpawner,
 	dropper: ExperienceDropper,
-	encounter: BossEncounter
+	encounter: BossEncounter,
+	arena_world: ArenaWorld
 ) -> void:
 	for profile in LAYOUT_PROFILES:
 		root.content_scale_size = profile
@@ -148,7 +152,14 @@ func _validate_layout_profiles(
 		_expect(enemy != null, "%s: lo spawner deve produrre una fixture." % context)
 		if enemy != null:
 			enemy.set_physics_process(false)
-			_expect(not EnemySpawner.is_point_in_rect_inclusive(playfield, enemy.global_position), "%s: lo spawn deve partire fuori dal playfield, non dai limiti viewport." % context)
+			# Da B38 lo spawner campiona attorno alla vista corrente della
+			# camera, non piu' dal playfield ritagliato sul viewport.
+			_expect(
+				not EnemySpawner.is_point_in_rect_inclusive(
+					spawner.get_visible_reference_rect(), enemy.global_position
+				),
+				"%s: lo spawn deve partire fuori dalla vista corrente della camera." % context
+			)
 			enemy.global_position = Vector2(safe_area.get_center().x, safe_area.position.y)
 			# Fixture geometrica: il valore XP frazionario B28 non deve nascondere
 			# il pickup usato per verificare il clamp nell'arena.
@@ -157,7 +168,14 @@ func _validate_layout_profiles(
 			_expect(pickup != null, "%s: il drop XP deve essere creato." % context)
 			if pickup != null:
 				pickup.set_physics_process(false)
-				_expect_circle_inside(pickup.global_position, pickup.get_confinement_radius(), playfield, "%s: il pickup non deve finire dietro le barre." % context)
+				# Da B38 i pickup restano confinati nel mondo fisso di
+				# ArenaWorld, non piu' nel playfield ritagliato sull'HUD.
+				_expect_circle_inside(
+					pickup.global_position,
+					pickup.get_confinement_radius(),
+					arena_world.get_world_rect(),
+					"%s: il pickup non deve finire fuori dall'arena." % context
+				)
 			dropper.clear_active_pickups()
 		spawner.clear_spawned_enemies()
 

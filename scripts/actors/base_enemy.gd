@@ -59,6 +59,7 @@ signal speed_modifiers_changed(enemy: BaseEnemy, effective_multiplier: float)
 @export_range(0.0, 0.5, 0.01) var hit_squash_strength := 0.16
 
 var _target: Node2D
+var _pursuit_offset := Vector2.ZERO
 var _run_controller: RunController
 var _damage_flash_remaining := 0.0
 var _hit_reaction_remaining := 0.0
@@ -130,13 +131,34 @@ func _physics_process(delta: float) -> void:
 			_knockback_velocity = Vector2.ZERO
 		return
 
-	var offset_to_target := _target.global_position - global_position
+	var offset_to_target := (
+		_target.global_position + _pursuit_offset - global_position
+	)
 	if offset_to_target.is_zero_approx():
 		velocity = Vector2.ZERO
 		return
 	_sync_enemy_sprite_facing(offset_to_target)
 
-	velocity = offset_to_target.normalized() * get_effective_move_speed()
+	var desired_direction := offset_to_target.normalized()
+	velocity = desired_direction * get_effective_move_speed()
+	move_and_slide()
+	_steer_around_blocking_obstacle(desired_direction)
+
+
+## move_and_slide() azzera la componente tangenziale quando la direzione
+## desiderata punta quasi frontalmente contro un ostacolo, lasciando il
+## nemico immobile all'infinito: qui lo si fa scivolare lungo il bordo
+## dell'ostacolo scegliendo la tangente piu' vicina al bersaglio.
+func _steer_around_blocking_obstacle(desired_direction: Vector2) -> void:
+	if get_slide_collision_count() == 0:
+		return
+	var normal := get_slide_collision(0).get_normal()
+	if normal.dot(desired_direction) >= -0.3:
+		return
+	var tangent := Vector2(-normal.y, normal.x)
+	if tangent.dot(desired_direction) < 0.0:
+		tangent = -tangent
+	velocity = tangent * get_effective_move_speed()
 	move_and_slide()
 
 
@@ -329,6 +351,17 @@ func get_target() -> Node2D:
 	return _target if is_instance_valid(_target) else null
 
 
+## Offset stabile assegnato allo spawn per disperdere il punto di inseguimento
+## di ogni nemico attorno al target, cosicche' grandi gruppi non convergano
+## visivamente sullo stesso pixel pur restando privi di collisione reciproca.
+func set_pursuit_offset(offset: Vector2) -> void:
+	_pursuit_offset = offset if offset.is_finite() else Vector2.ZERO
+
+
+func get_pursuit_offset() -> Vector2:
+	return _pursuit_offset
+
+
 func set_run_controller(value: RunController) -> void:
 	if value == _run_controller:
 		if not is_instance_valid(_run_controller) or not _run_controller.is_running():
@@ -351,6 +384,7 @@ func get_run_controller() -> RunController:
 
 func clear_chase_dependencies() -> void:
 	_target = null
+	_pursuit_offset = Vector2.ZERO
 	_disconnect_run_controller()
 	_run_controller = null
 	if is_instance_valid(_contact_damage):

@@ -168,6 +168,11 @@ func _validate_composed_ability() -> void:
 	outside_enemy.global_position = player.global_position + Vector2(260.0, 0.0)
 	var inside_health := inside_enemy.get_health_component()
 	var outside_health := outside_enemy.get_health_component()
+	# La fixture isola l'effetto knockback dal bilanciamento B37 della vita
+	# base: senza margine, i 20 danni fissi dell'abilita' ucciderebbero il
+	# nemico prima che il test possa osservare knockback e pausa.
+	inside_health.health_max = 100.0
+	inside_health.reset_to_max()
 
 	Input.action_release(&"active_ability")
 	input_router._process(0.0)

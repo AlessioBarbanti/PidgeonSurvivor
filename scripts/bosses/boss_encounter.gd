@@ -21,6 +21,7 @@ const SCHEDULE_SEED_FACTOR := 0x045D9F3B
 var _run_controller: RunController
 var _game_director: GameDirector
 var _arena_layout: ArenaLayout
+var _camera: Camera2D
 var _player: Player
 var _enemy_parent: Node
 var _boss_projectile_parent: Node
@@ -55,12 +56,14 @@ func configure(
 	targeting_system: TargetingSystem,
 	experience_system: ExperienceSystem,
 	boss_ui: BossUI,
-	friend_registry: FriendRegistry
+	friend_registry: FriendRegistry,
+	camera: Camera2D = null
 ) -> bool:
 	_disconnect_dependencies()
 	_run_controller = run_controller
 	_game_director = game_director
 	_arena_layout = arena_layout
+	_camera = camera
 	_player = player
 	_enemy_parent = enemy_parent
 	_boss_projectile_parent = boss_projectile_parent
@@ -223,6 +226,19 @@ func get_boss_projectile_parent() -> Node:
 	)
 
 
+## Rettangolo di riferimento per lo spawn del Boss: la stessa dimensione dello
+## schermo di ArenaLayout, centrata sulla vista corrente della camera invece
+## che sul rettangolo statico del viewport. Senza camera assegnata (es. i
+## fixture di test) il comportamento storico resta identico.
+func get_visible_reference_rect() -> Rect2:
+	var playfield_rect := _arena_layout.get_playfield_rect()
+	if not is_instance_valid(_camera) or not playfield_rect.has_area():
+		return playfield_rect
+	var half_size := playfield_rect.size * 0.5
+	var center := _camera.get_screen_center_position()
+	return Rect2(center - half_size, half_size * 2.0)
+
+
 static func calculate_spawn_position(
 	playfield_rect: Rect2,
 	player_position: Vector2,
@@ -290,7 +306,7 @@ func _spawn_boss(schedule_index: int) -> FirstBoss:
 		return null
 
 	var spawn_position := calculate_spawn_position(
-		_arena_layout.get_playfield_rect(),
+		get_visible_reference_rect(),
 		_player.global_position,
 		_active_definition.collision_radius
 	)
@@ -401,7 +417,8 @@ func _on_boss_died(boss: BaseEnemy) -> void:
 	if boss != _active_boss or _reward_granted:
 		return
 	_reward_granted = true
-	_targeting_system.unregister_target(_active_boss)
+	var dying_boss := _active_boss
+	_targeting_system.unregister_target(dying_boss)
 	var defeated_definition := _active_definition
 	if defeated_definition == null:
 		defeated_definition = boss_definition
@@ -409,8 +426,17 @@ func _on_boss_died(boss: BaseEnemy) -> void:
 	_last_experience_reward = 0
 	if _experience_system.add_experience(defeated_definition.experience_reward):
 		_last_experience_reward = defeated_definition.experience_reward
+
+	if dying_boss.died.is_connected(_on_boss_died):
+		dying_boss.died.disconnect(_on_boss_died)
+	if dying_boss.tree_exiting.is_connected(_on_boss_tree_exiting):
+		dying_boss.tree_exiting.disconnect(_on_boss_tree_exiting)
+	_active_boss = null
+	_active_definition = null
+	_active_schedule_index = -1
+
 	_game_director.complete_active_boss_event()
-	boss_defeated.emit(_active_boss, _last_experience_reward)
+	boss_defeated.emit(dying_boss, _last_experience_reward)
 
 
 func _on_boss_tree_exiting() -> void:

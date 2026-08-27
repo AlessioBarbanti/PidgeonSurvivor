@@ -140,28 +140,32 @@ func _run() -> void:
 	Input.action_release(&"move_down")
 	await _wait_processed_frame()
 
-	# Clamp su entrambi gli estremi, includendo il raggio di collisione.
-	var playfield := arena.get_playfield_rect()
-	var outside_minimum := playfield.position - Vector2(500.0, 500.0)
+	# Clamp su entrambi gli estremi, includendo il raggio di collisione. Da
+	# B38 il Player e' confinato nel mondo fisso di ArenaWorld, non piu' nel
+	# playfield ritagliato sul viewport di ArenaLayout.
+	var arena_world := movement_slice.get_arena_world() as ArenaWorld
+	_expect(arena_world != null, "La scena composta deve contenere ArenaWorld.")
+	var world_rect := arena_world.get_world_rect() if arena_world != null else Rect2()
+	var outside_minimum := world_rect.position - Vector2(500.0, 500.0)
 	player.global_position = outside_minimum
 	await _wait_physics_step()
 	_expect_vector_near(
 		player.global_position,
-		arena.clamp_circle_center(outside_minimum, player.collision_radius),
+		ArenaWorld.clamp_circle_center_in_rect(world_rect, outside_minimum, player.collision_radius),
 		0.01,
-		"Il Player deve essere confinato all'estremo minimo del playfield."
+		"Il Player deve essere confinato all'estremo minimo dell'arena."
 	)
 
-	var outside_maximum := playfield.end + Vector2(500.0, 500.0)
+	var outside_maximum := world_rect.end + Vector2(500.0, 500.0)
 	player.global_position = outside_maximum
 	await _wait_physics_step()
 	_expect_vector_near(
 		player.global_position,
-		arena.clamp_circle_center(outside_maximum, player.collision_radius),
+		ArenaWorld.clamp_circle_center_in_rect(world_rect, outside_maximum, player.collision_radius),
 		0.01,
-		"Il Player deve essere confinato all'estremo massimo del playfield."
+		"Il Player deve essere confinato all'estremo massimo dell'arena."
 	)
-	player.global_position = arena.get_playfield_center()
+	player.global_position = arena_world.get_world_center()
 
 	# Dispatch diretto: testa ownership senza dipendere dall'hit-testing headless.
 	joystick.show()

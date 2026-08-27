@@ -5,6 +5,7 @@ const MINIMUM_BOSS_THRESHOLD_SECONDS := 0.001
 
 @export var enemy_spawn_profile: EnemySpawnProfile
 @export var boss_thresholds_seconds := PackedFloat32Array([240.0])
+@export var recurring_boss_window_seconds := 240.0
 
 
 func get_effective_boss_thresholds() -> PackedFloat32Array:
@@ -27,8 +28,17 @@ func get_effective_boss_thresholds() -> PackedFloat32Array:
 	return PackedFloat32Array(unique_thresholds)
 
 
+func get_effective_recurring_boss_window() -> float:
+	if not is_finite(recurring_boss_window_seconds):
+		return 0.0
+	if recurring_boss_window_seconds < MINIMUM_BOSS_THRESHOLD_SECONDS:
+		return 0.0
+	return recurring_boss_window_seconds
+
+
 func is_valid() -> bool:
 	return (
 		enemy_spawn_profile != null
 		and not get_effective_boss_thresholds().is_empty()
+		and get_effective_recurring_boss_window() > 0.0
 	)

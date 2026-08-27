@@ -216,9 +216,9 @@ func _validate_health_and_targeting() -> void:
 	default_enemy.set_physics_process(false)
 	_expect_float_near(
 		default_enemy.get_health_component().health_max,
-		24.0,
+		18.0,
 		FLOAT_TOLERANCE,
-		"La scena BaseEnemy deve fissare la baseline B28 di 24 HP."
+		"La scena BaseEnemy deve fissare la baseline B37 di 18 HP."
 	)
 	default_enemy.queue_free()
 
