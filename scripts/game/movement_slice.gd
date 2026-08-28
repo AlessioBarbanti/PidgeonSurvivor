@@ -861,6 +861,7 @@ func _equip_friend(friend_id: StringName) -> bool:
 func _start_selected_run(seed_value: int) -> bool:
 	if not _run_controller.start_run(seed_value):
 		return false
+	_game_audio.stop_menu_music()
 	_character_select_overlay.hide_selection()
 	_welcome_screen.hide_welcome()
 	_tutorial_screen.hide_tutorial()
@@ -879,6 +880,7 @@ func _show_character_selection() -> void:
 	_touch_joystick.hide()
 	_welcome_screen.hide_welcome()
 	_tutorial_screen.hide_tutorial()
+	_game_audio.start_menu_music()
 	var current_friend := _player.get_friend_definition()
 	_character_select_overlay.show_selection(
 		current_friend.id if current_friend != null else &"magno"
@@ -895,6 +897,7 @@ func _show_welcome_screen(focus_tutorial: bool = false) -> void:
 	_touch_joystick.hide()
 	_character_select_overlay.hide_selection()
 	_tutorial_screen.hide_tutorial()
+	_game_audio.start_menu_music()
 	_welcome_screen.show_welcome(focus_tutorial)
 	print("B18O_WELCOME_SHOWN")
 
@@ -908,6 +911,7 @@ func _show_tutorial_screen() -> void:
 	_touch_joystick.hide()
 	_character_select_overlay.hide_selection()
 	_welcome_screen.hide_welcome()
+	_game_audio.start_menu_music()
 	_tutorial_screen.show_tutorial(
 		_visual_accessibility_settings.is_reduced_flashes_enabled()
 	)

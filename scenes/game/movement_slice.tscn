@@ -1,4 +1,4 @@
-[gd_scene load_steps=108 format=3]
+[gd_scene load_steps=109 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -113,6 +113,7 @@
 [ext_resource type="Resource" path="res://data/upgrades/double_barrel.tres" id="116_double_barrel"]
 [ext_resource type="Resource" path="res://data/upgrades/death_burst.tres" id="117_death_burst"]
 [ext_resource type="PackedScene" path="res://scenes/ui/tutorial_screen.tscn" id="118_tutorial_screen"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/menu_music_wipics/menu_music_loop.ogg" id="119_menu_music"]
 
 [node name="MovementSlice" type="Control"]
 layout_mode = 3
@@ -247,6 +248,7 @@ resume_stream = ExtResource("73_resume")
 victory_stream = ExtResource("74_victory")
 defeat_stream = ExtResource("75_defeat")
 background_music_stream = ExtResource("95_background_music")
+menu_music_stream = ExtResource("119_menu_music")
 
 [node name="World" type="Node2D" parent="."]
 

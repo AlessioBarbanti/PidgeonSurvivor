@@ -5,8 +5,8 @@ Stato: `IN VERIFICA`.
 
 ## Implementazione
 
-- `GameAudio` mantiene il pool SFX B18 e aggiunge un solo player scene-local sul
-  bus `Music`; il suo guadagno base è `-12 dB` rispetto agli SFX.
+- `GameAudio` mantiene il pool SFX B18 e aggiunge due player scene-local sul
+  bus `Music`: quello della run (`-7 dB`) e quello dei menu (`-9 dB`).
 - Il loop `Super Wreck Roadway (loop)` parte soltanto in `RUNNING`, si
   ferma e riprende dalla posizione corrente in pausa e modal, e viene azzerato
   a terminale, restart e teardown.
@@ -51,6 +51,19 @@ da B29: `default_enemy_spawn_profile.tres` imposta
 `_b28_horde_density_smoke.gd` richiede `1.5`. Il tentativo `Full -KeepGoing` è
 stato inoltre interrotto perché `_upgrade_effects_smoke.gd` è rimasto appeso;
 il processo Godot figlio di quella suite è stato terminato senza toccare file.
+
+Il 29 agosto 2026 il guadagno base della musica di run è passato da `-12 dB` a
+`-7 dB` su richiesta del proprietario, ed è stato aggiunto il loop dei menu di
+BOOT (welcome, selezione personaggio, tutorial) su un player separato:
+`Menu Music (loop)` di wipics, CC0, tracciato in
+[`menu_music_wipics/ASSET-MANIFEST.md`](../assets/audio/third_party/menu_music_wipics/ASSET-MANIFEST.md).
+Il loop dei menu è continuo fra le tre schermate, si spegne all'avvio della run
+e non si sovrappone mai al loop di gioco. Copertura:
+`tests/integration/_menu_music_smoke.gd` (marker `MENU_MUSIC_SMOKE_OK`),
+verde il 29 agosto 2026 insieme a `B29_BACKGROUND_MUSIC_SMOKE_OK`,
+`B18_AUDIOVISUAL_SMOKE_OK`, `B54_TUTORIAL_FLOW_SMOKE_OK` e
+`B18T_CHARACTER_CAROUSEL_SMOKE_OK`. Export e ispezione Android non sono stati
+rieseguiti.
 
 Il 27 agosto 2026 il proprietario ha sostituito la traccia runtime con
 `super_wreck_roadway_loop.ogg`. Sono stati aggiornati soltanto il riferimento

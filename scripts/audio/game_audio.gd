@@ -10,7 +10,8 @@ const SFX_BUS_NAME := "SFX"
 const MUSIC_BUS_NAME := "Music"
 const PLAYER_POOL_SIZE := 12
 const MINIMUM_LINEAR_VOLUME := 0.0001
-const BACKGROUND_MUSIC_VOLUME_DB := -12.0
+const BACKGROUND_MUSIC_VOLUME_DB := -7.0
+const MENU_MUSIC_VOLUME_DB := -9.0
 
 const SHOT := &"shot"
 const HIT := &"hit"
@@ -56,6 +57,10 @@ const DEFEAT := &"defeat"
 
 @export_group("Background music")
 @export var background_music_stream: AudioStream
+## Loop dei menu di BOOT (welcome, selezione personaggio, tutorial). Vive su un
+## player separato da quello della run cosi' i due non si contendono lo stesso
+## stato di riproduzione durante le transizioni.
+@export var menu_music_stream: AudioStream
 
 @export_group("Diagnostics")
 ## Il driver headless non produce audio udibile e può trattenere playback OGG
@@ -66,12 +71,14 @@ var _effects_volume := 0.8
 var _muted := false
 var _players: Array[AudioStreamPlayer] = []
 var _background_music_player: AudioStreamPlayer
+var _menu_music_player: AudioStreamPlayer
 var _next_player_index := 0
 var _last_cue_ticks: Dictionary = {}
 var _ability_cooldown_armed := false
 var _configured := false
 var _background_music_active := false
 var _background_music_resume_position := 0.0
+var _menu_music_active := false
 
 var _run_controller: RunController
 var _player: Player
@@ -90,6 +97,7 @@ func _ready() -> void:
 	_ensure_music_bus()
 	_build_player_pool()
 	_build_background_music_player()
+	_build_menu_music_player()
 	_load_settings()
 	_apply_settings()
 
@@ -192,6 +200,7 @@ func stop_all() -> void:
 		audio_player.stop()
 		audio_player.stream = null
 	stop_background_music()
+	stop_menu_music()
 
 
 func has_complete_cue_set() -> bool:
@@ -233,6 +242,25 @@ func is_background_music_looping() -> bool:
 
 func get_background_music_player() -> AudioStreamPlayer:
 	return _background_music_player
+
+
+func has_menu_music() -> bool:
+	return menu_music_stream != null
+
+
+func is_menu_music_active() -> bool:
+	return _menu_music_active
+
+
+func is_menu_music_looping() -> bool:
+	if not menu_music_stream is AudioStreamOggVorbis:
+		return false
+	var ogg_stream := menu_music_stream as AudioStreamOggVorbis
+	return ogg_stream.loop
+
+
+func get_menu_music_player() -> AudioStreamPlayer:
+	return _menu_music_player
 
 
 func get_stream_for_cue(cue_id: StringName) -> AudioStream:
@@ -349,6 +377,17 @@ func _build_background_music_player() -> void:
 	add_child(_background_music_player)
 
 
+func _build_menu_music_player() -> void:
+	if is_instance_valid(_menu_music_player):
+		return
+	_menu_music_player = AudioStreamPlayer.new()
+	_menu_music_player.name = "MenuMusicPlayer"
+	_menu_music_player.bus = MUSIC_BUS_NAME
+	_menu_music_player.volume_db = MENU_MUSIC_VOLUME_DB
+	_menu_music_player.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(_menu_music_player)
+
+
 func _acquire_player() -> AudioStreamPlayer:
 	for offset in _players.size():
 		var index := (_next_player_index + offset) % _players.size()
@@ -444,6 +483,7 @@ func start_background_music() -> bool:
 	if background_music_stream is AudioStreamOggVorbis:
 		var ogg_stream := background_music_stream as AudioStreamOggVorbis
 		ogg_stream.loop = true
+	stop_menu_music()
 	_background_music_active = true
 	if signal_only_in_headless and DisplayServer.get_name() == "headless":
 		return true
@@ -461,6 +501,34 @@ func pause_background_music() -> void:
 		_background_music_resume_position = _background_music_player.get_playback_position()
 		_background_music_player.stop()
 	_background_music_active = false
+
+
+## Idempotente per scelta: welcome, selezione personaggio e tutorial si
+## alternano continuamente in BOOT e il loop deve restare continuo invece di
+## ripartire da capo a ogni navigazione.
+func start_menu_music() -> bool:
+	if menu_music_stream == null:
+		return false
+	if _menu_music_active:
+		return true
+	if menu_music_stream is AudioStreamOggVorbis:
+		var ogg_stream := menu_music_stream as AudioStreamOggVorbis
+		ogg_stream.loop = true
+	_menu_music_active = true
+	if signal_only_in_headless and DisplayServer.get_name() == "headless":
+		return true
+	if not is_instance_valid(_menu_music_player):
+		return false
+	_menu_music_player.stream = menu_music_stream
+	_menu_music_player.play()
+	return true
+
+
+func stop_menu_music() -> void:
+	if is_instance_valid(_menu_music_player):
+		_menu_music_player.stop()
+		_menu_music_player.stream = null
+	_menu_music_active = false
 
 
 func stop_background_music() -> void:

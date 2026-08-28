@@ -262,7 +262,9 @@
         "assets/audio/*"
       ],
       "smokes": [
-        "tests/integration/_audiovisual_feedback_smoke.gd"
+        "tests/integration/_audiovisual_feedback_smoke.gd",
+        "tests/integration/_b29_background_music_smoke.gd",
+        "tests/integration/_menu_music_smoke.gd"
       ]
     },
     {
