@@ -99,6 +99,34 @@ func _validate_multishot_fan_offsets() -> void:
 	_expect_float_near(fan_a[1], 0.0, "Il proiettile centrale non deve deviare.")
 	_expect_float_near(fan_a[2], deg_to_rad(15.0), "L'ultimo proiettile deve stare al bordo destro del ventaglio.")
 
+	# Regressione: il ventaglio deve tenere un proiettile sulla linea di mira,
+	# altrimenti un bersaglio fermo passa nel buco centrale (caso Raffica Doppia
+	# rank 1, che con due proiettili tirava solo a -6 e +6 gradi).
+	for fan_count in range(1, 7):
+		var centered := WeaponController.calculate_multishot_fan_offsets(
+			fan_count,
+			12.0 * float(maxi(fan_count - 1, 1))
+		)
+		_expect(
+			centered.size() == fan_count,
+			"Il ventaglio deve avere un angolo per proiettile a ogni conteggio."
+		)
+		_expect(
+			centered.has(0.0),
+			"Ogni ventaglio deve tenere un proiettile sulla linea di mira."
+		)
+
+	var even_fan := WeaponController.calculate_multishot_fan_offsets(2, 12.0)
+	var even_fan_mirrored := WeaponController.calculate_multishot_fan_offsets(2, 12.0, true)
+	_expect_float_near(even_fan[0], 0.0, "Con due proiettili il primo deve restare sulla mira.")
+	_expect_float_near(even_fan[1], deg_to_rad(12.0), "Il secondo proiettile deve deviare di un passo pieno.")
+	_expect_float_near(
+		even_fan_mirrored[0],
+		deg_to_rad(-12.0),
+		"Il ventaglio speculare deve spostare il colpo spaiato sull'altro fianco."
+	)
+	_expect_float_near(even_fan_mirrored[1], 0.0, "Anche da speculare il ventaglio resta sulla mira.")
+
 
 func _validate_scene_behavior() -> void:
 	var movement_slice := MOVEMENT_SLICE_SCENE.instantiate() as Control

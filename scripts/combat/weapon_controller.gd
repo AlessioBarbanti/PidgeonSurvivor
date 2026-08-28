@@ -36,6 +36,7 @@ var _pierce_count := 1
 var _pierce_damage_falloff := 1.0
 var _multishot_count := 1
 var _multishot_spread_degrees := 0.0
+var _multishot_fan_mirror := false
 var _death_burst_enabled := false
 var _death_burst_radius := 0.0
 var _death_burst_damage_multiplier := 0.0
@@ -95,8 +96,10 @@ func try_fire() -> Projectile:
 
 	var fan_offsets := calculate_multishot_fan_offsets(
 		get_effective_multishot_count(),
-		get_effective_multishot_spread_degrees()
+		get_effective_multishot_spread_degrees(),
+		_multishot_fan_mirror
 	)
+	_multishot_fan_mirror = not _multishot_fan_mirror
 	var last_projectile: Projectile = null
 	var last_aim_direction := base_aim_direction
 	for fan_offset in fan_offsets:
@@ -515,16 +518,32 @@ func _on_restart_prepared() -> void:
 ## sulla direzione di mira. Nessun RNG: la dispersione e' dichiarata dalla
 ## carta, non casuale, cosi' resta identica a parita' di seed senza consumare
 ## lo stream dell'RNG di mira.
-static func calculate_multishot_fan_offsets(count: int, spread_degrees: float) -> Array[float]:
+## Offset angolari del ventaglio, ancorati alla linea di mira: un proiettile
+## resta sempre a 0 gradi cosi un bersaglio fermo viene sempre colpito, e gli
+## extra si aggiungono a coppie simmetriche (+/-passo, +/-2 passi, ...). Il
+## passo resta `spread_degrees / (count - 1)`, cioe la dispersione dichiarata
+## per proiettile dall'upgrade. Con un numero pari di proiettili il colpo
+## spaiato finisce sul lato scelto da `mirror`, che il controller alterna a
+## ogni raffica per non favorire sempre lo stesso fianco.
+static func calculate_multishot_fan_offsets(
+	count: int,
+	spread_degrees: float,
+	mirror := false
+) -> Array[float]:
 	var offsets: Array[float] = []
 	if count <= 1:
 		offsets.append(0.0)
 		return offsets
-	var spread_radians := deg_to_rad(spread_degrees)
-	var half_spread := spread_radians * 0.5
-	for shot_index in range(count):
-		var ratio := float(shot_index) / float(count - 1)
-		offsets.append(lerpf(-half_spread, half_spread, ratio))
+	var step := deg_to_rad(spread_degrees) / float(count - 1)
+	var extra_side := -1.0 if mirror else 1.0
+	offsets.append(0.0)
+	var ring := 1
+	while offsets.size() < count:
+		offsets.append(extra_side * float(ring) * step)
+		if offsets.size() < count:
+			offsets.append(-extra_side * float(ring) * step)
+		ring += 1
+	offsets.sort()
 	return offsets
 
 
