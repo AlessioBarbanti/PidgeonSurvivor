@@ -6,7 +6,7 @@ const WELCOME_BACKGROUND_PATH := "res://assets/art/ui/welcome/welcome_ability_ca
 const WELCOME_LOGO_PATH := "res://assets/art/ui/welcome/welcome_logo.png"
 const WELCOME_MANIFEST_PATH := "res://assets/art/ui/welcome/ASSET-MANIFEST.md"
 const CHARACTER_SELECT_CTA_PATH := "res://assets/art/ui/character_select/character_select_cta_base.png"
-const WELCOME_BACKGROUND_SHA256 := "93f85fd7f2a76f889a56961ed17dde667e0c8621ee085fe402aa0349f17c24d0"
+const WELCOME_BACKGROUND_SHA256 := "2fd5b3e8a3bfea879b4a9724ae215bae6d991503ff85f684012fd37bcd460454"
 const WELCOME_LOGO_SHA256 := "c2a63add4753ece374cf673d636d12cce55e55cd43624aed645bf8f5c347fa9f"
 const LAYOUT_PROFILES := [
 	Vector2i(1280, 720),
@@ -193,7 +193,7 @@ func _validate_visual_asset(welcome: WelcomeScreen) -> void:
 	_expect(background != null, "La welcome deve usare il fondale ImageGen approvato.")
 	if background != null:
 		var size := background.get_size()
-		_expect(size == Vector2(1634.0, 919.0), "Il fondale welcome deve conservare le dimensioni registrate.")
+		_expect(size == Vector2(1664.0, 936.0), "Il fondale welcome deve conservare le dimensioni registrate.")
 		_expect(absf(size.aspect() - (16.0 / 9.0)) < 0.01, "Il fondale welcome deve conservare il rapporto 16:9.")
 	_expect(FileAccess.file_exists(WELCOME_BACKGROUND_PATH), "Il PNG welcome deve esistere nel repository.")
 	_expect(

@@ -1,13 +1,12 @@
 # Manifest sprite Player B18U
 
 Le otto strisce Player sono asset raster originali prodotti il 25 agosto 2026
-con OpenAI ImageGen built-in per il progetto IL GIOCO. Nessuna fotografia,
-persona reale, marca, logo o personaggio di terzi e stato usato come soggetto.
-La dichiarazione vale per le otto strisce qui registrate. La striscia `aleo` e
-pero superata dal rework del 28 agosto 2026: la nuova direzione visuale del
-personaggio e ispirata, con consenso esplicito dichiarato dal proprietario, ai
-tratti di una persona reale, e resta una caricatura pixel-art. Il prompt di
-rigenerazione e in `docs/aleo-rework-art-prompts.md`.
+con OpenAI ImageGen built-in per il progetto IL GIOCO. La baseline iniziale non
+usava fotografie o persone reali; l'identity pass del 28 agosto 2026 la supera
+per tutti gli otto profili usando riferimenti fotografici forniti e autorizzati
+esplicitamente dal proprietario. I risultati restano caricature pixel-art e non
+contengono marche, loghi o personaggi di terzi. Il prompt del rework Aleo è in
+`docs/aleo-rework-art-prompts.md`.
 Origine: progetto IL GIOCO; autore: progetto IL GIOCO con assistenza OpenAI
 ImageGen; licenza: Licenza del progetto.
 
@@ -25,16 +24,16 @@ gia PNG RGBA trasparenti `1536x1024`, accompagnati da una copia intermedia su
 chroma per ogni candidato. Per ogni personaggio e stata promossa la versione
 piu recente:
 
-| Personaggio | Candidato promosso |
+| Personaggio | Master corrente |
 |---|---|
-| `magno` | `magno_identity_v3_source.png` |
-| `bea` | `bea_identity_v5_source.png` |
-| `zat` | `zat_identity_v2_source.png` |
-| `alea` | `alea_identity_v3_source.png` |
-| `aleo` | `aleo_thermotechnician_v3_source.png` |
-| `lollo` | `lollo_identity_v2_source.png` |
-| `migi` | `migi_identity_v2_source.png` |
-| `marghe` | `marghe_identity_v3_source.png` |
+| `magno` | `hd/magno_source.png` |
+| `bea` | `hd/bea_source.png` |
+| `zat` | `hd/zat_source.png` |
+| `alea` | `hd/alea_source.png` |
+| `aleo` | `hd/aleo_source.png` |
+| `lollo` | `hd/lollo_source.png` |
+| `migi` | `hd/migi_source.png` |
+| `marghe` | `hd/marghe_source.png` |
 
 Le copie su chroma e le versioni non promosse erano materiale di staging non
 versionato e sono state rimosse dopo la promozione: per questo la tabella di
@@ -43,14 +42,12 @@ dell'output ImageGen su chroma della baseline B18U. Le trasformazioni
 deterministiche verso `96x32` e verso il carosello `256x256` sono invariate e
 sono state rieseguite con gli stessi script e gli stessi parametri.
 
-Per `aleo` il passaggio accompagna il rework gameplay da muratore a
-termotecnico: la sua direzione visuale e ispirata, con consenso esplicito
-dichiarato dal proprietario, ai tratti di una persona reale e resta una
-caricatura pixel-art. La clausola «nessuna persona realeº della baseline B18U
-continua a valere per gli altri sette profili. I prompt di questo passaggio per
+Per `aleo` il passaggio accompagna inoltre il rework gameplay da muratore a
+termotecnico. Come per gli altri sette profili, la direzione visuale usa un
+riferimento autorizzato e resta una caricatura pixel-art. I prompt specifici di
 Aleo sono in `docs/aleo-rework-art-prompts.md`.
 
-## Prompt condiviso
+## Prompt condiviso della baseline del 25 agosto
 
 ```text
 Use case: stylized-concept

@@ -27,7 +27,7 @@ automatici, Windows, APK statico e Pixel 9 fisico a 20:9.
 
 ## Refresh visuale ImageGen
 
-La welcome usa ora la variante pixel-art `1634×919` prodotta con la modalità
+La baseline verificata il 24 agosto usa la variante pixel-art `1634×919` prodotta con la modalità
 built-in di OpenAI ImageGen a partire dalla reference fornita e approvata dal
 proprietario. L'edit rimuove insegna, testi e pulsanti incorporati, ricostruisce
 lo scenario centrale e sposta i personaggi quanto basta per lasciare volti,
@@ -165,6 +165,37 @@ riferite alla composizione `405×270`.
 | `exports/android/friendship-survival-debug.apk` | `90357808` | `E5CE0BCC0E62A163A85253DCA38B2917BA7475CB4300BE149C4136EF6E6BA558` |
 
 Gli artefatti e le schermate di verifica restano esclusi dal versionamento.
+
+## Refresh identità del cast — 28 agosto 2026
+
+Il fondale runtime è stato sostituito con una composizione `1664×936` che usa i
+master correnti in `assets/art/characters/players/hd/`: Aleo termotecnico,
+Magno muscoloso con motivo bovino, Alea ballerina bionda, Marghe più morbida,
+Lollo retrofuturista, Migi nello scudo tartaruga, Bea con bandana e pattini a
+terra, Zat medico elettrico. La pulizia finale conserva esattamente otto persone
+e lascia libera l'area menu; Lollo è stato abbassato finché entrambi gli stivali
+poggiano visibilmente sulla piattaforma. Il master completo `1672×941` è in
+`assets/art/ui/welcome/hd/`, esclusa da import ed export; i raster intermedi
+delle prove precedenti e il fondale base senza cast sono stati rimossi dal
+repository e restano recuperabili dalla cronologia git.
+
+SHA-256 runtime:
+`2FD5B3E8A3BFEA879B4A9724AE215BAE6D991503FF85F684012FD37BCD460454`.
+Le verifiche automatiche del refresh sono registrate nella sessione corrente;
+il nuovo controllo percettivo del proprietario e il passaggio fisico Pixel 9
+restano aperti e non sono confusi con le evidenze storiche del 24 agosto.
+
+Verifiche eseguite il 28 agosto:
+
+- refresh import editor Godot 4.7.1 completato senza errori;
+- `run-milestone-checks.ps1 -Milestone B18O -Profile Focused -NoCache`: PASS
+  `1/1`, marker `B18O_WELCOME_FLOW_SMOKE_OK`;
+- profilo `Relevant -NoCache`: il controllo B18O e 22 regressioni su 23 sono
+  verdi; `_complete_roster_abilities_smoke.gd` fallisce sul pannello roster
+  fuori safe area a causa del rework Lollo già presente nel worktree, separato
+  dal fondale welcome;
+- nessun `.import` nella cartella HD e filtro di esclusione presente in tutti e
+  tre i preset; hash runtime e dimensioni corrispondono al manifest.
 
 ## Rebrand ufficiale — 24 agosto 2026
 

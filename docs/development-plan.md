@@ -493,7 +493,7 @@ significato:
 | B18L | Joystick dinamico | COMPLETATO | Gate chiusi, inclusa regressione lock/resume; commit dedicato `d6625d7` |
 | B18M | Migliorie grafiche delle abilità | COMPLETATO | Refresh ImageGen: automatici, Windows, APK statico e controllo percettivo Pixel 9 chiusi il 25 agosto 2026 |
 | B18N | Cambia personaggio dal menu pausa | COMPLETATO | Gate automatici, Windows, APK statico e runtime Pixel 9 chiusi il 24 agosto 2026 |
-| B18O | Welcome screen | COMPLETATO | Gate automatici, Windows, APK statico e controllo percettivo 20:9 della variante finale sul Pixel 9 chiusi il 24 agosto 2026 |
+| B18O | Welcome screen | IN VERIFICA | Contratto funzionale chiuso; refresh identità del cast installato il 28 agosto, con automatici e nuovo controllo percettivo da chiudere |
 | B18P | Dimensioni configurabili dei controlli touch | COMPLETATO | Gate automatici, Windows, APK statico e multitouch reale Pixel 9 chiusi il 25 agosto 2026 |
 | B18Q | Arena separata dal HUD minimo | COMPLETATO | Automatici, Windows, APK statico, percorso Pixel 9 20:9 e confronto percettivo manuale multi-aspect chiusi il 25 agosto 2026 |
 | B18R | Durata e leggibilità di animazioni e VFX | COMPLETATO | Timing centralizzati e separati dal gameplay; `42/42`, Windows, Android e verifica umana Windows/Pixel 9 chiusi il 25 agosto 2026 |
@@ -522,7 +522,8 @@ significato:
 
 #### B18C — Player animato e direzione persistente
 
-Stato: `COMPLETATO`.
+Stato: `IN VERIFICA`; contratto funzionale chiuso, refresh identità del cast del
+28 agosto 2026 installato e in attesa del nuovo controllo percettivo.
 
 - [x] Rimuovere il cannoncino visibile e il vecchio fondo circolare azzurro.
 - [x] Animare il personaggio durante il movimento e mostrare una posa ferma al
@@ -869,6 +870,12 @@ Stato: `COMPLETATO`.
 - [x] Verificare sul Pixel 9 la ricomposizione dalla reference e il logo finale:
   welcome e impostazioni mantengono tutti gli otto volti fuori dai pannelli,
   con centro leggibile e target interamente nella safe area.
+- [x] Riallineare il fondale agli otto master correnti in
+  `assets/art/characters/players/hd/`, mantenendo esattamente otto persone, la
+  posa da pattinatrice di Bea, la bandana, il centro libero e il master HD fuori
+  da import/export.
+- [ ] Ripetere smoke B18O e controllo percettivo della nuova composizione su
+  welcome e impostazioni; la verifica su Pixel 9 resta un gate separato.
 
 Dettagli ed evidenze: [`b18o-verification.md`](./b18o-verification.md).
 
