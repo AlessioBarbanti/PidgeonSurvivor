@@ -16,9 +16,9 @@ const PAGE_IDS: Array[String] = [
 	"enemies",
 	"boss",
 ]
-## Pagine con animazione: indice, passo di campionamento e numero di scatti che
-## coprono due periodi interi del loop.
-const LOOP_PAGES: Array[int] = [2, 3, 4]
+## Pagine con animazione: solo la camminata dei piccioni. Passo di campionamento
+## e numero di scatti coprono due periodi interi del loop.
+const LOOP_PAGES: Array[int] = [4]
 const LOOP_STEP_SECONDS := 0.5
 const LOOP_SHOT_COUNT := 25
 ## Profili verificati: 16:9, Pixel 9 20:9 e 4:3.

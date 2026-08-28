@@ -103,10 +103,10 @@ func handle_back_requested() -> bool:
 	return true
 
 
+## La vetrina non lampeggia più (resta solo la camminata dei piccioni): lo stato
+## viene conservato per l'autorità di accessibilità condivisa con welcome/pausa.
 func set_reduced_flashes(enabled: bool) -> void:
 	_reduced_flashes = enabled
-	if is_instance_valid(_preview):
-		_preview.set_reduced_flashes(enabled)
 
 
 ## Rettangolo globale coperto dallo sfondo: deve contenere l'intero viewport.
@@ -127,7 +127,7 @@ func show_page(page_index: int) -> bool:
 	_page_title.text = page.title
 	_page_body.text = page.body
 	_update_layout()
-	_preview.configure(page, _reduced_flashes)
+	_preview.configure(page)
 	_preview.set_animation_active(visible)
 	_previous_button.text = "ESCI" if page_index == 0 else "INDIETRO"
 	_next_button.text = "GIOCA" if page_index == pages.size() - 1 else "AVANTI"

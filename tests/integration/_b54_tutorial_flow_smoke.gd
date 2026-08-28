@@ -142,12 +142,14 @@ func _validate_tutorial_flow() -> void:
 		and tutorial.pages[5].artwork.resource_path == TUTORIAL_ARTWORK_PATHS[2],
 		"Obiettivo, movimento e Boss devono usare gli artwork tutorial dedicati."
 	)
-	_expect(tutorial.is_preview_animation_active(), "La preview visibile deve animarsi.")
-	var first_phase := tutorial.get_preview_animation_phase()
+	_expect(
+		not tutorial.is_preview_animation_active(),
+		"L'artwork della prima pagina deve restare immobile."
+	)
 	await _wait_processed_frame()
 	_expect(
-		tutorial.get_preview_animation_phase() > first_phase,
-		"La preview visibile deve avanzare senza usare il clock della run."
+		is_zero_approx(tutorial.get_preview_animation_phase()),
+		"Senza camminata la fase non deve avanzare."
 	)
 	_validate_boot_invariants(controller, spawner, router, hud, joystick, "preview")
 	tutorial.get_previous_button().pressed.emit()
@@ -208,19 +210,34 @@ func _validate_tutorial_flow() -> void:
 				% EXPECTED_ENEMY_SPRITE_PATHS[index]
 			)
 	_expect(tutorial.is_preview_animation_active(), "La camminata dei piccioni deve essere attiva.")
+	var walk_phase := tutorial.get_preview_animation_phase()
+	await _wait_processed_frame()
+	_expect(
+		tutorial.get_preview_animation_phase() > walk_phase,
+		"La camminata dei piccioni deve avanzare senza usare il clock della run."
+	)
 	_expect_continuous_loop(tutorial, "Nemici")
 
 	_expect(tutorial.show_page(BOSS_PAGE_INDEX), "La pagina Boss deve essere raggiungibile.")
 	await _wait_processed_frame()
 	_expect(tutorial.get_next_button().text == "GIOCA", "L'ultima pagina deve sostituire AVANTI con GIOCA.")
-	_expect(tutorial.is_preview_animation_active(), "La pagina Boss deve avere una preview attiva.")
-	_expect_continuous_loop(tutorial, "Boss")
+	_expect(
+		not tutorial.is_preview_animation_active(),
+		"L'artwork della pagina Boss deve restare immobile."
+	)
 	await _validate_layout_profiles(movement_slice, welcome, tutorial)
 
+	## Il ritorno avviene dalla pagina Nemici: e' l'unica animata, quindi l'unica
+	## che potrebbe restare a girare dietro la welcome.
+	_expect(tutorial.show_page(ENEMIES_PAGE_INDEX), "La pagina Nemici deve restare raggiungibile.")
+	await _wait_processed_frame()
 	_expect(lifecycle.request_back(), "Back deve chiudere il tutorial in BOOT.")
 	await _wait_processed_frame()
 	_expect(welcome.visible and not tutorial.visible, "Back dal tutorial deve tornare alla welcome.")
-	_expect(not tutorial.is_preview_animation_active(), "Le preview devono fermarsi quando il tutorial è nascosto.")
+	_expect(
+		not tutorial.is_preview_animation_active(),
+		"La camminata deve fermarsi quando il tutorial è nascosto."
+	)
 	_expect(root.gui_get_focus_owner() == tutorial_button, "Back deve restituire il focus a TUTORIAL.")
 	_validate_boot_invariants(controller, spawner, router, hud, joystick, "chiusura")
 
@@ -279,8 +296,10 @@ func _validate_grid_page(
 					and textures[index].resource_path == expected_icon_paths[index],
 					"%s: lo slot %d deve usare %s." % [context, index, expected_icon_paths[index]]
 				)
-	_expect(tutorial.is_preview_animation_active(), "%s: la preview visibile deve animarsi." % context)
-	_expect_continuous_loop(tutorial, context)
+	_expect(
+		not tutorial.is_preview_animation_active(),
+		"%s: le icone della vetrina devono restare immobili." % context
+	)
 
 
 func _expect_continuous_loop(tutorial: TutorialScreen, context: String) -> void:

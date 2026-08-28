@@ -1,9 +1,11 @@
 class_name TutorialPreview
 extends Control
 
-## Vetrina illustrata delle pagine tutorial. Ogni animazione è una funzione pura
-## della fase normalizzata `[0, 1)`: lo stato in `1` coincide con quello in `0`,
-## quindi il loop non produce salti fra ultimo e primo frame.
+## Vetrina illustrata delle pagine tutorial. L'unica animazione è la camminata
+## dei piccioni (layout `WALKERS_2_3`): artwork e icone in griglia restano
+## immobili. La camminata è una funzione pura della fase normalizzata `[0, 1)`,
+## con lo stato in `1` uguale a quello in `0`: il loop non salta fra ultimo e
+## primo frame.
 
 const LOOP_PERIOD := 6.0
 
@@ -34,7 +36,6 @@ const GOLD := Color(1.0, 0.72, 0.25, 1.0)
 @onready var _gallery: CenterContainer = %Gallery
 
 var _animation_active := false
-var _reduced_flashes := false
 var _phase := 0.0
 var _layout := TutorialPageDefinition.ShowcaseLayout.GRID_2X2
 var _gallery_icons: Array[TextureRect] = []
@@ -43,13 +44,10 @@ var _walkers: Array[Dictionary] = []
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_artwork.resized.connect(_update_artwork_pivot)
-	_update_artwork_pivot()
 	set_process(false)
 
 
-func configure(page: TutorialPageDefinition, reduced_flashes: bool) -> void:
-	_reduced_flashes = reduced_flashes
+func configure(page: TutorialPageDefinition) -> void:
 	_phase = 0.0
 	_layout = page.showcase_layout
 	_artwork.texture = page.artwork
@@ -59,17 +57,14 @@ func configure(page: TutorialPageDefinition, reduced_flashes: bool) -> void:
 	_apply_phase(0.0)
 
 
+## Solo la camminata dei piccioni ha bisogno del clock: sulle altre pagine la
+## vetrina è statica e non consuma un frame di processo.
 func set_animation_active(active: bool) -> void:
-	_animation_active = active
-	set_process(active)
-	if not active:
+	_animation_active = active and _is_walker_layout()
+	set_process(_animation_active)
+	if not _animation_active:
 		_phase = 0.0
 		_apply_phase(0.0)
-
-
-func set_reduced_flashes(enabled: bool) -> void:
-	_reduced_flashes = enabled
-	_apply_phase(_phase)
 
 
 func is_animation_active() -> bool:
@@ -168,16 +163,6 @@ func _process(delta: float) -> void:
 
 
 func _apply_phase(phase: float) -> void:
-	if is_instance_valid(_artwork) and _artwork.visible:
-		var artwork_amount := 0.005 if _reduced_flashes else 0.012
-		_artwork.scale = Vector2.ONE * (1.0 + artwork_amount * _rise(phase))
-	var icon_amount := 0.024 if _reduced_flashes else 0.06
-	var icon_sway := deg_to_rad(1.0 if _reduced_flashes else 2.5)
-	for index in _gallery_icons.size():
-		var icon := _gallery_icons[index]
-		var offset := phase + float(index) * 0.25
-		icon.scale = Vector2.ONE * (1.0 + icon_amount * _rise(offset))
-		icon.rotation = icon_sway * sin(TAU * offset)
 	for walker in _walkers:
 		_apply_walker_phase(walker, phase)
 
@@ -266,11 +251,6 @@ func _on_walker_slot_resized() -> void:
 	_apply_phase(_phase)
 
 
-func _update_artwork_pivot() -> void:
-	if is_instance_valid(_artwork):
-		_artwork.pivot_offset = _artwork.size * 0.5
-
-
 func _rebuild_gallery(page: TutorialPageDefinition) -> void:
 	for child in _gallery.get_children():
 		_gallery.remove_child(child)
@@ -313,7 +293,6 @@ func _build_icon_card(texture: Texture2D) -> PanelContainer:
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	icon.pivot_offset = GRID_ICON_SIZE * 0.5
 	center.add_child(icon)
 	_gallery_icons.append(icon)
 	return card
