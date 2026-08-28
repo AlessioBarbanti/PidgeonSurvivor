@@ -1,7 +1,7 @@
 extends Node2D
 
 const LOGICAL_ICON_SIZE := 92.0
-const BURST_DURATION := PresentationTimings.ABILITY_ICON_BURST_SECONDS
+const BURST_DURATION := PresentationTimings.ABILITY_VFX_TAIL_SECONDS
 
 var _effect_id: StringName
 var _run_controller: RunController

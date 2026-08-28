@@ -52,6 +52,12 @@ const GOLDEN_ANGLE := 2.399963229728653
 const VISUAL_FAMILY_ID := &"thunder_cloud_warning_and_waves"
 const VISUAL_PARTICLE_COUNT := 0
 const VISUAL_MATERIAL_COUNT := 0
+const LIGHTNING_IMPACT_TEXTURE := preload(
+	"res://assets/art/vfx/abilities/generated/lightning_impact.png"
+)
+## Il decal elettrico riempie il quadrato fino agli angoli, mentre l'AoE e'
+## circolare: inscrivendolo nel cerchio la diagonale non eccede _strike_radius.
+const INSCRIBED_DECAL_SCALE := 0.70710678
 
 var _definition: AbilityDefinition
 var _run_controller: RunController
@@ -158,6 +164,7 @@ func initialize(
 	_build_strike_plan(resolve_strike_count(_definition), strike_seed, arena_layout)
 	_total_duration = _warning_seconds + _storm_duration
 	_phase = Phase.WARNING
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_create_flash_overlay()
 	queue_redraw()
 	return true
@@ -317,6 +324,10 @@ func get_visual_particle_count() -> int:
 
 func get_visual_material_count() -> int:
 	return VISUAL_MATERIAL_COUNT
+
+
+func get_visual_texture_path() -> String:
+	return LIGHTNING_IMPACT_TEXTURE.resource_path
 
 
 func uses_fullscreen_overlay() -> bool:
@@ -538,6 +549,14 @@ func _sync_flash_overlay() -> void:
 
 func _draw_strike_telegraph(center: Vector2, lead: float) -> void:
 	var progress := clampf(1.0 - lead / maxf(_telegraph_seconds, 0.001), 0.0, 1.0)
+	var preview_radius := _strike_radius * lerpf(0.72, 0.96, progress)
+	var preview_size := Vector2.ONE * preview_radius * 2.0 * INSCRIBED_DECAL_SCALE
+	draw_texture_rect(
+		LIGHTNING_IMPACT_TEXTURE,
+		Rect2(center - preview_size * 0.5, preview_size),
+		false,
+		Color(0.62, 0.78, 1.0, 0.08 + progress * 0.12)
+	)
 	draw_circle(center, _strike_radius, Color(0.42, 0.58, 0.9, 0.10 + progress * 0.14))
 	draw_circle(
 		center,
@@ -552,27 +571,23 @@ func _draw_strike_telegraph(center: Vector2, lead: float) -> void:
 		_strike_radius * progress,
 		Color(1.0, 0.9, 0.35, 0.16 + progress * 0.26)
 	)
-	var cloud_color := Color(0.18, 0.22, 0.38, 0.45 + progress * 0.35)
-	for cloud_index in 5:
-		var cloud_offset := Vector2(
-			float(cloud_index - 2) * 16.0,
-			-42.0 - absf(float(cloud_index - 2)) * 3.0
-		)
-		draw_circle(center + cloud_offset, 18.0 - absf(float(cloud_index - 2)) * 1.5, cloud_color)
-	var bolt := PackedVector2Array([
-		center + Vector2(4.0, -36.0),
-		center + Vector2(-8.0, -14.0),
-		center + Vector2(2.0, -16.0),
-		center + Vector2(-5.0, 4.0),
-	])
-	draw_polyline(bolt, Color(1.0, 0.88, 0.28, 0.45 + progress * 0.5), 5.0, true)
+	var cross_size := lerpf(13.0, 5.0, progress)
+	draw_line(center - Vector2(cross_size, 0.0), center + Vector2(cross_size, 0.0), Color(1.0, 0.92, 0.5, 0.72), 3.0, true)
+	draw_line(center - Vector2(0.0, cross_size), center + Vector2(0.0, cross_size), Color(1.0, 0.92, 0.5, 0.72), 3.0, true)
 
 
 func _draw_strike_afterglow(center: Vector2, age: float) -> void:
 	var fade := 1.0 - clampf(age / maxf(_strike_interval, 0.001), 0.0, 1.0)
 	if fade <= 0.0:
 		return
-	draw_circle(center, 18.0, Color(0.85, 0.95, 1.0, 0.32 * fade))
+	var impact_radius := _strike_radius * (1.0 + (1.0 - fade) * 0.08)
+	var impact_size := Vector2.ONE * impact_radius * 2.0 * INSCRIBED_DECAL_SCALE
+	draw_texture_rect(
+		LIGHTNING_IMPACT_TEXTURE,
+		Rect2(center - impact_size * 0.5, impact_size),
+		false,
+		Color(1.0, 1.0, 1.0, fade * 0.94)
+	)
 	for ring_index in range(3):
 		draw_arc(
 			center,

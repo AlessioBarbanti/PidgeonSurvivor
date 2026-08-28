@@ -1,10 +1,77 @@
 # B18M — Migliorie grafiche delle abilità
 
+## Refresh VFX runtime — 29 agosto 2026
+
+Stato corrente: `IN VERIFICA` per il nuovo controllo percettivo in movimento.
+Il runtime non mostra piu l'icona HUD come emblema sopra l'arena: nove decal
+ImageGen dedicati coprono shockwave, scia, impatto elettrico, Piroetta, le due
+fasi di Shock Termico, reveal Cosplay, campo Zen e clone Reggaeton.
+
+I master RGBA `1254x1254` sono in
+`assets/art/vfx/abilities/hd/`; i derivati runtime `512x512` sono in
+`assets/art/vfx/abilities/generated/`. `tools/process-ability-vfx.ps1` conserva
+il canvas quadrato, ricampiona in bicubica e azzera l'alpha residuo sotto `32`;
+master e prompt/hashes sono
+registrati nel manifest. Gli output ImageGen built-in avevano alpha nativo,
+quindi non e servita rimozione chroma.
+
+L'integrazione mantiene un bordo procedurale sul raggio gameplay reale e usa il
+decal come resa artistica: danno, hitbox, cooldown, targeting e input non
+cambiano. La sola durata presentazionale della shockwave di Magno passa da
+`0,35 s` a `1,20 s`; l'impatto resta istantaneo e il nodo non contiene
+collisioni.
+
+### Passata di taratura sulla leggibilita' — 29 agosto 2026
+
+La prima integrazione dei decal introduceva tre disallineamenti fra resa e
+gameplay, ora corretti; nessuna correzione tocca dati, hitbox o timing di danno.
+
+- Onda d'Urto Tellurica: l'espansione si chiudeva a `~0,50 s` mentre danno,
+  knockback e stun sono istantanei, quindi i nemici al bordo volavano via prima
+  del fronte. Il fronte raggiunge ora il raggio pieno entro il `15%` della
+  durata visiva (`~0,18 s`) e la coda comincia a dissolversi dal `22%`.
+- Il master tellurico e' l'unico dei nove senza centro aperto: l'opacita' del
+  decal e' ora limitata a `0,62`, mentre il bordo del raggio resta a `0,85`, per
+  non nascondere il Player durante gli `1,20 s` di coda. Lo stesso master e'
+  pittorico e non pixel-art, quindi il suo nodo usa filtro lineare.
+- Tempesta di Tuoni: il decal riempie il quadrato fino agli angoli mentre l'AoE
+  e' circolare, cosi' l'impatto appariva fino a `1,41x` il raggio che fa danno.
+  Telegraph e afterglow sono ora inscritti nel cerchio (`1/sqrt(2)`).
+- Powerslide: il master non e' raccordabile, quindi gli stampi accumulavano
+  alpha nelle sovrapposizioni. Passo portato a `0,72` del lato, opacita' del
+  singolo tassello a `0,62` e specchiatura alternata per spezzare la ripetizione.
+- Pulizie: `VISUAL_PARTICLE_COUNT` di Shock Termico allineato a `0` (le schegge
+  che lo giustificavano sono state sostituite dal decal), note musicali del
+  clone Reggaeton spostate fuori dalla sagoma, variabile morta rimossa,
+  `ABILITY_ICON_BURST_SECONDS` rinominata `ABILITY_VFX_TAIL_SECONDS` e percorso
+  `_attach_generated_icon_burst` marcato come deprecato.
+
+Resta aperta, come scelta artistica: `zen_field` e `thermal_frost` sono
+pittorici accanto a master pixel-art e condividono il nodo con questi ultimi,
+quindi non possono ricevere un filtro diverso senza rigenerarli o separarli.
+
+Verifica automatica corrente:
+
+- import Godot dei nove PNG: verde;
+- `_ability_visuals_smoke.gd`: `B18M_ABILITY_VISUALS_SMOKE_OK`;
+- `_visual_timing_smoke.gd`: `B18R_VISUAL_TIMING_SMOKE_OK`;
+- profilo `Relevant` su `66` step: `62` verdi. I tre rossi sono preesistenti e
+  non riguardano le abilita': `_hud_smoke` si aspetta HP `80/100` ma riceve
+  `95/115`, mentre `_typography_smoke` e `_welcome_flow_smoke` appartengono al
+  refresh B18O ancora in verifica (entrambi rossi anche senza queste modifiche).
+  `_signature_upgrades_smoke` e' risultato instabile: rosso in una passata e
+  verde in tre esecuzioni successive con le modifiche applicate, per via
+  dell'asserzione sulla dispersione casuale della Birra.
+
+Restano aperti export/runtime Windows, build/install Android e controllo
+percettivo Pixel 9 del nuovo candidato; le evidenze del 25 agosto riguardano la
+grafica precedente e non vengono riutilizzate.
+
 Data verifica refresh ImageGen: 24 agosto 2026
 Godot: `4.7.1.stable.official.a13da4feb`
 Target obbligatori: Windows x64 e Android ARM64
 
-## Stato
+## Stato storico del refresh icone — 24/26 agosto 2026
 
 `COMPLETATO`. Il refresh sostituisce le otto icone SVG runtime con emblemi PNG
 ImageGen e li riusa in brevi animazioni di attivazione. Smoke, regressione,

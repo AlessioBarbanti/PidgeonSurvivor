@@ -6,6 +6,17 @@ signal finished(wave: EarthquakeWave)
 const VISUAL_FAMILY_ID := &"earthquake_rings_and_cracks"
 const VISUAL_PARTICLE_COUNT := 0
 const VISUAL_MATERIAL_COUNT := 0
+const EARTHQUAKE_WAVE_TEXTURE := preload(
+	"res://assets/art/vfx/abilities/generated/earthquake_wave.png"
+)
+## Frazione della durata visiva entro cui il fronte raggiunge il raggio pieno.
+const EXPANSION_PROGRESS := 0.15
+## Frazione oltre la quale la coda comincia a dissolversi.
+const FADE_START_PROGRESS := 0.22
+## Il decal e' pittorico e pieno al centro: tetto di opacita' sul Player.
+const MAX_DECAL_ALPHA := 0.62
+## Il bordo resta piu' leggibile del decal perche' e' il telegraph autorevole.
+const BORDER_ALPHA := 0.85
 
 var _run_controller: RunController
 var _radius := 0.0
@@ -36,6 +47,9 @@ func initialize(
 	_run_controller = run_controller
 	_elapsed = 0.0
 	_finished = false
+	# Il master tellurico e' pittorico, non pixel-art: con nearest un rescale
+	# non intero (raggio*2/512) produce aliasing durante l'espansione.
+	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	queue_redraw()
 	return true
 
@@ -58,35 +72,38 @@ func _draw() -> void:
 	if _radius <= 0.0 or _duration <= 0.0:
 		return
 	var progress := clampf(_elapsed / _duration, 0.0, 1.0)
-	var visible_radius := lerpf(_radius * 0.12, _radius, progress)
-	var alpha := lerpf(0.9, 0.0, progress)
-	draw_circle(Vector2.ZERO, visible_radius, Color(0.42, 0.2, 0.08, alpha * 0.16))
-	for ring_index in 3:
-		var ring_scale := 1.0 - float(ring_index) * 0.16
-		var ring_alpha := alpha * (1.0 - float(ring_index) * 0.22)
-		draw_arc(
-			Vector2.ZERO,
-			visible_radius * ring_scale,
-			0.0,
-			TAU,
-			64,
-			Color(1.0, 0.78 + float(ring_index) * 0.06, 0.22, ring_alpha),
-			lerpf(9.0 - float(ring_index) * 2.0, 2.5, progress),
-			true
-		)
-	for crack_index in 8:
-		var direction := Vector2.RIGHT.rotated(TAU * float(crack_index) / 8.0 + 0.22)
-		var tangent := direction.orthogonal()
-		var bend_sign := -1.0 if crack_index % 2 == 0 else 1.0
-		var start := direction * visible_radius * 0.28
-		var middle := direction * visible_radius * 0.57 + tangent * visible_radius * 0.06 * bend_sign
-		var end := direction * visible_radius * 0.88
-		draw_polyline(
-			PackedVector2Array([start, middle, end]),
-			Color(1.0, 0.92, 0.62, alpha * 0.8),
-			2.5,
-			true
-		)
+	# L'onda raggiunge il raggio pieno entro EXPANSION_PROGRESS: danno,
+	# knockback e stun sono applicati all'istante zero, quindi l'espansione
+	# visiva deve chiudersi subito e non far volare i nemici prima del fronte.
+	var expansion := smoothstep(0.0, EXPANSION_PROGRESS, progress)
+	var visible_radius := lerpf(_radius * 0.12, _radius, expansion)
+	var fade_progress := clampf(
+		(progress - FADE_START_PROGRESS) / (1.0 - FADE_START_PROGRESS),
+		0.0,
+		1.0
+	)
+	var fade := 1.0 - fade_progress
+	var decal_size := Vector2.ONE * visible_radius * 2.0
+	# Il decal tellurico non ha centro aperto: resta sotto MAX_DECAL_ALPHA per
+	# non coprire il Player, che deve continuare a schivare durante la coda.
+	draw_texture_rect(
+		EARTHQUAKE_WAVE_TEXTURE,
+		Rect2(-decal_size * 0.5, decal_size),
+		false,
+		Color(1.0, 1.0, 1.0, fade * MAX_DECAL_ALPHA)
+	)
+	# Il bordo procedurale resta il telegraph geometrico autorevole: il decal
+	# migliora la resa senza suggerire una collisione piu' ampia del raggio.
+	draw_arc(
+		Vector2.ZERO,
+		visible_radius,
+		0.0,
+		TAU,
+		64,
+		Color(1.0, 0.86, 0.42, fade * BORDER_ALPHA),
+		lerpf(5.0, 2.0, progress),
+		true
+	)
 
 
 func get_radius() -> float:
@@ -95,6 +112,18 @@ func get_radius() -> float:
 
 func get_elapsed() -> float:
 	return _elapsed
+
+
+func get_duration_total() -> float:
+	return _duration
+
+
+func get_duration_remaining() -> float:
+	return maxf(_duration - _elapsed, 0.0)
+
+
+func is_non_interactive_tail() -> bool:
+	return true
 
 
 func get_visual_family_id() -> StringName:
@@ -107,6 +136,10 @@ func get_visual_particle_count() -> int:
 
 func get_visual_material_count() -> int:
 	return VISUAL_MATERIAL_COUNT
+
+
+func get_visual_texture_path() -> String:
+	return EARTHQUAKE_WAVE_TEXTURE.resource_path
 
 
 func uses_fullscreen_overlay() -> bool:

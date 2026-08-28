@@ -7,6 +7,11 @@ signal targets_affected(count: int)
 const VISUAL_FAMILY_ID := &"reggeton_clone_speaker_and_notes"
 const VISUAL_PARTICLE_COUNT := 6
 const VISUAL_MATERIAL_COUNT := 0
+const REGGAETON_DECOY_TEXTURE := preload(
+	"res://assets/art/vfx/abilities/generated/reggaeton_decoy.png"
+)
+## Semilato del decal a riposo (104 / 2) piu' un margine di lettura.
+const NOTE_LANE_OFFSET_X := 62.0
 
 var _definition: AbilityDefinition
 var _run_controller: RunController
@@ -41,6 +46,7 @@ func initialize(
 	global_position = source.global_position
 	_duration_total = definition.duration_seconds
 	_duration_remaining = _duration_total
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_redirect_targets()
 	queue_redraw()
 	return true
@@ -65,7 +71,6 @@ func _draw() -> void:
 	var beat := (sin(elapsed * TAU * 2.0) + 1.0) * 0.5
 	var sway := sin(elapsed * TAU * 1.5) * 3.0
 	var glow_color := Color(0.95, 0.18, 0.72, alpha * (0.18 + beat * 0.12))
-	var line_color := Color(1.0, 0.78, 0.25, alpha)
 	draw_circle(Vector2.ZERO, 27.0 + beat * 4.0, glow_color)
 	draw_arc(
 		Vector2.ZERO,
@@ -77,23 +82,26 @@ func _draw() -> void:
 		3.0,
 		true
 	)
-	# Clone ballerino e cassa pulsante: solo presentazione, l'aggro resta invariato.
-	var dancer_origin := Vector2(-7.0 + sway, 1.0)
-	draw_circle(dancer_origin + Vector2(0.0, -12.0), 4.5, line_color)
-	draw_line(dancer_origin + Vector2(0.0, -7.0), dancer_origin + Vector2(0.0, 7.0), line_color, 3.0, true)
-	draw_line(dancer_origin + Vector2(0.0, -3.0), dancer_origin + Vector2(-8.0, 2.0 - sway), line_color, 3.0, true)
-	draw_line(dancer_origin + Vector2(0.0, -3.0), dancer_origin + Vector2(8.0, -7.0 + sway), line_color, 3.0, true)
-	draw_line(dancer_origin + Vector2(0.0, 7.0), dancer_origin + Vector2(-6.0, 15.0), line_color, 3.0, true)
-	draw_line(dancer_origin + Vector2(0.0, 7.0), dancer_origin + Vector2(7.0, 13.0), line_color, 3.0, true)
-	var speaker_rect := Rect2(Vector2(12.0, -10.0), Vector2(12.0, 22.0))
-	draw_rect(speaker_rect, Color(0.12, 0.07, 0.2, alpha), true)
-	draw_rect(speaker_rect, Color(0.95, 0.18, 0.72, alpha), false, 2.0, true)
-	draw_circle(Vector2(18.0, -4.0), 2.5 + beat, Color(0.3, 0.9, 1.0, alpha))
-	draw_circle(Vector2(18.0, 6.0), 3.5 + beat, line_color)
+	# Il clone raster sostituisce il vecchio omino procedurale; l'aggro resta
+	# sul Node2D e quindi non dipende dalla dimensione visiva del decal.
+	var decal_size := Vector2.ONE * (104.0 + beat * 8.0)
+	draw_set_transform(Vector2(sway, -16.0 - beat * 2.0), sin(elapsed * 3.0) * 0.025, Vector2.ONE)
+	draw_texture_rect(
+		REGGAETON_DECOY_TEXTURE,
+		Rect2(-decal_size * 0.5, decal_size),
+		false,
+		Color(1.0, 1.0, 1.0, alpha)
+	)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	for note_index in VISUAL_PARTICLE_COUNT:
 		var lane := float(note_index % 3) - 1.0
 		var rise := fmod(elapsed * 18.0 + float(note_index) * 9.0, 44.0)
-		var note_origin := Vector2(18.0 + lane * 12.0 + sin(elapsed * 2.0 + note_index) * 3.0, -14.0 - rise)
+		# Le note restano fuori dalla sagoma del decal, altrimenti si perdono
+		# sul boombox: NOTE_LANE_OFFSET_X supera il semilato del clone.
+		var note_origin := Vector2(
+			NOTE_LANE_OFFSET_X + lane * 12.0 + sin(elapsed * 2.0 + note_index) * 3.0,
+			-14.0 - rise
+		)
 		var note_alpha := alpha * (1.0 - rise / 52.0)
 		var note_color := Color(0.35, 0.92, 1.0, note_alpha)
 		draw_circle(note_origin, 2.8, note_color)
@@ -116,6 +124,10 @@ func get_visual_particle_count() -> int:
 
 func get_visual_material_count() -> int:
 	return VISUAL_MATERIAL_COUNT
+
+
+func get_visual_texture_path() -> String:
+	return REGGAETON_DECOY_TEXTURE.resource_path
 
 
 func uses_fullscreen_overlay() -> bool:

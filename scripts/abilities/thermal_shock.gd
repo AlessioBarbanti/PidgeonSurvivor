@@ -15,11 +15,19 @@ const DEFAULT_SLOW_FACTOR := 0.45
 const DEFAULT_SHOCK_MULTIPLIER := 2.0
 const DEFAULT_BLOOM_SECONDS := 0.35
 const VISUAL_FAMILY_ID := &"thermal_shock_frost_ring_and_bloom"
-const VISUAL_PARTICLE_COUNT := 12
+## Le schegge procedurali sono state sostituite dal decal di brina: il budget
+## dichiarato deve restare allineato a cio' che viene davvero disegnato.
+const VISUAL_PARTICLE_COUNT := 0
 const VISUAL_MATERIAL_COUNT := 0
 const FROST_COLOR := Color(0.55, 0.86, 1.0, 0.72)
 const FROST_CORE_COLOR := Color(0.82, 0.95, 1.0, 0.34)
 const BLOOM_COLOR := Color(1.0, 0.52, 0.18, 0.82)
+const THERMAL_FROST_TEXTURE := preload(
+	"res://assets/art/vfx/abilities/generated/thermal_frost.png"
+)
+const THERMAL_BLOOM_TEXTURE := preload(
+	"res://assets/art/vfx/abilities/generated/thermal_bloom.png"
+)
 
 var _definition: AbilityDefinition
 var _run_controller: RunController
@@ -76,6 +84,7 @@ func initialize(
 		DEFAULT_BLOOM_SECONDS,
 		AbilityDefinition.MINIMUM_POSITIVE_VALUE
 	)
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_set_phase(Phase.FROST, definition.duration_seconds)
 	_refresh_frost_targets()
 	queue_redraw()
@@ -153,6 +162,13 @@ func get_visual_particle_count() -> int:
 
 func get_visual_material_count() -> int:
 	return VISUAL_MATERIAL_COUNT
+
+
+func get_visual_texture_paths() -> PackedStringArray:
+	return PackedStringArray([
+		THERMAL_FROST_TEXTURE.resource_path,
+		THERMAL_BLOOM_TEXTURE.resource_path,
+	])
 
 
 func get_visual_extent() -> float:
@@ -236,6 +252,14 @@ func _draw_frost_field() -> void:
 	var radius := _definition.area_radius
 	var progress := 1.0 - _safe_phase_ratio()
 	draw_circle(Vector2.ZERO, radius, FROST_CORE_COLOR)
+	var contraction := lerpf(1.0, 0.36, progress)
+	var decal_size := Vector2.ONE * radius * 2.0 * contraction
+	draw_texture_rect(
+		THERMAL_FROST_TEXTURE,
+		Rect2(-decal_size * 0.5, decal_size),
+		false,
+		Color(1.0, 1.0, 1.0, 0.76 + progress * 0.18)
+	)
 	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 48, FROST_COLOR, 4.0, true)
 	# La corona si contrae verso il centro: telegrafa l'istante della detonazione.
 	draw_arc(
@@ -248,25 +272,20 @@ func _draw_frost_field() -> void:
 		3.0,
 		true
 	)
-	for shard_index in VISUAL_PARTICLE_COUNT:
-		var angle := TAU * float(shard_index) / float(VISUAL_PARTICLE_COUNT)
-		var direction := Vector2.RIGHT.rotated(angle)
-		var shard_distance := radius * lerpf(0.86, 0.34, progress)
-		var shard_center := direction * shard_distance
-		var shard_length := 9.0 + progress * 5.0
-		draw_line(
-			shard_center - direction * shard_length,
-			shard_center + direction * shard_length,
-			Color(0.9, 0.98, 1.0, 0.5 + progress * 0.35),
-			2.0,
-			true
-		)
 
 
 func _draw_heat_bloom() -> void:
 	var radius := _definition.area_radius
 	var fade := _safe_phase_ratio()
 	draw_circle(Vector2.ZERO, radius * (1.0 - fade * 0.18), Color(BLOOM_COLOR, 0.28 * fade))
+	var bloom_scale := lerpf(1.08, 0.82, fade)
+	var decal_size := Vector2.ONE * radius * 2.0 * bloom_scale
+	draw_texture_rect(
+		THERMAL_BLOOM_TEXTURE,
+		Rect2(-decal_size * 0.5, decal_size),
+		false,
+		Color(1.0, 1.0, 1.0, fade * 0.94)
+	)
 	for ring_index in range(3):
 		draw_arc(
 			Vector2.ZERO,

@@ -23,7 +23,7 @@ func _run() -> void:
 func _validate_central_contract() -> void:
 	_expect(PresentationTimings.is_valid(), "I timing centralizzati B18R devono essere validi.")
 	_expect(
-		PresentationTimings.ABILITY_ICON_BURST_SECONDS > 0.72,
+		PresentationTimings.ABILITY_VFX_TAIL_SECONDS > 0.72,
 		"Il burst principale deve superare la baseline B18M da 0,72 s."
 	)
 	_expect(
@@ -203,39 +203,37 @@ func _validate_non_interactive_ability_tail(
 
 	var effect := registry.execute_effect(definition, player) as EarthquakeWave
 	var burst := registry.get_last_icon_burst()
-	_expect(effect != null and burst != null, "Onda d'Urto deve creare effetto e burst separati.")
-	if effect == null or burst == null:
+	_expect(effect != null and burst == null, "Onda d'Urto deve usare il decal nel proprio effetto, senza icona HUD.")
+	if effect == null:
 		return
 	effect.set_process(false)
-	burst.set_process(false)
 	_expect_float_near(
-		float(burst.call("get_duration_total")),
-		PresentationTimings.ABILITY_ICON_BURST_SECONDS,
-		"Il burst deve usare la durata B18R."
+		effect.get_duration_total(),
+		PresentationTimings.ABILITY_VFX_TAIL_SECONDS,
+		"Il decal tellurico deve usare la durata B18R."
 	)
-	_expect(bool(burst.call("is_non_interactive_tail")), "La coda deve dichiararsi non interattiva.")
+	_expect(effect.is_non_interactive_tail(), "La coda tellurica deve dichiararsi non interattiva.")
 	_expect(
-		burst.find_children("*", "CollisionObject2D", true, false).is_empty(),
-		"La coda visiva non deve contenere collisioni."
+		effect.find_children("*", "CollisionObject2D", true, false).is_empty(),
+		"Il decal tellurico non deve contenere collisioni."
 	)
-	var before_pause := float(burst.call("get_duration_remaining"))
-	_expect(controller.request_manual_pause(), "La pausa deve aprirsi durante il burst abilita.")
-	burst.call("_process", 0.4)
+	var before_pause := effect.get_duration_remaining()
+	_expect(controller.request_manual_pause(), "La pausa deve aprirsi durante il decal abilita.")
+	effect._process(0.4)
 	_expect_float_near(
-		float(burst.call("get_duration_remaining")),
+		effect.get_duration_remaining(),
 		before_pause,
-		"Il burst abilita deve congelarsi in pausa."
+		"Il decal abilita deve congelarsi in pausa."
 	)
-	_expect(controller.resume_run(), "La run deve riprendere dopo il burst congelato.")
+	_expect(controller.resume_run(), "La run deve riprendere dopo il decal congelato.")
 
 	effect._process(0.4)
 	await process_frame
-	_expect(registry.get_active_effect_count() == 0, "L'effetto gameplay deve terminare alla propria durata.")
-	_expect(registry.get_active_visual_tail_count() == 1, "La coda leggibile deve sopravvivere separata.")
-	_expect(is_instance_valid(burst), "La coda non deve essere troncata dal parent gameplay.")
-	burst.call("_process", PresentationTimings.ABILITY_ICON_BURST_SECONDS)
+	_expect(registry.get_active_effect_count() == 1, "Il decal tellurico deve restare leggibile dopo l'impatto istantaneo.")
+	_expect(registry.get_active_visual_tail_count() == 0, "Il decal non deve creare una seconda coda-emblema.")
+	effect._process(PresentationTimings.ABILITY_VFX_TAIL_SECONDS)
 	await process_frame
-	_expect(registry.get_active_visual_tail_count() == 0, "La coda deve ripulirsi alla fine visiva.")
+	_expect(registry.get_active_effect_count() == 0, "Il decal deve ripulirsi alla fine visiva.")
 
 
 func _validate_two_run_cleanup(
@@ -249,7 +247,8 @@ func _validate_two_run_cleanup(
 	if definition == null:
 		return
 	_expect(registry.execute_effect(definition, player) != null, "La prima run deve creare un effetto.")
-	_expect(registry.get_active_visual_tail_count() == 1, "La prima run deve avere una coda visiva.")
+	_expect(registry.get_active_effect_count() == 1, "La prima run deve avere il decal attivo.")
+	_expect(registry.get_active_visual_tail_count() == 0, "La prima run non deve creare un emblema separato.")
 	_expect(controller.request_defeat(), "La prima run deve entrare nel terminale.")
 	await process_frame
 	_expect(
@@ -266,7 +265,8 @@ func _validate_two_run_cleanup(
 	await process_frame
 	_expect(feedback.get_active_effect_count() == 0, "La seconda run non deve ereditare feedback mondo.")
 	_expect(registry.execute_effect(definition, player) != null, "La seconda run deve creare un nuovo effetto.")
-	_expect(registry.get_active_visual_tail_count() == 1, "La seconda run deve avere una sola nuova coda.")
+	_expect(registry.get_active_effect_count() == 1, "La seconda run deve avere un solo nuovo decal.")
+	_expect(registry.get_active_visual_tail_count() == 0, "La seconda run non deve avere code-emblema.")
 	controller.prepare_restart()
 	await process_frame
 	_expect(

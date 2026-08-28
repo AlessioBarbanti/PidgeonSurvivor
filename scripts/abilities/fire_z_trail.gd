@@ -7,6 +7,14 @@ signal targets_affected(count: int)
 const VISUAL_FAMILY_ID := &"powerslide_ribbon_and_sparks"
 const VISUAL_PARTICLE_COUNT := 16
 const VISUAL_MATERIAL_COUNT := 0
+const FIRE_TRAIL_TEXTURE := preload(
+	"res://assets/art/vfx/abilities/generated/fire_trail.png"
+)
+## Passo fra due stampi, in frazioni di lato: sovrapposizione sufficiente a
+## nascondere le estremita' rastremate senza moltiplicare i tasselli.
+const STAMP_SPACING_RATIO := 0.72
+## Opacita' del singolo tassello, tarata per la sovrapposizione qui sopra.
+const STAMP_ALPHA := 0.62
 
 var _source: Player
 var _definition: AbilityDefinition
@@ -58,6 +66,7 @@ func initialize(
 	_source.global_position = _path_points[-1]
 	_apply_damage_tick()
 	_tick_remaining = _tick_interval
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	queue_redraw()
 	return true
 
@@ -104,6 +113,26 @@ func _draw() -> void:
 	var destination := _path_points[1]
 	var direction := (destination - origin).normalized()
 	var normal := direction.orthogonal()
+	var path_length := origin.distance_to(destination)
+	var stamp_size := maxf(_trail_width * 2.55, 64.0)
+	var stamp_count := maxi(1, ceili(path_length / (stamp_size * STAMP_SPACING_RATIO)))
+	var trail_angle := direction.angle()
+	# Il master non e' raccordabile: gli stampi si sovrappongono per fondere le
+	# estremita' rastremate, quindi l'alpha del singolo tassello resta bassa per
+	# non accumularsi in grumi opachi, e le fiamme si specchiano a alternanza
+	# per spezzare la ripetizione della stessa silhouette.
+	for stamp_index in stamp_count + 1:
+		var ratio := float(stamp_index) / float(stamp_count)
+		var center := origin.lerp(destination, ratio)
+		var mirror := -1.0 if stamp_index % 2 == 1 else 1.0
+		draw_set_transform(center, trail_angle, Vector2(1.0, mirror))
+		draw_texture_rect(
+			FIRE_TRAIL_TEXTURE,
+			Rect2(Vector2.ONE * stamp_size * -0.5, Vector2.ONE * stamp_size),
+			false,
+			Color(1.0, 1.0, 1.0, alpha * STAMP_ALPHA)
+		)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	var elapsed := maxf(_trail_duration_total - _trail_duration_remaining, 0.0)
 	for spark_index in VISUAL_PARTICLE_COUNT:
 		var ratio := (float(spark_index) + 0.5) / float(VISUAL_PARTICLE_COUNT)
@@ -151,9 +180,12 @@ func get_visual_material_count() -> int:
 	return VISUAL_MATERIAL_COUNT
 
 
-## Ancora per gli effetti visivi accodati al lancio (emblema ImageGen): il
-## nodo vive con `global_position` a zero perche' disegna in coordinate di
-## mondo, quindi l'ancora corretta e' il punto di arrivo dello scatto.
+func get_visual_texture_path() -> String:
+	return FIRE_TRAIL_TEXTURE.resource_path
+
+
+## Ancora visiva del Powerslide. Il nodo vive a `global_position` zero perche'
+## il decal viene stampato direttamente lungo il segmento in coordinate mondo.
 func get_visual_anchor_position() -> Vector2:
 	if _path_points.is_empty():
 		return global_position

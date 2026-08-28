@@ -3,7 +3,8 @@ extends RefCounted
 
 # B18R candidate timings. They remain presentation-only and can be tuned after
 # the Windows/Pixel 9 perceptual gate without changing gameplay data.
-const ABILITY_ICON_BURST_SECONDS := 1.20
+## Durata della coda visiva non interattiva delle abilita' (ex burst icona).
+const ABILITY_VFX_TAIL_SECONDS := 1.20
 const ONE_SHOT_ENTRY_SECONDS := 0.18
 const ONE_SHOT_EXIT_SECONDS := 0.38
 const COSPLAY_ACCENT_SECONDS := 1.00
@@ -24,10 +25,10 @@ const ABILITY_READY_PULSE_SECONDS := 0.60
 
 static func is_valid() -> bool:
 	return (
-		ABILITY_ICON_BURST_SECONDS > 0.72
+		ABILITY_VFX_TAIL_SECONDS > 0.72
 		and ONE_SHOT_ENTRY_SECONDS > 0.0
 		and ONE_SHOT_EXIT_SECONDS > 0.0
-		and ONE_SHOT_ENTRY_SECONDS + ONE_SHOT_EXIT_SECONDS < ABILITY_ICON_BURST_SECONDS
+		and ONE_SHOT_ENTRY_SECONDS + ONE_SHOT_EXIT_SECONDS < ABILITY_VFX_TAIL_SECONDS
 		and COSPLAY_ACCENT_SECONDS > 0.65
 		and INSTINCTIVE_DODGE_ACCENT_SECONDS > 0.3
 		and PLAYER_DAMAGE_FLASH_SECONDS <= 0.08

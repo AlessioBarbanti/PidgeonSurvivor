@@ -5,7 +5,6 @@ const INITIAL_VIEWPORT_SIZE := Vector2i(1280, 720)
 const MAX_FULLSCREEN_OVERLAYS := 1
 const MAX_VISUAL_PARTICLES := 64
 const MAX_VISUAL_MATERIALS := 2
-const MAX_GENERATED_EMBLEMS := 1
 const VFX_MANIFEST_PATH := "res://assets/art/vfx/ASSET-MANIFEST.md"
 
 const EXPECTED_FAMILIES := {
@@ -27,16 +26,16 @@ const MANIFEST_RUNTIME_PATHS := [
 	"res://scripts/abilities/illusion_decoy.gd",
 	"res://scripts/abilities/lightning_storm.gd",
 	"res://scripts/abilities/thermal_shock.gd",
-	"res://scripts/abilities/ability_icon_burst.gd",
 	"res://scripts/abilities/instinctive_dodge_accent.gd",
-	"res://assets/art/icons/abilities/generated/earthquake.png",
-	"res://assets/art/icons/abilities/generated/powerslide.png",
-	"res://assets/art/icons/abilities/generated/lightning.png",
-	"res://assets/art/icons/abilities/generated/grand_spin.png",
-	"res://assets/art/icons/abilities/generated/thermal_shock.png",
-	"res://assets/art/icons/abilities/generated/cosplay.png",
-	"res://assets/art/icons/abilities/generated/zen.png",
-	"res://assets/art/icons/abilities/generated/reggaeton.png",
+	"res://assets/art/vfx/abilities/generated/earthquake_wave.png",
+	"res://assets/art/vfx/abilities/generated/fire_trail.png",
+	"res://assets/art/vfx/abilities/generated/lightning_impact.png",
+	"res://assets/art/vfx/abilities/generated/grand_spin.png",
+	"res://assets/art/vfx/abilities/generated/thermal_frost.png",
+	"res://assets/art/vfx/abilities/generated/thermal_bloom.png",
+	"res://assets/art/vfx/abilities/generated/cosplay_reveal.png",
+	"res://assets/art/vfx/abilities/generated/zen_field.png",
+	"res://assets/art/vfx/abilities/generated/reggaeton_decoy.png",
 ]
 
 var _failures: Array[String] = []
@@ -114,7 +113,7 @@ func _validate_visual_families_and_budgets() -> void:
 			continue
 
 		_validate_visual_contract(visual_node, definition.effect_id)
-		_validate_generated_icon_burst(controller, registry, effect, definition)
+		_validate_generated_vfx_asset(registry, visual_node, definition)
 		var family_id := StringName(visual_node.call("get_visual_family_id"))
 		family_ids[family_id] = true
 		var total_particles := int(effect.call("get_visual_particle_count"))
@@ -168,56 +167,33 @@ func _validate_visual_contract(visual_node: Node2D, effect_id: StringName) -> vo
 	)
 
 
-func _validate_generated_icon_burst(
-	controller: RunController,
+func _validate_generated_vfx_asset(
 	registry: AbilityEffectRegistry,
-	effect: Node2D,
+	visual_node: Node2D,
 	definition: AbilityDefinition
 ) -> void:
-	var burst := registry.get_last_icon_burst()
-	_expect(burst != null, "%s deve mostrare l'emblema ImageGen animato." % definition.id)
 	_expect(
-		definition.icon != null
-			and definition.icon.resource_path.begins_with(
-				"res://assets/art/icons/abilities/generated/"
-			)
-			and definition.icon.resource_path.ends_with(".png"),
-		"%s deve usare l'icona PNG ImageGen." % definition.id
+		registry.get_last_icon_burst() == null,
+		"%s non deve piu' sovrapporre l'icona HUD nel mondo." % definition.id
 	)
-	if burst == null:
-		return
-	_expect(
-		burst.get_parent() == registry.get_effect_parent(),
-		"Il burst B18R deve vivere come coda visiva separata dall'effetto gameplay."
-	)
-	_expect(
-		float(burst.call("get_duration_total")) > 0.72,
-		"Il burst B18R deve superare la baseline B18M da 0,72 s."
-	)
-	_expect(
-		burst.has_method(&"get_texture_path")
-			and String(burst.call("get_texture_path")) == definition.icon.resource_path,
-		"%s deve animare la stessa icona usata dall'HUD." % definition.id
-	)
-	_expect(
-		burst.has_method(&"get_visual_element_count")
-			and int(burst.call("get_visual_element_count")) <= MAX_GENERATED_EMBLEMS,
-		"%s supera il budget degli emblemi generati." % definition.id
-	)
-	_expect(
-		burst.has_method(&"get_visual_material_count")
-			and int(burst.call("get_visual_material_count")) == 0,
-		"L'emblema di %s non deve aggiungere materiali custom." % definition.id
-	)
-	var before := float(burst.call("get_duration_remaining"))
-	_expect(controller.request_manual_pause(), "La fixture deve sospendere l'emblema generato.")
-	burst.call("_process", 0.2)
-	_expect_float_near(
-		float(burst.call("get_duration_remaining")),
-		before,
-		"L'emblema generato deve fermarsi in pausa."
-	)
-	_expect(controller.resume_run(), "La fixture deve riprendere l'emblema generato.")
+	var texture_paths := PackedStringArray()
+	if visual_node.has_method(&"get_visual_texture_path"):
+		texture_paths.append(String(visual_node.call("get_visual_texture_path")))
+	elif visual_node.has_method(&"get_visual_texture_paths"):
+		texture_paths = visual_node.call("get_visual_texture_paths")
+	_expect(not texture_paths.is_empty(), "%s deve esporre almeno un decal VFX." % definition.id)
+	for texture_path in texture_paths:
+		_expect(
+			texture_path.begins_with("res://assets/art/vfx/abilities/generated/")
+				and texture_path.ends_with(".png"),
+			"%s deve usare un PNG VFX ImageGen runtime." % definition.id
+		)
+		_expect(FileAccess.file_exists(texture_path), "Decal VFX mancante: %s." % texture_path)
+		var texture := load(texture_path) as Texture2D
+		_expect(
+			texture != null and texture.get_size() == Vector2(512.0, 512.0),
+			"Il decal %s deve essere RGBA 512x512." % texture_path
+		)
 
 
 func _validate_visual_extent(effect: Node2D, definition: AbilityDefinition) -> void:

@@ -279,11 +279,18 @@ func _execute_definition(
 		SHADOW_DECEPTION:
 			effect = _execute_shadow_deception(definition, source)
 	if effect != null and announce:
-		_attach_generated_icon_burst(effect, definition)
+		# Ogni effetto possiede ora il proprio decal ImageGen ancorato a raggio,
+		# posizione e fase; non sovrapponiamo piu' l'icona HUD nel mondo.
 		effect_executed.emit(definition, effect, _last_affected_count)
 	return effect
 
 
+## DEPRECATO dal refresh VFX del 29 agosto 2026: ogni effetto disegna il proprio
+## decal ancorato a raggio, posizione e fase, quindi l'emblema HUD non viene piu'
+## istanziato nel mondo. Il metodo, `ABILITY_ICON_BURST_SCRIPT`, `_last_icon_burst`
+## e `get_active_visual_tail_count()` restano solo per far valere l'asserzione
+## negativa degli smoke test; vanno rimossi insieme a `ability_icon_burst.gd`
+## quando il gate percettivo B18M sara' chiuso.
 func _attach_generated_icon_burst(effect: Node2D, definition: AbilityDefinition) -> void:
 	if definition.icon == null or not is_instance_valid(_effect_parent):
 		return

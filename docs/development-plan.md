@@ -491,7 +491,7 @@ significato:
 | B18J | Grigliata estiva | COMPLETATO | Gate automatici, Windows, Android statico e interazione manuale Pixel 9 chiusi il 25 agosto 2026 |
 | B18K | Pulsante abilità con icona e cooldown circolare | COMPLETATO | Gate chiusi; commit dedicato `81b47f6` |
 | B18L | Joystick dinamico | COMPLETATO | Gate chiusi, inclusa regressione lock/resume; commit dedicato `d6625d7` |
-| B18M | Migliorie grafiche delle abilità | COMPLETATO | Refresh ImageGen: automatici, Windows, APK statico e controllo percettivo Pixel 9 chiusi il 25 agosto 2026 |
+| B18M | Migliorie grafiche delle abilità | IN VERIFICA | Nuovi decal VFX ImageGen integrati il 29 agosto; automatici mirati verdi, nuovo gate percettivo Windows/Pixel 9 aperto |
 | B18N | Cambia personaggio dal menu pausa | COMPLETATO | Gate automatici, Windows, APK statico e runtime Pixel 9 chiusi il 24 agosto 2026 |
 | B18O | Welcome screen | IN VERIFICA | Contratto funzionale chiuso; refresh identità del cast installato il 28 agosto, con automatici e nuovo controllo percettivo da chiudere |
 | B18P | Dimensioni configurabili dei controlli touch | COMPLETATO | Gate automatici, Windows, APK statico e multitouch reale Pixel 9 chiusi il 25 agosto 2026 |
@@ -784,7 +784,30 @@ Dettagli ed evidenze: [`b18l-verification.md`](./b18l-verification.md).
 
 #### B18M — Migliorie grafiche delle abilità
 
-Stato: `COMPLETATO` dopo il refresh ImageGen.
+Stato: `IN VERIFICA` dopo il refresh dei VFX runtime del 29 agosto 2026.
+
+- [x] Nove decal ImageGen `512x512` sostituiscono l'emblema dell'icona HUD
+  durante il gioco: shockwave, scia, impatto elettrico, Piroetta, brina/bloom,
+  reveal Cosplay, campo Zen e clone Reggaeton.
+- [x] Le texture seguono posizione, raggio e fase degli effetti; i bordi
+  procedurali restano il telegraph geometrico autorevole. Danno, collisioni,
+  cooldown, targeting e input sono invariati.
+- [x] La shockwave di Magno resta istantanea lato gameplay ma il decal
+  non-interattivo dura `1,20 s`, si ferma in pausa e si ripulisce su restart.
+- [x] Taratura di leggibilita' del 29 agosto: espansione tellurica chiusa entro
+  il `15%` della durata (l'impatto e' istantaneo), opacita' del decal tellurico
+  limitata a `0,62` perche' e' l'unico master senza centro aperto, decal
+  elettrico inscritto nel cerchio di danno, stampi del Powerslide con passo e
+  alpha ritarati. Nessun dato, hitbox o timing di danno toccato.
+- [x] Import Godot, `B18M_ABILITY_VISUALS_SMOKE_OK` e
+  `B18R_VISUAL_TIMING_SMOKE_OK` verdi. Relevant `62/66`: i tre rossi stabili
+  sono preesistenti e fuori ambito (`_hud_smoke` con aspettative HP `80/100`
+  contro `95/115`, `_typography_smoke` e `_welcome_flow_smoke` del refresh
+  B18O); `_signature_upgrades_smoke` e' instabile sulla dispersione casuale.
+- [ ] Decidere se rigenerare in pixel-art `zen_field` e `thermal_frost`, oggi
+  pittorici accanto ai master pixel-art con cui condividono il nodo.
+- [ ] Ripetere export/runtime Windows, build/install Android e controllo
+  percettivo Pixel 9 sul nuovo candidato prima di richiudere B18M.
 
 - [x] La baseline di release conserva VFX originali disegnati con primitive
   Godot e aggiunge otto emblemi PNG RGBA `256×256` prodotti con OpenAI ImageGen

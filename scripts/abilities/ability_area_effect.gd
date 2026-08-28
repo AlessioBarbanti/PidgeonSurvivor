@@ -22,6 +22,12 @@ const GRAND_SPIN_PARTICLE_COUNT := 12
 const CEMENT_PARTICLE_COUNT := 10
 const ZEN_PARTICLE_COUNT := 18
 const VISUAL_MATERIAL_COUNT := 0
+const GRAND_SPIN_TEXTURE := preload(
+	"res://assets/art/vfx/abilities/generated/grand_spin.png"
+)
+const ZEN_FIELD_TEXTURE := preload(
+	"res://assets/art/vfx/abilities/generated/zen_field.png"
+)
 
 var _mode := AreaMode.PULSE_DAMAGE
 var _definition: AbilityDefinition
@@ -102,6 +108,7 @@ func initialize(
 	if _tick_damage > 0.0:
 		_apply_damage_tick()
 	_tick_remaining = _tick_interval
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	queue_redraw()
 	return true
 
@@ -155,13 +162,16 @@ func _draw_mode_pattern(progress: float) -> void:
 func _draw_grand_spin(radius: float, progress: float) -> void:
 	var pulse := (sin(progress * TAU * 2.0) + 1.0) * 0.5
 	draw_circle(Vector2.ZERO, radius, Color(0.55, 0.04, 0.34, 0.08 + pulse * 0.04))
+	var decal_size := Vector2.ONE * radius * 2.0
+	draw_set_transform(Vector2.ZERO, progress * TAU * 1.35, Vector2.ONE)
+	draw_texture_rect(
+		GRAND_SPIN_TEXTURE,
+		Rect2(-decal_size * 0.5, decal_size),
+		false,
+		Color(1.0, 1.0, 1.0, 0.72 + pulse * 0.12)
+	)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 64, Color(1.0, 0.34, 0.72, 0.86), 4.0, true)
-	for arc_index in 4:
-		var direction := -1.0 if arc_index % 2 == 0 else 1.0
-		var start_angle := progress * TAU * direction + float(arc_index) * TAU * 0.25
-		var arc_radius := radius * (0.42 + float(arc_index) * 0.13)
-		var arc_color := Color(1.0, 0.28 + float(arc_index) * 0.1, 0.75, 0.78)
-		draw_arc(Vector2.ZERO, arc_radius, start_angle, start_angle + 1.65, 24, arc_color, 6.0, true)
 	for spark_index in GRAND_SPIN_PARTICLE_COUNT:
 		var angle := progress * TAU * 2.0 + TAU * float(spark_index) / float(GRAND_SPIN_PARTICLE_COUNT)
 		var spark_radius := radius * (0.5 + 0.38 * float((spark_index % 4) + 1) / 4.0)
@@ -188,10 +198,16 @@ func _draw_cement_pool(radius: float, progress: float) -> void:
 func _draw_zen_field(radius: float, progress: float) -> void:
 	var breath := (sin(progress * TAU) + 1.0) * 0.5
 	draw_circle(Vector2.ZERO, radius, Color(0.08, 0.4, 0.36, 0.08 + breath * 0.03))
+	var decal_size := Vector2.ONE * radius * 2.0
+	draw_set_transform(Vector2.ZERO, -progress * 0.34, Vector2.ONE)
+	draw_texture_rect(
+		ZEN_FIELD_TEXTURE,
+		Rect2(-decal_size * 0.5, decal_size),
+		false,
+		Color(1.0, 1.0, 1.0, 0.42 + breath * 0.12)
+	)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 64, Color(0.35, 0.94, 0.78, 0.76), 4.0, true)
-	for ring_index in 4:
-		var ring_radius := radius * (0.22 + float(ring_index) * 0.2) + breath * 4.0
-		draw_arc(Vector2.ZERO, ring_radius, 0.0, TAU, 48, Color(0.4, 0.9, 0.82, 0.22), 2.5, true)
 	for mote_index in ZEN_PARTICLE_COUNT:
 		var base_angle := TAU * float(mote_index) / float(ZEN_PARTICLE_COUNT)
 		var drift_angle := base_angle - progress * 0.65
@@ -237,6 +253,15 @@ func get_visual_particle_count() -> int:
 
 func get_visual_material_count() -> int:
 	return VISUAL_MATERIAL_COUNT
+
+
+func get_visual_texture_path() -> String:
+	match _mode:
+		AreaMode.PULSE_DAMAGE, AreaMode.FOLLOWING_PULSE_DAMAGE:
+			return GRAND_SPIN_TEXTURE.resource_path
+		AreaMode.FOLLOWING_SLOW, AreaMode.FOLLOWING_SLOW_ABSORB:
+			return ZEN_FIELD_TEXTURE.resource_path
+	return ""
 
 
 func get_visual_extent() -> float:

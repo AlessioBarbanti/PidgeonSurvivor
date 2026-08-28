@@ -207,10 +207,15 @@ Non comprende account sviluppatore, scheda store, policy, privacy form, closed t
 | VISUAL-008 | Verificata | Gli otto profili B18U usano una posa idle e due pose di locomozione registrate, mostrate nearest-neighbor con la sequenza B18C e il flip orizzontale esistente | La sostituzione non cambia scala, origine, hitbox, movimento, collisioni, passive, abilità o timing. Automatici, Windows, APK statico, dipendenza B18T/B18W e controllo percettivo Pixel 9 in movimento sono chiusi |
 | VISUAL-009 | Candidata, in verifica | B24 applica a `CharacterSprite` un moltiplicatore visuale esportato; la baseline candidata `1,25×` si compone con la base B18U `1,65` e con lo squash di danno | `CharacterBody2D`, hitbox `24`, layer/mask, velocità, clamp, raggi, `WeaponController` e origine di fuoco restano invariati. Automatici `44/44`, Windows runtime e APK statico sono verdi; il valore viene congelato solo dopo confronto percettivo Windows/Pixel 9 in orde dense, Boss, VFX e bordi |
 
+| VISUAL-010 | In verifica | Il refresh del 29 agosto sostituisce nel mondo l'emblema dell'icona HUD con nove decal ImageGen `512x512`: shockwave, scia, impatto elettrico, Piroetta, brina/bloom, reveal Cosplay, campo Zen e clone Reggaeton | Ogni decal segue posizione, raggio e fase del proprio effetto; il bordo procedurale resta il telegraph geometrico autorevole. La shockwave dura `1,20 s` solo sul piano visivo, senza cambiare impatto istantaneo, danno o collisioni. La taratura del 29 agosto chiude l'espansione tellurica entro il `15%` della durata perche' l'impatto e' istantaneo, limita a `0,62` l'opacita' dell'unico decal senza centro aperto e inscrive il decal elettrico nel cerchio di danno. Automatici mirati verdi; nuovo gate percettivo Windows/Pixel 9 aperto |
+
 I preset di export escludono esplicitamente `exports/**`, `android/build/**` e
 le sorgenti B18U `assets/art/characters/players/hd/**` dal filtro
 `all_resources`, così anteprime, output generati locali e master artistici non
 vengono reimpacchettati nel PCK o nell'APK.
+
+Anche `assets/art/vfx/abilities/hd/**` e escluso dai tre preset; soltanto i
+derivati runtime `assets/art/vfx/abilities/generated/**` entrano nelle build.
 
 ## Matrice minima di verifica
 

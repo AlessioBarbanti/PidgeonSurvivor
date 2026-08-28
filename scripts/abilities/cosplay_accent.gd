@@ -5,6 +5,9 @@ const VISUAL_FAMILY_ID := &"cosplay_confetti_and_copied_palette"
 const VISUAL_PARTICLE_COUNT := 18
 const VISUAL_MATERIAL_COUNT := 0
 const DEFAULT_DURATION_SECONDS := PresentationTimings.COSPLAY_ACCENT_SECONDS
+const COSPLAY_REVEAL_TEXTURE := preload(
+	"res://assets/art/vfx/abilities/generated/cosplay_reveal.png"
+)
 
 var _run_controller: RunController
 var _palette := Color(0.95, 0.3, 0.72, 1.0)
@@ -32,6 +35,7 @@ func initialize(
 	_duration_remaining = duration_seconds
 	top_level = true
 	global_position = origin
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	queue_redraw()
 	return true
 
@@ -58,6 +62,15 @@ func _draw() -> void:
 		minf(PresentationTimings.ONE_SHOT_EXIT_SECONDS, _duration_total * 0.4)
 	)
 	var burst_radius := lerpf(20.0, 82.0, progress)
+	var decal_size := Vector2.ONE * burst_radius * 2.0
+	draw_set_transform(Vector2.ZERO, progress * 0.42, Vector2.ONE)
+	draw_texture_rect(
+		COSPLAY_REVEAL_TEXTURE,
+		Rect2(-decal_size * 0.5, decal_size),
+		false,
+		Color(1.0, 1.0, 1.0, alpha * 0.9)
+	)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	draw_arc(
 		Vector2.ZERO,
 		burst_radius * 0.72,
@@ -105,6 +118,10 @@ func get_visual_particle_count() -> int:
 
 func get_visual_material_count() -> int:
 	return VISUAL_MATERIAL_COUNT
+
+
+func get_visual_texture_path() -> String:
+	return COSPLAY_REVEAL_TEXTURE.resource_path
 
 
 func uses_fullscreen_overlay() -> bool:
