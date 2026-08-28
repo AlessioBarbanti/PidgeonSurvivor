@@ -317,8 +317,9 @@ text = "GIOCA"
 
 [node name="TutorialButton" type="Button" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/MainActions"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(320, 48)
 layout_mode = 2
+size_flags_horizontal = 4
 theme_override_colors/font_color = Color(0.82, 0.94, 1, 1)
 theme_override_colors/font_hover_color = Color(0.96, 0.99, 1, 1)
 theme_override_colors/font_pressed_color = Color(0.72, 0.84, 0.9, 1)
