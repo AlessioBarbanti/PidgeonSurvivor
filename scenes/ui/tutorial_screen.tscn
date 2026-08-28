@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/tutorial_screen.gd" id="1_screen"]
 [ext_resource type="Script" path="res://scripts/ui/tutorial_preview.gd" id="2_preview"]
@@ -10,6 +10,7 @@
 [ext_resource type="Resource" path="res://data/tutorial/boss.tres" id="8_boss"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/welcome/welcome_ability_cast_background.png" id="9_background"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/character_select/secondary_button_cta_base.png" id="10_secondary_cta"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/character_select/character_select_cta_base.png" id="11_primary_cta"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.015, 0.027, 0.045, 0.985)
@@ -77,44 +78,44 @@ expand_margin_right = 3.0
 expand_margin_bottom = 2.0
 modulate_color = Color(0.72, 0.72, 0.72, 1.0)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_normal"]
-bg_color = Color(0.961, 0.38, 0.055, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 5
-border_color = Color(1, 0.78, 0.25, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-shadow_color = Color(0.18, 0.03, 0, 0.72)
-shadow_size = 5
-shadow_offset = Vector2(0, 4)
+[sub_resource type="AtlasTexture" id="AtlasTexture_primary_cta"]
+atlas = ExtResource("11_primary_cta")
+region = Rect2(0, 0, 754, 181)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_hover"]
-bg_color = Color(1, 0.54, 0.09, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 5
-border_color = Color(1, 0.94, 0.64, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_primary_normal"]
+texture = SubResource("AtlasTexture_primary_cta")
+texture_margin_left = 88.0
+texture_margin_top = 34.0
+texture_margin_right = 88.0
+texture_margin_bottom = 34.0
+expand_margin_left = 8.0
+expand_margin_top = 8.0
+expand_margin_right = 8.0
+expand_margin_bottom = 8.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_pressed"]
-bg_color = Color(0.58, 0.12, 0.018, 1)
-border_width_left = 3
-border_width_top = 6
-border_width_right = 3
-border_width_bottom = 2
-border_color = Color(0.9, 0.52, 0.12, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_primary_hover"]
+texture = SubResource("AtlasTexture_primary_cta")
+texture_margin_left = 88.0
+texture_margin_top = 34.0
+texture_margin_right = 88.0
+texture_margin_bottom = 34.0
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+modulate_color = Color(1, 1, 0.86, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_primary_pressed"]
+texture = SubResource("AtlasTexture_primary_cta")
+texture_margin_left = 88.0
+texture_margin_top = 34.0
+texture_margin_right = 88.0
+texture_margin_bottom = 34.0
+expand_margin_left = 6.0
+expand_margin_top = 5.0
+expand_margin_right = 6.0
+expand_margin_bottom = 7.0
+modulate_color = Color(0.72, 0.72, 0.72, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
 
@@ -357,8 +358,8 @@ custom_minimum_size = Vector2(176, 58)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_type_variation = &"ButtonStandard"
-theme_override_styles/normal = SubResource("StyleBoxFlat_primary_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_primary_hover")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_primary_pressed")
+theme_override_styles/normal = SubResource("StyleBoxTexture_primary_normal")
+theme_override_styles/hover = SubResource("StyleBoxTexture_primary_hover")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_primary_pressed")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
 text = "AVANTI"

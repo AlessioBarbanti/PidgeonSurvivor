@@ -1,8 +1,10 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=16 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/pause_overlay.gd" id="1_pause"]
 [ext_resource type="Script" path="res://scripts/ui/pixel_arcade_slider.gd" id="2_slider"]
 [ext_resource type="Script" path="res://scripts/ui/pixel_arcade_toggle.gd" id="3_toggle"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/character_select/character_select_cta_base.png" id="4_primary_cta"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/character_select/secondary_button_cta_base.png" id="5_secondary_cta"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pause_panel"]
 bg_color = Color(0.018, 0.031, 0.055, 0.98)
@@ -30,98 +32,83 @@ bg_color = Color(0.345, 0.294, 0.204, 0.72)
 content_margin_top = 1.0
 content_margin_bottom = 1.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_normal"]
-bg_color = Color(0.58, 0.18, 0.024, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.859, 0.69, 0.376, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-corner_detail = 1
-shadow_color = Color(0.12, 0.025, 0.008, 0.92)
-shadow_size = 3
-shadow_offset = Vector2(1, 3)
-anti_aliasing = false
+[sub_resource type="AtlasTexture" id="AtlasTexture_primary_cta"]
+atlas = ExtResource("4_primary_cta")
+region = Rect2(0, 0, 754, 181)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_hover"]
-bg_color = Color(0.82, 0.31, 0.03, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 0.91, 0.7, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-corner_detail = 1
-shadow_color = Color(0.12, 0.025, 0.008, 0.92)
-shadow_size = 3
-shadow_offset = Vector2(1, 3)
-anti_aliasing = false
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_primary_normal"]
+texture = SubResource("AtlasTexture_primary_cta")
+texture_margin_left = 88.0
+texture_margin_top = 24.0
+texture_margin_right = 88.0
+texture_margin_bottom = 24.0
+expand_margin_left = 6.0
+expand_margin_top = 6.0
+expand_margin_right = 6.0
+expand_margin_bottom = 6.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_pressed"]
-bg_color = Color(0.43, 0.11, 0.012, 1)
-border_width_left = 2
-border_width_top = 3
-border_width_right = 2
-border_width_bottom = 1
-border_color = Color(0.859, 0.69, 0.376, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-corner_detail = 1
-anti_aliasing = false
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_primary_hover"]
+texture = SubResource("AtlasTexture_primary_cta")
+texture_margin_left = 88.0
+texture_margin_top = 24.0
+texture_margin_right = 88.0
+texture_margin_bottom = 24.0
+expand_margin_left = 8.0
+expand_margin_top = 8.0
+expand_margin_right = 8.0
+expand_margin_bottom = 8.0
+modulate_color = Color(1, 1, 0.86, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary_normal"]
-bg_color = Color(0.055, 0.09, 0.145, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.345, 0.294, 0.204, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-corner_detail = 1
-shadow_color = Color(0.008, 0.014, 0.027, 0.8)
-shadow_size = 2
-shadow_offset = Vector2(1, 2)
-anti_aliasing = false
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_primary_pressed"]
+texture = SubResource("AtlasTexture_primary_cta")
+texture_margin_left = 88.0
+texture_margin_top = 24.0
+texture_margin_right = 88.0
+texture_margin_bottom = 24.0
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 5.0
+modulate_color = Color(0.72, 0.72, 0.72, 1)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary_hover"]
-bg_color = Color(0.075, 0.12, 0.18, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.859, 0.69, 0.376, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-corner_detail = 1
-anti_aliasing = false
+[sub_resource type="AtlasTexture" id="AtlasTexture_secondary_cta"]
+atlas = ExtResource("5_secondary_cta")
+region = Rect2(0, 0, 667, 127)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary_pressed"]
-bg_color = Color(0.027, 0.067, 0.122, 1)
-border_width_left = 2
-border_width_top = 3
-border_width_right = 2
-border_width_bottom = 1
-border_color = Color(0.345, 0.294, 0.204, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-corner_detail = 1
-anti_aliasing = false
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_secondary_normal"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 20.0
+texture_margin_right = 102.0
+texture_margin_bottom = 20.0
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_secondary_hover"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 20.0
+texture_margin_right = 102.0
+texture_margin_bottom = 20.0
+expand_margin_left = 6.0
+expand_margin_top = 6.0
+expand_margin_right = 6.0
+expand_margin_bottom = 6.0
+modulate_color = Color(1.0, 1.0, 0.86, 1.0)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_secondary_pressed"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 20.0
+texture_margin_right = 102.0
+texture_margin_bottom = 20.0
+expand_margin_left = 3.0
+expand_margin_top = 5.0
+expand_margin_right = 3.0
+expand_margin_bottom = 2.0
+modulate_color = Color(0.72, 0.72, 0.72, 1.0)
 
 [node name="PauseOverlay" type="Control"]
 process_mode = 3
@@ -323,10 +310,10 @@ focus_neighbor_top = NodePath("../JoystickSizeRow/JoystickSizeSlider")
 focus_neighbor_bottom = NodePath("../ChangeCharacterButton")
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_type_variation = &"ButtonStandard"
-theme_override_styles/normal = SubResource("StyleBoxFlat_primary_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_primary_hover")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_primary_pressed")
-theme_override_styles/focus = SubResource("StyleBoxFlat_primary_hover")
+theme_override_styles/normal = SubResource("StyleBoxTexture_primary_normal")
+theme_override_styles/hover = SubResource("StyleBoxTexture_primary_hover")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_primary_pressed")
+theme_override_styles/focus = SubResource("StyleBoxTexture_primary_hover")
 text = "Riprendi"
 
 [node name="ChangeCharacterButton" type="Button" parent="PauseCenter/Panel/VBox"]
@@ -337,10 +324,10 @@ focus_neighbor_top = NodePath("../ResumeButton")
 focus_neighbor_bottom = NodePath(".")
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_type_variation = &"ButtonStandard"
-theme_override_styles/normal = SubResource("StyleBoxFlat_secondary_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_secondary_hover")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_secondary_pressed")
-theme_override_styles/focus = SubResource("StyleBoxFlat_secondary_hover")
+theme_override_styles/normal = SubResource("StyleBoxTexture_secondary_normal")
+theme_override_styles/hover = SubResource("StyleBoxTexture_secondary_hover")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_secondary_pressed")
+theme_override_styles/focus = SubResource("StyleBoxTexture_secondary_hover")
 text = "Cambia personaggio"
 
 [node name="ConfirmationCenter" type="CenterContainer" parent="."]
@@ -386,10 +373,10 @@ focus_neighbor_top = NodePath("../ConfirmChangeButton")
 focus_neighbor_bottom = NodePath("../ConfirmChangeButton")
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_type_variation = &"ButtonStandard"
-theme_override_styles/normal = SubResource("StyleBoxFlat_secondary_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_secondary_hover")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_secondary_pressed")
-theme_override_styles/focus = SubResource("StyleBoxFlat_secondary_hover")
+theme_override_styles/normal = SubResource("StyleBoxTexture_secondary_normal")
+theme_override_styles/hover = SubResource("StyleBoxTexture_secondary_hover")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_secondary_pressed")
+theme_override_styles/focus = SubResource("StyleBoxTexture_secondary_hover")
 text = "Annulla"
 
 [node name="ConfirmChangeButton" type="Button" parent="ConfirmationCenter/Panel/VBox"]
@@ -400,8 +387,8 @@ focus_neighbor_top = NodePath("../CancelChangeButton")
 focus_neighbor_bottom = NodePath("../CancelChangeButton")
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_type_variation = &"ButtonStandard"
-theme_override_styles/normal = SubResource("StyleBoxFlat_primary_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_primary_hover")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_primary_pressed")
-theme_override_styles/focus = SubResource("StyleBoxFlat_primary_hover")
+theme_override_styles/normal = SubResource("StyleBoxTexture_primary_normal")
+theme_override_styles/hover = SubResource("StyleBoxTexture_primary_hover")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_primary_pressed")
+theme_override_styles/focus = SubResource("StyleBoxTexture_primary_hover")
 text = "Conferma"
