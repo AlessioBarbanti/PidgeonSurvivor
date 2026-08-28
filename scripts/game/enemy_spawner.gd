@@ -9,12 +9,17 @@ const ALL_SECTORS: Array[int] = [0, 1, 2, 3]
 
 @export var enemy_scene: PackedScene
 @export var spawn_profile: EnemySpawnProfile
+## Archetipi aggiuntivi oltre al piccione (B40): il piccione resta selezionato
+## tramite enemy_scene e partecipa allo stesso pool pesato con
+## spawn_profile.base_archetype_weight.
+@export var archetypes: Array[EnemyArchetypeDefinition] = []
 
 var _run_controller: RunController
 var _arena_layout: ArenaLayout
 var _target: Node2D
 var _enemy_parent: Node
 var _camera: Camera2D
+var _hostile_projectile_parent: Node
 var _spawned_enemies: Array[BaseEnemy] = []
 var _rng := RandomNumberGenerator.new()
 var _spawn_elapsed := 0.0
@@ -24,6 +29,7 @@ var _invalid_scene_warning_emitted := false
 var _active_sectors: Array[int] = ALL_SECTORS.duplicate()
 var _sector_elapsed := 0.0
 var _sector_hold_duration := 0.0
+var _ordinary_spawn_suspended := false
 
 
 func _ready() -> void:
@@ -35,7 +41,6 @@ func _process(delta: float) -> void:
 		return
 
 	var safe_delta := maxf(delta, 0.0)
-	_spawn_elapsed += safe_delta
 	_cleanup_elapsed += safe_delta
 
 	_sector_elapsed += safe_delta
@@ -46,6 +51,10 @@ func _process(delta: float) -> void:
 	if _cleanup_elapsed >= cleanup_interval:
 		_cleanup_elapsed = 0.0
 		cleanup_outside_despawn_rect()
+
+	if _ordinary_spawn_suspended:
+		return
+	_spawn_elapsed += safe_delta
 
 	var interval := spawn_profile.initial_spawn_delay
 	if not _awaiting_initial_spawn:
@@ -73,13 +82,23 @@ func configure(
 	arena_layout: ArenaLayout,
 	target: Node2D,
 	enemy_parent: Node,
-	camera: Camera2D = null
+	camera: Camera2D = null,
+	hostile_projectile_parent: Node = null
 ) -> void:
 	set_run_controller(run_controller)
 	_arena_layout = arena_layout
 	_target = target
 	_enemy_parent = enemy_parent
 	_camera = camera
+	_hostile_projectile_parent = hostile_projectile_parent
+
+
+func get_hostile_projectile_parent() -> Node:
+	return (
+		_hostile_projectile_parent
+		if is_instance_valid(_hostile_projectile_parent)
+		else null
+	)
 
 
 ## Rettangolo di riferimento per spawn/despawn: la stessa dimensione dello
@@ -132,9 +151,23 @@ func reset_for_run(seed_value: int, clear_existing: bool = true) -> void:
 	_cleanup_elapsed = 0.0
 	_awaiting_initial_spawn = true
 	_invalid_scene_warning_emitted = false
+	_ordinary_spawn_suspended = false
 	_roll_active_sectors()
 	if clear_existing:
 		clear_spawned_enemies()
+
+
+## Sospensione dello spawn ordinario durante un Boss attivo (B53): non tocca
+## clock, pattern, proiettili o collisioni, solo la schedulazione di nuovi
+## nemici ordinari. I nemici gia' presenti restano invariati; alla ripresa
+## _spawn_elapsed riprende esattamente da dove si era fermato, senza raffica
+## arretrata perche' try_spawn_enemy() genera al piu' un nemico per frame.
+func set_ordinary_spawn_suspended(value: bool) -> void:
+	_ordinary_spawn_suspended = value
+
+
+func is_ordinary_spawn_suspended() -> bool:
+	return _ordinary_spawn_suspended
 
 
 func get_active_sectors() -> Array[int]:
@@ -151,7 +184,55 @@ func try_spawn_enemy() -> BaseEnemy:
 	if not playfield_rect.has_area():
 		return null
 
-	var spawn_position := sample_spawn_position(
+	var spawn_position := _sample_position(playfield_rect)
+	if not spawn_position.is_finite():
+		return null
+
+	var chosen_archetype := _pick_archetype(_run_controller.get_run_time())
+	if chosen_archetype == null:
+		return _spawn_base_enemy(spawn_position)
+
+	var first_enemy := _spawn_archetype_enemy(chosen_archetype, spawn_position)
+	if first_enemy == null:
+		return null
+	for _cluster_index in range(1, chosen_archetype.spawn_cluster_size):
+		if get_alive_count() >= spawn_profile.max_alive_enemies:
+			break
+		var extra_position := _sample_position(playfield_rect)
+		if not extra_position.is_finite():
+			break
+		_spawn_archetype_enemy(chosen_archetype, extra_position)
+	return first_enemy
+
+
+## Istanzia un archetipo fuori dal ciclo di spawn ordinario (B40): usato dal
+## divisore per generare i propri frammenti nella posizione di morte. Rispetta
+## comunque il cap max_alive_enemies e passa dalla stessa pipeline di
+## registrazione di ogni altro nemico, cosicche' i frammenti vengano ripuliti
+## da clear_spawned_enemies()/cleanup_outside_despawn_rect() come tutti gli
+## altri.
+func spawn_archetype_instance(
+	definition: EnemyArchetypeDefinition,
+	position: Vector2
+) -> BaseEnemy:
+	if (
+		definition == null
+		or not definition.is_valid()
+		or spawn_profile == null
+		or not is_instance_valid(_run_controller)
+		or not _run_controller.is_running()
+		or not is_instance_valid(_target)
+		or not is_instance_valid(_enemy_parent)
+		or not _enemy_parent.is_inside_tree()
+	):
+		return null
+	if get_alive_count() >= spawn_profile.max_alive_enemies:
+		return null
+	return _spawn_archetype_enemy(definition, position)
+
+
+func _sample_position(playfield_rect: Rect2) -> Vector2:
+	return sample_spawn_position(
 		playfield_rect,
 		spawn_profile.inner_spawn_margin,
 		spawn_profile.get_effective_outer_spawn_margin(),
@@ -161,9 +242,30 @@ func try_spawn_enemy() -> BaseEnemy:
 		_rng,
 		_active_sectors
 	)
-	if not spawn_position.is_finite():
-		return null
 
+
+## Sceglie il profilo base (ritorna null) o un archetipo eleggibile in questo
+## istante di run, con un pool pesato che include sempre il piccione tramite
+## spawn_profile.base_archetype_weight (contratto: "il profilo base domina i
+## primi minuti e gli altri entrano progressivamente").
+func _pick_archetype(run_time: float) -> EnemyArchetypeDefinition:
+	var eligible: Array[EnemyArchetypeDefinition] = []
+	var weights: Array[float] = [spawn_profile.base_archetype_weight]
+	for archetype in archetypes:
+		if archetype == null or not archetype.is_valid():
+			continue
+		if not archetype.is_eligible_at(run_time):
+			continue
+		eligible.append(archetype)
+		weights.append(archetype.spawn_weight)
+
+	var chosen_index := pick_weighted_index(weights, _rng)
+	if chosen_index <= 0:
+		return null
+	return eligible[chosen_index - 1]
+
+
+func _spawn_base_enemy(position: Vector2) -> BaseEnemy:
 	var instance := enemy_scene.instantiate()
 	if not instance is BaseEnemy:
 		if is_instance_valid(instance):
@@ -174,16 +276,50 @@ func try_spawn_enemy() -> BaseEnemy:
 				"EnemySpawner: enemy_scene deve avere BaseEnemy come nodo root."
 			)
 		return null
-
 	var enemy := instance as BaseEnemy
+	if not _finalize_spawned_enemy(enemy, position):
+		return null
+	return enemy
+
+
+func _spawn_archetype_enemy(
+	archetype: EnemyArchetypeDefinition,
+	position: Vector2
+) -> BaseEnemy:
+	if archetype == null or archetype.scene == null:
+		return null
+	var instance := archetype.scene.instantiate()
+	if not instance is BaseEnemy:
+		if is_instance_valid(instance):
+			instance.free()
+		return null
+	var enemy := instance as BaseEnemy
+	if not _finalize_spawned_enemy(enemy, position, archetype):
+		return null
+	_configure_archetype_behavior(enemy, archetype)
+	return enemy
+
+
+## Percorso comune di registrazione: aggiunta alla scena, posizionamento,
+## dati dell'archetipo (se presente), inseguimento/RNG/XP e tracking dello
+## spawner. Va chiamato dopo add_child perche' apply_archetype_definition
+## legge componenti @onready risolti solo a nodo entrato nell'albero.
+func _finalize_spawned_enemy(
+	enemy: BaseEnemy,
+	position: Vector2,
+	archetype: EnemyArchetypeDefinition = null
+) -> bool:
+	_enemy_parent.add_child(enemy)
+	enemy.global_position = position
+	if archetype != null and not enemy.apply_archetype_definition(archetype):
+		enemy.queue_free()
+		return false
 	enemy.set_target(_target)
 	enemy.set_pursuit_offset(_sample_pursuit_offset())
 	enemy.set_run_controller(_run_controller)
 	enemy.experience_reward_scale = spawn_profile.get_experience_reward_scale(
 		_run_controller.get_run_time()
 	)
-	_enemy_parent.add_child(enemy)
-	enemy.global_position = spawn_position
 	if not enemy.is_in_group(&"enemies"):
 		enemy.add_to_group(&"enemies")
 
@@ -193,7 +329,21 @@ func try_spawn_enemy() -> BaseEnemy:
 		CONNECT_ONE_SHOT
 	)
 	enemy_spawned.emit(enemy)
-	return enemy
+	return true
+
+
+func _configure_archetype_behavior(
+	enemy: BaseEnemy,
+	archetype: EnemyArchetypeDefinition
+) -> void:
+	if enemy is SplitterEnemy and archetype.split_fragment_definition != null:
+		(enemy as SplitterEnemy).configure_splitter(
+			archetype.split_fragment_definition,
+			archetype.split_fragment_count,
+			self
+		)
+	elif enemy is RangedEnemy:
+		(enemy as RangedEnemy).configure_ranged(archetype, _hostile_projectile_parent)
 
 
 func cleanup_outside_despawn_rect() -> int:
@@ -358,6 +508,36 @@ static func pick_sector_combination(
 	return picked
 
 
+## Sceglie un indice fra pesi paralleli con l'RNG fornito, cosicche' la scelta
+## resti deterministica per seed (stesso principio di pick_sector_combination).
+## Ritorna -1 se il pool e' vuoto o tutti i pesi sono <= 0.
+static func pick_weighted_index(weights: Array[float], rng: RandomNumberGenerator) -> int:
+	if rng == null or weights.is_empty():
+		return -1
+	var total := 0.0
+	for weight in weights:
+		if is_finite(weight) and weight > 0.0:
+			total += weight
+	if total <= 0.0:
+		return -1
+
+	var roll := rng.randf() * total
+	var cumulative := 0.0
+	for index in weights.size():
+		var weight: float = weights[index]
+		if not is_finite(weight) or weight <= 0.0:
+			continue
+		cumulative += weight
+		if roll < cumulative:
+			return index
+
+	# Arrotondamento in virgola mobile: ricade sull'ultimo peso valido.
+	for index in range(weights.size() - 1, -1, -1):
+		if is_finite(weights[index]) and weights[index] > 0.0:
+			return index
+	return -1
+
+
 func _exit_tree() -> void:
 	_disconnect_run_controller()
 
@@ -444,6 +624,7 @@ func _on_restart_prepared() -> void:
 	_spawn_elapsed = 0.0
 	_cleanup_elapsed = 0.0
 	_awaiting_initial_spawn = true
+	_ordinary_spawn_suspended = false
 	clear_spawned_enemies()
 
 

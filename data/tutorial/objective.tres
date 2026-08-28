@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TutorialPageDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/tutorial_page_definition.gd" id="1_page"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/tutorial/generated/tutorial_objective.png" id="2_artwork"]
+
+[resource]
+script = ExtResource("1_page")
+id = &"objective"
+eyebrow = "OBIETTIVO"
+title = "SOPRAVVIVI ALLA GRIGLIATA"
+body = "Resisti alle orde e supera ogni Boss. Finché resti in piedi, il tempo continua e il record cresce."
+artwork = ExtResource("2_artwork")

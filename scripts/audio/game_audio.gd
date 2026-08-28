@@ -21,6 +21,11 @@ const ABILITY_ACTIVATE := &"ability_activate"
 const ABILITY_READY := &"ability_ready"
 const BOSS_WARNING := &"boss_warning"
 const BOSS_ATTACK := &"boss_attack"
+## Scarto Istintivo di Bea (B45). Non e' ancora nella lista di
+## has_complete_cue_set(): resta un no-op silenzioso finche' non arriva un
+## asset dedicato, coerente con la disciplina che richiede uno stream
+## importato per ogni cue prima di dichiararlo "completo".
+const DODGE := &"dodge"
 const UI_CONFIRM := &"ui_confirm"
 const PAUSE := &"pause"
 const RESUME := &"resume"
@@ -40,6 +45,7 @@ const DEFEAT := &"defeat"
 @export var ability_ready_stream: AudioStream
 @export var boss_warning_stream: AudioStream
 @export var boss_attack_stream: AudioStream
+@export var dodge_stream: AudioStream
 
 @export_group("Interface")
 @export var ui_confirm_stream: AudioStream
@@ -249,6 +255,8 @@ func get_stream_for_cue(cue_id: StringName) -> AudioStream:
 			return boss_warning_stream
 		BOSS_ATTACK:
 			return boss_attack_stream
+		DODGE:
+			return dodge_stream
 		UI_CONFIRM:
 			return ui_confirm_stream
 		PAUSE:

@@ -11,9 +11,26 @@ const MEAT_FORK_DAMAGE := preload("res://data/upgrades/meat_fork_damage.tres")
 const GOSSIP := preload("res://data/upgrades/gossip_projectiles.tres")
 const NO_TIME := preload("res://data/upgrades/damage_shockwave.tres")
 const SUMMER_GRILL := preload("res://data/upgrades/summer_grill.tres")
+const PIERCING_ROUNDS := preload("res://data/upgrades/piercing_rounds.tres")
+const DOUBLE_BARREL := preload("res://data/upgrades/double_barrel.tres")
+const DEATH_BURST := preload("res://data/upgrades/death_burst.tres")
 
 const VIEWPORTS: Array[Vector2i] = [Vector2i(1280, 720), Vector2i(1080, 2400), Vector2i(1024, 768)]
-const DEFINITIONS: Array[UpgradeDefinition] = [SWIFT_STEPS, RAPID_FIRE, WIDE_MAGNET, ANXIETY, BEER, CHRONIC_DELAY, MEAT_FORK_DAMAGE, GOSSIP, NO_TIME, SUMMER_GRILL]
+const DEFINITIONS: Array[UpgradeDefinition] = [
+	SWIFT_STEPS,
+	RAPID_FIRE,
+	WIDE_MAGNET,
+	ANXIETY,
+	BEER,
+	CHRONIC_DELAY,
+	MEAT_FORK_DAMAGE,
+	GOSSIP,
+	NO_TIME,
+	SUMMER_GRILL,
+	PIERCING_ROUNDS,
+	DOUBLE_BARREL,
+	DEATH_BURST,
+]
 
 var _failures: Array[String] = []
 

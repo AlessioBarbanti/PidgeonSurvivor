@@ -8,14 +8,14 @@ Nomi e testi sono stati approvati dal proprietario del progetto il 17 agosto
 ## Magno
 
 Ruolo: Mobilità e controllo delle orde.  
-Passiva — Flusso Aerodinamico Bovino: Aumenta la velocità di movimento base.  
-Attiva — Onda d'Urto Tellurica: Genera un'onda d'urto circolare che infligge danni e respinge i nemici vicini.
+Passiva — Flusso Aerodinamico Bovino: Lo slancio cresce muovendosi dritto e decade cambiando direzione.  
+Attiva — Onda d'Urto Tellurica: Genera un'onda d'urto circolare che infligge danni e respinge i nemici vicini, più forte con più slancio.
 Boss: Evil Magno.
 
 ## Bea
 
 Ruolo: Evasione e riposizionamento.  
-Passiva — Sesto Senso Equino: Probabilità di evitare completamente un colpo ricevuto.  
+Passiva — Scarto Istintivo: A cooldown, annulla il primo colpo che la colpirebbe e la scarta d'istinto lontano dal pericolo con un breve i-frame.  
 Attiva — Powerslide: Si teletrasporta nell'ultima direzione guardata e lascia una scia di fuoco persistente.
 Boss: Evil Bea.
 
@@ -23,41 +23,41 @@ Boss: Evil Bea.
 
 Ruolo: Gestione del danno e sopravvivenza.  
 Passiva — Guarigione Ritardata: Parte del danno diventa una quantità recuperabile nel tempo se il giocatore evita danni successivi.  
-Attiva — Tempesta di Tuoni: Un tuono colpisce tutti i nemici dopo un breve preavviso.
+Attiva — Tempesta di Tuoni: Una sequenza di fulmini telegrafati cade su posizioni fisse durante alcuni secondi; il valore sta nel portarci sopra orde e Boss (B43).
 Boss: Evil Zat.
 
 ## Alea
 
 Ruolo: Progressione e crescita.  
-Passiva — L’Aquila Non Sbaglia Mai: a intervalli regolari ottiene un effetto casuale temporaneo, positivo o negativo, con una maggiore probabilità che sia positivo.  
+Passiva — L’Aquila Non Sbaglia Mai: a intervalli regolari tira un effetto temporaneo, forte in bene o in male; ogni nemico ucciso carica la fortuna del prossimo tiro, che la spende per intero.  
 Attiva — Gran Piroetta: Rotazione rapida che colpisce ripetutamente i nemici vicini.
 Boss: Evil Alea.
 
 ## Aleo
 
 Ruolo: Sbalzo termico — brucia quando sta bene, raffredda quando è in difficoltà.  
-Passiva — Termostato Interno: sopra metà salute lavora in riscaldamento e aumenta il danno inflitto; sotto metà passa in raffrescamento, riduce il danno subito e rallenta i nemici vicini.  
+Passiva — Termostato Interno: sopra metà salute lavora in riscaldamento e aumenta il danno inflitto; sotto metà passa in raffrescamento, riduce il danno subito e la brina rallenta ed erode i nemici vicini. Un'aura ciano o arancio dichiara sempre la modalità corrente.  
 Attiva — Shock Termico: Congela un'area per un istante, poi la fa esplodere di calore con danno raddoppiato sui nemici brinati.
 Boss: Evil Aleo.
 
 ## Lollo
 
 Ruolo: Velocità, caos e imprevedibilità.  
-Passiva — Iperfocus ADHD: Alterna a intervalli casuali una fase di iperfocus (movimento e cadenza di fuoco molto più rapidi) e una fase distratta (movimento e cadenza sotto la norma).  
-Attiva — Cosplay Casuale: Usa casualmente l'attiva di un altro personaggio.
+Passiva — Iperfocus ADHD: Alterna a intervalli casuali una fase di iperfocus (movimento e cadenza di fuoco molto più rapidi) e una fase distratta (movimento e cadenza sotto la norma); ogni nemico ucciso accorcia la sola distrazione. Una tinta dedicata dichiara la fase corrente.  
+Attiva — Cosplay Casuale: Usa l'attiva di un altro personaggio, estratta in anticipo e annunciata prima del lancio, così da poterci pianificare sopra.
 Boss: Evil Lollo.
 
 ## Migi
 
 Ruolo: Difesa e controllo delle orde.  
-Passiva — Guscio Tartarughina: Aumenta difesa; sotto soglia genera uno scudo temporaneo (con cooldown).  
-Attiva — Rallentamento Zen: Zona che rallenta fortemente i nemici.
+Passiva — Guscio Tartarughina: Placche che annullano i primi colpi e si ricaricano nel tempo; sotto soglia critica arriva uno scudo d'emergenza (con cooldown).  
+Attiva — Rallentamento Zen: Zona che rallenta fortemente i nemici e assorbe i loro proiettili.
 Boss: Evil Migi.
 
 ## Marghe
 
 Ruolo: Indebolimento e manipolazione dell'aggro.  
-Passiva — Sorriso Contagioso: Riduce la salute massima dei nemici (concetto: -5% come valore indicativo).  
+Passiva — Sorriso Contagioso: I nemici vicini subiscono più danno da ogni fonte, arma e abilità comprese, e sono marcati da una tinta magenta riconoscibile.  
 Attiva — Reggeton time!: Genera un clone che balla reggaeton e devia l'aggro dei nemici.
 Boss: Evil Marghe.
 

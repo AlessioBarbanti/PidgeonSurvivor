@@ -60,6 +60,7 @@ const B22_PHYSICAL_AUTODEFEAT_DELAY_SECONDS := 8.0
 @onready var _boss_ui: BossUI = %BossUI
 @onready var _upgrade_overlay: UpgradeOverlay = %UpgradeOverlay
 @onready var _welcome_screen: WelcomeScreen = %WelcomeScreen
+@onready var _tutorial_screen: TutorialScreen = %TutorialScreen
 @onready var _character_select_overlay: CharacterSelectOverlay = %CharacterSelectOverlay
 @onready var _pause_overlay: PauseOverlay = %PauseOverlay
 @onready var _end_screen: EndScreen = %EndScreen
@@ -76,14 +77,19 @@ func _ready() -> void:
 	_run_controller.state_changed.connect(_on_run_state_changed_for_joystick)
 	_player.died.connect(_on_player_died)
 	_run_controller.run_ended.connect(_on_run_ended)
+	_boss_encounter.boss_spawned.connect(_on_boss_spawned_for_horde_pause)
+	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_horde_pause)
 	_hud.pause_requested.connect(_on_pause_requested)
 	_end_screen.restart_requested.connect(_on_restart_requested)
 	_end_screen.change_character_requested.connect(_on_change_character_requested)
 	_pause_overlay.change_character_requested.connect(_on_change_character_requested)
 	_welcome_screen.play_requested.connect(_on_welcome_play_requested)
+	_welcome_screen.tutorial_requested.connect(_on_welcome_tutorial_requested)
 	_welcome_screen.audio_volume_changed.connect(_on_welcome_audio_volume_changed)
 	_welcome_screen.audio_mute_toggled.connect(_on_welcome_audio_mute_toggled)
 	_welcome_screen.reduced_flashes_toggled.connect(_on_welcome_reduced_flashes_toggled)
+	_tutorial_screen.close_requested.connect(_on_tutorial_close_requested)
+	_tutorial_screen.play_requested.connect(_on_tutorial_play_requested)
 	_character_select_overlay.friend_confirmed.connect(_on_friend_confirmed)
 	_character_select_overlay.back_requested.connect(_on_character_selection_back_requested)
 	_platform_lifecycle.configure(
@@ -105,6 +111,7 @@ func _ready() -> void:
 	_camera.limit_bottom = int(world_rect.end.y)
 	_player.set_arena_layout(_arena_layout)
 	_player.set_world_bounds(world_rect)
+	_player.set_hud_exclusion(_camera, _hud.get_active_ability_button())
 	_player.set_run_controller(_run_controller)
 	_player.global_position = _arena_world.get_world_center()
 	_camera.reset_smoothing()
@@ -115,7 +122,8 @@ func _ready() -> void:
 		_arena_layout,
 		_player,
 		_enemies,
-		_camera
+		_camera,
+		_boss_projectiles
 	)
 	_combat_feedback.configure(
 		_run_controller,
@@ -181,6 +189,9 @@ func _ready() -> void:
 		_weapon_controller,
 		_targeting_system
 	)
+	_friend_passive_controller.instinctive_dodge_triggered.connect(
+		_on_instinctive_dodge_triggered
+	)
 	_ability_controller.configure(
 		_run_controller,
 		_input_router,
@@ -220,11 +231,17 @@ func _ready() -> void:
 	_visual_accessibility_settings.settings_changed.connect(
 		_welcome_screen.set_reduced_flashes
 	)
+	_visual_accessibility_settings.settings_changed.connect(
+		_tutorial_screen.set_reduced_flashes
+	)
 	_welcome_screen.set_audio_settings(
 		_game_audio.get_effects_volume(),
 		_game_audio.is_muted()
 	)
 	_welcome_screen.set_reduced_flashes(
+		_visual_accessibility_settings.is_reduced_flashes_enabled()
+	)
+	_tutorial_screen.set_reduced_flashes(
 		_visual_accessibility_settings.is_reduced_flashes_enabled()
 	)
 	_apply_touch_control_settings(
@@ -472,6 +489,10 @@ func get_character_select_overlay() -> CharacterSelectOverlay:
 
 func get_welcome_screen() -> WelcomeScreen:
 	return _welcome_screen
+
+
+func get_tutorial_screen() -> TutorialScreen:
+	return _tutorial_screen
 
 
 func get_boss_encounter() -> BossEncounter:
@@ -824,6 +845,7 @@ func _start_selected_run(seed_value: int) -> bool:
 		return false
 	_character_select_overlay.hide_selection()
 	_welcome_screen.hide_welcome()
+	_tutorial_screen.hide_tutorial()
 	_hud.show()
 	_touch_joystick.show()
 	_player.global_position = _arena_world.get_world_center()
@@ -838,6 +860,7 @@ func _show_character_selection() -> void:
 	_hud.hide()
 	_touch_joystick.hide()
 	_welcome_screen.hide_welcome()
+	_tutorial_screen.hide_tutorial()
 	var current_friend := _player.get_friend_definition()
 	_character_select_overlay.show_selection(
 		current_friend.id if current_friend != null else &"magno"
@@ -845,7 +868,7 @@ func _show_character_selection() -> void:
 	print("B18O_CHARACTER_SELECT_SHOWN")
 
 
-func _show_welcome_screen() -> void:
+func _show_welcome_screen(focus_tutorial: bool = false) -> void:
 	if _run_controller.get_state() != RunController.RunState.BOOT:
 		return
 	_input_router.suspend_input()
@@ -853,8 +876,24 @@ func _show_welcome_screen() -> void:
 	_hud.hide()
 	_touch_joystick.hide()
 	_character_select_overlay.hide_selection()
-	_welcome_screen.show_welcome()
+	_tutorial_screen.hide_tutorial()
+	_welcome_screen.show_welcome(focus_tutorial)
 	print("B18O_WELCOME_SHOWN")
+
+
+func _show_tutorial_screen() -> void:
+	if _run_controller.get_state() != RunController.RunState.BOOT:
+		return
+	_input_router.suspend_input()
+	_player.clear_movement_input()
+	_hud.hide()
+	_touch_joystick.hide()
+	_character_select_overlay.hide_selection()
+	_welcome_screen.hide_welcome()
+	_tutorial_screen.show_tutorial(
+		_visual_accessibility_settings.is_reduced_flashes_enabled()
+	)
+	print("B54_TUTORIAL_SHOWN")
 
 
 func _validate_current_contract() -> bool:
@@ -1028,6 +1067,8 @@ func _validate_current_contract() -> bool:
 	else:
 		if _welcome_screen.get_play_button() == null:
 			failures.append("WelcomeScreen B18O priva di GIOCA.")
+		if _welcome_screen.get_tutorial_button() == null:
+			failures.append("WelcomeScreen B54 priva di TUTORIAL.")
 		if _welcome_screen.get_settings_button() == null:
 			failures.append("WelcomeScreen B18O priva di IMPOSTAZIONI.")
 		if (
@@ -1041,6 +1082,14 @@ func _validate_current_contract() -> bool:
 			or _welcome_screen.get_reduced_flashes_check_button() == null
 		):
 			failures.append("WelcomeScreen B18O priva delle impostazioni correnti.")
+	if _tutorial_screen == null:
+		failures.append("TutorialScreen B54 non presente.")
+	elif (
+		_tutorial_screen.get_page_count() != 6
+		or _tutorial_screen.get_page_ids()
+		!= [&"objective", &"movement", &"ability", &"progression", &"enemies", &"boss"]
+	):
+		failures.append("TutorialScreen B54 deve esporre le sei pagine autorevoli.")
 	if _character_select_overlay.get_back_button() == null:
 		failures.append("Il selettore B18O deve esporre INDIETRO.")
 	if _visual_accessibility_settings == null:
@@ -1247,6 +1296,12 @@ func _validate_current_contract() -> bool:
 		)
 	):
 		failures.append("La run deve iniziare senza modificatori proiettile B13.")
+	if (
+		_weapon_controller.get_effective_pierce_count() != 1
+		or _weapon_controller.get_effective_multishot_count() != 1
+		or _weapon_controller.is_death_burst_enabled()
+	):
+		failures.append("La run deve iniziare senza forme d'attacco B41.")
 	if _vignette_effect.visible or not is_zero_approx(_vignette_effect.intensity):
 		failures.append("La vignetta B13 deve essere disattiva a inizio run.")
 	if _upgrade_overlay == null:
@@ -1588,6 +1643,7 @@ func _validate_current_contract() -> bool:
 		print("B18U_CONTRACT_OK")
 		print("B18W_CONTRACT_OK")
 		print("B18V_CONTRACT_OK")
+		print("B54_CONTRACT_OK")
 		return true
 
 	for failure in failures:
@@ -1606,6 +1662,33 @@ func _on_player_died(player: Player) -> void:
 
 func _on_run_ended(final_state: RunController.RunState, run_time: float) -> void:
 	_show_terminal_screen(final_state, run_time)
+
+
+## B53: lo spawn ordinario si ferma per tutta la presenza di un Boss attivo
+## (dall'ingresso effettivo, non dalla sola richiesta) e riprende alla sua
+## uscita. EnemySpawner resta la fonte autorevole del cap e della sequenza
+## RNG: qui si tocca solo il flag di sospensione.
+func _on_boss_spawned_for_horde_pause(_boss: FirstBoss, _schedule_index: int) -> void:
+	_enemy_spawner.set_ordinary_spawn_suspended(true)
+
+
+func _on_boss_defeated_for_horde_pause(_boss: FirstBoss, _experience_reward: int) -> void:
+	_enemy_spawner.set_ordinary_spawn_suspended(false)
+
+
+## Tell dello Scarto Istintivo di Bea (B45): la passiva non conosce nodi
+## visivi o audio, emette solo posizione e direzione; questa e' la stessa
+## responsabilita' gia' svolta da AbilityEffectRegistry per le abilita' attive.
+func _on_instinctive_dodge_triggered(position: Vector2, direction: Vector2) -> void:
+	if not is_instance_valid(_ability_effects):
+		return
+	var accent := InstinctiveDodgeAccent.new()
+	accent.name = "InstinctiveDodgeAccent"
+	_ability_effects.add_child(accent)
+	if not accent.initialize(position, direction, _run_controller):
+		accent.queue_free()
+		return
+	_game_audio.play_cue(GameAudio.DODGE, -3.0)
 
 
 func _show_terminal_screen(
@@ -1657,12 +1740,33 @@ func _on_welcome_play_requested() -> void:
 	_show_character_selection()
 
 
+func _on_welcome_tutorial_requested() -> void:
+	if _run_controller.get_state() != RunController.RunState.BOOT:
+		return
+	_game_audio.play_cue(GameAudio.UI_CONFIRM, -3.0)
+	_show_tutorial_screen()
+
+
+func _on_tutorial_close_requested() -> void:
+	if _run_controller.get_state() == RunController.RunState.BOOT:
+		_show_welcome_screen(true)
+
+
+func _on_tutorial_play_requested() -> void:
+	if _run_controller.get_state() != RunController.RunState.BOOT:
+		return
+	_game_audio.play_cue(GameAudio.UI_CONFIRM, -3.0)
+	_show_character_selection()
+
+
 func _on_character_selection_back_requested() -> void:
 	if _run_controller.get_state() == RunController.RunState.BOOT:
 		_show_welcome_screen()
 
 
 func _on_boot_back_requested() -> bool:
+	if _tutorial_screen.visible:
+		return _tutorial_screen.handle_back_requested()
 	if _character_select_overlay.visible:
 		_show_welcome_screen()
 		return true

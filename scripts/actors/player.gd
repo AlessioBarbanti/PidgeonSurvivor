@@ -42,6 +42,18 @@ signal facing_direction_changed(direction: Vector2)
 const DEFAULT_FACING_DIRECTION := Vector2.RIGHT
 const HORIZONTAL_FACING_EPSILON := 0.001
 
+## Slancio di Magno (B45): sale mentre la direzione resta entro questa soglia
+## angolare (coseno) dal frame precedente, decade altrimenti. Tracciato per
+## chiunque a costo trascurabile; solo la passiva di Magno lo rende visibile
+## o rilevante per il gameplay.
+const MOMENTUM_DIRECTION_COS_THRESHOLD := 0.85
+const MOMENTUM_RAMP_SECONDS := 1.4
+const MOMENTUM_DECAY_SECONDS := 0.5
+const MOMENTUM_TRAIL_MAX_POINTS := 14
+const MOMENTUM_TRAIL_SAMPLE_INTERVAL := 0.03
+const MOMENTUM_TRAIL_MINIMUM_RATIO := 0.02
+const MOMENTUM_TRAIL_COLOR := Color(1.0, 0.78, 0.32, 1.0)
+
 var movement_input := Vector2.ZERO:
 	set(value):
 		movement_input = value.limit_length(1.0)
@@ -51,6 +63,8 @@ var movement_input := Vector2.ZERO:
 
 var _arena_layout: ArenaLayout
 var _world_bounds := Rect2()
+var _hud_exclusion_camera: Camera2D
+var _hud_exclusion_control: Control
 var _run_controller: RunController
 var _damage_flash_remaining := 0.0
 var _damage_reaction_remaining := 0.0
@@ -72,8 +86,14 @@ var _character_idle_texture: Texture2D
 var _character_walk_frames: Array[Texture2D] = []
 var _character_walk_frame_index := 0
 var _character_walk_elapsed := 0.0
+var _passive_state_tint := Color.WHITE
 var _character_is_walking := false
 var _last_movement_direction := DEFAULT_FACING_DIRECTION
+var _momentum_ratio := 0.0
+var _momentum_reference_direction := Vector2.ZERO
+var _momentum_trail_enabled := false
+var _momentum_trail_points: PackedVector2Array = PackedVector2Array()
+var _momentum_trail_sample_elapsed := 0.0
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 @onready var _health_component: HealthComponent = %HealthComponent
@@ -121,7 +141,10 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	_clamp_to_playfield()
 	_advance_character_animation(safe_delta)
+	_advance_momentum(safe_delta)
 	_update_character_feedback()
+
+
 func set_movement_input(value: Vector2) -> void:
 	movement_input = value
 
@@ -137,6 +160,25 @@ func get_facing_direction() -> Vector2:
 
 func get_last_movement_direction() -> Vector2:
 	return _last_movement_direction
+
+
+## Slancio 0..1 accumulato muovendosi in linea retta (B45/Magno). Letto a
+## lancio da chi copia l'Onda d'Urto Tellurica (Cosplay incluso), dato che
+## `source` e' sempre il Player vivo al momento dell'esecuzione dell'abilita'.
+func get_momentum_ratio() -> float:
+	return _momentum_ratio
+
+
+## Mostra/nasconde la scia procedurale dello slancio: e' la passiva
+## equipaggiata a deciderlo (solo Magno), il Player resta agnostico rispetto
+## a quale personaggio sia attivo.
+func set_momentum_trail_enabled(value: bool) -> void:
+	if _momentum_trail_enabled == value:
+		return
+	_momentum_trail_enabled = value
+	if not value:
+		_momentum_trail_points.clear()
+	queue_redraw()
 
 
 func is_character_walking() -> bool:
@@ -192,7 +234,11 @@ func get_passive_controller() -> FriendPassiveController:
 	return _passive_controller if is_instance_valid(_passive_controller) else null
 
 
-func take_contact_damage(amount: float) -> bool:
+## `source_position` (mondo) e' opzionale: alcune passive (Scarto Istintivo
+## di Bea) la usano per calcolare una direzione di fuga dalla minaccia.
+## `Vector2.INF` (default) segnala "fonte sconosciuta" ai chiamanti che non
+## la conoscono ancora.
+func take_contact_damage(amount: float, source_position: Vector2 = Vector2.INF) -> bool:
 	if (
 		not is_instance_valid(_run_controller)
 		or not _run_controller.is_running()
@@ -202,7 +248,7 @@ func take_contact_damage(amount: float) -> bool:
 		return false
 	var resolved_amount := amount
 	if is_instance_valid(_passive_controller):
-		resolved_amount = _passive_controller.resolve_incoming_damage(amount)
+		resolved_amount = _passive_controller.resolve_incoming_damage(amount, source_position)
 	resolved_amount *= _damage_taken_multiplier
 	if resolved_amount <= 0.0:
 		return false
@@ -217,6 +263,10 @@ func reset_for_run() -> void:
 	clear_movement_input()
 	_set_facing_direction(DEFAULT_FACING_DIRECTION)
 	_last_movement_direction = DEFAULT_FACING_DIRECTION
+	_momentum_ratio = 0.0
+	_momentum_reference_direction = Vector2.ZERO
+	_momentum_trail_points.clear()
+	_momentum_trail_sample_elapsed = 0.0
 	if is_instance_valid(_health_component):
 		_health_component.set_health_max(get_base_health_max())
 		_health_component.reset_to_max()
@@ -247,6 +297,17 @@ func set_world_bounds(value: Rect2) -> void:
 
 func get_world_bounds() -> Rect2:
 	return _world_bounds
+
+
+## Riserva runtime del controllo HUD passato (B52): quando visibile, il suo
+## ingombro sullo schermo esclude il punto corrispondente del playfield,
+## cosi' il Player non puo' finire sotto l'icona dell'abilita' nel suo
+## angolo. Player resta agnostico rispetto a GameHud: riceve un Control
+## generico e la Camera2D che traduce lo schermo in coordinate di mondo.
+func set_hud_exclusion(camera: Camera2D, reserved_control: Control) -> void:
+	_hud_exclusion_camera = camera
+	_hud_exclusion_control = reserved_control
+	_clamp_to_playfield()
 
 
 func set_run_controller(value: RunController) -> void:
@@ -323,6 +384,32 @@ func set_character_stat_multipliers(
 	_character_health_max_multiplier = health_max_multiplier
 	_recalculate_effective_stats(true)
 	return true
+
+
+## Tinta di stato della passiva equipaggiata (B42/B44): e' il "tell" che
+## rende leggibile in quale fase si trova il profilo, senza introdurre nodi
+## aggiuntivi ne' toccare collisioni, statistiche o timing di gameplay.
+func set_passive_state_tint(value: Color) -> bool:
+	if not is_finite(value.r) or not is_finite(value.g) or not is_finite(value.b):
+		return false
+	_passive_state_tint = Color(value.r, value.g, value.b, 1.0)
+	_update_character_feedback()
+	return true
+
+
+func clear_passive_state_tint() -> void:
+	if _passive_state_tint == Color.WHITE:
+		return
+	_passive_state_tint = Color.WHITE
+	_update_character_feedback()
+
+
+func get_passive_state_tint() -> Color:
+	return _passive_state_tint
+
+
+func has_passive_state_tint() -> bool:
+	return _passive_state_tint != Color.WHITE
 
 
 func reset_character_stat_multipliers() -> void:
@@ -466,7 +553,7 @@ func _update_character_feedback() -> void:
 	_character_sprite.self_modulate = (
 		Color(1.0, 0.72, 0.8, 1.0)
 		if _damage_flash_remaining > 0.0
-		else Color.WHITE
+		else _passive_state_tint
 	)
 	_character_sprite.visible = (
 		_character_sprite.texture != null
@@ -525,6 +612,55 @@ func _advance_character_animation(delta: float) -> void:
 			(_character_walk_frame_index + 1) % _character_walk_frames.size()
 		)
 	_apply_character_frame()
+
+
+func _advance_momentum(delta: float) -> void:
+	if movement_input.is_zero_approx():
+		_momentum_ratio = maxf(_momentum_ratio - delta / MOMENTUM_DECAY_SECONDS, 0.0)
+		_momentum_reference_direction = Vector2.ZERO
+	else:
+		var direction := movement_input.normalized()
+		var aligned := (
+			_momentum_reference_direction.is_zero_approx()
+			or direction.dot(_momentum_reference_direction) >= MOMENTUM_DIRECTION_COS_THRESHOLD
+		)
+		if aligned:
+			_momentum_ratio = clampf(_momentum_ratio + delta / MOMENTUM_RAMP_SECONDS, 0.0, 1.0)
+		else:
+			_momentum_ratio = maxf(_momentum_ratio - delta / MOMENTUM_DECAY_SECONDS, 0.0)
+		_momentum_reference_direction = direction
+	_advance_momentum_trail(delta)
+
+
+func _advance_momentum_trail(delta: float) -> void:
+	if not _momentum_trail_enabled or _momentum_ratio <= MOMENTUM_TRAIL_MINIMUM_RATIO:
+		if not _momentum_trail_points.is_empty():
+			_momentum_trail_points.clear()
+			queue_redraw()
+		return
+	_momentum_trail_sample_elapsed += delta
+	if _momentum_trail_sample_elapsed < MOMENTUM_TRAIL_SAMPLE_INTERVAL:
+		return
+	_momentum_trail_sample_elapsed = 0.0
+	_momentum_trail_points.append(global_position)
+	if _momentum_trail_points.size() > MOMENTUM_TRAIL_MAX_POINTS:
+		_momentum_trail_points.remove_at(0)
+	queue_redraw()
+
+
+func _draw() -> void:
+	if not _momentum_trail_enabled or _momentum_trail_points.size() < 2:
+		return
+	var point_count := _momentum_trail_points.size()
+	for index in point_count - 1:
+		var age_ratio := float(index) / float(point_count)
+		var alpha := _momentum_ratio * age_ratio * 0.55
+		if alpha <= 0.01:
+			continue
+		var from_point := to_local(_momentum_trail_points[index])
+		var to_point := to_local(_momentum_trail_points[index + 1])
+		var width := 3.0 + 4.0 * _momentum_ratio * age_ratio
+		draw_line(from_point, to_point, Color(MOMENTUM_TRAIL_COLOR, alpha), width, true)
 
 
 func _apply_character_frame() -> void:
@@ -681,10 +817,134 @@ func _clamp_to_playfield() -> void:
 			global_position,
 			collision_radius
 		)
+	elif is_instance_valid(_arena_layout):
+		global_position = _arena_layout.clamp_circle_center(
+			global_position,
+			collision_radius
+		)
+	else:
 		return
-	if not is_instance_valid(_arena_layout):
+	_apply_hud_exclusion()
+
+
+## B52: dopo il confinamento nel mondo, spinge il Player fuori dall'ingombro
+## corrente del controllo HUD riservato (se assegnato e visibile), poi
+## ri-applica il confinamento esterno nel caso lo spostamento avesse
+## superato il limite opposto (angolo stretto su viewport minuscoli).
+func _apply_hud_exclusion() -> void:
+	var reserved_rect := get_hud_exclusion_world_rect()
+	if not reserved_rect.has_area():
 		return
-	global_position = _arena_layout.clamp_circle_center(
+	var pushed := ArenaWorld.push_circle_outside_rect(
 		global_position,
-		collision_radius
+		collision_radius,
+		reserved_rect
+	)
+	if pushed == global_position:
+		return
+	global_position = pushed
+	if _world_bounds.has_area():
+		global_position = ArenaWorld.clamp_circle_center_in_rect(
+			_world_bounds,
+			global_position,
+			collision_radius
+		)
+	elif is_instance_valid(_arena_layout):
+		global_position = _arena_layout.clamp_circle_center(
+			global_position,
+			collision_radius
+		)
+
+
+## Scarto Istintivo di Bea (B45): prova a spostare il Player lungo
+## `direction` per `distance`, rispettando confinamento mondo/HUD e senza
+## mai atterrare dentro un ostacolo statico. Se non esiste una destinazione
+## sicura (spostamento quasi nullo dopo il confinamento, o punto bloccato),
+## non sposta il Player e restituisce `false`: il colpo va comunque annullato
+## e l'i-frame concesso a monte, ma senza spostamento casuale.
+func try_shove_to_safe_position(direction: Vector2, distance: float) -> bool:
+	if (
+		not direction.is_finite()
+		or direction.is_zero_approx()
+		or not is_finite(distance)
+		or distance <= 0.0
+	):
+		return false
+	var desired := global_position + direction.normalized() * distance
+	var confined := _confine_point(desired)
+	if confined.distance_to(global_position) < collision_radius * 0.5:
+		return false
+	if _point_blocked_by_obstacle(confined):
+		return false
+	global_position = confined
+	return true
+
+
+## Confinamento pubblico di un punto arbitrario nello spazio di mondo:
+## stessa catena usata dal Player ogni frame (world bounds, poi esclusione
+## HUD). Serve a chi calcola una destinazione per il Player (Powerslide di
+## Bea) senza dover conoscere i limiti dell'arena, che NON coincidono con il
+## playfield a schermo di ArenaLayout.
+func confine_world_point(point: Vector2) -> Vector2:
+	if not point.is_finite():
+		return global_position
+	return _confine_point(point)
+
+
+func _confine_point(point: Vector2) -> Vector2:
+	var confined := point
+	if _world_bounds.has_area():
+		confined = ArenaWorld.clamp_circle_center_in_rect(_world_bounds, confined, collision_radius)
+	elif is_instance_valid(_arena_layout):
+		confined = _arena_layout.clamp_circle_center(confined, collision_radius)
+	var reserved_rect := get_hud_exclusion_world_rect()
+	if not reserved_rect.has_area():
+		return confined
+	var pushed := ArenaWorld.push_circle_outside_rect(confined, collision_radius, reserved_rect)
+	if pushed == confined:
+		return confined
+	if _world_bounds.has_area():
+		return ArenaWorld.clamp_circle_center_in_rect(_world_bounds, pushed, collision_radius)
+	if is_instance_valid(_arena_layout):
+		return _arena_layout.clamp_circle_center(pushed, collision_radius)
+	return pushed
+
+
+func _point_blocked_by_obstacle(point: Vector2) -> bool:
+	if not is_inside_tree():
+		return false
+	for obstacle in get_tree().get_nodes_in_group(&"static_obstacles"):
+		if obstacle is StaticObstacle and (obstacle as StaticObstacle).get_footprint_rect().has_point(point):
+			return true
+	return false
+
+
+## Traduce l'ingombro a schermo del controllo HUD riservato in un rettangolo
+## di mondo, centrando la vista corrente della camera come gia' fa
+## EnemySpawner.get_visible_reference_rect() per il playfield (B38): stessa
+## idea, applicata al solo angolo occupato dal controllo invece che
+## all'intero playfield. Pubblico per essere verificabile dagli smoke test.
+func get_hud_exclusion_world_rect() -> Rect2:
+	if (
+		not is_instance_valid(_hud_exclusion_camera)
+		or not is_instance_valid(_hud_exclusion_control)
+		or not _hud_exclusion_control.is_visible_in_tree()
+	):
+		return Rect2()
+	var control_rect := _hud_exclusion_control.get_global_rect()
+	if not control_rect.has_area():
+		return Rect2()
+	var viewport := get_viewport()
+	if viewport == null:
+		return Rect2()
+	var viewport_rect := viewport.get_visible_rect()
+	if not viewport_rect.has_area():
+		return Rect2()
+	var viewport_origin_world := (
+		_hud_exclusion_camera.get_screen_center_position()
+		- viewport_rect.size * 0.5
+	)
+	return Rect2(
+		viewport_origin_world + (control_rect.position - viewport_rect.position),
+		control_rect.size
 	)

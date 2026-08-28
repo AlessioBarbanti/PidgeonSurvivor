@@ -33,13 +33,14 @@ display_name = "Lollo"
 role = "Velocità, caos e imprevedibilità."
 tags = Array[StringName]([&"mobility", &"random", &"copy"])
 passive_title = "Iperfocus ADHD"
-passive_description = "Alterna a intervalli casuali una fase di iperfocus fulminea e una fase distratta più lenta."
+passive_description = "Alterna a intervalli casuali una fase di iperfocus fulminea e una fase distratta più lenta; ogni nemico ucciso accorcia la distrazione."
 passive_id = &"lollo_hyperactivity"
 passive_parameters = {
 "distracted_duration_max": 6.0,
 "distracted_duration_min": 3.0,
 "distracted_fire_rate_multiplier": 0.8,
 "distracted_move_speed_multiplier": 0.85,
+"distraction_seconds_per_kill": 0.15,
 "focus_duration_max": 8.0,
 "focus_duration_min": 4.0,
 "focus_fire_rate_multiplier": 1.45,
@@ -48,6 +49,9 @@ passive_parameters = {
 active_ability_id = &"lollo_random_cosplay"
 active_ability_title = "Cosplay Casuale"
 active_ability_description = "Usa casualmente l'attiva di un altro personaggio."
+base_health_multiplier = 0.9
+base_move_speed_multiplier = 1.05
+base_fire_rate_multiplier = 1.05
 evil_display_name = "Evil Lollo"
 portrait = SubResource("AtlasTexture_portrait")
 evil_portrait = SubResource("AtlasTexture_evil")

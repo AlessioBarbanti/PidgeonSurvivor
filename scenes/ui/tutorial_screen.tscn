@@ -1,0 +1,364 @@
+[gd_scene load_steps=20 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/tutorial_screen.gd" id="1_screen"]
+[ext_resource type="Script" path="res://scripts/ui/tutorial_preview.gd" id="2_preview"]
+[ext_resource type="Resource" path="res://data/tutorial/objective.tres" id="3_objective"]
+[ext_resource type="Resource" path="res://data/tutorial/movement.tres" id="4_movement"]
+[ext_resource type="Resource" path="res://data/tutorial/ability.tres" id="5_ability"]
+[ext_resource type="Resource" path="res://data/tutorial/progression.tres" id="6_progression"]
+[ext_resource type="Resource" path="res://data/tutorial/enemies.tres" id="7_enemies"]
+[ext_resource type="Resource" path="res://data/tutorial/boss.tres" id="8_boss"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/welcome/welcome_ability_cast_background.png" id="9_background"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/character_select/secondary_button_cta_base.png" id="10_secondary_cta"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.015, 0.027, 0.045, 0.985)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 6
+border_color = Color(0.78, 0.49, 0.16, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.78)
+shadow_size = 12
+shadow_offset = Vector2(0, 7)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_visual"]
+bg_color = Color(0.012, 0.024, 0.04, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.345, 0.294, 0.204, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_secondary_cta"]
+atlas = ExtResource("10_secondary_cta")
+region = Rect2(0, 0, 667, 127)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_secondary_normal"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 31.0
+texture_margin_right = 102.0
+texture_margin_bottom = 31.0
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_secondary_hover"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 31.0
+texture_margin_right = 102.0
+texture_margin_bottom = 31.0
+expand_margin_left = 6.0
+expand_margin_top = 6.0
+expand_margin_right = 6.0
+expand_margin_bottom = 6.0
+modulate_color = Color(1.0, 1.0, 0.86, 1.0)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_secondary_pressed"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 31.0
+texture_margin_right = 102.0
+texture_margin_bottom = 31.0
+expand_margin_left = 3.0
+expand_margin_top = 6.0
+expand_margin_right = 3.0
+expand_margin_bottom = 2.0
+modulate_color = Color(0.72, 0.72, 0.72, 1.0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_normal"]
+bg_color = Color(0.961, 0.38, 0.055, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(1, 0.78, 0.25, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0.18, 0.03, 0, 0.72)
+shadow_size = 5
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_hover"]
+bg_color = Color(1, 0.54, 0.09, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 5
+border_color = Color(1, 0.94, 0.64, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_pressed"]
+bg_color = Color(0.58, 0.12, 0.018, 1)
+border_width_left = 3
+border_width_top = 6
+border_width_right = 3
+border_width_bottom = 2
+border_color = Color(0.9, 0.52, 0.12, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_focus"]
+
+[node name="TutorialScreen" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1_screen")
+pages = Array[TutorialPageDefinition]([ExtResource("3_objective"), ExtResource("4_movement"), ExtResource("5_ability"), ExtResource("6_progression"), ExtResource("7_enemies"), ExtResource("8_boss")])
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("9_background")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BackdropTint" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.006, 0.012, 0.024, 0.84)
+
+[node name="OuterMargin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="Center" type="CenterContainer" parent="OuterMargin"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="MainPanel" type="PanelContainer" parent="OuterMargin/Center"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(920, 620)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="PanelMargin" type="MarginContainer" parent="OuterMargin/Center/MainPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 20
+
+[node name="Content" type="VBoxContainer" parent="OuterMargin/Center/MainPanel/PanelMargin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Header" type="HBoxContainer" parent="OuterMargin/Center/MainPanel/PanelMargin/Content"]
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+
+[node name="Brand" type="Label" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.72, 0.25, 1)
+theme_type_variation = &"TitleS"
+text = "PIDGEON SURVIVOR  •  TUTORIAL"
+vertical_alignment = 1
+
+[node name="LessonLabel" type="Label" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Header"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.54, 0.86, 0.96, 1)
+theme_type_variation = &"BodyM"
+text = "GUIDA RAPIDA  •  01 / 06"
+vertical_alignment = 1
+
+[node name="HeaderLine" type="ColorRect" parent="OuterMargin/Center/MainPanel/PanelMargin/Content"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.78, 0.49, 0.16, 0.82)
+
+[node name="Body" type="HBoxContainer" parent="OuterMargin/Center/MainPanel/PanelMargin/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 22
+
+[node name="VisualPanel" type="PanelContainer" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Body"]
+custom_minimum_size = Vector2(505, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_visual")
+
+[node name="VisualMargin" type="MarginContainer" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Body/VisualPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="TutorialPreview" type="Control" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Body/VisualPanel/VisualMargin"]
+unique_name_in_owner = true
+clip_contents = true
+custom_minimum_size = Vector2(0, 430)
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("2_preview")
+
+[node name="Artwork" type="TextureRect" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Body/VisualPanel/VisualMargin/TutorialPreview"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Gallery" type="HBoxContainer" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Body/VisualPanel/VisualMargin/TutorialPreview"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="CopyColumn" type="VBoxContainer" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Body"]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="PageEyebrow" type="Label" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Body/CopyColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.54, 0.86, 0.96, 1)
+theme_type_variation = &"TitleXS"
+text = "OBIETTIVO"
+
+[node name="PageTitle" type="Label" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Body/CopyColumn"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
+theme_override_colors/font_outline_color = Color(0.008, 0.014, 0.027, 1)
+theme_override_constants/outline_size = 4
+theme_type_variation = &"TitleL"
+text = "SOPRAVVIVI ALLA GRIGLIATA"
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="AccentLine" type="ColorRect" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Body/CopyColumn"]
+custom_minimum_size = Vector2(92, 4)
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_filter = 2
+color = Color(0.961, 0.38, 0.055, 1)
+
+[node name="PageBody" type="Label" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Body/CopyColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.84, 0.89, 0.94, 1)
+theme_type_variation = &"BodyL"
+text = "Resisti alle orde e supera ogni Boss."
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Hint" type="Label" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Body/CopyColumn"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.54, 0.63, 0.72, 1)
+theme_type_variation = &"BodyS"
+text = "SCORRI O USA  ←  →"
+
+[node name="Footer" type="HBoxContainer" parent="OuterMargin/Center/MainPanel/PanelMargin/Content"]
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="PreviousButton" type="Button" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(176, 58)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.94, 1, 1)
+theme_type_variation = &"ButtonStandard"
+theme_override_styles/normal = SubResource("StyleBoxTexture_secondary_normal")
+theme_override_styles/hover = SubResource("StyleBoxTexture_secondary_hover")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_secondary_pressed")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+text = "ESCI"
+
+[node name="Progress" type="VBoxContainer" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="PageDots" type="Label" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Footer/Progress"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 0.84, 0.96, 1)
+theme_type_variation = &"BodyM"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PageCounter" type="Label" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Footer/Progress"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.72, 0.8, 1)
+theme_type_variation = &"ValueNumeric"
+text = "01 / 06"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NextButton" type="Button" parent="OuterMargin/Center/MainPanel/PanelMargin/Content/Footer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(176, 58)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
+theme_type_variation = &"ButtonStandard"
+theme_override_styles/normal = SubResource("StyleBoxFlat_primary_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_primary_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_primary_pressed")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+text = "AVANTI"

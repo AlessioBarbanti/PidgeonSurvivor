@@ -276,8 +276,8 @@ func _validate_composed_defeat_and_restart() -> void:
 	_expect(player.is_alive(), "Il restart composto deve ripristinare il Player.")
 	_expect_float_near(
 		player.get_health_component().health_max,
-		100.0,
-		"Il restart composto deve rimuovere modifiche alla vita massima."
+		player.get_base_health_max(),
+		"Il restart composto deve rimuovere modifiche alla vita massima, mantenendo il moltiplicatore del personaggio equipaggiato."
 	)
 	_expect_float_near(
 		player.get_health_component().health_current,

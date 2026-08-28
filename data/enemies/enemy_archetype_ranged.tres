@@ -1,0 +1,62 @@
+[gd_resource type="Resource" script_class="EnemyArchetypeDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/game/enemy_archetype_definition.gd" id="1_archetype"]
+[ext_resource type="PackedScene" path="res://scenes/actors/ranged_enemy.tscn" id="2_scene"]
+[ext_resource type="Texture2D" path="res://assets/art/enemies/pigeons/pigeon_ranged.png" id="3_pigeon_ranged"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ranged_neutral"]
+atlas = ExtResource("3_pigeon_ranged")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ranged_up"]
+atlas = ExtResource("3_pigeon_ranged")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ranged_down"]
+atlas = ExtResource("3_pigeon_ranged")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ranged"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ranged_neutral")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ranged_up")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ranged_down")
+}],
+"loop": true,
+"name": &"base",
+"speed": 6.0
+}]
+
+[resource]
+script = ExtResource("1_archetype")
+silhouette_kind = 4
+id = &"ranged"
+scene = ExtResource("2_scene")
+spawn_weight = 1.2
+eligible_time_start = 15.0
+eligible_time_end = 3600.0
+spawn_cluster_size = 1
+health_max = 16.0
+move_speed = 110.0
+collision_radius = 20.0
+contact_damage = 12.0
+experience_amount = 2
+body_color = Color(0.2, 0.55, 0.62, 1.0)
+outline_color = Color(0.04, 0.16, 0.19, 1.0)
+accent_color = Color(0.65, 0.95, 1.0, 1.0)
+ranged_attack_range = 420.0
+ranged_preferred_distance = 320.0
+ranged_telegraph_duration = 0.6
+ranged_attack_interval = 2.2
+ranged_projectile_damage = 8.0
+ranged_projectile_speed = 200.0
+ranged_projectile_lifetime = 4.0
+ranged_projectile_radius = 8.0
+ranged_telegraph_color = Color(1.0, 0.24, 0.18, 0.6)
+sprite_frames = SubResource("SpriteFrames_ranged")

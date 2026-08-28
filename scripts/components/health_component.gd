@@ -112,6 +112,16 @@ func clear_invulnerability() -> void:
 	_set_invulnerability_remaining(0.0)
 
 
+## Concede i-frame senza infliggere danno: usato da un colpo annullato a
+## monte (es. lo Scarto Istintivo di Bea), che quindi non passa da
+## take_damage() e non attiverebbe l'invulnerabilita' automatica.
+func grant_invulnerability(duration: float) -> bool:
+	if not _initialized or _dead or not is_finite(duration) or duration <= 0.0:
+		return false
+	_set_invulnerability_remaining(maxf(_invulnerability_remaining, duration))
+	return true
+
+
 func set_health_max(value: float, preserve_ratio: bool = false) -> void:
 	var previous_max := health_max
 	var previous_current := _health_current

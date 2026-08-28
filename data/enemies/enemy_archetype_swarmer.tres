@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="EnemyArchetypeDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/game/enemy_archetype_definition.gd" id="1_archetype"]
+[ext_resource type="PackedScene" path="res://scenes/actors/configurable_enemy.tscn" id="2_scene"]
+[ext_resource type="Texture2D" path="res://assets/art/enemies/pigeons/pigeon_swarmer.png" id="3_pigeon_swarmer"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_swarmer_neutral"]
+atlas = ExtResource("3_pigeon_swarmer")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_swarmer_up"]
+atlas = ExtResource("3_pigeon_swarmer")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_swarmer_down"]
+atlas = ExtResource("3_pigeon_swarmer")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_swarmer"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_swarmer_neutral")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_swarmer_up")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_swarmer_down")
+}],
+"loop": true,
+"name": &"base",
+"speed": 6.0
+}]
+
+[resource]
+script = ExtResource("1_archetype")
+silhouette_kind = 1
+id = &"swarmer"
+scene = ExtResource("2_scene")
+spawn_weight = 1.4
+eligible_time_start = 25.0
+eligible_time_end = 3600.0
+spawn_cluster_size = 3
+health_max = 9.0
+move_speed = 210.0
+collision_radius = 14.0
+contact_damage = 12.0
+experience_amount = 1
+body_color = Color(0.98, 0.45, 0.16, 1.0)
+outline_color = Color(0.32, 0.12, 0.02, 1.0)
+accent_color = Color(1.0, 0.85, 0.35, 1.0)
+sprite_frames = SubResource("SpriteFrames_swarmer")

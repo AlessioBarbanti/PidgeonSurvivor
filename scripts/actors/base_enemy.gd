@@ -5,6 +5,7 @@ signal health_changed(enemy: BaseEnemy, health_current: float, health_max: float
 signal damaged(enemy: BaseEnemy, amount: float, health_current: float)
 signal died(enemy: BaseEnemy)
 signal speed_modifiers_changed(enemy: BaseEnemy, effective_multiplier: float)
+signal damage_taken_modifiers_changed(enemy: BaseEnemy, effective_multiplier: float)
 
 @export_range(0.0, 2000.0, 1.0) var move_speed: float = 140.0
 
@@ -53,6 +54,14 @@ signal speed_modifiers_changed(enemy: BaseEnemy, effective_multiplier: float)
 		if is_node_ready():
 			_sync_enemy_sprite_animation()
 
+## Forma disegnata dal fallback procedurale di _draw() quando manca uno
+## sprite dedicato (B40): distingue gli archetipi a colpo d'occhio anche
+## senza arte pixel propria, per silhouette oltre che per colore.
+@export_enum("Round", "Swarmer", "Armored", "Segmented", "Turret") var silhouette_kind := 0:
+	set(value):
+		silhouette_kind = clampi(value, 0, 4)
+		queue_redraw()
+
 @export_group("Combat Feedback")
 @export_range(0.0, 1.0, 0.01) var damage_flash_duration := PresentationTimings.ENEMY_DAMAGE_FLASH_SECONDS
 @export_range(0.0, 1.0, 0.01) var hit_reaction_duration := PresentationTimings.ENEMY_HIT_REACTION_SECONDS
@@ -67,6 +76,7 @@ var _death_handled := false
 var _knockback_velocity := Vector2.ZERO
 var _knockback_remaining := 0.0
 var _speed_modifiers: Dictionary = {}
+var _damage_taken_modifiers: Dictionary = {}
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 @onready var _health_component: HealthComponent = %HealthComponent
@@ -131,9 +141,7 @@ func _physics_process(delta: float) -> void:
 			_knockback_velocity = Vector2.ZERO
 		return
 
-	var offset_to_target := (
-		_target.global_position + _pursuit_offset - global_position
-	)
+	var offset_to_target := _compute_chase_offset()
 	if offset_to_target.is_zero_approx():
 		velocity = Vector2.ZERO
 		return
@@ -143,6 +151,14 @@ func _physics_process(delta: float) -> void:
 	velocity = desired_direction * get_effective_move_speed()
 	move_and_slide()
 	_steer_around_blocking_obstacle(desired_direction)
+
+
+## Offset verso il punto inseguito, al netto dell'offset di dispersione B37.
+## RangedEnemy sovrascrive questo metodo per fermarsi a distanza di tiro
+## invece di chiudere sempre la distanza, riusando tutto il resto della
+## pipeline di movimento/knockback/steering senza duplicarla.
+func _compute_chase_offset() -> Vector2:
+	return _target.global_position + _pursuit_offset - global_position
 
 
 ## move_and_slide() azzera la componente tangenziale quando la direzione
@@ -166,39 +182,138 @@ func _draw() -> void:
 	if not has_visual_sprite():
 		draw_set_transform(Vector2.ZERO, 0.0, get_visual_hit_scale())
 		var visible_body_color := body_color
-		if get_speed_multiplier() < 1.0 - 0.0001:
+		if is_damage_amplified():
+			visible_body_color = visible_body_color.lerp(
+				Color(1.0, 0.42, 0.82, visible_body_color.a),
+				0.42
+			)
+		elif get_speed_multiplier() < 1.0 - 0.0001:
 			visible_body_color = visible_body_color.lerp(
 				Color(0.25, 0.68, 1.0, visible_body_color.a),
 				0.38
 			)
 		if _damage_flash_remaining > 0.0:
 			visible_body_color = visible_body_color.lerp(Color.WHITE, 0.82)
-		draw_circle(
-			Vector2.ZERO,
-			collision_radius + outline_width,
-			outline_color
-		)
-		draw_circle(Vector2.ZERO, collision_radius, visible_body_color)
-
-		var eye_offset := Vector2(collision_radius * 0.35, -collision_radius * 0.2)
-		var eye_radius := collision_radius * 0.13
-		draw_circle(Vector2(-eye_offset.x, eye_offset.y), eye_radius, accent_color)
-		draw_circle(eye_offset, eye_radius, accent_color)
-		draw_line(
-			Vector2(-collision_radius * 0.4, collision_radius * 0.35),
-			Vector2(collision_radius * 0.4, collision_radius * 0.35),
-			outline_color,
-			maxf(outline_width * 0.75, 1.0),
-			true
-		)
+		match silhouette_kind:
+			1:
+				_draw_swarmer_body(visible_body_color)
+			2:
+				_draw_armored_body(visible_body_color)
+			3:
+				_draw_segmented_body(visible_body_color)
+			4:
+				_draw_turret_body(visible_body_color)
+			_:
+				_draw_round_body(visible_body_color)
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	_draw_health_bar()
+
+
+## Silhouette storica del piccione/nemico generico: cerchio con occhi e bocca.
+func _draw_round_body(visible_body_color: Color) -> void:
+	draw_circle(Vector2.ZERO, collision_radius + outline_width, outline_color)
+	draw_circle(Vector2.ZERO, collision_radius, visible_body_color)
+
+	var eye_offset := Vector2(collision_radius * 0.35, -collision_radius * 0.2)
+	var eye_radius := collision_radius * 0.13
+	draw_circle(Vector2(-eye_offset.x, eye_offset.y), eye_radius, accent_color)
+	draw_circle(eye_offset, eye_radius, accent_color)
+	draw_line(
+		Vector2(-collision_radius * 0.4, collision_radius * 0.35),
+		Vector2(collision_radius * 0.4, collision_radius * 0.35),
+		outline_color,
+		maxf(outline_width * 0.75, 1.0),
+		true
+	)
+
+
+## Sciamatore (B40): cuneo appuntito nella direzione di marcia, cosicche' la
+## silhouette resti riconoscibile anche fermo (punta verso destra di default).
+func _draw_swarmer_body(visible_body_color: Color) -> void:
+	var forward := velocity.normalized() if not velocity.is_zero_approx() else Vector2.RIGHT
+	var side := Vector2(-forward.y, forward.x)
+	var outer_tip := forward * (collision_radius + outline_width)
+	var outer_back_left := -forward * collision_radius * 0.7 + side * collision_radius * 0.95
+	var outer_back_right := -forward * collision_radius * 0.7 - side * collision_radius * 0.95
+	draw_colored_polygon(
+		PackedVector2Array([outer_tip, outer_back_left, outer_back_right]),
+		outline_color
+	)
+	var inner_tip := forward * collision_radius
+	var inner_back_left := -forward * collision_radius * 0.45 + side * collision_radius * 0.62
+	var inner_back_right := -forward * collision_radius * 0.45 - side * collision_radius * 0.62
+	draw_colored_polygon(
+		PackedVector2Array([inner_tip, inner_back_left, inner_back_right]),
+		visible_body_color
+	)
+
+
+## Corazzato (B40): esagono con banda di placcatura interna, silhouette
+## squadrata e voluminosa per leggersi come "duro da abbattere".
+func _draw_armored_body(visible_body_color: Color) -> void:
+	draw_colored_polygon(
+		_regular_polygon_points(collision_radius + outline_width, 6),
+		outline_color
+	)
+	draw_colored_polygon(_regular_polygon_points(collision_radius, 6), visible_body_color)
+	var band := _regular_polygon_points(collision_radius * 0.6, 6)
+	band.append(band[0])
+	draw_polyline(band, outline_color, maxf(outline_width * 0.55, 1.5), true)
+
+
+## Divisore (B40): cerchio con una cucitura centrale visibile e due nuclei
+## laterali, a suggerire che si dividera' in due unita' alla morte.
+func _draw_segmented_body(visible_body_color: Color) -> void:
+	draw_circle(Vector2.ZERO, collision_radius + outline_width, outline_color)
+	draw_circle(Vector2.ZERO, collision_radius, visible_body_color)
+	draw_line(
+		Vector2(0.0, -collision_radius),
+		Vector2(0.0, collision_radius),
+		outline_color,
+		maxf(outline_width * 0.6, 1.5),
+		true
+	)
+	draw_circle(Vector2(-collision_radius * 0.42, 0.0), collision_radius * 0.22, accent_color)
+	draw_circle(Vector2(collision_radius * 0.42, 0.0), collision_radius * 0.22, accent_color)
+
+
+## Tiratore (B40): cerchio con una canna rivolta verso il bersaglio e un
+## mirino centrale, a leggersi come "fermo e pronto a sparare".
+func _draw_turret_body(visible_body_color: Color) -> void:
+	draw_circle(Vector2.ZERO, collision_radius + outline_width, outline_color)
+	draw_circle(Vector2.ZERO, collision_radius, visible_body_color)
+	var target := get_target()
+	var forward := (
+		(target.global_position - global_position).normalized()
+		if target != null and not target.global_position.is_equal_approx(global_position)
+		else Vector2.RIGHT
+	)
+	draw_line(
+		Vector2.ZERO,
+		forward * (collision_radius + 14.0),
+		outline_color,
+		maxf(outline_width * 0.85, 2.0),
+		true
+	)
+	draw_arc(Vector2.ZERO, collision_radius * 0.5, 0.0, TAU, 14, accent_color, 2.0, true)
+
+
+static func _regular_polygon_points(radius: float, sides: int) -> PackedVector2Array:
+	var points := PackedVector2Array()
+	var safe_sides := maxi(sides, 3)
+	for point_index in safe_sides:
+		var angle := -PI * 0.5 + TAU * float(point_index) / float(safe_sides)
+		points.append(Vector2.RIGHT.rotated(angle) * radius)
+	return points
 
 
 func take_damage(amount: float) -> bool:
 	if not is_instance_valid(_health_component) or _death_handled:
 		return false
-	return _health_component.take_damage(amount)
+	var amplified := amount
+	if is_finite(amount) and amount > 0.0:
+		amplified = amount * get_damage_taken_multiplier()
+	return _health_component.take_damage(amplified)
 
 
 func apply_knockback(knockback_velocity: Vector2, duration: float) -> bool:
@@ -272,6 +387,62 @@ func get_effective_move_speed() -> float:
 	return move_speed * get_speed_multiplier()
 
 
+## Amplificatori di danno subito, speculari ai modificatori di velocita': una
+## sorgente per ID, composizione moltiplicativa e rimozione esplicita. Servono
+## alle passive e alle abilita' che indeboliscono un bersaglio senza mutarne i
+## dati base.
+func set_damage_taken_modifier(modifier_id: StringName, multiplier: float) -> bool:
+	if (
+		String(modifier_id).is_empty()
+		or not is_finite(multiplier)
+		or multiplier <= 0.0
+	):
+		return false
+	if (
+		_damage_taken_modifiers.has(modifier_id)
+		and is_equal_approx(float(_damage_taken_modifiers[modifier_id]), multiplier)
+	):
+		return true
+	_damage_taken_modifiers[modifier_id] = multiplier
+	damage_taken_modifiers_changed.emit(self, get_damage_taken_multiplier())
+	_sync_enemy_sprite_feedback()
+	queue_redraw()
+	return true
+
+
+func remove_damage_taken_modifier(modifier_id: StringName) -> bool:
+	if not _damage_taken_modifiers.erase(modifier_id):
+		return false
+	damage_taken_modifiers_changed.emit(self, get_damage_taken_multiplier())
+	_sync_enemy_sprite_feedback()
+	queue_redraw()
+	return true
+
+
+func clear_damage_taken_modifiers() -> void:
+	if _damage_taken_modifiers.is_empty():
+		return
+	_damage_taken_modifiers.clear()
+	damage_taken_modifiers_changed.emit(self, 1.0)
+	_sync_enemy_sprite_feedback()
+	queue_redraw()
+
+
+func has_damage_taken_modifier(modifier_id: StringName) -> bool:
+	return _damage_taken_modifiers.has(modifier_id)
+
+
+func get_damage_taken_multiplier() -> float:
+	var multiplier := 1.0
+	for value: Variant in _damage_taken_modifiers.values():
+		multiplier *= float(value)
+	return multiplier
+
+
+func is_damage_amplified() -> bool:
+	return get_damage_taken_multiplier() > 1.0 + 0.0001
+
+
 func is_alive() -> bool:
 	return (
 		is_instance_valid(_health_component)
@@ -317,9 +488,12 @@ func get_enemy_sprite() -> AnimatedSprite2D:
 ## Vero se un nemico offre già un proprio sprite visivo, cosicché il corpo
 ## e il contorno geometrici di riserva restino confinati ai nemici senza
 ## un'illustrazione dedicata (i sottotipi con sprite proprio, come i Boss,
-## sovrascrivono questo metodo).
+## sovrascrivono questo metodo). Richiede anche SpriteFrames assegnati: gli
+## archetipi che condividono una scena con un nodo EnemySprite ma nessuna
+## texture propria (B49, es. il frammento del divisore) restano sul disegno
+## procedurale invece di apparire vuoti.
 func has_visual_sprite() -> bool:
-	return is_instance_valid(_enemy_sprite)
+	return is_instance_valid(_enemy_sprite) and _enemy_sprite.sprite_frames != null
 
 
 func get_health_component() -> HealthComponent:
@@ -340,6 +514,33 @@ func get_experience_amount() -> int:
 
 func get_experience_reward_value() -> float:
 	return float(experience_amount) * experience_reward_scale
+
+
+## Applica i dati di un archetipo (B40) prima che il nemico entri in gioco:
+## usato dallo spawner per sciamatore e corazzato, e come base comune da
+## SplitterEnemy/RangedEnemy prima delle rispettive configurazioni.
+func apply_archetype_definition(definition: EnemyArchetypeDefinition) -> bool:
+	if definition == null or not definition.is_valid():
+		return false
+	var health_component := get_health_component()
+	var contact_damage_component := get_contact_damage()
+	if health_component == null or contact_damage_component == null:
+		return false
+	move_speed = definition.move_speed
+	collision_radius = definition.collision_radius
+	body_color = definition.body_color
+	outline_color = definition.outline_color
+	accent_color = definition.accent_color
+	silhouette_kind = definition.silhouette_kind
+	experience_amount = definition.experience_amount
+	if is_instance_valid(_enemy_sprite):
+		_enemy_sprite.sprite_frames = definition.sprite_frames
+		_sync_enemy_sprite_animation()
+		queue_redraw()
+	health_component.set_health_max(definition.health_max)
+	health_component.reset_to_max()
+	contact_damage_component.damage = definition.contact_damage
+	return true
 
 
 func set_target(value: Node2D) -> void:
@@ -392,6 +593,7 @@ func clear_chase_dependencies() -> void:
 	velocity = Vector2.ZERO
 	_clear_knockback()
 	clear_speed_modifiers()
+	clear_damage_taken_modifiers()
 	_sync_enemy_sprite_animation()
 
 
@@ -519,9 +721,11 @@ func _clear_knockback() -> void:
 
 
 func _sync_enemy_sprite_animation() -> void:
-	if not is_instance_valid(_enemy_sprite):
+	if not is_instance_valid(_enemy_sprite) or _enemy_sprite.sprite_frames == null:
 		return
 	var animation_name := &"special" if visual_variant == 1 else &"base"
+	if not _enemy_sprite.sprite_frames.has_animation(animation_name):
+		return
 	if _enemy_sprite.animation != animation_name:
 		_enemy_sprite.animation = animation_name
 		_enemy_sprite.frame = 0
@@ -543,6 +747,8 @@ func _sync_enemy_sprite_feedback() -> void:
 	_enemy_sprite.scale = get_visual_hit_scale()
 	if _damage_flash_remaining > 0.0:
 		_enemy_sprite.self_modulate = Color(1.35, 1.35, 1.35, 1.0)
+	elif is_damage_amplified():
+		_enemy_sprite.self_modulate = Color(1.28, 0.72, 1.05, 1.0)
 	elif get_speed_multiplier() < 1.0 - 0.0001:
 		_enemy_sprite.self_modulate = Color(0.66, 0.84, 1.0, 1.0)
 	else:

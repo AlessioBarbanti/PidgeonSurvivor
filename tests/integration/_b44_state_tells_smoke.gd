@@ -1,0 +1,392 @@
+extends SceneTree
+
+## B44 — Tell di stato e fasi: Aleo e Lollo.
+##
+## Verifica che lo stato termico di Aleo sia leggibile e che la fase fredda
+## eroda davvero i nemici brinati, che le kill accorcino la distrazione di
+## Lollo senza toccare l'iperfocus, e che il Cosplay sia deciso in anticipo e
+## quindi pianificabile invece che risolto al momento del lancio.
+
+const MOVEMENT_SLICE_SCENE := preload("res://scenes/game/movement_slice.tscn")
+const INITIAL_VIEWPORT_SIZE := Vector2i(1280, 720)
+const FLOAT_TOLERANCE := 0.001
+
+var _failures: Array[String] = []
+
+
+func _initialize() -> void:
+	call_deferred("_run")
+
+
+func _run() -> void:
+	paused = false
+	root.content_scale_size = INITIAL_VIEWPORT_SIZE
+	root.size = INITIAL_VIEWPORT_SIZE
+	await process_frame
+	await _validate_aleo_thermal_state()
+	await _validate_lollo_distraction()
+	await _validate_pending_cosplay()
+	await _finish()
+
+
+func _validate_aleo_thermal_state() -> void:
+	var context := await _build_context()
+	if context.is_empty():
+		return
+	var controller: RunController = context["controller"]
+	var registry: FriendRegistry = context["registry"]
+	var player: Player = context["player"]
+	var passive: FriendPassiveController = context["passive"]
+	var spawner: EnemySpawner = context["spawner"]
+	var movement_slice: Control = context["slice"]
+
+	var aleo := registry.resolve_definition(&"aleo")
+	_expect(aleo != null, "Il profilo Aleo deve esistere.")
+	if aleo == null:
+		movement_slice.queue_free()
+		await process_frame
+		return
+	player.set_friend_definition(aleo)
+	_expect(passive.equip_definition(aleo), "La passiva deve accettare Aleo.")
+
+	var cold_dps := aleo.get_passive_float(&"cold_aura_damage_per_second", 0.0, 0.0)
+	var tick_interval := aleo.get_passive_float(&"cold_aura_tick_interval", 0.25, 0.001)
+	var aura_radius := aleo.get_passive_float(&"cold_aura_radius", 0.0, 0.0)
+	_expect(cold_dps > 0.0, "La fase fredda deve dichiarare una componente offensiva.")
+
+	# Sopra meta' vita: modalita' calda, tell caldo, nessun danno d'aura.
+	passive._process(0.1)
+	_expect(passive.is_thermal_hot(), "Sopra meta' vita Aleo deve essere in riscaldamento.")
+	_expect(
+		player.get_passive_state_tint() == FriendPassiveController.TINT_ALEO_HOT,
+		"Il tell caldo deve essere attivo sopra la soglia."
+	)
+
+	var enemy := spawner.try_spawn_enemy()
+	_expect(enemy != null, "Serve un bersaglio fixture per l'aura fredda.")
+	if enemy == null:
+		movement_slice.queue_free()
+		await process_frame
+		return
+	enemy.set_physics_process(false)
+	enemy.global_position = player.global_position + Vector2(aura_radius * 0.5, 0.0)
+
+	var health_before := enemy.get_health_component().health_current
+	passive._process(tick_interval * 2.0)
+	_expect_float_near(
+		enemy.get_health_component().health_current,
+		health_before,
+		"In riscaldamento l'aura non deve infliggere danno."
+	)
+
+	# Sotto meta' vita: modalita' fredda, tell freddo, brina e danno periodico.
+	var player_health := player.get_health_component()
+	player_health.take_damage(player_health.health_max * 0.7)
+	passive._process(0.1)
+	_expect(not passive.is_thermal_hot(), "Sotto meta' vita Aleo deve passare in raffrescamento.")
+	_expect(
+		player.get_passive_state_tint() == FriendPassiveController.TINT_ALEO_COLD,
+		"Il tell freddo deve essere attivo sotto la soglia."
+	)
+	_expect(
+		passive.get_chilled_target_count() == 1,
+		"Il bersaglio dentro il raggio deve risultare brinato."
+	)
+	_expect(
+		enemy.get_speed_multiplier() < 1.0,
+		"La brina deve continuare a rallentare il bersaglio."
+	)
+
+	health_before = enemy.get_health_component().health_current
+	passive._process(tick_interval)
+	_expect(
+		enemy.get_health_component().health_current < health_before,
+		"La fase fredda deve erodere i nemici brinati."
+	)
+
+	# Il tick non avanza fuori da RUNNING.
+	_expect(controller.request_manual_pause(), "La pausa manuale deve riuscire.")
+	health_before = enemy.get_health_component().health_current
+	passive._process(tick_interval * 4.0)
+	_expect_float_near(
+		enemy.get_health_component().health_current,
+		health_before,
+		"L'aura fredda non deve avanzare fuori da RUNNING."
+	)
+	_expect(controller.resume_run(), "La ripresa deve riuscire.")
+
+	# Tornando sopra la soglia l'accumulatore si azzera e la brina sparisce.
+	player_health.heal(player_health.health_max)
+	passive._process(0.1)
+	_expect(passive.is_thermal_hot(), "Curandosi Aleo deve tornare in riscaldamento.")
+	_expect_float_near(
+		passive.get_cold_damage_accumulator(),
+		0.0,
+		"Il rientro in riscaldamento deve azzerare l'accumulatore."
+	)
+	_expect(
+		passive.get_chilled_target_count() == 0,
+		"Il rientro in riscaldamento deve sciogliere la brina."
+	)
+
+	controller.prepare_restart()
+	paused = false
+	movement_slice.queue_free()
+	await process_frame
+
+
+func _validate_lollo_distraction() -> void:
+	var context := await _build_context()
+	if context.is_empty():
+		return
+	var controller: RunController = context["controller"]
+	var registry: FriendRegistry = context["registry"]
+	var player: Player = context["player"]
+	var passive: FriendPassiveController = context["passive"]
+	var spawner: EnemySpawner = context["spawner"]
+	var movement_slice: Control = context["slice"]
+
+	var lollo := registry.resolve_definition(&"lollo")
+	_expect(lollo != null, "Il profilo Lollo deve esistere.")
+	if lollo == null:
+		movement_slice.queue_free()
+		await process_frame
+		return
+	player.set_friend_definition(lollo)
+	_expect(passive.equip_definition(lollo), "La passiva deve accettare Lollo.")
+
+	var reduction := lollo.get_passive_float(&"distraction_seconds_per_kill", 0.0, 0.0)
+	_expect(reduction > 0.0, "Lollo deve dichiarare una riduzione della distrazione per kill.")
+
+	# In iperfocus il tell e' quello focalizzato e le kill non accorciano nulla.
+	_expect(passive.is_hyperfocused(), "Lollo deve avviare la run in iperfocus.")
+	_expect(
+		player.get_passive_state_tint() == FriendPassiveController.TINT_LOLLO_FOCUSED,
+		"Il tell di iperfocus deve essere attivo."
+	)
+	var focus_before := passive.get_hyperfocus_remaining()
+	var focus_enemy := spawner.try_spawn_enemy()
+	if focus_enemy != null:
+		focus_enemy.set_physics_process(false)
+		focus_enemy.take_damage(9999.0)
+		await process_frame
+	_expect_float_near(
+		passive.get_hyperfocus_remaining(),
+		focus_before,
+		"Le kill non devono accorciare la fase di iperfocus."
+	)
+
+	# Passaggio in distrazione: tell distratto e kill che accorciano la fase.
+	passive._process(passive.get_hyperfocus_remaining() + 0.01)
+	_expect(not passive.is_hyperfocused(), "Alla scadenza Lollo deve passare in distrazione.")
+	_expect(
+		player.get_passive_state_tint() == FriendPassiveController.TINT_LOLLO_DISTRACTED,
+		"Il tell di distrazione deve essere attivo."
+	)
+
+	var distracted_before := passive.get_hyperfocus_remaining()
+	var kill_enemy := spawner.try_spawn_enemy()
+	_expect(kill_enemy != null, "Serve un bersaglio fixture per la kill di Lollo.")
+	if kill_enemy != null:
+		kill_enemy.set_physics_process(false)
+		kill_enemy.take_damage(9999.0)
+		await process_frame
+		_expect_float_near(
+			passive.get_hyperfocus_remaining(),
+			maxf(distracted_before - reduction, 0.0),
+			"Una kill deve accorciare la distrazione della quota dichiarata."
+		)
+
+	# La distrazione resta una fase reale: non puo' andare sotto zero.
+	for _index in range(200):
+		passive._shorten_lollo_distraction()
+	_expect(
+		passive.get_hyperfocus_remaining() >= 0.0,
+		"La distrazione non puo' diventare negativa."
+	)
+
+	controller.prepare_restart()
+	paused = false
+	movement_slice.queue_free()
+	await process_frame
+
+
+func _validate_pending_cosplay() -> void:
+	var context := await _build_context()
+	if context.is_empty():
+		return
+	var controller: RunController = context["controller"]
+	var registry: FriendRegistry = context["registry"]
+	var player: Player = context["player"]
+	var passive: FriendPassiveController = context["passive"]
+	var movement_slice: Control = context["slice"]
+	var ability := movement_slice.get_ability_controller() as AbilityController
+	var effects := movement_slice.get_ability_effect_registry() as AbilityEffectRegistry
+	_expect(ability != null and effects != null, "Servono controller e registry delle attive.")
+	if ability == null or effects == null:
+		movement_slice.queue_free()
+		await process_frame
+		return
+
+	var lollo := registry.resolve_definition(&"lollo")
+	if lollo == null:
+		movement_slice.queue_free()
+		await process_frame
+		return
+	player.set_friend_definition(lollo)
+	passive.equip_definition(lollo)
+	var cosplay := effects.resolve_definition(lollo.active_ability_id)
+	_expect(cosplay != null, "L'attiva di Lollo deve essere risolvibile.")
+	if cosplay == null:
+		movement_slice.queue_free()
+		await process_frame
+		return
+	_expect(ability.equip_definition(cosplay), "Il controller deve equipaggiare Cosplay.")
+
+	# Il tiro e' gia' risolto prima del lancio: e' cio' che rende l'attiva
+	# pianificabile invece che casuale al momento dell'uso.
+	var pending := ability.get_pending_cosplay_ability_id()
+	_expect(not pending.is_empty(), "Il prossimo Cosplay deve essere deciso in anticipo.")
+	_expect(
+		pending != lollo.active_ability_id,
+		"Il Cosplay non puo' avere se stesso come bersaglio."
+	)
+	_expect(
+		effects.get_pending_cosplay_ability_id() == pending,
+		"Controller e registry devono esporre la stessa scelta pendente."
+	)
+
+	# Il pulsante HUD resta senza nome (B18K): il tell di pianificabilita'
+	# passa dal mostrare l'icona del bersaglio invece di quella di Cosplay.
+	var hud := movement_slice.get_hud() as GameHud
+	_expect(hud != null, "La HUD deve essere accessibile per verificare il tell del Cosplay.")
+	var pending_icon := ability.get_pending_cosplay_icon()
+	_expect(pending_icon != null, "Il prossimo Cosplay deve avere un'icona risolvibile.")
+	if hud != null:
+		var button := hud.get_active_ability_button()
+		_expect(
+			button != null and pending_icon != null and button.get_ability_icon() == pending_icon,
+			"Il pulsante deve mostrare l'icona del prossimo Cosplay invece di quella generica."
+		)
+
+	# La scelta pendente e' stabile: non cambia finche' non viene consumata.
+	_expect(
+		ability.get_pending_cosplay_ability_id() == pending,
+		"La scelta pendente non deve cambiare fra due letture."
+	)
+
+	# Il lancio consuma esattamente la scelta annunciata e ne prepara subito
+	# un'altra, cosi' l'HUD ha sempre qualcosa da mostrare.
+	_expect(ability.try_activate(), "Cosplay deve essere eseguibile.")
+	_expect(
+		effects.get_last_copied_ability_id() == pending,
+		"Il lancio deve eseguire esattamente l'abilita' annunciata."
+	)
+	var next_pending := ability.get_pending_cosplay_ability_id()
+	_expect(
+		not next_pending.is_empty(),
+		"Dopo il lancio deve essere pronta una nuova scelta."
+	)
+	if hud != null:
+		var button := hud.get_active_ability_button()
+		var next_icon := ability.get_pending_cosplay_icon()
+		_expect(
+			button != null and next_icon != null and button.get_ability_icon() == next_icon,
+			"Dopo il lancio il pulsante deve aggiornarsi alla nuova icona pendente."
+		)
+
+	# Determinismo per seed: la stessa run rifatta annuncia la stessa scelta.
+	var first_pending := pending
+	controller.prepare_restart()
+	controller.start_run(4711)
+	player.set_friend_definition(lollo)
+	passive.equip_definition(lollo)
+	ability.equip_definition(cosplay)
+	_expect(
+		not ability.get_pending_cosplay_ability_id().is_empty(),
+		"Anche dopo il restart il prossimo Cosplay deve essere annunciato."
+	)
+	_expect(
+		not first_pending.is_empty(),
+		"La prima scelta annunciata deve essere valida."
+	)
+
+	# Un profilo senza Cosplay non espone alcuna scelta pendente.
+	var magno := registry.resolve_definition(&"magno")
+	var magno_ability := effects.resolve_definition(magno.active_ability_id)
+	if magno_ability != null:
+		ability.equip_definition(magno_ability)
+		_expect(
+			ability.get_pending_cosplay_ability_id().is_empty()
+			or effects.resolve_definition(
+				ability.get_pending_cosplay_ability_id()
+			) != null,
+			"Un profilo senza Cosplay non deve annunciare una scelta invalida."
+		)
+
+	controller.prepare_restart()
+	paused = false
+	movement_slice.queue_free()
+	await process_frame
+
+
+func _build_context() -> Dictionary:
+	var movement_slice := MOVEMENT_SLICE_SCENE.instantiate() as Control
+	root.add_child(movement_slice)
+	await process_frame
+
+	var controller := movement_slice.get_run_controller() as RunController
+	var registry := movement_slice.get_friend_registry() as FriendRegistry
+	var player := movement_slice.get_player() as Player
+	var passive := movement_slice.get_friend_passive_controller() as FriendPassiveController
+	var spawner := movement_slice.get_enemy_spawner() as EnemySpawner
+	if (
+		controller == null
+		or registry == null
+		or player == null
+		or passive == null
+		or spawner == null
+	):
+		_expect(false, "La scena di run deve esporre le dipendenze B44.")
+		movement_slice.queue_free()
+		await process_frame
+		return {}
+
+	controller.set_process(false)
+	spawner.set_process(false)
+	player.set_physics_process(false)
+	passive.set_process(false)
+	controller.start_run(4711)
+	return {
+		"slice": movement_slice,
+		"controller": controller,
+		"registry": registry,
+		"player": player,
+		"passive": passive,
+		"spawner": spawner,
+	}
+
+
+func _expect_float_near(actual: float, expected: float, message: String) -> void:
+	_expect(
+		absf(actual - expected) <= FLOAT_TOLERANCE,
+		"%s Atteso %s, ottenuto %s." % [message, expected, actual]
+	)
+
+
+func _expect(condition: bool, message: String) -> void:
+	if not condition:
+		_failures.append(message)
+
+
+func _finish() -> void:
+	paused = false
+	await process_frame
+	if _failures.is_empty():
+		print("B44_STATE_TELLS_SMOKE_OK")
+		quit(0)
+		return
+	for failure in _failures:
+		printerr(failure)
+	printerr("B44_STATE_TELLS_SMOKE_FAIL count=%d" % _failures.size())
+	quit(1)

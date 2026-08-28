@@ -9,6 +9,10 @@ enum AreaMode {
 	FOLLOWING_PULSE_DAMAGE,
 	GROUND_SLOW_DAMAGE,
 	FOLLOWING_SLOW,
+	## Guscio condiviso di Migi (B45): stessa logica di FOLLOWING_SLOW (il
+	## rallentamento resta) piu' l'assorbimento dei proiettili ostili che
+	## entrano nel raggio.
+	FOLLOWING_SLOW_ABSORB,
 }
 
 const GRAND_SPIN_VISUAL_FAMILY_ID := &"grand_spin_rotating_arcs"
@@ -86,7 +90,7 @@ func initialize(
 				1.0,
 				AbilityDefinition.MINIMUM_POSITIVE_VALUE
 			)
-		AreaMode.FOLLOWING_SLOW:
+		AreaMode.FOLLOWING_SLOW, AreaMode.FOLLOWING_SLOW_ABSORB:
 			_tick_interval = INF
 			_tick_damage = 0.0
 			_slow_factor = definition.get_effect_float(
@@ -111,8 +115,14 @@ func _process(delta: float) -> void:
 			_finish()
 			return
 		global_position = _source.global_position
-	if _mode in [AreaMode.GROUND_SLOW_DAMAGE, AreaMode.FOLLOWING_SLOW]:
+	if _mode in [
+		AreaMode.GROUND_SLOW_DAMAGE,
+		AreaMode.FOLLOWING_SLOW,
+		AreaMode.FOLLOWING_SLOW_ABSORB,
+	]:
 		_refresh_slow_targets()
+	if _mode == AreaMode.FOLLOWING_SLOW_ABSORB:
+		_absorb_projectiles()
 	if is_finite(_tick_interval) and _tick_damage > 0.0:
 		_tick_remaining -= safe_delta
 		while _tick_remaining <= 0.0 and _duration_remaining > 0.0:
@@ -138,7 +148,7 @@ func _draw_mode_pattern(progress: float) -> void:
 			_draw_grand_spin(radius, progress)
 		AreaMode.GROUND_SLOW_DAMAGE:
 			_draw_cement_pool(radius, progress)
-		AreaMode.FOLLOWING_SLOW:
+		AreaMode.FOLLOWING_SLOW, AreaMode.FOLLOWING_SLOW_ABSORB:
 			_draw_zen_field(radius, progress)
 
 
@@ -209,7 +219,7 @@ func get_visual_family_id() -> StringName:
 			return GRAND_SPIN_VISUAL_FAMILY_ID
 		AreaMode.GROUND_SLOW_DAMAGE:
 			return CEMENT_VISUAL_FAMILY_ID
-		AreaMode.FOLLOWING_SLOW:
+		AreaMode.FOLLOWING_SLOW, AreaMode.FOLLOWING_SLOW_ABSORB:
 			return ZEN_VISUAL_FAMILY_ID
 	return &""
 
@@ -220,7 +230,7 @@ func get_visual_particle_count() -> int:
 			return GRAND_SPIN_PARTICLE_COUNT
 		AreaMode.GROUND_SLOW_DAMAGE:
 			return CEMENT_PARTICLE_COUNT
-		AreaMode.FOLLOWING_SLOW:
+		AreaMode.FOLLOWING_SLOW, AreaMode.FOLLOWING_SLOW_ABSORB:
 			return ZEN_PARTICLE_COUNT
 	return 0
 
@@ -271,7 +281,30 @@ func _refresh_slow_targets() -> void:
 
 
 func _follows_source() -> bool:
-	return _mode in [AreaMode.FOLLOWING_PULSE_DAMAGE, AreaMode.FOLLOWING_SLOW]
+	return _mode in [
+		AreaMode.FOLLOWING_PULSE_DAMAGE,
+		AreaMode.FOLLOWING_SLOW,
+		AreaMode.FOLLOWING_SLOW_ABSORB,
+	]
+
+
+## Guscio condiviso di Migi: distrugge (invece di respingere) i proiettili
+## ostili che entrano nel raggio, riusando il metodo pubblico e idempotente
+## gia' esposto da BossProjectile per lo scadere naturale del proiettile.
+func _absorb_projectiles() -> void:
+	for node in get_tree().get_nodes_in_group(&"enemy_projectiles"):
+		if not node is BossProjectile:
+			continue
+		var projectile := node as BossProjectile
+		if projectile.is_spent():
+			continue
+		if not AbilityEffectRegistry.is_point_within_radius(
+			global_position,
+			projectile.global_position,
+			_definition.area_radius
+		):
+			continue
+		projectile.expire()
 
 
 func _clear_slow_targets() -> void:

@@ -32,15 +32,20 @@ id = &"bea"
 display_name = "Bea"
 role = "Evasione e riposizionamento."
 tags = Array[StringName]([&"mobility", &"evasion"])
-passive_title = "Sesto Senso Equino"
-passive_description = "Probabilità di evitare completamente un colpo ricevuto."
+passive_title = "Scarto Istintivo"
+passive_description = "A cooldown dichiarato, annulla il primo colpo che la colpirebbe: Bea scarta d'istinto lontano dal pericolo e ottiene un breve i-frame."
 passive_id = &"bea_sixth_sense"
 passive_parameters = {
-"evasion_chance": 0.15
+"dodge_cooldown": 9.0,
+"iframe_duration": 0.4,
+"shove_distance": 90.0
 }
 active_ability_id = &"bea_fire_z_trail"
 active_ability_title = "Powerslide"
 active_ability_description = "Si teletrasporta nell'ultima direzione guardata e lascia una scia di fuoco persistente."
+base_health_multiplier = 0.9
+base_move_speed_multiplier = 1.1
+base_fire_rate_multiplier = 1.0
 evil_display_name = "Evil Bea"
 portrait = SubResource("AtlasTexture_portrait")
 evil_portrait = SubResource("AtlasTexture_evil")

@@ -66,10 +66,18 @@ accento "zona cottura" pavimentata attorno al camino.
 | Tavolo di legno | `hd/obstacle_wooden_table.png` | `generated/obstacle_wooden_table.png` | `96×95` | — |
 | Panca | `hd/obstacle_bench.png` | `generated/obstacle_bench.png` | `118×84` | — |
 | Filo dei panni | `hd/obstacle_clothesline.png` | `generated/obstacle_clothesline.png` | `60×100` | — |
-| Rete/recinzione | `hd/obstacle_steel_net.png` | `generated/obstacle_steel_net.png` | `170×45` | — |
 | Lavatoio in pietra | `hd/obstacle_stone_washbasin.png` | `generated/obstacle_stone_washbasin.png` | `74×83` | — |
 | Pavimento ghiaia | `hd/texture_gravel.png` | `generated/texture_gravel.png` | `256×256` | `8EF8E91C6EBBEF5B8D68EB2CFD3777C69C79EE713ABE701103D709D73E20CFED` |
 | Pavimento cotto (riservato) | `hd/texture_pavement.png` | `generated/texture_pavement.png` | `256×256` | `D3C0BB9A5EEDDD77BDD5449B283D450D43FEFDD7B0AA5A04C6E3D8D782F28F98` |
 
 I master `hd/*.png` restano fuori da import, EXE, APK e AAB (stessa
 convenzione B27 di `icons/upgrades/hd/`).
+
+## B50 — Rimozione della rete/recinzione
+
+`obstacle_steel_net.png` (master `hd/` e derivato `generated/`) e' stato
+rimosso dal repository: le due reti metalliche dell'arena (`FenceWest`,
+`FenceEast`) collidevano su tutto il rettangolo pur essendo visivamente per
+lo piu' vuote, e il piano di evoluzione del gameplay ne richiede la
+rimozione senza sostituirle con un'altra rete. Nessun altro ostacolo usa
+questa texture.

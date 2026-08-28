@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="TutorialPageDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/tutorial_page_definition.gd" id="1_page"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/tutorial/generated/tutorial_boss.png" id="2_artwork"]
+
+[resource]
+script = ExtResource("1_page")
+id = &"boss"
+eyebrow = "BOSS"
+title = "TROVA IL VARCO"
+body = "I Boss annunciano gli attacchi. Leggi il disegno, schiva nella zona sicura e colpisci quando l'arena si apre."
+artwork = ExtResource("2_artwork")

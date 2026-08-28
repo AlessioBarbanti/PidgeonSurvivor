@@ -330,7 +330,7 @@ func _validate_rejected_definitions(effects: UpgradeEffectRegistry) -> void:
 	var bad_gossip := (GOSSIP as UpgradeDefinition).duplicate(true) as UpgradeDefinition
 	bad_gossip.id = &"bad_gossip"
 	bad_gossip.effect_parameters = {
-		"chain_jumps": 2.0,
+		"chain_jumps_per_rank": 2.0,
 		"chain_radius": 260.0,
 		"damage_falloff": 0.65,
 	}

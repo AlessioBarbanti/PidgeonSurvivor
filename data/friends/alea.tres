@@ -33,18 +33,23 @@ display_name = "Alea"
 role = "Progressione e crescita."
 tags = Array[StringName]([&"progression", &"random"])
 passive_title = "L'Aquila Non Sbaglia Mai"
-passive_description = "A intervalli regolari ottiene un effetto casuale temporaneo, positivo o negativo, con una maggiore probabilità che sia positivo."
+passive_description = "A intervalli regolari tira un effetto temporaneo, forte in bene o in male: ogni nemico ucciso carica la fortuna del prossimo tiro."
 passive_id = &"alea_eagle_never_misses"
 passive_parameters = {
 "effect_duration": 5.0,
-"negative_multiplier": 0.9,
-"positive_chance": 0.75,
-"positive_multiplier": 1.2,
-"trigger_interval": 12.0
+"luck_chance_cap": 0.95,
+"luck_per_kill": 0.01,
+"negative_multiplier": 0.7,
+"positive_chance": 0.6,
+"positive_multiplier": 1.5,
+"trigger_interval": 10.0
 }
 active_ability_id = &"alea_grand_spin"
 active_ability_title = "Gran Piroetta"
 active_ability_description = "Rotazione rapida che colpisce ripetutamente i nemici vicini."
+base_health_multiplier = 1.0
+base_move_speed_multiplier = 1.0
+base_fire_rate_multiplier = 1.0
 evil_display_name = "Evil Alea"
 portrait = SubResource("AtlasTexture_portrait")
 evil_portrait = SubResource("AtlasTexture_evil")

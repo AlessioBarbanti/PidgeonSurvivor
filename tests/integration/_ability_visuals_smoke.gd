@@ -28,6 +28,7 @@ const MANIFEST_RUNTIME_PATHS := [
 	"res://scripts/abilities/lightning_storm.gd",
 	"res://scripts/abilities/thermal_shock.gd",
 	"res://scripts/abilities/ability_icon_burst.gd",
+	"res://scripts/abilities/instinctive_dodge_accent.gd",
 	"res://assets/art/icons/abilities/generated/earthquake.png",
 	"res://assets/art/icons/abilities/generated/powerslide.png",
 	"res://assets/art/icons/abilities/generated/lightning.png",
@@ -227,6 +228,8 @@ func _validate_visual_extent(effect: Node2D, definition: AbilityDefinition) -> v
 		_expect_float_near((effect as FireZTrail).get_visual_extent(), expected_extent, "Il nastro Powerslide deve comunicare la larghezza reale.")
 	elif effect is AbilityAreaEffect:
 		_expect_float_near((effect as AbilityAreaEffect).get_visual_extent(), definition.area_radius, "L'area deve comunicare il raggio reale.")
+	elif effect is ThunderStorm:
+		_expect_float_near((effect as ThunderStorm).get_visual_extent(), definition.area_radius, "Il telegrafo del fulmine deve comunicare il raggio reale.")
 
 
 func _validate_cosplay_pause(controller: RunController, accent: CosplayAccent) -> void:

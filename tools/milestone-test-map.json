@@ -82,7 +82,8 @@
       "smokes": [
         "tests/integration/_combat_slice_smoke.gd",
         "tests/integration/_player_survival_smoke.gd",
-        "tests/integration/_complete_run_smoke.gd"
+        "tests/integration/_complete_run_smoke.gd",
+        "tests/integration/_b41_weapon_shapes_smoke.gd"
       ]
     },
     {
@@ -109,7 +110,8 @@
         "tests/integration/_upgrade_overlay_smoke.gd",
         "tests/integration/_upgrade_effects_smoke.gd",
         "tests/integration/_signature_upgrades_smoke.gd",
-        "tests/integration/_summer_grill_smoke.gd"
+        "tests/integration/_summer_grill_smoke.gd",
+        "tests/integration/_b41_weapon_shapes_smoke.gd"
       ]
     },
     {
@@ -121,7 +123,8 @@
         "tests/integration/_powerup_first_wave_smoke.gd",
         "tests/integration/_xp_arena_confinement_smoke.gd",
         "tests/integration/_b38_arena_world_smoke.gd",
-        "tests/integration/_b39_health_pickup_smoke.gd"
+        "tests/integration/_b39_health_pickup_smoke.gd",
+        "tests/integration/_b41_weapon_shapes_smoke.gd"
       ]
     },
     {
@@ -174,7 +177,8 @@
         "tests/integration/_recurring_boss_smoke.gd",
         "tests/integration/_b38_arena_world_smoke.gd",
         "tests/integration/_xp_arena_confinement_smoke.gd",
-        "tests/integration/_b39_health_pickup_smoke.gd"
+        "tests/integration/_b39_health_pickup_smoke.gd",
+        "tests/integration/_b54_tutorial_flow_smoke.gd"
       ]
     },
     {
@@ -217,7 +221,17 @@
         "tests/integration/_character_carousel_smoke.gd",
         "tests/integration/_character_select_refinement_smoke.gd",
         "tests/integration/_welcome_flow_smoke.gd",
+        "tests/integration/_b54_tutorial_flow_smoke.gd",
         "tests/integration/_typography_smoke.gd"
+      ]
+    },
+    {
+      "patterns": [
+        "data/tutorial/*"
+      ],
+      "smokes": [
+        "tests/integration/_b54_tutorial_flow_smoke.gd",
+        "tests/integration/_welcome_flow_smoke.gd"
       ]
     },
     {

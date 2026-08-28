@@ -1,4 +1,4 @@
-[gd_scene load_steps=100 format=3]
+[gd_scene load_steps=108 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -101,11 +101,18 @@
 [ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_wooden_table.png" id="103_obstacle_wooden_table"]
 [ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_bench.png" id="104_obstacle_bench"]
 [ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_clothesline.png" id="105_obstacle_clothesline"]
-[ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_steel_net.png" id="106_obstacle_steel_net"]
 [ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_stone_washbasin.png" id="107_obstacle_stone_washbasin"]
 [ext_resource type="Texture2D" path="res://assets/art/arena/generated/texture_gravel.png" id="108_texture_gravel"]
 [ext_resource type="Script" path="res://scripts/progression/health_pickup_dropper.gd" id="109_health_pickup_dropper"]
 [ext_resource type="PackedScene" path="res://scenes/pickups/health_pickup.tscn" id="110_health_pickup"]
+[ext_resource type="Resource" path="res://data/enemies/enemy_archetype_swarmer.tres" id="111_archetype_swarmer"]
+[ext_resource type="Resource" path="res://data/enemies/enemy_archetype_armored.tres" id="112_archetype_armored"]
+[ext_resource type="Resource" path="res://data/enemies/enemy_archetype_splitter.tres" id="113_archetype_splitter"]
+[ext_resource type="Resource" path="res://data/enemies/enemy_archetype_ranged.tres" id="114_archetype_ranged"]
+[ext_resource type="Resource" path="res://data/upgrades/piercing_rounds.tres" id="115_piercing_rounds"]
+[ext_resource type="Resource" path="res://data/upgrades/double_barrel.tres" id="116_double_barrel"]
+[ext_resource type="Resource" path="res://data/upgrades/death_burst.tres" id="117_death_burst"]
+[ext_resource type="PackedScene" path="res://scenes/ui/tutorial_screen.tscn" id="118_tutorial_screen"]
 
 [node name="MovementSlice" type="Control"]
 layout_mode = 3
@@ -179,6 +186,7 @@ boss_definition = ExtResource("41_boss_definition")
 unique_name_in_owner = true
 script = ExtResource("8_enemy_spawner")
 enemy_scene = ExtResource("9_base_enemy")
+archetypes = Array[ExtResource("111_archetype_swarmer")]([ExtResource("111_archetype_swarmer"), ExtResource("112_archetype_armored"), ExtResource("113_archetype_splitter"), ExtResource("114_archetype_ranged")])
 
 [node name="TargetingSystem" type="Node" parent="."]
 unique_name_in_owner = true
@@ -201,7 +209,7 @@ experience_curve = ExtResource("16_experience_curve")
 [node name="UpgradeRegistry" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("21_upgrade_registry")
-definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"), ExtResource("24_rapid_fire"), ExtResource("25_wide_magnet"), ExtResource("94_meat_fork_damage"), ExtResource("96_projectile_speed"), ExtResource("97_reinforced_tray"), ExtResource("98_barb_xp"), ExtResource("99_ability_cooldown"), ExtResource("86_summer_grill"), ExtResource("31_anxiety_signature"), ExtResource("32_gossip_projectiles"), ExtResource("33_chronic_delay"), ExtResource("34_beer_signature"), ExtResource("35_damage_shockwave"), ExtResource("78_rank_magno"), ExtResource("79_rank_bea"), ExtResource("80_rank_zat"), ExtResource("81_rank_alea"), ExtResource("82_rank_aleo"), ExtResource("83_rank_lollo"), ExtResource("84_rank_migi"), ExtResource("85_rank_marghe")])
+definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"), ExtResource("24_rapid_fire"), ExtResource("25_wide_magnet"), ExtResource("94_meat_fork_damage"), ExtResource("96_projectile_speed"), ExtResource("97_reinforced_tray"), ExtResource("98_barb_xp"), ExtResource("99_ability_cooldown"), ExtResource("86_summer_grill"), ExtResource("31_anxiety_signature"), ExtResource("32_gossip_projectiles"), ExtResource("33_chronic_delay"), ExtResource("34_beer_signature"), ExtResource("35_damage_shockwave"), ExtResource("78_rank_magno"), ExtResource("79_rank_bea"), ExtResource("80_rank_zat"), ExtResource("81_rank_alea"), ExtResource("82_rank_aleo"), ExtResource("83_rank_lollo"), ExtResource("84_rank_migi"), ExtResource("85_rank_marghe"), ExtResource("115_piercing_rounds"), ExtResource("116_double_barrel"), ExtResource("117_death_burst")])
 
 [node name="UpgradeService" type="Node" parent="."]
 unique_name_in_owner = true
@@ -296,16 +304,6 @@ position = Vector2(0, -620)
 footprint_size = Vector2(260, 260)
 texture = ExtResource("102_obstacle_fireplace")
 
-[node name="FenceWest" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
-position = Vector2(-420, -690)
-footprint_size = Vector2(340, 90)
-texture = ExtResource("106_obstacle_steel_net")
-
-[node name="FenceEast" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
-position = Vector2(420, -690)
-footprint_size = Vector2(340, 90)
-texture = ExtResource("106_obstacle_steel_net")
-
 [node name="TableA" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
 position = Vector2(-260, 40)
 footprint_size = Vector2(150, 150)
@@ -330,11 +328,13 @@ texture = ExtResource("104_obstacle_bench")
 position = Vector2(-950, 0)
 footprint_size = Vector2(150, 250)
 texture = ExtResource("105_obstacle_clothesline")
+collision_segments = Array[Rect2]([Rect2(-0.5, -0.5, 0.18, 1.0), Rect2(0.32, -0.5, 0.18, 1.0)])
 
 [node name="ClotheslineB" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
 position = Vector2(950, 0)
 footprint_size = Vector2(150, 250)
 texture = ExtResource("105_obstacle_clothesline")
+collision_segments = Array[Rect2]([Rect2(-0.5, -0.5, 0.18, 1.0), Rect2(0.32, -0.5, 0.18, 1.0)])
 
 [node name="StoneWashbasin" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
 position = Vector2(-950, -350)
@@ -407,6 +407,9 @@ debug_mode_in_editor = true
 unique_name_in_owner = true
 
 [node name="WelcomeScreen" parent="UI/SafeAreaRoot" instance=ExtResource("87_welcome_screen")]
+unique_name_in_owner = true
+
+[node name="TutorialScreen" parent="UI/SafeAreaRoot" instance=ExtResource("118_tutorial_screen")]
 unique_name_in_owner = true
 
 [node name="CharacterSelectOverlay" parent="UI/SafeAreaRoot" instance=ExtResource("60_character_select")]

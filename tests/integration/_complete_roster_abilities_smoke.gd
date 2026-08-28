@@ -176,14 +176,49 @@ func _validate_passive(
 ) -> void:
 	match friend_id:
 		&"magno":
-			_expect_float_near(player.get_character_move_speed_multiplier(), 1.15, "Magno deve avere +15% movimento.")
+			var magno_definition := passive.get_definition()
+			var magno_base := magno_definition.get_base_move_speed_multiplier()
+			_expect_float_near(
+				player.get_character_move_speed_multiplier(),
+				1.0 * magno_base,
+				"Magno deve partire dal moltiplicatore base a slancio zero."
+			)
+			player.set_movement_input(Vector2.RIGHT)
+			for _tick_index in 20:
+				player._advance_momentum(0.1)
+			passive._apply_character_multipliers()
+			_expect(
+				player.get_momentum_ratio() > 0.9,
+				"Venti tick in linea retta devono quasi saturare lo slancio."
+			)
+			_expect_float_near(
+				player.get_character_move_speed_multiplier(),
+				1.35 * magno_base,
+				"Lo slancio pieno deve avvicinare Magno al tetto dichiarato."
+			)
+			player.clear_movement_input()
 		&"bea":
-			passive._rng.seed = 1
-			var avoided := 0
-			for _index in 32:
-				if passive.resolve_incoming_damage(20.0) <= 0.0:
-					avoided += 1
-			_expect(avoided > 0 and avoided < 32, "Il seed di Bea deve produrre sia schivate sia colpi validi.")
+			_expect_float_near(
+				passive.resolve_incoming_damage(20.0),
+				0.0,
+				"Il primo colpo di Bea deve essere annullato dallo Scarto Istintivo."
+			)
+			_expect_float_near(
+				passive.resolve_incoming_damage(20.0),
+				20.0,
+				"Un secondo colpo durante il cooldown deve passare."
+			)
+			var bea_cooldown := passive.get_definition().get_passive_float(
+				&"dodge_cooldown",
+				9.0,
+				AbilityDefinition.MINIMUM_POSITIVE_VALUE
+			)
+			passive._process(bea_cooldown)
+			_expect_float_near(
+				passive.resolve_incoming_damage(20.0),
+				0.0,
+				"A cooldown esaurito lo Scarto Istintivo deve annullare di nuovo il colpo."
+			)
 		&"zat":
 			var health := player.get_health_component()
 			_expect(player.take_contact_damage(20.0), "Zat deve ricevere il danno fixture.")
@@ -234,15 +269,17 @@ func _validate_passive(
 		&"lollo":
 			var lollo_definition := passive.get_definition()
 			_expect(passive.is_hyperfocused(), "Lollo deve avviare la run in iperfocus.")
+			var lollo_base_move := lollo_definition.get_base_move_speed_multiplier()
+			var lollo_base_fire := lollo_definition.get_base_fire_rate_multiplier()
 			_expect_float_near(
 				player.get_character_move_speed_multiplier(),
-				1.35,
-				"L'iperfocus di Lollo deve dare +35% movimento."
+				1.35 * lollo_base_move,
+				"L'iperfocus di Lollo deve dare +35% movimento sopra lo scarto base."
 			)
 			_expect_float_near(
 				weapon.get_character_fire_rate_multiplier(),
-				1.45,
-				"L'iperfocus di Lollo deve dare +45% frequenza."
+				1.45 * lollo_base_fire,
+				"L'iperfocus di Lollo deve dare +45% frequenza sopra lo scarto base."
 			)
 			var focus_remaining := passive.get_hyperfocus_remaining()
 			_expect(
@@ -254,12 +291,12 @@ func _validate_passive(
 			_expect(not passive.is_hyperfocused(), "Alla scadenza Lollo deve passare in distrazione.")
 			_expect_float_near(
 				player.get_character_move_speed_multiplier(),
-				0.85,
+				0.85 * lollo_base_move,
 				"La distrazione di Lollo deve ridurre il movimento del 15%."
 			)
 			_expect_float_near(
 				weapon.get_character_fire_rate_multiplier(),
-				0.8,
+				0.8 * lollo_base_fire,
 				"La distrazione di Lollo deve ridurre la frequenza del 20%."
 			)
 			var distracted_remaining := passive.get_hyperfocus_remaining()
@@ -272,11 +309,39 @@ func _validate_passive(
 			_expect(passive.is_hyperfocused(), "Dopo la distrazione Lollo deve rientrare in iperfocus.")
 			_expect_float_near(
 				player.get_character_move_speed_multiplier(),
-				1.35,
+				1.35 * lollo_base_move,
 				"Il ritorno in iperfocus deve ripristinare il bonus movimento."
 			)
 		&"migi":
-			_expect(player.take_contact_damage(75.0), "Migi deve attraversare la soglia scudo.")
+			var migi_health := player.get_health_component()
+			var migi_charge_max := passive.get_definition().get_passive_int(
+				&"shell_charge_max",
+				2,
+				0
+			)
+			for _charge_index in migi_charge_max:
+				_expect(
+					not player.take_contact_damage(5.0),
+					"Ogni carica del guscio piccolo di Migi deve annullare un colpo intero."
+				)
+			_expect(
+				passive.get_migi_shell_charges() == 0,
+				"Le cariche del guscio devono esaurirsi dopo l'uso."
+			)
+			var migi_threshold := passive.get_definition().get_passive_float(
+				&"shield_health_threshold",
+				0.35,
+				0.0,
+				1.0
+			)
+			# La soglia si misura sulla salute effettiva del profilo, che dal
+			# B47 include lo scarto base; le cariche esaurite sopra non hanno
+			# ridotto la salute, quindi non serve maggiorare il colpo.
+			var migi_damage := migi_health.health_max * (1.0 - migi_threshold) + 1.0
+			_expect(
+				player.take_contact_damage(migi_damage),
+				"Migi deve attraversare la soglia scudo dopo aver esaurito le cariche."
+			)
 			_expect(passive.is_shield_active(), "Migi deve attivare lo scudo sotto il 35%.")
 			_expect_float_near(passive.resolve_incoming_damage(20.0), 0.0, "Lo scudo Migi deve negare un colpo.")
 			_expect(not passive.is_shield_active(), "Lo scudo a un colpo deve consumarsi.")
@@ -358,7 +423,7 @@ func _validate_ability(
 			_expect(effect is AbilityAreaEffect, "Migi deve creare l'aura Zen.")
 			_expect_float_near(enemy.get_speed_multiplier(), 0.4, "L'aura Zen deve rallentare del 60%.")
 		&"marghe":
-			_expect_float_near(initial_health, 17.1, "Marghe deve ridurre del 5% la salute base B37.")
+			_expect_float_near(initial_health, 18.0, "B42: Marghe non altera piu' la salute base del nemico.")
 			_expect(effect is IllusionDecoy, "Marghe deve creare un'illusione.")
 			_expect(enemy.get_target() == effect, "L'illusione deve deviare l'aggro.")
 	_validate_effect_pause(movement_slice.get_run_controller(), effect, friend_id)
@@ -386,7 +451,7 @@ func _get_effect_progress(effect: Node2D) -> float:
 	if effect is FireZTrail:
 		return (effect as FireZTrail).get_duration_remaining()
 	if effect is ThunderStorm:
-		return (effect as ThunderStorm).get_phase_remaining()
+		return (effect as ThunderStorm).get_elapsed()
 	if effect is AbilityAreaEffect:
 		return (effect as AbilityAreaEffect).get_duration_remaining()
 	if effect is IllusionDecoy:

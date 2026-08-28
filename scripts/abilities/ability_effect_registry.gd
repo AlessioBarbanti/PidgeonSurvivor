@@ -35,6 +35,7 @@ var _last_cosplay_accent: CosplayAccent
 var _last_affected_count := 0
 var _last_copied_ability_id: StringName
 var _previous_copied_ability_id: StringName
+var _pending_cosplay_ability_id: StringName
 var _execution_serial := 0
 var _rng := RandomNumberGenerator.new()
 
@@ -134,6 +135,7 @@ func clear_active_effects() -> void:
 	_last_affected_count = 0
 	_last_copied_ability_id = &""
 	_previous_copied_ability_id = &""
+	_pending_cosplay_ability_id = &""
 
 
 func get_active_effect_count() -> int:
@@ -170,6 +172,38 @@ func get_last_affected_count() -> int:
 
 func get_last_copied_ability_id() -> StringName:
 	return _last_copied_ability_id
+
+
+## Abilita' che il prossimo Cosplay eseguira'. E' decisa in anticipo, cosi'
+## il giocatore puo' pianificare l'uso dell'attiva invece di subire un tiro
+## risolto solo al momento del lancio (B44).
+func get_pending_cosplay_ability_id() -> StringName:
+	return _pending_cosplay_ability_id
+
+
+## Prepara (o ri-prepara) la scelta del prossimo Cosplay. Va chiamata
+## all'equipaggiamento del profilo e dopo ogni lancio; restituisce l'ID
+## scelto, oppure la stringa vuota se nessun candidato e' compatibile.
+func prepare_pending_cosplay(definition: AbilityDefinition) -> StringName:
+	if definition == null or definition.effect_id != RANDOM_COSPLAY:
+		return &""
+	var candidates := _get_cosplay_candidates(definition)
+	if candidates.is_empty():
+		_pending_cosplay_ability_id = &""
+		return _pending_cosplay_ability_id
+	var avoid_repeat := definition.effect_parameters.get("avoid_repeat", false) as bool
+	if (
+		avoid_repeat
+		and candidates.size() > 1
+		and not _previous_copied_ability_id.is_empty()
+	):
+		for index in range(candidates.size() - 1, -1, -1):
+			if candidates[index].id == _previous_copied_ability_id:
+				candidates.remove_at(index)
+	_pending_cosplay_ability_id = candidates[
+		_rng.randi_range(0, candidates.size() - 1)
+	].id
+	return _pending_cosplay_ability_id
 
 
 func get_run_controller() -> RunController:
@@ -220,7 +254,7 @@ func _execute_definition(
 			effect = _execute_area_effect(
 				definition,
 				source,
-				AbilityAreaEffect.AreaMode.FOLLOWING_SLOW,
+				AbilityAreaEffect.AreaMode.FOLLOWING_SLOW_ABSORB,
 				Color(0.2, 0.85, 0.72, 0.72)
 			)
 		SHADOW_DECEPTION:
@@ -237,7 +271,15 @@ func _attach_generated_icon_burst(effect: Node2D, definition: AbilityDefinition)
 	var burst := ABILITY_ICON_BURST_SCRIPT.new() as Node2D
 	burst.name = "AbilityIconBurst"
 	_effect_parent.add_child(burst)
-	burst.global_position = effect.global_position
+	# Alcuni effetti disegnano in coordinate di mondo e tengono il proprio
+	# nodo a `global_position` zero (FireZTrail): in quel caso l'emblema
+	# finirebbe al centro dell'arena, quindi l'effetto puo' dichiarare
+	# un'ancora esplicita.
+	burst.global_position = (
+		effect.call("get_visual_anchor_position")
+		if effect.has_method("get_visual_anchor_position")
+		else effect.global_position
+	)
 	if not burst.call("initialize", definition.icon, definition.effect_id, _run_controller):
 		burst.queue_free()
 		return
@@ -266,7 +308,7 @@ func _execute_earthquake_shockwave(
 		wave.queue_free()
 		return null
 	_track_effect(wave)
-	_last_affected_count = _apply_earthquake_to_targets(definition, source.global_position)
+	_last_affected_count = _apply_earthquake_to_targets(definition, source.global_position, source)
 	return wave
 
 
@@ -295,12 +337,16 @@ func _execute_lightning_storm(definition: AbilityDefinition, source: Node2D) -> 
 	storm.name = "ThunderStorm"
 	_effect_parent.add_child(storm)
 	storm.targets_affected.connect(_on_targets_affected)
+	# La tempesta dispone i fulmini con un seme preso dall'RNG della run: la
+	# stessa run rigioca la stessa sequenza, run diverse no.
 	if not storm.initialize(
 		source.global_position,
 		definition,
 		_run_controller,
 		_targeting_system,
-		_visual_settings
+		_visual_settings,
+		_arena_layout,
+		_rng.randi()
 	):
 		storm.queue_free()
 		return null
@@ -365,13 +411,19 @@ func _execute_random_cosplay(
 ) -> Node2D:
 	var candidates := _get_cosplay_candidates(definition)
 	if candidates.is_empty():
+		_pending_cosplay_ability_id = &""
 		return null
-	var avoid_repeat := definition.effect_parameters.get("avoid_repeat", false) as bool
-	if avoid_repeat and candidates.size() > 1 and not _previous_copied_ability_id.is_empty():
-		for index in range(candidates.size() - 1, -1, -1):
-			if candidates[index].id == _previous_copied_ability_id:
-				candidates.remove_at(index)
-	var selected := candidates[_rng.randi_range(0, candidates.size() - 1)]
+	# Il tiro e' gia' stato risolto e mostrato al giocatore: qui si consuma
+	# la scelta pendente, ricadendo su un nuovo tiro soltanto se quella non
+	# e' piu' eseguibile (profilo cambiato, abilita' non piu' compatibile).
+	var selected: AbilityDefinition = null
+	if not _pending_cosplay_ability_id.is_empty():
+		for candidate in candidates:
+			if candidate.id == _pending_cosplay_ability_id:
+				selected = candidate
+				break
+	if selected == null:
+		selected = candidates[_rng.randi_range(0, candidates.size() - 1)]
 	_last_copied_ability_id = selected.id
 	_previous_copied_ability_id = selected.id
 	var copy_rank := clampi(int(definition.effect_parameters.get("copy_rank", 1)), 1, 5)
@@ -382,6 +434,7 @@ func _execute_random_cosplay(
 	if copied_effect == null:
 		return null
 	_attach_cosplay_accent(copied_effect, source, selected.effect_id)
+	prepare_pending_cosplay(definition)
 	return copied_effect
 
 
@@ -446,13 +499,28 @@ func _execute_shadow_deception(
 	return illusion
 
 
+## Lo slancio di Magno (B45) scala danno e knockback fra il valore dichiarato
+## e un bonus massimo, letto dal `Player` vivo al momento del lancio (stesso
+## pattern gia' usato da FireZTrail per la direzione persistente). Per
+## qualunque altra fonte (Cosplay compreso) senza slancio accumulato i bonus
+## restano semplicemente a zero: nessuna regressione sui valori dichiarati.
 func _apply_earthquake_to_targets(
 	definition: AbilityDefinition,
-	origin: Vector2
+	origin: Vector2,
+	source: Node2D
 ) -> int:
 	var affected_count := 0
+	var momentum_ratio := (source as Player).get_momentum_ratio() if source is Player else 0.0
 	var knockback_force := definition.get_effect_float(&"knockback_force", 0.0, 0.0)
+	var knockback_bonus_max := definition.get_effect_float(
+		&"momentum_knockback_bonus_max",
+		0.0,
+		0.0
+	)
+	knockback_force *= 1.0 + knockback_bonus_max * momentum_ratio
 	var stun_duration := definition.get_effect_float(&"stun_duration", 0.0, 0.0)
+	var damage_bonus_max := definition.get_effect_float(&"momentum_damage_bonus_max", 0.0, 0.0)
+	var damage := definition.damage * (1.0 + damage_bonus_max * momentum_ratio)
 	for target in _targeting_system.get_alive_targets():
 		var offset := target.global_position - origin
 		if not is_point_within_radius(origin, target.global_position, definition.area_radius):
@@ -460,8 +528,8 @@ func _apply_earthquake_to_targets(
 		var direction := offset.normalized() if not offset.is_zero_approx() else Vector2.RIGHT
 		if knockback_force > 0.0 and stun_duration > 0.0:
 			target.apply_knockback(direction * knockback_force, stun_duration)
-		if definition.damage > 0.0:
-			target.take_damage(definition.damage)
+		if damage > 0.0:
+			target.take_damage(damage)
 		affected_count += 1
 	return affected_count
 

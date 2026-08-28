@@ -125,6 +125,7 @@ func reset_rank_for_run() -> bool:
 
 
 func reset_for_run() -> void:
+	_prepare_pending_cosplay()
 	var was_ready := _ready_state
 	_cooldown_remaining = 0.0
 	_active_cooldown_total = 0.0
@@ -136,6 +137,33 @@ func reset_for_run() -> void:
 
 func get_definition() -> AbilityDefinition:
 	return ability_definition
+
+
+## Abilita' che il prossimo Cosplay eseguira', vuota per ogni altro profilo.
+## E' il dato che rende l'attiva di Lollo pianificabile invece che casuale al
+## momento del lancio.
+func get_pending_cosplay_ability_id() -> StringName:
+	if not is_instance_valid(_effect_registry):
+		return &""
+	return _effect_registry.get_pending_cosplay_ability_id()
+
+
+## Icona dell'abilita' che il prossimo Cosplay eseguira', null per ogni altro
+## profilo. E' il tell HUD di B44: il pulsante icona resta senza nome (B18K),
+## quindi la pianificabilita' passa dal mostrare l'icona del bersaglio invece
+## di quella generica di Cosplay.
+func get_pending_cosplay_icon() -> Texture2D:
+	var pending_id := get_pending_cosplay_ability_id()
+	if pending_id.is_empty() or not is_instance_valid(_effect_registry):
+		return null
+	var pending_definition := _effect_registry.resolve_definition(pending_id)
+	return pending_definition.icon if pending_definition != null else null
+
+
+func _prepare_pending_cosplay() -> void:
+	if not is_instance_valid(_effect_registry) or ability_definition == null:
+		return
+	_effect_registry.prepare_pending_cosplay(ability_definition)
 
 
 func get_activation_definition() -> AbilityDefinition:

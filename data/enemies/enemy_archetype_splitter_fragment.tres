@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EnemyArchetypeDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/game/enemy_archetype_definition.gd" id="1_archetype"]
+[ext_resource type="PackedScene" path="res://scenes/actors/configurable_enemy.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_archetype")
+silhouette_kind = 0
+id = &"splitter_fragment"
+scene = ExtResource("2_scene")
+spawn_weight = 0.0
+eligible_time_start = 0.0
+eligible_time_end = 0.0
+spawn_cluster_size = 1
+health_max = 7.0
+move_speed = 160.0
+collision_radius = 13.0
+contact_damage = 10.0
+experience_amount = 1
+body_color = Color(0.7, 0.28, 0.85, 1.0)
+outline_color = Color(0.22, 0.07, 0.28, 1.0)
+accent_color = Color(0.94, 0.72, 1.0, 1.0)

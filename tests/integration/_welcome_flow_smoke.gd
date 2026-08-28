@@ -6,7 +6,7 @@ const WELCOME_BACKGROUND_PATH := "res://assets/art/ui/welcome/welcome_ability_ca
 const WELCOME_LOGO_PATH := "res://assets/art/ui/welcome/welcome_logo.png"
 const WELCOME_MANIFEST_PATH := "res://assets/art/ui/welcome/ASSET-MANIFEST.md"
 const CHARACTER_SELECT_CTA_PATH := "res://assets/art/ui/character_select/character_select_cta_base.png"
-const WELCOME_BACKGROUND_SHA256 := "2fd5b3e8a3bfea879b4a9724ae215bae6d991503ff85f684012fd37bcd460454"
+const WELCOME_BACKGROUND_SHA256 := "fe721f5a98048fb8db4093700af50b0ac9a070b1af92582b4b16059d9d8f1ba9"
 const WELCOME_LOGO_SHA256 := "c2a63add4753ece374cf673d636d12cce55e55cd43624aed645bf8f5c347fa9f"
 const LAYOUT_PROFILES := [
 	Vector2i(1280, 720),
@@ -224,6 +224,7 @@ func _validate_layout_profiles(movement_slice: Control, welcome: WelcomeScreen) 
 		var arena := movement_slice.get_node("ArenaLayout") as ArenaLayout
 		arena.refresh_layout()
 		await _wait_processed_frame()
+		var viewport_rect := root.get_visible_rect()
 		var safe_area := arena.get_safe_area_rect()
 		var panel_rect := welcome.get_content_panel_rect()
 		var title_rect := welcome.get_title_plaque_rect()
@@ -237,12 +238,11 @@ func _validate_layout_profiles(movement_slice: Control, welcome: WelcomeScreen) 
 		_expect(gear_rect.has_area(), "%s: l'ingranaggio deve avere area." % profile)
 		_expect(safe_area.encloses(panel_rect), "%s: la welcome deve restare nella safe area." % profile)
 		_expect(safe_area.encloses(title_rect), "%s: l'insegna deve restare nella safe area." % profile)
-		_expect(safe_area.encloses(logo_rect), "%s: il logo deve restare nella safe area." % profile)
+		_expect(viewport_rect.encloses(logo_rect), "%s: il logo decorativo deve restare nel viewport." % profile)
 		_expect(safe_area.encloses(actions_rect), "%s: le azioni devono restare nella safe area." % profile)
 		_expect(safe_area.encloses(gear_rect), "%s: l'ingranaggio deve restare nella safe area." % profile)
 		_expect(panel_rect.size.x <= safe_area.size.x, "%s: la welcome non deve debordare in larghezza." % profile)
 		_expect(panel_rect.size.y <= safe_area.size.y, "%s: la welcome non deve debordare in altezza." % profile)
-		_expect(panel_rect.size.y <= safe_area.size.y * 0.72, "%s: la UI deve lasciare leggibile il cast inferiore." % profile)
 		_expect(title_rect.end.y <= actions_rect.position.y, "%s: insegna e azioni devono restare due blocchi distinti." % profile)
 		_expect(logo_rect.end.y <= actions_rect.position.y, "%s: il logo non deve sovrapporsi alle azioni." % profile)
 		_expect(

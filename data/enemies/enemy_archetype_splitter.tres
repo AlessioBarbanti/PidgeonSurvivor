@@ -1,0 +1,56 @@
+[gd_resource type="Resource" script_class="EnemyArchetypeDefinition" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/game/enemy_archetype_definition.gd" id="1_archetype"]
+[ext_resource type="PackedScene" path="res://scenes/actors/splitter_enemy.tscn" id="2_scene"]
+[ext_resource type="Resource" path="res://data/enemies/enemy_archetype_splitter_fragment.tres" id="3_fragment"]
+[ext_resource type="Texture2D" path="res://assets/art/enemies/pigeons/pigeon_splitter.png" id="4_pigeon_splitter"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_splitter_neutral"]
+atlas = ExtResource("4_pigeon_splitter")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_splitter_up"]
+atlas = ExtResource("4_pigeon_splitter")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_splitter_down"]
+atlas = ExtResource("4_pigeon_splitter")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_splitter"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_splitter_neutral")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_splitter_up")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_splitter_down")
+}],
+"loop": true,
+"name": &"base",
+"speed": 6.0
+}]
+
+[resource]
+script = ExtResource("1_archetype")
+silhouette_kind = 3
+id = &"splitter"
+scene = ExtResource("2_scene")
+spawn_weight = 1.0
+eligible_time_start = 50.0
+eligible_time_end = 3600.0
+spawn_cluster_size = 1
+health_max = 26.0
+move_speed = 130.0
+collision_radius = 22.0
+contact_damage = 18.0
+experience_amount = 2
+body_color = Color(0.62, 0.24, 0.78, 1.0)
+outline_color = Color(0.18, 0.06, 0.24, 1.0)
+accent_color = Color(0.94, 0.72, 1.0, 1.0)
+split_fragment_definition = ExtResource("3_fragment")
+split_fragment_count = 2
+sprite_frames = SubResource("SpriteFrames_splitter")

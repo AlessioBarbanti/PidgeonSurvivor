@@ -1,6 +1,6 @@
 # Registro approvazioni contenuti
 
-Ultimo aggiornamento: 27 agosto 2026
+Ultimo aggiornamento: 28 agosto 2026
 Ambito: nomi, testi, controparti Boss, ritratti placeholder, audio e direzione
 degli asset originali B18
 
@@ -32,14 +32,42 @@ proprietario, ai tratti di una persona reale: resta una caricatura pixel-art e
 non una somiglianza fotografica, ma per Aleo non vale più la clausola
 «nessuna persona reale» applicata al resto del cast.
 
+Il 28 agosto 2026 il proprietario ha inoltre approvato le revisioni di
+gameplay B42, B44 e B47 emerse dalla revisione di design: la passiva di
+Marghe passa dalla riduzione di salute massima a un'aura di amplificazione
+del danno; quella di Alea alza la posta e si carica con le kill; Aleo e
+Lollo ricevono un tell di stato, la fase fredda una componente offensiva e
+il Cosplay diventa annunciato in anticipo; ogni profilo dichiara scarti di
+statistiche base. Nomi, ruoli e controparti Evil restano invariati.
+
+Nella stessa data il proprietario ha scelto, tra le due direzioni proposte per
+B43, la **(a) tempesta vera**: Tempesta di Tuoni di Zat smette di essere un
+impatto istantaneo su tutti i nemici e diventa una sequenza di fulmini
+telegrafati su posizioni fisse durante alcuni secondi. Il nome pubblico, la
+passiva e gli ID tecnici storici non cambiano.
+
+Il 28 agosto 2026 il proprietario ha inoltre approvato B45 (identità dipendenti
+dai nemici): la passiva di Bea diventa **Scarto Istintivo** (annulla il primo
+colpo a cooldown, con scarto e i-frame, al posto dell'evasione RNG invisibile);
+Migi mantiene il nome e il soprannome parodico **"Guscio Tartarughina"** ma la
+riduzione danno flat diventa cariche che annullano un colpo intero e si
+ricaricano nel tempo, mentre Rallentamento Zen assorbe anche i proiettili
+nemici; Magno rende lo slancio espressivo (si accumula in linea retta, decade
+cambiando direzione) e l'Onda d'Urto Tellurica scala con lo slancio accumulato.
+Nomi pubblici, ruoli e controparti Evil restano invariati salvo il rinominato
+titolo della passiva di Bea.
+
 | Contenuto | Stato | Nota pubblica |
 |---|---|---|
 | Magno, Bea, Zat, Alea, Aleo, Lollo, Migi, Marghe | Approvato | Nomi, ruoli, passive e descrizioni delle attive in `data/friends/*.tres` |
 | Termostato Interno / Shock Termico | Approvato e integrato | Rework termotecnico di Aleo del 28 agosto 2026: la passiva alterna riscaldamento e raffrescamento sulla soglia HP, l'attiva sostituisce Colata di Cemento con una detonazione bifase. Le due icone dedicate sono entrate nel runtime lo stesso giorno; prompt, trasformazioni e hash sono nei manifest passive e VFX |
 | Identity pass sprite del cast | Approvato e integrato | Il 28 agosto 2026 il proprietario ha rigenerato tutte e otto le strisce Player. Versione promossa per personaggio, trasformazioni deterministiche invariate e hash sono in `assets/art/characters/players/ASSET-MANIFEST.md`. Le copie su chroma e le versioni non promosse erano staging non versionato e sono state rimosse |
 | Reggeton time! | Approvato | Retheme reggaeton dell'attiva di Marghe; comportamento gameplay invariato |
+| Revisione passive B42/B44 | Approvato e integrato | Marghe amplifica il danno subito dai nemici vicini al posto di ridurne la salute massima; Alea alza la posta e carica la fortuna con le kill; Aleo espone lo stato termico e la fase fredda erode i brinati; Lollo accorcia la distrazione con le kill e annuncia il prossimo Cosplay. Copy pubblico aggiornato in `characters.md` e nei `.tres` |
+| Scarti di statistiche base B47 | Approvato e integrato | Ogni `FriendDefinition` dichiara salute, movimento e cadenza di partenza, con default neutro e composizione moltiplicativa; nessun nome o testo pubblico cambia |
+| Identità dipendenti dai nemici B45 | Approvato e integrato | Bea: Sesto Senso Equino → **Scarto Istintivo** (nome rinominato). Migi: "Guscio Tartarughina" invariato nel nome, riduzione flat sostituita da cariche a blocco totale; Rallentamento Zen assorbe anche i proiettili nemici. Magno: slancio espressivo che scala l'Onda d'Urto Tellurica. Copy pubblico aggiornato in `characters.md` e nei `.tres` |
 | Powerslide | Approvato | Nome, copy e icona inline-skate CC0 richiesti nel tracker gameplay; valori runtime registrati nel PRD |
-| Tempesta di Tuoni | Approvato | Nome e copy corretti dal proprietario; nube, onde e flash comunicano il tuono senza cambiare gli ID tecnici storici |
+| Tempesta di Tuoni | Approvato e integrato | Nome corretto dal proprietario il 24 agosto; il 28 agosto l'attiva è stata riprogettata in B43 come sequenza di fulmini telegrafati (direzione "tempesta vera"), copy e ID tecnici storici invariati |
 | Evil Magno, Evil Bea, Evil Zat, Evil Alea, Evil Aleo, Evil Lollo, Evil Migi, Evil Marghe | Approvato | Ogni profilo amico contiene la propria controparte Boss |
 | L'Ansia, Gossip, Ritardo Cronico, Birra, Non Ho Tempo Per Questo, Grigliata estiva | Approvato | Titoli generici correnti, senza attribuzioni personali aggiuntive |
 | Ritratto hero/Evil CC0 | Approvato come placeholder | Asset temporanei sostituibili dai singoli `FriendDefinition` |
@@ -47,6 +75,7 @@ non una somiglianza fotografica, ma per Aleo non vale più la clausola
 | Varianti Boss B22 | Approvate come riuso | Il piccione speciale B18H è la baseline; gli otto Evil riusano gli sprite Player B18U già approvati con sola modulazione viola/magenta runtime. Nessun nuovo raster, citazione, voce, passiva o abilità personale entra in B22 |
 | Icone e VFX B18M | Approvato e integrato; timing B18R verificati | Otto emblemi PNG originali OpenAI ImageGen sostituiscono gli SVG e animano l'attivazione; prompt, trasformazioni, licenza e hash sono nel manifest. Il burst da `1,20 s` e le code non interattive hanno superato automatici, Windows, Android e verifica umana il 25 agosto 2026 |
 | Icone passive del roster B18W | Approvate e integrate | Otto PNG raster dedicati (Magno più sette master RGBA forniti dal proprietario) sostituiscono il fallback al ritratto nel kit. Prompt, origine, trasformazioni e hash sono in `assets/art/icons/passives/ASSET-MANIFEST.md`; confronto percettivo fisico chiuso il 25 agosto 2026 |
+| Icone forme d'attacco B41 | Direzione approvata; integrate, gate percettivo aperto | Su richiesta del proprietario i tre badge geometrici sono sostituiti da soggetti da griglia: spiedino con tre bocconi per Colpo Perforante, doppia Costina per Raffica Doppia e Coppa per Esplosione Finale. Master ImageGen, trasformazioni e hash sono nel manifest upgrade; ID, copy ed effetti gameplay restano invariati |
 | Fondale e logo welcome B18O | Refresh integrato; gate percettivo riaperto | Il refresh del 28 agosto usa gli otto master B18U, derivati da riferimenti fotografici forniti e autorizzati dal proprietario, per riallineare il cast della welcome alle identità correnti. Restano esattamente otto caricature pixel-art ai bordi, senza UI raster e con centro protetto. Il master HD e la versione precedente sono esclusi da import/export; prompt, origine, crop e SHA-256 sono nel manifest dedicato |
 | Sfondo arena B18S | Approvato e integrato | Due varianti originali OpenAI ImageGen built-in sono state confrontate; soltanto la texture materica non semantica scelta entra nel runtime come PNG RGB `768×512`. Prompt, autore, licenza, downscale nearest-neighbor e SHA-256 sono nel manifest; automatici, Windows, APK, Pixel 9 20:9 e confronto finale a luminosità controllata sono chiusi |
 | Identità pubblica | Approvata | Titolo esatto `Pidgeon Survivor`; sottotitolo esatto `It's grilling time!`. Il logo B18O fornito dal proprietario contiene già entrambe le stringhe corrette e resta invariato |

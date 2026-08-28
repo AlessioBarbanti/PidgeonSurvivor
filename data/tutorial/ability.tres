@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="TutorialPageDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/tutorial_page_definition.gd" id="1_page"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/abilities/generated/lightning.png" id="2_lightning"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/abilities/generated/grand_spin.png" id="3_spin"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/abilities/generated/zen.png" id="4_zen"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/abilities/generated/earthquake.png" id="5_earthquake"]
+
+[resource]
+script = ExtResource("1_page")
+id = &"ability"
+eyebrow = "ABILITÀ ATTIVA"
+title = "IL MOMENTO GIUSTO CAMBIA TUTTO"
+body = "Ogni personaggio ha un potere unico. Attivalo quando il pulsante è pronto; l'anello mostra la ricarica."
+showcase_textures = Array[Texture2D]([ExtResource("2_lightning"), ExtResource("3_spin"), ExtResource("4_zen"), ExtResource("5_earthquake")])
+showcase_labels = Array[String](["TUONI", "TROTTOLA", "ZEN", "SISMA"])

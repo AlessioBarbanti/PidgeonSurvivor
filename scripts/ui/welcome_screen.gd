@@ -2,6 +2,7 @@ class_name WelcomeScreen
 extends Control
 
 signal play_requested()
+signal tutorial_requested()
 signal audio_volume_changed(value: float)
 signal audio_mute_toggled(muted: bool)
 signal reduced_flashes_toggled(enabled: bool)
@@ -15,6 +16,7 @@ signal touch_control_scale_changed(control_id: StringName, value: float)
 @onready var _main_actions: VBoxContainer = %MainActions
 @onready var _settings_panel: VBoxContainer = %SettingsPanel
 @onready var _play_button: Button = %PlayButton
+@onready var _tutorial_button: Button = %TutorialButton
 @onready var _settings_button: Button = %SettingsButton
 @onready var _volume_slider: HSlider = %VolumeSlider
 @onready var _volume_value_label: Label = %VolumeValueLabel
@@ -32,6 +34,7 @@ var _syncing_controls := false
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_play_button.pressed.connect(_on_play_pressed)
+	_tutorial_button.pressed.connect(_on_tutorial_pressed)
 	_settings_button.pressed.connect(_open_settings)
 	_volume_slider.value_changed.connect(_on_volume_changed)
 	_mute_check_button.toggled.connect(_on_mute_toggled)
@@ -57,11 +60,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 
-func show_welcome() -> void:
+func show_welcome(focus_tutorial: bool = false) -> void:
 	visible = true
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_show_main_actions()
-	_play_button.call_deferred("grab_focus")
+	if focus_tutorial:
+		_tutorial_button.call_deferred("grab_focus")
+	else:
+		_play_button.call_deferred("grab_focus")
 
 
 func hide_welcome() -> void:
@@ -69,6 +75,8 @@ func hide_welcome() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if is_instance_valid(_play_button):
 		_play_button.disabled = true
+	if is_instance_valid(_tutorial_button):
+		_tutorial_button.disabled = true
 	if is_instance_valid(_settings_button):
 		_settings_button.disabled = true
 	if is_instance_valid(_close_settings_button):
@@ -115,6 +123,10 @@ func is_title_plaque_visible() -> bool:
 
 func get_play_button() -> Button:
 	return _play_button if is_instance_valid(_play_button) else null
+
+
+func get_tutorial_button() -> Button:
+	return _tutorial_button if is_instance_valid(_tutorial_button) else null
 
 
 func get_settings_button() -> Button:
@@ -195,8 +207,18 @@ func _on_play_pressed() -> void:
 	if not visible or is_settings_visible() or _play_button.disabled:
 		return
 	_play_button.disabled = true
+	_tutorial_button.disabled = true
 	_settings_button.disabled = true
 	play_requested.emit()
+
+
+func _on_tutorial_pressed() -> void:
+	if not visible or is_settings_visible() or _tutorial_button.disabled:
+		return
+	_play_button.disabled = true
+	_tutorial_button.disabled = true
+	_settings_button.disabled = true
+	tutorial_requested.emit()
 
 
 func _open_settings() -> void:
@@ -206,6 +228,7 @@ func _open_settings() -> void:
 	_settings_panel.visible = true
 	_title_plaque.visible = false
 	_play_button.disabled = true
+	_tutorial_button.disabled = true
 	_settings_button.disabled = true
 	_settings_button.visible = false
 	_close_settings_button.disabled = false
@@ -224,6 +247,7 @@ func _show_main_actions() -> void:
 	_main_actions.visible = true
 	_settings_panel.visible = false
 	_play_button.disabled = false
+	_tutorial_button.disabled = false
 	_settings_button.disabled = false
 	_settings_button.visible = true
 	_close_settings_button.disabled = true
@@ -231,11 +255,17 @@ func _show_main_actions() -> void:
 
 
 func _update_main_action_focus() -> void:
-	if not is_instance_valid(_play_button) or not is_instance_valid(_settings_button):
+	if (
+		not is_instance_valid(_play_button)
+		or not is_instance_valid(_tutorial_button)
+		or not is_instance_valid(_settings_button)
+	):
 		return
 	_play_button.focus_neighbor_top = _play_button.get_path_to(_settings_button)
-	_play_button.focus_neighbor_bottom = _play_button.get_path_to(_settings_button)
-	_settings_button.focus_neighbor_top = _settings_button.get_path_to(_play_button)
+	_play_button.focus_neighbor_bottom = _play_button.get_path_to(_tutorial_button)
+	_tutorial_button.focus_neighbor_top = _tutorial_button.get_path_to(_play_button)
+	_tutorial_button.focus_neighbor_bottom = _tutorial_button.get_path_to(_settings_button)
+	_settings_button.focus_neighbor_top = _settings_button.get_path_to(_tutorial_button)
 	_settings_button.focus_neighbor_bottom = _settings_button.get_path_to(_play_button)
 
 

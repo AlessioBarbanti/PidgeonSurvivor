@@ -151,6 +151,15 @@ func get_visual_material_count() -> int:
 	return VISUAL_MATERIAL_COUNT
 
 
+## Ancora per gli effetti visivi accodati al lancio (emblema ImageGen): il
+## nodo vive con `global_position` a zero perche' disegna in coordinate di
+## mondo, quindi l'ancora corretta e' il punto di arrivo dello scatto.
+func get_visual_anchor_position() -> Vector2:
+	if _path_points.is_empty():
+		return global_position
+	return _path_points[-1]
+
+
 func get_visual_extent() -> float:
 	return _trail_width * 0.5
 
@@ -171,8 +180,13 @@ func _build_straight_path(
 	direction = direction.normalized()
 	var origin := source.global_position
 	var desired_end := origin + direction * dash_distance
-	var actual_end := desired_end
-	if is_instance_valid(arena_layout):
+	# Il confinamento va chiesto al Player: i suoi limiti sono quelli di
+	# ArenaWorld in coordinate di mondo, mentre il playfield di ArenaLayout
+	# vive in coordinate di schermo. Usare ArenaLayout qui schiacciava la
+	# destinazione verso l'angolo alto-sinistro del mondo, annullando di
+	# fatto lo scatto ovunque tranne che al centro dell'arena.
+	var actual_end := source.confine_world_point(desired_end)
+	if is_instance_valid(arena_layout) and actual_end == desired_end and not source.get_world_bounds().has_area():
 		actual_end = arena_layout.clamp_circle_center(desired_end, source.collision_radius)
 	_path_points = PackedVector2Array([origin, actual_end])
 

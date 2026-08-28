@@ -62,8 +62,13 @@ func _run() -> void:
 	if ability != null:
 		ability.set_process(false)
 
+	var camera := movement_slice.get_camera() as Camera2D
+	_expect(camera != null, "B52 richiede la Camera2D composta.")
+
 	_validate_minimal_nodes(hud)
 	await _validate_layout_profiles(arena, hud, player, spawner, dropper, encounter, arena_world)
+	if camera != null:
+		await _validate_hud_ability_exclusion(hud, player, camera, arena_world)
 	_validate_authoritative_clock(controller, hud)
 	await _finish(movement_slice, controller)
 
@@ -178,6 +183,73 @@ func _validate_layout_profiles(
 				)
 			dropper.clear_active_pickups()
 		spawner.clear_spawned_enemies()
+
+
+## B52: il Player non deve poter finire sotto l'icona dell'abilita' quando
+## raggiunge il limite inferiore destro della mappa, su piu' profili di
+## viewport.
+func _validate_hud_ability_exclusion(
+	hud: GameHud,
+	player: Player,
+	camera: Camera2D,
+	arena_world: ArenaWorld
+) -> void:
+	for profile in LAYOUT_PROFILES:
+		root.content_scale_size = profile
+		root.size = profile
+		await _wait_processed_frame()
+
+		var context := "%dx%d" % [profile.x, profile.y]
+		var button_rect := hud.get_active_ability_button_rect()
+		_expect(button_rect.has_area(), "%s: B52 richiede un controllo abilita' con ingombro." % context)
+		if not button_rect.has_area():
+			continue
+
+		var world_rect := arena_world.get_world_rect()
+		var default_radius := player.collision_radius
+		# Il margine dichiarato fra il controllo e il vero angolo schermo
+		# (hud_control_edge_padding + gesture_navigation_padding + safe area)
+		# e' generoso col raggio di default: per esercitare davvero la spinta
+		# di B52 anziche' verificare un caso gia' innocuo, la fixture usa un
+		# raggio grande quanto il controllo stesso, cosi' il solo clamp sul
+		# mondo lo farebbe atterrare dentro l'icona senza l'esclusione HUD.
+		var radius := maxf(button_rect.size.x, button_rect.size.y)
+		player.collision_radius = radius
+		player.global_position = world_rect.end - Vector2.ONE * radius
+		camera.reset_smoothing()
+		await _wait_processed_frame()
+		# Rientra nel confinamento: il setter e' pubblico e riapplica il
+		# clamp (compreso B52) con la posizione/camera aggiornate.
+		player.set_hud_exclusion(camera, hud.get_active_ability_button())
+
+		var reserved_rect := player.get_hud_exclusion_world_rect()
+		_expect(
+			reserved_rect.has_area() and reserved_rect.size.distance_to(button_rect.size) <= FLOAT_TOLERANCE,
+			"%s: il rettangolo riservato deve corrispondere all'ingombro del controllo." % context
+		)
+		_expect_circle_inside(player.global_position, radius, world_rect, "%s: l'esclusione HUD non deve espellere il Player dal mondo." % context)
+		_expect(
+			ArenaWorld.push_circle_outside_rect(player.global_position, radius, reserved_rect) == player.global_position,
+			"%s: dopo il confinamento il Player non deve piu' sovrapporsi al rettangolo riservato." % context
+		)
+
+		# Proiezione a schermo indipendente: il centro del Player, vicino alla
+		# camera clampata nell'angolo, non deve cadere dentro l'ingombro reale
+		# del controllo (verifica visiva, non solo geometria di mondo).
+		var viewport_rect := player.get_viewport().get_visible_rect()
+		var viewport_origin_world := camera.get_screen_center_position() - viewport_rect.size * 0.5
+		var projected_screen_position := (
+			player.global_position - viewport_origin_world + viewport_rect.position
+		)
+		_expect(
+			not button_rect.grow(-1.0).has_point(projected_screen_position),
+			"%s: la proiezione a schermo del Player non deve cadere sotto l'icona abilita'." % context
+		)
+		player.collision_radius = default_radius
+
+	root.content_scale_size = LAYOUT_PROFILES[0]
+	root.size = LAYOUT_PROFILES[0]
+	await _wait_processed_frame()
 
 
 func _validate_authoritative_clock(controller: RunController, hud: GameHud) -> void:

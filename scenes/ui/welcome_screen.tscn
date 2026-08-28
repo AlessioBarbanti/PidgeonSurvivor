@@ -1,9 +1,10 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=23 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/welcome_screen.gd" id="1_welcome"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/welcome/welcome_ability_cast_background.png" id="2_background"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/welcome/welcome_logo.png" id="3_logo"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/character_select/character_select_cta_base.png" id="4_cta"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/character_select/secondary_button_cta_base.png" id="5_secondary_cta"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_actions_frame"]
 
@@ -134,47 +135,44 @@ corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gear_focus"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary_normal"]
-bg_color = Color(0.035, 0.105, 0.16, 0.98)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 5
-border_color = Color(0.2, 0.62, 0.79, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-shadow_color = Color(0, 0, 0, 0.62)
-shadow_size = 5
-shadow_offset = Vector2(0, 4)
+[sub_resource type="AtlasTexture" id="AtlasTexture_secondary_cta"]
+atlas = ExtResource("5_secondary_cta")
+region = Rect2(0, 0, 667, 127)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary_hover"]
-bg_color = Color(0.055, 0.2, 0.28, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 5
-border_color = Color(0.42, 0.88, 1, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-shadow_color = Color(0, 0, 0, 0.68)
-shadow_size = 7
-shadow_offset = Vector2(0, 4)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_secondary_normal"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 31.0
+texture_margin_right = 102.0
+texture_margin_bottom = 31.0
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_secondary_pressed"]
-bg_color = Color(0.02, 0.065, 0.095, 1)
-border_width_left = 3
-border_width_top = 6
-border_width_right = 3
-border_width_bottom = 2
-border_color = Color(0.25, 0.64, 0.78, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_secondary_hover"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 31.0
+texture_margin_right = 102.0
+texture_margin_bottom = 31.0
+expand_margin_left = 6.0
+expand_margin_top = 6.0
+expand_margin_right = 6.0
+expand_margin_bottom = 6.0
+modulate_color = Color(1.0, 1.0, 0.86, 1.0)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_secondary_pressed"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 31.0
+texture_margin_right = 102.0
+texture_margin_bottom = 31.0
+expand_margin_left = 3.0
+expand_margin_top = 6.0
+expand_margin_right = 3.0
+expand_margin_bottom = 2.0
+modulate_color = Color(0.72, 0.72, 0.72, 1.0)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_secondary_focus"]
 
@@ -297,7 +295,7 @@ layout_mode = 2
 [node name="MainActions" type="VBoxContainer" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 13
+theme_override_constants/separation = 8
 
 [node name="PlayButton" type="Button" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/MainActions"]
 unique_name_in_owner = true
@@ -316,6 +314,20 @@ theme_override_styles/hover = SubResource("StyleBoxTexture_cta_hover")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_cta_pressed")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_play_focus")
 text = "GIOCA"
+
+[node name="TutorialButton" type="Button" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/MainActions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.94, 1, 1)
+theme_override_colors/font_hover_color = Color(0.96, 0.99, 1, 1)
+theme_override_colors/font_pressed_color = Color(0.72, 0.84, 0.9, 1)
+theme_type_variation = &"ButtonStandard"
+theme_override_styles/normal = SubResource("StyleBoxTexture_secondary_normal")
+theme_override_styles/hover = SubResource("StyleBoxTexture_secondary_hover")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_secondary_pressed")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_secondary_focus")
+text = "TUTORIAL"
 
 [node name="SettingsPanel" type="VBoxContainer" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent"]
 unique_name_in_owner = true
@@ -456,8 +468,8 @@ focus_neighbor_bottom = NodePath("../VolumeRow/VolumeSlider")
 theme_override_colors/font_color = Color(0.82, 0.94, 1, 1)
 theme_override_colors/font_hover_color = Color(0.96, 0.99, 1, 1)
 theme_type_variation = &"ButtonStandard"
-theme_override_styles/normal = SubResource("StyleBoxFlat_secondary_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_secondary_hover")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_secondary_pressed")
+theme_override_styles/normal = SubResource("StyleBoxTexture_secondary_normal")
+theme_override_styles/hover = SubResource("StyleBoxTexture_secondary_hover")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_secondary_pressed")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_secondary_focus")
 text = "INDIETRO"

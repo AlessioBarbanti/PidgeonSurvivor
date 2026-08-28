@@ -44,6 +44,13 @@ var _chain_current_damage := 0.0
 var _aim_spread_degrees := 0.0
 var _targeting_system: TargetingSystem
 var _hit_target_ids: Dictionary = {}
+var _pierce_enabled := false
+var _pierce_remaining := 1
+var _pierce_damage_falloff := 1.0
+var _pierce_current_damage := 0.0
+var _death_burst_enabled := false
+var _death_burst_radius := 0.0
+var _death_burst_damage_multiplier := 0.0
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 
@@ -162,6 +169,37 @@ func configure_signature_effects(
 	return true
 
 
+func configure_shape_effects(
+	pierce_count: int,
+	pierce_damage_falloff: float,
+	death_burst_enabled: bool,
+	death_burst_radius: float,
+	death_burst_damage_multiplier: float
+) -> bool:
+	if (
+		pierce_count < 1
+		or not is_finite(pierce_damage_falloff)
+		or pierce_damage_falloff <= 0.0
+		or pierce_damage_falloff > 1.0
+		or not is_finite(death_burst_radius)
+		or death_burst_radius < 0.0
+		or not is_finite(death_burst_damage_multiplier)
+		or death_burst_damage_multiplier < 0.0
+		or (death_burst_enabled and (death_burst_radius <= 0.0 or death_burst_damage_multiplier <= 0.0))
+	):
+		return false
+	# La perforazione cede il passo alla catena (Gossip): sono due modi diversi
+	# di continuare oltre il primo bersaglio e non compongono la stessa vita.
+	_pierce_enabled = pierce_count > 1 and not _chain_enabled
+	_pierce_remaining = pierce_count
+	_pierce_damage_falloff = pierce_damage_falloff
+	_pierce_current_damage = damage
+	_death_burst_enabled = death_burst_enabled
+	_death_burst_radius = death_burst_radius
+	_death_burst_damage_multiplier = death_burst_damage_multiplier
+	return true
+
+
 func try_hit(target: BaseEnemy) -> bool:
 	if (
 		_spent
@@ -177,39 +215,72 @@ func try_hit(target: BaseEnemy) -> bool:
 	if _hit_target_ids.has(target_instance_id):
 		return false
 	_hit_target_ids[target_instance_id] = true
-	var hit_damage := _chain_current_damage if _chain_enabled else damage
+	var is_multi_hit := _chain_enabled or _pierce_enabled
+	var hit_damage := _current_hit_damage()
 	# Il latch precede il danno: callback duplicate o rientranti non possono
-	# riutilizzare lo stesso bersaglio durante la catena.
-	if not _chain_enabled:
+	# riutilizzare lo stesso bersaglio durante la catena o la perforazione.
+	if not is_multi_hit:
 		_spent = true
 		_disable_immediately()
 	var damage_applied := target.take_damage(hit_damage)
 	if damage_applied:
 		hit_processed.emit(target, hit_damage)
-	if not _chain_enabled:
+		if _death_burst_enabled and not target.is_alive():
+			_trigger_death_burst(target.global_position)
+	if not is_multi_hit:
 		queue_free()
 		return damage_applied
 
-	if not damage_applied or _chain_jumps_remaining <= 0:
-		expire()
+	if _chain_enabled:
+		if not damage_applied or _chain_jumps_remaining <= 0:
+			expire()
+			return damage_applied
+
+		_chain_jumps_remaining -= 1
+		_chain_current_damage *= _chain_damage_falloff
+		global_position = target.global_position
+		var next_target := _targeting_system.get_nearest_alive_excluding(
+			global_position,
+			_hit_target_ids
+		)
+		if (
+			next_target == null
+			or global_position.distance_to(next_target.global_position) > _chain_radius
+		):
+			expire()
+			return damage_applied
+		chain_jumped.emit(target, next_target, _chain_current_damage)
+		try_hit(next_target)
 		return damage_applied
 
-	_chain_jumps_remaining -= 1
-	_chain_current_damage *= _chain_damage_falloff
-	global_position = target.global_position
-	var next_target := _targeting_system.get_nearest_alive_excluding(
-		global_position,
-		_hit_target_ids
-	)
-	if (
-		next_target == null
-		or global_position.distance_to(next_target.global_position) > _chain_radius
-	):
+	_pierce_remaining -= 1
+	if not damage_applied or _pierce_remaining <= 0:
 		expire()
 		return damage_applied
-	chain_jumped.emit(target, next_target, _chain_current_damage)
-	try_hit(next_target)
+	_pierce_current_damage *= _pierce_damage_falloff
 	return damage_applied
+
+
+func _current_hit_damage() -> float:
+	if _chain_enabled:
+		return _chain_current_damage
+	if _pierce_enabled:
+		return _pierce_current_damage
+	return damage
+
+
+func _trigger_death_burst(origin: Vector2) -> void:
+	if not is_instance_valid(_targeting_system):
+		return
+	var burst_damage := damage * _death_burst_damage_multiplier
+	if burst_damage <= 0.0:
+		return
+	for enemy in _targeting_system.get_alive_targets():
+		if not is_instance_valid(enemy) or not enemy.is_alive():
+			continue
+		if origin.distance_to(enemy.global_position) > _death_burst_radius:
+			continue
+		enemy.take_damage(burst_damage)
 
 
 func expire() -> void:
@@ -247,6 +318,30 @@ func get_chain_radius() -> float:
 
 func get_aim_spread_degrees() -> float:
 	return _aim_spread_degrees
+
+
+func is_pierce_enabled() -> bool:
+	return _pierce_enabled
+
+
+func get_pierce_remaining() -> int:
+	return _pierce_remaining
+
+
+func get_pierce_damage_falloff() -> float:
+	return _pierce_damage_falloff
+
+
+func is_death_burst_enabled() -> bool:
+	return _death_burst_enabled
+
+
+func get_death_burst_radius() -> float:
+	return _death_burst_radius
+
+
+func get_death_burst_damage_multiplier() -> float:
+	return _death_burst_damage_multiplier
 
 
 func has_hit_target(target: BaseEnemy) -> bool:

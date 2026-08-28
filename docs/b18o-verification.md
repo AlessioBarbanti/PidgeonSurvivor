@@ -174,13 +174,15 @@ Magno muscoloso con motivo bovino, Alea ballerina bionda, Marghe più morbida,
 Lollo retrofuturista, Migi nello scudo tartaruga, Bea con bandana e pattini a
 terra, Zat medico elettrico. La pulizia finale conserva esattamente otto persone
 e lascia libera l'area menu; Lollo è stato abbassato finché entrambi gli stivali
-poggiano visibilmente sulla piattaforma. Il master completo `1672×941` è in
-`assets/art/ui/welcome/hd/`, esclusa da import ed export; i raster intermedi
+poggiano visibilmente sulla piattaforma. Magno mostra una coppia più leggibile
+di corna decorative montate sull'armatura; le onde ciano davanti ai pattini di
+Bea sono state rimosse senza toccare la scia arancione. Il master completo
+`1672×941` è in `assets/art/ui/welcome/hd/`, esclusa da import ed export; i raster intermedi
 delle prove precedenti e il fondale base senza cast sono stati rimossi dal
 repository e restano recuperabili dalla cronologia git.
 
 SHA-256 runtime:
-`2FD5B3E8A3BFEA879B4A9724AE215BAE6D991503FF85F684012FD37BCD460454`.
+`FE721F5A98048FB8DB4093700AF50B0AC9A070B1AF92582B4B16059D9D8F1BA9`.
 Le verifiche automatiche del refresh sono registrate nella sessione corrente;
 il nuovo controllo percettivo del proprietario e il passaggio fisico Pixel 9
 restano aperti e non sono confusi con le evidenze storiche del 24 agosto.

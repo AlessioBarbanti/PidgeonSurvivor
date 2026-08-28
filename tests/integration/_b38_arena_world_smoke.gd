@@ -22,7 +22,9 @@ func _run() -> void:
 	paused = false
 	_validate_arena_world_math()
 	_validate_static_obstacle()
+	_validate_boundary_bands_math()
 	await _validate_obstacle_blocks_movement()
+	await _validate_obstacle_collision_segments_block_only_opaque_parts()
 	await _validate_camera_relative_spawn_reference()
 	await _validate_actor_obstacle_masks()
 	await _validate_composed_scene()
@@ -94,6 +96,34 @@ func _validate_static_obstacle() -> void:
 	await process_frame
 
 
+func _validate_boundary_bands_math() -> void:
+	var rect := Rect2(Vector2(-1200.0, -750.0), Vector2(2400.0, 1500.0))
+	var bands := ArenaView.calculate_boundary_bands(rect, 28.0)
+	_expect(
+		bands.size() == 4,
+		"calculate_boundary_bands deve produrre quattro bande (alto, basso, sinistra, destra)."
+	)
+	for band in bands:
+		_expect(
+			rect.encloses(band),
+			"B50: ogni banda del delimitatore deve restare contenuta nel playfield."
+		)
+	_expect(
+		ArenaView.calculate_boundary_bands(rect, 0.0).is_empty(),
+		"Uno spessore nullo non deve produrre bande."
+	)
+	_expect(
+		ArenaView.calculate_boundary_bands(Rect2(), 28.0).is_empty(),
+		"Un rettangolo senza area non deve produrre bande."
+	)
+	var oversized := ArenaView.calculate_boundary_bands(Rect2(Vector2.ZERO, Vector2(40.0, 20.0)), 100.0)
+	for band in oversized:
+		_expect(
+			Rect2(Vector2.ZERO, Vector2(40.0, 20.0)).encloses(band),
+			"Uno spessore piu' grande del playfield deve restare comunque contenuto (clamp)."
+		)
+
+
 func _validate_obstacle_blocks_movement() -> void:
 	var fixture := Node2D.new()
 	var obstacle := STATIC_OBSTACLE_SCENE.instantiate() as StaticObstacle
@@ -133,6 +163,86 @@ func _validate_obstacle_blocks_movement() -> void:
 	paused = false
 	fixture.queue_free()
 	await process_frame
+
+
+func _validate_obstacle_collision_segments_block_only_opaque_parts() -> void:
+	var fixture := Node2D.new()
+	var obstacle := STATIC_OBSTACLE_SCENE.instantiate() as StaticObstacle
+	obstacle.footprint_size = Vector2(150.0, 250.0)
+	obstacle.collision_segments = [
+		Rect2(-0.5, -0.5, 0.18, 1.0),
+		Rect2(0.32, -0.5, 0.18, 1.0),
+	]
+	obstacle.global_position = Vector2(300.0, 0.0)
+	fixture.add_child(obstacle)
+	root.add_child(fixture)
+	await process_frame
+	await physics_frame
+
+	var main_shape := obstacle.get_node("CollisionShape") as CollisionShape2D
+	_expect(
+		main_shape.disabled,
+		"B50: la CollisionShape2D piena deve disattivarsi quando collision_segments non e' vuoto."
+	)
+	var segment_shapes: Array[CollisionShape2D] = []
+	for child in obstacle.get_children():
+		if child is CollisionShape2D and child != main_shape:
+			segment_shapes.append(child)
+	_expect(
+		segment_shapes.size() == obstacle.collision_segments.size(),
+		"B50: ogni voce di collision_segments deve produrre una CollisionShape2D dedicata."
+	)
+
+	# Zona trasparente (il vano centrale del filo, tra i due pali): un corpo
+	# deve poterla attraversare senza essere bloccato.
+	var through_gap := _make_probe_body(obstacle.global_position + Vector2(0.0, -200.0))
+	fixture.add_child(through_gap)
+
+	# Palo sinistro (parte opaca): un corpo allineato con esso deve restare bloccato.
+	var into_post := _make_probe_body(obstacle.global_position + Vector2(-61.5, -200.0))
+	fixture.add_child(into_post)
+
+	await process_frame
+	await physics_frame
+	for _attempt in range(60):
+		through_gap.velocity = Vector2.DOWN * 400.0
+		through_gap.move_and_slide()
+		into_post.velocity = Vector2.DOWN * 400.0
+		into_post.move_and_slide()
+		await physics_frame
+
+	_expect(
+		through_gap.global_position.y > obstacle.global_position.y + 100.0,
+		(
+			"B50: un corpo deve attraversare la zona trasparente al centro del filo dei panni (y=%s)."
+			% through_gap.global_position.y
+		)
+	)
+	_expect(
+		into_post.global_position.y < obstacle.global_position.y - 100.0,
+		(
+			"B50: un corpo non deve attraversare il palo opaco del filo dei panni (y=%s)."
+			% into_post.global_position.y
+		)
+	)
+
+	paused = false
+	fixture.queue_free()
+	await process_frame
+
+
+func _make_probe_body(start_position: Vector2) -> CharacterBody2D:
+	var body := CharacterBody2D.new()
+	body.collision_layer = 1
+	body.collision_mask = OBSTACLE_LAYER_BIT
+	body.motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
+	var body_shape := CollisionShape2D.new()
+	var body_circle := CircleShape2D.new()
+	body_circle.radius = 10.0
+	body_shape.shape = body_circle
+	body.add_child(body_shape)
+	body.global_position = start_position
+	return body
 
 
 func _validate_camera_relative_spawn_reference() -> void:
@@ -233,7 +343,7 @@ func _validate_composed_scene() -> void:
 		"La camera deve restare stabile al centro e scorrere solo vicino ai bordi."
 	)
 
-	var expected_obstacle_count := 15
+	var expected_obstacle_count := 13
 	_expect(
 		obstacles.get_child_count() == expected_obstacle_count,
 		"L'arena deve contenere %d ostacoli piazzati, trovati %d." % [
@@ -246,6 +356,10 @@ func _validate_composed_scene() -> void:
 		if obstacle == null:
 			continue
 		_expect(
+			not obstacle.name.begins_with("Fence"),
+			"B50: le reti metalliche devono essere rimosse dall'arena, trovato %s." % obstacle.name
+		)
+		_expect(
 			world_rect.grow(2.0).encloses(obstacle.get_footprint_rect()),
 			"%s deve restare dentro l'arena." % obstacle.name
 		)
@@ -253,11 +367,29 @@ func _validate_composed_scene() -> void:
 			obstacle.texture != null,
 			"%s deve avere gia' una texture assegnata invece del solo segnaposto." % obstacle.name
 		)
+		if obstacle.name.begins_with("Clothesline"):
+			_expect(
+				not obstacle.collision_segments.is_empty(),
+				(
+					"B50: %s deve collidere solo sulle parti opache tramite collision_segments."
+					% obstacle.name
+				)
+			)
 
 	_expect(
 		arena_view.has_raster_background() and not arena_view.uses_procedural_fallback(),
 		"Il pavimento della grigliata deve usare la texture ghiaia raster."
 	)
+
+	_expect(
+		arena_view.boundary_thickness > 0.0,
+		"B50: ArenaView deve dichiarare un delimitatore d'arena con spessore positivo."
+	)
+	for band in ArenaView.calculate_boundary_bands(world_rect, arena_view.boundary_thickness):
+		_expect(
+			world_rect.encloses(band),
+			"B50: il delimitatore d'arena deve restare contenuto nel playfield, non essere un ostacolo."
+		)
 
 	paused = false
 	movement_slice.queue_free()

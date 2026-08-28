@@ -8,6 +8,11 @@ signal shield_changed(active: bool, remaining: float)
 signal random_effect_started(positive: bool, stat_id: StringName, multiplier: float)
 signal thermal_mode_changed(hot: bool)
 signal hyperfocus_changed(focused: bool, phase_duration: float)
+signal marked_targets_changed(marked_count: int)
+signal luck_charge_changed(luck_bonus: float)
+signal distraction_shortened(remaining: float)
+signal migi_shell_charges_changed(charges: int, max_charges: int)
+signal instinctive_dodge_triggered(position: Vector2, direction: Vector2)
 
 const MAGNO_AERODYNAMIC_FLOW := &"magno_aerodynamic_flow"
 const BEA_SIXTH_SENSE := &"bea_sixth_sense"
@@ -19,8 +24,20 @@ const MIGI_TURTLE_SHELL := &"migi_turtle_shell"
 const MARGHE_CONTAGIOUS_SMILE := &"marghe_contagious_smile"
 
 const ALEO_COLD_AURA_MODIFIER := &"aleo_cold_aura"
-const MARGHE_HEALTH_META := &"b17a_marghe_health_profile"
+const MARGHE_SMILE_MODIFIER := &"marghe_contagious_smile"
 const MINIMUM_MULTIPLIER := 0.001
+
+## Tinte di stato usate come "tell" delle passive a fasi. Restano
+## esclusivamente presentazionali e non alterano nessun valore di gameplay.
+const TINT_NEUTRAL := Color.WHITE
+const TINT_ALEO_HOT := Color(1.32, 0.86, 0.62, 1.0)
+const TINT_ALEO_COLD := Color(0.68, 0.94, 1.34, 1.0)
+const TINT_LOLLO_FOCUSED := Color(1.3, 1.22, 0.62, 1.0)
+const TINT_LOLLO_DISTRACTED := Color(0.74, 0.74, 0.82, 1.0)
+const TINT_ALEA_POSITIVE := Color(0.72, 1.32, 0.82, 1.0)
+const TINT_ALEA_NEGATIVE := Color(1.32, 0.72, 0.74, 1.0)
+const TINT_MIGI_SHELL_READY := Color(0.66, 1.26, 1.14, 1.0)
+const TINT_MIGI_SHIELD := Color(0.46, 1.48, 1.28, 1.0)
 
 var _run_controller: RunController
 var _player: Player
@@ -39,10 +56,16 @@ var _alea_interval_remaining := 0.0
 var _alea_effect_remaining := 0.0
 var _alea_move_multiplier := 1.0
 var _alea_fire_multiplier := 1.0
+var _alea_luck_bonus := 0.0
 var _aleo_hot := true
 var _aleo_chilled_targets: Array[BaseEnemy] = []
+var _aleo_cold_damage_accumulator := 0.0
 var _lollo_focused := true
 var _lollo_phase_remaining := 0.0
+var _marghe_marked_targets: Array[BaseEnemy] = []
+var _bea_dodge_cooldown_remaining := 0.0
+var _migi_shell_charges := 0
+var _migi_shell_regen_remaining := 0.0
 
 
 func _process(delta: float) -> void:
@@ -61,15 +84,23 @@ func _process(delta: float) -> void:
 		ALEA_EAGLE_NEVER_MISSES:
 			_advance_alea_effect(safe_delta)
 		ALEO_INTERNAL_THERMOSTAT:
-			_advance_aleo_thermostat()
+			_advance_aleo_thermostat(safe_delta)
 		LOLLO_HYPERACTIVITY:
 			_advance_lollo_hyperfocus(safe_delta)
 		MIGI_TURTLE_SHELL:
 			_advance_migi_shield(safe_delta)
+			_advance_migi_shell_charges(safe_delta)
+		MARGHE_CONTAGIOUS_SMILE:
+			_refresh_marghe_aura()
+		BEA_SIXTH_SENSE:
+			_advance_bea_dodge_cooldown(safe_delta)
+		MAGNO_AERODYNAMIC_FLOW:
+			_apply_character_multipliers()
 
 
 func _exit_tree() -> void:
 	_clear_aleo_cold_aura()
+	_clear_marghe_aura()
 	_disconnect_dependencies()
 
 
@@ -131,7 +162,7 @@ func get_hyperfocus_remaining() -> float:
 	return maxf(_lollo_phase_remaining, 0.0)
 
 
-func resolve_incoming_damage(amount: float) -> float:
+func resolve_incoming_damage(amount: float, source_position: Vector2 = Vector2.INF) -> float:
 	if (
 		_definition == null
 		or not is_finite(amount)
@@ -141,34 +172,31 @@ func resolve_incoming_damage(amount: float) -> float:
 	):
 		return maxf(amount, 0.0) if is_finite(amount) else 0.0
 
-	if _definition.passive_id == BEA_SIXTH_SENSE:
-		var evasion_chance := _definition.get_passive_float(
-			&"evasion_chance",
-			0.0,
-			0.0,
-			1.0
-		)
-		if _rng.randf() < evasion_chance:
-			damage_avoided.emit(_definition.passive_id)
-			return 0.0
+	if _definition.passive_id == BEA_SIXTH_SENSE and _bea_dodge_cooldown_remaining <= 0.0:
+		_trigger_instinctive_dodge(source_position)
+		return 0.0
 
 	if _definition.passive_id == MIGI_TURTLE_SHELL and is_shield_active():
 		_shield_hits_remaining -= 1
 		if _shield_hits_remaining <= 0:
 			_shield_remaining = 0.0
 			shield_changed.emit(false, 0.0)
+			_refresh_passive_state_tint()
 		damage_avoided.emit(_definition.passive_id)
 		return 0.0
 
-	var reduction := 0.0
-	if _definition.passive_id == MIGI_TURTLE_SHELL:
-		reduction = _definition.get_passive_float(
-			&"damage_reduction",
-			0.0,
-			0.0,
-			0.95
+	if _definition.passive_id == MIGI_TURTLE_SHELL and _migi_shell_charges > 0:
+		_migi_shell_charges -= 1
+		migi_shell_charges_changed.emit(
+			_migi_shell_charges,
+			_definition.get_passive_int(&"shell_charge_max", 2, 0)
 		)
-	elif _definition.passive_id == ALEO_INTERNAL_THERMOSTAT and not _aleo_hot:
+		damage_avoided.emit(_definition.passive_id)
+		_refresh_passive_state_tint()
+		return 0.0
+
+	var reduction := 0.0
+	if _definition.passive_id == ALEO_INTERNAL_THERMOSTAT and not _aleo_hot:
 		reduction = _definition.get_passive_float(
 			&"cold_damage_reduction",
 			0.0,
@@ -176,6 +204,44 @@ func resolve_incoming_damage(amount: float) -> float:
 			0.95
 		)
 	return amount * (1.0 - reduction)
+
+
+## Annulla il colpo, avvia il cooldown e prova a scartare Bea lontano dalla
+## minaccia con un breve i-frame. Se non esiste una destinazione sicura (o
+## la fonte del danno non e' nota), non la sposta ma il colpo resta comunque
+## annullato: nessun salvataggio casuale, nessun colpo che passa.
+func _trigger_instinctive_dodge(source_position: Vector2) -> void:
+	_bea_dodge_cooldown_remaining = _definition.get_passive_float(
+		&"dodge_cooldown",
+		9.0,
+		AbilityDefinition.MINIMUM_POSITIVE_VALUE
+	)
+	damage_avoided.emit(_definition.passive_id)
+	if not is_instance_valid(_player):
+		return
+	var direction := _resolve_dodge_direction(source_position)
+	var shove_distance := _definition.get_passive_float(&"shove_distance", 90.0, 0.0)
+	if shove_distance > 0.0:
+		_player.try_shove_to_safe_position(direction, shove_distance)
+	var iframe_duration := _definition.get_passive_float(
+		&"iframe_duration",
+		0.4,
+		AbilityDefinition.MINIMUM_POSITIVE_VALUE
+	)
+	var health := _player.get_health_component()
+	if health != null:
+		health.grant_invulnerability(iframe_duration)
+	instinctive_dodge_triggered.emit(_player.global_position, direction)
+
+
+func _resolve_dodge_direction(source_position: Vector2) -> Vector2:
+	if is_instance_valid(_player) and source_position.is_finite():
+		var offset := _player.global_position - source_position
+		if not offset.is_zero_approx():
+			return offset.normalized()
+	if is_instance_valid(_player):
+		return -_player.get_last_movement_direction()
+	return Vector2.LEFT
 
 
 func is_supported_definition(definition: FriendDefinition) -> bool:
@@ -226,6 +292,7 @@ func _advance_alea_effect(delta: float) -> void:
 			_alea_move_multiplier = 1.0
 			_alea_fire_multiplier = 1.0
 			_apply_character_multipliers()
+			_refresh_passive_state_tint()
 	_alea_interval_remaining -= delta
 	if _alea_interval_remaining > 0.0:
 		return
@@ -237,13 +304,54 @@ func _advance_alea_effect(delta: float) -> void:
 	_activate_alea_effect()
 
 
-func _activate_alea_effect() -> void:
-	var positive := _rng.randf() < _definition.get_passive_float(
+## La fortuna accumulata dalle kill si somma alla probabilita' base e viene
+## spesa integralmente a ogni tiro: il giocatore puo' influenzare la scommessa
+## invece di subirla.
+func get_luck_bonus() -> float:
+	return _alea_luck_bonus
+
+
+func get_effective_positive_chance() -> float:
+	if _definition == null or _definition.passive_id != ALEA_EAGLE_NEVER_MISSES:
+		return 0.0
+	var base_chance := _definition.get_passive_float(
 		&"positive_chance",
-		0.75,
+		0.6,
 		0.0,
 		1.0
 	)
+	var chance_cap := _definition.get_passive_float(
+		&"luck_chance_cap",
+		0.95,
+		0.0,
+		1.0
+	)
+	return minf(base_chance + _alea_luck_bonus, chance_cap)
+
+
+func _charge_alea_luck() -> void:
+	var luck_per_kill := _definition.get_passive_float(
+		&"luck_per_kill",
+		0.0,
+		0.0,
+		1.0
+	)
+	if luck_per_kill <= 0.0:
+		return
+	var chance_cap := _definition.get_passive_float(
+		&"luck_chance_cap",
+		0.95,
+		0.0,
+		1.0
+	)
+	_alea_luck_bonus = minf(_alea_luck_bonus + luck_per_kill, chance_cap)
+	luck_charge_changed.emit(_alea_luck_bonus)
+
+
+func _activate_alea_effect() -> void:
+	var positive := _rng.randf() < get_effective_positive_chance()
+	_alea_luck_bonus = 0.0
+	luck_charge_changed.emit(_alea_luck_bonus)
 	var multiplier := _definition.get_passive_float(
 		&"positive_multiplier" if positive else &"negative_multiplier",
 		1.2 if positive else 0.9,
@@ -258,6 +366,7 @@ func _activate_alea_effect() -> void:
 		AbilityDefinition.MINIMUM_POSITIVE_VALUE
 	)
 	_apply_character_multipliers()
+	_refresh_passive_state_tint()
 	random_effect_started.emit(positive, stat_id, multiplier)
 
 
@@ -268,7 +377,25 @@ func _advance_lollo_hyperfocus(delta: float) -> void:
 	_lollo_focused = not _lollo_focused
 	_lollo_phase_remaining = _roll_lollo_phase_duration(_lollo_focused)
 	_apply_character_multipliers()
+	_refresh_passive_state_tint()
 	hyperfocus_changed.emit(_lollo_focused, _lollo_phase_remaining)
+
+
+## Le kill accorciano la fase distratta: la distrazione resta una fase reale
+## ma diventa un'interazione invece di un pedaggio passivo. La fase di
+## iperfocus non viene mai accorciata.
+func _shorten_lollo_distraction() -> void:
+	if _lollo_focused or _lollo_phase_remaining <= 0.0:
+		return
+	var reduction := _definition.get_passive_float(
+		&"distraction_seconds_per_kill",
+		0.0,
+		0.0
+	)
+	if reduction <= 0.0:
+		return
+	_lollo_phase_remaining = maxf(_lollo_phase_remaining - reduction, 0.0)
+	distraction_shortened.emit(_lollo_phase_remaining)
 
 
 func _roll_lollo_phase_duration(focused: bool) -> float:
@@ -288,16 +415,66 @@ func _roll_lollo_phase_duration(focused: bool) -> float:
 	return _rng.randf_range(minimum, maximum)
 
 
-func _advance_aleo_thermostat() -> void:
+func _advance_aleo_thermostat(delta: float) -> void:
 	var hot := _resolve_aleo_hot_mode()
 	if hot != _aleo_hot:
 		_aleo_hot = hot
 		_apply_character_multipliers()
+		_refresh_passive_state_tint()
 		thermal_mode_changed.emit(_aleo_hot)
 	if _aleo_hot:
 		_clear_aleo_cold_aura()
+		_aleo_cold_damage_accumulator = 0.0
 		return
 	_refresh_aleo_cold_aura()
+	_advance_aleo_cold_damage(delta)
+
+
+## Componente offensiva della fase fredda: l'aura non si limita a rallentare,
+## ma erode i nemici che restano dentro. Scendere sotto meta' vita diventa
+## cosi' una scelta tattica invece di un premio di consolazione, e il verbo
+## resta distinto dall'amplificazione di Marghe.
+func _advance_aleo_cold_damage(delta: float) -> void:
+	var damage_per_second := _definition.get_passive_float(
+		&"cold_aura_damage_per_second",
+		0.0,
+		0.0
+	)
+	var tick_interval := _definition.get_passive_float(
+		&"cold_aura_tick_interval",
+		0.25,
+		AbilityDefinition.MINIMUM_POSITIVE_VALUE
+	)
+	if damage_per_second <= 0.0 or _aleo_chilled_targets.is_empty():
+		_aleo_cold_damage_accumulator = 0.0
+		return
+	_aleo_cold_damage_accumulator += delta
+	if _aleo_cold_damage_accumulator < tick_interval:
+		return
+	var elapsed := _aleo_cold_damage_accumulator
+	_aleo_cold_damage_accumulator = 0.0
+	var tick_damage := damage_per_second * elapsed
+	if tick_damage <= 0.0:
+		return
+	for target in _aleo_chilled_targets:
+		if is_instance_valid(target) and target.is_alive():
+			target.take_damage(tick_damage)
+
+
+func get_cold_damage_accumulator() -> float:
+	return _aleo_cold_damage_accumulator
+
+
+func get_chilled_target_count() -> int:
+	var count := 0
+	for target in _aleo_chilled_targets:
+		if is_instance_valid(target):
+			count += 1
+	return count
+
+
+func is_thermal_hot() -> bool:
+	return _aleo_hot
 
 
 func _resolve_aleo_hot_mode() -> bool:
@@ -357,6 +534,7 @@ func _advance_migi_shield(delta: float) -> void:
 	if _shield_remaining <= 0.0:
 		_shield_hits_remaining = 0
 		shield_changed.emit(false, 0.0)
+		_refresh_passive_state_tint()
 
 
 func _activate_migi_shield() -> void:
@@ -372,6 +550,78 @@ func _activate_migi_shield() -> void:
 		AbilityDefinition.MINIMUM_POSITIVE_VALUE
 	)
 	shield_changed.emit(true, _shield_remaining)
+	_refresh_passive_state_tint()
+
+
+func _advance_bea_dodge_cooldown(delta: float) -> void:
+	_bea_dodge_cooldown_remaining = maxf(_bea_dodge_cooldown_remaining - delta, 0.0)
+
+
+func get_bea_dodge_cooldown_remaining() -> float:
+	return _bea_dodge_cooldown_remaining
+
+
+## Guscio piccolo di Migi (B45): cariche che annullano un colpo intero,
+## rigenerate nel tempo fino al tetto dichiarato. Scala minore e piu'
+## frequente rispetto al guscio grande (lo scudo d'emergenza sotto soglia
+## HP), coerente con l'identita' "Tartarughina" a scale crescenti.
+func _advance_migi_shell_charges(delta: float) -> void:
+	var max_charges := _definition.get_passive_int(&"shell_charge_max", 2, 0)
+	if _migi_shell_charges >= max_charges:
+		_migi_shell_regen_remaining = 0.0
+		return
+	_migi_shell_regen_remaining -= delta
+	if _migi_shell_regen_remaining > 0.0:
+		return
+	_migi_shell_charges += 1
+	_migi_shell_regen_remaining = _definition.get_passive_float(
+		&"shell_charge_regen_seconds",
+		12.0,
+		AbilityDefinition.MINIMUM_POSITIVE_VALUE
+	)
+	migi_shell_charges_changed.emit(_migi_shell_charges, max_charges)
+	_refresh_passive_state_tint()
+
+
+func get_migi_shell_charges() -> int:
+	return _migi_shell_charges
+
+
+func get_migi_shell_charge_max() -> int:
+	return _definition.get_passive_int(&"shell_charge_max", 2, 0) if _definition != null else 0
+
+
+## Traduce la fase corrente della passiva nel tell visivo del Player. E'
+## puramente presentazionale: nessun ramo qui dentro tocca statistiche,
+## collisioni o timing.
+func _refresh_passive_state_tint() -> void:
+	if not is_instance_valid(_player):
+		return
+	if _definition == null:
+		_player.clear_passive_state_tint()
+		return
+	var tint := TINT_NEUTRAL
+	match _definition.passive_id:
+		ALEO_INTERNAL_THERMOSTAT:
+			tint = TINT_ALEO_HOT if _aleo_hot else TINT_ALEO_COLD
+		LOLLO_HYPERACTIVITY:
+			tint = TINT_LOLLO_FOCUSED if _lollo_focused else TINT_LOLLO_DISTRACTED
+		ALEA_EAGLE_NEVER_MISSES:
+			if _alea_effect_remaining > 0.0:
+				var positive := (
+					_alea_move_multiplier > 1.0
+					or _alea_fire_multiplier > 1.0
+				)
+				tint = TINT_ALEA_POSITIVE if positive else TINT_ALEA_NEGATIVE
+		MIGI_TURTLE_SHELL:
+			if is_shield_active():
+				tint = TINT_MIGI_SHIELD
+			elif _migi_shell_charges > 0:
+				tint = TINT_MIGI_SHELL_READY
+	if tint == TINT_NEUTRAL:
+		_player.clear_passive_state_tint()
+	else:
+		_player.set_passive_state_tint(tint)
 
 
 func _apply_character_multipliers() -> void:
@@ -390,11 +640,23 @@ func _apply_character_multipliers() -> void:
 						MINIMUM_MULTIPLIER
 					)
 			MAGNO_AERODYNAMIC_FLOW:
-				move_multiplier = _definition.get_passive_float(
+				var base_multiplier := _definition.get_passive_float(
 					&"move_speed_multiplier",
 					1.0,
 					MINIMUM_MULTIPLIER
 				)
+				var max_multiplier := maxf(
+					_definition.get_passive_float(
+						&"max_move_speed_multiplier",
+						base_multiplier,
+						MINIMUM_MULTIPLIER
+					),
+					base_multiplier
+				)
+				var momentum_ratio := (
+					_player.get_momentum_ratio() if is_instance_valid(_player) else 0.0
+				)
+				move_multiplier = lerpf(base_multiplier, max_multiplier, momentum_ratio)
 			LOLLO_HYPERACTIVITY:
 				move_multiplier = _definition.get_passive_float(
 					(
@@ -417,36 +679,74 @@ func _apply_character_multipliers() -> void:
 			ALEA_EAGLE_NEVER_MISSES:
 				move_multiplier = _alea_move_multiplier
 				fire_multiplier = _alea_fire_multiplier
-	_player.set_character_stat_multipliers(move_multiplier)
+	# Gli scarti di partenza B47 compongono moltiplicativamente con la passiva
+	# e restano neutri per i profili che non li dichiarano.
+	var health_multiplier := 1.0
+	if _definition != null:
+		move_multiplier *= _definition.get_base_move_speed_multiplier()
+		fire_multiplier *= _definition.get_base_fire_rate_multiplier()
+		health_multiplier = _definition.get_base_health_multiplier()
+	_player.set_character_stat_multipliers(move_multiplier, 1.0, health_multiplier)
 	_weapon_controller.set_character_stat_multipliers(fire_multiplier, damage_multiplier)
 
 
-func _apply_marghe_health_modifier(target: BaseEnemy) -> void:
-	if (
-		_definition == null
-		or _definition.passive_id != MARGHE_CONTAGIOUS_SMILE
-		or not is_instance_valid(target)
-		or target.is_queued_for_deletion()
-		or (
-			target.is_in_group(&"bosses")
-			and not _definition.get_passive_bool(&"affects_bosses", false)
-		)
-	):
-		return
-	var profile_marker := String(_definition.id)
-	if String(target.get_meta(MARGHE_HEALTH_META, "")) == profile_marker:
-		return
-	var health := target.get_health_component()
-	if health == null:
-		return
-	var health_multiplier := _definition.get_passive_float(
-		&"enemy_health_multiplier",
+## Aura di indebolimento: i nemici dentro il raggio subiscono piu' danno da
+## qualsiasi sorgente, arma e abilita' comprese. Sostituisce la riduzione di
+## salute massima pre-B42, che a 18 HP non cambiava il numero di colpi
+## necessari e restava quindi invisibile in partita.
+func _refresh_marghe_aura() -> void:
+	var radius := _definition.get_passive_float(&"aura_radius", 0.0, 0.0)
+	var damage_multiplier := _definition.get_passive_float(
+		&"damage_taken_multiplier",
 		1.0,
-		MINIMUM_MULTIPLIER,
 		1.0
 	)
-	health.set_health_max(health.health_max * health_multiplier, true)
-	target.set_meta(MARGHE_HEALTH_META, profile_marker)
+	if (
+		radius <= 0.0
+		or damage_multiplier <= 1.0
+		or not is_instance_valid(_player)
+		or not is_instance_valid(_targeting_system)
+	):
+		_clear_marghe_aura()
+		return
+	var affects_bosses := _definition.get_passive_bool(&"affects_bosses", false)
+	var inside: Array[BaseEnemy] = []
+	for target in _targeting_system.get_alive_targets():
+		if target.is_in_group(&"bosses") and not affects_bosses:
+			continue
+		if not AbilityEffectRegistry.is_point_within_radius(
+			_player.global_position,
+			target.global_position,
+			radius
+		):
+			continue
+		target.set_damage_taken_modifier(MARGHE_SMILE_MODIFIER, damage_multiplier)
+		inside.append(target)
+	for target in _marghe_marked_targets:
+		if is_instance_valid(target) and not target in inside:
+			target.remove_damage_taken_modifier(MARGHE_SMILE_MODIFIER)
+	var changed := inside.size() != _marghe_marked_targets.size()
+	_marghe_marked_targets = inside
+	if changed:
+		marked_targets_changed.emit(_marghe_marked_targets.size())
+
+
+func _clear_marghe_aura() -> void:
+	if _marghe_marked_targets.is_empty():
+		return
+	for target in _marghe_marked_targets:
+		if is_instance_valid(target):
+			target.remove_damage_taken_modifier(MARGHE_SMILE_MODIFIER)
+	_marghe_marked_targets.clear()
+	marked_targets_changed.emit(0)
+
+
+func get_marked_target_count() -> int:
+	var count := 0
+	for target in _marghe_marked_targets:
+		if is_instance_valid(target):
+			count += 1
+	return count
 
 
 func _reset_runtime(seed_value: int) -> void:
@@ -460,7 +760,10 @@ func _reset_runtime(seed_value: int) -> void:
 	_alea_effect_remaining = 0.0
 	_alea_move_multiplier = 1.0
 	_alea_fire_multiplier = 1.0
+	_alea_luck_bonus = 0.0
 	_clear_aleo_cold_aura()
+	_clear_marghe_aura()
+	_aleo_cold_damage_accumulator = 0.0
 	_aleo_hot = true
 	_alea_interval_remaining = (
 		_definition.get_passive_float(
@@ -476,12 +779,34 @@ func _reset_runtime(seed_value: int) -> void:
 	if _definition != null and _definition.passive_id == LOLLO_HYPERACTIVITY:
 		_lollo_phase_remaining = _roll_lollo_phase_duration(_lollo_focused)
 		hyperfocus_changed.emit(_lollo_focused, _lollo_phase_remaining)
+	_bea_dodge_cooldown_remaining = 0.0
+	var migi_shell_max := (
+		_definition.get_passive_int(&"shell_charge_max", 2, 0)
+		if _definition != null and _definition.passive_id == MIGI_TURTLE_SHELL
+		else 0
+	)
+	_migi_shell_charges = migi_shell_max
+	_migi_shell_regen_remaining = (
+		_definition.get_passive_float(
+			&"shell_charge_regen_seconds",
+			12.0,
+			AbilityDefinition.MINIMUM_POSITIVE_VALUE
+		)
+		if migi_shell_max > 0
+		else 0.0
+	)
+	migi_shell_charges_changed.emit(_migi_shell_charges, migi_shell_max)
+	if is_instance_valid(_player):
+		_player.set_momentum_trail_enabled(
+			_definition != null and _definition.passive_id == MAGNO_AERODYNAMIC_FLOW
+		)
 	_apply_character_multipliers()
+	_refresh_passive_state_tint()
 	if _definition != null and _definition.passive_id == MARGHE_CONTAGIOUS_SMILE:
-		for target in _targeting_system.get_alive_targets():
-			_apply_marghe_health_modifier(target)
+		_refresh_marghe_aura()
 	delayed_healing_changed.emit(0.0)
 	shield_changed.emit(false, 0.0)
+	luck_charge_changed.emit(_alea_luck_bonus)
 
 
 func _has_valid_dependencies() -> bool:
@@ -495,6 +820,8 @@ func _has_valid_dependencies() -> bool:
 
 func _disconnect_dependencies() -> void:
 	if is_instance_valid(_player):
+		_player.clear_passive_state_tint()
+		_player.set_momentum_trail_enabled(false)
 		if _player.damaged.is_connected(_on_player_damaged):
 			_player.damaged.disconnect(_on_player_damaged)
 		if _player.get_passive_controller() == self:
@@ -552,8 +879,37 @@ func _on_player_damaged(_player_value: Player, amount: float, _health_current: f
 			_activate_migi_shield()
 
 
+## Le passive che reagiscono alle kill si agganciano al singolo nemico allo
+## spawn: la connessione muore insieme al nodo, quindi non serve pulizia
+## esplicita oltre a quella gia' prevista dal targeting.
 func _on_target_registered(target: BaseEnemy) -> void:
-	_apply_marghe_health_modifier(target)
+	if _definition == null or not is_instance_valid(target):
+		return
+	if not _reacts_to_kills():
+		return
+	if not target.died.is_connected(_on_target_died):
+		target.died.connect(_on_target_died)
+
+
+func _on_target_died(_target: BaseEnemy) -> void:
+	if (
+		_definition == null
+		or not is_instance_valid(_run_controller)
+		or not _run_controller.is_running()
+	):
+		return
+	match _definition.passive_id:
+		ALEA_EAGLE_NEVER_MISSES:
+			_charge_alea_luck()
+		LOLLO_HYPERACTIVITY:
+			_shorten_lollo_distraction()
+
+
+func _reacts_to_kills() -> bool:
+	return _definition != null and _definition.passive_id in [
+		ALEA_EAGLE_NEVER_MISSES,
+		LOLLO_HYPERACTIVITY,
+	]
 
 
 func _on_run_started(seed_value: int) -> void:

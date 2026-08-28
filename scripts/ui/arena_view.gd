@@ -19,6 +19,25 @@ extends Node2D
 @export_range(2, 24, 1) var stain_count := 9
 @export_range(2, 24, 1) var crack_count := 7
 
+## B50: delimitatore discreto del confine dell'arena, derivato da
+## _playfield_rect (che ArenaWorld passa come rettangolo di mondo) invece che
+## da coordinate fisse, cosi' resta corretto in 16:9, 20:9 e 4:3. Slot pronto
+## per l'arte definitiva (ImageGen), sullo stesso schema di
+## `StaticObstacle.texture`: finche' `boundary_texture` resta vuota disegna un
+## cordolo procedurale leggibile; assegnarla piu' avanti la sostituisce senza
+## toccare il calcolo delle bande.
+@export var boundary_texture: Texture2D:
+	set(value):
+		boundary_texture = value
+		queue_redraw()
+@export var boundary_thickness := 28.0:
+	set(value):
+		boundary_thickness = maxf(value, 0.0)
+		queue_redraw()
+@export var boundary_tile_size := Vector2(96.0, 96.0)
+@export var boundary_color := Color(0.2, 0.17, 0.14, 0.9)
+@export var boundary_edge_color := Color(0.06, 0.05, 0.045, 0.95)
+
 var _safe_area_rect := Rect2()
 var _playfield_rect := Rect2()
 
@@ -39,6 +58,26 @@ func uses_debug_grid() -> bool:
 
 func has_raster_background() -> bool:
 	return background_texture != null and background_texture.get_size().x > 0.0
+
+
+func has_boundary_texture() -> bool:
+	return boundary_texture != null and boundary_texture.get_size().x > 0.0
+
+
+## Pura e statica (come calculate_background_source_rect) per restare
+## testabile senza rendering: quattro bande interne al bordo di `rect`,
+## sempre contenute in `rect` qualunque sia l'aspect ratio dello schermo.
+static func calculate_boundary_bands(rect: Rect2, thickness: float) -> Array[Rect2]:
+	if not rect.has_area() or thickness <= 0.0:
+		return []
+	var clamped_thickness := minf(thickness, minf(rect.size.x, rect.size.y) * 0.5)
+	var inner := rect.grow(-clamped_thickness)
+	return [
+		Rect2(rect.position, Vector2(rect.size.x, clamped_thickness)),
+		Rect2(Vector2(rect.position.x, inner.end.y), Vector2(rect.size.x, clamped_thickness)),
+		Rect2(rect.position, Vector2(clamped_thickness, rect.size.y)),
+		Rect2(Vector2(inner.end.x, rect.position.y), Vector2(clamped_thickness, rect.size.y)),
+	]
 
 
 func uses_procedural_fallback() -> bool:
@@ -92,7 +131,9 @@ func _draw() -> void:
 
 	draw_rect(_playfield_rect, playfield_color, true)
 	if has_raster_background():
-		_draw_tiled_background()
+		_draw_tiled_texture(
+			_playfield_rect, background_texture, background_tile_size, background_modulate
+		)
 	else:
 		var random := RandomNumberGenerator.new()
 		random.seed = _layout_seed()
@@ -102,27 +143,38 @@ func _draw() -> void:
 		_draw_cracks(random)
 	# Il bordo scuro chiude il pavimento senza ricreare il rettangolo ciano debug.
 	draw_rect(_playfield_rect, edge_shadow_color, false, 2.0, true)
+	_draw_boundary()
 
 
-func _draw_tiled_background() -> void:
-	# A differenza di get_background_source_rect() (pensato per un'unica
-	# immagine di copertura), ogni riquadro ripete l'intera texture sorgente:
-	# ritagliarla sull'aspect ratio del rettangolo enorme del mondo
-	# produrrebbe un unico riquadro fuori scala ripetuto ovunque.
-	var source_rect := Rect2(Vector2.ZERO, background_texture.get_size())
-	var tile_size := Vector2(
-		maxf(background_tile_size.x, 1.0),
-		maxf(background_tile_size.y, 1.0)
-	)
-	var y := _playfield_rect.position.y
-	while y < _playfield_rect.end.y:
-		var x := _playfield_rect.position.x
-		while x < _playfield_rect.end.x:
+func _draw_boundary() -> void:
+	for band in calculate_boundary_bands(_playfield_rect, boundary_thickness):
+		if has_boundary_texture():
+			_draw_tiled_texture(band, boundary_texture, boundary_tile_size, Color.WHITE)
+		else:
+			draw_rect(band, boundary_color, true)
+	if boundary_thickness > 0.0 and not has_boundary_texture():
+		var max_thickness := minf(_playfield_rect.size.x, _playfield_rect.size.y) * 0.5
+		var inner := _playfield_rect.grow(-minf(boundary_thickness, max_thickness))
+		draw_rect(inner, boundary_edge_color, false, 2.0, true)
+
+
+func _draw_tiled_texture(
+	area: Rect2, source_texture: Texture2D, tile_size_hint: Vector2, tint: Color
+) -> void:
+	# Ogni riquadro ripete l'intera texture sorgente invece di ritagliarla
+	# sull'aspect ratio di `area`: un'unica immagine di copertura andrebbe
+	# fuori scala se ripetuta su una banda stretta come il delimitatore.
+	var source_rect := Rect2(Vector2.ZERO, source_texture.get_size())
+	var tile_size := Vector2(maxf(tile_size_hint.x, 1.0), maxf(tile_size_hint.y, 1.0))
+	var y := area.position.y
+	while y < area.end.y:
+		var x := area.position.x
+		while x < area.end.x:
 			draw_texture_rect_region(
-				background_texture,
+				source_texture,
 				Rect2(Vector2(x, y), tile_size),
 				source_rect,
-				background_modulate,
+				tint,
 				false,
 				true
 			)

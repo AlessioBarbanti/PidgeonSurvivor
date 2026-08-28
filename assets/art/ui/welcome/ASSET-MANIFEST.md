@@ -17,14 +17,14 @@ Licenza: Licenza del progetto.
 
 | Percorso | Dimensioni | Trasformazioni | SHA-256 |
 |---|---:|---|---|
-| `welcome_ability_cast_background.png` | `1664×936` RGB PNG | Refresh identità del 28 agosto dai master B18U, Lollo abbassato sulla piattaforma, poi crop centrale 16:9 senza ricampionamento; mostrato con `KEEP_ASPECT_COVERED` più tint runtime | `2fd5b3e8a3bfea879b4a9724ae215bae6d991503ff85f684012fd37bcd460454` |
+| `welcome_ability_cast_background.png` | `1664×936` RGB PNG | Refresh identità del 28 agosto dai master B18U; Lollo appoggiato, corna decorative di Magno rafforzate e onde ciano davanti a Bea rimosse; poi crop centrale 16:9 senza ricampionamento; mostrato con `KEEP_ASPECT_COVERED` più tint runtime | `fe721f5a98048fb8db4093700af50b0ac9a070b1af92582b4b16059d9d8f1ba9` |
 | `welcome_logo.png` | `1536×1024` RGBA PNG | Versione finale modificata e fornita dal proprietario, nessuna trasformazione locale; visualizzata proporzionalmente in un `TextureRect` centrale | `c2a63add4753ece374cf673d636d12cce55e55cd43624aed645bf8f5c347fa9f` |
 
 Sorgente HD conservato fuori dall'import e dai tre preset di export:
 
 | Percorso | Dimensioni | SHA-256 |
 |---|---:|---|
-| `hd/welcome_ability_cast_identity_source.png` | `1672×941` RGB PNG | `1f0511a30628b3663d4206d531c48b9a9d5fd37e937a807548664e9bb0d4b790` |
+| `hd/welcome_ability_cast_identity_source.png` | `1672×941` RGB PNG | `ea746bbe40d4aa9c575fbf1728218c16fbb16b30c9acdc137d7ef86db58d2bda` |
 
 La cartella `hd/` contiene `.gdignore` ed è esclusa esplicitamente dai preset
 Windows, Android APK e Android AAB.
@@ -111,6 +111,9 @@ Una passata di pulizia ha rimosso il corpo blu residuo sotto Lollo. Su richiesta
 del proprietario, l'ultima correzione abbassa soltanto Lollo di pochi pixel e
 porta entrambi gli stivali a contatto leggibile con la piattaforma superiore,
 senza ridisegnare il personaggio o modificare gli altri sette.
+La passata successiva rende più leggibile il motivo bovino di Magno con una
+coppia simmetrica di corna curve montate sull'armatura e rimuove le onde ciano
+sul terreno davanti ai pattini di Bea, conservando la scia di fuoco arancione.
 
 ## Passaggi superati
 
@@ -127,4 +130,4 @@ questo manifest.
 | 24 agosto 2026 | Correzione Bea, rimozione casco e capelli ricci lunghi | Superato dal refresh identità |
 | 24 agosto 2026 | Correzione Lollo e Zat, capelli scuri e divisa da infermiera | Superato dal refresh identità |
 | 24 agosto 2026 | Pulizia reference e ricomposizione cast per liberare l'area menu | Confluito nella versione corrente |
-| 28 agosto 2026 | Refresh identità del cast dai master B18U, più abbassamento di Lollo | **Versione runtime corrente** |
+| 28 agosto 2026 | Refresh identità del cast dai master B18U, Lollo abbassato, corna di Magno rafforzate e onde ciano davanti a Bea rimosse | **Versione runtime corrente** |

@@ -30,6 +30,7 @@ var _spent := false
 
 
 func _ready() -> void:
+	add_to_group(&"enemy_projectiles")
 	_make_collision_shape_unique()
 	_sync_collision_radius()
 	collision_layer = 0
@@ -118,7 +119,7 @@ func try_hit(player: Player) -> bool:
 
 	_spent = true
 	_disable_immediately()
-	var damage_applied := player.take_contact_damage(damage)
+	var damage_applied := player.take_contact_damage(damage, global_position)
 	if damage_applied:
 		hit_processed.emit(player, damage)
 	expired.emit(self)

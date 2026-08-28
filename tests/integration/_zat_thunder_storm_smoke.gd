@@ -1,5 +1,15 @@
 extends SceneTree
 
+## B18E — Accessibilita' del flash di Tempesta di Tuoni.
+##
+## Il B43 ha riprogettato l'attiva in una sequenza di fulmini telegrafati
+## (vedi `_b43_lightning_storm_smoke.gd` per il contratto di decisione e il
+## tetto sulla vita del Boss); questo smoke resta il presidio del contratto
+## di accessibilita' B18E originale, che non si tocca: un solo flash
+## fullscreen per attivazione, alpha massimo per piattaforma, chiusura entro
+## 0,30 s e l'opzione persistente Flash ridotti, incluso il toggle live
+## mentre il flash e' in corso.
+
 const ENEMY_SCENE := preload("res://scenes/actors/base_enemy.tscn")
 const BOSS_SCENE := preload("res://scenes/actors/first_boss.tscn")
 const PAUSE_OVERLAY_SCENE := preload("res://scenes/ui/pause_overlay.tscn")
@@ -102,8 +112,13 @@ func _validate_contract_and_full_flash() -> void:
 		"Flash ridotti deve usare alpha massimo 0,15."
 	)
 
-	var normal_enemy := await _spawn_target(fixture, targeting, false, 100.0, Vector2(300.0, 300.0))
-	var boss := await _spawn_target(fixture, targeting, true, 1000.0, Vector2(900.0, 300.0))
+	var warning_seconds := THUNDER_DEFINITION.get_effect_float(&"warning_seconds", 0.45, 0.0)
+	var origin := source.global_position
+	# Il primo fulmine cade sempre esattamente sull'origine (B43): i bersagli
+	# fixture restano vicini a Zat cosi' il preavviso e l'impatto restano
+	# osservabili come nel contratto B18E originale.
+	var normal_enemy := await _spawn_target(fixture, targeting, false, 100.0, origin + Vector2(40.0, 0.0))
+	var boss := await _spawn_target(fixture, targeting, true, 1000.0, origin + Vector2(-40.0, 0.0))
 	if normal_enemy == null or boss == null:
 		fixture.queue_free()
 		await process_frame
@@ -116,7 +131,7 @@ func _validate_contract_and_full_flash() -> void:
 		await process_frame
 		return
 	_expect(effect.get_phase() == ThunderStorm.Phase.WARNING, "L'effetto deve iniziare dal preavviso.")
-	_expect_float_near(effect.get_warning_remaining(), 0.45, "Il preavviso deve durare 0,45 s.")
+	_expect_float_near(effect.get_warning_remaining(), warning_seconds, "Il preavviso deve durare 0,45 s.")
 	_expect_float_near(
 		normal_enemy.get_health_component().health_current,
 		100.0,
@@ -140,38 +155,75 @@ func _validate_contract_and_full_flash() -> void:
 	)
 	_expect(controller.resume_run(), "La fixture deve riprendere la run.")
 
-	var late_enemy := await _spawn_target(fixture, targeting, false, 80.0, Vector2(640.0, 520.0))
+	var late_enemy := await _spawn_target(fixture, targeting, false, 80.0, origin + Vector2(0.0, 40.0))
 	_expect(late_enemy != null, "Un nemico deve poter entrare durante il preavviso.")
 	effect._process(paused_warning)
-	_expect(effect.has_impacted(), "L'impatto deve avvenire al termine del preavviso.")
-	_expect(effect.get_affected_count() == 3, "L'impatto deve fotografare tutti e tre i bersagli vivi.")
+	_expect(effect.has_impacted(), "Il primo fulmine deve cadere al termine del preavviso.")
+	_expect(effect.get_strikes_resolved() == 1, "Il preavviso deve risolvere un solo fulmine.")
+	_expect(effect.get_flash_count() == 1, "Il primo fulmine deve accendere il flash.")
+	_expect(effect.get_affected_count() == 3, "Il primo fulmine deve fotografare tutti e tre i bersagli vivi.")
 	_expect(effect.get_impacted_target_ids().size() == 3, "Ogni bersaglio deve comparire una sola volta nello snapshot.")
+	var normal_ratio := THUNDER_DEFINITION.get_effect_float(&"normal_max_health_damage_ratio", 0.5, 0.0)
+	var boss_ratio := THUNDER_DEFINITION.get_effect_float(&"boss_max_health_damage_ratio", 0.008, 0.0)
 	_expect_float_near(
 		normal_enemy.get_health_component().health_current,
-		50.0,
-		"Un nemico normale deve perdere il 50% degli HP massimi."
+		100.0 * (1.0 - normal_ratio),
+		"Un nemico normale deve perdere la quota di HP massimi dichiarata."
 	)
 	_expect_float_near(
 		boss.get_health_component().health_current,
-		800.0,
-		"Un Boss deve perdere il 20% degli HP massimi."
+		1000.0 * (1.0 - boss_ratio),
+		"Un Boss deve perdere la quota per fulmine dichiarata."
 	)
 	if late_enemy != null:
 		_expect_float_near(
 			late_enemy.get_health_component().health_current,
-			40.0,
-			"Il nemico entrato nel preavviso deve essere incluso all'impatto."
+			80.0 * (1.0 - normal_ratio),
+			"Il nemico entrato nel preavviso deve essere incluso nel primo fulmine."
 		)
 
+	# Budget di flash: si accende una volta sola e si chiude entro 0,30 s,
+	# anche se la tempesta continuera' a colpire per altri fulmini.
 	var normal_after_impact := normal_enemy.get_health_component().health_current
-	effect._process(0.30)
+	var peak_alpha := 0.0
+	for _step in 30:
+		effect._process(0.01)
+		peak_alpha = maxf(peak_alpha, effect.get_flash_alpha())
+	_expect(
+		peak_alpha <= effect.get_flash_max_alpha() + FLOAT_TOLERANCE,
+		"Il flash non deve superare l'alpha massimo dichiarato."
+	)
+	_expect(
+		effect.get_flash_phase() == ThunderStorm.FlashPhase.DONE,
+		"Il flash standard deve chiudersi entro 0,30 s."
+	)
+	_expect(
+		effect.get_flash_rect() == Rect2(),
+		"L'overlay fullscreen deve essere rimosso quando il flash finisce."
+	)
 	_expect_float_near(
 		normal_enemy.get_health_component().health_current,
 		normal_after_impact,
-		"Il flash non deve applicare un secondo danno."
+		"Il flash non deve applicare un secondo danno entro il proprio budget."
+	)
+	_expect(
+		registry.get_active_effect_count() == 1,
+		"La tempesta resta attiva oltre il flash: deve ancora colpire i fulmini successivi."
+	)
+
+	# Il budget di flash non deve crescere anche dopo tutti i fulmini
+	# successivi della stessa attivazione (contratto B43).
+	effect._process(effect.get_total_duration())
+	_expect(
+		effect.get_flash_count() == 1,
+		"Una attivazione deve accendere un solo flash, quanti che siano i fulmini."
+	)
+	_expect(
+		effect.get_strikes_resolved() == effect.get_strike_count(),
+		"Tutti i fulmini pianificati devono cadere entro la durata dichiarata."
 	)
 	await _wait_processed_frame()
-	_expect(registry.get_active_effect_count() == 0, "Il flash standard deve chiudersi entro 0,30 s.")
+	_expect(registry.get_active_effect_count() == 0, "La tempesta esaurita deve liberarsi da sola.")
 
 	var reduced_button := pause_overlay.get_reduced_flashes_check_button()
 	if reduced_button != null:
@@ -190,7 +242,8 @@ func _validate_contract_and_full_flash() -> void:
 	var reduced_effect := registry.execute_effect(THUNDER_DEFINITION, source) as ThunderStorm
 	_expect(reduced_effect != null, "Tempesta di Tuoni deve riattivarsi nella fixture ridotta.")
 	if reduced_effect != null:
-		reduced_effect._process(0.45)
+		reduced_effect._process(warning_seconds)
+		_expect(reduced_effect.has_impacted(), "Il primo fulmine deve cadere anche in modalita' ridotta.")
 		_expect_float_near(
 			reduced_effect.get_flash_max_alpha(),
 			0.15,
@@ -205,13 +258,13 @@ func _validate_contract_and_full_flash() -> void:
 		)
 		reduced_effect._process(0.06)
 		_expect(
-			reduced_effect.get_phase() == ThunderStorm.Phase.FLASH_HOLD,
+			reduced_effect.get_flash_phase() == ThunderStorm.FlashPhase.HOLD,
 			"La modalità standard riattivata deve conservare la tenuta."
 		)
 		if reduced_button != null:
 			reduced_button.button_pressed = true
 		_expect(
-			reduced_effect.get_phase() == ThunderStorm.Phase.FLASH_FADE,
+			reduced_effect.get_flash_phase() == ThunderStorm.FlashPhase.FADE,
 			"Attivare Flash ridotti durante la tenuta deve passare subito alla dissolvenza."
 		)
 		_expect_float_near(

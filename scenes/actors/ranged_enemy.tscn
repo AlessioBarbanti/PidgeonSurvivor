@@ -1,0 +1,64 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/actors/ranged_enemy.gd" id="1_ranged_enemy"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="2_health"]
+[ext_resource type="Script" path="res://scripts/components/hurtbox.gd" id="3_hurtbox"]
+[ext_resource type="Script" path="res://scripts/components/contact_damage.gd" id="4_contact"]
+[ext_resource type="PackedScene" path="res://scenes/combat/boss_projectile.tscn" id="5_boss_projectile"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ranged_enemy"]
+resource_local_to_scene = true
+radius = 20.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ranged_hurtbox"]
+resource_local_to_scene = true
+radius = 20.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ranged_contact"]
+resource_local_to_scene = true
+radius = 20.0
+
+[node name="RangedEnemy" type="CharacterBody2D" groups=["enemies"]]
+z_index = 5
+collision_layer = 0
+collision_mask = 4
+motion_mode = 1
+script = ExtResource("1_ranged_enemy")
+silhouette_kind = 4
+projectile_scene = ExtResource("5_boss_projectile")
+
+[node name="CollisionShape" type="CollisionShape2D" parent="."]
+unique_name_in_owner = true
+shape = SubResource("CircleShape2D_ranged_enemy")
+
+[node name="EnemySprite" type="AnimatedSprite2D" parent="."]
+unique_name_in_owner = true
+texture_filter = 1
+
+[node name="HealthComponent" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("2_health")
+health_max = 16.0
+
+[node name="Hurtbox" type="Area2D" parent="."]
+unique_name_in_owner = true
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+script = ExtResource("3_hurtbox")
+
+[node name="HurtboxCollisionShape" type="CollisionShape2D" parent="Hurtbox"]
+unique_name_in_owner = true
+shape = SubResource("CircleShape2D_ranged_hurtbox")
+
+[node name="ContactDamage" type="Area2D" parent="."]
+unique_name_in_owner = true
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+script = ExtResource("4_contact")
+damage = 12.0
+
+[node name="ContactCollisionShape" type="CollisionShape2D" parent="ContactDamage"]
+unique_name_in_owner = true
+shape = SubResource("CircleShape2D_ranged_contact")

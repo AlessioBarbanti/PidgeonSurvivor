@@ -30,6 +30,9 @@ const DAMAGE_SHOCKWAVE := &"damage_shockwave"
 const ABILITY_RANK := &"ability_rank"
 const SUMMER_GRILL := &"summer_grill"
 const CHRONIC_DELAY_MODIFIER := &"upgrade_chronic_delay"
+const WEAPON_PIERCE := &"weapon_pierce"
+const WEAPON_MULTISHOT := &"weapon_multishot"
+const WEAPON_DEATH_BURST := &"weapon_death_burst"
 
 const MINIMUM_MULTIPLIER := 0.001
 
@@ -44,6 +47,10 @@ const MINIMUM_MULTIPLIER := 0.001
 @export_range(0.01, 1.0, 0.01) var min_damage_taken_multiplier := 0.7
 @export_range(1.0, 10.0, 0.05, "or_greater") var max_xp_value_multiplier := 2.0
 @export_range(0.01, 1.0, 0.01) var min_active_ability_cooldown_multiplier := 0.65
+@export_range(1, 20, 1, "or_greater") var max_weapon_pierce_count := 4
+@export_range(1, 20, 1, "or_greater") var max_weapon_multishot_count := 3
+@export_range(0.01, 1.0, 0.01) var max_weapon_death_burst_damage_multiplier := 0.6
+@export_range(1, 20, 1, "or_greater") var max_gossip_chain_jumps := 6
 
 var _upgrade_service: UpgradeService
 var _upgrade_registry: UpgradeRegistry
@@ -188,10 +195,10 @@ func can_apply(definition: UpgradeDefinition) -> bool:
 			)
 		GOSSIP_PROJECTILES:
 			return (
-				_is_single_rank_signature(definition)
+				definition.repeatable
 				and _get_positive_integer(
 					definition.effect_parameters,
-					"chain_jumps"
+					"chain_jumps_per_rank"
 				) > 0
 				and _get_positive_number(
 					definition.effect_parameters,
@@ -200,6 +207,39 @@ func can_apply(definition: UpgradeDefinition) -> bool:
 				and _get_unit_number(
 					definition.effect_parameters,
 					"damage_falloff"
+				) > 0.0
+			)
+		WEAPON_PIERCE:
+			return (
+				definition.repeatable
+				and _get_positive_integer(
+					definition.effect_parameters,
+					"pierce_count_per_rank"
+				) > 0
+				and _get_unit_number(
+					definition.effect_parameters,
+					"damage_falloff"
+				) > 0.0
+			)
+		WEAPON_MULTISHOT:
+			return (
+				definition.repeatable
+				and _get_positive_integer(
+					definition.effect_parameters,
+					"projectiles_per_rank"
+				) > 0
+				and _get_positive_number(
+					definition.effect_parameters,
+					"spread_degrees_per_projectile"
+				) > 0.0
+			)
+		WEAPON_DEATH_BURST:
+			return (
+				definition.repeatable
+				and _get_positive_number(definition.effect_parameters, "radius") > 0.0
+				and _get_positive_number(
+					definition.effect_parameters,
+					"damage_multiplier_per_rank"
 				) > 0.0
 			)
 		CHRONIC_DELAY:
@@ -356,10 +396,66 @@ func recalculate_effects(preserve_health_ratio: bool = true) -> bool:
 				next_signatures[definition.effect_id] = (
 					definition.effect_parameters.duplicate(true)
 				)
-			GOSSIP_PROJECTILES, CHRONIC_DELAY, DAMAGE_SHOCKWAVE:
+			GOSSIP_PROJECTILES:
+				var chain_jumps_per_rank := _get_positive_integer(
+					definition.effect_parameters,
+					"chain_jumps_per_rank"
+				)
+				next_signatures[definition.effect_id] = {
+					"chain_jumps": mini(chain_jumps_per_rank * rank, max_gossip_chain_jumps),
+					"chain_radius": _get_positive_number(
+						definition.effect_parameters,
+						"chain_radius"
+					),
+					"damage_falloff": _get_unit_number(
+						definition.effect_parameters,
+						"damage_falloff"
+					),
+				}
+			CHRONIC_DELAY, DAMAGE_SHOCKWAVE:
 				next_signatures[definition.effect_id] = (
 					definition.effect_parameters.duplicate(true)
 				)
+			WEAPON_PIERCE:
+				var pierce_count_per_rank := _get_positive_integer(
+					definition.effect_parameters,
+					"pierce_count_per_rank"
+				)
+				next_signatures[definition.effect_id] = {
+					"pierce_count": mini(1 + pierce_count_per_rank * rank, max_weapon_pierce_count),
+					"damage_falloff": _get_unit_number(
+						definition.effect_parameters,
+						"damage_falloff"
+					),
+				}
+			WEAPON_MULTISHOT:
+				var projectiles_per_rank := _get_positive_integer(
+					definition.effect_parameters,
+					"projectiles_per_rank"
+				)
+				var multishot_count := mini(
+					1 + projectiles_per_rank * rank,
+					max_weapon_multishot_count
+				)
+				next_signatures[definition.effect_id] = {
+					"multishot_count": multishot_count,
+					"spread_degrees": _get_positive_number(
+						definition.effect_parameters,
+						"spread_degrees_per_projectile"
+					) * float(multishot_count - 1),
+				}
+			WEAPON_DEATH_BURST:
+				var damage_multiplier_per_rank := _get_positive_number(
+					definition.effect_parameters,
+					"damage_multiplier_per_rank"
+				)
+				next_signatures[definition.effect_id] = {
+					"radius": _get_positive_number(definition.effect_parameters, "radius"),
+					"damage_multiplier": minf(
+						damage_multiplier_per_rank * float(rank),
+						max_weapon_death_burst_damage_multiplier
+					),
+				}
 			_:
 				_multiply_effect(
 					next_multipliers,
@@ -535,6 +631,37 @@ func _apply_signature_effects(next_signatures: Dictionary) -> bool:
 	):
 		return false
 
+	var pierce_parameters := _parameters_from(next_signatures, WEAPON_PIERCE)
+	var multishot_parameters := _parameters_from(next_signatures, WEAPON_MULTISHOT)
+	var death_burst_parameters := _parameters_from(next_signatures, WEAPON_DEATH_BURST)
+	var pierce_count := 1
+	var pierce_damage_falloff := 1.0
+	if not pierce_parameters.is_empty():
+		pierce_count = int(pierce_parameters["pierce_count"])
+		pierce_damage_falloff = float(pierce_parameters["damage_falloff"])
+	var multishot_count := 1
+	var multishot_spread_degrees := 0.0
+	if not multishot_parameters.is_empty():
+		multishot_count = int(multishot_parameters["multishot_count"])
+		multishot_spread_degrees = float(multishot_parameters["spread_degrees"])
+	var death_burst_enabled := false
+	var death_burst_radius := 0.0
+	var death_burst_damage_multiplier := 0.0
+	if not death_burst_parameters.is_empty():
+		death_burst_enabled = true
+		death_burst_radius = float(death_burst_parameters["radius"])
+		death_burst_damage_multiplier = float(death_burst_parameters["damage_multiplier"])
+	if not _weapon_controller.set_projectile_shape_modifiers(
+		pierce_count,
+		pierce_damage_falloff,
+		multishot_count,
+		multishot_spread_degrees,
+		death_burst_enabled,
+		death_burst_radius,
+		death_burst_damage_multiplier
+	):
+		return false
+
 	_apply_chronic_delay_configuration(
 		_parameters_from(next_signatures, CHRONIC_DELAY)
 	)
@@ -610,6 +737,7 @@ func _clear_signature_runtime() -> void:
 		_vignette_effect.reset_effect()
 	if is_instance_valid(_weapon_controller):
 		_weapon_controller.reset_projectile_upgrade_modifiers()
+		_weapon_controller.reset_projectile_shape_modifiers()
 	for pulse in _active_shockwaves.duplicate():
 		if is_instance_valid(pulse):
 			pulse.finish()
@@ -671,6 +799,9 @@ func _has_valid_caps() -> bool:
 	]:
 		if not is_finite(cap) or cap < 1.0:
 			return false
+	for count_cap in [max_weapon_pierce_count, max_weapon_multishot_count, max_gossip_chain_jumps]:
+		if count_cap < 1:
+			return false
 	return (
 		is_finite(min_health_max_multiplier)
 		and min_health_max_multiplier > 0.0
@@ -681,6 +812,9 @@ func _has_valid_caps() -> bool:
 		and is_finite(min_active_ability_cooldown_multiplier)
 		and min_active_ability_cooldown_multiplier > 0.0
 		and min_active_ability_cooldown_multiplier <= 1.0
+		and is_finite(max_weapon_death_burst_damage_multiplier)
+		and max_weapon_death_burst_damage_multiplier > 0.0
+		and max_weapon_death_burst_damage_multiplier <= 1.0
 	)
 
 

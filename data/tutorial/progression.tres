@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="TutorialPageDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/tutorial_page_definition.gd" id="1_page"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/upgrades/generated/meat_fork_damage.png" id="2_damage"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/upgrades/generated/fire_rate.png" id="3_fire_rate"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/upgrades/generated/move_speed.png" id="4_speed"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/upgrades/generated/pickup_range.png" id="5_pickup"]
+
+[resource]
+script = ExtResource("1_page")
+id = &"progression"
+eyebrow = "XP E POTENZIAMENTI"
+title = "COSTRUISCI LA TUA BUILD"
+body = "Raccogli Caffè e Gocce di Pressione per riempire la barra XP. A ogni livello scegli una carta e cambia la run."
+showcase_textures = Array[Texture2D]([ExtResource("2_damage"), ExtResource("3_fire_rate"), ExtResource("4_speed"), ExtResource("5_pickup")])
+showcase_labels = Array[String](["DANNO", "CADENZA", "VELOCITÀ", "RACCOLTA"])

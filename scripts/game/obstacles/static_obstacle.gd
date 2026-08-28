@@ -34,10 +34,26 @@ extends StaticBody2D
 		texture = value
 		queue_redraw()
 
+## B50: quando l'ostacolo ha zone visivamente trasparenti (es. il filo dei
+## panni), la collisione deve seguire solo le parti opache invece dell'intero
+## footprint. Ogni Rect2 e' espresso in spazio unitario centrato sull'origine
+## (-0.5..0.5 su entrambi gli assi, come get_footprint_rect()), cosi' resta
+## corretto qualunque sia footprint_size. Vuoto (default) mantiene il
+## comportamento storico: un'unica CollisionShape2D grande quanto il footprint.
+@export var collision_segments: Array[Rect2] = []:
+	set(value):
+		collision_segments = value
+		if is_node_ready():
+			_sync_collision_shape()
+		queue_redraw()
+
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
+
+var _segment_shapes: Array[CollisionShape2D] = []
 
 
 func _ready() -> void:
+	add_to_group(&"static_obstacles")
 	_make_collision_shape_unique()
 	_sync_collision_shape()
 	queue_redraw()
@@ -71,5 +87,24 @@ func _make_collision_shape_unique() -> void:
 
 
 func _sync_collision_shape() -> void:
-	if _collision_shape.shape is RectangleShape2D:
-		(_collision_shape.shape as RectangleShape2D).size = footprint_size
+	for shape in _segment_shapes:
+		shape.queue_free()
+	_segment_shapes.clear()
+
+	if collision_segments.is_empty():
+		_collision_shape.disabled = false
+		if _collision_shape.shape is RectangleShape2D:
+			(_collision_shape.shape as RectangleShape2D).size = footprint_size
+		return
+
+	_collision_shape.disabled = true
+	for index in collision_segments.size():
+		var segment := collision_segments[index]
+		var rect_shape := RectangleShape2D.new()
+		rect_shape.size = segment.size * footprint_size
+		var shape := CollisionShape2D.new()
+		shape.name = "SegmentShape%d" % index
+		shape.shape = rect_shape
+		shape.position = (segment.position + segment.size * 0.5) * footprint_size
+		add_child(shape)
+		_segment_shapes.append(shape)

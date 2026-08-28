@@ -33,14 +33,18 @@ display_name = "Magno"
 role = "Mobilità e controllo delle orde."
 tags = Array[StringName]([&"mobility", &"control"])
 passive_title = "Flusso Aerodinamico Bovino"
-passive_description = "Aumenta la velocità di movimento base."
+passive_description = "Lo slancio cresce muovendosi dritto e decade cambiando direzione."
 passive_id = &"magno_aerodynamic_flow"
 passive_parameters = {
-"move_speed_multiplier": 1.15
+"move_speed_multiplier": 1.0,
+"max_move_speed_multiplier": 1.35
 }
 active_ability_id = &"magno_earthquake_shockwave"
 active_ability_title = "Onda d'Urto Tellurica"
-active_ability_description = "Genera un'onda d'urto circolare che infligge danni e respinge i nemici vicini."
+active_ability_description = "Genera un'onda d'urto circolare che infligge danni e respinge i nemici vicini, più forte con più slancio."
+base_health_multiplier = 1.15
+base_move_speed_multiplier = 0.95
+base_fire_rate_multiplier = 1.0
 evil_display_name = "Evil Magno"
 portrait = SubResource("AtlasTexture_portrait")
 evil_portrait = SubResource("AtlasTexture_evil")

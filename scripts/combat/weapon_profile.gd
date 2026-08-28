@@ -27,6 +27,24 @@ const MINIMUM_POSITIVE_VALUE := 0.001
 	set(value):
 		muzzle_offset = maxf(value, 0.0) if is_finite(value) else 0.0
 
+## Bersagli attraversabili di base prima di applicare le carte di perforazione.
+@export_range(1, 20, 1, "or_greater") var base_pierce_count := 1:
+	set(value):
+		base_pierce_count = maxi(value, 1)
+
+@export_range(0.01, 1.0, 0.01) var base_pierce_damage_falloff := 1.0:
+	set(value):
+		base_pierce_damage_falloff = clampf(value, 0.01, 1.0) if is_finite(value) else 1.0
+
+## Proiettili sparati per colpo di base prima di applicare le carte di raffica.
+@export_range(1, 20, 1, "or_greater") var base_multishot_count := 1:
+	set(value):
+		base_multishot_count = maxi(value, 1)
+
+@export_range(0.0, 179.0, 0.1, "or_greater") var base_multishot_spread_degrees := 0.0:
+	set(value):
+		base_multishot_spread_degrees = clampf(value, 0.0, 179.0) if is_finite(value) else 0.0
+
 
 func get_fire_interval() -> float:
 	return 1.0 / shots_per_second

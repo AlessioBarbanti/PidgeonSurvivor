@@ -8,14 +8,15 @@ script = ExtResource("1_definition")
 id = &"gossip_projectiles"
 title = "Gossip"
 description = "I colpi rimbalzano tra i nemici vicini, con danno ridotto a ogni salto."
-effect_summary = "2 RIMBALZI · RAGGIO 260 · -35% DANNO A SALTO"
+effect_summary = "+2 RIMBALZI /RANGO · RAGGIO 260 · -35% DANNO A SALTO"
 icon = ExtResource("2_icon")
 effect_id = &"gossip_projectiles"
 effect_parameters = {
-"chain_jumps": 2,
+"chain_jumps_per_rank": 2,
 "chain_radius": 260.0,
 "damage_falloff": 0.65
 }
-weight = 1.0
-max_rank = 1
+weight = 0.6
+max_rank = 3
+repeatable = true
 tags = Array[StringName]([&"signature", &"weapon", &"projectile", &"chain"])

@@ -483,8 +483,14 @@ func _refresh_ability_state() -> void:
 		_ability_controller.is_cooldown_ready()
 	)
 	var definition := _ability_controller.get_definition()
+	var pending_cosplay_icon := _ability_controller.get_pending_cosplay_icon()
+	var display_icon := (
+		pending_cosplay_icon
+		if pending_cosplay_icon != null
+		else (definition.icon if definition != null else null)
+	)
 	_active_ability_button.set_ability_visual(
-		definition.icon if definition != null else null,
+		display_icon,
 		_ability_controller.get_cooldown_remaining(),
 		_ability_controller.get_cooldown_total(),
 		running and ready

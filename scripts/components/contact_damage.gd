@@ -44,7 +44,7 @@ func try_damage(player: Player) -> bool:
 		or not player.is_alive()
 	):
 		return false
-	if not player.take_contact_damage(damage):
+	if not player.take_contact_damage(damage, global_position):
 		return false
 	damage_applied.emit(player, damage)
 	return true

@@ -28,6 +28,17 @@ var _projectile_chain_damage_falloff := 1.0
 var _projectile_chain_radius := 0.0
 var _projectile_aim_spread_degrees := 0.0
 var _aim_rng := RandomNumberGenerator.new()
+var _base_pierce_count := 1
+var _base_pierce_damage_falloff := 1.0
+var _base_multishot_count := 1
+var _base_multishot_spread_degrees := 0.0
+var _pierce_count := 1
+var _pierce_damage_falloff := 1.0
+var _multishot_count := 1
+var _multishot_spread_degrees := 0.0
+var _death_burst_enabled := false
+var _death_burst_radius := 0.0
+var _death_burst_damage_multiplier := 0.0
 
 
 func _exit_tree() -> void:
@@ -76,13 +87,38 @@ func try_fire() -> Projectile:
 		return null
 
 	var offset_to_target := target.global_position - _source.global_position
-	var aim_direction := _last_aim_direction
+	var base_aim_direction := _last_aim_direction
 	var muzzle_offset := 0.0
 	if not offset_to_target.is_zero_approx():
-		aim_direction = offset_to_target.normalized()
+		base_aim_direction = offset_to_target.normalized()
 		muzzle_offset = minf(weapon_profile.muzzle_offset, offset_to_target.length())
-	aim_direction = _apply_aim_spread(aim_direction)
 
+	var fan_offsets := calculate_multishot_fan_offsets(
+		get_effective_multishot_count(),
+		get_effective_multishot_spread_degrees()
+	)
+	var last_projectile: Projectile = null
+	var last_aim_direction := base_aim_direction
+	for fan_offset in fan_offsets:
+		var aim_direction := _apply_aim_spread(base_aim_direction.rotated(fan_offset))
+		var projectile := _spawn_projectile(aim_direction, muzzle_offset)
+		if projectile == null:
+			continue
+		last_projectile = projectile
+		last_aim_direction = aim_direction
+		projectile_fired.emit(projectile, target)
+
+	if last_projectile == null:
+		return null
+
+	_last_aim_direction = last_aim_direction
+	rotation = _last_aim_direction.angle()
+	_cooldown_remaining = get_effective_fire_interval()
+	queue_redraw()
+	return last_projectile
+
+
+func _spawn_projectile(aim_direction: Vector2, muzzle_offset: float) -> Projectile:
 	var instance := projectile_scene.instantiate()
 	if not instance is Projectile:
 		if is_instance_valid(instance):
@@ -118,12 +154,15 @@ func try_fire() -> Projectile:
 	):
 		projectile.expire()
 		return null
-
-	_last_aim_direction = aim_direction
-	rotation = _last_aim_direction.angle()
-	_cooldown_remaining = get_effective_fire_interval()
-	queue_redraw()
-	projectile_fired.emit(projectile, target)
+	if not projectile.configure_shape_effects(
+		get_effective_pierce_count(),
+		get_effective_pierce_damage_falloff(),
+		_death_burst_enabled,
+		_death_burst_radius,
+		_death_burst_damage_multiplier
+	):
+		projectile.expire()
+		return null
 	return projectile
 
 
@@ -196,6 +235,7 @@ func reset_upgrade_stat_multipliers() -> void:
 	_damage_multiplier = 1.0
 	_projectile_speed_multiplier = 1.0
 	reset_projectile_upgrade_modifiers()
+	reset_projectile_shape_modifiers()
 
 
 func set_character_stat_multipliers(
@@ -253,6 +293,84 @@ func reset_projectile_upgrade_modifiers() -> void:
 	_projectile_chain_damage_falloff = 1.0
 	_projectile_chain_radius = 0.0
 	_projectile_aim_spread_degrees = 0.0
+
+
+func set_projectile_shape_modifiers(
+	pierce_count: int,
+	pierce_damage_falloff: float,
+	multishot_count: int,
+	multishot_spread_degrees: float,
+	death_burst_enabled: bool,
+	death_burst_radius: float,
+	death_burst_damage_multiplier: float
+) -> bool:
+	if (
+		pierce_count < 1
+		or not is_finite(pierce_damage_falloff)
+		or pierce_damage_falloff <= 0.0
+		or pierce_damage_falloff > 1.0
+		or multishot_count < 1
+		or not is_finite(multishot_spread_degrees)
+		or multishot_spread_degrees < 0.0
+		or multishot_spread_degrees >= 180.0
+		or (multishot_count > 1 and multishot_spread_degrees <= 0.0)
+		or not is_finite(death_burst_radius)
+		or death_burst_radius < 0.0
+		or not is_finite(death_burst_damage_multiplier)
+		or death_burst_damage_multiplier < 0.0
+		or (death_burst_enabled and (death_burst_radius <= 0.0 or death_burst_damage_multiplier <= 0.0))
+	):
+		return false
+	_pierce_count = pierce_count
+	_pierce_damage_falloff = pierce_damage_falloff
+	_multishot_count = multishot_count
+	_multishot_spread_degrees = multishot_spread_degrees
+	_death_burst_enabled = death_burst_enabled
+	_death_burst_radius = death_burst_radius
+	_death_burst_damage_multiplier = death_burst_damage_multiplier
+	return true
+
+
+func reset_projectile_shape_modifiers() -> void:
+	_pierce_count = 1
+	_pierce_damage_falloff = 1.0
+	_multishot_count = 1
+	_multishot_spread_degrees = 0.0
+	_death_burst_enabled = false
+	_death_burst_radius = 0.0
+	_death_burst_damage_multiplier = 0.0
+
+
+func get_effective_pierce_count() -> int:
+	return maxi(_base_pierce_count, _pierce_count)
+
+
+func get_effective_pierce_damage_falloff() -> float:
+	return _pierce_damage_falloff if _pierce_count >= _base_pierce_count else _base_pierce_damage_falloff
+
+
+func get_effective_multishot_count() -> int:
+	return maxi(_base_multishot_count, _multishot_count)
+
+
+func get_effective_multishot_spread_degrees() -> float:
+	return (
+		_multishot_spread_degrees
+		if _multishot_count >= _base_multishot_count
+		else _base_multishot_spread_degrees
+	)
+
+
+func is_death_burst_enabled() -> bool:
+	return _death_burst_enabled
+
+
+func get_death_burst_radius() -> float:
+	return _death_burst_radius
+
+
+func get_death_burst_damage_multiplier() -> float:
+	return _death_burst_damage_multiplier
 
 
 func is_projectile_chain_enabled() -> bool:
@@ -338,9 +456,17 @@ func _capture_base_stats() -> void:
 	if weapon_profile == null:
 		_base_shots_per_second = 0.0
 		_base_damage = 0.0
+		_base_pierce_count = 1
+		_base_pierce_damage_falloff = 1.0
+		_base_multishot_count = 1
+		_base_multishot_spread_degrees = 0.0
 		return
 	_base_shots_per_second = weapon_profile.shots_per_second
 	_base_damage = weapon_profile.damage
+	_base_pierce_count = weapon_profile.base_pierce_count
+	_base_pierce_damage_falloff = weapon_profile.base_pierce_damage_falloff
+	_base_multishot_count = weapon_profile.base_multishot_count
+	_base_multishot_spread_degrees = weapon_profile.base_multishot_spread_degrees
 
 
 func _connect_run_controller() -> void:
@@ -383,3 +509,54 @@ func _on_run_started(seed_value: int) -> void:
 
 func _on_restart_prepared() -> void:
 	reset_for_run()
+
+
+## Angoli deterministici (radianti) del ventaglio di colpi multipli, centrati
+## sulla direzione di mira. Nessun RNG: la dispersione e' dichiarata dalla
+## carta, non casuale, cosi' resta identica a parita' di seed senza consumare
+## lo stream dell'RNG di mira.
+static func calculate_multishot_fan_offsets(count: int, spread_degrees: float) -> Array[float]:
+	var offsets: Array[float] = []
+	if count <= 1:
+		offsets.append(0.0)
+		return offsets
+	var spread_radians := deg_to_rad(spread_degrees)
+	var half_spread := spread_radians * 0.5
+	for shot_index in range(count):
+		var ratio := float(shot_index) / float(count - 1)
+		offsets.append(lerpf(-half_spread, half_spread, ratio))
+	return offsets
+
+
+## Kill/s teorico di una build completa contro nemici da enemy_health, a zero
+## overkill e zero tempo di volo (stesso metodo dell'appendice B41): somma il
+## danno di tutti i bersagli perforati da un proiettile, lo moltiplica per i
+## proiettili del ventaglio e per la cadenza effettiva, poi divide per la vita
+## nemica. Funzione pura, usata dallo smoke B41 per il tetto aritmetico.
+static func calculate_full_build_kill_rate_per_second(
+	base_shots_per_second: float,
+	base_damage: float,
+	fire_rate_multiplier: float,
+	damage_multiplier: float,
+	multishot_count: int,
+	pierce_count: int,
+	pierce_damage_falloff: float,
+	enemy_health: float
+) -> float:
+	if (
+		enemy_health <= 0.0
+		or base_shots_per_second <= 0.0
+		or base_damage <= 0.0
+		or fire_rate_multiplier <= 0.0
+		or damage_multiplier <= 0.0
+	):
+		return 0.0
+	var effective_shots_per_second := base_shots_per_second * fire_rate_multiplier
+	var effective_damage := base_damage * damage_multiplier
+	var pierce_damage_sum := 0.0
+	var hit_damage := effective_damage
+	for _hit_index in range(maxi(pierce_count, 1)):
+		pierce_damage_sum += hit_damage
+		hit_damage *= pierce_damage_falloff
+	var total_dps := effective_shots_per_second * float(maxi(multishot_count, 1)) * pierce_damage_sum
+	return total_dps / enemy_health

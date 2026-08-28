@@ -33,15 +33,19 @@ display_name = "Marghe"
 role = "Indebolimento e manipolazione dell'aggro."
 tags = Array[StringName]([&"debuff", &"aggro", &"illusion"])
 passive_title = "Sorriso Contagioso"
-passive_description = "Riduce la salute massima dei nemici; il 5% resta un valore indicativo da bilanciare."
+passive_description = "I nemici vicini subiscono più danno da ogni fonte, arma e abilità comprese."
 passive_id = &"marghe_contagious_smile"
 passive_parameters = {
 "affects_bosses": false,
-"enemy_health_multiplier": 0.95
+"aura_radius": 200.0,
+"damage_taken_multiplier": 1.3
 }
 active_ability_id = &"marghe_shadow_deception"
 active_ability_title = "Reggeton time!"
 active_ability_description = "Genera un clone che balla reggaeton e devia l'aggro dei nemici."
+base_health_multiplier = 0.95
+base_move_speed_multiplier = 1.0
+base_fire_rate_multiplier = 1.1
 evil_display_name = "Evil Marghe"
 portrait = SubResource("AtlasTexture_portrait")
 evil_portrait = SubResource("AtlasTexture_evil")

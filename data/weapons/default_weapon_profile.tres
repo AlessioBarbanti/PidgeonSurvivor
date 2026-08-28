@@ -10,3 +10,7 @@ projectile_speed = 900.0
 projectile_lifetime = 2.0
 projectile_radius = 6.0
 muzzle_offset = 32.0
+base_pierce_count = 1
+base_pierce_damage_falloff = 1.0
+base_multishot_count = 1
+base_multishot_spread_degrees = 0.0

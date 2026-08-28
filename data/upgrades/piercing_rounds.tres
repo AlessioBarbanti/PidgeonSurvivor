@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="UpgradeDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/progression/upgrade_definition.gd" id="1_definition"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/upgrades/generated/piercing_rounds.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_definition")
+id = &"piercing_rounds"
+title = "Colpo Perforante"
+description = "Il proiettile attraversa i nemici colpiti, con danno ridotto a ogni bersaglio in piu."
+effect_summary = "+1 BERSAGLIO PERFORATO /RANGO · -30% DANNO A BERSAGLIO"
+icon = ExtResource("2_icon")
+effect_id = &"weapon_pierce"
+effect_parameters = {
+"pierce_count_per_rank": 1,
+"damage_falloff": 0.7
+}
+weight = 0.55
+max_rank = 3
+repeatable = true
+tags = Array[StringName]([&"weapon", &"shape", &"pierce"])

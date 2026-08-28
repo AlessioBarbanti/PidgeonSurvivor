@@ -321,7 +321,7 @@ func _execute_targeted_blast() -> int:
 	var effective_radius := definition.targeted_blast_radius + player.collision_radius
 	if player.global_position.distance_squared_to(_targeted_position) > effective_radius * effective_radius:
 		return 0
-	return 1 if player.take_contact_damage(definition.targeted_blast_damage) else 0
+	return 1 if player.take_contact_damage(definition.targeted_blast_damage, _targeted_position) else 0
 
 
 func _draw_boss_mark() -> void:

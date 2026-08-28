@@ -170,19 +170,29 @@ in base ai tag di compatibilità, in particolare per gli effetti di copia.
 
 #### Zat — Tempesta di Tuoni
 
-- **Tipo:** danno globale percentuale con impatto ritardato.
-- **Effetto:** dopo un preavviso di `0,45 s`, un singolo tuono produce un
-  flash sull'intero viewport logico e colpisce una volta tutti i nemici vivi
-  validi al momento dell'impatto, inclusi quelli entrati dopo l'attivazione.
-- **Parametri iniziali:** `cooldown_seconds: 60.0`,
-  `normal_max_health_damage_ratio: 0.50`,
-  `boss_max_health_damage_ratio: 0.20`, `warning_seconds: 0.45`.
-- **Accessibilità:** flash singolo con alpha massimo `0,55` su Windows e `0,40`
-  su Android, chiuso entro `0,30 s`; l'opzione persistente **Flash ridotti** usa
-  alpha `0,15`, nessuna tenuta e conserva preavviso, onde, audio e danno.
-- **Nota tecnica:** bersagli e danno sono risolti all'impatto. Cooldown,
-  preavviso e flash avanzano soltanto in `RUNNING`; pausa, morte, cambio profilo
-  e restart non producono impatti tardivi o overlay residui.
+- **Tipo:** tempesta di danno percentuale su posizioni telegrafate (B43).
+- **Effetto:** dopo un preavviso di `0,45 s`, il primo di cinque fulmini cade
+  esattamente sull'origine dell'attivazione; i successivi si allontanano a
+  spirale attorno ad essa, ciascuno annunciato da un telegrafo locale prima
+  dell'impatto. La tempesta dura `2,75 s` e colpisce solo i bersagli dentro il
+  raggio del singolo fulmine al momento del suo impatto, inclusi quelli entrati
+  dopo l'attivazione: il valore sta nel portarci sopra orde e Boss, non in un
+  pulsante premuto a caso.
+- **Parametri iniziali:** `cooldown_seconds: 60.0`, `strike_count: 5`,
+  `area_radius (raggio del fulmine): 150.0`, `storm_radius: 260.0`,
+  `normal_max_health_damage_ratio: 0.50`, `boss_max_health_damage_ratio: 0.008`,
+  `warning_seconds: 0.45`, `strike_telegraph_seconds: 0.85`.
+- **Accessibilità:** un solo flash fullscreen per attivazione, acceso sul primo
+  fulmine, alpha massimo `0,55` su Windows e `0,40` su Android, chiuso entro
+  `0,30 s`; l'opzione persistente **Flash ridotti** usa alpha `0,15`, nessuna
+  tenuta. Il budget di flash non cresce con il numero di fulmini: i successivi
+  hanno solo VFX locali.
+- **Nota tecnica:** le posizioni dei fulmini sono fotografate all'attivazione
+  con l'RNG seedato della run (stessa run, stessa tempesta); i bersagli e il
+  danno per ciascun fulmine sono risolti al suo impatto. Cooldown, tempesta e
+  flash avanzano soltanto in `RUNNING`; pausa, morte, cambio profilo e restart
+  non producono impatti tardivi o overlay residui. Il contributo dell'attiva
+  alla vita del Boss resta sotto il `50%` per finestra Boss a ogni rank.
 
 #### Alea — Gran Piroetta
 
@@ -353,6 +363,13 @@ alla selezione dopo aver ripulito la run. Da una run attiva la scelta richiede
 conferma; annullarla mantiene la pausa e non riprende implicitamente. Passive e
 upgrade si compongono senza mutare i dati base.
 
+Ogni profilo dichiara inoltre tre scarti di partenza (B47) su salute,
+velocità di movimento e cadenza di fuoco. Il default è neutro `×1,0`, i
+valori restano nell'intervallo `0,5–2,0`, vengono normalizzati se malformati
+e compongono moltiplicativamente con passive e upgrade senza mutare i dati
+base condivisi di Player e arma. Gli scarti si azzerano a restart e cambio
+personaggio come ogni altro contributo di profilo.
+
 Baseline iniziali delle passive, tutte configurabili nei `.tres`:
 
 | Profilo | Parametri runtime B17A |
@@ -360,11 +377,11 @@ Baseline iniziali delle passive, tutte configurabili nei `.tres`:
 | Magno | velocità di movimento `×1,15` |
 | Bea | probabilità di evasione `15%` |
 | Zat | `35%` del danno recuperabile dopo `3 s`, recupero in `4 s` |
-| Alea | effetto ogni `12 s` per `5 s`; `75%` positivo (`×1,20`) e `25%` negativo (`×0,90`) su movimento o fuoco |
-| Aleo | sopra il `50%` HP danno inflitto `×1,20`; sotto il `50%` HP danno subito `-25%` e nemici entro `140 px` rallentati a `×0,70` |
-| Lollo | iperfocus `4-8 s` (movimento `×1,35`, fuoco `×1,45`) alternato a distrazione `3-6 s` (movimento `×0,85`, fuoco `×0,80`); durata di ogni fase estratta casualmente |
+| Alea | effetto ogni `10 s` per `5 s`; `60%` positivo (`×1,50`) e negativo (`×0,70`) su movimento o fuoco; ogni kill carica `+1%` di probabilità positiva fino al cap `95%`, e il tiro spende l'intera carica accumulata (B42) |
+| Aleo | sopra il `50%` HP danno inflitto `×1,20`; sotto il `50%` HP danno subito `-25%`, nemici entro `140 px` rallentati a `×0,70` e brinati per `12` danni al secondo con tick da `0,25 s` (B44) |
+| Lollo | iperfocus `4-8 s` (movimento `×1,35`, fuoco `×1,45`) alternato a distrazione `3-6 s` (movimento `×0,85`, fuoco `×0,80`); durata di ogni fase estratta casualmente. Ogni kill accorcia la sola distrazione di `0,15 s`, mai l'iperfocus (B44) |
 | Migi | riduzione danno `10%`; sotto `35%` HP scudo da un colpo per `4 s`, cooldown `20 s` |
-| Marghe | salute massima dei nemici base `×0,95`; Boss esclusi dalla baseline |
+| Marghe | i nemici entro `200` unità logiche subiscono danno `×1,30` da ogni fonte, arma e abilità comprese; Boss esclusi dalla baseline. Sostituisce la riduzione di salute massima `×0,95` pre-B42, che a `18` HP non cambiava il numero di colpi necessari (B42) |
 
 Il `FriendRegistry` rifiuta ID amico, ID abilità e nomi Evil ambigui. Copy e
 ritratti vengono esposti attraverso getter sicuri: se manca l'approvazione
@@ -540,6 +557,22 @@ resta compatto. Pausa, ingranaggio, frecce e medaglione condividono il bordo
 scuro/oro e bevel pixelato, mentre il joystick conserva la variante trasparente
 con la stessa palette. Il padding esterno di pausa e abilità deriva dalla stessa
 configurazione B31 su 16:9, 20:9 e 4:3.
+
+**Tutorial B54:** la welcome mostra `TUTORIAL` sotto `GIOCA` come azione
+secondaria. Apre in `BOOT` un carosello di sei pagine su scopo della run,
+movimento e sparo automatico, abilità attiva, XP e carte, archetipi nemici e
+Boss. Frecce, indicatori, swipe, tastiera/controller e Back condividono un solo
+indice; l'ultima pagina apre il selettore senza creare la run. Copy e visual
+sono dati separati dal layout. Obiettivo, movimento e Boss usano artwork
+editoriali originali dedicati; abilità, progressione e nemici riusano le icone
+runtime già approvate. Il solo movimento delle visual è presentazionale, non
+usa nodi gameplay o RNG e si ferma fuori dal tutorial; i concetti restano
+comprensibili anche senza animazione, audio o colore. Sulla prima pagina il
+controllo sinistro è `ESCI` e torna alla welcome; sulle successive diventa
+`INDIETRO`. Back di sistema chiude sempre il tutorial. Gli
+elementi decorativi della welcome possono estendersi nel viewport, ma i target
+interattivi restano nella safe area; il pannello tutorial e tutti i suoi
+controlli restano safe-area su 16:9, 20:9 e 4:3.
 
 **Hardening B18V:** `PerformanceProfile` è scene-local e fisso a 60 FPS, con
 stress da 150 nemici, 200 proiettili e 200 pickup sia su Windows sia su mobile.

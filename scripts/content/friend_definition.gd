@@ -1,6 +1,12 @@
 class_name FriendDefinition
 extends Resource
 
+## Intervallo consentito agli scarti di statistiche base per profilo. Il
+## limite tiene gli scarti nell'ordine di grandezza dichiarato dalla linea
+## guida di design e impedisce che un dato malformato sostituisca la baseline.
+const MINIMUM_BASE_STAT_MULTIPLIER := 0.5
+const MAXIMUM_BASE_STAT_MULTIPLIER := 2.0
+
 @export_group("Identity")
 @export var id: StringName = &""
 @export var display_name := ""
@@ -15,6 +21,27 @@ extends Resource
 @export var active_ability_id: StringName = &""
 @export var active_ability_title := ""
 @export_multiline var active_ability_description := ""
+
+## Scarti di partenza dichiarati per profilo (B47). Il default neutro `1.0`
+## lascia un profilo non aggiornato identico alla baseline condivisa; i valori
+## compongono moltiplicativamente con passive e upgrade senza mutare i dati
+## base di Player e arma.
+@export_group("Base Stats")
+@export_range(
+	MINIMUM_BASE_STAT_MULTIPLIER,
+	MAXIMUM_BASE_STAT_MULTIPLIER,
+	0.01
+) var base_health_multiplier := 1.0
+@export_range(
+	MINIMUM_BASE_STAT_MULTIPLIER,
+	MAXIMUM_BASE_STAT_MULTIPLIER,
+	0.01
+) var base_move_speed_multiplier := 1.0
+@export_range(
+	MINIMUM_BASE_STAT_MULTIPLIER,
+	MAXIMUM_BASE_STAT_MULTIPLIER,
+	0.01
+) var base_fire_rate_multiplier := 1.0
 
 @export_group("Evil Counterpart")
 @export var evil_display_name := ""
@@ -164,6 +191,29 @@ func get_passive_bool(parameter_name: StringName, default_value: bool = false) -
 	return bool(passive_parameters.get(parameter_name, default_value))
 
 
+func get_base_health_multiplier() -> float:
+	return _sanitize_base_stat_multiplier(base_health_multiplier)
+
+
+func get_base_move_speed_multiplier() -> float:
+	return _sanitize_base_stat_multiplier(base_move_speed_multiplier)
+
+
+func get_base_fire_rate_multiplier() -> float:
+	return _sanitize_base_stat_multiplier(base_fire_rate_multiplier)
+
+
+## Vero quando il profilo dichiara almeno uno scarto diverso dalla baseline
+## condivisa, così i consumatori possono distinguere un profilo neutro da uno
+## caratterizzato senza confrontare i tre valori a mano.
+func has_base_stat_spread() -> bool:
+	return (
+		not is_equal_approx(get_base_health_multiplier(), 1.0)
+		or not is_equal_approx(get_base_move_speed_multiplier(), 1.0)
+		or not is_equal_approx(get_base_fire_rate_multiplier(), 1.0)
+	)
+
+
 func get_public_active_ability_title() -> String:
 	return (
 		active_ability_title.strip_edges()
@@ -234,6 +284,16 @@ func has_directional_gameplay_animation() -> bool:
 		and get_gameplay_walk_right_frames().size() >= 2
 		and is_finite(gameplay_walk_fps)
 		and gameplay_walk_fps > 0.0
+	)
+
+
+static func _sanitize_base_stat_multiplier(value: float) -> float:
+	if not is_finite(value):
+		return 1.0
+	return clampf(
+		value,
+		MINIMUM_BASE_STAT_MULTIPLIER,
+		MAXIMUM_BASE_STAT_MULTIPLIER
 	)
 
 

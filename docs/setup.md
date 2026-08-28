@@ -102,12 +102,32 @@ ARM64.
 
 Dopo ogni `--install-android-build-template` (rigenerazione del template,
 prima installazione, aggiornamento della patch di Godot), aggiungere
-`org.gradle.daemon=false` in `android/build/gradle.properties`. Il daemon
-Gradle si stacca dal processo Godot che esporta ma su Windows eredita i suoi
-handle di stdout/stderr; qualunque cosa legga l'output di quel processo
-aspettando l'EOF (script, CI) resta appesa dopo `[ DONE ]` anche se la build e
-l'APK sono già completi. Senza daemon ogni export costa un avvio JVM a freddo
-in più, ma il processo termina davvero.
+`org.gradle.daemon=false` in `android/build/gradle.properties`: buona norma
+per non accumulare daemon Gradle a lungo termine.
+
+**Nota (28 agosto 2026, verificata su Godot 4.7.1):** contrariamente a quanto
+scritto qui in precedenza, questa impostazione **non elimina** l'attesa dopo
+`[ DONE ] export`. Con un test mirato (log catturato subito dopo la comparsa
+di `[ DONE ]`) nessun processo `java` risultava più vivo: Gradle aveva già
+terminato la sua JVM, quindi non può essere il suo daemon a trattenere
+l'handle. Il ritardo (tipicamente oltre gli `8s` di stabilità che
+`run-milestone-checks.ps1` attende prima di terminare il processo) è lato
+Godot: l'editor headless non chiude sempre in tempi brevi dopo un export
+Android, con o senza `org.gradle.daemon=false` e con o senza
+`--install-android-build-template` nella stessa invocazione. La mitigazione
+che funziona davvero è quella già in `run-milestone-checks.ps1`
+(`-StableArtifactPath`/`-StableArtifactSeconds`): osservare l'artefatto,
+aspettare che sia stabile, terminare il processo e validare l'APK prodotto,
+classificando l'esito come `RECOVERED` solo se l'ispezione statica passa. Per
+un export manuale fuori da quello script, vedere "APK aggiornato ma processo
+di export ancora aperto" più sotto invece di aspettarsi che disattivare il
+daemon risolva l'attesa.
+
+`run-milestone-checks.ps1` applica comunque `org.gradle.daemon=false` in
+automatico dopo ogni export Android (funzione `Set-AndroidGradleDaemonDisabled`)
+e passa `--install-android-build-template` soltanto se il template non è
+ancora installato, cosicché un export di routine non rigeneri
+`gradle.properties` perdendo l'impostazione a ogni corsa.
 
 `--install-android-build-template` è valido soltanto insieme a un comando di
 export. Se eseguito da solo, avvia l'editor headless senza completare il flusso.

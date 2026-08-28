@@ -23,3 +23,44 @@
 | Pirofila Rinforzata | `hd/upgrade_pirofila_rinforzata.png` (`1536×1024`) | `generated/pirofila_rinforzata.png` (`128×128`) | `BB901AE4F937B915000CF84B55D95ACCCA1C384EDE83B1BDEC4AA6FDECC267FF` | `7CAFFC2C6B5508AB15188AF475EA7AFE24A81B2E696189D815000EB312CA7C0B` |
 | Il condimento di Barb | `hd/upgrade_condimento_di_barb.png` (`1254×1254`) | `generated/condimento_di_barb.png` (`128×128`) | `D44E4CD8BCDECBAD002CADC75709AB0812607FBC453BE7BB045FB30D055FA3C0` | `9ED19225F4EA8F431BE4853E1193F71CE95FA41D1850F76245B2A958D2611E26` |
 | Bis di Salsiccia | `hd/upgrade_bis_di_salsiccia.png` (`1254×1254`) | `generated/bis_di_salsiccia.png` (`128×128`) | `5DF4E4F86A2261AC344508820CBEBDBCAB2F8187E85C1286C5B2BD850E9D92DF` | `44BCF523C7B388C3555E7BA09E416A216017E517DADF957D20F598C8044E88F4` |
+
+## B41 — Forme d'attacco con tagli di carne
+
+- Data integrazione: 28 agosto 2026.
+- Direzione approvata dal proprietario: sostituire i tre badge geometrici
+  provvisori con soggetti da griglia riconoscibili — Spiedino, doppia Costina e
+  Coppa — mantenendo invariati ID e comportamento delle carte.
+- Origine: OpenAI ImageGen built-in; le rigenerazioni di Colpo Perforante e
+  Raffica Doppia sono state fornite dal proprietario come candidate HD. Autore:
+  progetto IL GIOCO con assistenza OpenAI ImageGen; licenza: Licenza del
+  progetto. Il master
+  `upgrade_damage_meat_fork.png` è stato usato soltanto come riferimento dello
+  stile pixel-art arcade, della palette griglia e del peso dei contorni.
+- Trasparenza: output su chroma uniforme verde, rimosso con
+  `remove_chroma_key.py --auto-key border --soft-matte
+  --transparent-threshold 12 --opaque-threshold 220 --despill
+  --edge-contract 1`.
+- Runtime: `tools/process-upgrade-icon.ps1`, bounds alpha con soglia `8`, padding
+  quadrato `12`, nearest-neighbor a `128×128` RGBA. I master `1024×1024` delle
+  due rigenerazioni e il master Coppa `1254×1254` restano in `hd/`, esclusi da
+  import ed export; soltanto i derivati mantengono i nomi già referenziati dalle
+  `UpgradeDefinition`.
+
+Prompt condiviso normalizzato: icona quadrata HD, un soggetto centrale in
+pixel-art arcade coerente col Forchettone da Braciere, contorno scuro, carni
+rosso-brune grigliate, osso avorio, scintille ambra, nessun testo, badge,
+cornice, persona, arma da fuoco o oggetto estraneo. Specifiche per carta:
+
+- **Colpo Perforante:** un unico spiedino metallico attraversa esattamente tre
+  bocconi di carne disossata, in diagonale, con punta e scintille di
+  penetrazione leggibili.
+- **Raffica Doppia:** esattamente due Costine con osso, separate e lanciate a
+  ventaglio con due brevi scie calde.
+- **Esplosione Finale:** una fetta rotonda di Coppa marezzata al centro di un
+  burst radiale compatto di fiamme ed ember.
+
+| Carta | Master HD escluso | Derivato runtime | SHA-256 master | SHA-256 runtime |
+|---|---|---|---|---|
+| Colpo Perforante | `hd/upgrade_piercing_rounds_spiedino.png` (`1024×1024`) | `generated/piercing_rounds.png` (`128×128`) | `903FD8857DBC68D2A17B0B5996B809A357CC6851F4851E0EA6408523392FBC1C` | `C619A100C1E7D31B81AA98474C192211AED394FD8D48C8D2354D245CB851858B` |
+| Raffica Doppia | `hd/upgrade_double_barrel_costine.png` (`1024×1024`) | `generated/double_barrel.png` (`128×128`) | `1859ED1F8E47311DCB14797F355A4EDBECDF2E246837D79EA5AFB1CB1AD3A1FD` | `A7F5FB212CED181A29050970D397DE23795CB2B4405A47D1D154F731E83318CE` |
+| Esplosione Finale | `hd/upgrade_death_burst_coppa.png` (`1254×1254`) | `generated/death_burst.png` (`128×128`) | `1F78D20AED70B10DC174E69691899F69FFE9059FA12FA39BDEBD4D1EEA74CD0A` | `8E47934030DAA0A5BE124B151B54E10BBC8F58D3A0F7EFBA79543DA388AE450D` |

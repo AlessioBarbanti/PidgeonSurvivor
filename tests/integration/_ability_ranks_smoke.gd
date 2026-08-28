@@ -20,11 +20,11 @@ const EXPECTED_RANKS: Dictionary = {
 		[9.0, 5.0, 0.0, 11.0, {"dash_distance": 440.0, "trail_width": 56.0}],
 	],
 	&"zat_lightning_storm": [
-		[60.0, 0.0, 0.0, 0.0, {"normal_max_health_damage_ratio": 0.5, "boss_max_health_damage_ratio": 0.2}],
-		[60.0, 0.0, 0.0, 0.0, {"normal_max_health_damage_ratio": 0.55, "boss_max_health_damage_ratio": 0.2}],
-		[55.0, 0.0, 0.0, 0.0, {"normal_max_health_damage_ratio": 0.55, "boss_max_health_damage_ratio": 0.22}],
-		[55.0, 0.0, 0.0, 0.0, {"normal_max_health_damage_ratio": 0.6, "boss_max_health_damage_ratio": 0.24}],
-		[50.0, 0.0, 0.0, 0.0, {"normal_max_health_damage_ratio": 0.7, "boss_max_health_damage_ratio": 0.28}],
+		[60.0, 2.75, 150.0, 0.0, {"strike_count": 5, "storm_radius": 260.0, "normal_max_health_damage_ratio": 0.5, "boss_max_health_damage_ratio": 0.008}],
+		[60.0, 3.3, 150.0, 0.0, {"strike_count": 6, "storm_radius": 260.0, "normal_max_health_damage_ratio": 0.55, "boss_max_health_damage_ratio": 0.008}],
+		[55.0, 3.0, 170.0, 0.0, {"strike_count": 6, "storm_radius": 290.0, "normal_max_health_damage_ratio": 0.55, "boss_max_health_damage_ratio": 0.009}],
+		[55.0, 3.5, 170.0, 0.0, {"strike_count": 7, "storm_radius": 290.0, "normal_max_health_damage_ratio": 0.6, "boss_max_health_damage_ratio": 0.01}],
+		[50.0, 3.6, 190.0, 0.0, {"strike_count": 8, "storm_radius": 320.0, "normal_max_health_damage_ratio": 0.7, "boss_max_health_damage_ratio": 0.01}],
 	],
 	&"alea_grand_spin": [
 		[9.0, 1.2, 140.0, 5.0, {"hits_per_second": 12.0}],

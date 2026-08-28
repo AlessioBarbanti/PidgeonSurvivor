@@ -95,6 +95,14 @@ const MINIMUM_INTERVAL_SECONDS := 0.01
 	set(value):
 		sector_spike_chance = clampf(value, 0.0, 1.0)
 
+@export_group("Archetypes")
+## Peso del profilo base (piccione) nel pool pesato dello spawner (B40): un
+## valore alto rispetto ai pesi degli archetipi lo mantiene dominante finche'
+## gli altri non sono numerosi o non hanno peso comparabile.
+@export_range(0.0, 64.0, 0.01, "or_greater") var base_archetype_weight := 6.0:
+	set(value):
+		base_archetype_weight = maxf(value, 0.0) if is_finite(value) else 0.0
+
 @export_group("Cleanup")
 @export_range(0.01, 60.0, 0.01, "or_greater") var cleanup_interval := 1.0:
 	set(value):

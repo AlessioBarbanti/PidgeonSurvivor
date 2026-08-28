@@ -42,7 +42,10 @@ passive_parameters = {
 }
 active_ability_id = &"zat_lightning_storm"
 active_ability_title = "Tempesta di Tuoni"
-active_ability_description = "Un tuono colpisce tutti i nemici dopo un breve preavviso."
+active_ability_description = "Una tempesta di fulmini telegrafati cade attorno a Zat: portaci sopra i nemici."
+base_health_multiplier = 1.1
+base_move_speed_multiplier = 0.95
+base_fire_rate_multiplier = 1.0
 evil_display_name = "Evil Zat"
 portrait = SubResource("AtlasTexture_portrait")
 evil_portrait = SubResource("AtlasTexture_evil")

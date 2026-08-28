@@ -642,7 +642,7 @@ Valori autorevoli (`cd` in secondi; distanze e raggi in unità logiche mondo):
 |---|---|---|---|---|---|
 | Onda d'Urto Tellurica | `cd 8`, danno `20`, raggio `220`, knockback `300` | danno `26` | raggio `260` | `cd 7`, stun `0,25` | danno `36`, raggio `280`, knockback `380` |
 | Powerslide | `cd 10`, distanza `320`, scia `4 s`, danno `6`, larghezza `40` | danno `8` | distanza `380`, larghezza `48` | `cd 9`, scia `5 s` | distanza `440`, danno `11`, larghezza `56` |
-| Tempesta di Tuoni | `cd 60`, normali `50%`, Boss `20%` | normali `55%` | `cd 55`, Boss `22%` | normali `60%`, Boss `24%` | `cd 50`, normali `70%`, Boss `28%` |
+| Tempesta di Tuoni | `cd 60`, `5` fulmini, raggio fulmine `150`, raggio tempesta `260`, `2,75 s`, normali `50%`, Boss `0,8%` | `6` fulmini, raggio tempesta `260`, `3,3 s`, normali `55%` | `cd 55`, `6` fulmini, raggio fulmine `170`, raggio tempesta `290`, `3,0 s`, normali `55%`, Boss `0,9%` | `cd 55`, `7` fulmini, `3,5 s`, normali `60%`, Boss `1,0%` | `cd 50`, `8` fulmini, raggio fulmine `190`, raggio tempesta `320`, `3,6 s`, normali `70%`, Boss `1,0%` |
 | Gran Piroetta | `cd 9`, `1,2 s`, danno `5`, `12 hit/s`, raggio `140` | danno `6` | `1,4 s`, raggio `165` | `cd 8`, `14 hit/s` | `1,6 s`, danno `8`, raggio `180` |
 | Shock Termico | `cd 12`, brina `1,2 s`, danno `14`, raggio `200`, velocità nemici `×0,45`, sbalzo `×2,0` | danno `18` | brina `1,4 s`, raggio `230` | `cd 11`, velocità `×0,35`, sbalzo `×2,2` | brina `1,6 s`, danno `26`, raggio `250`, sbalzo `×2,5` |
 | Cosplay Casuale | `cd 14`, copia rank `1` | `cd 13` | copia rank `2` | `cd 12`, non ripete l'ultima abilità se esiste un'alternativa | `cd 11`, copia rank `3`, stessa regola anti-ripetizione |
@@ -1681,6 +1681,398 @@ assunzioni gia' verificate di `_experience_pickup_smoke` (B07). Restano
 aperti: playtest percettivo
 (leggibilita' del pickup in corsa, sensazione del drop rate) ed export/gate
 Windows e Android non ancora eseguiti per questa slice.
+
+#### B40 — Archetipi nemici e nemico a distanza
+
+Stato: `IN VERIFICA`.
+
+Proposta ricevuta in [`gameplay-evolution-plan.md`](./gameplay-evolution-plan.md)
+il 28 agosto 2026, dipendenza radice del piano B40–B48: finche' esiste un solo
+tipo di nemico che cammina dritto verso il Player, ogni verbo difensivo del
+roster collassa sullo stesso risultato osservabile. Il proprietario ha
+approvato l'implementazione lo stesso giorno.
+
+- [x] Nuovo `EnemyArchetypeDefinition` (`scripts/game/enemy_archetype_definition.gd`,
+  `res://data/enemies/`) sulla falsariga di `EnemySpawnProfile`: vita,
+  velocita', raggio di collisione, danno da contatto, peso di spawn, finestra
+  temporale di eleggibilita', colori e forma della silhouette; nessun valore
+  hardcoded negli script.
+- [x] Quattro archetipi aggiuntivi al piccione (invariato): **sciamatore**
+  (veloce, fragile, `spawn_cluster_size=3` per comparire in gruppo),
+  **corazzato** (lento, molta vita), **divisore** (alla morte genera due
+  frammenti tramite un `split_fragment_definition` dedicato, strutturalmente
+  non ricorsivo perche' il frammento usa una scena diversa da quella del
+  divisore) e **tiratore** (si ferma a `ranged_preferred_distance`, spara un
+  proiettile telegrafato riusando `scripts/bosses/boss_projectile.gd` e lo
+  stesso contenitore proiettili ostili gia' usato dal Boss, `%BossProjectiles`).
+- [x] `EnemySpawner` sceglie fra piccione e archetipi con un pool pesato
+  (`pick_weighted_index`, statica e testabile come `pick_sector_combination`)
+  filtrato per finestra temporale; il piccione resta nel pool tramite
+  `EnemySpawnProfile.base_archetype_weight` e il suo percorso di spawn
+  (`enemy_scene`) non e' stato toccato, cosi' il suo comportamento non cambia.
+  Determinismo per seed verificato: stesso seed produce la stessa sequenza di
+  archetipi.
+- [x] Contratti B28 e B37 intatti: `max_alive_enemies` e il credito XP
+  frazionario restano autorevoli anche per gli archetipi (l'XP per archetipo
+  e' un valore dichiarato in dati, non ricavato dalla vita); offset di
+  inseguimento, scheduler dei settori e assenza di collisione rigida fra
+  nemici non sono stati modificati.
+- [x] Differenziazione per silhouette oltre che per colore
+  (`BaseEnemy.silhouette_kind`, ramo procedurale di `_draw()`): cuneo per lo
+  sciamatore, esagono placcato per il corazzato, cucitura centrale per il
+  divisore, canna e mirino per il tiratore. Nessuna nuova arte pixel e'
+  disponibile per questa slice: e' un placeholder procedurale sullo stesso
+  principio gia' usato da `StaticObstacle` (B38), in attesa di arte dedicata.
+- [x] Smoke `_b40_enemy_archetypes_smoke.gd` (`B40_ENEMY_ARCHETYPES_SMOKE_OK`):
+  distribuzione e determinismo di `pick_weighted_index`, finestra di
+  eleggibilita' rispettata, sequenza di archetipi identica a parita' di seed,
+  il tiratore non spara prima del telegraph completo ne' se il bersaglio esce
+  dal raggio durante il telegraph, il divisore genera esattamente due
+  frammenti non ricorsivi, cap `max_alive_enemies` rispettato con il cluster
+  dello sciamatore attivo, nessun residuo dopo `prepare_restart()`.
+
+Implementazione del 28 agosto 2026. Verificata anche la regressione esistente
+toccata dal cambiamento (`_enemy_spawner_smoke`, `_b37_density_direction_smoke`,
+`_b39_health_pickup_smoke`, `_pigeon_enemy_smoke`, `_b28_horde_density_smoke`,
+`_combat_slice_smoke`, `_game_director_smoke` e il validatore di cablaggio
+`_validate_current_contract()` eseguito dalla scena principale con
+`--smoke-test`, che copre anche il contratto B18H sullo sprite del piccione):
+tutte verdi. Tre smoke pre-esistenti e scollegati da questa slice
+(`_complete_roster_abilities_smoke`, `_player_survival_smoke`, `_hud_smoke`)
+falliscono gia' nel worktree per un bonus vita massima di Magno non azzerato
+al restart composto (lavoro B47 in corso, non toccato da questa slice).
+
+Restano aperti: export Windows/Android e la verifica percettiva su Windows e
+Pixel 9 con orde dense richiesta dal contratto (leggibilita' delle silhouette
+e dei telegraph a densita' massima), profiler Pixel 9 per la nuova varieta' di
+nodi.
+
+#### B41 — Forme d'attacco dell'arma
+
+Stato: `IN VERIFICA`.
+
+Richiesta ricevuta il 28 agosto 2026 dal proprietario, a valle della revisione
+in [`gameplay-evolution-plan.md`](./gameplay-evolution-plan.md): il mazzo
+utile era di circa quattordici carte quasi tutte moltiplicatori, e la build
+danno+cadenza al rank massimo restava sotto lo spawn rate al cap (`7,20`
+kill/s contro `8,33` spawn/s).
+
+- [x] `WeaponProfile` dichiara forme di base a identita' neutra
+  (`base_pierce_count=1`, `base_pierce_damage_falloff=1.0`,
+  `base_multishot_count=1`, `base_multishot_spread_degrees=0.0`);
+  `default_weapon_profile.tres` le esplicita senza cambiare comportamento.
+  `WeaponController`/`Projectile` portano la logica delle forme interamente a
+  runtime (mai sul `Resource` condiviso), sullo stesso principio gia' usato
+  dalla catena Gossip e dalla dispersione Birra.
+- [x] Tre nuove carte forma, tutte multi-rank e mai a dipendenza dall'abilita'
+  attiva: **Colpo Perforante** (`piercing_rounds`, perfora fino a 4 bersagli
+  con danno decrescente `×0,7` per bersaglio), **Raffica Doppia**
+  (`double_barrel`, fino a 3 proiettili per colpo su un ventaglio
+  **deterministico** — angoli calcolati, nessun RNG), **Esplosione Finale**
+  (`death_burst`, i nemici uccisi dall'arma esplodono per un raggio dichiarato
+  infliggendo una quota del danno dell'arma ai vicini, una sola volta per
+  esplosione).
+- [x] Obiettivo aritmetico verificato da una funzione statica pura,
+  `WeaponController.calculate_full_build_kill_rate_per_second()` (stesso
+  metodo zero-overkill/zero tempo di volo dell'appendice): con danno e cadenza
+  al rank `5` storico piu' perforazione e ventaglio al cap runtime, il kill
+  rate supera ampiamente la soglia `9,6 kill/s` — margine voluto per lasciare
+  spazio a piu' build valide; i valori restano punti di partenza da playtest,
+  non bilanciati in questa slice.
+- [x] Stacking e cap runtime: nuovi export su `UpgradeEffectRegistry`
+  (`max_weapon_pierce_count=4`, `max_weapon_multishot_count=3`,
+  `max_weapon_death_burst_damage_multiplier=0.6`, `max_gossip_chain_jumps=6`),
+  applicati in `recalculate_effects()` con lo stesso pattern rank-per-effetto
+  gia' chiuso da PROG-006. `reset_projectile_shape_modifiers()` azzera tutto a
+  restart e cambio personaggio.
+- [x] Gerarchia di rarita' sui pesi: le tre carte forma entrano a
+  `weight 0,4–0,55`, Gossip rivalutato a `0,6`; le carte piatte esistenti
+  restano `1,0` invariate. Prima gerarchia a due fasce del catalogo (prima
+  d'ora tutti i pesi erano `1,0`).
+- [x] `Gossip` (`gossip_projectiles.tres`) passa da `max_rank 1`/non ripetibile
+  a `max_rank 3`/ripetibile, con `chain_jumps_per_rank` invece del vecchio
+  `chain_jumps` fisso: il rank `1` riproduce esattamente il valore storico
+  (`chain_jumps=2`), nessuna regressione per le run gia' in corso di verifica.
+- [x] La perforazione e la catena Gossip non compongono sullo stesso
+  proiettile: se un giocatore possiede entrambe, la catena ha precedenza
+  (scelta di implementazione dichiarata, non ancora playtestata).
+
+File coinvolti: `scripts/combat/weapon_profile.gd`,
+`scripts/combat/weapon_controller.gd`, `scripts/combat/projectile.gd`,
+`scripts/progression/upgrade_effect_registry.gd`,
+`data/upgrades/{piercing_rounds,double_barrel,death_burst,gossip_projectiles}.tres`,
+`data/weapons/default_weapon_profile.tres`, `scenes/game/movement_slice.tscn`,
+`scripts/game/movement_slice.gd` (contratto B41 nel validatore
+`--smoke-test`), `tools/milestone-test-map.json`.
+
+Smoke: `_b41_weapon_shapes_smoke.gd` → `B41_WEAPON_SHAPES_SMOKE_OK`. Copre:
+ventaglio dei colpi multipli deterministico (stesso conteggio e stessa
+dispersione dichiarata producono sempre lo stesso ventaglio), la perforazione
+applica il danno una sola volta per bersaglio per proiettile e si consuma
+esaurendo i bersagli dichiarati, il cap runtime della perforazione, il numero
+di proiettili per colpo del ventaglio, l'esplosione alla morte colpisce il
+vicino nel raggio una sola volta e ignora il bersaglio fuori raggio,
+azzeramento completo di perforazione/ventaglio/esplosione al restart, e il
+test aritmetico sulla soglia `9,6 kill/s`.
+
+Implementazione del 28 agosto 2026. Verificata anche la regressione toccata
+(`_signature_upgrades_smoke`, `_damage_upgrade_smoke`, `_upgrade_service_smoke`,
+`_upgrade_icon_refresh_smoke`, `_combat_slice_smoke`,
+`_powerup_first_wave_smoke`, `_summer_grill_smoke`, `_upgrade_effects_smoke`,
+`_complete_run_smoke`, `_level_progression_smoke`, `_ability_ranks_smoke`,
+`_ability_visuals_smoke`): tutte verdi. Tre smoke pre-esistenti e scollegati
+da questa slice (`_complete_roster_abilities_smoke`, `_player_survival_smoke`,
+`_hud_smoke`) falliscono gia' nel worktree per lo stesso bonus vita massima di
+Magno non azzerato al restart composto gia' documentato da B40 (lavoro B47 in
+corso, non toccato da questa slice).
+
+Restano aperti: export Windows/Android, verifica percettiva su Pixel 9 a
+densita' massima (le nuove forme non devono coprire telegraph e proiettili
+ostili), playtest di bilanciamento del kill rate risultante. I tre placeholder
+procedurali sono stati sostituiti il 28 agosto con arte pixel dedicata basata su
+soggetti da griglia: uno spiedino con tre bocconi per Colpo Perforante, due
+Costine per Raffica Doppia e Coppa esplosiva per Esplosione Finale. Master HD,
+prompt, trasformazioni e hash sono nel manifest upgrade; il controllo percettivo delle
+carte resta parte del gate aperto.
+
+Refresh asset verificato il 28 agosto: import Godot pulito,
+`B41_WEAPON_SHAPES_SMOKE_OK` e `B27_UPGRADE_ICON_REFRESH_SMOKE_OK`. Il profilo
+Relevant è verde `22/23`; l'unico fallimento è
+`_boss_no_circular_aura_smoke.gd`, che richiede ancora uno sprite su un
+`EnemySprite` base modificato dal lavoro B40 e non dipende dalle icone B41.
+
+#### B42 — Passive misurabili: Marghe e Alea
+
+Stato: `COMPLETATO`.
+
+Richiesta ricevuta il 28 agosto 2026 dal proprietario, a valle della revisione
+di design: rimuovere le passive che non producono l'effetto dichiarato dal loro
+testo. Razionale completo e matematica in
+[`gameplay-evolution-plan.md`](./gameplay-evolution-plan.md).
+
+- [x] `BaseEnemy` guadagna modificatori di danno subito speculari a quelli di
+  velocita': una sorgente per ID, composizione moltiplicativa, rimozione
+  esplicita, default neutro e pulizia insieme agli altri modificatori in
+  `clear_chase_dependencies()`. `take_damage()` applica il prodotto solo a un
+  ammontare finito e positivo, quindi il comportamento storico resta invariato
+  finche' nessuno registra un modificatore.
+- [x] La passiva di Marghe sostituisce `enemy_health_multiplier: 0.95` con
+  un'aura dati (`aura_radius: 200.0`, `damage_taken_multiplier: 1.3`,
+  `affects_bosses: false`) che marca i nemici entro il raggio e li smarca
+  all'uscita, sul modello gia' collaudato dell'aura fredda di Aleo. La vecchia
+  riduzione era un no-op: a `18` HP portava il nemico a `17,1` senza cambiare il
+  numero di colpi necessari ne' a danno `10` ne' a danno `20,11`.
+- [x] La passiva di Alea alza la posta (`positive_multiplier: 1.5`,
+  `negative_multiplier: 0.7`, `trigger_interval: 10.0`) e introduce la carica di
+  fortuna: ogni kill aggiunge `luck_per_kill: 0.01` alla probabilita' positiva
+  fino a `luck_chance_cap: 0.95`, e il tiro spende l'intera carica. Il valore
+  atteso passa da `+5,2%` a circa `+17%` con una pressione di kill ordinaria, e
+  soprattutto diventa influenzabile dal giocatore.
+- [x] Tell obbligatorio: i nemici amplificati usano una tinta magenta distinta,
+  con priorita' sotto al flash da colpo e sopra al blu del rallentamento, sia
+  sullo sprite dei piccioni sia sul corpo geometrico di riserva.
+- [x] Smoke `_b42_measurable_passives_smoke.gd`
+  (`B42_MEASURABLE_PASSIVES_SMOKE_OK`): API dei modificatori con rifiuto degli
+  input non validi, amplificazione effettiva del danno, marcatura ed uscita dal
+  raggio, salute massima del nemico non piu' alterata, caso documentato in cui
+  l'aura toglie un colpo (danno `15,2` su `18` HP), pulizia al cambio profilo,
+  carica e spesa della fortuna, cap e azzeramento al restart.
+
+Gate completati: playtest percettivo (leggibilita' del marchio magenta a
+densita' massima, sensazione della scommessa di Alea), export Windows e Android.
+
+#### B44 — Tell di stato e fasi: Aleo e Lollo
+
+Stato: `IN VERIFICA`.
+
+- [x] `Player` espone un tint di stato della passiva
+  (`set_passive_state_tint` / `clear_passive_state_tint`), puramente
+  presentazionale e subordinato al flash da danno, che non introduce nodi
+  aggiuntivi ne' tocca collisioni, statistiche o timing.
+- [x] Aleo dichiara lo stato termico con due tinte distinte, ciano per il
+  raffrescamento e arancio per il riscaldamento: prima della slice nulla sullo
+  schermo comunicava la modalita' corrente.
+- [x] La fase fredda di Aleo guadagna una componente offensiva
+  (`cold_aura_damage_per_second: 12.0`, `cold_aura_tick_interval: 0.25`): i
+  brinati vengono erosi finche' restano nell'aura. Scendere sotto meta' vita
+  diventa una scelta tattica invece di un premio di consolazione, e il verbo
+  resta distinto dall'amplificazione di Marghe.
+- [x] Lollo accorcia la sola fase distratta con le kill
+  (`distraction_seconds_per_kill: 0.15`); l'iperfocus non viene mai accorciato e
+  la fase non puo' diventare negativa.
+- [x] Cosplay Casuale diventa pianificabile: la scelta e' risolta in anticipo e
+  annunciata (`AbilityEffectRegistry.prepare_pending_cosplay`,
+  `AbilityController.get_pending_cosplay_ability_id`), viene consumata dal
+  lancio e subito ri-preparata. Il tiro ricade su una nuova estrazione soltanto
+  se la scelta annunciata non e' piu' eseguibile. Filtri anti-ricorsione,
+  anti-ripetizione e regola per cui Cosplay non trasferisce rank restano
+  invariati.
+- [x] Smoke `_b44_state_tells_smoke.gd` (`B44_STATE_TELLS_SMOKE_OK`): tinte
+  coerenti con la fase in entrambe le direzioni, aura fredda che danneggia solo
+  sotto soglia e mai fuori da `RUNNING`, accumulatore e brina azzerati al
+  rientro in riscaldamento, kill che accorciano la distrazione ma non
+  l'iperfocus, scelta di Cosplay annunciata, stabile fra due letture, consumata
+  dal lancio e ri-preparata subito dopo.
+
+Restano aperti: playtest percettivo (leggibilita' delle tinte a densita'
+massima) ed export/gate Windows e Android.
+
+#### B47 — Statistiche base per profilo
+
+Stato: `IN VERIFICA`.
+
+- [x] `FriendDefinition` guadagna il gruppo `Base Stats` con
+  `base_health_multiplier`, `base_move_speed_multiplier` e
+  `base_fire_rate_multiplier`, default neutro `1.0`, intervallo `0,5–2,0` e
+  normalizzazione dei valori non finiti o fuori scala.
+- [x] `FriendPassiveController._apply_character_multipliers()` compone gli
+  scarti con i contributi della passiva e li inoltra alle API di personaggio
+  gia' esistenti su `Player` e `WeaponController`: nessun dato base condiviso
+  viene mutato e il reset riporta esattamente alla baseline di scena.
+- [x] Gli otto profili dichiarano scarti coerenti con il ruolo, nell'ordine di
+  grandezza `±10–15%`; Alea resta il profilo neutro di riferimento.
+- [x] Smoke `_b47_base_stats_smoke.gd` (`B47_BASE_STATS_SMOKE_OK`): default
+  neutro, normalizzazione degli input malformati, scarti dichiarati nel roster,
+  composizione con la passiva su movimento, cadenza e salute, ricalcolo al
+  cambio profilo e ritorno alla baseline dopo il reset.
+- [x] Le asserzioni storiche di `_complete_roster_abilities_smoke.gd` che
+  confrontavano la passiva isolata sono state riscritte perche' compongano lo
+  scarto dichiarato dal profilo; la soglia scudo di Migi si calcola ora sulla
+  salute effettiva e tiene conto della riduzione danno che la precede.
+
+Restano aperti: playtest di confronto fra profili ed export/gate Windows e
+Android.
+
+#### B45 — Identità dipendenti dai nemici: Bea, Migi, Magno
+
+Stato: `IN VERIFICA`.
+
+Richiesta ricevuta il 28 agosto 2026 dal proprietario, a valle della revisione
+di design: le tre riprogettazioni sono verificabili solo dopo B40 (nemico a
+distanza), già `COMPLETATO`. Razionale, diagnosi D1/D3 e matematica completa in
+[`gameplay-evolution-plan.md`](./gameplay-evolution-plan.md).
+
+- [x] **Bea — Scarto Istintivo.** Sostituisce `evasion_chance` (RNG invisibile)
+  con `dodge_cooldown: 9.0`, `iframe_duration: 0.4`, `shove_distance: 90.0`:
+  a cooldown esaurito il primo colpo eleggibile viene annullato,
+  `Player.try_shove_to_safe_position()` prova a scartarla lontano dalla fonte
+  del danno (confinamento mondo/HUD riusato da `ArenaWorld`, più un nuovo
+  controllo contro gli ostacoli statici, gruppo `static_obstacles`), e
+  `HealthComponent.grant_invulnerability()` (nuovo) concede l'i-frame anche
+  quando il colpo annullato non passa da `take_damage()`. Senza destinazione
+  sicura il colpo resta comunque annullato, senza spostamento casuale. Tell:
+  nuovo `InstinctiveDodgeAccent` (sagoma a ferro di cavallo + scia viola),
+  cablato da `movement_slice.gd` sul nuovo segnale
+  `instinctive_dodge_triggered`; cue audio `GameAudio.DODGE` predisposto e
+  in attesa di asset. Il Powerslide resta invariato.
+- [x] **Migi — Guscio Tartarughina.** La riduzione flat `damage_reduction: 0.1`
+  diventa un accumulo di cariche (`shell_charge_max: 2`,
+  `shell_charge_regen_seconds: 12.0`): ogni carica annulla un colpo intero
+  invece di scalarlo di una percentuale invisibile, e si ricarica nel tempo.
+  Lo scudo d'emergenza sotto soglia HP resta invariato nei numeri ma riceve
+  finalmente un tell (il segnale `shield_changed` non aveva alcun consumer);
+  entrambi i livelli riusano il sistema di tint gia' in produzione per
+  Aleo/Lollo/Alea. Rallentamento Zen guadagna il nuovo `AreaMode`
+  `FOLLOWING_SLOW_ABSORB` in `AbilityAreaEffect`: il rallentamento resta
+  invariato e in piu' distrugge (`BossProjectile.expire()`, gia' pubblico e
+  idempotente) i proiettili ostili nel raggio, gruppo `enemy_projectiles`
+  aggiunto a `BossProjectile._ready()`. Si applica anche ai proiettili del
+  Boss: scelta deliberata da confermare in playtest.
+- [x] **Magno — Slancio.** `Player` traccia `_momentum_ratio` (0..1) in
+  `_physics_process`: sale muovendosi entro una soglia angolare dalla
+  direzione precedente, decade cambiando bruscamente o fermandosi. La
+  passiva usa `max_move_speed_multiplier: 1.35` come tetto invece del flat
+  `1.15`, interpolato dal momentum letto ogni frame. L'Onda d'Urto Tellurica
+  (`_apply_earthquake_to_targets` in `AbilityEffectRegistry`) legge
+  `source.get_momentum_ratio()` al lancio — stesso pattern gia' usato da
+  `FireZTrail` per la direzione persistente — e scala danno/knockback fra il
+  valore dichiarato e `momentum_damage_bonus_max`/
+  `momentum_knockback_bonus_max` (`0.5`/`0.4` su tutti i rank). Tell: scia
+  procedurale disegnata da `Player._draw()`, attiva solo quando la passiva
+  equipaggiata è quella di Magno (`set_momentum_trail_enabled`).
+- [x] Smoke `_b45_role_identity_smoke.gd` (`B45_ROLE_IDENTITY_SMOKE_OK`): copre
+  lo Scarto Istintivo (annullo del primo colpo, cooldown, i-frame, fallback
+  senza spostamento su direzione degenere), le cariche del guscio di Migi
+  (blocco totale, rigenerazione nel tempo, nessun residuo al restart), la
+  zona che assorbe i proiettili ostili senza toccare quelli alleati (verifica
+  architetturale sul gruppo `enemy_projectiles`), e lo slancio di Magno
+  (accumulo/decadimento, scaling del danno dell'Onda d'Urto Tellurica).
+  `_complete_roster_abilities_smoke.gd`, `_b47_base_stats_smoke.gd`,
+  `_ability_visuals_smoke.gd` (manifest VFX aggiornato con il nuovo hash di
+  `ability_area_effect.gd` e la nuova voce per `instinctive_dodge_accent.gd`)
+  e `_character_select_refinement_smoke.gd` (testi passiva/attiva di Magno
+  accorciati per rispettare il vincolo di dimensione uguale delle due card)
+  sono stati aggiornati e rieseguiti: verdi. Tre smoke restano rossi ma sono
+  pre-esistenti e scollegati da questa slice — `_complete_roster_abilities_smoke.gd`
+  (pannello roster fuori dalla safe area in ambiente headless),
+  `_player_survival_smoke.gd` e `_hud_smoke.gd` (bonus vita massima di Magno
+  non azzerato al restart composto, già documentato da B40/B41) — confermato
+  che falliscono identicamente sulla baseline pre-B45.
+
+Restano aperti: regressione completa (Windows/Android), export Windows,
+verifica manuale su Pixel 9 (Scarto Istintivo e i-frame con touch reale) e
+playtest contro il tiratore per confermare che le tre identità si distinguano.
+
+#### B54 — Tutorial dal Welcome Screen
+
+Stato: `IN VERIFICA`.
+
+Richiesta approvata e implementata il 28 agosto 2026 a partire dalla proposta
+in [`gameplay-evolution-plan.md`](./gameplay-evolution-plan.md). Dipende dal
+frontend `BOOT` B18O/B32/B34 e riusa contenuti e icone nemici B40/B49.
+
+- [x] La welcome espone `TUTORIAL` immediatamente sotto `GIOCA`, come CTA
+  secondario blu/cyan da `48` unità logiche. `GIOCA` conserva focus iniziale e
+  placca primaria; il percorso focus diventa `GIOCA ↔ TUTORIAL ↔ ingranaggio`.
+  Per decisione del proprietario gli elementi decorativi della welcome possono
+  usare tutto il viewport, mentre CTA, ingranaggio e target interattivi restano
+  nella safe area.
+- [x] `TutorialScreen` è una scena full-viewport always-process separata dalla
+  simulazione: apertura, chiusura, Back e CTA finale restano in
+  `RunController.BOOT`; clock, seed, spawn, input gameplay, HUD e joystick non
+  vengono inizializzati prima della conferma personaggio.
+- [x] Sei `TutorialPageDefinition` sotto `data/tutorial/` centralizzano ordine e
+  copy: obiettivo della run, movimento/attacco automatico, abilità attiva,
+  XP/carte, cinque famiglie nemiche e Boss/partenza. Il CTA finale `GIOCA`
+  inoltra allo stesso selettore della welcome.
+- [x] Il carosello supporta frecce, contatore e indicatori `n/6`, swipe touch a
+  dominanza orizzontale, tastiera/controller, focus sempre visibile e Back con
+  esito unico. Sulla prima pagina il controllo sinistro è `ESCI` e torna alla
+  welcome; dalle successive diventa `INDIETRO`. Riaprire resetta la pagina
+  `01 / 06`; la `X` ridondante del primo wireframe è stata rimossa.
+- [x] Il redesign percettivo usa tre artwork originali dedicati per obiettivo,
+  movimento e Boss, registrati sotto `assets/art/ui/tutorial/`; abilità,
+  progressione e nemici riusano rispettivamente icone abilità, upgrade e B49
+  già approvate. Le sole micro-animazioni di scala non usano Player, spawner,
+  combattimento o RNG, processano soltanto quando visibili e rispettano Flash
+  ridotti. Nome e testo restano canali aggiuntivi a forma/colore.
+- [x] Smoke `_b54_tutorial_flow_smoke.gd`
+  (`B54_TUTORIAL_FLOW_SMOKE_OK`) su composizione, sei risorse, swipe reale,
+  icone, focus/Back, stop preview, invarianti `BOOT` e layout 16:9/20:9/4:3.
+  `_welcome_flow_smoke.gd` è aggiornato alla nuova distinzione fra decorazione
+  viewport-wide e controlli safe-area; emette ancora
+  `B18O_WELCOME_FLOW_SMOKE_OK` e `B32_WELCOME_CTA_SETTINGS_SMOKE_OK`.
+
+Focused B54 verde. Relevant sull'intero worktree: `30/31` regressioni verdi,
+con il solo `_complete_roster_abilities_smoke.gd` rosso per il pannello roster
+fuori safe area. Relevant limitato ai path B54: `7/8`, fermato dal solo
+`_hud_smoke.gd` sui valori vita storici `100` contro i `115` correnti di Magno;
+le sette regressioni successive sono state eseguite esplicitamente e sono
+`7/7` verdi. Entrambi i failure sono preesistenti, già documentati in B45/B47
+e non introdotti dal tutorial.
+Il 28 agosto 2026 il proprietario ha respinto percettivamente il primo
+wireframe perché appariva da debug e ha segnalato il controllo `INDIETRO`
+inerte in pagina uno. Il wireframe è stato sostituito integralmente con layout
+a due colonne, copy breve, artwork/icone definitive e `ESCI` attivo; sei
+catture Windows raster locali sono state controllate prima del nuovo gate.
+Export debug Windows e Android del redesign verdi. L'APK corrente (SHA-256
+`271F8BEEF9BE6B38631FD37F47C0E1E944B2272E8AD6D9F4262CAC70ABA3BAD7`) è
+staticamente valido per package, SDK 31/36, ARM64 e firma v2; il cold launch
+precedente resta evidenza della candidata superata. Il nuovo APK è stato installato con `adb install -r`
+(`Success`) sul Pixel 9 il 28 agosto 2026, senza avviare l'app. Restano aperti
+Full/Release, runtime Windows interattivo, cold launch e una nuova prova fisica del proprietario su Pixel 9 per
+tap/swipe/Back e accettazione percettiva del carosello.
+Evidenza: [`b54-verification.md`](./b54-verification.md).
 
 ## 7. Strategia di test
 

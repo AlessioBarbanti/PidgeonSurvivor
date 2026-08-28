@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="EnemyArchetypeDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/game/enemy_archetype_definition.gd" id="1_archetype"]
+[ext_resource type="PackedScene" path="res://scenes/actors/configurable_enemy.tscn" id="2_scene"]
+[ext_resource type="Texture2D" path="res://assets/art/enemies/pigeons/pigeon_armored.png" id="3_pigeon_armored"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_armored_neutral"]
+atlas = ExtResource("3_pigeon_armored")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_armored_up"]
+atlas = ExtResource("3_pigeon_armored")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_armored_down"]
+atlas = ExtResource("3_pigeon_armored")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_armored"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_armored_neutral")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_armored_up")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_armored_down")
+}],
+"loop": true,
+"name": &"base",
+"speed": 6.0
+}]
+
+[resource]
+script = ExtResource("1_archetype")
+silhouette_kind = 2
+id = &"armored"
+scene = ExtResource("2_scene")
+spawn_weight = 0.9
+eligible_time_start = 40.0
+eligible_time_end = 3600.0
+spawn_cluster_size = 1
+health_max = 54.0
+move_speed = 70.0
+collision_radius = 28.0
+contact_damage = 26.0
+experience_amount = 3
+body_color = Color(0.32, 0.36, 0.42, 1.0)
+outline_color = Color(0.08, 0.09, 0.12, 1.0)
+accent_color = Color(0.78, 0.82, 0.88, 1.0)
+sprite_frames = SubResource("SpriteFrames_armored")
