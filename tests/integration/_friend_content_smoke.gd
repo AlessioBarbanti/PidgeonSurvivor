@@ -110,7 +110,7 @@ func _validate_catalog_and_approvals() -> void:
 	var marghe := registry.resolve_definition(&"marghe")
 	_expect(
 		marghe != null
-		and marghe.get_public_active_ability_title() == "Reggeton time!"
+		and marghe.get_public_active_ability_title() == "Reggaeton time!"
 		and "reggaeton" in marghe.get_public_active_ability_description().to_lower(),
 		"L'attiva approvata di Marghe deve usare il retheme reggaeton."
 	)

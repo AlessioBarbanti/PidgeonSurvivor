@@ -317,10 +317,9 @@ func _validate_no_residue_after_restart() -> void:
 	await process_frame
 
 
-## B49: le texture pixel degli archetipi speciali devono essere assegnate,
-## distinte fra loro, e un archetipo senza sprite_frames deve ricadere sul
-## disegno procedurale invece di restare invisibile (fallback sicuro per un
-## asset mancante).
+## B49: le texture pixel degli archetipi speciali e del frammento devono essere
+## assegnate e distinte. Il fallback procedurale resta sicuro solo per veri asset
+## mancanti, non per il frammento ormai illustrato.
 func _validate_b49_archetype_textures() -> void:
 	var archetype_paths := {
 		"swarmer": "res://data/enemies/enemy_archetype_swarmer.tres",
@@ -366,8 +365,23 @@ func _validate_b49_archetype_textures() -> void:
 		"res://data/enemies/enemy_archetype_splitter_fragment.tres"
 	) as EnemyArchetypeDefinition
 	_expect(
-		fragment_definition != null and fragment_definition.sprite_frames == null,
-		"Il frammento del divisore non ha ancora un asset dedicato: deve restare senza sprite_frames."
+		fragment_definition != null
+		and fragment_definition.sprite_frames != null
+		and fragment_definition.sprite_frames.has_animation(&"base")
+		and fragment_definition.sprite_frames.get_frame_count(&"base") == 3,
+		"Il frammento del divisore deve usare lo strip dedicato a tre pose."
+	)
+	var fragment_texture := (
+		fragment_definition.sprite_frames.get_frame_texture(&"base", 0)
+		if fragment_definition != null and fragment_definition.sprite_frames != null
+		else null
+	) as AtlasTexture
+	_expect(
+		fragment_texture != null
+		and fragment_texture.atlas != null
+		and fragment_texture.atlas.resource_path
+			== "res://assets/art/enemies/pigeons/pigeon_splitter_fragment.png",
+		"Il frammento deve puntare allo strip pixel dedicato, non alla texture del genitore."
 	)
 
 	var fixture := Node2D.new()
@@ -376,16 +390,12 @@ func _validate_b49_archetype_textures() -> void:
 	root.add_child(fixture)
 	await process_frame
 	_expect(
-		not enemy.has_visual_sprite(),
-		"Senza sprite_frames assegnato l'archetipo deve ricadere sul disegno procedurale."
-	)
-	_expect(
 		fragment_definition != null and enemy.apply_archetype_definition(fragment_definition),
-		"apply_archetype_definition deve riuscire anche senza sprite_frames (fallback sicuro)."
+		"apply_archetype_definition deve riuscire con lo sprite dedicato del frammento."
 	)
 	_expect(
-		not enemy.has_visual_sprite(),
-		"Un archetipo senza asset dedicato deve restare sul fallback procedurale dopo l'applicazione."
+		enemy.has_visual_sprite(),
+		"Il frammento con asset dedicato deve usare AnimatedSprite2D, non il fallback procedurale."
 	)
 
 	var swarmer_definition := load(archetype_paths["swarmer"]) as EnemyArchetypeDefinition

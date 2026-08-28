@@ -10,23 +10,32 @@ const EXPECTED_PAGE_IDS: Array[StringName] = [
 	&"enemies",
 	&"boss",
 ]
-const EXPECTED_ENEMY_TITLES: Array[String] = [
-	"BASE",
-	"SCIAME",
-	"ARMATO",
-	"DIVIDE",
-	"SPARA",
+const EXPECTED_ENEMY_SPRITE_PATHS: Array[String] = [
+	"res://assets/art/enemies/pigeons/pigeon_base.png",
+	"res://assets/art/enemies/pigeons/pigeon_swarmer.png",
+	"res://assets/art/enemies/pigeons/pigeon_armored.png",
+	"res://assets/art/enemies/pigeons/pigeon_splitter.png",
+	"res://assets/art/enemies/pigeons/pigeon_ranged.png",
 ]
+const EXPECTED_UPGRADE_ICON_PATHS: Array[String] = [
+	"res://assets/art/icons/upgrades/generated/meat_fork_damage.png",
+	"res://assets/art/icons/upgrades/generated/fire_rate.png",
+	"res://assets/art/icons/upgrades/generated/move_speed.png",
+	"res://assets/art/icons/upgrades/generated/bis_di_salsiccia.png",
+]
+const RETIRED_UPGRADE_ICON_PATH := "res://assets/art/icons/upgrades/generated/pickup_range.png"
+const ABILITY_PAGE_INDEX := 2
+const PROGRESSION_PAGE_INDEX := 3
+const ENEMIES_PAGE_INDEX := 4
+const BOSS_PAGE_INDEX := 5
+## Campionatura fine del loop: uno scarto oltre la soglia indica un teletrasporto
+## fra ultimo e primo frame, non il normale avanzamento continuo.
+const LOOP_SAMPLE_COUNT := 720
+const LOOP_CONTINUITY_TOLERANCE := 2.5
 const TUTORIAL_ARTWORK_PATHS: Array[String] = [
 	"res://assets/art/ui/tutorial/generated/tutorial_objective.png",
 	"res://assets/art/ui/tutorial/generated/tutorial_movement.png",
 	"res://assets/art/ui/tutorial/generated/tutorial_boss.png",
-]
-const SPECIAL_ENEMY_ICON_PATHS: Array[String] = [
-	"res://assets/art/icons/enemies/generated/enemy_swarmer.png",
-	"res://assets/art/icons/enemies/generated/enemy_armored.png",
-	"res://assets/art/icons/enemies/generated/enemy_splitter.png",
-	"res://assets/art/icons/enemies/generated/enemy_ranged.png",
 ]
 const LAYOUT_PROFILES: Array[Vector2i] = [
 	Vector2i(1280, 720),
@@ -91,10 +100,13 @@ func _validate_tutorial_flow() -> void:
 		and tutorial_button.custom_minimum_size.y < play_button.custom_minimum_size.y,
 		"TUTORIAL deve conservare un target touch valido ma meno enfasi di GIOCA."
 	)
+	var tutorial_style := tutorial_button.get_theme_stylebox("normal") as StyleBoxTexture
+	var play_style := play_button.get_theme_stylebox("normal") as StyleBoxTexture
 	_expect(
-		tutorial_button.get_theme_stylebox("normal") is StyleBoxFlat
-		and play_button.get_theme_stylebox("normal") is StyleBoxTexture,
-		"TUTORIAL deve usare la tinta secondaria distinta dalla placca primaria."
+		tutorial_style != null
+		and play_style != null
+		and tutorial_style.texture != play_style.texture,
+		"TUTORIAL deve usare la placca secondaria, distinta da quella primaria di GIOCA."
 	)
 	_expect(
 		play_button.focus_neighbor_bottom == play_button.get_path_to(tutorial_button)
@@ -164,27 +176,45 @@ func _validate_tutorial_flow() -> void:
 	await _wait_processed_frame()
 	_expect(tutorial.get_current_page_index() == 1, "Uno swipe a destra deve tornare di una pagina.")
 
-	_expect(tutorial.show_page(4), "La pagina Nemici deve essere raggiungibile.")
+	await _validate_grid_page(tutorial, ABILITY_PAGE_INDEX, "03 / 06", "Abilità", [])
+	await _validate_grid_page(
+		tutorial,
+		PROGRESSION_PAGE_INDEX,
+		"04 / 06",
+		"Potenziamenti",
+		EXPECTED_UPGRADE_ICON_PATHS
+	)
+
+	_expect(tutorial.show_page(ENEMIES_PAGE_INDEX), "La pagina Nemici deve essere raggiungibile.")
 	await _wait_processed_frame()
 	_expect(tutorial.get_page_counter_text() == "05 / 06", "La pagina Nemici deve mostrare 05 / 06.")
 	_expect(tutorial.get_showcase_item_count() == 5, "La pagina Nemici deve mostrare cinque famiglie.")
-	_expect(tutorial.get_current_page().showcase_labels == EXPECTED_ENEMY_TITLES, "Nomi e ordine dei nemici devono essere autorevoli.")
-	var enemy_icons := tutorial.get_showcase_textures()
-	_expect(enemy_icons.size() == 5, "Ogni famiglia nemica deve avere un'icona.")
-	if enemy_icons.size() == 5:
-		_expect(enemy_icons[0] is AtlasTexture, "Il piccione base deve usare una posa della sprite gameplay.")
-		for index in SPECIAL_ENEMY_ICON_PATHS.size():
-			var icon := enemy_icons[index + 1]
+	_expect(
+		tutorial.get_walker_row_counts() == [2, 3],
+		"I cinque piccioni devono stare su due file, due sopra e tre sotto."
+	)
+	_expect(
+		tutorial.get_gallery_label_count() == 0,
+		"La composizione Nemici non deve contenere etichette: i nomi restano nel testo."
+	)
+	var enemy_sprites := tutorial.get_showcase_textures()
+	_expect(enemy_sprites.size() == 5, "Ogni famiglia nemica deve avere la propria sprite.")
+	if enemy_sprites.size() == 5:
+		for index in EXPECTED_ENEMY_SPRITE_PATHS.size():
+			var sprite := enemy_sprites[index]
 			_expect(
-				icon != null and icon.resource_path == SPECIAL_ENEMY_ICON_PATHS[index],
-				"La pagina Nemici deve riusare l'icona B49 %s." % SPECIAL_ENEMY_ICON_PATHS[index]
+				sprite != null and sprite.resource_path == EXPECTED_ENEMY_SPRITE_PATHS[index],
+				"La pagina Nemici deve riusare lo strip di camminata %s."
+				% EXPECTED_ENEMY_SPRITE_PATHS[index]
 			)
-	_expect(tutorial.is_preview_animation_active(), "Le icone definitive devono ricevere soltanto l'animazione presentazionale attiva.")
+	_expect(tutorial.is_preview_animation_active(), "La camminata dei piccioni deve essere attiva.")
+	_expect_continuous_loop(tutorial, "Nemici")
 
-	_expect(tutorial.show_page(5), "La pagina Boss deve essere raggiungibile.")
+	_expect(tutorial.show_page(BOSS_PAGE_INDEX), "La pagina Boss deve essere raggiungibile.")
 	await _wait_processed_frame()
 	_expect(tutorial.get_next_button().text == "GIOCA", "L'ultima pagina deve sostituire AVANTI con GIOCA.")
 	_expect(tutorial.is_preview_animation_active(), "La pagina Boss deve avere una preview attiva.")
+	_expect_continuous_loop(tutorial, "Boss")
 	await _validate_layout_profiles(movement_slice, welcome, tutorial)
 
 	_expect(lifecycle.request_back(), "Back deve chiudere il tutorial in BOOT.")
@@ -204,6 +234,61 @@ func _validate_tutorial_flow() -> void:
 	_validate_boot_invariants(controller, spawner, router, hud, joystick, "selettore finale")
 
 	await _dispose(movement_slice, controller)
+
+
+func _validate_grid_page(
+	tutorial: TutorialScreen,
+	page_index: int,
+	expected_counter: String,
+	context: String,
+	expected_icon_paths: Array[String]
+) -> void:
+	_expect(tutorial.show_page(page_index), "%s: la pagina deve essere raggiungibile." % context)
+	await _wait_processed_frame()
+	_expect(
+		tutorial.get_page_counter_text() == expected_counter,
+		"%s: il contatore deve mostrare %s." % [context, expected_counter]
+	)
+	_expect(
+		tutorial.get_showcase_item_count() == 4,
+		"%s: la vetrina deve avere quattro icone." % context
+	)
+	_expect(
+		tutorial.get_gallery_column_count() == 2,
+		"%s: le quattro icone devono stare in una matrice 2×2." % context
+	)
+	_expect(
+		tutorial.get_gallery_label_count() == 0,
+		"%s: la vetrina non deve reintrodurre una galleria di nomi tecnici." % context
+	)
+	var textures := tutorial.get_showcase_textures()
+	for texture in textures:
+		_expect(
+			texture != null and texture.resource_path != RETIRED_UPGRADE_ICON_PATH,
+			"%s: l'arte RACCOLTA non deve comparire nella vetrina." % context
+		)
+	if not expected_icon_paths.is_empty():
+		_expect(
+			textures.size() == expected_icon_paths.size(),
+			"%s: la vetrina deve elencare le icone attese." % context
+		)
+		if textures.size() == expected_icon_paths.size():
+			for index in expected_icon_paths.size():
+				_expect(
+					textures[index] != null
+					and textures[index].resource_path == expected_icon_paths[index],
+					"%s: lo slot %d deve usare %s." % [context, index, expected_icon_paths[index]]
+				)
+	_expect(tutorial.is_preview_animation_active(), "%s: la preview visibile deve animarsi." % context)
+	_expect_continuous_loop(tutorial, context)
+
+
+func _expect_continuous_loop(tutorial: TutorialScreen, context: String) -> void:
+	var worst := tutorial.measure_preview_loop_discontinuity(LOOP_SAMPLE_COUNT)
+	_expect(
+		worst <= LOOP_CONTINUITY_TOLERANCE,
+		"%s: il loop deve restare continuo alla giunzione, scarto massimo %.3f." % [context, worst]
+	)
 
 
 func _validate_boot_invariants(
@@ -247,6 +332,12 @@ func _validate_layout_profiles(
 			"%s: il target TUTORIAL deve restare nella safe area della welcome." % profile
 		)
 		_expect(safe_area.encloses(panel_rect), "%s: il tutorial deve restare nella safe area." % profile)
+		var viewport_rect := root.get_visible_rect()
+		var backdrop_rect := tutorial.get_backdrop_rect()
+		_expect(
+			backdrop_rect.encloses(viewport_rect),
+			"%s: lo sfondo tutorial deve coprire il viewport intero, non la safe area." % profile
+		)
 		_expect(panel_rect.encloses(previous_rect), "%s: ESCI/INDIETRO deve restare nel pannello." % profile)
 		_expect(panel_rect.encloses(next_rect), "%s: il CTA pagina deve restare nel pannello." % profile)
 		_expect(

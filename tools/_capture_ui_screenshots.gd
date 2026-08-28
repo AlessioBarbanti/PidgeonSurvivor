@@ -50,6 +50,21 @@ func _run() -> void:
 			welcome.get_close_settings_button().emit_signal("pressed")
 			await _frames(12)
 
+	if welcome != null and welcome.get_tutorial_button() != null:
+		welcome.get_tutorial_button().emit_signal("pressed")
+		await _frames(24)
+		var tutorial := _slice.get_tutorial_screen() as TutorialScreen
+		if tutorial != null:
+			for page_index in tutorial.get_page_count():
+				tutorial.show_page(page_index)
+				await _frames(16)
+				await _shot("02b_tutorial_%02d" % (page_index + 1))
+			if tutorial.get_previous_button() != null:
+				tutorial.show_page(0)
+				await _frames(8)
+				tutorial.get_previous_button().emit_signal("pressed")
+			await _frames(24)
+
 	if welcome != null and welcome.get_play_button() != null:
 		welcome.get_play_button().emit_signal("pressed")
 		await _frames(30)
@@ -65,6 +80,7 @@ func _run() -> void:
 		experience.add_experience(40)
 		await _frames(24)
 		await _shot("05_upgrade_overlay")
+		await _timeout(UpgradeOverlay.SELECTION_LOCK_SECONDS + 0.2)
 		if upgrade_overlay != null and upgrade_overlay.is_accepting_selection():
 			upgrade_overlay.submit_card(0)
 			await _frames(20)

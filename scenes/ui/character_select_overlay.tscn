@@ -270,13 +270,15 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="TopRow" type="HBoxContainer" parent="Center/SelectionPanel/Content"]
+[node name="TitleRow" type="HBoxContainer" parent="Center/SelectionPanel/Content"]
 layout_mode = 2
+theme_override_constants/separation = 0
 
-[node name="BackButton" type="Button" parent="Center/SelectionPanel/Content/TopRow"]
+[node name="BackButton" type="Button" parent="Center/SelectionPanel/Content/TitleRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(138, 44)
 layout_mode = 2
+size_flags_vertical = 4
 theme_type_variation = &"ButtonCompact"
 theme_override_colors/font_color = Color(1, 0.88, 0.65, 1)
 theme_override_colors/font_hover_color = Color(1, 0.95, 0.78, 1)
@@ -284,14 +286,12 @@ theme_override_styles/normal = SubResource("StyleBoxFlat_back_normal")
 theme_override_styles/hover = SubResource("StyleBoxFlat_back_hover")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_back_pressed")
 theme_override_styles/focus = SubResource("StyleBoxFlat_back_focus")
-text = "← Indietro"
+text = "INDIETRO"
 
-[node name="TopSpacer" type="Control" parent="Center/SelectionPanel/Content/TopRow"]
+[node name="Title" type="Label" parent="Center/SelectionPanel/Content/TitleRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="Title" type="Label" parent="Center/SelectionPanel/Content"]
-layout_mode = 2
+size_flags_vertical = 4
 theme_override_colors/font_color = Color(0.48, 0.88, 1, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
 theme_override_constants/shadow_offset_x = 3
@@ -300,8 +300,12 @@ theme_type_variation = &"TitleL"
 text = "SCEGLI IL PERSONAGGIO"
 horizontal_alignment = 1
 
+[node name="TitleRowSpacer" type="Control" parent="Center/SelectionPanel/Content/TitleRow"]
+custom_minimum_size = Vector2(138, 0)
+layout_mode = 2
+
 [node name="MainRow" type="HBoxContainer" parent="Center/SelectionPanel/Content"]
-custom_minimum_size = Vector2(0, 348)
+custom_minimum_size = Vector2(0, 392)
 layout_mode = 2
 size_flags_vertical = 1
 theme_override_constants/separation = 6
@@ -313,7 +317,7 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
 [node name="CarouselFrame" type="Control" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn"]
-custom_minimum_size = Vector2(0, 280)
+custom_minimum_size = Vector2(0, 324)
 layout_mode = 2
 
 [node name="PreviousButton" type="Button" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn/CarouselFrame"]
@@ -401,7 +405,7 @@ autowrap_mode = 2
 
 [node name="AbilityCards" type="VBoxContainer" parent="Center/SelectionPanel/Content/MainRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(380, 348)
+custom_minimum_size = Vector2(410, 392)
 layout_mode = 2
 size_flags_horizontal = 1
 size_flags_vertical = 4
@@ -409,7 +413,7 @@ theme_override_constants/separation = 8
 
 [node name="PassiveCard" type="PanelContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityCards"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(380, 170)
+custom_minimum_size = Vector2(410, 192)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_info_panel")
@@ -446,6 +450,7 @@ text = "PASSIVA"
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.78, 0.32, 1)
+theme_override_constants/line_spacing = -11
 theme_type_variation = &"TitleS"
 text = "Passiva"
 autowrap_mode = 2
@@ -454,13 +459,14 @@ autowrap_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.8, 0.86, 1)
+theme_override_font_sizes/font_size = 16
 theme_type_variation = &"BodyS"
 text = "Descrizione passiva"
 autowrap_mode = 2
 
 [node name="AbilityCard" type="PanelContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityCards"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(380, 170)
+custom_minimum_size = Vector2(410, 192)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_info_panel")
@@ -497,6 +503,7 @@ text = "ABILITÀ"
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.82, 0.42, 1)
+theme_override_constants/line_spacing = -11
 theme_type_variation = &"TitleS"
 text = "Abilità"
 autowrap_mode = 2
@@ -505,6 +512,7 @@ autowrap_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.82, 0.86, 1)
+theme_override_font_sizes/font_size = 16
 theme_type_variation = &"BodyS"
 text = "Descrizione abilità"
 autowrap_mode = 2
@@ -527,4 +535,4 @@ theme_override_styles/normal = SubResource("StyleBoxTexture_cta_normal")
 theme_override_styles/hover = SubResource("StyleBoxTexture_cta_hover")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_cta_pressed")
 theme_override_styles/focus = SubResource("StyleBoxFlat_cta_focus")
-text = "Gioca con Magno"
+text = "GIOCA CON MAGNO"

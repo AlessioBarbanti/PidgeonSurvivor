@@ -21,7 +21,7 @@ func _ready() -> void:
 
 func show_defeat(run_time: float) -> void:
 	_title_label.text = "GAME OVER"
-	_summary_label.text = "Hai resistito %s" % format_run_time(run_time)
+	_summary_label.text = "Hai resistito per %s" % format_run_time(run_time)
 	_restart_button.text = "RIPROVA"
 	_show_terminal_screen()
 

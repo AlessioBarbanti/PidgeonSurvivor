@@ -33,7 +33,7 @@ display_name = "Zat"
 role = "Gestione del danno e sopravvivenza."
 tags = Array[StringName]([&"survival", &"damage"])
 passive_title = "Guarigione Ritardata"
-passive_description = "Parte del danno diventa una quantità recuperabile nel tempo se il giocatore evita danni successivi."
+passive_description = "Parte del danno subito resta recuperabile: se Zat evita altri colpi per qualche secondo, quella quota torna indietro."
 passive_id = &"zat_delayed_healing"
 passive_parameters = {
 "recoverable_fraction": 0.35,
@@ -42,7 +42,7 @@ passive_parameters = {
 }
 active_ability_id = &"zat_lightning_storm"
 active_ability_title = "Tempesta di Tuoni"
-active_ability_description = "Una tempesta di fulmini telegrafati cade attorno a Zat: portaci sopra i nemici."
+active_ability_description = "Una tempesta di fulmini telegrafati cade su punti fissi attorno a Zat, colpendo ogni nemico che si trova sotto le zone d'impatto."
 base_health_multiplier = 1.1
 base_move_speed_multiplier = 0.95
 base_fire_rate_multiplier = 1.0

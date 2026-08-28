@@ -210,7 +210,7 @@ func get_passive_icon() -> Texture2D:
 
 
 func get_title_rect() -> Rect2:
-	return _global_rect($Center/SelectionPanel/Content/Title)
+	return _global_rect($Center/SelectionPanel/Content/TitleRow/Title)
 
 
 func get_name_rect() -> Rect2:
@@ -294,20 +294,20 @@ func _select_index(index: int, animate: bool) -> void:
 	_selected_index = posmod(index, _definitions.size())
 	var definition := _definitions[_selected_index]
 	_selected_definition = definition
-	_name_label.text = definition.get_public_display_name()
+	_name_label.text = definition.get_public_display_name().to_upper()
 	_role_label.text = definition.get_public_role()
 	_passive_icon.texture = definition.get_public_passive_icon()
 	_passive_icon.visible = _passive_icon.texture != null
-	_passive_title_label.text = definition.get_public_passive_title()
+	_passive_title_label.text = definition.get_public_passive_title().to_upper()
 	_passive_description_label.text = definition.get_public_passive_description()
-	_ability_title_label.text = definition.get_public_active_ability_title()
+	_ability_title_label.text = definition.get_public_active_ability_title().to_upper()
 	_ability_description_label.text = definition.get_public_active_ability_description()
 	var ability_definition: AbilityDefinition = null
 	if is_instance_valid(_ability_registry):
 		ability_definition = _ability_registry.resolve_definition(definition.active_ability_id)
 	_ability_icon.texture = ability_definition.icon if ability_definition != null else null
 	_ability_icon.visible = _ability_icon.texture != null
-	_confirm_button.text = "Gioca con %s" % definition.get_public_display_name()
+	_confirm_button.text = "GIOCA CON %s" % definition.get_public_display_name().to_upper()
 	_confirm_button.disabled = false
 	_layout_cards(animate)
 	call_deferred("_focus_selected_card")

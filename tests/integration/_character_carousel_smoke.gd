@@ -110,9 +110,9 @@ func _validate_character_carousel() -> void:
 		_expect(selector.get_selected_index() == expected_index, "L'indice centrale deve avanzare deterministicamente.")
 		_expect(selector.get_visible_card_ids().size() == 3, "Ogni profilo deve conservare due anteprime.")
 		var copy := selector.get_displayed_copy()
-		_expect(copy.name == definition.get_public_display_name(), "Il centro deve mostrare il nome dati con maiuscola naturale.")
-		_expect(String(copy.passive).contains(definition.get_public_passive_title()), "Il centro deve mostrare la passiva dati.")
-		_expect(String(copy.ability).contains(definition.get_public_active_ability_title()), "Il centro deve mostrare l'abilita dati.")
+		_expect(copy.name == definition.get_public_display_name().to_upper(), "Il centro deve mostrare il nome dati in maiuscolo.")
+		_expect(String(copy.passive).contains(definition.get_public_passive_title().to_upper()), "Il centro deve mostrare la passiva dati.")
+		_expect(String(copy.ability).contains(definition.get_public_active_ability_title().to_upper()), "Il centro deve mostrare l'abilita dati.")
 		selector.navigate_next()
 	_expect(selector.get_selected_definition().id == &"magno", "Otto avanzamenti devono chiudere il ciclo.")
 	await create_timer(0.2).timeout

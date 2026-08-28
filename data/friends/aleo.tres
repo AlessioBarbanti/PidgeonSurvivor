@@ -30,10 +30,10 @@ region = Rect2(64, 0, 32, 32)
 script = ExtResource("1_definition")
 id = &"aleo"
 display_name = "Aleo"
-role = "Sbalzo termico: brucia quando sta bene, raffredda quando è in difficoltà."
+role = "Sbalzo termico e gestione del danno."
 tags = Array[StringName]([&"survival", &"damage", &"control"])
 passive_title = "Termostato Interno"
-passive_description = "Sopra metà salute lavora in riscaldamento e aumenta il danno inflitto; sotto metà passa in raffrescamento, riduce il danno subito e la brina rallenta ed erode i nemici vicini."
+passive_description = "Sopra metà vita scalda e infligge più danno; sotto metà raffredda, incassa meno e la brina rallenta e logora i nemici vicini."
 passive_id = &"aleo_internal_thermostat"
 passive_parameters = {
 "cold_aura_damage_per_second": 12.0,
@@ -46,7 +46,7 @@ passive_parameters = {
 }
 active_ability_id = &"aleo_thermal_shock"
 active_ability_title = "Shock Termico"
-active_ability_description = "Congela un'area per un istante, poi la fa esplodere di calore con danno raddoppiato sui nemici brinati."
+active_ability_description = "Congela un'area per un istante, poi la fa esplodere di calore: i nemici ancora brinati subiscono danno raddoppiato."
 base_health_multiplier = 1.1
 base_move_speed_multiplier = 0.95
 base_fire_rate_multiplier = 1.05

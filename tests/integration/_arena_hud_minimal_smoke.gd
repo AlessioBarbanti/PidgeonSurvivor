@@ -120,10 +120,13 @@ func _validate_layout_profiles(
 
 		_expect_rect_near(playfield, expected_playfield, "%s: il playfield deve derivare dalla safe area meno l'HUD." % context)
 		_expect_float_near(arena.get_top_reserved_height(), hud.get_gameplay_top_inset(), "%s: ArenaLayout e HUD devono condividere lo stesso inset." % context)
-		_expect_float_near(xp_bar.position.x, safe_area.position.x, "%s: XP deve partire dal bordo safe." % context)
-		_expect_float_near(xp_bar.size.x, safe_area.size.x, "%s: XP deve essere full-width." % context)
-		_expect_float_near(health_bar.position.x, safe_area.position.x, "%s: vita deve partire dal bordo safe." % context)
-		_expect_float_near(health_bar.size.x, safe_area.size.x, "%s: vita deve essere full-width." % context)
+		# UI-004: le barre si allineano al viewport con margini simmetrici, non
+		# alla safe area, che rientra solo dal lato del cutout.
+		var bar_margin := float(profile.x) * hud.get_bar_horizontal_margin_ratio()
+		_expect_float_near(xp_bar.position.x, bar_margin, "%s: XP deve rispettare il margine sinistro." % context)
+		_expect_float_near(float(profile.x) - xp_bar.end.x, bar_margin, "%s: XP deve rispettare il margine destro." % context)
+		_expect_float_near(health_bar.position.x, bar_margin, "%s: vita deve rispettare il margine sinistro." % context)
+		_expect_float_near(float(profile.x) - health_bar.end.x, bar_margin, "%s: vita deve rispettare il margine destro." % context)
 		_expect_float_near(health_bar.position.y, xp_bar.end.y, "%s: vita deve seguire immediatamente XP." % context)
 		_expect_float_near(xp_bar.size.y, 18.0, "%s: la barra XP deve essere piu corposa." % context)
 		_expect_float_near(health_bar.size.y, 20.0, "%s: la barra HP deve essere piu corposa." % context)

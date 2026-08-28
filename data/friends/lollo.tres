@@ -48,7 +48,7 @@ passive_parameters = {
 }
 active_ability_id = &"lollo_random_cosplay"
 active_ability_title = "Cosplay Casuale"
-active_ability_description = "Usa casualmente l'attiva di un altro personaggio."
+active_ability_description = "Estrae in anticipo l'abilità di un altro personaggio e la mostra sul pulsante: la prossima attivazione lancia quella."
 base_health_multiplier = 0.9
 base_move_speed_multiplier = 1.05
 base_fire_rate_multiplier = 1.05

@@ -4,13 +4,18 @@ extends Control
 signal close_requested()
 signal play_requested()
 
+## Dimensione desiderata del pannello: viene ridotta quando la safe area del
+## dispositivo non la contiene, cosi copy e controlli restano sempre protetti.
+const PANEL_PREFERRED_SIZE := Vector2(920.0, 620.0)
+
 const SWIPE_MIN_DISTANCE := 72.0
 const SWIPE_HORIZONTAL_DOMINANCE := 1.25
 
 @export var pages: Array[TutorialPageDefinition] = []
 
+@onready var _backdrop: Control = %Backdrop
+@onready var _outer_margin: MarginContainer = %OuterMargin
 @onready var _main_panel: PanelContainer = %MainPanel
-@onready var _lesson_label: Label = %LessonLabel
 @onready var _page_eyebrow: Label = %PageEyebrow
 @onready var _page_title: Label = %PageTitle
 @onready var _page_body: Label = %PageBody
@@ -28,11 +33,22 @@ var _swipe_start := Vector2.ZERO
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	## Lo sfondo decorativo vive fuori dai container della safe area e viene
+	## riallineato al viewport completo a ogni cambio di rect o di risoluzione.
+	set_notify_transform(true)
+	resized.connect(_update_layout)
+	get_viewport().size_changed.connect(_update_layout)
+	_update_layout()
 	_previous_button.pressed.connect(_on_previous_pressed)
 	_next_button.pressed.connect(_on_next_pressed)
 	_previous_button.focus_neighbor_right = _previous_button.get_path_to(_next_button)
 	_next_button.focus_neighbor_left = _next_button.get_path_to(_previous_button)
 	hide_tutorial()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSFORM_CHANGED:
+		_update_layout()
 
 
 func _input(event: InputEvent) -> void:
@@ -93,6 +109,13 @@ func set_reduced_flashes(enabled: bool) -> void:
 		_preview.set_reduced_flashes(enabled)
 
 
+## Rettangolo globale coperto dallo sfondo: deve contenere l'intero viewport.
+func get_backdrop_rect() -> Rect2:
+	if not is_instance_valid(_backdrop):
+		return Rect2()
+	return _backdrop.get_global_rect()
+
+
 func show_page(page_index: int) -> bool:
 	if page_index < 0 or page_index >= pages.size():
 		return false
@@ -100,10 +123,10 @@ func show_page(page_index: int) -> bool:
 	if page == null or not page.is_valid():
 		return false
 	_current_page_index = page_index
-	_lesson_label.text = "GUIDA RAPIDA  •  %02d / %02d" % [page_index + 1, pages.size()]
 	_page_eyebrow.text = page.eyebrow
 	_page_title.text = page.title
 	_page_body.text = page.body
+	_update_layout()
 	_preview.configure(page, _reduced_flashes)
 	_preview.set_animation_active(visible)
 	_previous_button.text = "ESCI" if page_index == 0 else "INDIETRO"
@@ -157,6 +180,22 @@ func get_showcase_item_count() -> int:
 	return _preview.get_showcase_item_count() if is_instance_valid(_preview) else 0
 
 
+func get_gallery_column_count() -> int:
+	return _preview.get_gallery_column_count() if is_instance_valid(_preview) else 0
+
+
+func get_walker_row_counts() -> Array[int]:
+	return _preview.get_walker_row_counts() if is_instance_valid(_preview) else []
+
+
+func get_gallery_label_count() -> int:
+	return _preview.get_gallery_label_count() if is_instance_valid(_preview) else 0
+
+
+func measure_preview_loop_discontinuity(samples: int = 240) -> float:
+	return _preview.measure_loop_discontinuity(samples) if is_instance_valid(_preview) else INF
+
+
 func get_showcase_textures() -> Array[Texture2D]:
 	return _preview.get_showcase_textures() if is_instance_valid(_preview) else []
 
@@ -167,6 +206,40 @@ func is_preview_animation_active() -> bool:
 
 func get_preview_animation_phase() -> float:
 	return _preview.get_animation_phase() if is_instance_valid(_preview) else 0.0
+
+
+func _update_layout() -> void:
+	if not is_inside_tree():
+		return
+	_update_backdrop_rect()
+	_update_panel_size()
+
+
+func _update_backdrop_rect() -> void:
+	if not is_instance_valid(_backdrop):
+		return
+	var viewport_rect := get_viewport().get_visible_rect()
+	_backdrop.global_position = viewport_rect.position
+	_backdrop.size = viewport_rect.size
+
+
+func _update_panel_size() -> void:
+	if not is_instance_valid(_main_panel) or not is_instance_valid(_outer_margin):
+		return
+	var available := size - Vector2(
+		float(
+			_outer_margin.get_theme_constant(&"margin_left")
+			+ _outer_margin.get_theme_constant(&"margin_right")
+		),
+		float(
+			_outer_margin.get_theme_constant(&"margin_top")
+			+ _outer_margin.get_theme_constant(&"margin_bottom")
+		)
+	)
+	_main_panel.custom_minimum_size = Vector2(
+		minf(PANEL_PREFERRED_SIZE.x, maxf(available.x, 0.0)),
+		minf(PANEL_PREFERRED_SIZE.y, maxf(available.y, 0.0))
+	)
 
 
 func simulate_swipe(start: Vector2, finish: Vector2) -> bool:

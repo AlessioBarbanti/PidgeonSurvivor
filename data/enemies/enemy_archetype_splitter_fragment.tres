@@ -1,7 +1,37 @@
-[gd_resource type="Resource" script_class="EnemyArchetypeDefinition" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="EnemyArchetypeDefinition" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/enemy_archetype_definition.gd" id="1_archetype"]
 [ext_resource type="PackedScene" path="res://scenes/actors/configurable_enemy.tscn" id="2_scene"]
+[ext_resource type="Texture2D" path="res://assets/art/enemies/pigeons/pigeon_splitter_fragment.png" id="3_pigeon_splitter_fragment"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fragment_up"]
+atlas = ExtResource("3_pigeon_splitter_fragment")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fragment_neutral"]
+atlas = ExtResource("3_pigeon_splitter_fragment")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fragment_down"]
+atlas = ExtResource("3_pigeon_splitter_fragment")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_splitter_fragment"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fragment_up")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fragment_neutral")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fragment_down")
+}],
+"loop": true,
+"name": &"base",
+"speed": 8.0
+}]
 
 [resource]
 script = ExtResource("1_archetype")
@@ -20,3 +50,4 @@ experience_amount = 1
 body_color = Color(0.7, 0.28, 0.85, 1.0)
 outline_color = Color(0.22, 0.07, 0.28, 1.0)
 accent_color = Color(0.94, 0.72, 1.0, 1.0)
+sprite_frames = SubResource("SpriteFrames_splitter_fragment")

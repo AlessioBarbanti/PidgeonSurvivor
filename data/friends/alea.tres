@@ -30,10 +30,10 @@ region = Rect2(64, 0, 32, 32)
 script = ExtResource("1_definition")
 id = &"alea"
 display_name = "Alea"
-role = "Progressione e crescita."
+role = "Rischio, fortuna e mischia."
 tags = Array[StringName]([&"progression", &"random"])
 passive_title = "L'Aquila Non Sbaglia Mai"
-passive_description = "A intervalli regolari tira un effetto temporaneo, forte in bene o in male: ogni nemico ucciso carica la fortuna del prossimo tiro."
+passive_description = "Ogni 10 secondi tira un effetto a caso: uccidere nemici aiuta la sorte."
 passive_id = &"alea_eagle_never_misses"
 passive_parameters = {
 "effect_duration": 5.0,
@@ -46,7 +46,7 @@ passive_parameters = {
 }
 active_ability_id = &"alea_grand_spin"
 active_ability_title = "Gran Piroetta"
-active_ability_description = "Rotazione rapida che colpisce ripetutamente i nemici vicini."
+active_ability_description = "Una rotazione rapida che colpisce ripetutamente tutti i nemici vicini."
 base_health_multiplier = 1.0
 base_move_speed_multiplier = 1.0
 base_fire_rate_multiplier = 1.0

@@ -8,5 +8,5 @@ script = ExtResource("1_page")
 id = &"objective"
 eyebrow = "OBIETTIVO"
 title = "SOPRAVVIVI ALLA GRIGLIATA"
-body = "Resisti alle orde e supera ogni Boss. Finché resti in piedi, il tempo continua e il record cresce."
+body = "Resisti alle orde e supera ogni Boss: più a lungo resti in piedi, più lontano arrivi."
 artwork = ExtResource("2_artwork")

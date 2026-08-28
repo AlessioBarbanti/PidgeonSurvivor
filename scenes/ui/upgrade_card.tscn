@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/upgrade_card.gd" id="1_card"]
 
@@ -9,18 +9,6 @@ border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
 border_color = Color(0.19, 0.48, 0.68, 0.9)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hover"]
-bg_color = Color(0.055, 0.105, 0.17, 1)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color(0.3, 0.82, 1, 1)
 corner_radius_top_left = 18
 corner_radius_top_right = 18
 corner_radius_bottom_right = 18
@@ -70,7 +58,7 @@ size_flags_vertical = 3
 focus_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_styles/normal = SubResource("StyleBoxFlat_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_normal")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_pressed")
 theme_override_styles/focus = SubResource("StyleBoxFlat_focus")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_disabled")
@@ -113,15 +101,6 @@ vertical_alignment = 1
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
-
-[node name="TypeLabel" type="Label" parent="Margins/Content/Header"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.38, 0.82, 1, 1)
-theme_type_variation = &"Eyebrow"
-text = "POTENZIAMENTO"
-vertical_alignment = 1
 
 [node name="IconCenter" type="CenterContainer" parent="Margins/Content"]
 custom_minimum_size = Vector2(0, 198)

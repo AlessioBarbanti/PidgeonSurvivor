@@ -207,7 +207,7 @@ custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_type_variation = &"CheckLabel"
-text = "DISATTIVA AUDIO"
+text = "AUDIO DISATTIVATO"
 script = ExtResource("3_toggle")
 
 [node name="AccessibilitySeparator" type="HSeparator" parent="PauseCenter/Panel/VBox"]
@@ -314,7 +314,7 @@ theme_override_styles/normal = SubResource("StyleBoxTexture_primary_normal")
 theme_override_styles/hover = SubResource("StyleBoxTexture_primary_hover")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_primary_pressed")
 theme_override_styles/focus = SubResource("StyleBoxTexture_primary_hover")
-text = "Riprendi"
+text = "RIPRENDI"
 
 [node name="ChangeCharacterButton" type="Button" parent="PauseCenter/Panel/VBox"]
 unique_name_in_owner = true
@@ -328,7 +328,7 @@ theme_override_styles/normal = SubResource("StyleBoxTexture_secondary_normal")
 theme_override_styles/hover = SubResource("StyleBoxTexture_secondary_hover")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_secondary_pressed")
 theme_override_styles/focus = SubResource("StyleBoxTexture_secondary_hover")
-text = "Cambia personaggio"
+text = "CAMBIA PERSONAGGIO"
 
 [node name="ConfirmationCenter" type="CenterContainer" parent="."]
 unique_name_in_owner = true
@@ -377,7 +377,7 @@ theme_override_styles/normal = SubResource("StyleBoxTexture_secondary_normal")
 theme_override_styles/hover = SubResource("StyleBoxTexture_secondary_hover")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_secondary_pressed")
 theme_override_styles/focus = SubResource("StyleBoxTexture_secondary_hover")
-text = "Annulla"
+text = "ANNULLA"
 
 [node name="ConfirmChangeButton" type="Button" parent="ConfirmationCenter/Panel/VBox"]
 unique_name_in_owner = true
@@ -391,4 +391,4 @@ theme_override_styles/normal = SubResource("StyleBoxTexture_primary_normal")
 theme_override_styles/hover = SubResource("StyleBoxTexture_primary_hover")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_primary_pressed")
 theme_override_styles/focus = SubResource("StyleBoxTexture_primary_hover")
-text = "Conferma"
+text = "CONFERMA"

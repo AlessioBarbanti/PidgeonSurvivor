@@ -7,8 +7,8 @@
 script = ExtResource("1_definition")
 id = &"piercing_rounds"
 title = "Colpo Perforante"
-description = "Il proiettile attraversa i nemici colpiti, con danno ridotto a ogni bersaglio in piu."
-effect_summary = "+1 BERSAGLIO PERFORATO /RANGO · -30% DANNO A BERSAGLIO"
+description = "Il proiettile attraversa i nemici colpiti, con danno ridotto a ogni bersaglio in più."
+effect_summary = "+1 PERFORAZIONE · -30% DANNO A BERSAGLIO"
 icon = ExtResource("2_icon")
 effect_id = &"weapon_pierce"
 effect_parameters = {

@@ -4,7 +4,6 @@ extends Button
 signal upgrade_chosen(upgrade_id: StringName)
 
 @onready var _shortcut_label: Label = %ShortcutLabel
-@onready var _type_label: Label = %TypeLabel
 @onready var _icon: TextureRect = %Icon
 @onready var _title_label: Label = %TitleLabel
 @onready var _description_label: Label = %DescriptionLabel
@@ -32,9 +31,8 @@ func configure(
 	_definition = definition
 	_offer_index = offer_index
 	_shortcut_label.text = "%d" % (offer_index + 1)
-	_type_label.text = "POTENZIAMENTO"
 	_icon.texture = definition.icon
-	_title_label.text = definition.title
+	_title_label.text = definition.title.to_upper()
 	_description_label.text = definition.description
 	_set_effect_summary(definition.effect_summary)
 	_rank_label.text = "RANGO %d  >  %d" % [
@@ -54,7 +52,6 @@ func clear_card() -> void:
 	if not is_node_ready():
 		return
 	_shortcut_label.text = ""
-	_type_label.text = ""
 	_icon.texture = null
 	_title_label.text = ""
 	_description_label.text = ""

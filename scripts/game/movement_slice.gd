@@ -329,6 +329,7 @@ func _apply_layout() -> void:
 
 	_safe_area_root.position = safe_area.position
 	_safe_area_root.size = safe_area.size
+	_apply_bar_horizontal_margins(safe_area)
 
 	var joystick_rect := calculate_bottom_left_control_rect(
 		safe_area,
@@ -362,6 +363,23 @@ func _apply_layout() -> void:
 			"B09_SAFE safe_area=%s joystick_rect=%s gesture_padding=%s"
 			% [safe_area, joystick_rect, gesture_navigation_padding]
 		)
+
+
+func _apply_bar_horizontal_margins(safe_area: Rect2) -> void:
+	# Le barre XP/HP escono dalla safe area: quel rettangolo rientra solo dal
+	# lato del cutout e le lascerebbe staccate da un bordo e a filo sull'altro.
+	# Le ancoriamo invece al viewport con margini simmetrici percentuali.
+	if not is_instance_valid(_hud):
+		return
+	var viewport_rect := get_viewport().get_visible_rect()
+	if not viewport_rect.has_area():
+		return
+	var margin := viewport_rect.size.x * GameHud.BAR_HORIZONTAL_MARGIN_RATIO
+	# Offset relativi ai bordi della HUD, che coincidono con la safe area.
+	_hud.set_bar_horizontal_offsets(
+		viewport_rect.position.x + margin - safe_area.position.x,
+		viewport_rect.end.x - margin - safe_area.end.x
+	)
 
 
 func _apply_touch_control_settings(
@@ -1429,7 +1447,7 @@ func _validate_current_contract() -> bool:
 			failures.append("B18T richiede una conferma separata con target minimo 44x44.")
 		if (
 			_character_select_overlay.get_back_button() == null
-			or _character_select_overlay.get_back_button().text != "← Indietro"
+			or _character_select_overlay.get_back_button().text != "INDIETRO"
 		):
 			failures.append("B18W richiede Back distinto in alto con copy naturale.")
 		if _character_select_overlay.get_ability_panel_rect().size.x < 260.0:
@@ -1506,20 +1524,33 @@ func _validate_current_contract() -> bool:
 			failures.append("La fascia HUD B18Q deve coincidere con l'inset gameplay dichiarato.")
 		var xp_line_rect := _hud.get_experience_panel_rect()
 		var health_line_rect := _hud.get_health_panel_rect()
-		var safe_area_rect := _arena_layout.get_safe_area_rect()
+		var hud_viewport_rect := get_viewport().get_visible_rect()
 		if absf(xp_line_rect.size.y - 18.0) > 1.0:
 			failures.append("La barra XP B18Q deve essere alta 18 unita logiche.")
 		if absf(health_line_rect.size.y - 20.0) > 1.0:
 			failures.append("La barra vita B18Q deve essere alta 20 unita logiche.")
 		if _hud.get_experience_kind_text() != "XP" or _hud.get_health_kind_text() != "HP":
 			failures.append("Le barre B18Q devono mostrare soltanto i tag fissi XP e HP.")
+		# UI-004: le barre ignorano la safe area asimmetrica e si allineano al
+		# viewport con margini orizzontali simmetrici.
+		var expected_bar_margin := (
+			hud_viewport_rect.size.x * GameHud.BAR_HORIZONTAL_MARGIN_RATIO
+		)
+		var xp_left_margin := xp_line_rect.position.x - hud_viewport_rect.position.x
+		var xp_right_margin := hud_viewport_rect.end.x - xp_line_rect.end.x
+		var health_left_margin := (
+			health_line_rect.position.x - hud_viewport_rect.position.x
+		)
+		var health_right_margin := hud_viewport_rect.end.x - health_line_rect.end.x
 		if (
-			absf(xp_line_rect.position.x - safe_area_rect.position.x) > 1.0
-			or absf(xp_line_rect.size.x - safe_area_rect.size.x) > 1.0
-			or absf(health_line_rect.position.x - safe_area_rect.position.x) > 1.0
-			or absf(health_line_rect.size.x - safe_area_rect.size.x) > 1.0
+			absf(xp_left_margin - expected_bar_margin) > 1.0
+			or absf(xp_right_margin - expected_bar_margin) > 1.0
+			or absf(health_left_margin - expected_bar_margin) > 1.0
+			or absf(health_right_margin - expected_bar_margin) > 1.0
 		):
-			failures.append("Le barre XP e vita B18Q devono occupare tutta la safe area.")
+			failures.append(
+				"Le barre XP e vita B18Q devono avere margini simmetrici sul viewport."
+			)
 		if _arena_layout.get_playfield_rect().position.y < top_band_rect.end.y - 1.0:
 			failures.append("Il playfield B18Q deve iniziare sotto l'intera fascia HUD.")
 		var ability_panel_rect := _hud.get_ability_panel_rect()

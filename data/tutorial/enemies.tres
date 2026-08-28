@@ -1,21 +1,17 @@
-[gd_resource type="Resource" script_class="TutorialPageDefinition" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="TutorialPageDefinition" load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/tutorial_page_definition.gd" id="1_page"]
 [ext_resource type="Texture2D" path="res://assets/art/enemies/pigeons/pigeon_base.png" id="2_base"]
-[ext_resource type="Texture2D" path="res://assets/art/icons/enemies/generated/enemy_swarmer.png" id="3_swarmer"]
-[ext_resource type="Texture2D" path="res://assets/art/icons/enemies/generated/enemy_armored.png" id="4_armored"]
-[ext_resource type="Texture2D" path="res://assets/art/icons/enemies/generated/enemy_splitter.png" id="5_splitter"]
-[ext_resource type="Texture2D" path="res://assets/art/icons/enemies/generated/enemy_ranged.png" id="6_ranged"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_base"]
-atlas = ExtResource("2_base")
-region = Rect2(0, 0, 48, 48)
+[ext_resource type="Texture2D" path="res://assets/art/enemies/pigeons/pigeon_swarmer.png" id="3_swarmer"]
+[ext_resource type="Texture2D" path="res://assets/art/enemies/pigeons/pigeon_armored.png" id="4_armored"]
+[ext_resource type="Texture2D" path="res://assets/art/enemies/pigeons/pigeon_splitter.png" id="5_splitter"]
+[ext_resource type="Texture2D" path="res://assets/art/enemies/pigeons/pigeon_ranged.png" id="6_ranged"]
 
 [resource]
 script = ExtResource("1_page")
 id = &"enemies"
 eyebrow = "NEMICI"
 title = "LEGGI LA SAGOMA. REAGISCI."
-body = "Base: ti insegue. Sciamatore: rapido e in gruppo. Corazzato: lento e resistente. Divisore: si moltiplica. Tiratore: si ferma e spara."
-showcase_textures = Array[Texture2D]([SubResource("AtlasTexture_base"), ExtResource("3_swarmer"), ExtResource("4_armored"), ExtResource("5_splitter"), ExtResource("6_ranged")])
-showcase_labels = Array[String](["BASE", "SCIAME", "ARMATO", "DIVIDE", "SPARA"])
+body = "Base che insegue, sciamatore in gruppo, corazzato che incassa, divisore che si sdoppia, tiratore a distanza."
+showcase_layout = 1
+showcase_textures = Array[Texture2D]([ExtResource("2_base"), ExtResource("3_swarmer"), ExtResource("4_armored"), ExtResource("5_splitter"), ExtResource("6_ranged")])

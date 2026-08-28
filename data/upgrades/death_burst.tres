@@ -7,8 +7,8 @@
 script = ExtResource("1_definition")
 id = &"death_burst"
 title = "Esplosione Finale"
-description = "I nemici uccisi dall'arma esplodono, danneggiando i nemici vicini."
-effect_summary = "RAGGIO 85 · +20% DANNO ARMA IN AREA /RANGO"
+description = "I nemici uccisi dall'arma esplodono e danneggiano chi sta loro vicino."
+effect_summary = "ESPLOSIONE RAGGIO 85 · 20% DANNO ARMA"
 icon = ExtResource("2_icon")
 effect_id = &"weapon_death_burst"
 effect_parameters = {

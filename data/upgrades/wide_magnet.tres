@@ -7,8 +7,8 @@
 script = ExtResource("1_definition")
 id = &"wide_magnet"
 title = "Pinza Lunga"
-description = "Aumenta il raggio di raccolta dei cristalli XP."
-effect_summary = "+15% RAGGIO RACCOLTA /RANGO"
+description = "Aumenta il raggio di raccolta automatica di cristalli XP e cosce di piccione."
+effect_summary = "+15% RAGGIO RACCOLTA"
 icon = ExtResource("2_icon")
 effect_id = &"player_pickup_radius_multiplier"
 effect_parameters = {

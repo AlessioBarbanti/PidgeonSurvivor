@@ -7,8 +7,8 @@
 script = ExtResource("1_definition")
 id = &"double_barrel"
 title = "Raffica Doppia"
-description = "Ogni colpo spara proiettili aggiuntivi a ventaglio, con dispersione dichiarata."
-effect_summary = "+1 PROIETTILE /RANGO · +12° VENTAGLIO A PROIETTILE"
+description = "Ogni colpo spara proiettili aggiuntivi disposti a ventaglio attorno al bersaglio."
+effect_summary = "+1 PROIETTILE · VENTAGLIO +12°"
 icon = ExtResource("2_icon")
 effect_id = &"weapon_multishot"
 effect_parameters = {

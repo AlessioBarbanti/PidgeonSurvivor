@@ -111,6 +111,14 @@ func _validate_composed_encounter() -> void:
 	_expect(boss_ui.get_boss() == boss, "La barra Boss deve osservare l'istanza attiva.")
 	_expect(boss_ui.is_intro_visible(), "La citazione deve apparire durante BOSS_INTRO.")
 	_expect(boss_ui.is_boss_health_visible(), "Gli HP Boss devono essere visibili dall'introduzione.")
+	var continue_button := boss_ui.get_node_or_null("IntroLayer/Center/IntroPanel/VBox/ContinueButton") as Button
+	var continue_style := continue_button.get_theme_stylebox("normal") as StyleBoxTexture if continue_button != null else null
+	_expect(
+		continue_style != null
+		and continue_style.texture != null
+		and FileAccess.file_exists("res://assets/art/ui/boss/boss_continue_cta_base.png"),
+		"AFFRONTA deve usare la plancia Boss pixel-art dedicata."
+	)
 	_expect(
 		definition.quote not in boss_ui.get_intro_quote_text()
 		and definition.get_safe_quote() in boss_ui.get_intro_quote_text(),

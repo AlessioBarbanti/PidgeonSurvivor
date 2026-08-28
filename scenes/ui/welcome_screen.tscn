@@ -383,7 +383,7 @@ focus_neighbor_top = NodePath("../VolumeRow/VolumeSlider")
 focus_neighbor_bottom = NodePath("../ReducedFlashesCheckButton")
 theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
 theme_type_variation = &"CheckLabel"
-text = "DISATTIVA AUDIO"
+text = "AUDIO DISATTIVATO"
 
 [node name="ReducedFlashesCheckButton" type="CheckButton" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel"]
 unique_name_in_owner = true

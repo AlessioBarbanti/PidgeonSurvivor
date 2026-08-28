@@ -33,7 +33,7 @@ display_name = "Bea"
 role = "Evasione e riposizionamento."
 tags = Array[StringName]([&"mobility", &"evasion"])
 passive_title = "Scarto Istintivo"
-passive_description = "A cooldown dichiarato, annulla il primo colpo che la colpirebbe: Bea scarta d'istinto lontano dal pericolo e ottiene un breve i-frame."
+passive_description = "Ogni 9 secondi annulla il colpo che la colpirebbe: Bea scarta d'istinto lontano dal pericolo e resta invulnerabile per un istante."
 passive_id = &"bea_sixth_sense"
 passive_parameters = {
 "dodge_cooldown": 9.0,
@@ -42,7 +42,7 @@ passive_parameters = {
 }
 active_ability_id = &"bea_fire_z_trail"
 active_ability_title = "Powerslide"
-active_ability_description = "Si teletrasporta nell'ultima direzione guardata e lascia una scia di fuoco persistente."
+active_ability_description = "Scatto istantaneo nell'ultima direzione di movimento, che lascia dietro di sé una scia di fuoco."
 base_health_multiplier = 0.9
 base_move_speed_multiplier = 1.1
 base_fire_rate_multiplier = 1.0

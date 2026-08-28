@@ -8,57 +8,57 @@ Nomi e testi sono stati approvati dal proprietario del progetto il 17 agosto
 ## Magno
 
 Ruolo: Mobilità e controllo delle orde.  
-Passiva — Flusso Aerodinamico Bovino: Lo slancio cresce muovendosi dritto e decade cambiando direzione.  
-Attiva — Onda d'Urto Tellurica: Genera un'onda d'urto circolare che infligge danni e respinge i nemici vicini, più forte con più slancio.
+Passiva — Flusso Aerodinamico Bovino: Muovendosi dritto accumula slancio: più è veloce, più forte è la sua onda.  
+Attiva — Onda d'Urto Tellurica: Genera un'onda d'urto che danneggia e respinge i nemici vicini, più forte quanto più slancio Magno ha accumulato.
 Boss: Evil Magno.
 
 ## Bea
 
 Ruolo: Evasione e riposizionamento.  
-Passiva — Scarto Istintivo: A cooldown, annulla il primo colpo che la colpirebbe e la scarta d'istinto lontano dal pericolo con un breve i-frame.  
-Attiva — Powerslide: Si teletrasporta nell'ultima direzione guardata e lascia una scia di fuoco persistente.
+Passiva — Scarto Istintivo: Ogni 9 secondi annulla il colpo che la colpirebbe: Bea scarta d'istinto lontano dal pericolo e resta invulnerabile per un istante.  
+Attiva — Powerslide: Scatto istantaneo nell'ultima direzione di movimento, che lascia dietro di sé una scia di fuoco.
 Boss: Evil Bea.
 
 ## Zat
 
 Ruolo: Gestione del danno e sopravvivenza.  
-Passiva — Guarigione Ritardata: Parte del danno diventa una quantità recuperabile nel tempo se il giocatore evita danni successivi.  
-Attiva — Tempesta di Tuoni: Una sequenza di fulmini telegrafati cade su posizioni fisse durante alcuni secondi; il valore sta nel portarci sopra orde e Boss (B43).
+Passiva — Guarigione Ritardata: Parte del danno subito resta recuperabile: se Zat evita altri colpi per qualche secondo, quella quota torna indietro.  
+Attiva — Tempesta di Tuoni: Una tempesta di fulmini telegrafati cade su punti fissi attorno a Zat, colpendo ogni nemico che si trova sotto le zone d'impatto; il valore sta nel portarci sopra orde e Boss (B43).
 Boss: Evil Zat.
 
 ## Alea
 
-Ruolo: Progressione e crescita.  
-Passiva — L’Aquila Non Sbaglia Mai: a intervalli regolari tira un effetto temporaneo, forte in bene o in male; ogni nemico ucciso carica la fortuna del prossimo tiro, che la spende per intero.  
-Attiva — Gran Piroetta: Rotazione rapida che colpisce ripetutamente i nemici vicini.
+Ruolo: Rischio, fortuna e mischia.  
+Passiva — L’Aquila Non Sbaglia Mai: Ogni 10 secondi tira un effetto a caso: uccidere nemici aiuta la sorte (ogni kill carica la fortuna del tiro successivo, che la spende per intero).  
+Attiva — Gran Piroetta: Una rotazione rapida che colpisce ripetutamente tutti i nemici vicini.
 Boss: Evil Alea.
 
 ## Aleo
 
-Ruolo: Sbalzo termico — brucia quando sta bene, raffredda quando è in difficoltà.  
-Passiva — Termostato Interno: sopra metà salute lavora in riscaldamento e aumenta il danno inflitto; sotto metà passa in raffrescamento, riduce il danno subito e la brina rallenta ed erode i nemici vicini. Un'aura ciano o arancio dichiara sempre la modalità corrente.  
-Attiva — Shock Termico: Congela un'area per un istante, poi la fa esplodere di calore con danno raddoppiato sui nemici brinati.
+Ruolo: Sbalzo termico e gestione del danno.  
+Passiva — Termostato Interno: Sopra metà vita scalda e infligge più danno; sotto metà raffredda, incassa meno e la brina rallenta e logora i nemici vicini. Un'aura ciano o arancio dichiara sempre la modalità corrente.  
+Attiva — Shock Termico: Congela un'area per un istante, poi la fa esplodere di calore: i nemici ancora brinati subiscono danno raddoppiato.
 Boss: Evil Aleo.
 
 ## Lollo
 
 Ruolo: Velocità, caos e imprevedibilità.  
 Passiva — Iperfocus ADHD: Alterna a intervalli casuali una fase di iperfocus (movimento e cadenza di fuoco molto più rapidi) e una fase distratta (movimento e cadenza sotto la norma); ogni nemico ucciso accorcia la sola distrazione. Una tinta dedicata dichiara la fase corrente.  
-Attiva — Cosplay Casuale: Usa l'attiva di un altro personaggio, estratta in anticipo e annunciata prima del lancio, così da poterci pianificare sopra.
+Attiva — Cosplay Casuale: Estrae in anticipo l'abilità di un altro personaggio e la mostra sul pulsante: la prossima attivazione lancia quella.
 Boss: Evil Lollo.
 
 ## Migi
 
 Ruolo: Difesa e controllo delle orde.  
-Passiva — Guscio Tartarughina: Placche che annullano i primi colpi e si ricaricano nel tempo; sotto soglia critica arriva uno scudo d'emergenza (con cooldown).  
-Attiva — Rallentamento Zen: Zona che rallenta fortemente i nemici e assorbe i loro proiettili.
+Passiva — Guscio Tartarughina: Le placche del guscio annullano i primi colpi e si ricaricano; sotto il 35% di vita la Tartarughina tira fuori il carapace.  
+Attiva — Rallentamento Zen: Crea una zona che rallenta fortemente i nemici vicini e assorbe i proiettili che vi entrano.
 Boss: Evil Migi.
 
 ## Marghe
 
 Ruolo: Indebolimento e manipolazione dell'aggro.  
-Passiva — Sorriso Contagioso: I nemici vicini subiscono più danno da ogni fonte, arma e abilità comprese, e sono marcati da una tinta magenta riconoscibile.  
-Attiva — Reggeton time!: Genera un clone che balla reggaeton e devia l'aggro dei nemici.
+Passiva — Sorriso Contagioso: I nemici vicini subiscono più danno da ogni fonte, arma e abilità comprese (i Boss non ne risentono), e sono marcati da una tinta magenta riconoscibile.  
+Attiva — Reggaeton time!: Genera un clone che balla reggaeton e devia su di sé l'aggro dei nemici.
 Boss: Evil Marghe.
 
 ## Direzione visuale del cast

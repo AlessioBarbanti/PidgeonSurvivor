@@ -5,6 +5,13 @@ signal pause_requested()
 
 const GAMEPLAY_TOP_INSET := 88.0
 const DEFAULT_CONTROL_EDGE_PADDING := Vector2(20.0, 20.0)
+const BAR_LABEL_INSET := 10.0
+## UI-004: margine orizzontale delle barre XP/HP, in frazione della
+## larghezza del viewport. Simmetrico, indipendente dalla safe area.
+const BAR_HORIZONTAL_MARGIN_RATIO := 0.05
+## Le barre XP/HP occupano i primi 38px della fascia: la pausa scende verso la
+## riga del cronometro, per quanto lo consente GAMEPLAY_TOP_INSET.
+const PAUSE_TOP_INSET := 39.0
 
 @onready var _experience_bar: ProgressBar = %ExperienceBar
 @onready var _experience_kind_label: Label = %ExperienceKindLabel
@@ -227,6 +234,26 @@ func set_active_ability_scale(scale_value: float, edge_padding: Vector2) -> void
 	_ability_panel.offset_top = _ability_panel.offset_bottom - target_size.y
 
 
+func get_bar_horizontal_margin_ratio() -> float:
+	return BAR_HORIZONTAL_MARGIN_RATIO
+
+
+func set_bar_horizontal_offsets(left_offset: float, right_offset: float) -> void:
+	# Le barre XP/HP ignorano la safe area e si allineano al viewport, quindi gli
+	# offset arrivano gia' calcolati e possono uscire dal rettangolo sicuro.
+	var safe_left := left_offset if is_finite(left_offset) else 0.0
+	var safe_right := right_offset if is_finite(right_offset) else 0.0
+	for panel: Control in [_experience_panel, _health_panel]:
+		if is_instance_valid(panel):
+			panel.offset_left = safe_left
+			panel.offset_right = safe_right
+	for label: Label in [_experience_kind_label, _health_kind_label]:
+		if is_instance_valid(label):
+			var label_width := label.offset_right - label.offset_left
+			label.offset_left = safe_left + BAR_LABEL_INSET
+			label.offset_right = label.offset_left + label_width
+
+
 func set_pause_edge_padding(edge_padding: Vector2) -> void:
 	if not is_instance_valid(_pause_button):
 		return
@@ -234,8 +261,19 @@ func set_pause_edge_padding(edge_padding: Vector2) -> void:
 	var target_size := _pause_button.custom_minimum_size.max(Vector2.ZERO)
 	_pause_button.offset_left = -safe_padding.x - target_size.x
 	_pause_button.offset_right = -safe_padding.x
-	_pause_button.offset_top = safe_padding.y
-	_pause_button.offset_bottom = safe_padding.y + target_size.y
+	# L'altezza effettiva puo' superare custom_minimum_size: il minimo del tema
+	# (bordi del StyleBox) vince. Usiamo quella reale e teniamo il pulsante
+	# dentro la fascia dichiarata.
+	var button_height := maxf(
+		target_size.y,
+		_pause_button.get_combined_minimum_size().y
+	)
+	var top_inset := maxf(
+		minf(PAUSE_TOP_INSET, GAMEPLAY_TOP_INSET - button_height),
+		safe_padding.y
+	)
+	_pause_button.offset_top = top_inset
+	_pause_button.offset_bottom = top_inset + button_height
 
 
 func is_touch_origin_excluded(viewport_position: Vector2) -> bool:

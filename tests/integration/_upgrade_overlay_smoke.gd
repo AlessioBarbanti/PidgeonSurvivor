@@ -92,7 +92,7 @@ func _validate_responsive_layouts() -> void:
 				"%s: carta %d non e' un target touch ampio." % [profile_name, index + 1]
 			)
 			_expect(
-				card.get_title_text() == card.get_definition().title
+				card.get_title_text() == card.get_definition().title.to_upper()
 				and card.get_description_text() == card.get_definition().description,
 				"%s: carta %d deve mostrare titolo e descrizione dati." % [profile_name, index + 1]
 			)
@@ -179,12 +179,26 @@ func _validate_composed_input_and_queue() -> void:
 	_expect(not joystick.visible, "Il joystick composto deve essere nascosto.")
 	_expect(input_router.is_input_suspended(), "L'input gameplay deve restare sospeso.")
 
+	# Il lock iniziale scarta i tap partiti mentre il pollice era sul joystick.
+	_expect(overlay.is_selection_locked(), "L'offerta deve aprirsi con la selezione bloccata.")
+	_expect(
+		overlay.get_focused_card_index() < 0,
+		"L'offerta non deve preselezionare nessuna carta."
+	)
+	_dispatch_event(_key(KEY_1))
+	_dispatch_event(_key(KEY_1, false))
+	await _wait_processed_frame()
+	_expect(selected_ids.is_empty(), "Un input dentro il lock non deve applicare scelte.")
+	await _wait_selection_unlock(overlay)
+
 	# Tastiera: il tasto numerico sceglie direttamente la seconda carta.
 	_dispatch_event(_key(KEY_2))
 	_dispatch_event(_key(KEY_2, false))
 	await _wait_processed_frame()
 	_expect(selected_ids.size() == 1, "Un input tastiera deve applicare una sola scelta.")
 	_expect(overlay.get_displayed_level() == 3, "La coda deve mostrare subito l'offerta successiva.")
+
+	await _wait_selection_unlock(overlay)
 
 	# Controller: D-pad sposta il focus, A conferma la carta focalizzata.
 	_expect(overlay.focus_card(0), "La fixture deve poter focalizzare la prima carta.")
@@ -198,12 +212,16 @@ func _validate_composed_input_and_queue() -> void:
 	_expect(selected_ids.size() == 2, "Un input controller deve applicare una sola scelta.")
 	_expect(overlay.get_displayed_level() == 4, "La terza offerta deve seguire senza frame RUNNING.")
 
+	await _wait_selection_unlock(overlay)
+
 	# Mouse: l'intero riquadro Button e' selezionabile.
 	var mouse_card := overlay.get_cards()[0]
 	await _dispatch_mouse_click(mouse_card.get_global_rect().get_center())
 	await _wait_processed_frame()
 	_expect(selected_ids.size() == 3, "Un click mouse deve applicare una sola scelta.")
 	_expect(overlay.get_displayed_level() == 5, "La quarta offerta deve restare nello stesso LEVEL_UP.")
+
+	await _wait_selection_unlock(overlay)
 
 	# Touch: un tap sul terzo riquadro percorre lo stesso segnale del Button.
 	var touch_card := overlay.get_cards()[2]
@@ -287,6 +305,11 @@ func _create_overlay_fixture(safe_rect: Rect2, seed_value: int) -> Dictionary:
 	_expect(controller.start_run(seed_value), "La fixture B11 deve avviare la run.")
 	_expect(experience.add_experience(1), "La fixture B11 deve generare un'offerta.")
 	await _wait_processed_frame()
+	_expect(
+		overlay.get_focused_card_index() < 0,
+		"L'offerta non deve preselezionare nessuna carta."
+	)
+	await _wait_selection_unlock(overlay)
 	return {
 		"root": fixture_root,
 		"controller": controller,
@@ -363,6 +386,14 @@ func _expect_rect_near(actual: Rect2, expected: Rect2, message: String) -> void:
 		and actual.size.distance_to(expected.size) <= LAYOUT_TOLERANCE,
 		"%s Atteso %s, ottenuto %s." % [message, expected, actual]
 	)
+
+
+func _wait_selection_unlock(overlay: UpgradeOverlay) -> void:
+	while overlay.is_selection_locked():
+		await create_timer(
+			overlay.get_selection_lock_remaining() + 0.05, true, false, true
+		).timeout
+	await _wait_processed_frame()
 
 
 func _wait_processed_frame() -> void:

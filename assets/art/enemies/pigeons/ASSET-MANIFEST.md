@@ -1,5 +1,25 @@
 # B18H pigeon sprites
 
+## Frammento del divisore
+
+- Data generazione: 28 agosto 2026; origine e autore: progetto IL GIOCO con
+  assistenza OpenAI ImageGen built-in; licenza: Licenza del progetto.
+- Prompt: tre celle orizzontali uguali per un piccolo piccione viola rivolto a
+  destra, pose ali su/neutra/ali giu', contorno plum scuro, piuma lavanda,
+  becco e zampe arancio, su chroma verde uniforme; nessun testo, UI, ambiente,
+  ombra o watermark.
+- Trasformazioni: il master RGBA e' in `hd/` ed escluso da import/export; ogni
+  componente opaca e' stata ricavata per cella, scalata nearest-neighbor e
+  allineata al bordo basso in tre canvas `48x48` tramite
+  `tools/process-cast-sprite.ps1 -FrameCount 3 -CanvasSize 48 -Padding 8`.
+- File: master `hd/pigeon_splitter_fragment_source.png` SHA-256
+  `B1E49D0D3EAE639D55ABCCBE139B509F2698FF0A9FDDBD474BE8EDE4BD4DB9B5`;
+  strip runtime `pigeon_splitter_fragment.png` (`144x48`) SHA-256
+  `9851987E50AA5C6D9ED915318D14367C2E431085F2F80EB40F7F5AE5BF700AAA`.
+- Integrazione: `splitter_fragment` usa `SpriteFrames.base` a 3 frame e 8 fps;
+  restano invariati collisione, HP, velocita', danno, XP e split del genitore.
+  La verifica percettiva in un'orda densa su Windows/Pixel 9 resta aperta.
+
 Original assets commissioned for IL GIOCO on 2026-08-24 with the built-in
 OpenAI image generation tool. No third-party image or character was supplied as
 an input. The runtime game has no dependency on the generation service.
@@ -50,9 +70,9 @@ data-driven variants, but it is not selected by the current spawner.
   sciamatore, corazzato, divisore e tiratore (`data/enemies/*.tres`), con
   `AnimatedSprite2D` dedicato nelle rispettive scene
   (`configurable_enemy.tscn`, `splitter_enemy.tscn`, `ranged_enemy.tscn`).
-  Il frammento del divisore resta sul disegno procedurale B40, senza texture
-  propria. Nessun cambio a hitbox, parametri, spawn o comportamento. Verifica
-  Windows eseguita il 28 agosto 2026 con le cinque sprite (base + quattro
+  Il frammento del divisore usa ora il proprio strip; nessun cambio a hitbox,
+  parametri, spawn o comportamento. Verifica
+  Windows eseguita il 28 agosto 2026 con le sei sprite (base + quattro
   archetipi) renderizzate affiancate: restano distinguibili a colpo d'occhio.
   La verifica fisica su Pixel 9 in un'orda densa in gioco resta un gate B49.
 

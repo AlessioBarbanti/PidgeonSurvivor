@@ -52,7 +52,7 @@ effect_parameters = {"illusion_lifetime_on_death": true}
 [resource]
 script = ExtResource("1_definition")
 id = &"marghe_shadow_deception"
-title = "Reggeton time!"
+title = "Reggaeton time!"
 description = "Genera un clone che balla reggaeton e devia su di sé l'aggro dei nemici."
 effect_summary = "DURATA CLONE 3 S · RICARICA 13 S"
 icon = ExtResource("2_icon")

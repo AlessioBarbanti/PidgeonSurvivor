@@ -4,6 +4,9 @@ extends Control
 signal selection_submitted(upgrade_id: StringName)
 
 const CARD_COUNT := UpgradeService.DEFAULT_OFFER_SIZE
+# Il pollice sta ancora muovendo il joystick quando le carte compaiono: questa
+# finestra breve scarta il tap accidentale sopra la carta appena disegnata.
+const SELECTION_LOCK_SECONDS := 0.45
 
 @onready var _level_label: Label = %LevelLabel
 @onready var _queue_label := get_node_or_null("SafeMargins/Layout/QueueLabel") as Label
@@ -19,10 +22,12 @@ var _displayed_level := 0
 var _accepting_selection := false
 var _joystick_was_visible := false
 var _joystick_hidden_by_overlay := false
+var _selection_unlock_msec := 0
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	set_process(false)
 	for index in _cards.size():
 		var card := _cards[index]
 		card.upgrade_chosen.connect(_on_card_chosen)
@@ -31,6 +36,15 @@ func _ready() -> void:
 		card.focus_neighbor_top = NodePath(".")
 		card.focus_neighbor_bottom = NodePath(".")
 	hide_offer()
+
+
+# Il lock usa il tempo reale: le abilita' che alterano Engine.time_scale non
+# devono allungare o accorciare la finestra di sicurezza.
+func _process(_delta: float) -> void:
+	if is_selection_locked():
+		return
+	set_process(false)
+	_apply_selection_lock_state()
 
 
 func _exit_tree() -> void:
@@ -63,6 +77,8 @@ func configure(
 func hide_offer() -> void:
 	_accepting_selection = false
 	_displayed_level = 0
+	_selection_unlock_msec = 0
+	set_process(false)
 	visible = false
 	if is_node_ready():
 		for card in _cards:
@@ -72,6 +88,16 @@ func hide_offer() -> void:
 
 func is_accepting_selection() -> bool:
 	return _accepting_selection and visible
+
+
+func is_selection_locked() -> bool:
+	return _selection_unlock_msec > Time.get_ticks_msec()
+
+
+func get_selection_lock_remaining() -> float:
+	if not is_selection_locked():
+		return 0.0
+	return float(_selection_unlock_msec - Time.get_ticks_msec()) / 1000.0
 
 
 func get_upgrade_service() -> UpgradeService:
@@ -121,6 +147,8 @@ func submit_card(index: int) -> bool:
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_accepting_selection() or event.is_echo() or not event.is_pressed():
 		return
+	if is_selection_locked():
+		return
 
 	if event is InputEventKey:
 		var key_event := event as InputEventKey
@@ -150,12 +178,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		_focus_relative(direction)
 		return
 
-	# Button focus normally consumes ui_accept first. This fallback also covers a
-	# synthetic/controller accept received before the deferred initial focus.
+	# Button focus normally consumes ui_accept first. Senza preselezione il primo
+	# accept sceglie soltanto la carta iniziale, non la conferma.
 	if event.is_action_pressed(&"ui_accept"):
 		get_viewport().set_input_as_handled()
 		var focused_index := get_focused_card_index()
-		submit_card(0 if focused_index < 0 else focused_index)
+		if focused_index < 0:
+			focus_card(0)
+			return
+		submit_card(focused_index)
 
 
 func _show_offer(level: int, offers: Array[UpgradeDefinition]) -> void:
@@ -187,17 +218,22 @@ func _show_offer(level: int, offers: Array[UpgradeDefinition]) -> void:
 			_queue_label.text = (
 				"Scegli un potenziamento"
 				if pending_choices == 1
-				else "Scegli un potenziamento  -  %d scelte in coda" % pending_choices
+				else "Scegli un potenziamento  •  %d scelte in coda" % pending_choices
 			)
 	_hide_touch_joystick()
 	visible = true
 	_accepting_selection = true
-	_cards[0].call_deferred("grab_focus")
+	# Nessuna carta preselezionata: il focus compare solo se il giocatore naviga.
+	_release_card_focus()
+	_selection_unlock_msec = Time.get_ticks_msec() + int(SELECTION_LOCK_SECONDS * 1000.0)
+	_apply_selection_lock_state()
+	set_process(true)
 
 
 func _submit_selection(upgrade_id: StringName) -> bool:
 	if (
 		not is_accepting_selection()
+		or is_selection_locked()
 		or upgrade_id.is_empty()
 		or not is_instance_valid(_upgrade_service)
 	):
@@ -223,6 +259,23 @@ func _submit_selection(upgrade_id: StringName) -> bool:
 			card.disabled = false
 		_accepting_selection = true
 	return false
+
+
+# Durante il lock le carte restano disabilitate: un tap iniziato in quella
+# finestra non viene registrato dal Button nemmeno se il dito si stacca dopo.
+func _apply_selection_lock_state() -> void:
+	var locked := is_selection_locked()
+	for card in _cards:
+		if card.get_definition() != null:
+			card.disabled = locked
+
+
+func _release_card_focus() -> void:
+	if not is_inside_tree():
+		return
+	var focus_owner := get_viewport().gui_get_focus_owner()
+	if focus_owner in _cards:
+		focus_owner.release_focus()
 
 
 func _focus_relative(direction: int) -> void:
