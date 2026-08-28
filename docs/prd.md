@@ -362,7 +362,7 @@ Baseline iniziali delle passive, tutte configurabili nei `.tres`:
 | Zat | `35%` del danno recuperabile dopo `3 s`, recupero in `4 s` |
 | Alea | effetto ogni `12 s` per `5 s`; `75%` positivo (`×1,20`) e `25%` negativo (`×0,90`) su movimento o fuoco |
 | Aleo | sopra il `50%` HP danno inflitto `×1,20`; sotto il `50%` HP danno subito `-25%` e nemici entro `140 px` rallentati a `×0,70` |
-| Lollo | movimento `×1,10`, frequenza di fuoco `×1,15` |
+| Lollo | iperfocus `4-8 s` (movimento `×1,35`, fuoco `×1,45`) alternato a distrazione `3-6 s` (movimento `×0,85`, fuoco `×0,80`); durata di ogni fase estratta casualmente |
 | Migi | riduzione danno `10%`; sotto `35%` HP scudo da un colpo per `4 s`, cooldown `20 s` |
 | Marghe | salute massima dei nemici base `×0,95`; Boss esclusi dalla baseline |
 

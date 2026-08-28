@@ -357,14 +357,27 @@ prima del colpo, ed è lo sbalzo fra le due fasi a produrre il danno vero.
 
 Velocità, caos e imprevedibilità.
 
-## Passiva — Iperattività ADHD
+## Passiva — Iperfocus ADHD
 
-Aumenta:
+Lollo non ha un bonus costante: oscilla fra due stati mentali e non decide lui
+quando cambiano.
 
-* velocità di movimento;
-* rapidità delle azioni offensive.
+* In **iperfocus** è fulmineo: velocità di movimento e cadenza delle azioni
+  offensive salgono ben oltre la norma.
+* In **distrazione** scende sotto la norma: si muove e attacca più lentamente
+  della media.
 
-L'eventuale componente di movimento imprevedibile è ancora da valutare durante il prototipo, perché non deve compromettere il controllo diretto del personaggio.
+Il passaggio da uno stato all'altro avviene automaticamente dopo un tempo
+**casuale**, diverso per ciascuna fase, quindi il giocatore non può programmare
+il ritmo ma deve leggerlo e adattarsi: spendere l'iperfocus in aggressione e
+usare la distrazione per riposizionarsi.
+
+Le durate medie delle due fasi sono calibrate perché il rendimento medio resti
+vicino a un personaggio veloce standard: l'imprevedibilità è il costo, non un
+potenziamento netto.
+
+Il controllo diretto del personaggio non viene mai sottratto al giocatore: la
+passiva agisce solo sui moltiplicatori, non sull'input.
 
 ## Attiva — Cosplay Casuale
 

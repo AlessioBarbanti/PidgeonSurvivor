@@ -32,12 +32,18 @@ id = &"lollo"
 display_name = "Lollo"
 role = "Velocità, caos e imprevedibilità."
 tags = Array[StringName]([&"mobility", &"random", &"copy"])
-passive_title = "Iperattività ADHD"
-passive_description = "Aumenta velocità di movimento e rapidità offensiva."
+passive_title = "Iperfocus ADHD"
+passive_description = "Alterna a intervalli casuali una fase di iperfocus fulminea e una fase distratta più lenta."
 passive_id = &"lollo_hyperactivity"
 passive_parameters = {
-"fire_rate_multiplier": 1.15,
-"move_speed_multiplier": 1.1
+"distracted_duration_max": 6.0,
+"distracted_duration_min": 3.0,
+"distracted_fire_rate_multiplier": 0.8,
+"distracted_move_speed_multiplier": 0.85,
+"focus_duration_max": 8.0,
+"focus_duration_min": 4.0,
+"focus_fire_rate_multiplier": 1.45,
+"focus_move_speed_multiplier": 1.35
 }
 active_ability_id = &"lollo_random_cosplay"
 active_ability_title = "Cosplay Casuale"

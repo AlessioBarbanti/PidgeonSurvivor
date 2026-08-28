@@ -7,6 +7,7 @@ signal delayed_healing_changed(recoverable_health: float)
 signal shield_changed(active: bool, remaining: float)
 signal random_effect_started(positive: bool, stat_id: StringName, multiplier: float)
 signal thermal_mode_changed(hot: bool)
+signal hyperfocus_changed(focused: bool, phase_duration: float)
 
 const MAGNO_AERODYNAMIC_FLOW := &"magno_aerodynamic_flow"
 const BEA_SIXTH_SENSE := &"bea_sixth_sense"
@@ -40,6 +41,8 @@ var _alea_move_multiplier := 1.0
 var _alea_fire_multiplier := 1.0
 var _aleo_hot := true
 var _aleo_chilled_targets: Array[BaseEnemy] = []
+var _lollo_focused := true
+var _lollo_phase_remaining := 0.0
 
 
 func _process(delta: float) -> void:
@@ -59,6 +62,8 @@ func _process(delta: float) -> void:
 			_advance_alea_effect(safe_delta)
 		ALEO_INTERNAL_THERMOSTAT:
 			_advance_aleo_thermostat()
+		LOLLO_HYPERACTIVITY:
+			_advance_lollo_hyperfocus(safe_delta)
 		MIGI_TURTLE_SHELL:
 			_advance_migi_shield(safe_delta)
 
@@ -116,6 +121,14 @@ func is_shield_active() -> bool:
 
 func get_shield_remaining() -> float:
 	return _shield_remaining
+
+
+func is_hyperfocused() -> bool:
+	return _lollo_focused
+
+
+func get_hyperfocus_remaining() -> float:
+	return maxf(_lollo_phase_remaining, 0.0)
 
 
 func resolve_incoming_damage(amount: float) -> float:
@@ -248,6 +261,33 @@ func _activate_alea_effect() -> void:
 	random_effect_started.emit(positive, stat_id, multiplier)
 
 
+func _advance_lollo_hyperfocus(delta: float) -> void:
+	_lollo_phase_remaining -= delta
+	if _lollo_phase_remaining > 0.0:
+		return
+	_lollo_focused = not _lollo_focused
+	_lollo_phase_remaining = _roll_lollo_phase_duration(_lollo_focused)
+	_apply_character_multipliers()
+	hyperfocus_changed.emit(_lollo_focused, _lollo_phase_remaining)
+
+
+func _roll_lollo_phase_duration(focused: bool) -> float:
+	var minimum := _definition.get_passive_float(
+		&"focus_duration_min" if focused else &"distracted_duration_min",
+		4.0 if focused else 3.0,
+		AbilityDefinition.MINIMUM_POSITIVE_VALUE
+	)
+	var maximum := maxf(
+		_definition.get_passive_float(
+			&"focus_duration_max" if focused else &"distracted_duration_max",
+			8.0 if focused else 6.0,
+			AbilityDefinition.MINIMUM_POSITIVE_VALUE
+		),
+		minimum
+	)
+	return _rng.randf_range(minimum, maximum)
+
+
 func _advance_aleo_thermostat() -> void:
 	var hot := _resolve_aleo_hot_mode()
 	if hot != _aleo_hot:
@@ -357,12 +397,20 @@ func _apply_character_multipliers() -> void:
 				)
 			LOLLO_HYPERACTIVITY:
 				move_multiplier = _definition.get_passive_float(
-					&"move_speed_multiplier",
+					(
+						&"focus_move_speed_multiplier"
+						if _lollo_focused
+						else &"distracted_move_speed_multiplier"
+					),
 					1.0,
 					MINIMUM_MULTIPLIER
 				)
 				fire_multiplier = _definition.get_passive_float(
-					&"fire_rate_multiplier",
+					(
+						&"focus_fire_rate_multiplier"
+						if _lollo_focused
+						else &"distracted_fire_rate_multiplier"
+					),
 					1.0,
 					MINIMUM_MULTIPLIER
 				)
@@ -423,6 +471,11 @@ func _reset_runtime(seed_value: int) -> void:
 		if _definition != null and _definition.passive_id == ALEA_EAGLE_NEVER_MISSES
 		else 0.0
 	)
+	_lollo_focused = true
+	_lollo_phase_remaining = 0.0
+	if _definition != null and _definition.passive_id == LOLLO_HYPERACTIVITY:
+		_lollo_phase_remaining = _roll_lollo_phase_duration(_lollo_focused)
+		hyperfocus_changed.emit(_lollo_focused, _lollo_phase_remaining)
 	_apply_character_multipliers()
 	if _definition != null and _definition.passive_id == MARGHE_CONTAGIOUS_SMILE:
 		for target in _targeting_system.get_alive_targets():

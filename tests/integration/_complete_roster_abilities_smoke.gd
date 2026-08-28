@@ -232,8 +232,49 @@ func _validate_passive(
 				"Aleo in raffrescamento deve ridurre il danno del 25%."
 			)
 		&"lollo":
-			_expect_float_near(player.get_character_move_speed_multiplier(), 1.1, "Lollo deve avere +10% movimento.")
-			_expect_float_near(weapon.get_character_fire_rate_multiplier(), 1.15, "Lollo deve avere +15% frequenza.")
+			var lollo_definition := passive.get_definition()
+			_expect(passive.is_hyperfocused(), "Lollo deve avviare la run in iperfocus.")
+			_expect_float_near(
+				player.get_character_move_speed_multiplier(),
+				1.35,
+				"L'iperfocus di Lollo deve dare +35% movimento."
+			)
+			_expect_float_near(
+				weapon.get_character_fire_rate_multiplier(),
+				1.45,
+				"L'iperfocus di Lollo deve dare +45% frequenza."
+			)
+			var focus_remaining := passive.get_hyperfocus_remaining()
+			_expect(
+				focus_remaining >= lollo_definition.get_passive_float(&"focus_duration_min")
+				and focus_remaining <= lollo_definition.get_passive_float(&"focus_duration_max"),
+				"La fase di iperfocus deve durare un tempo casuale nell'intervallo dichiarato."
+			)
+			passive._process(focus_remaining + 0.01)
+			_expect(not passive.is_hyperfocused(), "Alla scadenza Lollo deve passare in distrazione.")
+			_expect_float_near(
+				player.get_character_move_speed_multiplier(),
+				0.85,
+				"La distrazione di Lollo deve ridurre il movimento del 15%."
+			)
+			_expect_float_near(
+				weapon.get_character_fire_rate_multiplier(),
+				0.8,
+				"La distrazione di Lollo deve ridurre la frequenza del 20%."
+			)
+			var distracted_remaining := passive.get_hyperfocus_remaining()
+			_expect(
+				distracted_remaining >= lollo_definition.get_passive_float(&"distracted_duration_min")
+				and distracted_remaining <= lollo_definition.get_passive_float(&"distracted_duration_max"),
+				"La fase di distrazione deve durare un tempo casuale nell'intervallo dichiarato."
+			)
+			passive._process(distracted_remaining + 0.01)
+			_expect(passive.is_hyperfocused(), "Dopo la distrazione Lollo deve rientrare in iperfocus.")
+			_expect_float_near(
+				player.get_character_move_speed_multiplier(),
+				1.35,
+				"Il ritorno in iperfocus deve ripristinare il bonus movimento."
+			)
 		&"migi":
 			_expect(player.take_contact_damage(75.0), "Migi deve attraversare la soglia scudo.")
 			_expect(passive.is_shield_active(), "Migi deve attivare lo scudo sotto il 35%.")

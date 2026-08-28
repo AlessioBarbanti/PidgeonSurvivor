@@ -43,7 +43,7 @@ Boss: Evil Aleo.
 ## Lollo
 
 Ruolo: Velocità, caos e imprevedibilità.  
-Passiva — Iperattività ADHD: Aumenta velocità di movimento e rapidità offensiva.  
+Passiva — Iperfocus ADHD: Alterna a intervalli casuali una fase di iperfocus (movimento e cadenza di fuoco molto più rapidi) e una fase distratta (movimento e cadenza sotto la norma).  
 Attiva — Cosplay Casuale: Usa casualmente l'attiva di un altro personaggio.
 Boss: Evil Lollo.
 
