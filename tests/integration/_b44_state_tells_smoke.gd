@@ -26,6 +26,7 @@ func _run() -> void:
 	await _validate_aleo_thermal_state()
 	await _validate_lollo_distraction()
 	await _validate_pending_cosplay()
+	await _validate_pending_cosplay_before_run()
 	await _finish()
 
 
@@ -330,7 +331,72 @@ func _validate_pending_cosplay() -> void:
 	await process_frame
 
 
-func _build_context() -> Dictionary:
+## Nel gioco reale il profilo si equipaggia nella selezione personaggio, cioe'
+## a run ferma: l'estrazione anticipata deve esserci gia' al primo lancio,
+## altrimenti il pulsante mostra l'icona generica e il primo Cosplay torna a
+## essere un tiro cieco.
+func _validate_pending_cosplay_before_run() -> void:
+	var context := await _build_context(false)
+	if context.is_empty():
+		return
+	var controller: RunController = context["controller"]
+	var registry: FriendRegistry = context["registry"]
+	var movement_slice: Control = context["slice"]
+	var ability := movement_slice.get_ability_controller() as AbilityController
+	var effects := movement_slice.get_ability_effect_registry() as AbilityEffectRegistry
+	var hud := movement_slice.get_hud() as GameHud
+	var lollo := registry.resolve_definition(&"lollo")
+	var cosplay: AbilityDefinition = (
+		effects.resolve_definition(lollo.active_ability_id) if lollo != null else null
+	)
+	_expect(
+		ability != null and effects != null and hud != null and cosplay != null,
+		"Servono controller, registry, HUD e Cosplay per la verifica pre-run."
+	)
+	if ability == null or effects == null or hud == null or cosplay == null:
+		movement_slice.queue_free()
+		await process_frame
+		return
+
+	controller.prepare_restart()
+	_expect(
+		ability.equip_definition(cosplay),
+		"Il Cosplay deve essere equipaggiabile a run ferma."
+	)
+	_expect(
+		not ability.get_pending_cosplay_ability_id().is_empty(),
+		"L'estrazione deve essere annunciata gia' nella selezione personaggio."
+	)
+	_expect(controller.start_run(4711), "La run deve poter partire dopo l'equip.")
+
+	# Il tiro viene rifatto con l'RNG della run: resta deterministico per seed.
+	var pending := ability.get_pending_cosplay_ability_id()
+	_expect(
+		not pending.is_empty(),
+		"Anche il primo lancio deve avere un'estrazione annunciata."
+	)
+	var button := hud.get_active_ability_button()
+	var pending_icon := ability.get_pending_cosplay_icon()
+	_expect(
+		button != null and pending_icon != null and button.get_ability_icon() == pending_icon,
+		"Il pulsante deve mostrare il bersaglio annunciato gia' al primo lancio."
+	)
+	_expect(ability.try_activate(), "Il primo Cosplay deve essere eseguibile.")
+	_expect(
+		effects.get_last_copied_ability_id() == pending,
+		"Il primo lancio deve eseguire esattamente l'abilita' annunciata."
+	)
+	_expect(
+		effects.get_active_effect_count() > 0,
+		"Il primo Cosplay deve produrre un effetto reale in scena."
+	)
+
+	controller.prepare_restart()
+	movement_slice.queue_free()
+	await process_frame
+
+
+func _build_context(start_run := true) -> Dictionary:
 	var movement_slice := MOVEMENT_SLICE_SCENE.instantiate() as Control
 	root.add_child(movement_slice)
 	await process_frame
@@ -356,7 +422,8 @@ func _build_context() -> Dictionary:
 	spawner.set_process(false)
 	player.set_physics_process(false)
 	passive.set_process(false)
-	controller.start_run(4711)
+	if start_run:
+		controller.start_run(4711)
 	return {
 		"slice": movement_slice,
 		"controller": controller,

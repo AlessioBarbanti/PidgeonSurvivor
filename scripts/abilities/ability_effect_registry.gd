@@ -6,6 +6,9 @@ signal effect_executed(
 	effect: Node2D,
 	affected_count: int
 )
+## L'estrazione anticipata del Cosplay e' un tell HUD: quando cambia, il
+## pulsante deve poter aggiornare l'icona anche fuori dai tick di ricarica.
+signal pending_cosplay_changed(ability_id: StringName)
 
 const EARTHQUAKE_SHOCKWAVE := &"earthquake_shockwave"
 const FIRE_Z_TRAIL := &"fire_z_trail"
@@ -36,6 +39,7 @@ var _last_affected_count := 0
 var _last_copied_ability_id: StringName
 var _previous_copied_ability_id: StringName
 var _pending_cosplay_ability_id: StringName
+var _pending_cosplay_definition: AbilityDefinition
 var _execution_serial := 0
 var _rng := RandomNumberGenerator.new()
 
@@ -135,7 +139,7 @@ func clear_active_effects() -> void:
 	_last_affected_count = 0
 	_last_copied_ability_id = &""
 	_previous_copied_ability_id = &""
-	_pending_cosplay_ability_id = &""
+	_set_pending_cosplay_ability_id(&"")
 
 
 func get_active_effect_count() -> int:
@@ -184,12 +188,20 @@ func get_pending_cosplay_ability_id() -> StringName:
 ## Prepara (o ri-prepara) la scelta del prossimo Cosplay. Va chiamata
 ## all'equipaggiamento del profilo e dopo ogni lancio; restituisce l'ID
 ## scelto, oppure la stringa vuota se nessun candidato e' compatibile.
+##
+## L'equipaggiamento avviene nella selezione personaggio, cioe' a run ferma:
+## qui i candidati si filtrano senza il gate `is_running`, altrimenti il primo
+## lancio partirebbe senza estrazione annunciata (pulsante con l'icona
+## generica di Cosplay e tiro risolto solo al momento dell'uso).
 func prepare_pending_cosplay(definition: AbilityDefinition) -> StringName:
 	if definition == null or definition.effect_id != RANDOM_COSPLAY:
+		_pending_cosplay_definition = null
+		_set_pending_cosplay_ability_id(&"")
 		return &""
-	var candidates := _get_cosplay_candidates(definition)
+	_pending_cosplay_definition = definition
+	var candidates := _get_cosplay_candidates(definition, false)
 	if candidates.is_empty():
-		_pending_cosplay_ability_id = &""
+		_set_pending_cosplay_ability_id(&"")
 		return _pending_cosplay_ability_id
 	var avoid_repeat := definition.effect_parameters.get("avoid_repeat", false) as bool
 	if (
@@ -200,10 +212,17 @@ func prepare_pending_cosplay(definition: AbilityDefinition) -> StringName:
 		for index in range(candidates.size() - 1, -1, -1):
 			if candidates[index].id == _previous_copied_ability_id:
 				candidates.remove_at(index)
-	_pending_cosplay_ability_id = candidates[
+	_set_pending_cosplay_ability_id(candidates[
 		_rng.randi_range(0, candidates.size() - 1)
-	].id
+	].id)
 	return _pending_cosplay_ability_id
+
+
+func _set_pending_cosplay_ability_id(ability_id: StringName) -> void:
+	if _pending_cosplay_ability_id == ability_id:
+		return
+	_pending_cosplay_ability_id = ability_id
+	pending_cosplay_changed.emit(_pending_cosplay_ability_id)
 
 
 func get_run_controller() -> RunController:
@@ -411,7 +430,7 @@ func _execute_random_cosplay(
 ) -> Node2D:
 	var candidates := _get_cosplay_candidates(definition)
 	if candidates.is_empty():
-		_pending_cosplay_ability_id = &""
+		_set_pending_cosplay_ability_id(&"")
 		return null
 	# Il tiro e' gia' stato risolto e mostrato al giocatore: qui si consuma
 	# la scelta pendente, ricadendo su un nuovo tiro soltanto se quella non
@@ -534,19 +553,25 @@ func _apply_earthquake_to_targets(
 	return affected_count
 
 
-func _get_cosplay_candidates(definition: AbilityDefinition) -> Array[AbilityDefinition]:
+func _get_cosplay_candidates(
+	definition: AbilityDefinition,
+	require_running := true
+) -> Array[AbilityDefinition]:
 	var candidates: Array[AbilityDefinition] = []
 	for candidate in get_compatible_definitions([COPY_COMPATIBLE], [definition.id]):
-		if candidate.effect_id == RANDOM_COSPLAY or not _can_execute_non_copy(candidate):
+		if (
+			candidate.effect_id == RANDOM_COSPLAY
+			or not _can_execute_non_copy(candidate, require_running)
+		):
 			continue
 		candidates.append(candidate)
 	return candidates
 
 
-func _can_execute_non_copy(definition: AbilityDefinition) -> bool:
+func _can_execute_non_copy(definition: AbilityDefinition, require_running := true) -> bool:
 	if definition == null or not definition.is_valid() or not _has_valid_dependencies():
 		return false
-	if not _run_controller.is_running():
+	if require_running and not _run_controller.is_running():
 		return false
 	match definition.effect_id:
 		EARTHQUAKE_SHOCKWAVE:
@@ -669,6 +694,9 @@ func _disconnect_run_controller() -> void:
 func _on_run_started(seed_value: int) -> void:
 	_rng.seed = seed_value if seed_value != 0 else 1
 	_execution_serial = 0
+	# L'estrazione preparata all'equipaggiamento e' anteriore al seed della run:
+	# ripeterla qui la rende deterministica per seed come ogni altro tiro.
+	prepare_pending_cosplay(_pending_cosplay_definition)
 
 
 func _on_restart_prepared() -> void:

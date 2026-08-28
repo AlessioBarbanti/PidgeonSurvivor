@@ -8,6 +8,9 @@ signal cooldown_changed(cooldown_remaining: float, cooldown_total: float)
 signal readiness_changed(is_ready: bool)
 signal ability_activated(definition: AbilityDefinition)
 signal definition_changed(definition: AbilityDefinition)
+## Rilancio del tell di Cosplay: l'estrazione anticipata puo' cambiare anche
+## quando la ricarica non emette nulla (per esempio all'avvio della run).
+signal pending_cosplay_changed(ability_id: StringName)
 
 @export var ability_definition: AbilityDefinition
 
@@ -64,6 +67,7 @@ func configure(
 
 	_input_router.active_ability_requested.connect(try_activate)
 	_run_controller.restart_prepared.connect(_on_restart_prepared)
+	_effect_registry.pending_cosplay_changed.connect(_on_pending_cosplay_changed)
 	reset_for_run()
 	return true
 
@@ -249,10 +253,19 @@ func _disconnect_dependencies() -> void:
 		and _run_controller.restart_prepared.is_connected(_on_restart_prepared)
 	):
 		_run_controller.restart_prepared.disconnect(_on_restart_prepared)
+	if (
+		is_instance_valid(_effect_registry)
+		and _effect_registry.pending_cosplay_changed.is_connected(_on_pending_cosplay_changed)
+	):
+		_effect_registry.pending_cosplay_changed.disconnect(_on_pending_cosplay_changed)
 	_run_controller = null
 	_input_router = null
 	_effect_registry = null
 	_source = null
+
+
+func _on_pending_cosplay_changed(ability_id: StringName) -> void:
+	pending_cosplay_changed.emit(ability_id)
 
 
 func _on_restart_prepared() -> void:

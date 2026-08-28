@@ -98,6 +98,7 @@ func configure(
 		_ability_controller.cooldown_changed.connect(_on_ability_cooldown_changed)
 		_ability_controller.readiness_changed.connect(_on_ability_readiness_changed)
 		_ability_controller.definition_changed.connect(_on_ability_definition_changed)
+		_ability_controller.pending_cosplay_changed.connect(_on_pending_cosplay_changed)
 	_refresh_from_sources()
 	return true
 
@@ -384,6 +385,12 @@ func _disconnect_sources() -> void:
 			_ability_controller.definition_changed.disconnect(
 				_on_ability_definition_changed
 			)
+		if _ability_controller.pending_cosplay_changed.is_connected(
+			_on_pending_cosplay_changed
+		):
+			_ability_controller.pending_cosplay_changed.disconnect(
+				_on_pending_cosplay_changed
+			)
 
 	_run_controller = null
 	_health_component = null
@@ -499,6 +506,12 @@ func _on_ability_readiness_changed(is_ready: bool) -> void:
 	):
 		_play_ability_ready_pulse()
 	_last_ability_ready = is_ready
+	_refresh_ability_state()
+
+
+## L'estrazione del Cosplay puo' cambiare fuori dai tick di ricarica: il
+## pulsante deve mostrare subito l'icona del bersaglio annunciato.
+func _on_pending_cosplay_changed(_ability_id: StringName) -> void:
 	_refresh_ability_state()
 
 
