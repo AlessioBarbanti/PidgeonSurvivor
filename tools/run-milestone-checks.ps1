@@ -201,6 +201,46 @@ function Get-AllIntegrationSmokes {
     )
 }
 
+# GUT (tests/unit + tests/integration, prefisso test_) e gli smoke legacy
+# (prefisso _, suffisso _smoke.gd) non collidono mai per costruzione: la
+# distinzione tra i due percorsi di esecuzione si basa solo sul nome file.
+function Test-IsGutTestPath {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    return (Split-Path -Path $Path -Leaf) -like 'test_*.gd'
+}
+
+function Get-AllGutTests {
+    return @(
+        Get-ChildItem -LiteralPath (Join-Path $repoRoot 'tests') -Filter 'test_*.gd' -File -Recurse |
+            Sort-Object FullName |
+            ForEach-Object { $_.FullName }
+    )
+}
+
+# I test GUT non stampano piu' un marker <MILESTONE>_..._SMOKE_OK (rimosso in
+# conversione): la conversione fedele ha comunque preservato i messaggi di
+# asserzione originali, che nella maggioranza dei file citano il proprio
+# milestone (es. "B18B richiede..."). Il grep sul contenuto resta quindi un
+# sovrainsieme sicuro del comportamento legacy: mai piu' stretto, al piu' piu'
+# ampio per i file dove il marker storico non portava un ID di milestone.
+function Find-FocusedGutTests {
+    param(
+        [Parameter(Mandatory)]
+        [string]$MilestoneId
+    )
+
+    $pattern = '\b' + [regex]::Escape($MilestoneId) + '\b'
+    return @(
+        Get-ChildItem -LiteralPath (Join-Path $repoRoot 'tests') -Filter 'test_*.gd' -File -Recurse |
+            Where-Object { Select-String -LiteralPath $_.FullName -Pattern $pattern -Quiet } |
+            ForEach-Object { $_.FullName }
+    )
+}
+
 function Get-ChangedRepositoryPaths {
     if ($ChangedPath.Count -gt 0) {
         return @($ChangedPath | ForEach-Object { $_.Replace('\', '/') } | Sort-Object -Unique)
@@ -252,6 +292,10 @@ function Find-RelevantSmokes {
             $selected.Add($normalized) | Out-Null
             continue
         }
+        if ($normalized -match '^tests/(unit|integration)/.*/?test_[^/]+\.gd$') {
+            $selected.Add($normalized) | Out-Null
+            continue
+        }
         if (-not (Test-IsRuntimePath -Path $normalized)) {
             continue
         }
@@ -287,6 +331,9 @@ function Find-RelevantSmokes {
     if ($runAll -or $unmatchedRuntime.Count -gt 0) {
         foreach ($smoke in Get-AllIntegrationSmokes) {
             $selected.Add($smoke) | Out-Null
+        }
+        foreach ($test in Get-AllGutTests) {
+            $selected.Add($test) | Out-Null
         }
     }
     return @($selected | Sort-Object)
@@ -546,6 +593,266 @@ function Invoke-Smoke {
     return $step
 }
 
+function Get-GutJUnitResults {
+    param(
+        [Parameter(Mandatory)]
+        [string]$XmlPath
+    )
+
+    if (-not (Test-Path -LiteralPath $XmlPath -PathType Leaf)) {
+        return $null
+    }
+    [xml]$xml = Get-Content -LiteralPath $XmlPath -Raw -Encoding UTF8
+    $suites = [Collections.Generic.List[object]]::new()
+    foreach ($suite in @($xml.testsuites.testsuite)) {
+        $failures = [int]$suite.failures
+        $suites.Add([pscustomobject]@{
+            path = [string]$suite.name
+            tests = [int]$suite.tests
+            failures = $failures
+            skipped = [int]$suite.skipped
+            status = if ($failures -eq 0) { 'PASS' } else { 'FAIL' }
+        }) | Out-Null
+    }
+    return @($suites)
+}
+
+# Una sola invocazione GUT copre molti file: la cache per l'intero batch (non
+# per file, a differenza di Invoke-Smoke) memorizza l'esito per-script cosi'
+# che un cache hit possa rimaterializzare gli stessi $steps senza rilanciare
+# ne' riparsare l'XML.
+function Get-GutCachedBatch {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Key,
+
+        [Parameter(Mandatory)]
+        [string]$InputHash
+    )
+
+    if (-not $cacheEnabled) {
+        return $null
+    }
+    $cachePath = Get-CacheFilePath -Key $Key
+    if (-not (Test-Path -LiteralPath $cachePath -PathType Leaf)) {
+        return $null
+    }
+    try {
+        $entry = Get-Content -LiteralPath $cachePath -Raw -Encoding UTF8 | ConvertFrom-Json
+        if ($entry.input_hash -ne $InputHash -or $entry.status -ne 'PASS') {
+            return $null
+        }
+        return $entry
+    }
+    catch {
+        return $null
+    }
+}
+
+function Save-GutCachedBatch {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Key,
+
+        [Parameter(Mandatory)]
+        [string]$InputHash,
+
+        [Parameter(Mandatory)]
+        [object[]]$Scripts,
+
+        [Parameter(Mandatory)]
+        [string]$Status
+    )
+
+    if (-not $cacheEnabled -or $Status -ne 'PASS') {
+        return
+    }
+    New-Item -ItemType Directory -Force -Path $cacheRoot | Out-Null
+    $entry = [ordered]@{
+        version = $runnerVersion
+        key = $Key
+        input_hash = $InputHash
+        status = $Status
+        scripts = @($Scripts)
+        created_utc = [DateTime]::UtcNow.ToString('o')
+    }
+    [IO.File]::WriteAllText(
+        (Get-CacheFilePath -Key $Key),
+        ($entry | ConvertTo-Json -Depth 6 -Compress),
+        [Text.UTF8Encoding]::new($false)
+    )
+}
+
+function Add-GutStepsFromScripts {
+    param(
+        [Parameter(Mandatory)]
+        [object[]]$Scripts,
+
+        [Parameter(Mandatory)]
+        [string]$Category,
+
+        [Parameter(Mandatory)]
+        [string]$LogPath,
+
+        [int]$DurationMs = 0,
+        [switch]$Cached
+    )
+
+    $added = [Collections.Generic.List[object]]::new()
+    foreach ($scriptResult in $Scripts) {
+        $status = if ($Cached) { 'CACHED' } else { $scriptResult.status }
+        $note = if ($Cached) {
+            'Input hash invariato; risultato GUT verde riutilizzato.'
+        }
+        elseif ($scriptResult.status -eq 'FAIL') {
+            "GUT: $($scriptResult.failures)/$($scriptResult.tests) test falliti."
+        }
+        else {
+            $null
+        }
+        $step = [pscustomobject]@{
+            name = "$Category-$($scriptResult.path)"
+            category = $Category
+            status = $status
+            exit_code = 0
+            timed_out = $false
+            duration_ms = $DurationMs
+            markers = @()
+            error_markers = @()
+            note = $note
+            log = $LogPath
+        }
+        $steps.Add($step)
+        $added.Add($step) | Out-Null
+        if ($status -eq 'FAIL' -and -not $KeepGoing) {
+            $script:halted = $true
+        }
+    }
+    return @($added)
+}
+
+# Sostituisce N processi Godot (uno per smoke) con un solo processo GUT: la
+# selettivita' per profilo (Focused/Relevant/Full/Release) resta identica,
+# cambia solo il modo in cui i file scelti vengono eseguiti e riportati.
+function Invoke-GutBatch {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Category,
+
+        [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
+        [string[]]$TestPaths,
+
+        [Parameter(Mandatory)]
+        [string]$GodotPath,
+
+        [Parameter(Mandatory)]
+        [string]$RuntimeHash,
+
+        [Parameter(Mandatory)]
+        [string]$RunnerHash,
+
+        [Parameter(Mandatory)]
+        [string]$GodotVersion
+    )
+
+    if ($TestPaths.Count -eq 0) {
+        return @()
+    }
+
+    $resolvedPaths = @($TestPaths | Sort-Object -Unique)
+    $relativePaths = @($resolvedPaths | ForEach-Object { ConvertTo-RepositoryRelativePath -Path $_ })
+    $cacheKey = "gut|$Category|" + ($relativePaths -join ',')
+    $contentSignature = (
+        @($resolvedPaths | ForEach-Object { "$_|$(Get-FileContentHash -Path $_)" }) -join "`n"
+    )
+    $inputHash = Get-StringHash -Text (
+        "$runnerVersion|$RunnerHash|$GodotVersion|$RuntimeHash|$contentSignature"
+    )
+
+    $safeName = "gut-$Category" -replace '[^A-Za-z0-9_.-]', '_'
+    $logPath = Join-Path $logRoot ($safeName + '.log')
+
+    $cached = Get-GutCachedBatch -Key $cacheKey -InputHash $inputHash
+    if ($null -ne $cached) {
+        [IO.File]::WriteAllText(
+            $logPath,
+            "CACHED input_hash=$($cached.input_hash) created_utc=$($cached.created_utc)",
+            [Text.UTF8Encoding]::new($false)
+        )
+        return Add-GutStepsFromScripts -Scripts @($cached.scripts) -Category $Category `
+            -LogPath $logPath -Cached
+    }
+
+    $junitPath = Join-Path $logRoot ($safeName + '.junit.xml')
+    $resPaths = @($relativePaths | ForEach-Object { "res://$_" })
+    $processResult = Invoke-CapturedProcess -FilePath $GodotPath -Arguments @(
+        '--headless',
+        '--path', $repoRoot,
+        '--resolution', '1280x720',
+        '-s', 'addons/gut/gut_cmdln.gd',
+        ('-gtest=' + ($resPaths -join ',')),
+        '-gexit',
+        ('-gjunit_xml_file=' + $junitPath)
+    ) -WorkingDirectory $repoRoot
+
+    [IO.File]::WriteAllText($logPath, $processResult.Output, [Text.UTF8Encoding]::new($false))
+
+    $errorMarkers = @(
+        [regex]::Matches($processResult.Output, $failurePattern) |
+            ForEach-Object { $_.Value.ToUpperInvariant() } |
+            Sort-Object -Unique
+    )
+    # Un errore Godot (SCRIPT ERROR, FATAL EXCEPTION) puo' comparire senza che
+    # GUT lo traduca in un'asserzione fallita: l'exit code 0 non basta, come
+    # per gli smoke legacy (CLAUDE.md, "Onesta' dei gate").
+    $processOk = ($processResult.ExitCode -eq 0) -and (-not $processResult.TimedOut) -and
+        ($errorMarkers.Count -eq 0)
+    $rawScripts = Get-GutJUnitResults -XmlPath $junitPath
+
+    if ($null -eq $rawScripts) {
+        $step = [pscustomobject]@{
+            name = "$Category-gut-batch"
+            category = $Category
+            status = 'FAIL'
+            exit_code = $processResult.ExitCode
+            timed_out = $processResult.TimedOut
+            duration_ms = $processResult.DurationMs
+            markers = @()
+            error_markers = @($errorMarkers)
+            note = 'Report JUnit GUT assente o illeggibile: nessun test eseguito o crash prima del report.'
+            log = $logPath
+        }
+        $steps.Add($step)
+        if (-not $KeepGoing) {
+            $script:halted = $true
+        }
+        return @($step)
+    }
+    # @() forza il contesto array: un batch con un solo file fa collassare il
+    # valore di ritorno a scalare se non viene rifatto l'wrap qui, alla
+    # chiamata (gotcha noto di PowerShell sull'unwrap degli array a un
+    # elemento).
+    $scripts = @($rawScripts)
+
+    if (-not $processOk) {
+        foreach ($scriptResult in $scripts) {
+            $scriptResult.status = 'FAIL'
+        }
+    }
+
+    $addedSteps = @(Add-GutStepsFromScripts -Scripts $scripts -Category $Category `
+        -LogPath $logPath -DurationMs $processResult.DurationMs)
+    $overallStatus = if (@($addedSteps | Where-Object { $_.status -eq 'FAIL' }).Count -gt 0) {
+        'FAIL'
+    }
+    else {
+        'PASS'
+    }
+    Save-GutCachedBatch -Key $cacheKey -InputHash $inputHash -Scripts $scripts -Status $overallStatus
+    return $addedSteps
+}
+
 function Get-CategorySummary {
     param([string]$Category)
 
@@ -612,7 +919,7 @@ function Write-RunnerOutput {
 
 $changedPaths = @(Get-ChangedRepositoryPaths)
 if ($FocusedSmoke.Count -eq 0) {
-    $FocusedSmoke = @(Find-FocusedSmokes -MilestoneId $Milestone)
+    $FocusedSmoke = @(Find-FocusedSmokes -MilestoneId $Milestone) + @(Find-FocusedGutTests -MilestoneId $Milestone)
 }
 
 switch ($Profile) {
@@ -620,11 +927,11 @@ switch ($Profile) {
         $RegressionSmoke += @(Find-RelevantSmokes -Paths $changedPaths -MapPath $TestMap)
     }
     'Full' {
-        $RegressionSmoke += @(Get-AllIntegrationSmokes)
+        $RegressionSmoke += @(Get-AllIntegrationSmokes) + @(Get-AllGutTests)
         $RunProjectSmoke = $true
     }
     'Release' {
-        $RegressionSmoke += @(Get-AllIntegrationSmokes)
+        $RegressionSmoke += @(Get-AllIntegrationSmokes) + @(Get-AllGutTests)
         $RefreshEditor = $true
         $RunProjectSmoke = $true
         $ExportWindows = $true
@@ -653,6 +960,14 @@ $RegressionSmoke = @(
         Where-Object { -not $focusedLookup.ContainsKey($_.ToLowerInvariant()) } |
         Sort-Object -Unique
 )
+
+# Stesso elenco selezionato per profilo, eseguito su due percorsi diversi:
+# Invoke-Smoke (un processo per file) per gli smoke legacy ancora vivi,
+# Invoke-GutBatch (un solo processo) per i file gia' migrati a GUT.
+$FocusedLegacySmoke = @($FocusedSmoke | Where-Object { -not (Test-IsGutTestPath -Path $_) })
+$FocusedGutSmoke = @($FocusedSmoke | Where-Object { Test-IsGutTestPath -Path $_ })
+$RegressionLegacySmoke = @($RegressionSmoke | Where-Object { -not (Test-IsGutTestPath -Path $_) })
+$RegressionGutSmoke = @($RegressionSmoke | Where-Object { Test-IsGutTestPath -Path $_ })
 
 $hasWork = ($FocusedSmoke.Count -gt 0) -or ($RegressionSmoke.Count -gt 0) -or
     $RefreshEditor -or $RunToolchain -or $ExportWindows -or $ExportAndroid -or $InspectAndroid
@@ -711,13 +1026,21 @@ try {
         Add-ProcessStep -Name 'refresh-editor' -Category 'bootstrap' -ProcessResult $refreshResult | Out-Null
     }
 
-    foreach ($smoke in $FocusedSmoke) {
+    if (-not $halted) {
+        Invoke-GutBatch -Category 'focused' -TestPaths $FocusedGutSmoke -GodotPath $godot `
+            -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion | Out-Null
+    }
+    foreach ($smoke in $FocusedLegacySmoke) {
         if ($halted) { break }
         Invoke-Smoke -SmokePath $smoke -Category 'focused' -GodotPath $godot `
             -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion | Out-Null
     }
 
-    foreach ($smoke in $RegressionSmoke) {
+    if (-not $halted) {
+        Invoke-GutBatch -Category 'regression' -TestPaths $RegressionGutSmoke -GodotPath $godot `
+            -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion | Out-Null
+    }
+    foreach ($smoke in $RegressionLegacySmoke) {
         if ($halted) { break }
         Invoke-Smoke -SmokePath $smoke -Category 'regression' -GodotPath $godot `
             -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion | Out-Null
@@ -899,7 +1222,11 @@ try {
 }
 catch {
     $fatalLog = Join-Path $logRoot 'runner-fatal.log'
-    [IO.File]::WriteAllText($fatalLog, $_.Exception.ToString(), [Text.UTF8Encoding]::new($false))
+    [IO.File]::WriteAllText(
+        $fatalLog,
+        ($_.Exception.ToString() + "`n`n" + $_.InvocationInfo.PositionMessage + "`n`n" + $_.ScriptStackTrace),
+        [Text.UTF8Encoding]::new($false)
+    )
     $steps.Add([pscustomobject]@{
         name = 'runner'
         category = 'runner'

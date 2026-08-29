@@ -20,6 +20,7 @@
         "tests/integration/_movement_slice_smoke.gd",
         "tests/integration/_player_survival_smoke.gd",
         "tests/integration/_player_direction_animation_smoke.gd",
+        "tests/unit/test_b18c_player_direction_animation.gd",
         "tests/integration/_cast_sprites_smoke.gd",
         "tests/integration/_complete_roster_abilities_smoke.gd",
         "tests/integration/_b38_arena_world_smoke.gd"
@@ -36,6 +37,7 @@
         "tests/integration/_complete_run_smoke.gd",
         "tests/integration/_evil_boss_variants_smoke.gd",
         "tests/integration/_friend_content_smoke.gd",
+        "tests/unit/test_b17_friend_content.gd",
         "tests/integration/_recurring_boss_smoke.gd",
         "tests/integration/_b38_arena_world_smoke.gd"
       ]
@@ -66,8 +68,11 @@
         "tests/integration/_enemy_spawner_smoke.gd",
         "tests/integration/_combat_slice_smoke.gd",
         "tests/integration/_pigeon_enemy_smoke.gd",
+        "tests/unit/test_b18h_pigeon_enemies.gd",
         "tests/integration/_b28_horde_density_smoke.gd",
+        "tests/unit/test_b28_horde_density.gd",
         "tests/integration/_b37_density_direction_smoke.gd",
+        "tests/unit/test_b37_density_direction.gd",
         "tests/integration/_b38_arena_world_smoke.gd"
       ]
     },
@@ -121,9 +126,11 @@
       ],
       "smokes": [
         "tests/integration/_powerup_first_wave_smoke.gd",
+        "tests/unit/test_powerup_first_wave.gd",
         "tests/integration/_xp_arena_confinement_smoke.gd",
         "tests/integration/_b38_arena_world_smoke.gd",
         "tests/integration/_b39_health_pickup_smoke.gd",
+        "tests/unit/test_b39_health_pickup.gd",
         "tests/integration/_b41_weapon_shapes_smoke.gd"
       ]
     },
@@ -134,6 +141,7 @@
       ],
       "smokes": [
         "tests/integration/_b39_health_pickup_smoke.gd",
+        "tests/unit/test_b39_health_pickup.gd",
         "tests/integration/_movement_slice_smoke.gd"
       ]
     },
@@ -147,6 +155,7 @@
       "smokes": [
         "tests/integration/_arena_hud_minimal_smoke.gd",
         "tests/integration/_arena_background_smoke.gd",
+        "tests/unit/test_b18s_arena_background.gd",
         "tests/integration/_movement_slice_smoke.gd",
         "tests/integration/_xp_arena_confinement_smoke.gd",
         "tests/integration/_b38_arena_world_smoke.gd"
@@ -178,6 +187,7 @@
         "tests/integration/_b38_arena_world_smoke.gd",
         "tests/integration/_xp_arena_confinement_smoke.gd",
         "tests/integration/_b39_health_pickup_smoke.gd",
+        "tests/unit/test_b39_health_pickup.gd",
         "tests/integration/_b54_tutorial_flow_smoke.gd"
       ]
     },
@@ -190,7 +200,9 @@
       ],
       "smokes": [
         "tests/integration/_experience_pickup_smoke.gd",
+        "tests/unit/test_b07_experience_pickup.gd",
         "tests/integration/_level_progression_smoke.gd",
+        "tests/unit/test_b08_level_progression.gd",
         "tests/integration/_xp_arena_confinement_smoke.gd"
       ]
     },
@@ -202,6 +214,7 @@
       ],
       "smokes": [
         "tests/integration/_input_subsystem_smoke.gd",
+        "tests/unit/test_input_subsystem.gd",
         "tests/integration/_dynamic_joystick_smoke.gd",
         "tests/integration/_platform_lifecycle_smoke.gd"
       ]
@@ -216,13 +229,15 @@
       ],
       "smokes": [
         "tests/integration/_hud_smoke.gd",
+        "tests/unit/test_b09_hud.gd",
         "tests/integration/_arena_hud_minimal_smoke.gd",
         "tests/integration/_upgrade_overlay_smoke.gd",
         "tests/integration/_character_carousel_smoke.gd",
         "tests/integration/_character_select_refinement_smoke.gd",
         "tests/integration/_welcome_flow_smoke.gd",
         "tests/integration/_b54_tutorial_flow_smoke.gd",
-        "tests/integration/_typography_smoke.gd"
+        "tests/integration/_typography_smoke.gd",
+        "tests/unit/test_typography.gd"
       ]
     },
     {
@@ -251,6 +266,7 @@
       ],
       "smokes": [
         "tests/integration/_visual_identity_smoke.gd",
+        "tests/unit/test_b18b_visual_identity.gd",
         "tests/integration/_visual_timing_smoke.gd",
         "tests/integration/_ability_visuals_smoke.gd",
         "tests/integration/_audiovisual_feedback_smoke.gd"
@@ -264,7 +280,9 @@
       "smokes": [
         "tests/integration/_audiovisual_feedback_smoke.gd",
         "tests/integration/_b29_background_music_smoke.gd",
-        "tests/integration/_menu_music_smoke.gd"
+        "tests/unit/test_b29_background_music.gd",
+        "tests/integration/_menu_music_smoke.gd",
+        "tests/unit/test_menu_music.gd"
       ]
     },
     {
@@ -281,7 +299,8 @@
         "assets/art/branding/*"
       ],
       "smokes": [
-        "tests/integration/_app_icon_smoke.gd"
+        "tests/integration/_app_icon_smoke.gd",
+        "tests/unit/test_app_icon.gd"
       ]
     },
     {
@@ -293,7 +312,8 @@
         "tests/integration/_b44_state_tells_smoke.gd",
         "tests/integration/_b45_role_identity_smoke.gd",
         "tests/integration/_b42_measurable_passives_smoke.gd",
-        "tests/integration/_friend_content_smoke.gd"
+        "tests/integration/_friend_content_smoke.gd",
+        "tests/unit/test_b17_friend_content.gd"
       ]
     }
   ]
