@@ -57,19 +57,28 @@ La cache è locale e sacrificabile:
 .\tools\run-milestone-checks.ps1 -Milestone B24 -Profile Relevant -OutputMode Detailed
 ```
 
-Il contratto dei profili e della selezione viene controllato senza avviare
-Godot:
+I contratti degli strumenti vengono controllati senza avviare Godot. Il primo
+copre profili e selezione dei test, il secondo la cattura dei processi esterni
+(marker di completamento, ripiego sulla stabilità dell'artefatto, timeout):
 
 ```powershell
 .\tests\tooling\_milestone_runner_contract.ps1
+.\tests\tooling\_process_capture_contract.ps1
 ```
 
 ## Confini dei gate
 
 Il profilo `Release` può recuperare il caso Windows in cui l'exporter Android
-rimane aperto dopo aver scritto un APK nuovo e stabile. Termina esclusivamente
-il processo avviato dal runner e accetta `RECOVERED` soltanto dopo package,
-SDK, ABI, firma e struttura ZIP verdi.
+rimane aperto dopo aver completato l'APK. Il runner attende il marker
+`[ DONE ] export` stampato da Godot, concede una breve grazia perché il
+processo esca da solo, poi termina esclusivamente l'albero avviato da quella
+esecuzione. Se il marker non compare, ripiega sulla stabilità dell'artefatto.
+Accetta `RECOVERED` soltanto dopo package, SDK, ABI, firma e struttura ZIP
+verdi.
+
+I codici di uscita distinguono i tre casi nei log: `126` terminato dopo il
+marker, `125` terminato dopo un artefatto rimasto stabile, `124` scaduto senza
+alcun segnale.
 
 Questo non prova installazione, cold launch, touch, multitouch, lifecycle,
 prestazioni o qualità percettiva sul device. Tali risultati restano gate

@@ -114,14 +114,27 @@ l'handle. Il ritardo (tipicamente oltre gli `8s` di stabilità che
 `run-milestone-checks.ps1` attende prima di terminare il processo) è lato
 Godot: l'editor headless non chiude sempre in tempi brevi dopo un export
 Android, con o senza `org.gradle.daemon=false` e con o senza
-`--install-android-build-template` nella stessa invocazione. La mitigazione
-che funziona davvero è quella già in `run-milestone-checks.ps1`
-(`-StableArtifactPath`/`-StableArtifactSeconds`): osservare l'artefatto,
-aspettare che sia stabile, terminare il processo e validare l'APK prodotto,
+`--install-android-build-template` nella stessa invocazione. La mitigazione sta in
+`run-milestone-checks.ps1`: non attendere l'uscita del processo, ma un segnale
+di completamento, poi terminare quel processo e validare l'APK prodotto,
 classificando l'esito come `RECOVERED` solo se l'ispezione statica passa. Per
 un export manuale fuori da quello script, vedere "APK aggiornato ma processo
 di export ancora aperto" più sotto invece di aspettarsi che disattivare il
 daemon risolva l'attesa.
+
+**Aggiornamento (29 agosto 2026):** il segnale primario non è più la stabilità
+dell'artefatto ma il marker che Godot stampa da sé, `[ DONE ] export`. Il
+runner legge stdout/stderr in modo incrementale (non più `ReadToEndAsync`, che
+restituisce solo all'EOF della pipe), ripulisce ogni riga dai codici ANSI e
+confronta con `^\[ DONE \]\s+export\b`. Il passo va nominato: la stessa
+etichetta `[ DONE ]` compare anche per `first_scan_filesystem`, molto prima che
+l'APK esista. Dopo il marker il runner concede `CompletionGraceMs` (2 s di
+default) perché il processo esca da solo, poi termina il suo albero e
+restituisce exit `126`. La stabilità dell'artefatto
+(`-StableArtifactPath`/`-StableArtifactSeconds`, exit `125`) resta come ripiego
+per gli strumenti che non dichiarano nulla di riconoscibile, e il timeout
+(exit `124`) come scadenza esterna. In tutti i casi il criterio di successo
+resta l'ispezione statica dell'APK, non il codice di uscita.
 
 `run-milestone-checks.ps1` applica comunque `org.gradle.daemon=false` in
 automatico dopo ogni export Android (funzione `Set-AndroidGradleDaemonDisabled`)

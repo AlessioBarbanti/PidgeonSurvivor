@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [Parameter(Mandatory)]
     [ValidatePattern('^[BbMm]\d+[A-Za-z]?$')]
@@ -49,6 +49,10 @@ $halted = $false
 $androidInspection = $null
 $failurePattern = '(?im)(SCRIPT ERROR|FATAL EXCEPTION|SMOKE_FAIL|CONTRACT_FAIL)'
 $markerPattern = '(?m)\b(?:[A-Z][A-Z0-9_]*_SMOKE_OK|SMOKE_OK)\b'
+# Godot dichiara la fine dell'export con '[ DONE ] export'. La stessa etichetta
+# compare anche per 'first_scan_filesystem', quindi il passo va nominato: senza,
+# il completamento verrebbe letto molto prima che l'APK esista.
+$androidExportCompletionPattern = '^\[ DONE \]\s+export\b'
 $cacheEnabled = -not $NoCache
 
 function Set-AndroidGradleDaemonDisabled {
@@ -125,185 +129,8 @@ function Get-FileContentHash {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash
 }
 
-function ConvertTo-CommandLineArgument {
-    param(
-        [AllowEmptyString()]
-        [string]$Value
-    )
+. (Join-Path $PSScriptRoot 'lib\process-capture.ps1')
 
-    if ($Value.Length -gt 0 -and $Value -notmatch '[\s"]') {
-        return $Value
-    }
-    return '"' + ($Value -replace '"', '\"') + '"'
-}
-
-function Stop-TrackedProcessTree {
-    param(
-        [Parameter(Mandatory)]
-        [int]$RootProcessId
-    )
-
-    $processes = @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue)
-    $childrenByParent = @{}
-    foreach ($item in $processes) {
-        $parentKey = [string]$item.ParentProcessId
-        if (-not $childrenByParent.ContainsKey($parentKey)) {
-            $childrenByParent[$parentKey] = [Collections.Generic.List[int]]::new()
-        }
-        $childrenByParent[$parentKey].Add([int]$item.ProcessId)
-    }
-
-    $ordered = [Collections.Generic.List[int]]::new()
-    function Add-Descendants {
-        param([int]$ParentId)
-        $key = [string]$ParentId
-        if (-not $childrenByParent.ContainsKey($key)) {
-            return
-        }
-        foreach ($childId in $childrenByParent[$key]) {
-            Add-Descendants -ParentId $childId
-            $ordered.Add($childId)
-        }
-    }
-    Add-Descendants -ParentId $RootProcessId
-    $ordered.Add($RootProcessId)
-    foreach ($processId in $ordered) {
-        Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
-    }
-}
-
-function Invoke-CapturedProcess {
-    param(
-        [Parameter(Mandatory)]
-        [string]$FilePath,
-
-        [Parameter(Mandatory)]
-        [string[]]$Arguments,
-
-        [Parameter(Mandatory)]
-        [string]$WorkingDirectory,
-
-        [ValidateRange(0, 3600)]
-        [int]$TimeoutSeconds = 0,
-
-        [string]$StableArtifactPath,
-
-        [ValidateRange(0, 60)]
-        [int]$StableArtifactSeconds = 0
-    )
-
-    $artifactBefore = $null
-    if (
-        -not [string]::IsNullOrWhiteSpace($StableArtifactPath) -and
-        (Test-Path -LiteralPath $StableArtifactPath -PathType Leaf)
-    ) {
-        $artifactBefore = Get-Item -LiteralPath $StableArtifactPath
-    }
-
-    $startInfo = [Diagnostics.ProcessStartInfo]::new()
-    $startInfo.FileName = $FilePath
-    $startInfo.Arguments = (($Arguments | ForEach-Object {
-        ConvertTo-CommandLineArgument -Value $_
-    }) -join ' ')
-    $startInfo.WorkingDirectory = $WorkingDirectory
-    $startInfo.UseShellExecute = $false
-    $startInfo.CreateNoWindow = $true
-    $startInfo.RedirectStandardOutput = $true
-    $startInfo.RedirectStandardError = $true
-
-    $process = [Diagnostics.Process]::new()
-    $process.StartInfo = $startInfo
-    $stopwatch = [Diagnostics.Stopwatch]::StartNew()
-    if (-not $process.Start()) {
-        throw "Impossibile avviare: $FilePath"
-    }
-
-    $processId = $process.Id
-    $stdoutTask = $process.StandardOutput.ReadToEndAsync()
-    $stderrTask = $process.StandardError.ReadToEndAsync()
-    $timedOut = $false
-    $terminatedAfterArtifact = $false
-    $artifactChanged = $false
-    $lastArtifactSignature = $null
-    $artifactStableSinceMs = 0L
-
-    while (-not $process.WaitForExit(250)) {
-        if (
-            $TimeoutSeconds -gt 0 -and
-            $stopwatch.Elapsed.TotalSeconds -ge $TimeoutSeconds
-        ) {
-            $timedOut = $true
-            Stop-TrackedProcessTree -RootProcessId $processId
-            break
-        }
-
-        if (
-            $StableArtifactSeconds -gt 0 -and
-            -not [string]::IsNullOrWhiteSpace($StableArtifactPath) -and
-            (Test-Path -LiteralPath $StableArtifactPath -PathType Leaf)
-        ) {
-            $artifactNow = Get-Item -LiteralPath $StableArtifactPath
-            $artifactChanged = ($null -eq $artifactBefore) -or
-                ($artifactBefore.Length -ne $artifactNow.Length) -or
-                ($artifactBefore.LastWriteTimeUtc -ne $artifactNow.LastWriteTimeUtc)
-            if ($artifactChanged) {
-                $signature = "$($artifactNow.Length)|$($artifactNow.LastWriteTimeUtc.Ticks)"
-                if ($signature -ne $lastArtifactSignature) {
-                    $lastArtifactSignature = $signature
-                    $artifactStableSinceMs = $stopwatch.ElapsedMilliseconds
-                }
-                elseif (
-                    ($stopwatch.ElapsedMilliseconds - $artifactStableSinceMs) -ge
-                    ($StableArtifactSeconds * 1000)
-                ) {
-                    $terminatedAfterArtifact = $true
-                    Stop-TrackedProcessTree -RootProcessId $processId
-                    break
-                }
-            }
-        }
-    }
-
-    if (-not $process.HasExited) {
-        $process.WaitForExit(5000) | Out-Null
-    }
-    $stopwatch.Stop()
-
-    $stdout = if ($stdoutTask.Wait(2000)) {
-        $stdoutTask.Result
-    }
-    else {
-        '[stdout ancora aperto; consultare artifact e processi della build corrente]'
-    }
-    $stderr = if ($stderrTask.Wait(2000)) {
-        $stderrTask.Result
-    }
-    else {
-        '[stderr ancora aperto; consultare artifact e processi della build corrente]'
-    }
-    $output = @($stdout.TrimEnd(), $stderr.TrimEnd()) |
-        Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
-    $exitCode = if ($timedOut) {
-        124
-    }
-    elseif ($terminatedAfterArtifact) {
-        125
-    }
-    else {
-        $process.ExitCode
-    }
-    $process.Dispose()
-
-    return [pscustomobject]@{
-        ExitCode = $exitCode
-        TimedOut = $timedOut
-        TerminatedAfterArtifact = $terminatedAfterArtifact
-        ArtifactChanged = $artifactChanged
-        ProcessId = $processId
-        DurationMs = $stopwatch.ElapsedMilliseconds
-        Output = ($output -join [Environment]::NewLine)
-    }
-}
 
 function Resolve-GodotConsole {
     $command = Get-Command godot_console.exe -ErrorAction SilentlyContinue
@@ -868,8 +695,11 @@ try {
     if ([string]::IsNullOrWhiteSpace($godotVersion)) {
         $godotVersion = 'unknown'
     }
+    # La libreria di cattura e' parte del runner ai fini della cache: una
+    # modifica al suo comportamento deve invalidare i risultati memorizzati.
     $runnerHash = Get-StringHash -Text (
         "$(Get-FileContentHash -Path $PSCommandPath)|" +
+        "$(Get-FileContentHash -Path (Join-Path $PSScriptRoot 'lib\process-capture.ps1'))|" +
         "$(Get-FileContentHash -Path (Resolve-RepositoryPath -Path $TestMap -MustExist))"
     )
     $runtimeHash = Get-CombinedRepositoryHash -Paths @(Get-RepositoryRuntimeFiles)
@@ -978,7 +808,8 @@ try {
                 -Arguments $androidExportArguments.ToArray() `
                 -WorkingDirectory $repoRoot -TimeoutSeconds $ExportTimeoutSeconds `
                 -StableArtifactPath $androidPath `
-                -StableArtifactSeconds $AndroidArtifactStableSeconds
+                -StableArtifactSeconds $AndroidArtifactStableSeconds `
+                -CompletionPattern $androidExportCompletionPattern
             $androidExportStep = Add-ProcessStep -Name 'android-export' -Category 'android' `
                 -ProcessResult $androidExportResult -DoNotHalt
         }
@@ -1033,12 +864,22 @@ try {
             (Test-Path -LiteralPath $androidPath -PathType Leaf) -and
             $null -ne $androidExportResult -and
             $androidExportResult.ArtifactChanged -and
-            ($androidExportResult.TimedOut -or $androidExportResult.TerminatedAfterArtifact)
+            (
+                $androidExportResult.TimedOut -or
+                $androidExportResult.TerminatedAfterArtifact -or
+                $androidExportResult.TerminatedAfterMarker
+            )
         ) {
             $androidExportStep.status = 'RECOVERED'
-            $androidExportStep.note = (
+            $androidExportStep.note = if ($androidExportResult.TerminatedAfterMarker) {
+                'Exporter terminato dopo [ DONE ] export; ispezione statica completa verde.'
+            }
+            elseif ($androidExportResult.TerminatedAfterArtifact) {
                 'Exporter terminato dopo APK nuovo e stabile; ispezione statica completa verde.'
-            )
+            }
+            else {
+                'Exporter scaduto con APK nuovo valido; ispezione statica completa verde.'
+            }
             Save-CachedStep -Key $androidCacheKey -InputHash $androidInputHash `
                 -Step ([pscustomobject]@{ status = 'PASS'; markers = @() }) `
                 -ArtifactPath $androidPath
