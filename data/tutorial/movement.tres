@@ -8,5 +8,5 @@ script = ExtResource("1_page")
 id = &"movement"
 eyebrow = "COMANDI"
 title = "MUOVITI. L'ARMA FA IL RESTO."
-body = "Usa WASD, frecce, stick o joystick touch. L'arma mira e spara da sola al nemico più vicino."
+body = "Muovi il personaggio con il joystick, WASD o lo stick. Non devi mirare: l'arma colpisce da sola il nemico più vicino."
 artwork = ExtResource("2_artwork")

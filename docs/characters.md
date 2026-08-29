@@ -56,9 +56,9 @@ Boss: Evil Migi.
 
 ## Marghe
 
-Ruolo: Indebolimento e manipolazione dell'aggro.  
+Ruolo: Indebolimento e distrazione dei nemici.  
 Passiva — Sorriso Contagioso: I nemici vicini subiscono più danno da ogni fonte, arma e abilità comprese (i Boss non ne risentono), e sono marcati da una tinta magenta riconoscibile.  
-Attiva — Reggaeton time!: Genera un clone che balla reggaeton e devia su di sé l'aggro dei nemici.
+Attiva — Reggaeton time!: Genera un clone che balla reggaeton e diventa il bersaglio dei nemici vicini.
 Boss: Evil Marghe.
 
 ## Direzione visuale del cast

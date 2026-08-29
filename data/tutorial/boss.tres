@@ -7,6 +7,6 @@
 script = ExtResource("1_page")
 id = &"boss"
 eyebrow = "BOSS"
-title = "TROVA IL VARCO"
-body = "I Boss annunciano ogni attacco con un segnale a terra: leggilo, spostati nella zona sicura e colpisci quando l'arena si apre."
+title = "ASPETTA IL SEGNALE"
+body = "Prima di ogni colpo il Boss disegna a terra la zona che colpirà. Esci da lì, poi rientra e sparagli mentre si ricarica."
 artwork = ExtResource("2_artwork")

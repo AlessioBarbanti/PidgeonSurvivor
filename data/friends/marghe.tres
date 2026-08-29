@@ -30,7 +30,7 @@ region = Rect2(64, 0, 32, 32)
 script = ExtResource("1_definition")
 id = &"marghe"
 display_name = "Marghe"
-role = "Indebolimento e manipolazione dell'aggro."
+role = "Indebolimento e distrazione dei nemici."
 tags = Array[StringName]([&"debuff", &"aggro", &"illusion"])
 passive_title = "Sorriso Contagioso"
 passive_description = "I nemici vicini subiscono più danno da ogni fonte, arma e abilità comprese. I Boss non ne risentono."
@@ -42,7 +42,7 @@ passive_parameters = {
 }
 active_ability_id = &"marghe_shadow_deception"
 active_ability_title = "Reggaeton time!"
-active_ability_description = "Genera un clone che balla reggaeton e devia su di sé l'aggro dei nemici."
+active_ability_description = "Genera un clone che balla reggaeton e diventa il bersaglio dei nemici vicini."
 base_health_multiplier = 0.95
 base_move_speed_multiplier = 1.0
 base_fire_rate_multiplier = 1.1

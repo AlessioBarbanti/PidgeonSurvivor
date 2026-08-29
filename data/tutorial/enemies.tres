@@ -12,6 +12,6 @@ script = ExtResource("1_page")
 id = &"enemies"
 eyebrow = "NEMICI"
 title = "LEGGI LA SAGOMA. REAGISCI."
-body = "Base che insegue, sciamatore in gruppo, corazzato che incassa, divisore che si sdoppia, tiratore a distanza."
+body = "Grigio ti insegue, arancione arriva in sciame, quello con l'elmo incassa, viola si sdoppia quando cade, azzurro spara da lontano."
 showcase_layout = 1
 showcase_textures = Array[Texture2D]([ExtResource("2_base"), ExtResource("3_swarmer"), ExtResource("4_armored"), ExtResource("5_splitter"), ExtResource("6_ranged")])

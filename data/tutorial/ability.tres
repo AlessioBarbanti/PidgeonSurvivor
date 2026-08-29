@@ -10,7 +10,7 @@
 script = ExtResource("1_page")
 id = &"ability"
 eyebrow = "ABILITÀ ATTIVA"
-title = "IL MOMENTO GIUSTO CAMBIA TUTTO"
-body = "Ogni personaggio ha un potere unico. Attivalo quando il pulsante è pronto; l'anello mostra la ricarica."
+title = "QUANDO IL CERCHIO È PIENO, PREMI"
+body = "Ogni personaggio ha un'abilità sua, con una ricarica. Il cerchio in basso a destra la mostra: quando è pieno, è pronta."
 showcase_layout = 0
 showcase_textures = Array[Texture2D]([ExtResource("2_lightning"), ExtResource("3_spin"), ExtResource("4_zen"), ExtResource("5_earthquake")])
