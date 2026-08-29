@@ -63,8 +63,6 @@ var movement_input := Vector2.ZERO:
 
 var _arena_layout: ArenaLayout
 var _world_bounds := Rect2()
-var _hud_exclusion_camera: Camera2D
-var _hud_exclusion_control: Control
 var _run_controller: RunController
 var _damage_flash_remaining := 0.0
 var _damage_reaction_remaining := 0.0
@@ -86,7 +84,6 @@ var _character_idle_texture: Texture2D
 var _character_walk_frames: Array[Texture2D] = []
 var _character_walk_frame_index := 0
 var _character_walk_elapsed := 0.0
-var _passive_state_tint := Color.WHITE
 var _character_is_walking := false
 var _last_movement_direction := DEFAULT_FACING_DIRECTION
 var _momentum_ratio := 0.0
@@ -100,6 +97,7 @@ var _momentum_trail_sample_elapsed := 0.0
 @onready var _weapon_controller: WeaponController = %WeaponController
 @onready var _ability_controller: AbilityController = %AbilityController
 @onready var _character_sprite: Sprite2D = %CharacterSprite
+@onready var _passive_state_outline: PassiveStateOutline = %PassiveStateOutline
 
 
 func _ready() -> void:
@@ -195,6 +193,16 @@ func get_character_texture() -> Texture2D:
 
 func is_character_flipped_horizontally() -> bool:
 	return _character_sprite.flip_h if is_instance_valid(_character_sprite) else false
+
+
+## Esposto per gli smoke: verifica che il tell di stato non ridipinga lo sprite
+## (PS-001). Fuori dal lampeggio da danno deve restare `Color.WHITE`.
+func get_character_self_modulate() -> Color:
+	return (
+		_character_sprite.self_modulate
+		if is_instance_valid(_character_sprite)
+		else Color.WHITE
+	)
 
 
 func get_character_visual_offset() -> Vector2:
@@ -299,17 +307,6 @@ func get_world_bounds() -> Rect2:
 	return _world_bounds
 
 
-## Riserva runtime del controllo HUD passato (B52): quando visibile, il suo
-## ingombro sullo schermo esclude il punto corrispondente del playfield,
-## cosi' il Player non puo' finire sotto l'icona dell'abilita' nel suo
-## angolo. Player resta agnostico rispetto a GameHud: riceve un Control
-## generico e la Camera2D che traduce lo schermo in coordinate di mondo.
-func set_hud_exclusion(camera: Camera2D, reserved_control: Control) -> void:
-	_hud_exclusion_camera = camera
-	_hud_exclusion_control = reserved_control
-	_clamp_to_playfield()
-
-
 func set_run_controller(value: RunController) -> void:
 	if value == _run_controller:
 		return
@@ -386,30 +383,37 @@ func set_character_stat_multipliers(
 	return true
 
 
-## Tinta di stato della passiva equipaggiata (B42/B44): e' il "tell" che
-## rende leggibile in quale fase si trova il profilo, senza introdurre nodi
-## aggiuntivi ne' toccare collisioni, statistiche o timing di gameplay.
-func set_passive_state_tint(value: Color) -> bool:
-	if not is_finite(value.r) or not is_finite(value.g) or not is_finite(value.b):
+## Tell di stato della passiva equipaggiata (B42/B44, ridisegnato da PS-001):
+## rende leggibile in quale fase si trova il profilo senza toccare collisioni,
+## statistiche o timing di gameplay.
+##
+## Fino a PS-001 era una tinta piena applicata con `self_modulate` sull'intero
+## sprite: moltiplicando ogni pixel ridipingeva il personaggio e ne cancellava
+## l'identita' cromatica. Ora il colore vive in un contorno attorno alla
+## sagoma, cosi' lo sprite approvato del cast resta intatto.
+func set_passive_state_outline(value: Color) -> bool:
+	if not is_instance_valid(_passive_state_outline):
 		return false
-	_passive_state_tint = Color(value.r, value.g, value.b, 1.0)
-	_update_character_feedback()
-	return true
+	return _passive_state_outline.set_state_color(value)
 
 
-func clear_passive_state_tint() -> void:
-	if _passive_state_tint == Color.WHITE:
+func clear_passive_state_outline() -> void:
+	if not is_instance_valid(_passive_state_outline):
 		return
-	_passive_state_tint = Color.WHITE
-	_update_character_feedback()
+	_passive_state_outline.clear_state_color()
 
 
-func get_passive_state_tint() -> Color:
-	return _passive_state_tint
+func get_passive_state_outline_color() -> Color:
+	if not is_instance_valid(_passive_state_outline):
+		return Color(0.0, 0.0, 0.0, 0.0)
+	return _passive_state_outline.get_state_color()
 
 
-func has_passive_state_tint() -> bool:
-	return _passive_state_tint != Color.WHITE
+func has_passive_state_outline() -> bool:
+	return (
+		is_instance_valid(_passive_state_outline)
+		and _passive_state_outline.has_state_color()
+	)
 
 
 func reset_character_stat_multipliers() -> void:
@@ -550,10 +554,12 @@ func _update_character_feedback() -> void:
 		* visual_scale_multiplier
 		* get_visual_damage_scale()
 	)
+	# Lo sprite conserva i propri colori: solo il flash da danno lo altera,
+	# e ha la precedenza sul tell di stato (PS-001).
 	_character_sprite.self_modulate = (
 		Color(1.0, 0.72, 0.8, 1.0)
 		if _damage_flash_remaining > 0.0
-		else _passive_state_tint
+		else Color.WHITE
 	)
 	_character_sprite.visible = (
 		_character_sprite.texture != null
@@ -824,36 +830,6 @@ func _clamp_to_playfield() -> void:
 		)
 	else:
 		return
-	_apply_hud_exclusion()
-
-
-## B52: dopo il confinamento nel mondo, spinge il Player fuori dall'ingombro
-## corrente del controllo HUD riservato (se assegnato e visibile), poi
-## ri-applica il confinamento esterno nel caso lo spostamento avesse
-## superato il limite opposto (angolo stretto su viewport minuscoli).
-func _apply_hud_exclusion() -> void:
-	var reserved_rect := get_hud_exclusion_world_rect()
-	if not reserved_rect.has_area():
-		return
-	var pushed := ArenaWorld.push_circle_outside_rect(
-		global_position,
-		collision_radius,
-		reserved_rect
-	)
-	if pushed == global_position:
-		return
-	global_position = pushed
-	if _world_bounds.has_area():
-		global_position = ArenaWorld.clamp_circle_center_in_rect(
-			_world_bounds,
-			global_position,
-			collision_radius
-		)
-	elif is_instance_valid(_arena_layout):
-		global_position = _arena_layout.clamp_circle_center(
-			global_position,
-			collision_radius
-		)
 
 
 ## Scarto Istintivo di Bea (B45): prova a spostare il Player lungo
@@ -881,10 +857,10 @@ func try_shove_to_safe_position(direction: Vector2, distance: float) -> bool:
 
 
 ## Confinamento pubblico di un punto arbitrario nello spazio di mondo:
-## stessa catena usata dal Player ogni frame (world bounds, poi esclusione
-## HUD). Serve a chi calcola una destinazione per il Player (Powerslide di
-## Bea) senza dover conoscere i limiti dell'arena, che NON coincidono con il
-## playfield a schermo di ArenaLayout.
+## stessa catena usata dal Player ogni frame. Serve a chi calcola una
+## destinazione per il Player (Powerslide di Bea) senza dover conoscere i
+## limiti dell'arena, che NON coincidono con il playfield a schermo di
+## ArenaLayout.
 func confine_world_point(point: Vector2) -> Vector2:
 	if not point.is_finite():
 		return global_position
@@ -892,22 +868,11 @@ func confine_world_point(point: Vector2) -> Vector2:
 
 
 func _confine_point(point: Vector2) -> Vector2:
-	var confined := point
 	if _world_bounds.has_area():
-		confined = ArenaWorld.clamp_circle_center_in_rect(_world_bounds, confined, collision_radius)
-	elif is_instance_valid(_arena_layout):
-		confined = _arena_layout.clamp_circle_center(confined, collision_radius)
-	var reserved_rect := get_hud_exclusion_world_rect()
-	if not reserved_rect.has_area():
-		return confined
-	var pushed := ArenaWorld.push_circle_outside_rect(confined, collision_radius, reserved_rect)
-	if pushed == confined:
-		return confined
-	if _world_bounds.has_area():
-		return ArenaWorld.clamp_circle_center_in_rect(_world_bounds, pushed, collision_radius)
+		return ArenaWorld.clamp_circle_center_in_rect(_world_bounds, point, collision_radius)
 	if is_instance_valid(_arena_layout):
-		return _arena_layout.clamp_circle_center(pushed, collision_radius)
-	return pushed
+		return _arena_layout.clamp_circle_center(point, collision_radius)
+	return point
 
 
 func _point_blocked_by_obstacle(point: Vector2) -> bool:
@@ -919,32 +884,3 @@ func _point_blocked_by_obstacle(point: Vector2) -> bool:
 	return false
 
 
-## Traduce l'ingombro a schermo del controllo HUD riservato in un rettangolo
-## di mondo, centrando la vista corrente della camera come gia' fa
-## EnemySpawner.get_visible_reference_rect() per il playfield (B38): stessa
-## idea, applicata al solo angolo occupato dal controllo invece che
-## all'intero playfield. Pubblico per essere verificabile dagli smoke test.
-func get_hud_exclusion_world_rect() -> Rect2:
-	if (
-		not is_instance_valid(_hud_exclusion_camera)
-		or not is_instance_valid(_hud_exclusion_control)
-		or not _hud_exclusion_control.is_visible_in_tree()
-	):
-		return Rect2()
-	var control_rect := _hud_exclusion_control.get_global_rect()
-	if not control_rect.has_area():
-		return Rect2()
-	var viewport := get_viewport()
-	if viewport == null:
-		return Rect2()
-	var viewport_rect := viewport.get_visible_rect()
-	if not viewport_rect.has_area():
-		return Rect2()
-	var viewport_origin_world := (
-		_hud_exclusion_camera.get_screen_center_position()
-		- viewport_rect.size * 0.5
-	)
-	return Rect2(
-		viewport_origin_world + (control_rect.position - viewport_rect.position),
-		control_rect.size
-	)

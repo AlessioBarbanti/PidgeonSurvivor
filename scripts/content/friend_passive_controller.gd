@@ -27,17 +27,23 @@ const ALEO_COLD_AURA_MODIFIER := &"aleo_cold_aura"
 const MARGHE_SMILE_MODIFIER := &"marghe_contagious_smile"
 const MINIMUM_MULTIPLIER := 0.001
 
-## Tinte di stato usate come "tell" delle passive a fasi. Restano
-## esclusivamente presentazionali e non alterano nessun valore di gameplay.
-const TINT_NEUTRAL := Color.WHITE
-const TINT_ALEO_HOT := Color(1.32, 0.86, 0.62, 1.0)
-const TINT_ALEO_COLD := Color(0.68, 0.94, 1.34, 1.0)
-const TINT_LOLLO_FOCUSED := Color(1.3, 1.22, 0.62, 1.0)
-const TINT_LOLLO_DISTRACTED := Color(0.74, 0.74, 0.82, 1.0)
-const TINT_ALEA_POSITIVE := Color(0.72, 1.32, 0.82, 1.0)
-const TINT_ALEA_NEGATIVE := Color(1.32, 0.72, 0.74, 1.0)
-const TINT_MIGI_SHELL_READY := Color(0.66, 1.26, 1.14, 1.0)
-const TINT_MIGI_SHIELD := Color(0.46, 1.48, 1.28, 1.0)
+## Colori del contorno usato come "tell" delle passive a fasi (PS-001).
+## Restano puramente presentazionali: nessuna regola di gameplay li legge.
+##
+## Fino a PS-001 erano tinte moltiplicative applicate con `self_modulate`
+## sull'intero sprite, con valori fuori gamma (`1.32`) pensati per schiarire.
+## Ridipingevano il personaggio: Alea in fase positiva diventava tutta verde.
+## Ora sono colori opachi disegnati attorno alla sagoma, quindi vanno scelti
+## saturi e dentro gamma per restare leggibili a densita' alta.
+const OUTLINE_NEUTRAL := Color(0.0, 0.0, 0.0, 0.0)
+const OUTLINE_ALEO_HOT := Color(1.0, 0.55, 0.18, 1.0)
+const OUTLINE_ALEO_COLD := Color(0.35, 0.78, 1.0, 1.0)
+const OUTLINE_LOLLO_FOCUSED := Color(1.0, 0.88, 0.28, 1.0)
+const OUTLINE_LOLLO_DISTRACTED := Color(0.62, 0.62, 0.72, 1.0)
+const OUTLINE_ALEA_POSITIVE := Color(0.36, 1.0, 0.52, 1.0)
+const OUTLINE_ALEA_NEGATIVE := Color(1.0, 0.38, 0.42, 1.0)
+const OUTLINE_MIGI_SHELL_READY := Color(0.32, 0.94, 0.84, 1.0)
+const OUTLINE_MIGI_SHIELD := Color(0.16, 1.0, 0.88, 1.0)
 
 var _run_controller: RunController
 var _player: Player
@@ -181,7 +187,7 @@ func resolve_incoming_damage(amount: float, source_position: Vector2 = Vector2.I
 		if _shield_hits_remaining <= 0:
 			_shield_remaining = 0.0
 			shield_changed.emit(false, 0.0)
-			_refresh_passive_state_tint()
+			_refresh_passive_state_outline()
 		damage_avoided.emit(_definition.passive_id)
 		return 0.0
 
@@ -192,7 +198,7 @@ func resolve_incoming_damage(amount: float, source_position: Vector2 = Vector2.I
 			_definition.get_passive_int(&"shell_charge_max", 2, 0)
 		)
 		damage_avoided.emit(_definition.passive_id)
-		_refresh_passive_state_tint()
+		_refresh_passive_state_outline()
 		return 0.0
 
 	var reduction := 0.0
@@ -292,7 +298,7 @@ func _advance_alea_effect(delta: float) -> void:
 			_alea_move_multiplier = 1.0
 			_alea_fire_multiplier = 1.0
 			_apply_character_multipliers()
-			_refresh_passive_state_tint()
+			_refresh_passive_state_outline()
 	_alea_interval_remaining -= delta
 	if _alea_interval_remaining > 0.0:
 		return
@@ -366,7 +372,7 @@ func _activate_alea_effect() -> void:
 		AbilityDefinition.MINIMUM_POSITIVE_VALUE
 	)
 	_apply_character_multipliers()
-	_refresh_passive_state_tint()
+	_refresh_passive_state_outline()
 	random_effect_started.emit(positive, stat_id, multiplier)
 
 
@@ -377,7 +383,7 @@ func _advance_lollo_hyperfocus(delta: float) -> void:
 	_lollo_focused = not _lollo_focused
 	_lollo_phase_remaining = _roll_lollo_phase_duration(_lollo_focused)
 	_apply_character_multipliers()
-	_refresh_passive_state_tint()
+	_refresh_passive_state_outline()
 	hyperfocus_changed.emit(_lollo_focused, _lollo_phase_remaining)
 
 
@@ -420,7 +426,7 @@ func _advance_aleo_thermostat(delta: float) -> void:
 	if hot != _aleo_hot:
 		_aleo_hot = hot
 		_apply_character_multipliers()
-		_refresh_passive_state_tint()
+		_refresh_passive_state_outline()
 		thermal_mode_changed.emit(_aleo_hot)
 	if _aleo_hot:
 		_clear_aleo_cold_aura()
@@ -534,7 +540,7 @@ func _advance_migi_shield(delta: float) -> void:
 	if _shield_remaining <= 0.0:
 		_shield_hits_remaining = 0
 		shield_changed.emit(false, 0.0)
-		_refresh_passive_state_tint()
+		_refresh_passive_state_outline()
 
 
 func _activate_migi_shield() -> void:
@@ -550,7 +556,7 @@ func _activate_migi_shield() -> void:
 		AbilityDefinition.MINIMUM_POSITIVE_VALUE
 	)
 	shield_changed.emit(true, _shield_remaining)
-	_refresh_passive_state_tint()
+	_refresh_passive_state_outline()
 
 
 func _advance_bea_dodge_cooldown(delta: float) -> void:
@@ -580,7 +586,7 @@ func _advance_migi_shell_charges(delta: float) -> void:
 		AbilityDefinition.MINIMUM_POSITIVE_VALUE
 	)
 	migi_shell_charges_changed.emit(_migi_shell_charges, max_charges)
-	_refresh_passive_state_tint()
+	_refresh_passive_state_outline()
 
 
 func get_migi_shell_charges() -> int:
@@ -594,34 +600,34 @@ func get_migi_shell_charge_max() -> int:
 ## Traduce la fase corrente della passiva nel tell visivo del Player. E'
 ## puramente presentazionale: nessun ramo qui dentro tocca statistiche,
 ## collisioni o timing.
-func _refresh_passive_state_tint() -> void:
+func _refresh_passive_state_outline() -> void:
 	if not is_instance_valid(_player):
 		return
 	if _definition == null:
-		_player.clear_passive_state_tint()
+		_player.clear_passive_state_outline()
 		return
-	var tint := TINT_NEUTRAL
+	var outline := OUTLINE_NEUTRAL
 	match _definition.passive_id:
 		ALEO_INTERNAL_THERMOSTAT:
-			tint = TINT_ALEO_HOT if _aleo_hot else TINT_ALEO_COLD
+			outline = OUTLINE_ALEO_HOT if _aleo_hot else OUTLINE_ALEO_COLD
 		LOLLO_HYPERACTIVITY:
-			tint = TINT_LOLLO_FOCUSED if _lollo_focused else TINT_LOLLO_DISTRACTED
+			outline = OUTLINE_LOLLO_FOCUSED if _lollo_focused else OUTLINE_LOLLO_DISTRACTED
 		ALEA_EAGLE_NEVER_MISSES:
 			if _alea_effect_remaining > 0.0:
 				var positive := (
 					_alea_move_multiplier > 1.0
 					or _alea_fire_multiplier > 1.0
 				)
-				tint = TINT_ALEA_POSITIVE if positive else TINT_ALEA_NEGATIVE
+				outline = OUTLINE_ALEA_POSITIVE if positive else OUTLINE_ALEA_NEGATIVE
 		MIGI_TURTLE_SHELL:
 			if is_shield_active():
-				tint = TINT_MIGI_SHIELD
+				outline = OUTLINE_MIGI_SHIELD
 			elif _migi_shell_charges > 0:
-				tint = TINT_MIGI_SHELL_READY
-	if tint == TINT_NEUTRAL:
-		_player.clear_passive_state_tint()
+				outline = OUTLINE_MIGI_SHELL_READY
+	if outline == OUTLINE_NEUTRAL:
+		_player.clear_passive_state_outline()
 	else:
-		_player.set_passive_state_tint(tint)
+		_player.set_passive_state_outline(outline)
 
 
 func _apply_character_multipliers() -> void:
@@ -801,7 +807,7 @@ func _reset_runtime(seed_value: int) -> void:
 			_definition != null and _definition.passive_id == MAGNO_AERODYNAMIC_FLOW
 		)
 	_apply_character_multipliers()
-	_refresh_passive_state_tint()
+	_refresh_passive_state_outline()
 	if _definition != null and _definition.passive_id == MARGHE_CONTAGIOUS_SMILE:
 		_refresh_marghe_aura()
 	delayed_healing_changed.emit(0.0)
@@ -820,7 +826,7 @@ func _has_valid_dependencies() -> bool:
 
 func _disconnect_dependencies() -> void:
 	if is_instance_valid(_player):
-		_player.clear_passive_state_tint()
+		_player.clear_passive_state_outline()
 		_player.set_momentum_trail_enabled(false)
 		if _player.damaged.is_connected(_on_player_damaged):
 			_player.damaged.disconnect(_on_player_damaged)

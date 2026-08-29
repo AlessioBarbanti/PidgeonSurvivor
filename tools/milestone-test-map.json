@@ -283,6 +283,18 @@
       "smokes": [
         "tests/integration/_app_icon_smoke.gd"
       ]
+    },
+    {
+      "patterns": [
+        "scripts/content/friend_passive_controller.gd",
+        "scripts/vfx/passive_state_outline.gd"
+      ],
+      "smokes": [
+        "tests/integration/_b44_state_tells_smoke.gd",
+        "tests/integration/_b45_role_identity_smoke.gd",
+        "tests/integration/_b42_measurable_passives_smoke.gd",
+        "tests/integration/_friend_content_smoke.gd"
+      ]
     }
   ]
 }

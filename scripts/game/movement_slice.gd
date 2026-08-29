@@ -111,7 +111,7 @@ func _ready() -> void:
 	_camera.limit_bottom = int(world_rect.end.y)
 	_player.set_arena_layout(_arena_layout)
 	_player.set_world_bounds(world_rect)
-	_player.set_hud_exclusion(_camera, _hud.get_active_ability_button())
+	_hud.set_ability_fade_target(_camera, _player, _player.collision_radius)
 	_player.set_run_controller(_run_controller)
 	_player.global_position = _arena_world.get_world_center()
 	_camera.reset_smoothing()

@@ -12,6 +12,14 @@ const BAR_HORIZONTAL_MARGIN_RATIO := 0.05
 ## Le barre XP/HP occupano i primi 38px della fascia: la pausa scende verso la
 ## riga del cronometro, per quanto lo consente GAMEPLAY_TOP_INSET.
 const PAUSE_TOP_INSET := 39.0
+## B52: opacita' del controllo abilita' mentre il Player gli passa sotto.
+## Abbastanza bassa da leggere il beccaccino, abbastanza alta da non perdere
+## di vista l'icona e la sua ricarica.
+const ABILITY_FADED_ALPHA := 0.3
+## Margine attorno all'ingombro del controllo che attiva la dissolvenza: la
+## sfumatura parte poco prima della sovrapposizione vera, cosi' non scatta
+## sul pixel di bordo.
+const ABILITY_FADE_MARGIN := 24.0
 
 @onready var _experience_bar: ProgressBar = %ExperienceBar
 @onready var _experience_kind_label: Label = %ExperienceKindLabel
@@ -39,6 +47,10 @@ var _last_ability_ready := false
 var _ability_name_text := "ABILITÀ ATTIVA"
 var _ability_cooldown_text := "NON ASSEGNATA"
 var _ability_cooldown_value := 0.0
+var _ability_fade_camera: Camera2D
+var _ability_fade_target: Node2D
+var _ability_fade_target_radius := 0.0
+var _ability_alpha := 1.0
 
 
 func _ready() -> void:
@@ -49,9 +61,10 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	var safe_delta := maxf(delta, 0.0) if is_finite(delta) else 0.0
+	_update_ability_fade(safe_delta)
 	if not is_instance_valid(_run_controller) or not _run_controller.is_running():
 		return
-	var safe_delta := maxf(delta, 0.0) if is_finite(delta) else 0.0
 	_health_feedback_remaining = maxf(_health_feedback_remaining - safe_delta, 0.0)
 	_ability_ready_pulse_remaining = maxf(
 		_ability_ready_pulse_remaining - safe_delta,
@@ -62,7 +75,7 @@ func _process(delta: float) -> void:
 		is_zero_approx(_health_feedback_remaining)
 		and is_zero_approx(_ability_ready_pulse_remaining)
 	):
-		set_process(false)
+		_set_process_enabled(false)
 
 
 func _exit_tree() -> void:
@@ -220,6 +233,112 @@ func get_active_ability_button_rect() -> Rect2:
 		if is_instance_valid(_active_ability_button)
 		else Rect2()
 	)
+
+
+## B52: invece di riservare un angolo del playfield (muro invisibile), il
+## controllo abilita' si dissolve quando il soggetto tracciato gli finisce
+## sotto. Il pulsante resta premibile: cambia solo l'opacita'. L'HUD resta
+## agnostico rispetto al Player: riceve un Node2D generico e la Camera2D che
+## traduce il mondo in coordinate di schermo.
+func set_ability_fade_target(
+	camera: Camera2D,
+	target: Node2D,
+	target_radius: float = 0.0
+) -> void:
+	_ability_fade_camera = camera
+	_ability_fade_target = target
+	_ability_fade_target_radius = (
+		maxf(target_radius, 0.0) if is_finite(target_radius) else 0.0
+	)
+	if not _has_ability_fade_target():
+		_ability_alpha = 1.0
+		_apply_ability_alpha()
+		return
+	_ability_alpha = 1.0 if not is_ability_occluded() else ABILITY_FADED_ALPHA
+	_apply_ability_alpha()
+	_set_process_enabled(true)
+
+
+## Opacita' corrente del controllo abilita'. Pubblica per gli smoke: e' il
+## solo effetto osservabile della sovrapposizione, dato che il movimento non
+## viene piu' vincolato.
+func get_ability_alpha() -> float:
+	return _ability_alpha
+
+
+## Vero quando il soggetto tracciato, proiettato a schermo, cade nell'ingombro
+## del controllo abilita' cresciuto del suo raggio e del margine di anticipo.
+func is_ability_occluded() -> bool:
+	if not _has_ability_fade_target():
+		return false
+	var button_rect := get_active_ability_button_rect()
+	if not button_rect.has_area():
+		return false
+	var screen_position := get_ability_fade_target_screen_position()
+	if not screen_position.is_finite():
+		return false
+	return button_rect.grow(
+		_ability_fade_target_radius + ABILITY_FADE_MARGIN
+	).has_point(screen_position)
+
+
+## Proiezione a schermo del soggetto tracciato, centrata sulla vista corrente
+## della camera come fa EnemySpawner per il playfield (B38).
+func get_ability_fade_target_screen_position() -> Vector2:
+	if not _has_ability_fade_target():
+		return Vector2.INF
+	var viewport := get_viewport()
+	if viewport == null:
+		return Vector2.INF
+	var viewport_rect := viewport.get_visible_rect()
+	if not viewport_rect.has_area():
+		return Vector2.INF
+	var viewport_origin_world := (
+		_ability_fade_camera.get_screen_center_position()
+		- viewport_rect.size * 0.5
+	)
+	return (
+		_ability_fade_target.global_position
+		- viewport_origin_world
+		+ viewport_rect.position
+	)
+
+
+func _has_ability_fade_target() -> bool:
+	return (
+		is_instance_valid(_ability_fade_camera)
+		and is_instance_valid(_ability_fade_target)
+		and is_instance_valid(_ability_panel)
+	)
+
+
+func _update_ability_fade(delta: float) -> void:
+	if not _has_ability_fade_target():
+		return
+	var target_alpha := ABILITY_FADED_ALPHA if is_ability_occluded() else 1.0
+	if is_equal_approx(_ability_alpha, target_alpha):
+		_ability_alpha = target_alpha
+		_apply_ability_alpha()
+		return
+	var step := delta / maxf(PresentationTimings.HUD_ABILITY_FADE_SECONDS, 0.001)
+	_ability_alpha = move_toward(_ability_alpha, target_alpha, step)
+	_apply_ability_alpha()
+
+
+func _apply_ability_alpha() -> void:
+	if not is_instance_valid(_ability_panel):
+		return
+	# `modulate` propaga ai figli (icona, ricarica); `self_modulate` resta
+	# libero per il pulse di abilita' pronta.
+	var tint := _ability_panel.modulate
+	tint.a = clampf(_ability_alpha, 0.0, 1.0)
+	_ability_panel.modulate = tint
+
+
+## Il processing dell'HUD serve sia alle code di feedback sia alla
+## dissolvenza continua: non va mai spento finche' c'e' un soggetto tracciato.
+func _set_process_enabled(enabled: bool) -> void:
+	set_process(enabled or _has_ability_fade_target())
 
 
 func set_active_ability_scale(scale_value: float, edge_padding: Vector2) -> void:
@@ -443,7 +562,7 @@ func _on_health_damaged(_amount: float, _health_current: float) -> void:
 	if not is_instance_valid(_health_panel):
 		return
 	_health_feedback_remaining = PresentationTimings.HUD_HEALTH_FEEDBACK_SECONDS
-	set_process(true)
+	_set_process_enabled(true)
 	_sync_visual_feedback()
 
 
@@ -553,7 +672,7 @@ func _play_ability_ready_pulse() -> void:
 	if not is_instance_valid(_ability_panel):
 		return
 	_ability_ready_pulse_remaining = PresentationTimings.ABILITY_READY_PULSE_SECONDS
-	set_process(true)
+	_set_process_enabled(true)
 	_sync_visual_feedback()
 
 
@@ -585,4 +704,6 @@ func _clear_visual_feedback() -> void:
 		_health_panel.self_modulate = Color.WHITE
 	if is_instance_valid(_ability_panel):
 		_ability_panel.self_modulate = Color.WHITE
-	set_process(false)
+	_ability_alpha = 1.0
+	_apply_ability_alpha()
+	_set_process_enabled(false)

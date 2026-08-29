@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/actors/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/combat/weapon_controller.gd" id="2_weapon"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://scripts/abilities/ability_controller.gd" id="6_ability_controller"]
 [ext_resource type="Resource" path="res://data/abilities/magno_earthquake_shockwave.tres" id="7_ability"]
 [ext_resource type="Resource" path="res://data/friends/magno.tres" id="8_friend"]
+[ext_resource type="Script" path="res://scripts/vfx/passive_state_outline.gd" id="9_passive_outline"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 24.0
@@ -30,6 +31,11 @@ unique_name_in_owner = true
 z_index = 1
 texture_filter = 1
 scale = Vector2(1.65, 1.65)
+
+[node name="PassiveStateOutline" type="Node2D" parent="CharacterSprite"]
+unique_name_in_owner = true
+show_behind_parent = true
+script = ExtResource("9_passive_outline")
 
 [node name="HealthComponent" type="Node" parent="."]
 unique_name_in_owner = true

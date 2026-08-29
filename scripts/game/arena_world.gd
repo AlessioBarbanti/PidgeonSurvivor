@@ -47,34 +47,3 @@ static func clamp_circle_center_in_rect(
 		clampf(point.x, minimum.x, maximum.x),
 		clampf(point.y, minimum.y, maximum.y)
 	)
-
-
-## Spinge un cerchio fuori da un rettangolo riservato (B52: l'ingombro
-## runtime di un controllo HUD nel suo angolo). Se il centro cade nel
-## rettangolo cresciuto del raggio, lo sposta sul bordo piu' vicino lungo
-## l'asse di minima penetrazione, cosi' il cerchio resta appena fuori invece
-## di essere teletrasportato altrove.
-static func push_circle_outside_rect(
-	point: Vector2,
-	radius: float,
-	reserved_rect: Rect2
-) -> Vector2:
-	if not reserved_rect.has_area():
-		return point
-	var inflated := reserved_rect.grow(maxf(radius, 0.0))
-	if not inflated.has_point(point):
-		return point
-
-	var push_left := point.x - inflated.position.x
-	var push_right := inflated.end.x - point.x
-	var push_up := point.y - inflated.position.y
-	var push_down := inflated.end.y - point.y
-	var minimum_push := minf(minf(push_left, push_right), minf(push_up, push_down))
-
-	if minimum_push == push_left:
-		return Vector2(inflated.position.x, point.y)
-	if minimum_push == push_right:
-		return Vector2(inflated.end.x, point.y)
-	if minimum_push == push_up:
-		return Vector2(point.x, inflated.position.y)
-	return Vector2(point.x, inflated.end.y)

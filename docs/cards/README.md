@@ -15,4 +15,4 @@ verità operativa per la roadmap; questa board copre il lavoro puntuale.
 
 | ID | Titolo | Tipo | Area | Stato | Priorità |
 |---|---|---|---|---|---|
-| — | nessuna card aperta | — | — | — | — |
+| [PS-001](./PS-001-tell-di-stato-senza-snaturare-lo-sprite.md) | Comunicare la fase della passiva senza ridipingere lo sprite | ux | arte | IN CORSO | alta |

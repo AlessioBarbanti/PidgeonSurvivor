@@ -59,8 +59,19 @@ func _validate_aleo_thermal_state() -> void:
 	passive._process(0.1)
 	_expect(passive.is_thermal_hot(), "Sopra meta' vita Aleo deve essere in riscaldamento.")
 	_expect(
-		player.get_passive_state_tint() == FriendPassiveController.TINT_ALEO_HOT,
+		player.get_passive_state_outline_color() == FriendPassiveController.OUTLINE_ALEO_HOT,
 		"Il tell caldo deve essere attivo sopra la soglia."
+	)
+	# PS-001: il tell vive nel contorno, non nello sprite. Se questa asserzione
+	# cade, la tinta piena e' rientrata dalla finestra e il personaggio torna a
+	# essere ridipinto.
+	_expect(
+		player.get_character_self_modulate() == Color.WHITE,
+		"Lo sprite del personaggio non deve essere ridipinto dal tell di stato."
+	)
+	_expect(
+		player.has_passive_state_outline(),
+		"Il contorno deve risultare attivo quando la fase e' dichiarata."
 	)
 
 	var enemy := spawner.try_spawn_enemy()
@@ -86,7 +97,7 @@ func _validate_aleo_thermal_state() -> void:
 	passive._process(0.1)
 	_expect(not passive.is_thermal_hot(), "Sotto meta' vita Aleo deve passare in raffrescamento.")
 	_expect(
-		player.get_passive_state_tint() == FriendPassiveController.TINT_ALEO_COLD,
+		player.get_passive_state_outline_color() == FriendPassiveController.OUTLINE_ALEO_COLD,
 		"Il tell freddo deve essere attivo sotto la soglia."
 	)
 	_expect(
@@ -162,7 +173,7 @@ func _validate_lollo_distraction() -> void:
 	# In iperfocus il tell e' quello focalizzato e le kill non accorciano nulla.
 	_expect(passive.is_hyperfocused(), "Lollo deve avviare la run in iperfocus.")
 	_expect(
-		player.get_passive_state_tint() == FriendPassiveController.TINT_LOLLO_FOCUSED,
+		player.get_passive_state_outline_color() == FriendPassiveController.OUTLINE_LOLLO_FOCUSED,
 		"Il tell di iperfocus deve essere attivo."
 	)
 	var focus_before := passive.get_hyperfocus_remaining()
@@ -181,7 +192,7 @@ func _validate_lollo_distraction() -> void:
 	passive._process(passive.get_hyperfocus_remaining() + 0.01)
 	_expect(not passive.is_hyperfocused(), "Alla scadenza Lollo deve passare in distrazione.")
 	_expect(
-		player.get_passive_state_tint() == FriendPassiveController.TINT_LOLLO_DISTRACTED,
+		player.get_passive_state_outline_color() == FriendPassiveController.OUTLINE_LOLLO_DISTRACTED,
 		"Il tell di distrazione deve essere attivo."
 	)
 

@@ -138,7 +138,7 @@ func _validate_migi_shell_charges() -> void:
 		"Il guscio piccolo deve partire carico a inizio run."
 	)
 	_expect(
-		player.get_passive_state_tint() == FriendPassiveController.TINT_MIGI_SHELL_READY,
+		player.get_passive_state_outline_color() == FriendPassiveController.OUTLINE_MIGI_SHELL_READY,
 		"Il tell del guscio pronto deve essere attivo con cariche disponibili."
 	)
 
@@ -152,7 +152,7 @@ func _validate_migi_shell_charges() -> void:
 		"Le cariche devono esaurirsi dopo l'uso."
 	)
 	_expect(
-		player.get_passive_state_tint() != FriendPassiveController.TINT_MIGI_SHELL_READY,
+		player.get_passive_state_outline_color() != FriendPassiveController.OUTLINE_MIGI_SHELL_READY,
 		"Senza cariche il tell del guscio pronto deve spegnersi."
 	)
 	_expect(

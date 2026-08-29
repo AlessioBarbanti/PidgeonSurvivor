@@ -8,6 +8,7 @@ const LAYOUT_PROFILES: Array[Vector2i] = [
 	Vector2i(960, 720),
 ]
 const FLOAT_TOLERANCE := 1.0
+const ALPHA_TOLERANCE := 0.01
 
 var _failures: Array[String] = []
 
@@ -68,7 +69,7 @@ func _run() -> void:
 	_validate_minimal_nodes(hud)
 	await _validate_layout_profiles(arena, hud, player, spawner, dropper, encounter, arena_world)
 	if camera != null:
-		await _validate_hud_ability_exclusion(hud, player, camera, arena_world)
+		await _validate_hud_ability_fade(hud, player, camera, arena_world)
 	_validate_authoritative_clock(controller, hud)
 	await _finish(movement_slice, controller)
 
@@ -188,10 +189,10 @@ func _validate_layout_profiles(
 		spawner.clear_spawned_enemies()
 
 
-## B52: il Player non deve poter finire sotto l'icona dell'abilita' quando
-## raggiunge il limite inferiore destro della mappa, su piu' profili di
-## viewport.
-func _validate_hud_ability_exclusion(
+## B52: il Player raggiunge liberamente ogni angolo del mondo (nessun muro
+## invisibile sotto i controlli); e' il controllo abilita' a dissolversi
+## quando il Player gli finisce sotto, e a tornare pieno quando esce.
+func _validate_hud_ability_fade(
 	hud: GameHud,
 	player: Player,
 	camera: Camera2D,
@@ -210,45 +211,62 @@ func _validate_hud_ability_exclusion(
 
 		var world_rect := arena_world.get_world_rect()
 		var default_radius := player.collision_radius
-		# Il margine dichiarato fra il controllo e il vero angolo schermo
-		# (hud_control_edge_padding + gesture_navigation_padding + safe area)
-		# e' generoso col raggio di default: per esercitare davvero la spinta
-		# di B52 anziche' verificare un caso gia' innocuo, la fixture usa un
-		# raggio grande quanto il controllo stesso, cosi' il solo clamp sul
-		# mondo lo farebbe atterrare dentro l'icona senza l'esclusione HUD.
+		# Raggio grande quanto il controllo: cosi' il solo clamp sul mondo
+		# porta davvero il Player sotto l'icona, che e' il caso da esercitare.
 		var radius := maxf(button_rect.size.x, button_rect.size.y)
 		player.collision_radius = radius
+		hud.set_ability_fade_target(camera, player, radius)
+
+		# Angolo opposto: nessuna sovrapposizione, controllo a piena opacita'.
+		player.global_position = world_rect.position + Vector2.ONE * radius
+		camera.reset_smoothing()
+		await _wait_processed_frame()
+		_expect(
+			not hud.is_ability_occluded(),
+			"%s: lontano dal controllo non deve esserci sovrapposizione." % context
+		)
+		hud._update_ability_fade(1.0)
+		_expect(
+			absf(hud.get_ability_alpha() - 1.0) <= ALPHA_TOLERANCE,
+			"%s: il controllo deve tornare pieno (alpha %.2f)." % [context, hud.get_ability_alpha()]
+		)
+
+		# Angolo del controllo: il Player ci arriva senza essere respinto.
 		player.global_position = world_rect.end - Vector2.ONE * radius
 		camera.reset_smoothing()
 		await _wait_processed_frame()
-		# Rientra nel confinamento: il setter e' pubblico e riapplica il
-		# clamp (compreso B52) con la posizione/camera aggiornate.
-		player.set_hud_exclusion(camera, hud.get_active_ability_button())
-
-		var reserved_rect := player.get_hud_exclusion_world_rect()
+		_expect_circle_inside(player.global_position, radius, world_rect, "%s: il Player deve restare nel mondo." % context)
 		_expect(
-			reserved_rect.has_area() and reserved_rect.size.distance_to(button_rect.size) <= FLOAT_TOLERANCE,
-			"%s: il rettangolo riservato deve corrispondere all'ingombro del controllo." % context
-		)
-		_expect_circle_inside(player.global_position, radius, world_rect, "%s: l'esclusione HUD non deve espellere il Player dal mondo." % context)
-		_expect(
-			ArenaWorld.push_circle_outside_rect(player.global_position, radius, reserved_rect) == player.global_position,
-			"%s: dopo il confinamento il Player non deve piu' sovrapporsi al rettangolo riservato." % context
+			player.confine_world_point(world_rect.end) == ArenaWorld.clamp_circle_center_in_rect(
+				world_rect, world_rect.end, radius
+			),
+			"%s: il confinamento non deve piu' riservare l'angolo del controllo." % context
 		)
 
-		# Proiezione a schermo indipendente: il centro del Player, vicino alla
-		# camera clampata nell'angolo, non deve cadere dentro l'ingombro reale
-		# del controllo (verifica visiva, non solo geometria di mondo).
-		var viewport_rect := player.get_viewport().get_visible_rect()
-		var viewport_origin_world := camera.get_screen_center_position() - viewport_rect.size * 0.5
-		var projected_screen_position := (
-			player.global_position - viewport_origin_world + viewport_rect.position
-		)
+		var projected_screen_position := hud.get_ability_fade_target_screen_position()
 		_expect(
-			not button_rect.grow(-1.0).has_point(projected_screen_position),
-			"%s: la proiezione a schermo del Player non deve cadere sotto l'icona abilita'." % context
+			projected_screen_position.is_finite(),
+			"%s: la proiezione a schermo del Player deve essere calcolabile." % context
 		)
+		if button_rect.grow(GameHud.ABILITY_FADE_MARGIN + radius).has_point(projected_screen_position):
+			_expect(
+				hud.is_ability_occluded(),
+				"%s: il Player sotto il controllo deve attivare la dissolvenza." % context
+			)
+			hud._update_ability_fade(1.0)
+			_expect(
+				absf(hud.get_ability_alpha() - GameHud.ABILITY_FADED_ALPHA) <= ALPHA_TOLERANCE,
+				"%s: il controllo deve dissolversi sotto il Player (alpha %.2f)." % [
+					context, hud.get_ability_alpha()
+				]
+			)
+			_expect(
+				hud.get_ability_alpha() > 0.0,
+				"%s: il controllo non deve mai sparire del tutto." % context
+			)
+
 		player.collision_radius = default_radius
+		hud.set_ability_fade_target(camera, player, default_radius)
 
 	root.content_scale_size = LAYOUT_PROFILES[0]
 	root.size = LAYOUT_PROFILES[0]
