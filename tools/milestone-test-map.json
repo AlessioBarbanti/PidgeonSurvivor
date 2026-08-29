@@ -36,6 +36,7 @@
       ],
       "smokes": [
         "tests/integration/_boss_encounter_smoke.gd",
+        "tests/unit/test_b15_boss_encounter.gd",
         "tests/integration/_complete_run_smoke.gd",
         "tests/unit/test_b16_complete_run.gd",
         "tests/integration/_evil_boss_variants_smoke.gd",
@@ -58,6 +59,7 @@
         "tests/integration/_game_director_smoke.gd",
         "tests/unit/test_b14_game_director.gd",
         "tests/integration/_boss_encounter_smoke.gd",
+        "tests/unit/test_b15_boss_encounter.gd",
         "tests/integration/_complete_run_smoke.gd",
         "tests/unit/test_b16_complete_run.gd",
         "tests/integration/_recurring_boss_smoke.gd",
@@ -77,6 +79,7 @@
         "tests/integration/_enemy_spawner_smoke.gd",
         "tests/unit/test_b04_enemy_spawner.gd",
         "tests/integration/_combat_slice_smoke.gd",
+        "tests/unit/test_b05_combat_slice.gd",
         "tests/integration/_pigeon_enemy_smoke.gd",
         "tests/unit/test_b18h_pigeon_enemies.gd",
         "tests/integration/_b28_horde_density_smoke.gd",
@@ -97,6 +100,7 @@
       ],
       "smokes": [
         "tests/integration/_combat_slice_smoke.gd",
+        "tests/unit/test_b05_combat_slice.gd",
         "tests/integration/_player_survival_smoke.gd",
         "tests/integration/_complete_run_smoke.gd",
         "tests/unit/test_b16_complete_run.gd",
@@ -213,6 +217,7 @@
         "tests/integration/_welcome_flow_smoke.gd",
         "tests/unit/test_b18o_welcome_flow.gd",
         "tests/integration/_boss_encounter_smoke.gd",
+        "tests/unit/test_b15_boss_encounter.gd",
         "tests/integration/_recurring_boss_smoke.gd",
         "tests/unit/test_b33_recurring_boss.gd",
         "tests/integration/_b38_arena_world_smoke.gd",
@@ -221,7 +226,8 @@
         "tests/unit/test_b18i_xp_arena_confinement.gd",
         "tests/integration/_b39_health_pickup_smoke.gd",
         "tests/unit/test_b39_health_pickup.gd",
-        "tests/integration/_b54_tutorial_flow_smoke.gd"
+        "tests/integration/_b54_tutorial_flow_smoke.gd",
+        "tests/unit/test_b54_tutorial_flow.gd"
       ]
     },
     {
@@ -276,6 +282,7 @@
         "tests/integration/_welcome_flow_smoke.gd",
         "tests/unit/test_b18o_welcome_flow.gd",
         "tests/integration/_b54_tutorial_flow_smoke.gd",
+        "tests/unit/test_b54_tutorial_flow.gd",
         "tests/integration/_typography_smoke.gd",
         "tests/unit/test_typography.gd"
       ]
@@ -286,6 +293,7 @@
       ],
       "smokes": [
         "tests/integration/_b54_tutorial_flow_smoke.gd",
+        "tests/unit/test_b54_tutorial_flow.gd",
         "tests/integration/_welcome_flow_smoke.gd",
         "tests/unit/test_b18o_welcome_flow.gd"
       ]
