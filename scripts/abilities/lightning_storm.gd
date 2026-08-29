@@ -557,20 +557,6 @@ func _draw_strike_telegraph(center: Vector2, lead: float) -> void:
 		false,
 		Color(0.62, 0.78, 1.0, 0.08 + progress * 0.12)
 	)
-	draw_circle(center, _strike_radius, Color(0.42, 0.58, 0.9, 0.10 + progress * 0.14))
-	draw_circle(
-		center,
-		_strike_radius,
-		Color(0.78, 0.9, 1.0, 0.30 + progress * 0.45),
-		false,
-		3.0,
-		true
-	)
-	draw_circle(
-		center,
-		_strike_radius * progress,
-		Color(1.0, 0.9, 0.35, 0.16 + progress * 0.26)
-	)
 	var cross_size := lerpf(13.0, 5.0, progress)
 	draw_line(center - Vector2(cross_size, 0.0), center + Vector2(cross_size, 0.0), Color(1.0, 0.92, 0.5, 0.72), 3.0, true)
 	draw_line(center - Vector2(0.0, cross_size), center + Vector2(0.0, cross_size), Color(1.0, 0.92, 0.5, 0.72), 3.0, true)
@@ -588,17 +574,6 @@ func _draw_strike_afterglow(center: Vector2, age: float) -> void:
 		false,
 		Color(1.0, 1.0, 1.0, fade * 0.94)
 	)
-	for ring_index in range(3):
-		draw_arc(
-			center,
-			_strike_radius * (0.45 + float(ring_index) * 0.28) + (1.0 - fade) * 26.0,
-			0.0,
-			TAU,
-			24,
-			Color(1.0, 0.9, 0.35, (0.78 - float(ring_index) * 0.16) * fade),
-			3.0,
-			true
-		)
 
 
 func _finish() -> void:

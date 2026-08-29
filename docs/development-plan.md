@@ -789,9 +789,12 @@ Stato: `IN VERIFICA` dopo il refresh dei VFX runtime del 29 agosto 2026.
 - [x] Nove decal ImageGen `512x512` sostituiscono l'emblema dell'icona HUD
   durante il gioco: shockwave, scia, impatto elettrico, Piroetta, brina/bloom,
   reveal Cosplay, campo Zen e clone Reggaeton.
-- [x] Le texture seguono posizione, raggio e fase degli effetti; i bordi
-  procedurali restano il telegraph geometrico autorevole. Danno, collisioni,
-  cooldown, targeting e input sono invariati.
+- [x] Le texture seguono posizione, raggio e fase degli effetti; basi, bordi e
+  anelli circolari procedurali sotto i decal sono rimossi. L'area gameplay resta
+  invariata anche se il suo contorno e' meno esplicito; danno, collisioni,
+  cooldown, targeting e input non cambiano.
+- [x] Gran Piroetta di Alea compie `2` rotazioni visive nei suoi `1,20 s`, contro
+  le precedenti `1,35`, senza cambiare durata o tick gameplay.
 - [x] La shockwave di Magno resta istantanea lato gameplay ma il decal
   non-interattivo dura `1,20 s`, si ferma in pausa e si ripulisce su restart.
 - [x] Taratura di leggibilita' del 29 agosto: espansione tellurica chiusa entro

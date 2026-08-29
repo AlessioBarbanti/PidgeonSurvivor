@@ -137,6 +137,12 @@ func _validate_visual_families_and_budgets() -> void:
 		)
 		if definition.effect_id != AbilityEffectRegistry.RANDOM_COSPLAY:
 			_validate_visual_extent(effect, definition)
+		if definition.effect_id == AbilityEffectRegistry.GRAND_SPIN:
+			_expect(
+				effect is AbilityAreaEffect
+					and (effect as AbilityAreaEffect).get_visual_rotation_turns() >= 2.0,
+				"Gran Piroetta deve compiere almeno due rotazioni visive per attivazione."
+			)
 		if visual_node is CosplayAccent:
 			_validate_cosplay_pause(controller, visual_node as CosplayAccent)
 

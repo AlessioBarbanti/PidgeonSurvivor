@@ -71,16 +71,6 @@ func _draw() -> void:
 		Color(1.0, 1.0, 1.0, alpha * 0.9)
 	)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-	draw_arc(
-		Vector2.ZERO,
-		burst_radius * 0.72,
-		0.0,
-		TAU,
-		40,
-		Color(_palette, alpha * 0.54),
-		4.0,
-		true
-	)
 	for confetti_index in VISUAL_PARTICLE_COUNT:
 		var angle := TAU * float(confetti_index) / float(VISUAL_PARTICLE_COUNT)
 		angle += sin(float(confetti_index) * 1.73) * 0.18

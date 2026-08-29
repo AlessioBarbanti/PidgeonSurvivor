@@ -4,8 +4,8 @@
 
 Le icone HUD non vengono piu sovrapposte nell'arena. Le otto abilita usano ora
 decal ImageGen dedicati, ancorati alla posizione, al raggio e alla fase del VFX;
-le primitive restano soltanto come telegraph del bordo gameplay e particelle di
-supporto. `origine: progetto IL GIOCO`; autore: progetto IL GIOCO con assistenza
+non viene disegnato alcun cerchio procedurale sotto i decal, mentre restano le
+sole particelle di supporto. `origine: progetto IL GIOCO`; autore: progetto IL GIOCO con assistenza
 OpenAI ImageGen; licenza: Licenza del progetto.
 
 Prompt condiviso: VFX pixel-art top-down per survival arcade mobile, forme
@@ -19,7 +19,7 @@ I master `1254x1254` sono conservati in `assets/art/vfx/abilities/hd/`, esclusi
 da import ed export con `.gdignore` e preset. `tools/process-ability-vfx.ps1`
 li ricampiona sull'intero canvas a `512x512` RGBA con bicubica di alta qualita e
 azzera soltanto l'alpha residuo sotto `32`, senza crop o deformazioni. Il runtime
-mantiene un bordo procedurale per comunicare il raggio gameplay esatto e usa
+lascia al decal la comunicazione visiva dell'area, senza una base circolare, e usa
 filtro nearest sui master pixel-art; `earthquake_wave` e' pittorico e usa filtro
 lineare, perche' nearest su un rescale non intero sfarfallava in espansione.
 `zen_field` e `thermal_frost` sono altrettanto pittorici ma condividono il nodo
@@ -43,13 +43,13 @@ B18M precedente al refresh):
 
 | Percorso | Funzione corrente | SHA-256 |
 |---|---|---|
-| `scripts/abilities/earthquake_wave.gd` | Decal tellurico in espansione entro il 15% della durata, opacita' massima `0,62` e bordo del raggio reale | `c3c3ec98fd8c1f96e810f8640846e757040dec165d0c017394d3693d011e41b3` |
+| `scripts/abilities/earthquake_wave.gd` | Decal tellurico senza cerchio sottostante, in espansione entro il 15% della durata e con opacita' massima `0,62` | `cbc9f558b687f307eb8c0ce7b6730b8b19d84bc86f31f76063ded667f7074d2e` |
 | `scripts/abilities/fire_z_trail.gd` | Tasselli di fiamma specchiati a alternanza lungo il segmento e scintille | `7da85d1ce07c5d0e85ab8ed3b00f011a8d16378eea45bb00a9ec1e5ce6035003` |
-| `scripts/abilities/lightning_storm.gd` | Telegraph geometrico, decal di impatto inscritto nel cerchio di danno e flash accessibile | `241d89f009428b1b63fad46a861321b6e6ded53a99335008352fa3bc6e054f0c` |
-| `scripts/abilities/ability_area_effect.gd` | Decal Piroetta e Zen con bordo autorevole | `0eb51237c7155c0ebadb03b93dae6d8c2fc14cf81430a434984f7c2b95d48a1d` |
-| `scripts/abilities/cosplay_accent.gd` | Decal reveal e coriandoli | `ccfe12e5a9adb95eba80627232c4c597e3084ae4ec392e2a2dd324027c87a254` |
-| `scripts/abilities/thermal_shock.gd` | Decal separati per brina e bloom | `45dac8149c365fd5f2fb654af6d3de6ecf8526c7e84b646c625c938778008f98` |
-| `scripts/abilities/illusion_decoy.gd` | Clone e boombox raster con note animate | `ea1117491e2f5529211b622484597062b25aabf4388086e514604a5ed97245e8` |
+| `scripts/abilities/lightning_storm.gd` | Decal di preavviso e impatto inscritto nell'area, senza anelli procedurali, con flash accessibile | `d814137dfad42d1ad17191113bcbaeae6bb9426d198afff2dd7f4eaa2d811d5d` |
+| `scripts/abilities/ability_area_effect.gd` | Decal Piroetta e Zen senza base circolare; Piroetta a due giri per attivazione | `7e7ed0664d50609d423a9b10bfb68402dac650e6d91bf6746bf43e575eaae31d` |
+| `scripts/abilities/cosplay_accent.gd` | Decal reveal e coriandoli senza anello sottostante | `72521e3e91469c6fc9b4160e8853e5c1d027eb0dd863097996c09b05d0af9664` |
+| `scripts/abilities/thermal_shock.gd` | Decal separati per brina e bloom senza basi o anelli procedurali | `4316a441084c661934991561309e0f18059d7fb344c880dc37b3c2d5814bb09c` |
+| `scripts/abilities/illusion_decoy.gd` | Clone e boombox raster con note animate, senza aura circolare | `44126e90d493708de81e63167c4e75249aa75a855ced1a8b85d347c212053bde` |
 | `scripts/abilities/instinctive_dodge_accent.gd` | Tell Scarto Istintivo invariato | `57d9f40966aa37c523f4d67f4a235d3ff5671d4b746097d0aca7a29c073847b6` |
 
 Budget corrente: massimo un overlay fullscreen, 64 particelle logiche e due

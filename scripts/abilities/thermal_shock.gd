@@ -19,9 +19,6 @@ const VISUAL_FAMILY_ID := &"thermal_shock_frost_ring_and_bloom"
 ## dichiarato deve restare allineato a cio' che viene davvero disegnato.
 const VISUAL_PARTICLE_COUNT := 0
 const VISUAL_MATERIAL_COUNT := 0
-const FROST_COLOR := Color(0.55, 0.86, 1.0, 0.72)
-const FROST_CORE_COLOR := Color(0.82, 0.95, 1.0, 0.34)
-const BLOOM_COLOR := Color(1.0, 0.52, 0.18, 0.82)
 const THERMAL_FROST_TEXTURE := preload(
 	"res://assets/art/vfx/abilities/generated/thermal_frost.png"
 )
@@ -251,7 +248,6 @@ func _safe_phase_ratio() -> float:
 func _draw_frost_field() -> void:
 	var radius := _definition.area_radius
 	var progress := 1.0 - _safe_phase_ratio()
-	draw_circle(Vector2.ZERO, radius, FROST_CORE_COLOR)
 	var contraction := lerpf(1.0, 0.36, progress)
 	var decal_size := Vector2.ONE * radius * 2.0 * contraction
 	draw_texture_rect(
@@ -260,24 +256,11 @@ func _draw_frost_field() -> void:
 		false,
 		Color(1.0, 1.0, 1.0, 0.76 + progress * 0.18)
 	)
-	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 48, FROST_COLOR, 4.0, true)
-	# La corona si contrae verso il centro: telegrafa l'istante della detonazione.
-	draw_arc(
-		Vector2.ZERO,
-		radius * lerpf(0.92, 0.24, progress),
-		0.0,
-		TAU,
-		36,
-		Color(FROST_COLOR, 0.5 + progress * 0.4),
-		3.0,
-		true
-	)
 
 
 func _draw_heat_bloom() -> void:
 	var radius := _definition.area_radius
 	var fade := _safe_phase_ratio()
-	draw_circle(Vector2.ZERO, radius * (1.0 - fade * 0.18), Color(BLOOM_COLOR, 0.28 * fade))
 	var bloom_scale := lerpf(1.08, 0.82, fade)
 	var decal_size := Vector2.ONE * radius * 2.0 * bloom_scale
 	draw_texture_rect(
@@ -286,17 +269,6 @@ func _draw_heat_bloom() -> void:
 		false,
 		Color(1.0, 1.0, 1.0, fade * 0.94)
 	)
-	for ring_index in range(3):
-		draw_arc(
-			Vector2.ZERO,
-			radius * (0.45 + float(ring_index) * 0.27),
-			0.0,
-			TAU,
-			40,
-			Color(BLOOM_COLOR, fade * (0.85 - float(ring_index) * 0.22)),
-			4.0,
-			true
-		)
 
 
 func _clear_frost_targets() -> void:

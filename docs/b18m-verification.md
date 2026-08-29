@@ -15,11 +15,12 @@ master e prompt/hashes sono
 registrati nel manifest. Gli output ImageGen built-in avevano alpha nativo,
 quindi non e servita rimozione chroma.
 
-L'integrazione mantiene un bordo procedurale sul raggio gameplay reale e usa il
-decal come resa artistica: danno, hitbox, cooldown, targeting e input non
-cambiano. La sola durata presentazionale della shockwave di Magno passa da
-`0,35 s` a `1,20 s`; l'impatto resta istantaneo e il nodo non contiene
-collisioni.
+L'integrazione non disegna piu una base o un bordo circolare sotto i decal: la
+lettura dell'area resta affidata all'asset, accettando un contorno meno esplicito.
+Danno, raggio, hitbox, cooldown, targeting e input non cambiano. La sola durata
+presentazionale della shockwave di Magno passa da `0,35 s` a `1,20 s`;
+l'impatto resta istantaneo e il nodo non contiene collisioni. Gran Piroetta di
+Alea compie ora `2` giri nei suoi `1,20 s`, contro i precedenti `1,35`.
 
 ### Passata di taratura sulla leggibilita' — 29 agosto 2026
 
@@ -31,15 +32,20 @@ gameplay, ora corretti; nessuna correzione tocca dati, hitbox o timing di danno.
   del fronte. Il fronte raggiunge ora il raggio pieno entro il `15%` della
   durata visiva (`~0,18 s`) e la coda comincia a dissolversi dal `22%`.
 - Il master tellurico e' l'unico dei nove senza centro aperto: l'opacita' del
-  decal e' ora limitata a `0,62`, mentre il bordo del raggio resta a `0,85`, per
-  non nascondere il Player durante gli `1,20 s` di coda. Lo stesso master e'
-  pittorico e non pixel-art, quindi il suo nodo usa filtro lineare.
+  decal e' ora limitata a `0,62` per non nascondere il Player durante gli
+  `1,20 s` di coda. Lo stesso master e' pittorico e non pixel-art, quindi il suo
+  nodo usa filtro lineare.
 - Tempesta di Tuoni: il decal riempie il quadrato fino agli angoli mentre l'AoE
   e' circolare, cosi' l'impatto appariva fino a `1,41x` il raggio che fa danno.
   Telegraph e afterglow sono ora inscritti nel cerchio (`1/sqrt(2)`).
 - Powerslide: il master non e' raccordabile, quindi gli stampi accumulavano
   alpha nelle sovrapposizioni. Passo portato a `0,72` del lato, opacita' del
   singolo tassello a `0,62` e specchiatura alternata per spezzare la ripetizione.
+- Composizione: rimossi riempimenti, bordi e anelli circolari sotto shockwave,
+  fulmini, Piroetta, Shock Termico, Cosplay, Zen e clone Reggaeton. Scintille,
+  note e coriandoli restano parte dell'animazione.
+- Gran Piroetta: decal e scintille passano da `1,35` a `2` rotazioni per
+  attivazione, senza modificare durata o area gameplay.
 - Pulizie: `VISUAL_PARTICLE_COUNT` di Shock Termico allineato a `0` (le schegge
   che lo giustificavano sono state sostituite dal decal), note musicali del
   clone Reggaeton spostate fuori dalla sagoma, variabile morta rimossa,

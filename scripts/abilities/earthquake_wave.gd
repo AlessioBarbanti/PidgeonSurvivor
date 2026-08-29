@@ -15,8 +15,6 @@ const EXPANSION_PROGRESS := 0.15
 const FADE_START_PROGRESS := 0.22
 ## Il decal e' pittorico e pieno al centro: tetto di opacita' sul Player.
 const MAX_DECAL_ALPHA := 0.62
-## Il bordo resta piu' leggibile del decal perche' e' il telegraph autorevole.
-const BORDER_ALPHA := 0.85
 
 var _run_controller: RunController
 var _radius := 0.0
@@ -91,18 +89,6 @@ func _draw() -> void:
 		Rect2(-decal_size * 0.5, decal_size),
 		false,
 		Color(1.0, 1.0, 1.0, fade * MAX_DECAL_ALPHA)
-	)
-	# Il bordo procedurale resta il telegraph geometrico autorevole: il decal
-	# migliora la resa senza suggerire una collisione piu' ampia del raggio.
-	draw_arc(
-		Vector2.ZERO,
-		visible_radius,
-		0.0,
-		TAU,
-		64,
-		Color(1.0, 0.86, 0.42, fade * BORDER_ALPHA),
-		lerpf(5.0, 2.0, progress),
-		true
 	)
 
 

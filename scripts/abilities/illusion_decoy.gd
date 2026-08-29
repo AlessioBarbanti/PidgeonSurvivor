@@ -70,18 +70,6 @@ func _draw() -> void:
 	var elapsed := maxf(_duration_total - _duration_remaining, 0.0)
 	var beat := (sin(elapsed * TAU * 2.0) + 1.0) * 0.5
 	var sway := sin(elapsed * TAU * 1.5) * 3.0
-	var glow_color := Color(0.95, 0.18, 0.72, alpha * (0.18 + beat * 0.12))
-	draw_circle(Vector2.ZERO, 27.0 + beat * 4.0, glow_color)
-	draw_arc(
-		Vector2.ZERO,
-		23.0 + beat * 3.0,
-		0.0,
-		TAU,
-		32,
-		Color(0.3, 0.9, 1.0, alpha),
-		3.0,
-		true
-	)
 	# Il clone raster sostituisce il vecchio omino procedurale; l'aggro resta
 	# sul Node2D e quindi non dipende dalla dimensione visiva del decal.
 	var decal_size := Vector2.ONE * (104.0 + beat * 8.0)
