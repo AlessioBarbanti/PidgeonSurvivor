@@ -75,6 +75,7 @@
       ],
       "smokes": [
         "tests/integration/_enemy_spawner_smoke.gd",
+        "tests/unit/test_b04_enemy_spawner.gd",
         "tests/integration/_combat_slice_smoke.gd",
         "tests/integration/_pigeon_enemy_smoke.gd",
         "tests/unit/test_b18h_pigeon_enemies.gd",
@@ -131,6 +132,7 @@
         "tests/integration/_upgrade_overlay_smoke.gd",
         "tests/integration/_upgrade_effects_smoke.gd",
         "tests/integration/_signature_upgrades_smoke.gd",
+        "tests/unit/test_b13_signature_upgrades.gd",
         "tests/integration/_summer_grill_smoke.gd",
         "tests/unit/test_b18j_summer_grill.gd",
         "tests/integration/_b41_weapon_shapes_smoke.gd",
@@ -297,7 +299,8 @@
         "tests/unit/test_b18o_welcome_flow.gd",
         "tests/integration/_pause_change_character_smoke.gd",
         "tests/unit/test_b18n_pause_change_character.gd",
-        "tests/integration/_touch_control_settings_smoke.gd"
+        "tests/integration/_touch_control_settings_smoke.gd",
+        "tests/unit/test_b18p_touch_control_settings.gd"
       ]
     },
     {
@@ -356,6 +359,7 @@
       ],
       "smokes": [
         "tests/integration/_b44_state_tells_smoke.gd",
+        "tests/unit/test_b44_state_tells.gd",
         "tests/integration/_b45_role_identity_smoke.gd",
         "tests/integration/_b42_measurable_passives_smoke.gd",
         "tests/unit/test_b42_measurable_passives.gd",
