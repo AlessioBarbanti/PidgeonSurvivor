@@ -201,7 +201,7 @@ func _validate_passive(
 			_expect_float_near(
 				passive.resolve_incoming_damage(20.0),
 				0.0,
-				"Il primo colpo di Bea deve essere annullato dallo Scarto Istintivo."
+				"Il primo colpo di Bea deve essere annullato dal Sesto Senso Equino."
 			)
 			_expect_float_near(
 				passive.resolve_incoming_damage(20.0),
@@ -217,7 +217,7 @@ func _validate_passive(
 			_expect_float_near(
 				passive.resolve_incoming_damage(20.0),
 				0.0,
-				"A cooldown esaurito lo Scarto Istintivo deve annullare di nuovo il colpo."
+				"A cooldown esaurito il Sesto Senso Equino deve annullare di nuovo il colpo."
 			)
 		&"zat":
 			var health := player.get_health_component()

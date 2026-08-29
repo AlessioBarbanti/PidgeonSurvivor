@@ -2,7 +2,7 @@ extends SceneTree
 
 ## B45 — Identità dipendenti dai nemici: Bea, Migi, Magno.
 ##
-## Verifica che lo Scarto Istintivo di Bea annulli il primo colpo eleggibile
+## Verifica che il Sesto Senso Equino di Bea annulli il primo colpo eleggibile
 ## rispettando cooldown e i-frame (e che un input degenere non sposti il
 ## Player), che il guscio a cariche di Migi blocchi colpi interi e si
 ## ricarichi nel tempo dichiarato, che Rallentamento Zen assorba i proiettili
@@ -55,10 +55,10 @@ func _validate_bea_instinctive_dodge() -> void:
 	_expect(passive.equip_definition(bea), "La passiva deve accettare Bea.")
 
 	var cooldown := bea.get_passive_float(&"dodge_cooldown", 9.0, 0.001)
-	_expect(cooldown > 0.0, "Bea deve dichiarare un cooldown per lo Scarto Istintivo.")
+	_expect(cooldown > 0.0, "Bea deve dichiarare un cooldown per il Sesto Senso Equino.")
 	_expect(
 		passive.get_bea_dodge_cooldown_remaining() <= 0.0,
-		"Lo Scarto Istintivo deve partire pronto a inizio run."
+		"Il Sesto Senso Equino deve partire pronto a inizio run."
 	)
 
 	_expect_float_near(
@@ -68,7 +68,7 @@ func _validate_bea_instinctive_dodge() -> void:
 	)
 	_expect(
 		player.get_health_component().is_invulnerable(),
-		"Lo Scarto Istintivo deve concedere un i-frame anche quando il colpo annullato non passa da take_damage()."
+		"Il Sesto Senso Equino deve concedere un i-frame anche quando il colpo annullato non passa da take_damage()."
 	)
 	_expect(
 		passive.get_bea_dodge_cooldown_remaining() > 0.0,
@@ -88,7 +88,7 @@ func _validate_bea_instinctive_dodge() -> void:
 	_expect_float_near(
 		passive.resolve_incoming_damage(20.0),
 		0.0,
-		"A cooldown esaurito lo Scarto Istintivo deve annullare di nuovo il colpo."
+		"A cooldown esaurito il Sesto Senso Equino deve annullare di nuovo il colpo."
 	)
 
 	# Fallback senza destinazione sicura: un input degenere (nessuna
