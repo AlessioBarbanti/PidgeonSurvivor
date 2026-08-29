@@ -1,7 +1,7 @@
 class_name InstinctiveDodgeAccent
 extends Node2D
 
-## Tell one-shot dello Scarto Istintivo di Bea (B45): sagoma a ferro di
+## Tell one-shot del Sesto Senso Equino di Bea (B45): sagoma a ferro di
 ## cavallo davanti al Player e scia viola lungo la direzione dello scarto.
 ## Stesso schema di CosplayAccent/AbilityIconBurst: nodo autosufficiente,
 ## procedurale, si distrugge da solo a fine durata.

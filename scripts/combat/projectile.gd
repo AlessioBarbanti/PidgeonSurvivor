@@ -6,27 +6,7 @@ signal expired(projectile: Projectile)
 signal chain_jumped(from_target: BaseEnemy, to_target: BaseEnemy, damage: float)
 
 const ENEMY_HURTBOX_MASK := 1 << 1
-
-@export_group("Visual")
-@export var body_color := Color(1.0, 0.91, 0.2, 1.0):
-	set(value):
-		body_color = value
-		queue_redraw()
-
-@export var outline_color := Color(0.18, 0.025, 0.07, 1.0):
-	set(value):
-		outline_color = value
-		queue_redraw()
-
-@export var trail_color := Color(0.05, 0.88, 1.0, 0.8):
-	set(value):
-		trail_color = value
-		queue_redraw()
-
-@export_range(1.0, 8.0, 0.1) var trail_length_multiplier := 4.2:
-	set(value):
-		trail_length_multiplier = maxf(value, 1.0)
-		queue_redraw()
+const VISUAL_REFERENCE_RADIUS := 5.0
 
 var damage := 0.0
 var direction := Vector2.RIGHT
@@ -53,18 +33,19 @@ var _death_burst_radius := 0.0
 var _death_burst_damage_multiplier := 0.0
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
+@onready var _projectile_sprite: Sprite2D = %ProjectileSprite
 
 
 func _ready() -> void:
 	_make_collision_shape_unique()
 	_sync_collision_radius()
+	_sync_visual_scale()
 	collision_layer = 0
 	collision_mask = ENEMY_HURTBOX_MASK
 	monitoring = true
 	monitorable = false
 	if not area_entered.is_connected(_on_area_entered):
 		area_entered.connect(_on_area_entered)
-	queue_redraw()
 
 
 func _physics_process(delta: float) -> void:
@@ -78,34 +59,6 @@ func _physics_process(delta: float) -> void:
 	if lifetime_remaining <= 0.0:
 		expire()
 		return
-
-
-func _draw() -> void:
-	var outline_width := maxf(projectile_radius * 0.45, 2.0)
-	var trail_length := projectile_radius * trail_length_multiplier
-	for layer in range(3):
-		var layer_ratio := float(layer) / 2.0
-		var layer_color := trail_color
-		layer_color.a *= lerpf(0.72, 0.24, layer_ratio)
-		var y_offset := (float(layer) - 1.0) * projectile_radius * 0.3
-		draw_line(
-			Vector2(-trail_length * lerpf(1.0, 0.7, layer_ratio), y_offset),
-			Vector2(-projectile_radius * 0.7, y_offset * 0.35),
-			layer_color,
-			maxf(projectile_radius * lerpf(0.72, 0.3, layer_ratio), 1.0),
-			true
-		)
-	for echo_index in range(2):
-		var echo_color := trail_color
-		echo_color.a *= 0.28 - float(echo_index) * 0.09
-		draw_circle(
-			Vector2(-trail_length * (0.5 + float(echo_index) * 0.3), 0.0),
-			maxf(projectile_radius * (0.42 - float(echo_index) * 0.1), 1.0),
-			echo_color
-		)
-	draw_circle(Vector2.ZERO, projectile_radius + outline_width, outline_color)
-	draw_circle(Vector2.ZERO, projectile_radius, body_color)
-
 
 func initialize(
 	initial_direction: Vector2,
@@ -132,7 +85,7 @@ func initialize(
 	rotation = direction.angle()
 	if is_node_ready():
 		_sync_collision_radius()
-	queue_redraw()
+		_sync_visual_scale()
 	return lifetime_remaining > 0.0 and is_instance_valid(_run_controller)
 
 
@@ -372,3 +325,8 @@ func _make_collision_shape_unique() -> void:
 func _sync_collision_radius() -> void:
 	if _collision_shape.shape is CircleShape2D:
 		(_collision_shape.shape as CircleShape2D).radius = projectile_radius
+
+
+func _sync_visual_scale() -> void:
+	if is_instance_valid(_projectile_sprite):
+		_projectile_sprite.scale = Vector2.ONE * (projectile_radius / VISUAL_REFERENCE_RADIUS)

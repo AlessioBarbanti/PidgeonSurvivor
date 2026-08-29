@@ -1,7 +1,8 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/boss_ui.gd" id="1_boss_ui"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/boss/boss_continue_cta_base.png" id="2_boss_continue_cta"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/pause/pause_panel_frame.png" id="3_modal_frame"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_boss_health"]
 bg_color = Color(0.025, 0.02, 0.07, 0.94)
@@ -33,21 +34,16 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_intro_panel"]
-bg_color = Color(0.025, 0.02, 0.07, 0.98)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color(0.78, 0.32, 1, 0.95)
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
-content_margin_left = 44.0
-content_margin_top = 34.0
-content_margin_right = 44.0
-content_margin_bottom = 34.0
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_intro_panel"]
+texture = ExtResource("3_modal_frame")
+texture_margin_left = 56.0
+texture_margin_top = 52.0
+texture_margin_right = 56.0
+texture_margin_bottom = 52.0
+content_margin_left = 58.0
+content_margin_top = 48.0
+content_margin_right = 58.0
+content_margin_bottom = 46.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_continue_cta"]
 atlas = ExtResource("2_boss_continue_cta")
@@ -173,7 +169,7 @@ mouse_filter = 2
 [node name="IntroPanel" type="PanelContainer" parent="IntroLayer/Center"]
 custom_minimum_size = Vector2(620, 0)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_intro_panel")
+theme_override_styles/panel = SubResource("StyleBoxTexture_intro_panel")
 
 [node name="VBox" type="VBoxContainer" parent="IntroLayer/Center/IntroPanel"]
 layout_mode = 2
@@ -190,6 +186,8 @@ horizontal_alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.76, 1, 1)
+theme_override_colors/font_outline_color = Color(0.09, 0.025, 0.15, 1)
+theme_override_constants/outline_size = 5
 theme_type_variation = &"TitleXL"
 text = "EVIL BEA"
 horizontal_alignment = 1

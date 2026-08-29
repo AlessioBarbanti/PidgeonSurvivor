@@ -8,9 +8,10 @@ const TRANSITION_DURATION := 0.14
 const SWIPE_DISTANCE := 56.0
 const DRAG_CANCEL_DISTANCE := 18.0
 const EMULATED_MOUSE_SUPPRESSION_MSEC := 600
+const SELECTED_CARD_FRAME := preload("res://assets/art/ui/pause/pause_panel_frame.png")
 
 @onready var _selection_panel: Control = %SelectionPanel
-@onready var _backdrop: NinePatchRect = $Backdrop
+@onready var _backdrop: TextureRect = $Backdrop
 @onready var _carousel_viewport: Control = %CarouselViewport
 @onready var _previous_button: Button = %PreviousButton
 @onready var _next_button: Button = %NextButton
@@ -42,8 +43,8 @@ var _suppress_card_press := false
 var _suppress_card_press_until_msec := 0
 var _navigation_lock_until_msec := 0
 var _controller_axis_direction := 0
-var _center_style: StyleBoxFlat
-var _center_focus_style: StyleBoxFlat
+var _center_style: StyleBoxTexture
+var _center_focus_style: StyleBoxTexture
 var _preview_style: StyleBoxFlat
 var _preview_focus_style: StyleBoxFlat
 
@@ -189,7 +190,7 @@ func get_back_button() -> Button:
 	return _back_button if is_instance_valid(_back_button) else null
 
 
-func get_backdrop() -> NinePatchRect:
+func get_backdrop() -> TextureRect:
 	return _backdrop if is_instance_valid(_backdrop) else null
 
 
@@ -407,10 +408,25 @@ func _apply_card_role(button: Button, is_current: bool) -> void:
 
 
 func _build_card_styles() -> void:
-	_center_style = _make_card_style(Color(0.018, 0.04, 0.06, 0.9), Color(0.25, 0.66, 0.76, 0.92), 2)
-	_center_focus_style = _make_card_style(Color(0.026, 0.055, 0.08, 0.94), Color(0.42, 0.9, 1.0, 1.0), 3)
+	_center_style = _make_selected_card_style(Color.WHITE)
+	_center_focus_style = _make_selected_card_style(Color(1.0, 0.96, 0.78, 1.0))
 	_preview_style = _make_card_style(Color(0.01, 0.022, 0.034, 0.9), Color(0.2, 0.24, 0.28, 1.0), 3)
 	_preview_focus_style = _make_card_style(Color(0.035, 0.04, 0.045, 0.96), Color(0.78, 0.58, 0.27, 1.0), 3)
+
+
+func _make_selected_card_style(tint: Color) -> StyleBoxTexture:
+	var style := StyleBoxTexture.new()
+	style.texture = SELECTED_CARD_FRAME
+	style.texture_margin_left = 42.0
+	style.texture_margin_top = 42.0
+	style.texture_margin_right = 42.0
+	style.texture_margin_bottom = 42.0
+	style.content_margin_left = 16.0
+	style.content_margin_top = 16.0
+	style.content_margin_right = 16.0
+	style.content_margin_bottom = 16.0
+	style.modulate_color = tint
+	return style
 
 
 func _make_card_style(background: Color, border: Color, width: int) -> StyleBoxFlat:

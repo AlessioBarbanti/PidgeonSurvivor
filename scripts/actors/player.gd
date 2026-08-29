@@ -242,7 +242,7 @@ func get_passive_controller() -> FriendPassiveController:
 	return _passive_controller if is_instance_valid(_passive_controller) else null
 
 
-## `source_position` (mondo) e' opzionale: alcune passive (Scarto Istintivo
+## `source_position` (mondo) e' opzionale: alcune passive (Sesto Senso Equino
 ## di Bea) la usano per calcolare una direzione di fuga dalla minaccia.
 ## `Vector2.INF` (default) segnala "fonte sconosciuta" ai chiamanti che non
 ## la conoscono ancora.
@@ -832,7 +832,7 @@ func _clamp_to_playfield() -> void:
 		return
 
 
-## Scarto Istintivo di Bea (B45): prova a spostare il Player lungo
+## Sesto Senso Equino di Bea (B45): prova a spostare il Player lungo
 ## `direction` per `distance`, rispettando confinamento mondo/HUD e senza
 ## mai atterrare dentro un ostacolo statico. Se non esiste una destinazione
 ## sicura (spostamento quasi nullo dopo il confinamento, o punto bloccato),
@@ -882,5 +882,4 @@ func _point_blocked_by_obstacle(point: Vector2) -> bool:
 		if obstacle is StaticObstacle and (obstacle as StaticObstacle).get_footprint_rect().has_point(point):
 			return true
 	return false
-
 

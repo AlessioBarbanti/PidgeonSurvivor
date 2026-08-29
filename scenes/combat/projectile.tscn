@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/combat/projectile.gd" id="1_projectile"]
+[ext_resource type="Texture2D" path="res://assets/art/vfx/projectiles/generated/player_projectile.png" id="2_projectile_texture"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_projectile"]
 resource_local_to_scene = true
@@ -12,6 +13,11 @@ collision_layer = 0
 collision_mask = 2
 monitorable = false
 script = ExtResource("1_projectile")
+
+[node name="ProjectileSprite" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+texture_filter = 1
+texture = ExtResource("2_projectile_texture")
 
 [node name="CollisionShape" type="CollisionShape2D" parent="."]
 unique_name_in_owner = true

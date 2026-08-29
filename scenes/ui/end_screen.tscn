@@ -1,24 +1,20 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/end_screen.gd" id="1_end_screen"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/character_select/character_select_cta_base.png" id="2_primary_cta"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/character_select/secondary_button_cta_base.png" id="3_secondary_cta"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/pause/pause_panel_frame.png" id="4_modal_frame"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_end_panel"]
-bg_color = Color(0.025, 0.043, 0.075, 0.96)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.93, 0.2, 0.36, 0.9)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
-content_margin_left = 42.0
-content_margin_top = 32.0
-content_margin_right = 42.0
-content_margin_bottom = 32.0
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_end_panel"]
+texture = ExtResource("4_modal_frame")
+texture_margin_left = 56.0
+texture_margin_top = 52.0
+texture_margin_right = 56.0
+texture_margin_bottom = 52.0
+content_margin_left = 58.0
+content_margin_top = 48.0
+content_margin_right = 58.0
+content_margin_bottom = 46.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_primary_cta"]
 atlas = ExtResource("2_primary_cta")
@@ -122,7 +118,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.006, 0.01, 0.02, 0.82)
+color = Color(0.012, 0.008, 0.016, 0.86)
 
 [node name="Center" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -134,9 +130,9 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="Panel" type="PanelContainer" parent="Center"]
-custom_minimum_size = Vector2(430, 0)
+custom_minimum_size = Vector2(454, 0)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_end_panel")
+theme_override_styles/panel = SubResource("StyleBoxTexture_end_panel")
 
 [node name="VBox" type="VBoxContainer" parent="Center/Panel"]
 layout_mode = 2
@@ -146,6 +142,8 @@ theme_override_constants/separation = 16
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.36, 0.44, 1)
+theme_override_colors/font_outline_color = Color(0.18, 0.02, 0.035, 1)
+theme_override_constants/outline_size = 5
 theme_type_variation = &"TitleXL"
 text = "GAME OVER"
 horizontal_alignment = 1

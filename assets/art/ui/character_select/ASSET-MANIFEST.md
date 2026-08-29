@@ -20,14 +20,42 @@ Color palette: near-black navy, deep desaturated blue, gunmetal, sparse electric
 Constraints: background plate only; absolutely no people, characters, creatures, portraits, icons, cards, panels, buttons, arrows, logos, typography, readable symbols, watermark, or baked UI labels. Keep decoration at the edges so responsive controls remain readable. No photorealism, no 3D render, no blur.
 ```
 
-## File runtime
+## Fondale originale ritirato
 
 | Percorso | Generatore | Dimensioni | Trasformazioni | SHA-256 |
 |---|---|---:|---|---|
-| `assets/art/ui/character_select/character_select_backdrop.png` | OpenAI ImageGen built-in | `1672x941` RGB PNG | Output selezionato copiato senza crop, ritocco, testo o riscrittura; il runtime lo usa come `NinePatchRect` per preservare cornice e angoli su 16:9, 20:9 e 4:3 | `8C48FA0F8480873B605E2436B6DF6265340CB933CE1C37ABB68106BA311AAC99` |
+| `assets/art/ui/character_select/hd/character_select_backdrop_cyan_legacy.png` | OpenAI ImageGen built-in | `1672x941` RGB PNG | Primo output selezionato, conservato come master storico fuori da import ed export quando il runtime e stato sostituito dalla variante bronzo | `8C48FA0F8480873B605E2436B6DF6265340CB933CE1C37ABB68106BA311AAC99` |
 
 Il raster e soltanto decorativo. Testi, personaggi, icone, pannelli, focus e hit
 target restano nodi Godot dati e non sono incorporati nell'immagine.
+
+## Fondale selezione bronzo
+
+Il 29 agosto 2026 il fondale blu/ciano del selettore e stato sostituito con una
+variante interna in tavolozza notte, carbone e bronzo, coerente con le cornici
+modali. Origine: progetto IL GIOCO; autore: progetto IL GIOCO con assistenza
+OpenAI ImageGen; licenza: Licenza del progetto. Nessun testo, personaggio,
+ritratto, oggetto interattivo o UI e incorporato nel raster.
+
+```text
+Use case: stylized-concept
+Asset type: full-screen 16:9 background plate for the Godot character-selection screen of a dark pixel-art survivor game. It will sit behind dynamic portraits, text, cards and orange-gold buttons.
+Primary request: create an empty, premium pixel-art character selection backdrop in a deep charcoal-black night palette, with muted antique bronze and warm ember-brown details. Replace any cyan/blue sci-fi feeling with a grounded dark tavern and forge atmosphere: shadowy timber beams, a distant unlit grill hearth, faint stone floor perspective, barely visible smoke and floating ember specks. The central 70 percent must stay calm, dark and low contrast for the selected character and UI.
+Style/medium: polished 2D pixel art, sharp crisp game-ready finish, restrained fantasy arcade ornament.
+Composition/framing: wide landscape background; use sparse dark bronze structural ornaments only at the outer edges and corners; central area unobstructed; no framing panel in the middle.
+Lighting/mood: midnight tavern, subtle warm edge light, cinematic but quiet.
+Color palette: nearly black charcoal, desaturated warm brown, dark bronze, antique muted gold, sparse deep burgundy; absolutely no cyan, electric blue, neon, or bright orange focal object.
+Constraints: background plate only; no characters, creatures, portraits, hands, items, weapons, UI panels, buttons, arrows, logos, letters, numbers, readable signs, watermark, or border that would compete with the in-game modal frames. Keep it low contrast and leave generous calm negative space in the center.
+```
+
+| Percorso | Generatore | Dimensioni | Trasformazioni | SHA-256 |
+|---|---|---:|---|---|
+| `assets/art/ui/character_select/hd/character_select_backdrop_bronze_source.png` | OpenAI ImageGen built-in | `1536x1024` RGB PNG | Master originale, escluso da import ed export con `.gdignore` | `85A818FC25D9FE4D3A8ED367FA2D9AE869EE7C9FECBCF1D35E90413C83F21140` |
+| `assets/art/ui/character_select/character_select_backdrop.png` | Derivazione deterministica | `1536x864` RGBA PNG | Crop verticale centrale da y=`80` a y=`944`, nearest-neighbor tramite System.Drawing; `TextureRect` aspect-cover nel runtime | `CAEBF8988BFB6BCB4CBEF213253E3BEE0BACC8871DB3842019E802259234CC16` |
+
+Il ritratto correntemente selezionato usa inoltre la cornice nove-slice
+`assets/art/ui/pause/pause_panel_frame.png`; le anteprime laterali e le due card
+Passiva/Abilita restano volutamente piu sobrie.
 
 ## Base CTA ornamentale
 

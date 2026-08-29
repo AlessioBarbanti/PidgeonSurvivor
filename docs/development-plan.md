@@ -1978,7 +1978,7 @@ di design: le tre riprogettazioni sono verificabili solo dopo B40 (nemico a
 distanza), già `COMPLETATO`. Razionale, diagnosi D1/D3 e matematica completa in
 [`gameplay-evolution-plan.md`](./gameplay-evolution-plan.md).
 
-- [x] **Bea — Scarto Istintivo.** Sostituisce `evasion_chance` (RNG invisibile)
+- [x] **Bea — Sesto Senso Equino.** Sostituisce `evasion_chance` (RNG invisibile)
   con `dodge_cooldown: 9.0`, `iframe_duration: 0.4`, `shove_distance: 90.0`:
   a cooldown esaurito il primo colpo eleggibile viene annullato,
   `Player.try_shove_to_safe_position()` prova a scartarla lontano dalla fonte
@@ -2017,7 +2017,7 @@ distanza), già `COMPLETATO`. Razionale, diagnosi D1/D3 e matematica completa in
   procedurale disegnata da `Player._draw()`, attiva solo quando la passiva
   equipaggiata è quella di Magno (`set_momentum_trail_enabled`).
 - [x] Smoke `_b45_role_identity_smoke.gd` (`B45_ROLE_IDENTITY_SMOKE_OK`): copre
-  lo Scarto Istintivo (annullo del primo colpo, cooldown, i-frame, fallback
+  il Sesto Senso Equino (annullo del primo colpo, cooldown, i-frame, fallback
   senza spostamento su direzione degenere), le cariche del guscio di Migi
   (blocco totale, rigenerazione nel tempo, nessun residuo al restart), la
   zona che assorbe i proiettili ostili senza toccare quelli alleati (verifica
@@ -2036,7 +2036,7 @@ distanza), già `COMPLETATO`. Razionale, diagnosi D1/D3 e matematica completa in
   che falliscono identicamente sulla baseline pre-B45.
 
 Restano aperti: regressione completa (Windows/Android), export Windows,
-verifica manuale su Pixel 9 (Scarto Istintivo e i-frame con touch reale) e
+verifica manuale su Pixel 9 (Sesto Senso Equino e i-frame con touch reale) e
 playtest contro il tiratore per confermare che le tre identità si distinguano.
 
 #### B54 — Tutorial dal Welcome Screen

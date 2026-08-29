@@ -47,15 +47,14 @@ telegrafati su posizioni fisse durante alcuni secondi. Il nome pubblico, la
 passiva e gli ID tecnici storici non cambiano.
 
 Il 28 agosto 2026 il proprietario ha inoltre approvato B45 (identità dipendenti
-dai nemici): la passiva di Bea diventa **Scarto Istintivo** (annulla il primo
+dai nemici): la passiva di Bea resta **Sesto Senso Equino** (annulla il primo
 colpo a cooldown, con scarto e i-frame, al posto dell'evasione RNG invisibile);
 Migi mantiene il nome e il soprannome parodico **"Guscio Tartarughina"** ma la
 riduzione danno flat diventa cariche che annullano un colpo intero e si
 ricaricano nel tempo, mentre Rallentamento Zen assorbe anche i proiettili
 nemici; Magno rende lo slancio espressivo (si accumula in linea retta, decade
 cambiando direzione) e l'Onda d'Urto Tellurica scala con lo slancio accumulato.
-Nomi pubblici, ruoli e controparti Evil restano invariati salvo il rinominato
-titolo della passiva di Bea.
+Nomi pubblici, ruoli e controparti Evil restano invariati.
 
 | Contenuto | Stato | Nota pubblica |
 |---|---|---|
@@ -65,7 +64,7 @@ titolo della passiva di Bea.
 | Reggaeton time! | Approvato | Retheme reggaeton dell'attiva di Marghe; comportamento gameplay invariato |
 | Revisione passive B42/B44 | Approvato e integrato | Marghe amplifica il danno subito dai nemici vicini al posto di ridurne la salute massima; Alea alza la posta e carica la fortuna con le kill; Aleo espone lo stato termico e la fase fredda erode i brinati; Lollo accorcia la distrazione con le kill e annuncia il prossimo Cosplay. Copy pubblico aggiornato in `characters.md` e nei `.tres` |
 | Scarti di statistiche base B47 | Approvato e integrato | Ogni `FriendDefinition` dichiara salute, movimento e cadenza di partenza, con default neutro e composizione moltiplicativa; nessun nome o testo pubblico cambia |
-| Identità dipendenti dai nemici B45 | Approvato e integrato | Bea: Sesto Senso Equino → **Scarto Istintivo** (nome rinominato). Migi: "Guscio Tartarughina" invariato nel nome, riduzione flat sostituita da cariche a blocco totale; Rallentamento Zen assorbe anche i proiettili nemici. Magno: slancio espressivo che scala l'Onda d'Urto Tellurica. Copy pubblico aggiornato in `characters.md` e nei `.tres` |
+| Identità dipendenti dai nemici B45 | Approvato e integrato | Bea: **Sesto Senso Equino** (nome mantenuto; effetto a cooldown con scarto e i-frame). Migi: "Guscio Tartarughina" invariato nel nome, riduzione flat sostituita da cariche a blocco totale; Rallentamento Zen assorbe anche i proiettili nemici. Magno: slancio espressivo che scala l'Onda d'Urto Tellurica. Copy pubblico aggiornato in `characters.md` e nei `.tres` |
 | Powerslide | Approvato | Nome, copy e icona inline-skate CC0 richiesti nel tracker gameplay; valori runtime registrati nel PRD |
 | Tempesta di Tuoni | Approvato e integrato | Nome corretto dal proprietario il 24 agosto; il 28 agosto l'attiva è stata riprogettata in B43 come sequenza di fulmini telegrafati (direzione "tempesta vera"), copy e ID tecnici storici invariati |
 | Evil Magno, Evil Bea, Evil Zat, Evil Alea, Evil Aleo, Evil Lollo, Evil Migi, Evil Marghe | Approvato | Ogni profilo amico contiene la propria controparte Boss |

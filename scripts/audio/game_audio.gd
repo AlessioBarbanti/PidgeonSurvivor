@@ -22,7 +22,7 @@ const ABILITY_ACTIVATE := &"ability_activate"
 const ABILITY_READY := &"ability_ready"
 const BOSS_WARNING := &"boss_warning"
 const BOSS_ATTACK := &"boss_attack"
-## Scarto Istintivo di Bea (B45). Non e' ancora nella lista di
+## Sesto Senso Equino di Bea (B45). Non e' ancora nella lista di
 ## has_complete_cue_set(): resta un no-op silenzioso finche' non arriva un
 ## asset dedicato, coerente con la disciplina che richiede uno stream
 ## importato per ogni cue prima di dichiararlo "completo".

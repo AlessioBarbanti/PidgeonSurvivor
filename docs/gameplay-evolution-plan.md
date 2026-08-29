@@ -505,7 +505,8 @@ Contratti:
 
 - [x] **Bea — Sesto Senso Equino.** Il `15%` di evasione era RNG invisibile: non
       si percepiva mai e quando salvava la run il giocatore non lo sapeva.
-      Sostituito con **Scarto Istintivo** (rinominato anche il `passive_title`):
+      Sostituito con un effetto deterministico, mantenendo il `passive_title`
+      **Sesto Senso Equino**:
       a cooldown dichiarato (`dodge_cooldown: 9.0`), il primo colpo che
       starebbe colpendo Bea viene annullato; Bea scarta automaticamente lontano
       dalla fonte del pericolo (`shove_distance: 90.0`) e riceve un breve
@@ -515,7 +516,7 @@ Contratti:
       guadagna un parametro opzionale `source_position` (passato da
       `ContactDamage`, `BossProjectile.try_hit()` e `FirstBoss._execute_targeted_blast()`)
       per calcolare la direzione di fuga.
-- [x] Lo Scarto Istintivo ha un tell obbligatorio — nuovo
+- [x] Il Sesto Senso Equino ha un tell obbligatorio — nuovo
       `InstinctiveDodgeAccent` (sagoma a ferro di cavallo + scia viola
       procedurali, cablato da `movement_slice.gd` sul segnale
       `instinctive_dodge_triggered`) — e una durata di invulnerabilità
@@ -583,7 +584,7 @@ File coinvolti: `scripts/content/friend_passive_controller.gd`,
 `data/abilities/{migi_zen_slowdown,magno_earthquake_shockwave}.tres`.
 
 Smoke: `_b45_role_identity_smoke.gd` → `B45_ROLE_IDENTITY_SMOKE_OK`, verde.
-Copre: lo Scarto Istintivo di Bea annulla il primo colpo eleggibile, concede
+Copre: il Sesto Senso Equino di Bea annulla il primo colpo eleggibile, concede
 l'i-frame, rispetta il cooldown e rifiuta un input di scarto senza direzione
 valida senza spostare il Player; le cariche del guscio di Migi bloccano colpi
 interi, si ricaricano nel tempo dichiarato e non lasciano residui al restart;
@@ -605,7 +606,7 @@ massima di Magno non azzerato al restart, già noto da B40/B41): confermato
 che falliscono identicamente sulla baseline pre-B45.
 
 Gate: regressione completa, export Windows, **verifica manuale su Pixel 9** —
-Scarto Istintivo e i-frame del Powerslide vanno provati con touch reale; playtest
+Sesto Senso Equino e i-frame del Powerslide vanno provati con touch reale; playtest
 contro il tiratore per confermare che le tre identità si distinguano.
 
 ### B46 — Eventi d'ondata

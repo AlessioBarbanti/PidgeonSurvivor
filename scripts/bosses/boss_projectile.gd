@@ -5,16 +5,7 @@ signal hit_processed(player: Player, damage: float)
 signal expired(projectile: BossProjectile)
 
 const PLAYER_BODY_MASK := 1 << 0
-
-@export var body_color := Color(1.0, 0.28, 0.18, 1.0):
-	set(value):
-		body_color = value
-		queue_redraw()
-
-@export var outline_color := Color(0.22, 0.02, 0.04, 1.0):
-	set(value):
-		outline_color = value
-		queue_redraw()
+const VISUAL_REFERENCE_RADIUS := 4.5
 
 var direction := Vector2.RIGHT
 var damage := 0.0
@@ -27,19 +18,20 @@ var _player: Player
 var _spent := false
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
+@onready var _projectile_sprite: Sprite2D = %ProjectileSprite
 
 
 func _ready() -> void:
 	add_to_group(&"enemy_projectiles")
 	_make_collision_shape_unique()
 	_sync_collision_radius()
+	_sync_visual_scale()
 	collision_layer = 0
 	collision_mask = PLAYER_BODY_MASK
 	monitoring = true
 	monitorable = false
 	if not body_entered.is_connected(_on_body_entered):
 		body_entered.connect(_on_body_entered)
-	queue_redraw()
 
 
 func _physics_process(delta: float) -> void:
@@ -56,22 +48,6 @@ func _physics_process(delta: float) -> void:
 	lifetime_remaining -= safe_delta
 	if lifetime_remaining <= 0.0:
 		expire()
-
-
-func _draw() -> void:
-	draw_circle(Vector2.ZERO, projectile_radius + 3.0, outline_color)
-	draw_circle(Vector2.ZERO, projectile_radius, body_color)
-	draw_arc(
-		Vector2.ZERO,
-		projectile_radius + 6.0,
-		0.0,
-		TAU,
-		16,
-		Color(body_color, 0.55),
-		2.0,
-		true
-	)
-
 
 func initialize(
 	initial_direction: Vector2,
@@ -102,7 +78,7 @@ func initialize(
 	rotation = direction.angle()
 	if is_node_ready():
 		_sync_collision_radius()
-	queue_redraw()
+		_sync_visual_scale()
 	return lifetime_remaining > 0.0
 
 
@@ -169,3 +145,8 @@ func _make_collision_shape_unique() -> void:
 func _sync_collision_radius() -> void:
 	if _collision_shape.shape is CircleShape2D:
 		(_collision_shape.shape as CircleShape2D).radius = projectile_radius
+
+
+func _sync_visual_scale() -> void:
+	if is_instance_valid(_projectile_sprite):
+		_projectile_sprite.scale = Vector2.ONE * (projectile_radius / VISUAL_REFERENCE_RADIUS)

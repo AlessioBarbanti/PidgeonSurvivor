@@ -113,7 +113,7 @@ func clear_invulnerability() -> void:
 
 
 ## Concede i-frame senza infliggere danno: usato da un colpo annullato a
-## monte (es. lo Scarto Istintivo di Bea), che quindi non passa da
+## monte (es. il Sesto Senso Equino di Bea), che quindi non passa da
 ## take_damage() e non attiverebbe l'invulnerabilita' automatica.
 func grant_invulnerability(duration: float) -> bool:
 	if not _initialized or _dead or not is_finite(duration) or duration <= 0.0:

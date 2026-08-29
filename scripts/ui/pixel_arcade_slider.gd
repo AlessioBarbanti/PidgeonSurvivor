@@ -4,6 +4,7 @@ const Palette = preload("res://scripts/ui/pixel_arcade_palette.gd")
 const TRACK_HEIGHT := 10.0
 const HANDLE_SIZE := 22.0
 const HORIZONTAL_PADDING := 14.0
+const ORNAMENT_SIZE := 5.0
 
 var _transparent_icon: ImageTexture
 
@@ -34,15 +35,16 @@ func _draw() -> void:
 	)
 	var handle_border := Palette.CREAM if has_focus() else Palette.GOLD
 
-	draw_rect(track_rect.grow(2.0), Palette.OUTLINE_DARK)
+	draw_rect(track_rect.grow(4.0), Palette.OUTLINE_DARK)
+	draw_rect(track_rect.grow(2.0), Palette.METAL)
 	draw_rect(track_rect, Palette.PANEL_DEEP)
 	draw_rect(
-		Rect2(track_rect.position, Vector2(fill_width, track_rect.size.y)),
+		Rect2(track_rect.position + Vector2(1.0, 2.0), Vector2(fill_width - 1.0, track_rect.size.y - 4.0)),
 		Palette.ORANGE
 	)
-	draw_rect(handle_rect.grow(2.0), Palette.OUTLINE_DARK)
-	draw_rect(handle_rect, handle_border)
-	draw_rect(handle_rect.grow(-4.0), Palette.ORANGE_DEEP)
+	_draw_track_ornament(track_rect.position - Vector2(ORNAMENT_SIZE, 0.0), Palette.GOLD)
+	_draw_track_ornament(track_rect.end + Vector2(ORNAMENT_SIZE, 0.0), Palette.GOLD)
+	_draw_diamond_handle(handle_center, handle_border)
 
 
 func _install_native_overrides() -> void:
@@ -64,6 +66,30 @@ func _get_normalized_value() -> float:
 
 func _on_value_changed(_value: float) -> void:
 	queue_redraw()
+
+
+func _draw_track_ornament(center: Vector2, color: Color) -> void:
+	draw_circle(center, ORNAMENT_SIZE, Palette.OUTLINE_DARK)
+	draw_circle(center, ORNAMENT_SIZE - 2.0, color)
+
+
+func _draw_diamond_handle(center: Vector2, border_color: Color) -> void:
+	var outer_points := PackedVector2Array([
+		center + Vector2(0.0, -HANDLE_SIZE * 0.68),
+		center + Vector2(HANDLE_SIZE * 0.68, 0.0),
+		center + Vector2(0.0, HANDLE_SIZE * 0.68),
+		center + Vector2(-HANDLE_SIZE * 0.68, 0.0),
+	])
+	var inner_points := PackedVector2Array([
+		center + Vector2(0.0, -HANDLE_SIZE * 0.42),
+		center + Vector2(HANDLE_SIZE * 0.42, 0.0),
+		center + Vector2(0.0, HANDLE_SIZE * 0.42),
+		center + Vector2(-HANDLE_SIZE * 0.42, 0.0),
+	])
+	draw_colored_polygon(outer_points, Palette.OUTLINE_DARK)
+	draw_polyline(outer_points, border_color, 2.0, false)
+	draw_colored_polygon(inner_points, Palette.ORANGE_DEEP)
+	draw_line(center + Vector2(-4.0, 0.0), center + Vector2(0.0, -4.0), Palette.ORANGE, 2.0)
 
 
 static func _make_transparent_icon() -> ImageTexture:

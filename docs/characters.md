@@ -15,7 +15,7 @@ Boss: Evil Magno.
 ## Bea
 
 Ruolo: Evasione e riposizionamento.  
-Passiva — Scarto Istintivo: Ogni 9 secondi annulla il colpo che la colpirebbe: Bea scarta d'istinto lontano dal pericolo e resta invulnerabile per un istante.  
+Passiva — Sesto Senso Equino: Ogni 9 secondi annulla il colpo che la colpirebbe: Bea scarta d'istinto lontano dal pericolo e resta invulnerabile per un istante.<br>
 Attiva — Powerslide: Scatto istantaneo nell'ultima direzione di movimento, che lascia dietro di sé una scia di fuoco.
 Boss: Evil Bea.
 

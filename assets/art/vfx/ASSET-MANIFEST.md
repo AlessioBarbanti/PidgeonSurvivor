@@ -1,4 +1,50 @@
-# Manifest grafico B18M
+# Manifest grafico VFX
+
+## PS-002 — proiettili giocatore e ostili — 29 agosto 2026
+
+Due master originali sono stati generati separatamente con OpenAI ImageGen
+built-in per il progetto IL GIOCO. Origine e autore: progetto IL GIOCO con
+assistenza OpenAI ImageGen; licenza: Licenza del progetto. Entrambi gli output
+sono arrivati direttamente come PNG RGBA con angoli trasparenti, quindi non è
+stata applicata rimozione chroma.
+
+Prompt condiviso finale: master raster per un minuscolo sprite di proiettile in
+un survival arcade mobile top-down; pixel art 8-bit estremamente minimale,
+grandi blocchi, colori piatti, bordi duri e silhouette leggibile in movimento;
+un solo soggetto orizzontale orientato rigorosamente verso destra, interamente
+visibile e centrato; sfondo piatto `#00FF00` per eventuale rimozione chroma,
+senza ombre, gradienti, texture, riflessi o variazioni; nessun dettaglio minuto,
+particella, testo, elemento UI, badge, cornice, watermark, sheet o variante.
+
+Prompt specifico finale giocatore, approvato dal proprietario: brace dorata
+ultra-semplice; testa a losanga, corpo oro `#FFB51B`, piccolo nucleo
+`#FFE85A`, una sola coda trapezoidale arancio bruciato `#E64A19` e bordo
+continuo borgogna quasi nero `#2E0612`; profilo `2:1`, massimo quattro colori,
+nessun ciano, fiamma separata, scintilla, crepa, venatura o cibo riconoscibile.
+
+Prompt specifico finale ostile, approvato dal proprietario: piuma-punta magenta
+ultra-semplice, più simile a un dardo che a una piuma realistica; grande punta
+verso destra, corpo `#FF2F91`, rachide `#D4145A`, una sola tacca larga sopra e
+sotto e bordo continuo viola quasi nero `#26052F`; massimo tre colori, nessuna
+barba multipla, venatura, particella, fiamma o dettaglio sottile.
+
+`tools/process-projectile-vfx.ps1` ritaglia i bounds alpha complessivi, conserva
+il rapporto d'aspetto, applica padding trasparente, ricampiona nearest-neighbor,
+azzera l'alpha residuo e quantizza opzionalmente verso una palette esatta.
+Parametri finali: giocatore `32×16`, `Padding 1`, palette `#2E0612`, `#E64A19`,
+`#FFB51B`, `#FFE85A`; ostile `24×16`, `Padding 1`, palette `#26052F`,
+`#D4145A`, `#FF2F91`; soglia alpha visibile `32`, trasparente `16`. La metà
+della risoluzione interna viene mostrata nearest alla stessa dimensione fisica
+del candidato precedente: meno dettaglio, non meno visibilità. I master vivono
+in `hd/` con `.gdignore` e sono esclusi da tutti i preset; il runtime referenzia
+soltanto i derivati in `generated/`. La scala dello `Sprite2D` deriva dal raggio
+autorevole della `CircleShape2D`; gli asset non modificano collisione, danno,
+velocità o traiettoria.
+
+| Ruolo | Master HD | Runtime | Dimensioni master/runtime | SHA-256 master | SHA-256 runtime |
+|---|---|---|---|---|---|
+| Giocatore | `assets/art/vfx/projectiles/hd/player_projectile_source.png` | `assets/art/vfx/projectiles/generated/player_projectile.png` | `1774×887` / `32×16` | `f6da9649e45838ca804a814bd4f6dac540fa21d4f1d43cc42240ee594834d384` | `4db8de9a77d35bcc717375da2ab863e1eeee5f5f1f368c538dc72e76e5791f01` |
+| Nemico/Boss | `assets/art/vfx/projectiles/hd/enemy_projectile_source.png` | `assets/art/vfx/projectiles/generated/enemy_projectile.png` | `1774×887` / `24×16` | `2008a6a83beaa7dfc644f92810c831ab742e0a2c0dd402aa6851aa13c306cd16` | `10c2c5f90f32ee6613dc6c8af32ed788c888e1d1cb225dd55fe78668a6134930` |
 
 ## Refresh VFX runtime — 29 agosto 2026
 
@@ -50,7 +96,7 @@ B18M precedente al refresh):
 | `scripts/abilities/cosplay_accent.gd` | Decal reveal e coriandoli senza anello sottostante | `72521e3e91469c6fc9b4160e8853e5c1d027eb0dd863097996c09b05d0af9664` |
 | `scripts/abilities/thermal_shock.gd` | Decal separati per brina e bloom senza basi o anelli procedurali | `4316a441084c661934991561309e0f18059d7fb344c880dc37b3c2d5814bb09c` |
 | `scripts/abilities/illusion_decoy.gd` | Clone e boombox raster con note animate, senza aura circolare | `44126e90d493708de81e63167c4e75249aa75a855ced1a8b85d347c212053bde` |
-| `scripts/abilities/instinctive_dodge_accent.gd` | Tell Scarto Istintivo invariato | `57d9f40966aa37c523f4d67f4a235d3ff5671d4b746097d0aca7a29c073847b6` |
+| `scripts/abilities/instinctive_dodge_accent.gd` | Tell Sesto Senso Equino invariato | `57d9f40966aa37c523f4d67f4a235d3ff5671d4b746097d0aca7a29c073847b6` |
 
 Budget corrente: massimo un overlay fullscreen, 64 particelle logiche e due
 materiali aggiuntivi per attivazione; zero materiali custom nelle otto famiglie.
@@ -78,7 +124,7 @@ storica documentata, ma non è più consumato dal runtime.
 | `scripts/abilities/thermal_shock.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Corona di brina contrattile con 12 schegge e bloom di calore a tre anelli | `581ae10c475c789b2f9c1d623d9b31938181703a4f4e2d58ba8207c526276836` |
 | `scripts/abilities/illusion_decoy.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Clone ballerino, cassa pulsante e sei note musicali | `01df1dc441abf245404b8cb6bf794753b6df77b2efb893c3c3d15acf74ace07d` |
 | `scripts/abilities/ability_icon_burst.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Otto profili B18R da `1,20 s` con entrata/uscita centralizzate; coda non interattiva e clock solo `RUNNING` | `19790185309cbda01378ed93fad00f6554687129c9e741841178fc68e066f9e5` |
-| `scripts/abilities/instinctive_dodge_accent.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Tell dello Scarto Istintivo di Bea (B45): sagoma a ferro di cavallo e scia viola non interattiva, stesso schema di entrata/uscita centralizzata delle altre code | `57d9f40966aa37c523f4d67f4a235d3ff5671d4b746097d0aca7a29c073847b6` |
+| `scripts/abilities/instinctive_dodge_accent.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Tell del Sesto Senso Equino di Bea (B45): sagoma a ferro di cavallo e scia viola non interattiva, stesso schema di entrata/uscita centralizzata delle altre code | `57d9f40966aa37c523f4d67f4a235d3ff5671d4b746097d0aca7a29c073847b6` |
 
 ## Emblemi ImageGen definitivi
 

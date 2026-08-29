@@ -22,26 +22,27 @@ func _draw() -> void:
 		Vector2.ONE * BOX_SIZE
 	)
 	var edge_color := Palette.CREAM if has_focus() else Palette.GOLD
-	draw_rect(box_rect.grow(2.0), Palette.OUTLINE_DARK)
+	draw_rect(box_rect.grow(3.0), Palette.OUTLINE_DARK)
+	draw_rect(box_rect.grow(1.0), Palette.GOLD)
 	draw_rect(box_rect, Palette.PANEL_DEEP)
-	draw_rect(box_rect.grow(-2.0), Palette.CYAN if button_pressed else Palette.METAL)
+	draw_rect(box_rect.grow(-3.0), Palette.ORANGE_DEEP if button_pressed else Palette.METAL)
 	if button_pressed:
 		draw_line(
 			box_rect.position + Vector2(5.0, 12.0),
 			box_rect.position + Vector2(10.0, 17.0),
-			Palette.NIGHT,
+			Palette.CREAM,
 			3.0,
 			false
 		)
 		draw_line(
-			box_rect.position + Vector2(10.0, 17.0),
+		box_rect.position + Vector2(10.0, 17.0),
 			box_rect.position + Vector2(19.0, 6.0),
-			Palette.NIGHT,
+			Palette.CREAM,
 			3.0,
 			false
 		)
 	else:
-		draw_rect(box_rect, edge_color, false, 1.0)
+		draw_rect(box_rect.grow(-1.0), edge_color, false, 1.0)
 
 
 func _install_native_overrides() -> void:

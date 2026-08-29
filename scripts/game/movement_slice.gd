@@ -1711,7 +1711,7 @@ func _on_boss_defeated_for_horde_pause(_boss: FirstBoss, _experience_reward: int
 	_enemy_spawner.set_ordinary_spawn_suspended(false)
 
 
-## Tell dello Scarto Istintivo di Bea (B45): la passiva non conosce nodi
+## Tell del Sesto Senso Equino di Bea (B45): la passiva non conosce nodi
 ## visivi o audio, emette solo posizione e direzione; questa e' la stessa
 ## responsabilita' gia' svolta da AbilityEffectRegistry per le abilita' attive.
 func _on_instinctive_dodge_triggered(position: Vector2, direction: Vector2) -> void:
