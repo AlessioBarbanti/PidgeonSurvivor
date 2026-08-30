@@ -39,7 +39,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-010](./to_do/PS-010-implementa-difesa-grigliata.md) | Implementare Difesa Grigliata | feat | gameplay | PRONTO | alta | — |
 | [PS-011](./to_do/PS-011-confeziona-prima-release-nativa.md) | Confezionare la prima release nativa | chore | piattaforma | BLOCCATO | alta | PS-010 |
 | [PS-013](./to_do/PS-013-crash-typedarray-seconda-offerta-upgrade.md) | Correggere il crash TypedArray alla seconda offerta upgrade | fix | ui | PRONTO | alta | — |
-| [PS-014](./to_do/PS-014-logo-welcome-fuori-viewport.md) | Riportare il logo della welcome dentro il viewport | fix | ui | PRONTO | media | — |
+| [PS-014](./to_test/PS-014-logo-welcome-fuori-viewport.md) | Riportare il logo della welcome dentro il viewport | fix | ui | IN VERIFICA | media | — |
 | [PS-015](./completed/PS-015-bordo-pixelato-card-selettore.md) | Adeguare il test della card centrale del selettore all'artwork di selezione | fix | ui | COMPLETATO | bassa | — |
 | [PS-016](./to_test/PS-016-tutorial-fuori-safe-area.md) | Riportare il tutorial dentro la safe area su tutti i profili | fix | ui | IN VERIFICA | media | — |
 | [PS-017](./completed/PS-017-font-size-locale-selettore-personaggi.md) | Rimuovere il test che vietava font-size locali nel selettore personaggi | fix | ui | COMPLETATO | bassa | — |

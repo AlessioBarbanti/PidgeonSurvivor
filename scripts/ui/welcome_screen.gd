@@ -322,4 +322,23 @@ func _update_content_panel_rect() -> void:
 	var available := _content_area.size
 	var content_size := _content_panel.get_combined_minimum_size()
 	_content_panel.size = content_size
-	_content_panel.position = ((available - content_size) * 0.5).max(Vector2.ZERO)
+	var centered := (available - content_size) * 0.5
+	_content_panel.position = Vector2(
+		maxf(centered.x, 0.0),
+		maxf(centered.y, _minimum_content_panel_top())
+	)
+
+
+## Il logo sporge sopra TitlePlaque per design (vedi PS-014): il centraggio
+## verticale puro lo spinge fuori dal viewport sui profili piu' bassi.
+## Calcolata dalla geometria reale invece che con una costante, cosi' resta
+## corretta se il logo o l'insegna cambiano dimensione in futuro.
+func _minimum_content_panel_top() -> float:
+	if (
+		not is_instance_valid(_content_area)
+		or not is_instance_valid(_title_plaque)
+		or not is_instance_valid(_welcome_logo)
+	):
+		return 0.0
+	var logo_top_local := _title_plaque.position.y + _welcome_logo.position.y
+	return -(_content_area.global_position.y + logo_top_local)
