@@ -12,8 +12,7 @@ Ordine di autorevolezza delle fonti:
 
 1. Il codice in `scripts/`, `scenes/`, `data/` — ciò che il gioco fa davvero.
 2. `docs/cards/README.md` e la card interessata — lavoro, stato, dipendenze e decisioni.
-3. `docs/prd.md`, `CLAUDE.md`, cataloghi e `docs/content-approvals.md` —
-   contratti correnti e approvazioni.
+3. `docs/prd.md`, `CLAUDE.md` e cataloghi — contratti correnti e approvazioni.
 4. `docs/b*-verification.md` — evidenze storiche.
 5. `README.md` — spesso in ritardo rispetto al codice: verifica prima di citarlo.
 

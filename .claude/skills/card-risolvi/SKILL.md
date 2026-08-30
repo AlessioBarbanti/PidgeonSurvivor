@@ -64,7 +64,7 @@ piattaforma applica `gate-piattaforme`.
    [docs/cards/README.md](../../../docs/cards/README.md).
 5. Controlla che metadati, dipendenze e riga della board restino allineati.
 6. Se cambia la verità corrente, propaga il solo contratto risultante in
-   `prd.md`, `CLAUDE.md`, cataloghi, `content-approvals.md` o `setup.md` e spunta
+   `prd.md`, `CLAUDE.md`, cataloghi o `setup.md` e spunta
    `Documenti sincronizzati`. La motivazione resta nella card.
 7. Commit solo su richiesta: `feat(PS-007): ...` o `fix(PS-007): ...`, in
    italiano, focalizzato. Nessun push se non richiesto.

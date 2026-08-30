@@ -59,7 +59,7 @@ consegnati. Se il proprietario fornisce un master senza provenienza di terzi,
 scrivi esattamente questo: asset del progetto fornito dal proprietario.
 
 Per contenuti che ritraggono persone reali del cast, l'approvazione va
-registrata in [docs/content-approvals.md](../../../docs/content-approvals.md).
+registrata nella card pertinente.
 
 ## 4. Verifica
 

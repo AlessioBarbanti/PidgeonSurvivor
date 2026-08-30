@@ -14,7 +14,6 @@ contratti a memoria: leggili.
 |---|---|
 | [docs/cards/README.md](docs/cards/README.md) | **Fonte di verità operativa**: lavoro, priorità, dipendenze e stati |
 | [docs/prd.md](docs/prd.md) | Contratti di prodotto |
-| [docs/content-approvals.md](docs/content-approvals.md) | Approvazioni di nomi, ritratti, citazioni, audio, provenienza |
 | [docs/characters.md](docs/characters.md) | Catalogo corrente dei personaggi |
 | [docs/powerup-catalog.md](docs/powerup-catalog.md) | Catalogo corrente dei powerup |
 | [docs/verification-workflow.md](docs/verification-workflow.md) | Contratto dei profili del runner di verifica |

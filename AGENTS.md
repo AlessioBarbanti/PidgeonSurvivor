@@ -18,5 +18,5 @@ Procedure specifiche, in ordine di frequenza d'uso:
 - asset grafici e audio: `.claude/skills/asset-pipeline/`.
 
 Documenti autorevoli: `docs/cards/README.md` come unica fonte di verità
-operativa, `docs/prd.md`, `docs/content-approvals.md`, `docs/characters.md`,
-`docs/powerup-catalog.md`, `docs/verification-workflow.md` e `docs/setup.md`.
+operativa, `docs/prd.md`, `docs/characters.md`, `docs/powerup-catalog.md`,
+`docs/verification-workflow.md` e `docs/setup.md`.

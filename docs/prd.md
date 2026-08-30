@@ -386,7 +386,7 @@ Baseline iniziali delle passive, tutte configurabili nei `.tres`:
 Il `FriendRegistry` rifiuta ID amico, ID abilità e nomi Evil ambigui. Copy e
 ritratti vengono esposti attraverso getter sicuri: se manca l'approvazione
 ritornano fallback neutri. L'approvazione richiede approvatore, data ISO e
-riferimento; gli stati correnti sono registrati in `content-approvals.md`.
+riferimento.
 
 I ritratti B17 sono placeholder top-down CC0 ritagliati da un atlas. Possono
 essere sostituiti nei `.tres` senza cambiare codice. Citazioni personali e audio

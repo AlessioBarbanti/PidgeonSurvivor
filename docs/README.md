@@ -9,7 +9,6 @@ decisioni ed evidenze non si duplicano.
 |---|---|
 | [`cards/README.md`](./cards/README.md) | Cosa è aperto, cosa viene dopo, da cosa dipende e quali decisioni sono state prese? |
 | [`prd.md`](./prd.md) | Come deve funzionare il prodotto corrente? |
-| [`content-approvals.md`](./content-approvals.md) | Quali nomi, identità, asset e provenienze sono approvati? |
 | [`characters.md`](./characters.md) | Qual è l'identità corrente degli otto profili? |
 | [`powerup-catalog.md`](./powerup-catalog.md) | Quali powerup esistono o sono proposti? |
 | [`verification-workflow.md`](./verification-workflow.md) | Come funzionano profili, cache, marker e log del runner? |

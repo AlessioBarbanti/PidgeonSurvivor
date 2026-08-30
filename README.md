@@ -33,8 +33,7 @@ volume/mute persistenti. B18B compatta HUD e controlli, sostituisce la vista
 debug dell'arena con un pavimento procedurale discreto e aggiunge reazioni,
 particelle e impulsi di combattimento senza cambiare collisioni o bilanciamento.
 Lo stato più recente è in
-[`docs/b18b-verification.md`](docs/b18b-verification.md) e le approvazioni sono
-in [`docs/content-approvals.md`](docs/content-approvals.md).
+[`docs/b18b-verification.md`](docs/b18b-verification.md).
 
 ## Avvio rapido
 
