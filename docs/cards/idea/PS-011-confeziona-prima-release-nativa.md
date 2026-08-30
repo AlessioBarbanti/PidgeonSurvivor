@@ -3,7 +3,7 @@ id: PS-011
 titolo: Confeziona la prima release nativa
 tipo: chore
 area: piattaforma
-stato: BLOCCATO
+stato: IDEA
 priorita: alta
 dipende_da: [PS-010]
 origine: B20
@@ -81,4 +81,4 @@ closed testing o pubblicazione.
 ## Note
 
 Le decisioni storiche complete restano negli snapshot del decision log in
-[`docs/archive/`](../archive/README.md).
+[`docs/archive/`](../../archive/README.md).

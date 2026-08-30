@@ -15,14 +15,14 @@ aggiornato: 2026-08-29
 
 ## Contesto
 
-I proiettili del giocatore ([scripts/combat/projectile.gd:83-107](../../scripts/combat/projectile.gd#L83-L107))
-e quelli nemici/Boss ([scripts/bosses/boss_projectile.gd:61-73](../../scripts/bosses/boss_projectile.gd#L61-L73))
+I proiettili del giocatore ([scripts/combat/projectile.gd:83-107](../../../scripts/combat/projectile.gd#L83-L107))
+e quelli nemici/Boss ([scripts/bosses/boss_projectile.gd:61-73](../../../scripts/bosses/boss_projectile.gd#L61-L73))
 sono disegnati interamente via `_draw()`: cerchi vettoriali pieni con outline,
 senza texture né sprite. Il proprietario li percepisce ancora come "debug".
 Esiste già una pipeline riusabile: B18M ha introdotto decal ImageGen per le
 abilità, texture generate sovrapposte alla geometria Godot che resta
-l'autorità per hitbox/raggio ([scripts/abilities/ability_area_effect.gd:25-30](../../scripts/abilities/ability_area_effect.gd#L25-L30),
-[assets/art/vfx/ASSET-MANIFEST.md:1-16](../../assets/art/vfx/ASSET-MANIFEST.md#L1-L16)).
+l'autorità per hitbox/raggio ([scripts/abilities/ability_area_effect.gd:25-30](../../../scripts/abilities/ability_area_effect.gd#L25-L30),
+[assets/art/vfx/ASSET-MANIFEST.md:1-16](../../../assets/art/vfx/ASSET-MANIFEST.md#L1-L16)).
 Nessun asset per i proiettili esiste oggi in `assets/`.
 
 ## Comportamento atteso
@@ -30,7 +30,7 @@ Nessun asset per i proiettili esiste oggi in `assets/`.
 I proiettili del giocatore e quelli nemici/Boss hanno un aspetto rifinito
 (texture generata, non un cerchio vettoriale nudo) restando immediatamente
 distinguibili tra loro per colore/forma e nel rispetto del vincolo
-[prd.md:480](../prd.md#L480): i proiettili ostili mantengono priorità visiva e
+[prd.md:480](../../prd.md#L480): i proiettili ostili mantengono priorità visiva e
 non possono essere coperti da un'abilità. La hitbox (`CircleShape2D`) e la
 logica di movimento/danno restano invariate.
 
@@ -125,7 +125,7 @@ Opzioni discusse con il proprietario (2026-08-29):
   non sono stati aggiunti `GPUParticles2D`.
 - Prompt finali, generatore, parametri di derivazione, dimensioni e hash sono
   registrati in
-  [`assets/art/vfx/ASSET-MANIFEST.md`](../../assets/art/vfx/ASSET-MANIFEST.md).
+  [`assets/art/vfx/ASSET-MANIFEST.md`](../../../assets/art/vfx/ASSET-MANIFEST.md).
 
 ### Evidenza del 29 agosto 2026
 

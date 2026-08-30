@@ -25,7 +25,7 @@ definire: B23, B46 e le card `PRONTO` restano aperte.
 
 | Coda | Elementi |
 |---|---|
-| In corso | [PS-001](../cards/PS-001-tell-di-stato-senza-snaturare-lo-sprite.md) |
+| In corso | [PS-001](../cards/to_test/PS-001-tell-di-stato-senza-snaturare-lo-sprite.md) |
 | Pronti B-series | B23, B46 |
 | Card pronte | [PS-003–PS-009](../cards/README.md) |
 | In verifica | Nessuna: le slice implementate sono state accettate operativamente dal proprietario |
@@ -121,7 +121,7 @@ Contratto storico completo:
 ### B46 — Eventi d'ondata
 
 Stato: `PRONTO`. Dipende da B37 e B40; la card eseguibile è
-[PS-008](../cards/PS-008-eventi-di-ondata.md).
+[PS-008](../cards/to_do/PS-008-eventi-di-ondata.md).
 
 - eventi annunciati, riconoscibili e limitati nel tempo;
 - cadenza indipendente dai Boss e nessun overlap con `BOSS_INTRO`;

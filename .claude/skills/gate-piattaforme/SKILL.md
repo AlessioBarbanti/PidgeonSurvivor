@@ -1,6 +1,6 @@
 ---
 name: gate-piattaforme
-description: Esegui e riporta onestamente i gate Windows e Android di Pidgeon Survivor — export, ispezione statica dell'APK, installazione e prova fisica su Pixel 9, touch e multitouch, lifecycle. Usala quando si parla di export, APK, adb, device, prova su telefono, chiusura di un gate di piattaforma o quando una card sta per passare a VERIFICATO.
+description: Esegui e riporta onestamente i gate Windows e Android di Pidgeon Survivor — export, ispezione statica dell'APK, installazione e prova fisica su Pixel 9, touch e multitouch, lifecycle. Usala quando si parla di export, APK, adb, device, prova su telefono, chiusura di un gate di piattaforma o quando una card sta per passare a COMPLETATO.
 ---
 
 # Gate Windows e Android

@@ -1,6 +1,6 @@
 ---
 name: card-crea
-description: Crea una card di modifica o richiesta per Pidgeon Survivor come piccolo file md in docs/cards/, in stile board. Usala quando il proprietario segnala un problema, chiede una modifica, propone un'idea o dice "apri una card", "segnati questa cosa", "aggiungila alla board" — invece di implementare subito.
+description: Crea una card di modifica o richiesta per Pidgeon Survivor come piccolo file md nella cartella di fase sotto docs/cards/, in stile board. Usala quando il proprietario segnala un problema, chiede una modifica, propone un'idea o dice "apri una card", "segnati questa cosa", "aggiungila alla board" — invece di implementare subito.
 ---
 
 # Crea una card
@@ -21,15 +21,18 @@ verificabile e risolvibile da sola in un'altra sessione.
 
 ## 2. Scrivi la card
 
-- ID progressivo `PS-<numero>` guardando i file esistenti; nome file
-  `PS-007-nome-slug.md` in [docs/cards/](../../../docs/cards/).
+- ID progressivo `PS-<numero>` guardando ricorsivamente i file esistenti; nome
+  file `PS-007-nome-slug.md` nella cartella della fase sotto
+  [docs/cards/](../../../docs/cards/).
 - Parti da [`_TEMPLATE.md`](../../../docs/cards/_TEMPLATE.md) e compila **tutti**
   i campi del frontmatter. Date in formato `YYYY-MM-DD`.
 - Stato iniziale:
-  - `PRONTO` se il contratto è chiaro e le dipendenze sono chiuse;
-  - `BLOCCATO` se manca una dipendenza: nominala esplicitamente;
+  - `PRONTO` se il contratto è chiaro e le dipendenze sono chiuse: salva in
+    `to_do/`;
+  - `BLOCCATO` se manca una dipendenza: nominala esplicitamente e salva in
+    `to_do/`;
   - `DA DEFINIRE` se manca una decisione del proprietario: scrivi la domanda
-    precisa da porgli.
+    precisa da porgli e salva in `idea/`.
 - Compila `dipende_da` con soli ID card; usa `origine` esclusivamente per un
   riferimento storico B-series, mai come seconda fonte del contratto.
 - I **criteri di accettazione** sono osservabili e binari. "Il pulsante abilità
@@ -47,7 +50,8 @@ verificabile e risolvibile da sola in un'altra sessione.
 ## 3. Registra e riporta
 
 1. Aggiungi la riga alla tabella in
-   [docs/cards/README.md](../../../docs/cards/README.md).
+   [docs/cards/README.md](../../../docs/cards/README.md), con il link alla
+   cartella della fase corretta.
 2. Controlla che metadati, dipendenze e riga della board restino allineati.
 3. Qualunque dimensione del lavoro resta una card: non promuoverla a B-series.
 4. Riporta al proprietario: ID, titolo, stato scelto, e — se lo stato è

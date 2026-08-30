@@ -3,12 +3,12 @@ id: PS-001
 titolo: Comunicare la fase della passiva senza ridipingere lo sprite
 tipo: ux
 area: arte
-stato: IN CORSO
+stato: IN VERIFICA
 priorita: alta
 dipende_da: []
 origine: B44
 creato: 2026-08-29
-aggiornato: 2026-08-29
+aggiornato: 2026-08-30
 ---
 
 # PS-001 — Comunicare la fase della passiva senza ridipingere lo sprite
@@ -18,20 +18,20 @@ aggiornato: 2026-08-29
 B44 ha introdotto il *tell* di stato delle passive: quando un personaggio entra
 in una fase, il suo sprite viene tinto. La tinta è applicata come
 `self_modulate` sull'intero `_character_sprite`
-([player.gd:553](../../scripts/actors/player.gd#L553)), quindi moltiplica ogni
+([player.gd:553](../../../scripts/actors/player.gd#L553)), quindi moltiplica ogni
 pixel del personaggio invece di aggiungersi accanto a lui.
 
 Il risultato è che il personaggio perde la propria identità cromatica. Con Alea
 in fase positiva la tinta è `Color(0.72, 1.32, 0.82)` e il personaggio diventa
 tutto verde. Lo stesso vale per le altre sette tinte in
-[friend_passive_controller.gd:32-40](../../scripts/content/friend_passive_controller.gd#L32-L40):
+[friend_passive_controller.gd:32-40](../../../scripts/content/friend_passive_controller.gd#L32-L40):
 Aleo caldo/freddo, Lollo concentrato/distratto, Alea positivo/negativo, Migi
 guscio pronto/scudo.
 
 Questa osservazione ha originato un refinement distinto dalla baseline B44: il
 proprietario ha visto che la tinta non regge come soluzione definitiva. B44 è
-stato chiuso operativamente il 30 agosto 2026; questa card resta `IN CORSO`
-finché il nuovo tell non soddisfa i propri criteri.
+stato chiuso operativamente il 30 agosto 2026; questa card resta `IN VERIFICA`
+finché i gate percettivi e di piattaforma del nuovo tell non sono completati.
 
 ## Comportamento atteso
 
@@ -52,6 +52,11 @@ senza rimpiazzarlo riapre quel problema invece di chiudere questo.
   Il contorno resta visibile anche quando il personaggio è parzialmente coperto
   dai nemici, cioè quando il tell serve di più.
 
+- **2026-08-30 — Il colore resta memorizzato, la presentazione segue lo stato
+  della run.** Il contorno è visibile solo in `RunController.RUNNING`; pausa,
+  modali, terminali e `BOOT` lo nascondono senza perdere la fase da ripresentare
+  alla ripresa. Il restart riporta la passiva alla propria fase iniziale.
+
 ## Criteri di accettazione
 
 - [x] Nessun `self_modulate` di stato viene applicato a `_character_sprite`: in
@@ -69,9 +74,9 @@ senza rimpiazzarlo riapre quel problema invece di chiudere questo.
 - [x] Il tell resta puramente presentazionale: nessun cambiamento a collisioni,
       statistiche, timing o bilanciamento. Sono cambiati solo il canale di
       disegno e i valori dei colori.
-- [ ] Il tell avanza solo in `RunController.RUNNING`, sparisce in pausa e si
-      azzera al restart. *Non verificato specificamente in questa sessione: il
-      meccanismo è invariato rispetto a B44, ma manca l'asserzione dedicata.*
+- [x] Il tell avanza solo in `RunController.RUNNING`, sparisce in pausa e si
+      azzera al restart. Lo smoke asserisce pausa, ripresa, `BOOT` e nuova run
+      con ritorno di Aleo alla fase calda iniziale.
 - [ ] Il tell resta leggibile a densità massima di nemici. *Percettivo: è il gate
       che B44 ha aperto e che questa card deve chiudere.*
 
@@ -79,12 +84,12 @@ senza rimpiazzarlo riapre quel problema invece di chiudere questo.
 
 Probabilmente toccati:
 
-- [scripts/content/friend_passive_controller.gd](../../scripts/content/friend_passive_controller.gd)
+- [scripts/content/friend_passive_controller.gd](../../../scripts/content/friend_passive_controller.gd)
   — costanti `TINT_*` e `_refresh_passive_state_tint()`.
-- [scripts/actors/player.gd](../../scripts/actors/player.gd) —
+- [scripts/actors/player.gd](../../../scripts/actors/player.gd) —
   `set_passive_state_tint` / `clear_passive_state_tint` /
   `get_passive_state_tint` e `_update_character_feedback()`.
-- [tests/integration/_b44_state_tells_smoke.gd](../../tests/integration/_b44_state_tells_smoke.gd)
+- [tests/integration/_b44_state_tells_smoke.gd](../../../tests/integration/_b44_state_tells_smoke.gd)
   — oggi asserisce l'uguaglianza fra `get_passive_state_tint()` e le costanti:
   cambiando il meccanismo va riscritto, non aggirato.
 - Eventuale nuovo nodo accent, sullo schema dei tell già esistenti in
@@ -97,7 +102,7 @@ Da **non** toccare:
 - i registry degli effetti e i valori di bilanciamento delle passive: qui si
   cambia solo come la fase viene comunicata, non che cosa fa;
 - gli sprite approvati del cast, tracciati in
-  [content-approvals.md](../content-approvals.md).
+  [content-approvals.md](../../content-approvals.md).
 
 ## Verifica
 
@@ -116,15 +121,15 @@ Da **non** toccare:
 
 ## Documenti sincronizzati
 
-- [ ] Documento durevole del tell corrente: sostituire le due tinte di B44 con
-      i due contorni quando la card viene chiusa.
+- [x] `docs/characters.md`: il tell di Lollo è descritto come contorno colorato,
+      non più come tinta dello sprite.
 - [x] Gli snapshot B44 restano storici e non vengono riscritti.
 
 ## Note
 
 ### Che cosa è cambiato
 
-- Nuovo [`scripts/vfx/passive_state_outline.gd`](../../scripts/vfx/passive_state_outline.gd)
+- Nuovo [`scripts/vfx/passive_state_outline.gd`](../../../scripts/vfx/passive_state_outline.gd)
   (`PassiveStateOutline`): `Node2D` figlio di `CharacterSprite` con
   `show_behind_parent`, disegna la texture dello sprite otto volte con piccoli
   scostamenti nel colore della fase. Otto direzioni e non quattro perché le sole
@@ -143,6 +148,9 @@ Da **non** toccare:
   `get_passive_state_outline_color` / `has_passive_state_outline`. Il nome
   vecchio avrebbe mentito. Aggiunto `get_character_self_modulate()` come
   osservabilità per lo smoke.
+- `Player` osserva inoltre `RunController.state_changed` e presenta il contorno
+  soltanto in `RUNNING`. `PassiveStateOutline` conserva separatamente colore e
+  visibilità, così pausa e modali non fanno avanzare né perdere la fase.
 - `FriendPassiveController`: le costanti `TINT_*` diventano `OUTLINE_*`. Non è
   solo un rinominare: i valori erano fuori gamma (`1.32`) perché pensati per
   schiarire in moltiplicazione, e come colori opachi sarebbero stati clippati.
@@ -163,16 +171,22 @@ valori avrebbe attenuato il sintomo lasciando la causa.
 - Registrata in `tools/milestone-test-map.json` la regola che lega
   `friend_passive_controller.gd` e `passive_state_outline.gd` agli smoke B44,
   B45, B42 e contenuti.
+- Dopo il completamento del contratto pausa/restart:
+  `run-milestone-checks.ps1 -Milestone PS-001 -Profile Focused -RefreshEditor
+  -NoCache -FocusedSmoke tests/integration/_b44_state_tells_smoke.gd` → `PASS`,
+  marker `B44_STATE_TELLS_SMOKE_OK`.
+- Regressione mirata B45 rieseguita dopo il refactor → `PASS`, marker
+  `B45_ROLE_IDENTITY_SMOKE_OK`.
+- Il contratto tooling è stato avviato e ha segnalato un problema distinto da
+  PS-001: il controllo `Full` conta solo gli smoke legacy in `tests/integration`,
+  mentre il piano corrente include anche i test GUT della conversione in corso.
 
 ### Verifica NON eseguita
 
-Su richiesta del proprietario il checkpoint è stato saltato. **Restano da
-eseguire prima di considerare chiusa la parte automatica:**
-
-- `_b45_role_identity_smoke` dopo la modifica (rinominato ma non rieseguito);
-- `.\tools\run-milestone-checks.ps1 -Milestone PS-001 -Profile Relevant -FocusedSmoke tests/integration/_b44_state_tells_smoke.gd`;
-- `.\tests\tooling\_milestone_runner_contract.ps1`, che valida
-  `milestone-test-map.json` dopo la regola aggiunta.
+Il 30 agosto 2026 il proprietario ha chiesto di saltare i test. Il profilo
+`Relevant`, già avviato, è stato interrotto prima del completamento e non sono
+stati eseguiti altri test. Restano quindi aperti il minimo `Relevant`, il
+contratto tooling e tutti i gate manuali Windows/APK/Pixel 9/percettivo.
 
 ### Worktree
 

@@ -3,7 +3,7 @@ id: PS-000
 titolo: Titolo breve e imperativo
 tipo: feat            # feat | fix | art | ux | perf | chore
 area: gameplay        # gameplay | ui | audio | arte | piattaforma | tooling | docs
-stato: PRONTO         # DA DEFINIRE | BLOCCATO | PRONTO | IN CORSO | IN VERIFICA | VERIFICATO | COMPLETATO
+stato: PRONTO         # DA DEFINIRE | BLOCCATO | PRONTO | IN CORSO | IN VERIFICA | COMPLETATO
 priorita: media       # alta | media | bassa
 dipende_da: []        # ID card, per esempio [PS-003, PS-008]
 origine:              # riferimento storico facoltativo, per esempio B23

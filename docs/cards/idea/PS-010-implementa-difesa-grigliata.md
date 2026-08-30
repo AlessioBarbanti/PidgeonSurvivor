@@ -3,7 +3,7 @@ id: PS-010
 titolo: Implementa la modalità Difesa Grigliata
 tipo: feat
 area: gameplay
-stato: PRONTO
+stato: IDEA
 priorita: alta
 dipende_da: []
 origine: B23
@@ -81,4 +81,4 @@ scheduler Boss e non introdurre autoload.
 ## Note
 
 Contratto storico: B23 nello
-[snapshot archiviato](../archive/development-plan-through-b54-2026-08-30.md#b23--modalità-difesa-grigliata).
+[snapshot archiviato](../../archive/development-plan-through-b54-2026-08-30.md#b23--modalità-difesa-grigliata).

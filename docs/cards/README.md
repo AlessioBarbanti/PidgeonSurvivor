@@ -3,9 +3,17 @@
 Questa board è la **sola fonte di verità operativa** per tutto il lavoro di
 sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 
-- Un file per card: `PS-<numero>-<slug>.md`, numerazione progressiva.
+- Un file per card: `PS-<numero>-<slug>.md`, numerazione progressiva, nella
+  cartella corrispondente alla fase corrente.
 - Il vocabolario degli stati è: `DA DEFINIRE`,
-  `BLOCCATO`, `PRONTO`, `IN CORSO`, `IN VERIFICA`, `VERIFICATO`, `COMPLETATO`.
+  `BLOCCATO`, `PRONTO`, `IN CORSO`, `IN VERIFICA`, `COMPLETATO`.
+- Le quattro cartelle raggruppano gli stati senza sostituirli:
+  - `idea`: `DA DEFINIRE`;
+  - `to_do`: `BLOCCATO`, `PRONTO`, `IN CORSO`;
+  - `to_test`: `IN VERIFICA`;
+  - `completed`: `COMPLETATO`.
+- Quando cambia fase, sposta il file nella cartella corretta e aggiorna il link
+  nella board nello stesso cambiamento.
 - Modello: [`_TEMPLATE.md`](./_TEMPLATE.md).
 - Skill: `card-crea` per aprirne una, `card-risolvi` per chiuderla.
 - Ogni lavoro parte da una card. Non creare roadmap o tracker paralleli.
@@ -19,14 +27,22 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 
 | ID | Titolo | Tipo | Area | Stato | Priorità | Dipende da |
 |---|---|---|---|---|---|---|
-| [PS-001](./PS-001-tell-di-stato-senza-snaturare-lo-sprite.md) | Comunicare la fase della passiva senza ridipingere lo sprite | ux | arte | IN CORSO | alta | — |
-| [PS-002](./PS-002-restyle-proiettili-giocatore-e-nemici.md) | Sostituire i proiettili "debug" con sprite ImageGen leggibili | art | arte | COMPLETATO | media | — |
-| [PS-003](./PS-003-conferma-abilita-passiva-zat.md) | Confermare Guarigione Ritardata | chore | gameplay | PRONTO | alta | — |
-| [PS-004](./PS-004-lega-Tempesta-di-Tuoni-al-danno-recuperabile.md) | Legare Tempesta di Tuoni al danno recuperabile | feat | gameplay | BLOCCATO | alta | PS-003 |
-| [PS-005](./PS-005-Boss-timer.md) | Annunciare l'arrivo del Boss | ux | gameplay | PRONTO | alta | — |
-| [PS-006](./PS-006-bosses-new-abilities.md) | Dare agli Evil una Signature Ability | feat | gameplay | BLOCCATO | alta | PS-004 |
-| [PS-007](./PS-007-impedire-run-AFK-lategame.md) | Impedire che la late run diventi AFK | feat | gameplay | PRONTO | alta | — |
-| [PS-008](./PS-008-eventi-di-ondata.md) | Introdurre eventi d'ondata | feat | gameplay | PRONTO | alta | — |
-| [PS-009](./PS-009-trasparenza-dialog-boss.md) | Rendere trasparente la Boss UI sotto il Player | ux | ui | PRONTO | media | — |
-| [PS-010](./PS-010-implementa-difesa-grigliata.md) | Implementare Difesa Grigliata | feat | gameplay | PRONTO | alta | — |
-| [PS-011](./PS-011-confeziona-prima-release-nativa.md) | Confezionare la prima release nativa | chore | piattaforma | BLOCCATO | alta | PS-010 |
+| [PS-001](./to_test/PS-001-tell-di-stato-senza-snaturare-lo-sprite.md) | Comunicare la fase della passiva senza ridipingere lo sprite | ux | arte | IN VERIFICA | alta | — |
+| [PS-002](./completed/PS-002-restyle-proiettili-giocatore-e-nemici.md) | Sostituire i proiettili "debug" con sprite ImageGen leggibili | art | arte | COMPLETATO | media | — |
+| [PS-003](./to_do/PS-003-conferma-abilita-passiva-zat.md) | Confermare Guarigione Ritardata | chore | gameplay | PRONTO | alta | — |
+| [PS-004](./to_do/PS-004-lega-Tempesta-di-Tuoni-al-danno-recuperabile.md) | Legare Tempesta di Tuoni al danno recuperabile | feat | gameplay | BLOCCATO | alta | PS-003 |
+| [PS-005](./to_do/PS-005-Boss-timer.md) | Annunciare l'arrivo del Boss | ux | gameplay | PRONTO | alta | — |
+| [PS-006](./to_do/PS-006-bosses-new-abilities.md) | Dare agli Evil una Signature Ability | feat | gameplay | BLOCCATO | alta | PS-004 |
+| [PS-007](./to_do/PS-007-impedire-run-AFK-lategame.md) | Impedire che la late run diventi AFK | feat | gameplay | PRONTO | alta | — |
+| [PS-008](./to_do/PS-008-eventi-di-ondata.md) | Introdurre eventi d'ondata | feat | gameplay | PRONTO | alta | — |
+| [PS-009](./to_do/PS-009-trasparenza-dialog-boss.md) | Rendere trasparente la Boss UI sotto il Player | ux | ui | PRONTO | media | — |
+| [PS-010](./to_do/PS-010-implementa-difesa-grigliata.md) | Implementare Difesa Grigliata | feat | gameplay | PRONTO | alta | — |
+| [PS-011](./to_do/PS-011-confeziona-prima-release-nativa.md) | Confezionare la prima release nativa | chore | piattaforma | BLOCCATO | alta | PS-010 |
+| [PS-013](./to_do/PS-013-crash-typedarray-seconda-offerta-upgrade.md) | Correggere il crash TypedArray alla seconda offerta upgrade | fix | ui | PRONTO | alta | — |
+| [PS-014](./to_do/PS-014-logo-welcome-fuori-viewport.md) | Riportare il logo della welcome dentro il viewport | fix | ui | PRONTO | media | — |
+| [PS-015](./completed/PS-015-bordo-pixelato-card-selettore.md) | Adeguare il test della card centrale del selettore all'artwork di selezione | fix | ui | COMPLETATO | bassa | — |
+| [PS-016](./to_do/PS-016-tutorial-fuori-safe-area.md) | Riportare il tutorial dentro la safe area su tutti i profili | fix | ui | PRONTO | media | — |
+| [PS-017](./to_do/PS-017-font-size-locale-selettore-personaggi.md) | Rimuovere il font-size locale reintrodotto nel selettore personaggi | fix | ui | PRONTO | bassa | — |
+| [PS-018](./to_do/PS-018-hud-composta-danno-restart-vita.md) | Correggere danno e restart della vita nella scena HUD composta | fix | gameplay | PRONTO | alta | — |
+| [PS-019](./to_do/PS-019-manifest-vfx-hash-non-aggiornato.md) | Riallineare l'hash del manifest VFX per instinctive_dodge_accent | chore | arte | PRONTO | bassa | — |
+| [PS-020](./to_do/PS-020-diagnostica-flakiness-backdrop-selettore.md) | Diagnosticare il fallimento intermittente sul backdrop del selettore | chore | tooling | PRONTO | bassa | — |
