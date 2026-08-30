@@ -97,6 +97,10 @@ Se rimangono meno di tre Specialità bloccate, vengono mostrate soltanto quelle 
 
 Se tutte le Specialità sono già state sbloccate, il sistema non deve mostrare un'offerta vuota o bloccare la progressione della run. Il comportamento di fallback deve essere gestito esplicitamente senza creare nuove Specialità.
 
+## Fallback Specialità esaurite
+
+Quando non esistono più Specialità bloccate, la ricompensa Boss viene sostituita da due selezioni upgrade bonus consecutive, generate tramite lo stesso pool e le stesse regole dei normali level-up. Le selezioni applicano gli upgrade normalmente ma non aumentano il livello del Player e non modificano XP o soglie di progressione.
+
 ## Organizzazione dei file
 
 I file dati relativi alle Specialità devono essere separati dal catalogo degli upgrade ordinari.
