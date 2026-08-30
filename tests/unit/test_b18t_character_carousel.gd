@@ -87,6 +87,12 @@ func test_character_carousel_contract() -> void:
 	Input.parse_input_event(_stick_event(-1.0))
 	await wait_process_frames(1)
 	assert_eq(selector.get_selected_definition().id, &"alea", "Lo stick riarmato deve navigare indietro.")
+	# Un asse fisico rimasto premuto persiste nel singleton Input ben oltre la
+	# fine di questo test (a differenza di action_press/release): senza questo
+	# rilascio esplicito, JOY_AXIS_LEFT_X resterebbe a -1.0 per l'intero
+	# processo GUT e corromperebbe move_left/move_right nei test successivi.
+	Input.parse_input_event(_stick_event(0.0))
+	await wait_process_frames(1)
 	var next_id := EXPECTED_IDS[posmod(selector.get_selected_index() + 1, EXPECTED_IDS.size())]
 	selector.get_button(next_id).pressed.emit()
 	assert_eq(
