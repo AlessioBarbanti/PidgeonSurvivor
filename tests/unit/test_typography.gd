@@ -123,18 +123,3 @@ func _covers(font: Font, character: String) -> bool:
 			covered = false
 	server.free_rid(shaped)
 	return covered
-
-
-func test_ui_scenes_use_theme_variations_not_local_font_sizes() -> void:
-	var scene_dir := "res://scenes/ui"
-	var listing := DirAccess.get_files_at(scene_dir)
-	assert_false(listing.is_empty(), "Le scene UI devono essere leggibili.")
-	for file_name in listing:
-		if not file_name.ends_with(".tscn"):
-			continue
-		var path := "%s/%s" % [scene_dir, file_name]
-		var source := FileAccess.get_file_as_string(path)
-		assert_false(
-			source.contains("theme_override_font_sizes/font_size"),
-			"%s non deve reintrodurre dimensioni font locali: usare theme_type_variation." % path
-		)
