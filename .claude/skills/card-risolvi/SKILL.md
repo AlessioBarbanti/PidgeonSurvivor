@@ -1,6 +1,6 @@
 ---
 name: card-risolvi
-description: Risolvi una card della board di Pidgeon Survivor in docs/cards/ — implementazione, smoke, verifica e aggiornamento dello stato. Usala per "risolvi PS-007", "prendi la prossima card", "chiudi la card del joystick" o quando si lavora su un file docs/cards/PS-*.md.
+description: Risolvi una card della board di Pidgeon Survivor nelle cartelle di fase sotto docs/cards/ — implementazione, smoke, verifica e aggiornamento dello stato. Usala per "risolvi PS-007", "prendi la prossima card", "chiudi la card del joystick" o quando si lavora su un file docs/cards/*/PS-*.md.
 ---
 
 # Risolvi una card
@@ -17,7 +17,8 @@ La card è l'unico contratto operativo: non allargarla e non reinterpretarla.
    dipendenza registrata nella card e non implementare.
 4. Se ricevi un vecchio ID B-series, trova la card tramite `origine`; se non
    esiste, creala prima di implementare.
-5. Porta lo stato a `IN CORSO` e aggiorna `aggiornato` e la board.
+5. Porta lo stato a `IN CORSO`, sposta la card in `docs/cards/to_do/` e aggiorna
+   `aggiornato`, stato e link nella board.
 
 ## 2. Implementa
 
@@ -35,15 +36,16 @@ La card è l'unico contratto operativo: non allargarla e non reinterpretarla.
 
 ```powershell
 .\tools\run-milestone-checks.ps1 -Milestone PS-010 -Profile Focused `
-  -FocusedSmoke tests/integration/_grill_defense_mode_smoke.gd
+  -FocusedSmoke tests/unit/test_grill_defense_mode.gd
 .\tools\run-milestone-checks.ps1 -Milestone PS-010 -Profile Relevant `
-  -FocusedSmoke tests/integration/_grill_defense_mode_smoke.gd
+  -FocusedSmoke tests/unit/test_grill_defense_mode.gd
 ```
 
 Il parametro tecnico storico `-Milestone` accetta l'ID card; passa sempre
 `-FocusedSmoke` con il percorso pertinente quando esiste. Exit code `0` non basta:
-controlla i log per `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL`,
-`CONTRACT_FAIL`. Per i gate di piattaforma applica `gate-piattaforme`.
+controlla i log per `SCRIPT ERROR` o `FATAL EXCEPTION` (un errore motore può non
+tradursi in un'asserzione GUT fallita) oltre al report GUT stesso. Per i gate di
+piattaforma applica `gate-piattaforme`.
 
 ## 4. Chiudi
 
@@ -52,11 +54,13 @@ controlla i log per `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL`,
 2. Aggiorna lo stato:
    - `IN VERIFICA` se gli automatici sono verdi ma restano gate manuali,
      percettivi o su device;
-   - `VERIFICATO` se tutti i gate pertinenti sono chiusi;
-   - `COMPLETATO` quando la card è accettata e chiusa; il commit resta separato.
+   - `COMPLETATO` quando tutti i gate pertinenti sono chiusi e la card è
+     accettata; il commit resta separato.
+   Sposta `IN VERIFICA` in `docs/cards/to_test/` e `COMPLETATO` in
+   `docs/cards/completed/`.
 3. Scrivi in `Decisioni` le scelte e motivazioni; in Note alternative, comandi e
    marker esatti usati come evidenza.
-4. Aggiorna la riga nella tabella di
+4. Aggiorna stato e link della riga nella tabella di
    [docs/cards/README.md](../../../docs/cards/README.md).
 5. Controlla che metadati, dipendenze e riga della board restino allineati.
 6. Se cambia la verità corrente, propaga il solo contratto risultante in

@@ -64,7 +64,7 @@ Contratti da preservare:
 
 Layout: [scripts/](scripts/) per la logica, [scenes/](scenes/) per le scene,
 [data/](data/) per le `Resource` `.tres`, [assets/](assets/) per arte, audio e
-font, [tests/integration/](tests/integration/) per gli smoke,
+font, [tests/unit/](tests/unit/) per i test GUT (`test_*.gd`),
 [tools/](tools/) per gli script PowerShell.
 
 ## Stile GDScript
@@ -86,9 +86,9 @@ Un solo entry point:
 
 ```powershell
 .\tools\run-milestone-checks.ps1 -Milestone PS-010 -Profile Focused `
-  -FocusedSmoke tests/integration/_grill_defense_mode_smoke.gd
+  -FocusedSmoke tests/unit/test_grill_defense_mode.gd
 .\tools\run-milestone-checks.ps1 -Milestone PS-010 -Profile Relevant `
-  -FocusedSmoke tests/integration/_grill_defense_mode_smoke.gd
+  -FocusedSmoke tests/unit/test_grill_defense_mode.gd
 .\tools\run-milestone-checks.ps1 -Milestone PS-010 -Profile Full
 .\tools\run-milestone-checks.ps1 -Milestone PS-010 -Profile Release
 ```
@@ -96,14 +96,15 @@ Un solo entry point:
 `-Milestone` è il nome tecnico storico del parametro del runner e accetta l'ID
 della card; non implica l'esistenza di una roadmap B-series.
 
-- Ogni card che cambia il runtime ha uno smoke deterministico `tests/integration/_*_smoke.gd` con un
-  marker `*_SMOKE_OK` unico e uscita non nulla in caso di errore.
+- Ogni card che cambia il runtime ha un test GUT deterministico
+  `tests/unit/test_*.gd` (`extends GutTest`/`GutGameplayTest`); tutti i test
+  girano in un solo processo Godot per profilo.
 - Le associazioni file→regressioni vivono in
   [tools/milestone-test-map.json](tools/milestone-test-map.json).
-- **Exit code `0` non basta**: i log con `SCRIPT ERROR`, `FATAL EXCEPTION`,
-  `SMOKE_FAIL` o `CONTRACT_FAIL` sono fallimenti.
+- **Exit code `0` non basta**: i log con `SCRIPT ERROR` o `FATAL EXCEPTION`
+  sono fallimenti anche quando il report GUT risulterebbe verde.
 - Dopo aver aggiunto script con `class_name` o asset importati, rinfresca la
-  cache dell'editor prima dello smoke (`-RefreshEditor`).
+  cache dell'editor prima del test (`-RefreshEditor`).
 - L'export Android su Windows spesso non esce dopo `[ DONE ]` anche con l'APK
   completo: il runner chiude sul marker `[ DONE ] export`, non sull'uscita del
   processo. Non aspettare l'EOF e non terminare tutti i processi Godot/Java.

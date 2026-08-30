@@ -162,7 +162,7 @@ Per sostituire un testo o un asset non serve cambiare codice:
 2. aggiornare fonte e flag `portraits_are_placeholders` per un nuovo ritratto;
 3. conservare `content_approved`/`portraits_approved` soltanto con approvatore,
    data ISO e riferimento compilati;
-4. rilanciare `_friend_content_smoke.gd`.
+4. rilanciare `tests/unit/test_b17_friend_content.gd`.
 
 Se un flag di approvazione viene rimosso, i getter pubblici restituiscono copy e
 ritratti di fallback. Un flag approvato senza record completo invalida invece

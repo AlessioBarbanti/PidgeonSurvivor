@@ -9,7 +9,7 @@ $runner = Join-Path $repoRoot 'tools\run-milestone-checks.ps1'
 $testMapPath = Join-Path $repoRoot 'tools\milestone-test-map.json'
 
 $testMap = Get-Content -LiteralPath $testMapPath -Raw -Encoding UTF8 | ConvertFrom-Json
-if ($testMap.version -ne 1 -or $testMap.rules.Count -eq 0) {
+if ($testMap.version -ne 2 -or $testMap.rules.Count -eq 0) {
     throw 'Manifest di selezione test assente o con versione inattesa.'
 }
 foreach ($smoke in @($testMap.rules.smokes | Sort-Object -Unique)) {
@@ -36,13 +36,13 @@ function Invoke-Plan {
 }
 
 $relevant = Invoke-Plan -Profile Relevant -ChangedPath @('scripts/actors/player.gd')
-if ($relevant.focused_smokes -notcontains 'tests/integration/_player_visual_scale_smoke.gd') {
-    throw 'Il profilo Relevant non ha individuato lo smoke focused B24.'
+if ($relevant.focused_smokes -notcontains 'tests/unit/test_b24_player_visual_scale.gd') {
+    throw 'Il profilo Relevant non ha individuato il test focused B24.'
 }
 foreach ($expected in @(
-    'tests/integration/_cast_sprites_smoke.gd',
-    'tests/integration/_player_direction_animation_smoke.gd',
-    'tests/integration/_player_survival_smoke.gd'
+    'tests/unit/test_b18c_player_direction_animation.gd',
+    'tests/unit/test_b06_player_survival.gd',
+    'tests/unit/test_b17a_complete_roster_abilities.gd'
 )) {
     if ($relevant.regression_smokes -notcontains $expected) {
         throw "Mappatura Player mancante: $expected"
@@ -58,9 +58,9 @@ if ($docsOnly.regression_smokes.Count -ne 0) {
 }
 
 $full = Invoke-Plan -Profile Full -ChangedPath @('docs/development-plan.md')
-$allSmokeCount = @(Get-ChildItem (Join-Path $repoRoot 'tests\integration') -Filter '*_smoke.gd' -File).Count
-if (($full.focused_smokes.Count + $full.regression_smokes.Count) -ne $allSmokeCount) {
-    throw 'Full deve pianificare ogni smoke una sola volta.'
+$allTestCount = @(Get-ChildItem (Join-Path $repoRoot 'tests') -Filter 'test_*.gd' -File -Recurse).Count
+if (($full.focused_smokes.Count + $full.regression_smokes.Count) -ne $allTestCount) {
+    throw 'Full deve pianificare ogni test una sola volta.'
 }
 if (-not $full.run_project_smoke -or $full.export_windows -or $full.export_android) {
     throw 'Full deve includere project smoke senza export.'

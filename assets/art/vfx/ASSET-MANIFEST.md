@@ -148,7 +148,7 @@ a `256×256` e ottimizzata PNG.
 | `assets/art/icons/abilities/generated/zen.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Loto, onde di respiro e moti; crop quadrato stretto, ricampionamento Lanczos e ottimizzazione PNG | `dd51818ed667b92f56d131fca316f4b9f51035c0a8c111b368e062004c6ad483` |
 | `assets/art/icons/abilities/generated/reggaeton.png` | OpenAI ImageGen built-in | progetto IL GIOCO + OpenAI ImageGen | Licenza del progetto | Cassa, silhouette danzante e note; crop quadrato stretto, ricampionamento Lanczos e ottimizzazione PNG | `f315f7ce9cab7f736742278c5e2817f32e6619b3f18382a90d0e5c77f1718555` |
 
-Il budget dichiarato è verificato da `_ability_visuals_smoke.gd`: per singola
+Il budget dichiarato è verificato da `tests/unit/test_b18m_ability_visuals.gd`: per singola
 attivazione non più di un overlay fullscreen, 64 particelle logiche, un emblema
 ImageGen e due materiali aggiuntivi. Queste implementazioni usano zero materiali
 custom; il solo overlay fullscreen appartiene a Tempesta di Tuoni.

@@ -23,12 +23,12 @@ sceglierne uno in silenzio: spesso è quella la risposta utile.
 Metodo:
 
 - Parti da `Grep`/`Glob` mirati, apri solo le porzioni di file che servono.
-- Per una card: leggi frontmatter, criteri, decisioni, documenti sincronizzati,
-  nota di verifica e marker degli smoke. Per un vecchio ID B cerca `origine`.
+- Per una card: leggi frontmatter, criteri, decisioni, documenti sincronizzati
+  e nota di verifica. Per un vecchio ID B cerca `origine`.
 - Per un comportamento: risali dal segnale o dal nome del membro, non dal testo
   UI.
-- Per la copertura di test: incrocia `tools/milestone-test-map.json` con i marker
-  in `tests/integration/`.
+- Per la copertura di test: incrocia `tools/milestone-test-map.json` con i test
+  GUT in `tests/unit/`.
 
 Rispondi in italiano, in modo compatto: la conclusione prima, poi i riferimenti
 come `percorso/file.gd:123`, poi le incertezze residue. Se una domanda non ha

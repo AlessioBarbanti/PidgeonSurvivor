@@ -42,27 +42,13 @@ Da PowerShell, nella root del repository:
 
 ```powershell
 .\tools\verify-toolchain.ps1 -RunProjectSmoke
-godot_console --headless --path . --script tests/integration/_enemy_spawner_smoke.gd
-godot_console --headless --path . --script tests/integration/_combat_slice_smoke.gd
-godot_console --headless --path . --script tests/integration/_player_survival_smoke.gd
-godot_console --headless --path . --script tests/integration/_experience_pickup_smoke.gd
-godot_console --headless --path . --script tests/integration/_level_progression_smoke.gd
-godot_console --headless --path . --script tests/integration/_hud_smoke.gd
-godot_console --headless --path . --script tests/integration/_active_ability_smoke.gd
-godot_console --headless --path . --script tests/integration/_complete_roster_abilities_smoke.gd
-godot_console --headless --path . --script tests/integration/_upgrade_service_smoke.gd
-godot_console --headless --path . --resolution 1280x720 --script tests/integration/_upgrade_overlay_smoke.gd
-godot_console --headless --path . --resolution 1280x720 --script tests/integration/_upgrade_effects_smoke.gd
-godot_console --headless --path . --script tests/integration/_signature_upgrades_smoke.gd
-godot_console --headless --path . --script tests/integration/_game_director_smoke.gd
-godot_console --headless --path . --script tests/integration/_boss_encounter_smoke.gd
-godot_console --headless --path . --script tests/integration/_complete_run_smoke.gd
-godot_console --headless --path . --script tests/integration/_friend_content_smoke.gd
-godot_console --headless --path . --script tests/integration/_audiovisual_feedback_smoke.gd
-godot_console --headless --path . --resolution 1280x720 --script tests/integration/_visual_identity_smoke.gd
-godot_console --headless --path . --script tests/integration/_platform_lifecycle_smoke.gd
+.\tools\run-milestone-checks.ps1 -Milestone B54 -Profile Full
 godot --editor --path .
 ```
+
+Tutti i test automatici vivono in `tests/unit/` (contratto GUT, `test_*.gd`) ed
+eseguono in un solo processo Godot per profilo; i dettagli sono in
+[`docs/verification-workflow.md`](docs/verification-workflow.md).
 
 I comandi di export, i prerequisiti Android e le regole sulla firma sono in
 [`docs/setup.md`](docs/setup.md). La
