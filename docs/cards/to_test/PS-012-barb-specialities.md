@@ -3,7 +3,7 @@ id: PS-012
 titolo: Introduci le Specialità di Barb
 tipo: feat
 area: gameplay
-stato: PRONTO
+stato: IN VERIFICA
 priorita: alta
 dipende_da: []
 origine:
@@ -125,29 +125,36 @@ La cartella identifica una categoria di gameplay, non un nuovo formato di `Resou
 
 ## Criteri di accettazione
 
-* [ ] Le Specialità bloccate non possono comparire nel normale level-up.
-* [ ] Alla sconfitta di un Boss vengono offerte fino a tre Specialità ancora bloccate.
-* [ ] L'offerta non contiene duplicati.
-* [ ] Selezionare una Specialità assegna immediatamente il rank `1`.
-* [ ] La Specialità scelta entra nel pool dei level-up successivi.
-* [ ] Le Specialità non scelte restano bloccate.
-* [ ] Una Specialità già sbloccata non viene più offerta da Barb.
-* [ ] I rank successivi vengono applicati dal sistema upgrade esistente.
-* [ ] Nessuna Specialità supera `5` rank.
-* [ ] Una Specialità con `max_rank` corrente inferiore a `5` conserva quel limite.
-* [ ] Gli effetti e la progressione per rank delle Specialità esistenti restano invariati.
-* [ ] Gossip conserva il comportamento e la progressione già implementati.
-* [ ] Colpo Perforante conserva il comportamento e la progressione già implementati.
-* [ ] Raffica Doppia conserva il comportamento e la progressione già implementati.
-* [ ] Esplosione Finale conserva il comportamento e la progressione già implementati.
-* [ ] Una Specialità al proprio rank massimo non compare più nei level-up.
-* [ ] Lo stesso seed e le stesse scelte producono la stessa sequenza di offerte Barb.
-* [ ] Con meno di tre Specialità bloccate l'offerta mostra soltanto quelle disponibili.
-* [ ] Con tutte le Specialità sbloccate la morte del Boss non blocca la run.
-* [ ] Restart azzera tutti gli sblocchi delle Specialità.
-* [ ] Cambio personaggio azzera gli sblocchi appartenenti alla run precedente.
-* [ ] Le definizioni delle Specialità sono collocate sotto `data/upgrades/specialities/`.
-* [ ] Nessun riferimento runtime continua a dipendere dalle vecchie path.
+* [x] Le Specialità bloccate non possono comparire nel normale level-up.
+* [x] Alla sconfitta di un Boss vengono offerte fino a tre Specialità ancora bloccate.
+* [x] L'offerta non contiene duplicati.
+* [x] Selezionare una Specialità assegna immediatamente il rank `1`.
+* [x] La Specialità scelta entra nel pool dei level-up successivi.
+* [x] Le Specialità non scelte restano bloccate.
+* [x] Una Specialità già sbloccata non viene più offerta da Barb.
+* [x] I rank successivi vengono applicati dal sistema upgrade esistente.
+* [x] Nessuna Specialità supera `5` rank.
+* [x] Una Specialità con `max_rank` corrente inferiore a `5` conserva quel limite.
+* [x] Gli effetti e la progressione per rank delle Specialità esistenti restano invariati.
+* [x] Gossip conserva il comportamento e la progressione già implementati.
+* [x] Colpo Perforante conserva il comportamento e la progressione già implementati.
+* [x] Raffica Doppia conserva il comportamento e la progressione già implementati.
+* [x] Esplosione Finale conserva il comportamento e la progressione già implementati.
+* [x] Una Specialità al proprio rank massimo non compare più nei level-up — garantito da
+      `UpgradeDefinition.is_eligible()` invariato; le quattro carte attuali sono tutte
+      `repeatable`, quindi il caso non-repeatable-al-cap non è esercitato da un test
+      dedicato ma dalla copertura generica già in `test_b10_upgrade_service.gd`.
+* [x] Lo stesso seed e le stesse scelte producono la stessa sequenza di offerte Barb.
+* [x] Con meno di tre Specialità bloccate l'offerta mostra soltanto quelle disponibili.
+* [x] Con tutte le Specialità sbloccate la morte del Boss non blocca la run.
+* [x] Restart azzera tutti gli sblocchi delle Specialità.
+* [ ] Cambio personaggio azzera gli sblocchi appartenenti alla run precedente — non
+      testato con un caso dedicato; il cambio personaggio in `movement_slice.gd`
+      (`_on_change_character_requested`) passa per lo stesso `prepare_restart()` /
+      `restart_run()` già verificato dal test di restart, ma non ho eseguito un test
+      che attraversi esplicitamente il flusso di selezione personaggio.
+* [x] Le definizioni delle Specialità sono collocate sotto `data/upgrades/specialities/`.
+* [x] Nessun riferimento runtime continua a dipendere dalle vecchie path.
 
 ## Ambito
 
@@ -180,6 +187,27 @@ Non modificare:
 * GUT: `tests/unit/test_ps012_barb_specialities.gd` → marker `BARB_SPECIALITIES_SMOKE_OK`
 * Profilo minimo prima della chiusura: `Relevant`
 
+Eseguiti e verdi:
+
+```
+.\tools\run-milestone-checks.ps1 -Milestone PS-012 -Profile Focused `
+  -FocusedSmoke tests/unit/test_ps012_barb_specialities.gd
+.\tools\run-milestone-checks.ps1 -Milestone PS-012 -Profile Relevant `
+  -FocusedSmoke tests/unit/test_ps012_barb_specialities.gd
+.\tools\run-milestone-checks.ps1 -Milestone PS-012 -Profile Full `
+  -FocusedSmoke tests/unit/test_ps012_barb_specialities.gd
+```
+
+`Relevant` (28 script) e `Full` (72 script) sono risultati verdi al netto di una
+riesecuzione: il primo tentativo di `Relevant` ha mostrato un fallimento isolato in
+`test_b15_boss_encounter.gd` (conteggio target non deterministico) non riproducibile né
+in isolamento né in combinazioni ridotte con gli altri script toccati — trattato come
+flakiness preesistente e non come regressione PS-012, confermato dalla riesecuzione verde
+immediatamente successiva. Il primo tentativo di `Full` ha invece trovato due regressioni
+reali, poi corrette: la pesca a rischio-esaurimento di `test_b13_signature_upgrades.gd`
+(margine di tentativi eroso da Gossip come "rumore" già sbloccato) e la mancata
+risoluzione di `BARB_REWARD` in `test_b53_boss_horde_pause.gd`.
+
 ## Gate manuali
 
 * [ ] Runtime Windows
@@ -191,6 +219,50 @@ Non modificare:
 * [ ] Dopo lo sblocco la Specialità compare naturalmente fra i successivi level-up.
 * [ ] Le offerte Barb non vengono confuse con le normali carte statistiche.
 * [ ] La transizione Boss sconfitto → Specialità di Barb → ripresa della run è leggibile.
+
+## Decisioni
+
+* `UpgradeDefinition` guadagna il campo `is_speciality: bool` (default `false`): è dato
+  dichiarativo puro, coerente con "registry di effetti: i dati dichiarano, la logica vive
+  nei registry/service", e non introduce un nuovo formato Resource.
+* Lo stato "sbloccate in questa run" vive in `UpgradeService` (`_unlocked_specialities`),
+  non in `UpgradeRegistry`: il registry resta condiviso fra run, l'unlock è per-run e si
+  azzera con lo stesso `reset_for_run()` già usato per i rank.
+* `RunController` guadagna lo stato `BARB_REWARD`, simmetrico a `LEVEL_UP`/`BOSS_INTRO`
+  (`request_barb_reward()` / `complete_barb_reward()`), per riusare l'arbitraggio modale e
+  la pausa albero già esistenti invece di introdurre un meccanismo parallelo.
+* La richiesta di ricompensa Barb (`UpgradeService.queue_barb_reward()`) è accodata se la
+  run non è `RUNNING` nell'istante della morte del Boss (es. la ricompensa XP ha appena
+  aperto `LEVEL_UP`, oppure `pending_boss` fa nascere subito il Boss successivo): riparte
+  da sola al primo ritorno a `RUNNING`, tramite lo stesso `state_changed` già osservato da
+  `UpgradeService`. Non richiede modifiche a `BossEncounter` o `GameDirector`: la
+  ricorrenza dei Boss (B33) resta il meccanismo autorevole, Barb si limita ad attendere.
+* RNG di Barb su stream separato (`BARB_RNG_STREAM_SALT`) dallo stream dei level-up
+  normali, seedato allo stesso modo (`seed ^ salt`) per restare deterministico e non
+  alterare la sequenza di pesca già coperta da `test_b10_upgrade_service.gd`.
+* Selezionare una Specialità o un bonus Barb riemette anche `upgrade_selected` (oltre ai
+  segnali dedicati `barb_speciality_unlocked`/`barb_bonus_upgrade_selected`):
+  `UpgradeEffectRegistry` applica gli effetti solo in risposta a quel segnale, quindi
+  riusarlo è necessario perché lo sblocco assegni un rank realmente attivo, non solo un
+  numero in `UpgradeService.get_ranks()`.
+* Il fallback "tutte sbloccate" riusa `generate`-style draw pesato e le stesse regole di
+  eleggibilità del pool normale (specialità ancora bloccate escluse, filtro abilità
+  invariato) ma non passa da `ExperienceSystem`: i rank vengono assegnati direttamente da
+  `UpgradeService`, senza toccare XP o livello, come richiesto dalla card.
+* UI dedicata `BarbRewardOverlay` (nuova scena/script), non riuso di `UpgradeOverlay`:
+  quest'ultima richiede sempre esattamente tre carte, mentre Barb può offrirne da una a
+  tre. Riusa `UpgradeCard`/`upgrade_card.tscn` per il layout delle singole carte. Il
+  titolo "LE SPECIALITÀ DI BARB" resta fisso in entrambe le modalità (sblocco o bonus) per
+  restare "ben in vista" come richiesto dal proprietario.
+* I quattro `.tres` spostati sotto `data/upgrades/specialities/` guadagnano solo la riga
+  `is_speciality = true`: id, effect_id, parametri, pesi, rank e icone restano bit-per-bit
+  identici.
+
+## Documenti sincronizzati
+
+- [x] `CLAUDE.md`: elenco stati `RunController` aggiornato con `BARB_REWARD`.
+- [x] `docs/prd.md` (§3.3): contratto delle Specialità di Barb aggiunto in coda alla
+      sezione sul sistema di level up e upgrade.
 
 ## Note
 

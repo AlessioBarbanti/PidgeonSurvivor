@@ -41,8 +41,8 @@ Contratti da preservare:
 - **`RunController`** ([scripts/game/run_controller.gd](scripts/game/run_controller.gd))
   è l'unica autorità su stato, tempo logico, pausa, arbitraggio dei modali,
   vittoria/sconfitta, seed e restart. Stati: `BOOT`, `RUNNING`, `MANUAL_PAUSE`,
-  `LEVEL_UP`, `BOSS_INTRO`, `VICTORY`, `DEFEAT`. Cooldown, timer e VFX di
-  gameplay avanzano solo in `RUNNING` e si azzerano al restart.
+  `LEVEL_UP`, `BOSS_INTRO`, `BARB_REWARD`, `VICTORY`, `DEFEAT`. Cooldown, timer
+  e VFX di gameplay avanzano solo in `RUNNING` e si azzerano al restart.
 - **Flusso UI**: `welcome → (tutorial) → selezione → run → pausa`. `BOOT` resta
   attivo finché il giocatore non conferma; Back/annulla chiude solo il modale in
   cima, mai la run.

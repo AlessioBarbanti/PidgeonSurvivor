@@ -113,6 +113,20 @@ centrati con margine trasparente coerente; ID, pesi, rank, prerequisiti ed
 effetti restano invariati. Master e derivati sono tracciati nel
 [`manifest upgrade`](../assets/art/icons/upgrades/ASSET-MANIFEST.md).
 
+**Specialità di Barb (PS-012):** Gossip, Colpo Perforante, Raffica Doppia ed
+Esplosione Finale sono `UpgradeDefinition` con `is_speciality = true`, definite
+sotto `data/upgrades/specialities/`. Non compaiono nel pool di level-up
+normale finché non vengono sbloccate come ricompensa dopo la sconfitta di un
+Boss: quella ricompensa apre lo stato dedicato `RunController.BARB_REWARD` e
+propone fino a tre Specialità ancora bloccate, pescate con RNG deterministico
+derivato dal seed della run su uno stream separato da quello del level-up. La
+scelta assegna subito il rank `1` e sblocca la carta per il resto della run; i
+rank successivi seguono da lì il normale sistema di upgrade ed eleggibilità.
+Se tutte le Specialità sono già sbloccate, la ricompensa Boss diventa due
+selezioni upgrade bonus consecutive tramite lo stesso pool e le stesse regole
+del level-up, senza avanzare livello o XP. Restart e cambio personaggio
+azzerano tutti gli sblocchi.
+
 ### 3.4. Sistema delle abilità attive
 
 Ogni personaggio ha una sola abilità attiva assegnata dalla propria definizione.

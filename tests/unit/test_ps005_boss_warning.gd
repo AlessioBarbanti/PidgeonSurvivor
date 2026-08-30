@@ -185,14 +185,16 @@ func test_warning_repeats_for_recurring_bosses() -> void:
 	var spawner := movement_slice.get_enemy_spawner() as EnemySpawner
 	var experience := movement_slice.get_experience_system() as ExperienceSystem
 	var hud := movement_slice.get_hud() as GameHud
+	var service := movement_slice.get_upgrade_service() as UpgradeService
 	assert_true(
 		controller != null
 		and director != null
 		and encounter != null
 		and spawner != null
 		and experience != null
-		and hud != null,
-		"PS-005 richiede scheduler ricorrente, encounter e HUD dalla scena composta."
+		and hud != null
+		and service != null,
+		"PS-005 richiede scheduler ricorrente, encounter, HUD e UpgradeService dalla scena composta."
 	)
 	if (
 		controller == null
@@ -201,6 +203,7 @@ func test_warning_repeats_for_recurring_bosses() -> void:
 		or spawner == null
 		or experience == null
 		or hud == null
+		or service == null
 	):
 		return
 
@@ -213,7 +216,7 @@ func test_warning_repeats_for_recurring_bosses() -> void:
 		"La fixture deve raggiungere il primo Boss prima di provare il warning ricorrente."
 	)
 	assert_true(encounter.complete_intro(), "La fixture deve iniziare il primo scontro Boss.")
-	_kill_active_boss(encounter, controller, experience)
+	_kill_active_boss(encounter, controller, experience, service)
 	assert_true(controller.is_running(), "Dopo il primo Boss la run deve riprendere.")
 
 	var recurring_boss_time := (
@@ -239,7 +242,8 @@ func test_warning_repeats_for_recurring_bosses() -> void:
 	assert_eq(director.get_active_event_index(), 1, "Il secondo Boss deve usare lo schedule_index annunciato.")
 	assert_false(hud.is_boss_warning_visible(), "Il warning ricorrente deve sparire durante Boss Intro.")
 	assert_true(encounter.complete_intro(), "La fixture deve iniziare anche il secondo scontro Boss.")
-	_kill_active_boss(encounter, controller, experience)
+	_resolve_pending_barb_reward(controller, service)
+	_kill_active_boss(encounter, controller, experience, service)
 	var third_boss_time := (
 		director.get_last_boss_spawn_run_time() + director.get_recurring_window_seconds()
 	)
@@ -302,7 +306,10 @@ func _assert_warning_layout(hud: GameHud, movement_slice: Control) -> void:
 
 
 func _kill_active_boss(
-	encounter: BossEncounter, controller: RunController, experience: ExperienceSystem
+	encounter: BossEncounter,
+	controller: RunController,
+	experience: ExperienceSystem,
+	service: UpgradeService
 ) -> void:
 	var boss := encounter.get_active_boss()
 	assert_not_null(boss, "La fixture PS-005 deve avere un Boss attivo da sconfiggere.")
@@ -315,6 +322,27 @@ func _kill_active_boss(
 	boss.take_damage(health.health_current)
 	while controller.get_state() == RunController.RunState.LEVEL_UP:
 		if not experience.complete_level_up():
+			break
+	_resolve_pending_barb_reward(controller, service)
+
+
+# PS-012: quando pending_boss e' attivo, la morte riattiva subito il Boss
+# successivo (vedi GameDirector._request_next_boss_event) prima che Barb
+# riesca a reclamare RUNNING; in quel caso la ricompensa resta accodata e
+# si presenta solo alla chiusura dell'intro del nuovo Boss. Qui interessa
+# solo tornare in RUNNING, non quale Specialità/bonus venga scelto.
+func _resolve_pending_barb_reward(controller: RunController, service: UpgradeService) -> void:
+	while controller.get_state() == RunController.RunState.BARB_REWARD:
+		var offer := service.get_current_barb_offer()
+		if offer.is_empty():
+			break
+		var chosen_id := offer[0].id
+		var resolved := (
+			service.select_barb_bonus_upgrade(chosen_id)
+			if service.is_barb_bonus_mode()
+			else service.select_barb_speciality(chosen_id)
+		)
+		if not resolved:
 			break
 
 

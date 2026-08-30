@@ -18,4 +18,5 @@ effect_parameters = {
 weight = 0.55
 max_rank = 3
 repeatable = true
+is_speciality = true
 tags = Array[StringName]([&"weapon", &"shape", &"pierce"])

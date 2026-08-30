@@ -18,6 +18,9 @@ extends Resource
 @export_range(1, 100, 1, "or_greater") var max_rank := 1
 @export_range(0, 99, 1, "or_greater") var initial_rank := 0
 @export var repeatable := false
+## Carta appartenente al roster di Barb: esclusa dal pool normale finché non
+## viene sbloccata come ricompensa dopo la sconfitta di un Boss (PS-012).
+@export var is_speciality := false
 @export var tags: Array[StringName] = []
 ## Maps another upgrade ID to the minimum rank required for this definition.
 @export var prerequisites: Dictionary = {}

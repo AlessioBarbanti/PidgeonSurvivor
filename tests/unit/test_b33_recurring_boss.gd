@@ -9,10 +9,11 @@ func test_recurring_boss_schedule() -> void:
 	var encounter := movement_slice.get_boss_encounter() as BossEncounter
 	var spawner := movement_slice.get_enemy_spawner() as EnemySpawner
 	var experience := movement_slice.get_experience_system() as ExperienceSystem
+	var service := movement_slice.get_upgrade_service() as UpgradeService
 	assert_true(
 		controller != null and director != null and encounter != null and spawner != null
-		and experience != null,
-		"B33 richiede RunController, GameDirector, BossEncounter ed EnemySpawner dalla scena."
+		and experience != null and service != null,
+		"B33 richiede RunController, GameDirector, BossEncounter, EnemySpawner e UpgradeService dalla scena."
 	)
 	if (
 		controller == null
@@ -20,6 +21,7 @@ func test_recurring_boss_schedule() -> void:
 		or encounter == null
 		or spawner == null
 		or experience == null
+		or service == null
 	):
 		return
 
@@ -40,9 +42,10 @@ func test_recurring_boss_schedule() -> void:
 	assert_eq(director.get_active_event_index(), 0, "Il primo Boss deve usare lo schedule_index 0.")
 	_assert_single_active_boss(encounter, director, "Il primo Boss deve essere l'unico tracciato.")
 	assert_true(encounter.complete_intro(), "L'intro del primo Boss deve poter essere confermata.")
+	_resolve_pending_barb_reward(controller, service)
 
 	# 2. Morte prima che la finestra ricorrente scada: nessuno spawn prematuro.
-	_kill_active_boss(encounter, controller, experience)
+	_kill_active_boss(encounter, controller, experience, service)
 	assert_true(
 		controller.is_running() and not get_tree().paused, "La morte del primo Boss non deve chiudere la run."
 	)
@@ -70,6 +73,7 @@ func test_recurring_boss_schedule() -> void:
 		controller.prepare_restart()
 		return
 	assert_true(encounter.complete_intro(), "L'intro del secondo Boss deve poter essere confermata.")
+	_resolve_pending_barb_reward(controller, service)
 
 	# 4. Se il Boss resta vivo oltre la finestra, si imposta un'unica richiesta pendente.
 	var second_spawn_time := director.get_last_boss_spawn_run_time()
@@ -99,7 +103,7 @@ func test_recurring_boss_schedule() -> void:
 	# 6. Alla morte, con pending_boss attivo, il prossimo Boss nasce subito e la
 	# finestra seguente riparte dal suo spawn reale, non dalle finestre perse.
 	var death_time_2 := controller.get_run_time()
-	_kill_active_boss(encounter, controller, experience)
+	_kill_active_boss(encounter, controller, experience, service)
 	assert_eq(
 		director.get_recurring_boss_count(), 2, "La morte con pending_boss deve generare subito il terzo Boss."
 	)
@@ -118,6 +122,7 @@ func test_recurring_boss_schedule() -> void:
 		controller.prepare_restart()
 		return
 	assert_true(encounter.complete_intro(), "L'intro del terzo Boss deve poter essere confermata.")
+	_resolve_pending_barb_reward(controller, service)
 
 	# 7. La pausa manuale ferma il clock della finestra ricorrente.
 	var third_spawn_time := director.get_last_boss_spawn_run_time()
@@ -148,7 +153,7 @@ func test_recurring_boss_schedule() -> void:
 		director.is_boss_pending_after_active(),
 		"La finestra deve scattare non appena il clock la raggiunge in RUNNING."
 	)
-	_kill_active_boss(encounter, controller, experience)
+	_kill_active_boss(encounter, controller, experience, service)
 	assert_eq(director.get_active_event_index(), 3, "Il quarto Boss deve usare lo schedule_index 3.")
 	assert_eq(director.get_recurring_boss_count(), 3, "Il quarto Boss deve essere il terzo ricorrente.")
 	var boss_4 := encounter.get_active_boss()
@@ -156,6 +161,7 @@ func test_recurring_boss_schedule() -> void:
 	_assert_single_active_boss(encounter, director, "Il quarto Boss deve essere l'unico tracciato.")
 	if boss_4 != null:
 		assert_true(encounter.complete_intro(), "L'intro del quarto Boss deve poter essere confermata.")
+		_resolve_pending_barb_reward(controller, service)
 
 	# 10. Il restart azzera lo scheduler ricorrente.
 	assert_true(
@@ -180,7 +186,10 @@ func test_recurring_boss_schedule() -> void:
 
 
 func _kill_active_boss(
-	encounter: BossEncounter, controller: RunController, experience: ExperienceSystem
+	encounter: BossEncounter,
+	controller: RunController,
+	experience: ExperienceSystem,
+	service: UpgradeService
 ) -> void:
 	var boss := encounter.get_active_boss()
 	assert_not_null(boss, "Impossibile uccidere un Boss assente.")
@@ -195,6 +204,27 @@ func _kill_active_boss(
 	# lo scheduler dei Boss, quindi si risolve subito per tornare in RUNNING.
 	while controller.get_state() == RunController.RunState.LEVEL_UP:
 		if not experience.complete_level_up():
+			break
+	_resolve_pending_barb_reward(controller, service)
+
+
+# PS-012: quando pending_boss e' attivo, la morte riattiva subito il Boss
+# successivo (vedi GameDirector._request_next_boss_event) prima che Barb
+# riesca a reclamare RUNNING; in quel caso la ricompensa resta accodata e
+# si presenta solo alla chiusura dell'intro del nuovo Boss. Qui interessa
+# solo tornare in RUNNING, non quale Specialità/bonus venga scelto.
+func _resolve_pending_barb_reward(controller: RunController, service: UpgradeService) -> void:
+	while controller.get_state() == RunController.RunState.BARB_REWARD:
+		var offer := service.get_current_barb_offer()
+		if offer.is_empty():
+			break
+		var chosen_id := offer[0].id
+		var resolved := (
+			service.select_barb_bonus_upgrade(chosen_id)
+			if service.is_barb_bonus_mode()
+			else service.select_barb_speciality(chosen_id)
+		)
+		if not resolved:
 			break
 
 

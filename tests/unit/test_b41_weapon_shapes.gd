@@ -1,11 +1,11 @@
 extends GutGameplayTest
 
-const PIERCING_ROUNDS := preload("res://data/upgrades/piercing_rounds.tres")
-const DOUBLE_BARREL := preload("res://data/upgrades/double_barrel.tres")
-const DEATH_BURST := preload("res://data/upgrades/death_burst.tres")
+const PIERCING_ROUNDS := preload("res://data/upgrades/specialities/piercing_rounds.tres")
+const DOUBLE_BARREL := preload("res://data/upgrades/specialities/double_barrel.tres")
+const DEATH_BURST := preload("res://data/upgrades/specialities/death_burst.tres")
 const MEAT_FORK_DAMAGE := preload("res://data/upgrades/meat_fork_damage.tres")
 const RAPID_FIRE := preload("res://data/upgrades/rapid_fire.tres")
-const GOSSIP := preload("res://data/upgrades/gossip_projectiles.tres")
+const GOSSIP := preload("res://data/upgrades/specialities/gossip_projectiles.tres")
 const WIDE_MAGNET := preload("res://data/upgrades/wide_magnet.tres")
 const SWIFT_STEPS := preload("res://data/upgrades/swift_steps.tres")
 
@@ -172,8 +172,11 @@ func test_scene_behavior() -> void:
 	service.reset_for_run(controller.get_seed())
 	assert_true(effects.recalculate_effects(), "Il registry deve accettare la fase perforazione.")
 
+	# PS-012: Colpo Perforante è una Specialità di Barb, bloccata a inizio run.
+	service.queue_barb_reward()
 	assert_true(
-		_select_when_offered(experience, service, PIERCING_ROUNDS.id), "Colpo Perforante deve entrare nella pesca B41."
+		service.select_barb_speciality(PIERCING_ROUNDS.id),
+		"Colpo Perforante deve essere sbloccabile come Specialità di Barb prima della pesca B41."
 	)
 	assert_eq(weapon.get_effective_pierce_count(), 2, "Un rank deve dare due bersagli perforabili.")
 	assert_almost_eq(
@@ -228,7 +231,12 @@ func test_scene_behavior() -> void:
 	assert_true(effects.recalculate_effects(), "Il registry deve accettare la fase ventaglio.")
 	assert_eq(weapon.get_effective_pierce_count(), 1, "Il cambio fase deve azzerare la perforazione della fase precedente.")
 
-	assert_true(_select_when_offered(experience, service, DOUBLE_BARREL.id), "Raffica Doppia deve entrare nella pesca B41.")
+	# PS-012: Raffica Doppia è una Specialità di Barb, bloccata a inizio run.
+	service.queue_barb_reward()
+	assert_true(
+		service.select_barb_speciality(DOUBLE_BARREL.id),
+		"Raffica Doppia deve essere sbloccabile come Specialità di Barb prima della pesca B41."
+	)
 	assert_eq(weapon.get_effective_multishot_count(), 2, "Un rank deve dare due proiettili per colpo.")
 	var multishot_far_enemy := _spawn_enemy(spawner, player.global_position + Vector2(400.0, 0.0))
 	assert_true(multishot_far_enemy != null, "La fixture ventaglio deve avere un bersaglio lontano da mirare.")
@@ -249,7 +257,12 @@ func test_scene_behavior() -> void:
 	assert_true(effects.recalculate_effects(), "Il registry deve accettare la fase esplosione.")
 	assert_true(weapon.get_effective_multishot_count() == 1, "Il cambio fase deve azzerare il ventaglio della fase precedente.")
 
-	assert_true(_select_when_offered(experience, service, DEATH_BURST.id), "Esplosione Finale deve entrare nella pesca B41.")
+	# PS-012: Esplosione Finale è una Specialità di Barb, bloccata a inizio run.
+	service.queue_barb_reward()
+	assert_true(
+		service.select_barb_speciality(DEATH_BURST.id),
+		"Esplosione Finale deve essere sbloccabile come Specialità di Barb prima della pesca B41."
+	)
 	assert_true(weapon.is_death_burst_enabled(), "Un rank deve attivare l'esplosione alla morte.")
 	assert_almost_eq(weapon.get_death_burst_radius(), 85.0, FLOAT_TOLERANCE, "Il raggio deve restare quello dichiarato.")
 	assert_almost_eq(

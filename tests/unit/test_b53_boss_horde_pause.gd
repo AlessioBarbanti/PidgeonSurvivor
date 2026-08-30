@@ -12,6 +12,7 @@ func test_pause_and_resume() -> void:
 	var encounter: BossEncounter = built.get("encounter")
 	var spawner: EnemySpawner = built.get("spawner")
 	var experience: ExperienceSystem = built.get("experience")
+	var service: UpgradeService = built.get("service")
 	if controller == null:
 		return
 
@@ -54,7 +55,7 @@ func test_pause_and_resume() -> void:
 
 	# La morte del Boss deve riattivare lo spawner e farlo ripartire pulito,
 	# con un solo nemico per tick e nessuna raffica arretrata.
-	_kill_active_boss(encounter, controller, experience)
+	_kill_active_boss(encounter, controller, experience, service)
 	assert_null(encounter.get_active_boss(), "Il Boss sconfitto non deve restare attivo.")
 	assert_false(
 		spawner.is_ordinary_spawn_suspended(), "La sconfitta del Boss deve riattivare subito lo spawn ordinario."
@@ -138,6 +139,7 @@ func _run_scripted_sequence(seed_value: int) -> Array[float]:
 	var encounter: BossEncounter = built.get("encounter")
 	var spawner: EnemySpawner = built.get("spawner")
 	var experience: ExperienceSystem = built.get("experience")
+	var service: UpgradeService = built.get("service")
 	var signatures: Array[float] = []
 	if controller == null:
 		return signatures
@@ -148,7 +150,7 @@ func _run_scripted_sequence(seed_value: int) -> Array[float]:
 		return signatures
 	encounter.complete_intro()
 	spawner._process(LARGE_TICK_SECONDS)
-	_kill_active_boss(encounter, controller, experience)
+	_kill_active_boss(encounter, controller, experience, service)
 	for _tick_index in range(6):
 		spawner._process(LARGE_TICK_SECONDS)
 	for enemy in spawner.get_spawned_enemies():
@@ -159,7 +161,10 @@ func _run_scripted_sequence(seed_value: int) -> Array[float]:
 
 
 func _kill_active_boss(
-	encounter: BossEncounter, controller: RunController, experience: ExperienceSystem
+	encounter: BossEncounter,
+	controller: RunController,
+	experience: ExperienceSystem,
+	service: UpgradeService
 ) -> void:
 	var boss := encounter.get_active_boss()
 	assert_not_null(boss, "Impossibile uccidere un Boss assente.")
@@ -173,6 +178,20 @@ func _kill_active_boss(
 	while controller.get_state() == RunController.RunState.LEVEL_UP:
 		if not experience.complete_level_up():
 			break
+	# PS-012: la morte del Boss apre sempre una scelta di Barb; qui interessa
+	# solo tornare in RUNNING, non quale Specialità/bonus venga scelto.
+	while controller.get_state() == RunController.RunState.BARB_REWARD:
+		var offer := service.get_current_barb_offer()
+		if offer.is_empty():
+			break
+		var chosen_id := offer[0].id
+		var resolved := (
+			service.select_barb_bonus_upgrade(chosen_id)
+			if service.is_barb_bonus_mode()
+			else service.select_barb_speciality(chosen_id)
+		)
+		if not resolved:
+			break
 
 
 func _build_fixture(seed_value: int) -> Dictionary:
@@ -182,11 +201,19 @@ func _build_fixture(seed_value: int) -> Dictionary:
 	var encounter := movement_slice.get_boss_encounter() as BossEncounter
 	var spawner := movement_slice.get_enemy_spawner() as EnemySpawner
 	var experience := movement_slice.get_experience_system() as ExperienceSystem
+	var service := movement_slice.get_upgrade_service() as UpgradeService
 	assert_true(
-		controller != null and encounter != null and spawner != null and experience != null,
-		"B53 richiede RunController, BossEncounter, EnemySpawner ed ExperienceSystem dalla scena."
+		controller != null and encounter != null and spawner != null and experience != null
+		and service != null,
+		"B53 richiede RunController, BossEncounter, EnemySpawner, ExperienceSystem e UpgradeService dalla scena."
 	)
-	if controller == null or encounter == null or spawner == null or experience == null:
+	if (
+		controller == null
+		or encounter == null
+		or spawner == null
+		or experience == null
+		or service == null
+	):
 		return {}
 
 	# L'avvio automatico della scena usa un seed non deterministico (orologio
@@ -207,6 +234,7 @@ func _build_fixture(seed_value: int) -> Dictionary:
 		"encounter": encounter,
 		"spawner": spawner,
 		"experience": experience,
+		"service": service,
 	}
 
 

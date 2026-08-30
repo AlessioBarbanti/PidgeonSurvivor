@@ -97,6 +97,14 @@ func get_repeatable_definitions() -> Array[UpgradeDefinition]:
 	return repeatable
 
 
+func get_speciality_definitions() -> Array[UpgradeDefinition]:
+	var specialities: Array[UpgradeDefinition] = []
+	for definition in get_definitions():
+		if definition.is_speciality:
+			specialities.append(definition)
+	return specialities
+
+
 func get_validation_errors() -> Array[String]:
 	return _validation_errors.duplicate()
 

@@ -38,7 +38,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-009](./to_do/PS-009-trasparenza-dialog-boss.md) | Rendere trasparente la Boss UI sotto il Player | ux | ui | PRONTO | media | — |
 | [PS-010](./idea/PS-010-implementa-difesa-grigliata.md) | Implementare Difesa Grigliata | feat | gameplay | DA DEFINIRE | alta | — |
 | [PS-011](./idea/PS-011-confeziona-prima-release-nativa.md) | Confezionare la prima release nativa | chore | piattaforma | DA DEFINIRE | alta | PS-010 |
-| [PS-012](./to_do/PS-012-barb-specialities.md) | Introdurre le Specialità di Barb | feat | gameplay | PRONTO | alta | — |
+| [PS-012](./to_test/PS-012-barb-specialities.md) | Introdurre le Specialità di Barb | feat | gameplay | IN VERIFICA | alta | — |
 | [PS-013](./to_test/PS-013-crash-typedarray-seconda-offerta-upgrade.md) | Correggere il crash TypedArray alla seconda offerta upgrade | fix | ui | IN VERIFICA | alta | — |
 | [PS-014](./to_test/PS-014-logo-welcome-fuori-viewport.md) | Riportare il logo della welcome dentro il viewport | fix | ui | IN VERIFICA | media | — |
 | [PS-015](./completed/PS-015-bordo-pixelato-card-selettore.md) | Adeguare il test della card centrale del selettore all'artwork di selezione | fix | ui | COMPLETATO | bassa | — |

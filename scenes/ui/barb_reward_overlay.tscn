@@ -1,0 +1,82 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/barb_reward_overlay.gd" id="1_overlay"]
+[ext_resource type="PackedScene" path="res://scenes/ui/upgrade_card.tscn" id="2_card"]
+
+[node name="BarbRewardOverlay" type="Control"]
+process_mode = 3
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1_overlay")
+
+[node name="Dimmer" type="ColorRect" parent="."]
+top_level = true
+z_index = -10
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.058, 0.008, 0.02, 0.93)
+
+[node name="SafeMargins" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 16
+
+[node name="Layout" type="VBoxContainer" parent="SafeMargins"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="TitleLabel" type="Label" parent="SafeMargins/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 43)
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.35, 0.55, 1)
+theme_type_variation = &"TitleL"
+text = "LE SPECIALITÀ DI BARB"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="SafeMargins/Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+mouse_filter = 2
+text = "Ricompensa Boss: scegli la Specialità da sbloccare"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Cards" type="HBoxContainer" parent="SafeMargins/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="BarbCard1" parent="SafeMargins/Layout/Cards" instance=ExtResource("2_card")]
+unique_name_in_owner = true
+
+[node name="BarbCard2" parent="SafeMargins/Layout/Cards" instance=ExtResource("2_card")]
+unique_name_in_owner = true
+
+[node name="BarbCard3" parent="SafeMargins/Layout/Cards" instance=ExtResource("2_card")]
+unique_name_in_owner = true

@@ -87,6 +87,7 @@ var _ability_controller: AbilityController
 var _experience_system: ExperienceSystem
 var _boss_encounter: BossEncounter
 var _upgrade_overlay: UpgradeOverlay
+var _barb_reward_overlay: BarbRewardOverlay
 var _character_select_overlay: CharacterSelectOverlay
 var _pause_overlay: PauseOverlay
 
@@ -114,6 +115,7 @@ func configure(
 	experience_system: ExperienceSystem,
 	boss_encounter: BossEncounter,
 	upgrade_overlay: UpgradeOverlay,
+	barb_reward_overlay: BarbRewardOverlay,
 	character_select_overlay: CharacterSelectOverlay,
 	pause_overlay: PauseOverlay
 ) -> bool:
@@ -125,6 +127,7 @@ func configure(
 		or not is_instance_valid(experience_system)
 		or not is_instance_valid(boss_encounter)
 		or not is_instance_valid(upgrade_overlay)
+		or not is_instance_valid(barb_reward_overlay)
 		or not is_instance_valid(character_select_overlay)
 		or not is_instance_valid(pause_overlay)
 	):
@@ -137,6 +140,7 @@ func configure(
 	_experience_system = experience_system
 	_boss_encounter = boss_encounter
 	_upgrade_overlay = upgrade_overlay
+	_barb_reward_overlay = barb_reward_overlay
 	_character_select_overlay = character_select_overlay
 	_pause_overlay = pause_overlay
 
@@ -152,6 +156,7 @@ func configure(
 	_connect_once(_boss_encounter.boss_spawned, _on_boss_spawned)
 	_connect_once(_boss_encounter.boss_intro_started, _on_boss_intro_started)
 	_connect_once(_upgrade_overlay.selection_submitted, _on_upgrade_submitted)
+	_connect_once(_barb_reward_overlay.selection_submitted, _on_upgrade_submitted)
 	_connect_once(_character_select_overlay.friend_confirmed, _on_friend_confirmed)
 	_connect_once(_pause_overlay.audio_volume_changed, _on_audio_volume_changed)
 	_connect_once(_pause_overlay.audio_mute_toggled, _on_audio_mute_toggled)

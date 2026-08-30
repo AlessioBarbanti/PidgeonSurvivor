@@ -1,7 +1,7 @@
 extends GutGameplayTest
 
 const ANXIETY := preload("res://data/upgrades/anxiety_signature.tres")
-const GOSSIP := preload("res://data/upgrades/gossip_projectiles.tres")
+const GOSSIP := preload("res://data/upgrades/specialities/gossip_projectiles.tres")
 const CHRONIC_DELAY := preload("res://data/upgrades/chronic_delay.tres")
 const BEER := preload("res://data/upgrades/beer_signature.tres")
 const DAMAGE_SHOCKWAVE := preload("res://data/upgrades/damage_shockwave.tres")
@@ -89,11 +89,23 @@ func test_signature_composition() -> void:
 	assert_true(player.take_contact_damage(base_health_max * 0.5), "La fixture deve portare il Player al 50%.")
 	health.clear_invulnerability()
 
+	# PS-012: Gossip è una Specialità di Barb, bloccata all'inizio della run.
+	# Va sbloccata a parte, non compare nella pesca normale come le altre.
+	service.queue_barb_reward()
+	assert_true(
+		service.select_barb_speciality(&"gossip_projectiles"),
+		"Gossip deve essere sbloccabile come Specialità di Barb prima della composizione B13."
+	)
+
 	var signature_ids: Array[StringName] = [
 		&"anxiety_signature", &"gossip_projectiles", &"chronic_delay", &"beer_signature", &"damage_shockwave",
 	]
+	var normal_pool_signature_ids: Array[StringName] = [
+		&"anxiety_signature", &"chronic_delay", &"beer_signature", &"damage_shockwave",
+	]
 	assert_true(
-		_select_all_signatures(experience, service, signature_ids), "Le cinque signature devono essere acquisibili in offerte uniche."
+		_select_all_signatures(experience, service, normal_pool_signature_ids),
+		"Le quattro signature restanti devono essere acquisibili in offerte uniche."
 	)
 	assert_eq(_applied_ids.size(), 5, "Ogni signature deve applicarsi una sola volta.")
 	for signature_id in signature_ids:
@@ -261,7 +273,8 @@ func _select_all_signatures(
 ) -> bool:
 	var remaining := signature_ids.duplicate()
 	var guard := 0
-	while not remaining.is_empty() and guard < 20:
+	while not remaining.is_empty() and guard < 30:
+		guard += 1
 		if not experience.add_experience(experience.experience_required):
 			return false
 		var selected_id := StringName()
@@ -274,10 +287,13 @@ func _select_all_signatures(
 				if offered_id in [WIDE_MAGNET.id, MEAT_FORK_DAMAGE.id]:
 					selected_id = offered_id
 					break
-		if String(selected_id).is_empty() or not service.select_upgrade(selected_id):
+		if String(selected_id).is_empty():
+			# PS-012: Gossip, già sbloccata, può occupare uno slot "rumore" non
+			# riconosciuto (non va toccata: deve restare al rank 1). Si riprova.
+			continue
+		if not service.select_upgrade(selected_id):
 			return false
 		remaining.erase(selected_id)
-		guard += 1
 	return remaining.is_empty()
 
 

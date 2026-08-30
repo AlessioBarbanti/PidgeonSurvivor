@@ -13,6 +13,7 @@ enum RunState {
 	MANUAL_PAUSE,
 	LEVEL_UP,
 	BOSS_INTRO,
+	BARB_REWARD,
 	VICTORY,
 	DEFEAT,
 }
@@ -98,6 +99,18 @@ func request_boss_intro() -> bool:
 
 func complete_boss_intro() -> bool:
 	if _state != RunState.BOSS_INTRO or _terminal_locked:
+		return false
+	return _set_state(RunState.RUNNING)
+
+
+func request_barb_reward() -> bool:
+	if not is_running():
+		return false
+	return _set_state(RunState.BARB_REWARD)
+
+
+func complete_barb_reward() -> bool:
+	if _state != RunState.BARB_REWARD or _terminal_locked:
 		return false
 	return _set_state(RunState.RUNNING)
 

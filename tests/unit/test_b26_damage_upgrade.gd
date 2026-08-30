@@ -1,7 +1,7 @@
 extends GutGameplayTest
 
 const MEAT_FORK_DAMAGE := preload("res://data/upgrades/meat_fork_damage.tres")
-const GOSSIP := preload("res://data/upgrades/gossip_projectiles.tres")
+const GOSSIP := preload("res://data/upgrades/specialities/gossip_projectiles.tres")
 const BEER := preload("res://data/upgrades/beer_signature.tres")
 const SWIFT_STEPS := preload("res://data/upgrades/swift_steps.tres")
 const RAPID_FIRE := preload("res://data/upgrades/rapid_fire.tres")
@@ -76,7 +76,13 @@ func test_damage_upgrade() -> void:
 		weapon.get_effective_shots_per_second(), base_fire_rate, FLOAT_TOLERANCE, "B26 non deve cambiare la cadenza base."
 	)
 
-	assert_true(_select_when_offered(experience, service, GOSSIP.id), "Gossip deve entrare nella pesca B26.")
+	# PS-012: Gossip è una Specialità di Barb, bloccata all'inizio della run.
+	# Va sbloccata prima di poter comparire nella pesca normale.
+	service.queue_barb_reward()
+	assert_true(
+		service.select_barb_speciality(GOSSIP.id),
+		"Gossip deve essere sbloccabile come Specialità di Barb prima della pesca B26."
+	)
 	assert_true(_select_when_offered(experience, service, BEER.id), "Birra deve entrare nella pesca B26.")
 	assert_true(effects.has_signature_effect(GOSSIP.effect_id), "Gossip deve restare attivo.")
 	assert_true(effects.has_signature_effect(BEER.effect_id), "Birra deve restare attiva.")

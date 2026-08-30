@@ -1,4 +1,4 @@
-[gd_scene load_steps=109 format=3]
+[gd_scene load_steps=110 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -25,9 +25,10 @@
 [ext_resource type="Resource" path="res://data/upgrades/rapid_fire.tres" id="24_rapid_fire"]
 [ext_resource type="Resource" path="res://data/upgrades/wide_magnet.tres" id="25_wide_magnet"]
 [ext_resource type="PackedScene" path="res://scenes/ui/upgrade_overlay.tscn" id="29_upgrade_overlay"]
+[ext_resource type="PackedScene" path="res://scenes/ui/barb_reward_overlay.tscn" id="120_barb_reward_overlay"]
 [ext_resource type="Script" path="res://scripts/progression/upgrade_effect_registry.gd" id="30_upgrade_effect_registry"]
 [ext_resource type="Resource" path="res://data/upgrades/anxiety_signature.tres" id="31_anxiety_signature"]
-[ext_resource type="Resource" path="res://data/upgrades/gossip_projectiles.tres" id="32_gossip_projectiles"]
+[ext_resource type="Resource" path="res://data/upgrades/specialities/gossip_projectiles.tres" id="32_gossip_projectiles"]
 [ext_resource type="Resource" path="res://data/upgrades/chronic_delay.tres" id="33_chronic_delay"]
 [ext_resource type="Resource" path="res://data/upgrades/beer_signature.tres" id="34_beer_signature"]
 [ext_resource type="Resource" path="res://data/upgrades/damage_shockwave.tres" id="35_damage_shockwave"]
@@ -109,9 +110,9 @@
 [ext_resource type="Resource" path="res://data/enemies/enemy_archetype_armored.tres" id="112_archetype_armored"]
 [ext_resource type="Resource" path="res://data/enemies/enemy_archetype_splitter.tres" id="113_archetype_splitter"]
 [ext_resource type="Resource" path="res://data/enemies/enemy_archetype_ranged.tres" id="114_archetype_ranged"]
-[ext_resource type="Resource" path="res://data/upgrades/piercing_rounds.tres" id="115_piercing_rounds"]
-[ext_resource type="Resource" path="res://data/upgrades/double_barrel.tres" id="116_double_barrel"]
-[ext_resource type="Resource" path="res://data/upgrades/death_burst.tres" id="117_death_burst"]
+[ext_resource type="Resource" path="res://data/upgrades/specialities/piercing_rounds.tres" id="115_piercing_rounds"]
+[ext_resource type="Resource" path="res://data/upgrades/specialities/double_barrel.tres" id="116_double_barrel"]
+[ext_resource type="Resource" path="res://data/upgrades/specialities/death_burst.tres" id="117_death_burst"]
 [ext_resource type="PackedScene" path="res://scenes/ui/tutorial_screen.tscn" id="118_tutorial_screen"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/menu_music_wipics/menu_music_loop.ogg" id="119_menu_music"]
 
@@ -406,6 +407,9 @@ unique_name_in_owner = true
 debug_mode_in_editor = true
 
 [node name="UpgradeOverlay" parent="UI/SafeAreaRoot" instance=ExtResource("29_upgrade_overlay")]
+unique_name_in_owner = true
+
+[node name="BarbRewardOverlay" parent="UI/SafeAreaRoot" instance=ExtResource("120_barb_reward_overlay")]
 unique_name_in_owner = true
 
 [node name="WelcomeScreen" parent="UI/SafeAreaRoot" instance=ExtResource("87_welcome_screen")]

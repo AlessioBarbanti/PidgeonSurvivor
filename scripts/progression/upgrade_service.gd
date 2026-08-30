@@ -10,8 +10,32 @@ signal upgrade_selected(
 )
 signal ranks_reset()
 
+## Emesso quando Barb propone una scelta dopo la sconfitta di un Boss (PS-012).
+## `is_bonus` distingue le due modalità: sblocco Specialità (indici a zero) o
+## selezione upgrade bonus di fallback (indici 1-based su `bonus_total`).
+signal barb_offer_generated(
+	offers: Array[UpgradeDefinition],
+	is_bonus: bool,
+	bonus_index: int,
+	bonus_total: int
+)
+signal barb_offer_cleared()
+signal barb_speciality_unlocked(definition: UpgradeDefinition, rank: int)
+signal barb_bonus_upgrade_selected(
+	definition: UpgradeDefinition,
+	new_rank: int,
+	bonus_index: int,
+	bonus_total: int
+)
+signal barb_reward_completed()
+
 const DEFAULT_OFFER_SIZE := 3
 const RNG_STREAM_SALT := 0x4F1BBCDC
+const BARB_RNG_STREAM_SALT := 0x8A21FEED
+const BARB_OFFER_SIZE := 3
+const BARB_BONUS_SELECTIONS := 2
+
+enum BarbMode { NONE, SPECIALITY, BONUS }
 
 @export_range(1, 10, 1) var offer_size := DEFAULT_OFFER_SIZE
 
@@ -25,6 +49,13 @@ var _current_offer: Array[UpgradeDefinition] = []
 var _active_offer_level := 0
 var _ranks: Dictionary = {}
 var _equipped_ability_id: StringName
+var _unlocked_specialities: Dictionary = {}
+var _barb_rng := RandomNumberGenerator.new()
+var _pending_barb_reward := false
+var _barb_mode: BarbMode = BarbMode.NONE
+var _barb_current_offer: Array[UpgradeDefinition] = []
+var _barb_bonus_index := 0
+var _barb_bonus_total := 0
 
 
 func _init() -> void:
@@ -64,12 +95,20 @@ func has_valid_configuration() -> bool:
 
 func reset_for_run(seed_value: int) -> void:
 	var had_ranks := not _ranks.is_empty()
+	var had_specialities := not _unlocked_specialities.is_empty()
 	_ranks.clear()
+	_unlocked_specialities.clear()
 	_clear_current_offer()
+	_clear_barb_offer()
+	_barb_mode = BarbMode.NONE
+	_barb_bonus_index = 0
+	_barb_bonus_total = 0
+	_pending_barb_reward = false
 	_run_seed = seed_value
 	_draw_count = 0
 	_rng.seed = seed_value ^ RNG_STREAM_SALT
-	if had_ranks:
+	_barb_rng.seed = seed_value ^ BARB_RNG_STREAM_SALT
+	if had_ranks or had_specialities:
 		ranks_reset.emit()
 
 
@@ -80,6 +119,7 @@ func generate_offer(level: int) -> Array[UpgradeDefinition]:
 
 	var candidates := _registry.get_eligible_definitions(_ranks)
 	_filter_ability_rank_candidates(candidates)
+	_filter_locked_speciality_candidates(candidates)
 	var next_offer := _draw_weighted_without_replacement(candidates, offer_size)
 
 	_current_offer = next_offer
@@ -122,6 +162,110 @@ func select_upgrade(upgrade_id: StringName) -> bool:
 	else:
 		_ranks[upgrade_id] = new_rank - 1
 	return false
+
+
+## Richiesta dalla morte di un Boss: apre subito la scelta di Barb se la run è
+## `RUNNING`, oppure resta in attesa che un level-up già in corso si chiuda
+## (vedi `_on_run_state_changed_for_barb_reward`) prima di occupare lo stato.
+func queue_barb_reward() -> void:
+	_pending_barb_reward = true
+	_try_start_barb_reward()
+
+
+func is_barb_reward_active() -> bool:
+	return _barb_mode != BarbMode.NONE
+
+
+func is_barb_bonus_mode() -> bool:
+	return _barb_mode == BarbMode.BONUS
+
+
+func get_barb_bonus_index() -> int:
+	return _barb_bonus_index
+
+
+func get_barb_bonus_total() -> int:
+	return _barb_bonus_total
+
+
+func get_current_barb_offer() -> Array[UpgradeDefinition]:
+	return _barb_current_offer.duplicate()
+
+
+func get_current_barb_offer_ids() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for definition in _barb_current_offer:
+		ids.append(definition.id)
+	return ids
+
+
+func get_locked_speciality_definitions() -> Array[UpgradeDefinition]:
+	if not is_instance_valid(_registry):
+		return []
+	var locked: Array[UpgradeDefinition] = []
+	for definition in _registry.get_speciality_definitions():
+		if not _unlocked_specialities.has(definition.id):
+			locked.append(definition)
+	return locked
+
+
+func is_speciality_unlocked(upgrade_id: StringName) -> bool:
+	return _unlocked_specialities.has(upgrade_id)
+
+
+func get_unlocked_specialities() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for unlocked_id: Variant in _unlocked_specialities:
+		ids.append(unlocked_id)
+	return ids
+
+
+func select_barb_speciality(upgrade_id: StringName) -> bool:
+	if (
+		_barb_mode != BarbMode.SPECIALITY
+		or not is_instance_valid(_run_controller)
+		or _run_controller.get_state() != RunController.RunState.BARB_REWARD
+	):
+		return false
+	var selected_definition := _find_in_offer(_barb_current_offer, upgrade_id)
+	if selected_definition == null:
+		return false
+
+	_unlocked_specialities[upgrade_id] = true
+	_ranks[upgrade_id] = 1
+	_clear_barb_offer()
+	barb_speciality_unlocked.emit(selected_definition, 1)
+	# UpgradeEffectRegistry applica gli effetti solo in risposta a questo
+	# segnale: senza riusarlo lo sblocco assegnerebbe il rank senza attivarlo.
+	upgrade_selected.emit(selected_definition, 1, 0)
+	_finish_barb_reward()
+	return true
+
+
+func select_barb_bonus_upgrade(upgrade_id: StringName) -> bool:
+	if (
+		_barb_mode != BarbMode.BONUS
+		or not is_instance_valid(_run_controller)
+		or _run_controller.get_state() != RunController.RunState.BARB_REWARD
+	):
+		return false
+	var selected_definition := _find_in_offer(_barb_current_offer, upgrade_id)
+	if selected_definition == null or not selected_definition.is_eligible(_ranks):
+		return false
+
+	var new_rank := get_rank(upgrade_id) + 1
+	_ranks[upgrade_id] = new_rank
+	var completed_index := _barb_bonus_index
+	var total := _barb_bonus_total
+	_clear_barb_offer()
+	barb_bonus_upgrade_selected.emit(selected_definition, new_rank, completed_index, total)
+	upgrade_selected.emit(selected_definition, new_rank, 0)
+	if completed_index < total:
+		_barb_bonus_index = completed_index + 1
+		_generate_bonus_offer()
+	else:
+		_finish_barb_reward()
+	return true
 
 
 func get_current_offer() -> Array[UpgradeDefinition]:
@@ -186,8 +330,10 @@ func get_experience_system() -> ExperienceSystem:
 
 func _draw_weighted_without_replacement(
 	candidates: Array[UpgradeDefinition],
-	requested_count: int
+	requested_count: int,
+	rng: RandomNumberGenerator = null
 ) -> Array[UpgradeDefinition]:
+	var draw_rng := rng if rng != null else _rng
 	var available := candidates.duplicate()
 	var selected: Array[UpgradeDefinition] = []
 	var count := mini(maxi(requested_count, 0), available.size())
@@ -195,7 +341,7 @@ func _draw_weighted_without_replacement(
 		var total_weight := 0.0
 		for definition in available:
 			total_weight += definition.weight
-		var roll := _rng.randf() * total_weight
+		var roll := draw_rng.randf() * total_weight
 		var cumulative_weight := 0.0
 		var selected_index := available.size() - 1
 		for index in available.size():
@@ -218,6 +364,77 @@ func _filter_ability_rank_candidates(candidates: Array[UpgradeDefinition]) -> vo
 			candidates.remove_at(index)
 
 
+func _filter_locked_speciality_candidates(candidates: Array[UpgradeDefinition]) -> void:
+	for index in range(candidates.size() - 1, -1, -1):
+		var definition := candidates[index]
+		if definition.is_speciality and not _unlocked_specialities.has(definition.id):
+			candidates.remove_at(index)
+
+
+func _find_in_offer(
+	offer: Array[UpgradeDefinition],
+	upgrade_id: StringName
+) -> UpgradeDefinition:
+	for definition in offer:
+		if definition.id == upgrade_id:
+			return definition
+	return null
+
+
+func _try_start_barb_reward() -> void:
+	if (
+		not _pending_barb_reward
+		or not is_instance_valid(_run_controller)
+		or not _run_controller.is_running()
+	):
+		return
+	if not _run_controller.request_barb_reward():
+		return
+	_pending_barb_reward = false
+	_start_barb_reward_session()
+
+
+func _start_barb_reward_session() -> void:
+	var locked := get_locked_speciality_definitions()
+	if not locked.is_empty():
+		_barb_mode = BarbMode.SPECIALITY
+		_barb_current_offer = _draw_weighted_without_replacement(
+			locked, mini(BARB_OFFER_SIZE, locked.size()), _barb_rng
+		)
+		barb_offer_generated.emit(get_current_barb_offer(), false, 0, 0)
+	else:
+		_barb_mode = BarbMode.BONUS
+		_barb_bonus_index = 1
+		_barb_bonus_total = BARB_BONUS_SELECTIONS
+		_generate_bonus_offer()
+
+
+func _generate_bonus_offer() -> void:
+	var candidates := _registry.get_eligible_definitions(_ranks)
+	_filter_ability_rank_candidates(candidates)
+	_filter_locked_speciality_candidates(candidates)
+	_barb_current_offer = _draw_weighted_without_replacement(
+		candidates, mini(offer_size, candidates.size()), _barb_rng
+	)
+	barb_offer_generated.emit(get_current_barb_offer(), true, _barb_bonus_index, _barb_bonus_total)
+
+
+func _clear_barb_offer() -> void:
+	if _barb_current_offer.is_empty():
+		return
+	_barb_current_offer.clear()
+	barb_offer_cleared.emit()
+
+
+func _finish_barb_reward() -> void:
+	_barb_mode = BarbMode.NONE
+	_barb_bonus_index = 0
+	_barb_bonus_total = 0
+	if is_instance_valid(_run_controller):
+		_run_controller.complete_barb_reward()
+	barb_reward_completed.emit()
+
+
 func _clear_current_offer() -> void:
 	if _current_offer.is_empty() and _active_offer_level == 0:
 		return
@@ -235,6 +452,8 @@ func _connect_dependencies() -> void:
 			_run_controller.run_ended.connect(_on_run_ended)
 		if not _run_controller.restart_prepared.is_connected(_on_restart_prepared):
 			_run_controller.restart_prepared.connect(_on_restart_prepared)
+		if not _run_controller.state_changed.is_connected(_on_run_state_changed_for_barb_reward):
+			_run_controller.state_changed.connect(_on_run_state_changed_for_barb_reward)
 	if is_instance_valid(_experience_system):
 		if not _experience_system.level_up_started.is_connected(_on_level_up_started):
 			_experience_system.level_up_started.connect(_on_level_up_started)
@@ -250,6 +469,8 @@ func _disconnect_dependencies() -> void:
 			_run_controller.run_ended.disconnect(_on_run_ended)
 		if _run_controller.restart_prepared.is_connected(_on_restart_prepared):
 			_run_controller.restart_prepared.disconnect(_on_restart_prepared)
+		if _run_controller.state_changed.is_connected(_on_run_state_changed_for_barb_reward):
+			_run_controller.state_changed.disconnect(_on_run_state_changed_for_barb_reward)
 	if is_instance_valid(_experience_system):
 		if _experience_system.level_up_started.is_connected(_on_level_up_started):
 			_experience_system.level_up_started.disconnect(_on_level_up_started)
@@ -266,6 +487,9 @@ func _on_run_started(seed_value: int) -> void:
 
 func _on_run_ended(_final_state: RunController.RunState, _run_time: float) -> void:
 	_clear_current_offer()
+	_clear_barb_offer()
+	_barb_mode = BarbMode.NONE
+	_pending_barb_reward = false
 
 
 func _on_restart_prepared() -> void:
@@ -274,6 +498,14 @@ func _on_restart_prepared() -> void:
 
 func _on_level_up_started(level: int, _pending_choices: int) -> void:
 	generate_offer(level)
+
+
+func _on_run_state_changed_for_barb_reward(
+	_previous_state: RunController.RunState,
+	current_state: RunController.RunState
+) -> void:
+	if current_state == RunController.RunState.RUNNING:
+		_try_start_barb_reward()
 
 
 func _on_level_up_completed(level: int, _pending_choices: int) -> void:

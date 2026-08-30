@@ -59,6 +59,7 @@ const B22_PHYSICAL_AUTODEFEAT_DELAY_SECONDS := 8.0
 @onready var _hud: GameHud = %HUD
 @onready var _boss_ui: BossUI = %BossUI
 @onready var _upgrade_overlay: UpgradeOverlay = %UpgradeOverlay
+@onready var _barb_reward_overlay: BarbRewardOverlay = %BarbRewardOverlay
 @onready var _welcome_screen: WelcomeScreen = %WelcomeScreen
 @onready var _tutorial_screen: TutorialScreen = %TutorialScreen
 @onready var _character_select_overlay: CharacterSelectOverlay = %CharacterSelectOverlay
@@ -79,6 +80,7 @@ func _ready() -> void:
 	_run_controller.run_ended.connect(_on_run_ended)
 	_boss_encounter.boss_spawned.connect(_on_boss_spawned_for_horde_pause)
 	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_horde_pause)
+	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_barb_reward)
 	_hud.pause_requested.connect(_on_pause_requested)
 	_end_screen.restart_requested.connect(_on_restart_requested)
 	_end_screen.change_character_requested.connect(_on_change_character_requested)
@@ -159,6 +161,7 @@ func _ready() -> void:
 		_experience_system
 	)
 	_upgrade_overlay.configure(_upgrade_service, _touch_joystick)
+	_barb_reward_overlay.configure(_upgrade_service, _touch_joystick)
 	_experience_dropper.configure(
 		_run_controller,
 		_enemy_spawner,
@@ -225,6 +228,7 @@ func _ready() -> void:
 		_experience_system,
 		_boss_encounter,
 		_upgrade_overlay,
+		_barb_reward_overlay,
 		_character_select_overlay,
 		_pause_overlay
 	)
@@ -316,6 +320,7 @@ func _is_dynamic_joystick_origin_valid(viewport_position: Vector2) -> bool:
 		return false
 	return not (
 		_upgrade_overlay.visible
+		or _barb_reward_overlay.visible
 		or _character_select_overlay.visible
 		or _pause_overlay.visible
 		or _end_screen.visible
@@ -572,6 +577,10 @@ func get_upgrade_service() -> UpgradeService:
 
 func get_upgrade_overlay() -> UpgradeOverlay:
 	return _upgrade_overlay
+
+
+func get_barb_reward_overlay() -> BarbRewardOverlay:
+	return _barb_reward_overlay
 
 
 func get_upgrade_effect_registry() -> UpgradeEffectRegistry:
@@ -1263,6 +1272,12 @@ func _validate_current_contract() -> bool:
 		failures.append("Ogni run B18G deve iniziare con l'abilita al rank 1.")
 	if _upgrade_service.get_experience_system() != _experience_system:
 		failures.append("UpgradeService non collegato a ExperienceSystem.")
+	if _upgrade_registry.get_speciality_definitions().size() != 4:
+		failures.append("UpgradeRegistry deve contenere le quattro Specialità di Barb PS-012.")
+	if _upgrade_service.get_locked_speciality_definitions().size() != 4:
+		failures.append("Ogni run deve iniziare con tutte le Specialità di Barb bloccate.")
+	if _upgrade_service.is_barb_reward_active():
+		failures.append("La run non deve iniziare con una ricompensa Barb già attiva.")
 	if not _upgrade_effect_registry.has_valid_configuration():
 		failures.append("UpgradeEffectRegistry non configurato per il catalogo B13.")
 	if _upgrade_effect_registry.get_upgrade_service() != _upgrade_service:
@@ -1327,6 +1342,17 @@ func _validate_current_contract() -> bool:
 		failures.append("La run deve iniziare senza forme d'attacco B41.")
 	if _vignette_effect.visible or not is_zero_approx(_vignette_effect.intensity):
 		failures.append("La vignetta B13 deve essere disattiva a inizio run.")
+	if _barb_reward_overlay == null:
+		failures.append("BarbRewardOverlay non presente.")
+	else:
+		if _barb_reward_overlay.get_upgrade_service() != _upgrade_service:
+			failures.append("BarbRewardOverlay non collegato a UpgradeService.")
+		if _barb_reward_overlay.get_touch_joystick() != _touch_joystick:
+			failures.append("BarbRewardOverlay non collegato al joystick touch.")
+		if _barb_reward_overlay.visible:
+			failures.append("BarbRewardOverlay deve essere nascosto senza una ricompensa Boss attiva.")
+		if _barb_reward_overlay.get_cards().size() != 3:
+			failures.append("BarbRewardOverlay deve avere tre slot carta disponibili.")
 	if _upgrade_overlay == null:
 		failures.append("UpgradeOverlay non presente.")
 	else:
@@ -1714,6 +1740,13 @@ func _on_boss_spawned_for_horde_pause(_boss: FirstBoss, _schedule_index: int) ->
 
 func _on_boss_defeated_for_horde_pause(_boss: FirstBoss, _experience_reward: int) -> void:
 	_enemy_spawner.set_ordinary_spawn_suspended(false)
+
+
+## La ricompensa Boss (PS-012) resta accodata da UpgradeService se la run e'
+## gia' entrata in LEVEL_UP nello stesso frame (XP del Boss che fa salire di
+## livello): riparte da sola non appena lo stato torna RUNNING.
+func _on_boss_defeated_for_barb_reward(_boss: FirstBoss, _experience_reward: int) -> void:
+	_upgrade_service.queue_barb_reward()
 
 
 ## Tell del Sesto Senso Equino di Bea (B45): la passiva non conosce nodi
