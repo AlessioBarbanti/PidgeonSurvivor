@@ -43,6 +43,6 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-015](./completed/PS-015-bordo-pixelato-card-selettore.md) | Adeguare il test della card centrale del selettore all'artwork di selezione | fix | ui | COMPLETATO | bassa | — |
 | [PS-016](./to_do/PS-016-tutorial-fuori-safe-area.md) | Riportare il tutorial dentro la safe area su tutti i profili | fix | ui | PRONTO | media | — |
 | [PS-017](./to_do/PS-017-font-size-locale-selettore-personaggi.md) | Rimuovere il font-size locale reintrodotto nel selettore personaggi | fix | ui | PRONTO | bassa | — |
-| [PS-018](./to_do/PS-018-hud-composta-danno-restart-vita.md) | Correggere danno e restart della vita nella scena HUD composta | fix | gameplay | PRONTO | alta | — |
+| [PS-018](./completed/PS-018-hud-composta-danno-restart-vita.md) | Correggere danno e restart della vita nella scena HUD composta | fix | gameplay | COMPLETATO | alta | — |
 | [PS-019](./to_do/PS-019-manifest-vfx-hash-non-aggiornato.md) | Riallineare l'hash del manifest VFX per instinctive_dodge_accent | chore | arte | PRONTO | bassa | — |
 | [PS-020](./to_do/PS-020-diagnostica-flakiness-backdrop-selettore.md) | Diagnosticare il fallimento intermittente sul backdrop del selettore | chore | tooling | PRONTO | bassa | — |

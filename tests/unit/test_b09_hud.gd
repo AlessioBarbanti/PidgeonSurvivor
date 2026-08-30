@@ -243,8 +243,18 @@ func test_composed_hud_observes_gameplay_without_polling() -> void:
 
 	controller._process(4.2)
 	assert_eq(hud.get_time_text(), "00:04", "La scena composta deve inoltrare il clock all'HUD.")
+	# Il profilo equipaggiato di default (Magno) ha base_health_multiplier =
+	# 1.15 (approvato in data/friends/magno.tres): gli HP massimi reali non
+	# sono 100, quindi l'attesa va derivata dall'HUD invece che da un valore
+	# fisso, altrimenti il test regredisce a ogni bilanciamento del cast.
+	var health_max_before_damage := hud.get_health_max()
 	assert_true(player.take_contact_damage(20.0), "La scena composta deve applicare danno di prova.")
-	assert_almost_eq(hud.get_health_value(), 80.0, HUD_FLOAT_TOLERANCE, "La vita composta deve aggiornarsi senza polling.")
+	assert_almost_eq(
+		hud.get_health_value(),
+		health_max_before_damage - 20.0,
+		HUD_FLOAT_TOLERANCE,
+		"La vita composta deve aggiornarsi senza polling."
+	)
 	assert_true(experience.add_experience(3), "La scena composta deve accreditare XP di prova.")
 	assert_almost_eq(hud.get_experience_value(), 3.0, HUD_FLOAT_TOLERANCE, "Gli XP composti devono aggiornarsi senza polling.")
 
@@ -259,7 +269,18 @@ func test_composed_hud_observes_gameplay_without_polling() -> void:
 	controller.request_defeat()
 	assert_true(movement_slice.restart_run(9003), "Il restart composto deve essere disponibile.")
 	assert_eq(hud.get_time_text(), "00:00", "Il restart composto deve azzerare il timer.")
-	assert_almost_eq(hud.get_health_value(), 100.0, HUD_FLOAT_TOLERANCE, "Il restart composto deve ripristinare la vita HUD.")
+	assert_almost_eq(
+		hud.get_health_max(),
+		health_max_before_damage,
+		HUD_FLOAT_TOLERANCE,
+		"Il restart composto non deve alterare gli HP massimi del profilo equipaggiato."
+	)
+	assert_almost_eq(
+		hud.get_health_value(),
+		hud.get_health_max(),
+		HUD_FLOAT_TOLERANCE,
+		"Il restart composto deve ripristinare la vita HUD al massimo, non a un valore fisso."
+	)
 	assert_almost_eq(hud.get_experience_value(), 0.0, HUD_FLOAT_TOLERANCE, "Il restart composto deve ripristinare gli XP HUD.")
 
 	controller.prepare_restart()
