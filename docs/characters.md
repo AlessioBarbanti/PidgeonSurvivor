@@ -4,8 +4,7 @@ Questo file raccoglie le descrizioni correnti dei personaggi. La prima proposta
 da cui sono state estratte è conservata soltanto come
 [materiale storico](./archive/game-design-proposal-legacy.md).
 Nomi e testi sono stati approvati dal proprietario del progetto il 17 agosto
-2026. La fonte runtime è `data/friends/*.tres`; il registro completo è in
-[`content-approvals.md`](./content-approvals.md).
+2026. La fonte runtime è `data/friends/*.tres`.
 
 ## Magno
 
@@ -45,7 +44,7 @@ Boss: Evil Aleo.
 ## Lollo
 
 Ruolo: Velocità, caos e imprevedibilità.  
-Passiva — Iperfocus ADHD: Alterna a intervalli casuali una fase di iperfocus (movimento e cadenza di fuoco molto più rapidi) e una fase distratta (movimento e cadenza sotto la norma); ogni nemico ucciso accorcia la sola distrazione. Una tinta dedicata dichiara la fase corrente.  
+Passiva — Iperfocus ADHD: Alterna a intervalli casuali una fase di iperfocus (movimento e cadenza di fuoco molto più rapidi) e una fase distratta (movimento e cadenza sotto la norma); ogni nemico ucciso accorcia la sola distrazione. Un contorno colorato attorno alla sagoma dichiara la fase corrente senza alterare i colori del personaggio.<br>
 Attiva — Cosplay Casuale: Estrae in anticipo l'abilità di un altro personaggio e la mostra sul pulsante: la prossima attivazione lancia quella.
 Boss: Evil Lollo.
 
@@ -95,4 +94,4 @@ nel runtime, con versioni promosse e hash, è in
 Note:
 
 - Questo file è il riferimento per ruoli e descrizioni dei personaggi. Le specifiche numeriche di passive e abilità attive sono definite nelle sezioni 3.4 e 3.6 di `docs/prd.md` e nei data resource (`data/friends/*.tres` e `data/abilities/*.tres`).
-- Per modifiche o aggiunte aggiornare `docs/characters.md`, `docs/content-approvals.md`, la sezione delle abilità attive in `docs/prd.md` e i relativi data resource.
+- Per modifiche o aggiunte aggiornare `docs/characters.md`, la sezione delle abilità attive in `docs/prd.md` e i relativi data resource.

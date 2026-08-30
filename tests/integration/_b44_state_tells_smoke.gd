@@ -70,7 +70,7 @@ func _validate_aleo_thermal_state() -> void:
 		"Lo sprite del personaggio non deve essere ridipinto dal tell di stato."
 	)
 	_expect(
-		player.has_passive_state_outline(),
+		player.is_passive_state_outline_presented(),
 		"Il contorno deve risultare attivo quando la fase e' dichiarata."
 	)
 
@@ -125,7 +125,15 @@ func _validate_aleo_thermal_state() -> void:
 		health_before,
 		"L'aura fredda non deve avanzare fuori da RUNNING."
 	)
+	_expect(
+		not player.is_passive_state_outline_presented(),
+		"Il tell di stato deve sparire durante la pausa."
+	)
 	_expect(controller.resume_run(), "La ripresa deve riuscire.")
+	_expect(
+		player.is_passive_state_outline_presented(),
+		"Il tell di stato deve riapparire alla ripresa della run."
+	)
 
 	# Tornando sopra la soglia l'accumulatore si azzera e la brina sparisce.
 	player_health.heal(player_health.health_max)
@@ -141,6 +149,19 @@ func _validate_aleo_thermal_state() -> void:
 		"Il rientro in riscaldamento deve sciogliere la brina."
 	)
 
+	_expect(controller.prepare_restart(), "Il restart deve tornare in BOOT.")
+	paused = false
+	_expect(
+		not player.is_passive_state_outline_presented(),
+		"Il tell di stato deve restare nascosto in BOOT dopo il restart."
+	)
+	_expect(controller.start_run(4712), "La nuova run deve poter partire.")
+	_expect(passive.is_thermal_hot(), "Il restart deve azzerare Aleo alla fase calda iniziale.")
+	_expect(
+		player.is_passive_state_outline_presented()
+		and player.get_passive_state_outline_color() == FriendPassiveController.OUTLINE_ALEO_HOT,
+		"La nuova run deve ripresentare il tell della fase iniziale."
+	)
 	controller.prepare_restart()
 	paused = false
 	movement_slice.queue_free()

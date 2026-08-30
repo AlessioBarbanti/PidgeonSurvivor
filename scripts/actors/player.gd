@@ -313,6 +313,7 @@ func set_run_controller(value: RunController) -> void:
 	_disconnect_run_controller()
 	_run_controller = value
 	_connect_run_controller()
+	_sync_passive_state_outline_visibility()
 
 
 func get_run_controller() -> RunController:
@@ -394,7 +395,9 @@ func set_character_stat_multipliers(
 func set_passive_state_outline(value: Color) -> bool:
 	if not is_instance_valid(_passive_state_outline):
 		return false
-	return _passive_state_outline.set_state_color(value)
+	var accepted := _passive_state_outline.set_state_color(value)
+	_sync_passive_state_outline_visibility()
+	return accepted
 
 
 func clear_passive_state_outline() -> void:
@@ -413,6 +416,21 @@ func has_passive_state_outline() -> bool:
 	return (
 		is_instance_valid(_passive_state_outline)
 		and _passive_state_outline.has_state_color()
+	)
+
+
+func is_passive_state_outline_presented() -> bool:
+	return (
+		is_instance_valid(_passive_state_outline)
+		and _passive_state_outline.is_state_presented()
+	)
+
+
+func _sync_passive_state_outline_visibility() -> void:
+	if not is_instance_valid(_passive_state_outline):
+		return
+	_passive_state_outline.set_state_presented(
+		is_instance_valid(_run_controller) and _run_controller.is_running()
 	)
 
 
@@ -734,6 +752,8 @@ func _on_playfield_changed(_playfield_rect: Rect2) -> void:
 func _connect_run_controller() -> void:
 	if not is_instance_valid(_run_controller):
 		return
+	if not _run_controller.state_changed.is_connected(_on_run_state_changed):
+		_run_controller.state_changed.connect(_on_run_state_changed)
 	if not _run_controller.run_started.is_connected(_on_run_started):
 		_run_controller.run_started.connect(_on_run_started)
 	if not _run_controller.restart_prepared.is_connected(_on_restart_prepared):
@@ -744,6 +764,8 @@ func _disconnect_run_controller() -> void:
 	if not is_instance_valid(_run_controller):
 		_run_controller = null
 		return
+	if _run_controller.state_changed.is_connected(_on_run_state_changed):
+		_run_controller.state_changed.disconnect(_on_run_state_changed)
 	if _run_controller.run_started.is_connected(_on_run_started):
 		_run_controller.run_started.disconnect(_on_run_started)
 	if _run_controller.restart_prepared.is_connected(_on_restart_prepared):
@@ -806,6 +828,13 @@ func _on_died() -> void:
 
 func _on_invulnerability_changed(_active: bool, _remaining: float) -> void:
 	_update_character_feedback()
+
+
+func _on_run_state_changed(
+	_previous_state: RunController.RunState,
+	_current_state: RunController.RunState
+) -> void:
+	_sync_passive_state_outline_visibility()
 
 
 func _on_run_started(_seed_value: int) -> void:
@@ -882,4 +911,3 @@ func _point_blocked_by_obstacle(point: Vector2) -> bool:
 		if obstacle is StaticObstacle and (obstacle as StaticObstacle).get_footprint_rect().has_point(point):
 			return true
 	return false
-

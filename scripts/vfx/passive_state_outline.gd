@@ -105,6 +105,19 @@ func has_state_color() -> bool:
 	return _color.a > 0.0
 
 
+## Il colore resta memorizzato durante i modali, ma il tell viene presentato
+## soltanto quando la run e' effettivamente in corso.
+func set_state_presented(value: bool) -> void:
+	if visible == value:
+		return
+	visible = value
+	queue_redraw()
+
+
+func is_state_presented() -> bool:
+	return visible and has_state_color()
+
+
 func _draw() -> void:
 	if not has_state_color() or not is_instance_valid(_sprite):
 		return
