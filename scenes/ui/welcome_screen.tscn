@@ -214,18 +214,18 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.005, 0.012, 0.025, 0.16)
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="Margin" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 22.0
+offset_top = 22.0
+offset_right = -22.0
+offset_bottom = -22.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/margin_left = 22
-theme_override_constants/margin_top = 22
-theme_override_constants/margin_right = 22
-theme_override_constants/margin_bottom = 22
 
 [node name="SettingsButton" type="Button" parent="."]
 unique_name_in_owner = true
@@ -251,13 +251,20 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_gear_pressed")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_gear_focus")
 text = "⚙"
 
-[node name="Center" type="CenterContainer" parent="Margin"]
-layout_mode = 2
+[node name="Center" type="Control" parent="Margin"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="ContentPanel" type="VBoxContainer" parent="Margin/Center"]
 unique_name_in_owner = true
+layout_mode = 0
 custom_minimum_size = Vector2(500, 0)
-layout_mode = 2
 theme_override_constants/separation = 15
 
 [node name="TitlePlaque" type="Control" parent="Margin/Center/ContentPanel"]

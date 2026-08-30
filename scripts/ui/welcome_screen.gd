@@ -8,6 +8,7 @@ signal audio_mute_toggled(muted: bool)
 signal reduced_flashes_toggled(enabled: bool)
 signal touch_control_scale_changed(control_id: StringName, value: float)
 
+@onready var _content_area: Control = %Center
 @onready var _content_panel: Control = %ContentPanel
 @onready var _title_plaque: Control = %TitlePlaque
 @onready var _welcome_logo: TextureRect = %WelcomeLogo
@@ -33,6 +34,12 @@ var _syncing_controls := false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	## Il centraggio di ContentPanel e' calcolato qui invece che con un
+	## CenterContainer: Godot non riordina i Container di un ramo nascosto
+	## (welcome resta invisibile dietro il tutorial), quindi un centraggio
+	## automatico resterebbe congelato alla safe area del boot.
+	_content_area.resized.connect(_update_content_panel_rect)
+	_update_content_panel_rect()
 	_play_button.pressed.connect(_on_play_pressed)
 	_tutorial_button.pressed.connect(_on_tutorial_pressed)
 	_settings_button.pressed.connect(_open_settings)
@@ -232,6 +239,7 @@ func _open_settings() -> void:
 	_settings_button.disabled = true
 	_settings_button.visible = false
 	_close_settings_button.disabled = false
+	_update_content_panel_rect()
 	_volume_slider.call_deferred("grab_focus")
 
 
@@ -251,6 +259,7 @@ func _show_main_actions() -> void:
 	_settings_button.disabled = false
 	_settings_button.visible = true
 	_close_settings_button.disabled = true
+	_update_content_panel_rect()
 	_update_main_action_focus()
 
 
@@ -305,3 +314,12 @@ func _refresh_volume_label(value: float) -> void:
 func _refresh_scale_label(label: Label, value: float) -> void:
 	if is_instance_valid(label):
 		label.text = "%d%%" % roundi(value * 100.0)
+
+
+func _update_content_panel_rect() -> void:
+	if not is_instance_valid(_content_area) or not is_instance_valid(_content_panel):
+		return
+	var available := _content_area.size
+	var content_size := _content_panel.get_combined_minimum_size()
+	_content_panel.size = content_size
+	_content_panel.position = ((available - content_size) * 0.5).max(Vector2.ZERO)

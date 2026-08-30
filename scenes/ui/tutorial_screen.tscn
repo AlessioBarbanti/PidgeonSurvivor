@@ -185,9 +185,9 @@ theme_override_styles/panel = SubResource("StyleBoxTexture_modal_frame")
 [node name="PanelMargin" type="MarginContainer" parent="OuterMargin/Center/MainPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 16
+theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_bottom = 0
 
 [node name="Content" type="VBoxContainer" parent="OuterMargin/Center/MainPanel/PanelMargin"]
 layout_mode = 2
