@@ -102,11 +102,11 @@ script = ExtResource("1_hud")
 
 [node name="TopBand" type="Control" parent="."]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 88)
+custom_minimum_size = Vector2(0, 124)
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 88.0
+offset_bottom = 124.0
 grow_horizontal = 2
 mouse_filter = 2
 
@@ -187,7 +187,7 @@ anchor_right = 0.5
 offset_left = -72.0
 offset_top = 39.0
 offset_right = 72.0
-offset_bottom = 87.0
+offset_bottom = 78.0
 grow_horizontal = 2
 mouse_filter = 2
 
@@ -207,11 +207,11 @@ vertical_alignment = 1
 unique_name_in_owner = true
 layout_mode = 1
 anchor_left = 0.5
-anchor_right = 1.0
-offset_left = 84.0
-offset_top = 39.0
-offset_right = -76.0
-offset_bottom = 87.0
+anchor_right = 0.5
+offset_left = -320.0
+offset_top = 87.0
+offset_right = 320.0
+offset_bottom = 124.0
 grow_horizontal = 2
 mouse_filter = 2
 
@@ -224,7 +224,7 @@ theme_override_colors/font_color = Color(1, 0.82, 0.4, 1)
 theme_override_colors/font_shadow_color = Color(0.18, 0.015, 0.01, 0.95)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 19
+theme_override_font_sizes/font_size = 16
 theme_type_variation = &"TitleXS"
 horizontal_alignment = 1
 vertical_alignment = 1

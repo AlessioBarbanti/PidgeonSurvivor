@@ -3,14 +3,14 @@ extends Control
 
 signal pause_requested()
 
-const GAMEPLAY_TOP_INSET := 88.0
+const GAMEPLAY_TOP_INSET := 124.0
 const DEFAULT_CONTROL_EDGE_PADDING := Vector2(20.0, 20.0)
 const BAR_LABEL_INSET := 10.0
 ## UI-004: margine orizzontale delle barre XP/HP, in frazione della
 ## larghezza del viewport. Simmetrico, indipendente dalla safe area.
 const BAR_HORIZONTAL_MARGIN_RATIO := 0.05
-## Le barre XP/HP occupano i primi 38px della fascia: la pausa scende verso la
-## riga del cronometro, per quanto lo consente GAMEPLAY_TOP_INSET.
+## Le barre XP/HP occupano i primi 38px della fascia: cronometro e warning Boss
+## usano due righe centrali, mentre la pausa resta sulla riga del cronometro.
 const PAUSE_TOP_INSET := 39.0
 ## B52: opacita' del controllo abilita' mentre il Player gli passa sotto.
 ## Abbastanza bassa da leggere il beccaccino, abbastanza alta da non perdere
@@ -22,6 +22,7 @@ const ABILITY_FADED_ALPHA := 0.3
 const ABILITY_FADE_MARGIN := 24.0
 const BOSS_WARNING_COLOR := Color("ffd166")
 const BOSS_COUNTDOWN_COLOR := Color("ff6b6b")
+const BOSS_APPROACHING_TEXT := "LA GRIGLIA STA FACENDO UN PROFUMINO..."
 
 @onready var _experience_bar: ProgressBar = %ExperienceBar
 @onready var _experience_kind_label: Label = %ExperienceKindLabel
@@ -590,7 +591,7 @@ func _on_boss_warning_changed(
 		return
 	match phase:
 		GameDirector.BossWarningPhase.APPROACHING:
-			_boss_warning_label.text = "BOSS IN ARRIVO"
+			_boss_warning_label.text = BOSS_APPROACHING_TEXT
 			_boss_warning_label.add_theme_color_override("font_color", BOSS_WARNING_COLOR)
 			_boss_warning_label.visible = true
 		GameDirector.BossWarningPhase.COUNTDOWN:

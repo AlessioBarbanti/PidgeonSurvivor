@@ -267,15 +267,20 @@ func _update_boss_warning(run_time: float) -> void:
 		return
 
 	var next_schedule_index := -1
+	var next_boss_run_time := 0.0
 	for schedule_index in range(_thresholds.size()):
 		if not _triggered_events.has(schedule_index):
 			next_schedule_index = schedule_index
+			next_boss_run_time = _thresholds[schedule_index]
 			break
 	if next_schedule_index < 0:
-		_clear_boss_warning()
-		return
+		if _recurring_window_seconds <= 0.0 or _last_boss_spawn_run_time <= 0.0:
+			_clear_boss_warning()
+			return
+		next_schedule_index = _thresholds.size() + _recurring_count
+		next_boss_run_time = _last_boss_spawn_run_time + _recurring_window_seconds
 
-	var seconds_until_boss := _thresholds[next_schedule_index] - run_time
+	var seconds_until_boss := next_boss_run_time - run_time
 	if seconds_until_boss <= 0.0 or seconds_until_boss > _boss_warning_lead_seconds:
 		_clear_boss_warning()
 		return

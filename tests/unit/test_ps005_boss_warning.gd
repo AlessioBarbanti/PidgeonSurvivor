@@ -90,7 +90,10 @@ func test_warning_uses_running_clock_and_hands_off_to_boss_intro() -> void:
 	assert_false(hud.is_boss_warning_visible(), "Prima di 01:45 il warning non deve comparire.")
 	_advance_to(controller, WARNING_START_SECONDS)
 	assert_true(hud.is_boss_warning_visible(), "A 01:45 il warning PS-005 deve comparire.")
-	assert_eq(hud.get_boss_warning_text(), "BOSS IN ARRIVO", "Il preavviso generale deve usare il copy approvato.")
+	assert_eq(
+		hud.get_boss_warning_text(), GameHud.BOSS_APPROACHING_TEXT,
+		"Il preavviso generale deve usare il copy tematico approvato."
+	)
 	assert_eq(
 		director.get_boss_warning_phase(), GameDirector.BossWarningPhase.APPROACHING,
 		"Il Director deve esporre la fase generale una sola volta."
@@ -118,7 +121,10 @@ func test_warning_uses_running_clock_and_hands_off_to_boss_intro() -> void:
 	assert_true(controller.request_manual_pause(), "PS-005 deve poter congelare il warning in pausa.")
 	controller._process(20.0)
 	assert_almost_eq(controller.get_run_time(), paused_time, FLOAT_TOLERANCE, "La pausa deve congelare il clock PS-005.")
-	assert_eq(hud.get_boss_warning_text(), "BOSS IN ARRIVO", "La pausa deve congelare anche il copy del warning.")
+	assert_eq(
+		hud.get_boss_warning_text(), GameHud.BOSS_APPROACHING_TEXT,
+		"La pausa deve congelare anche il copy del warning."
+	)
 	assert_eq(_warning_events.size(), warning_event_count, "La pausa non deve duplicare il warning della stessa soglia.")
 	assert_true(controller.resume_run(), "La fixture PS-005 deve riprendere dalla pausa.")
 	assert_eq(_warning_events.size(), warning_event_count, "Il resume allo stesso istante non deve riemettere il warning.")
@@ -170,6 +176,86 @@ func test_warning_uses_running_clock_and_hands_off_to_boss_intro() -> void:
 	controller.prepare_restart()
 
 
+func test_warning_repeats_for_recurring_bosses() -> void:
+	_warning_events.clear()
+	var movement_slice := await instantiate_movement_slice()
+	var controller := movement_slice.get_run_controller() as RunController
+	var director := movement_slice.get_game_director() as GameDirector
+	var encounter := movement_slice.get_boss_encounter() as BossEncounter
+	var spawner := movement_slice.get_enemy_spawner() as EnemySpawner
+	var experience := movement_slice.get_experience_system() as ExperienceSystem
+	var hud := movement_slice.get_hud() as GameHud
+	assert_true(
+		controller != null
+		and director != null
+		and encounter != null
+		and spawner != null
+		and experience != null
+		and hud != null,
+		"PS-005 richiede scheduler ricorrente, encounter e HUD dalla scena composta."
+	)
+	if (
+		controller == null
+		or director == null
+		or encounter == null
+		or spawner == null
+		or experience == null
+		or hud == null
+	):
+		return
+
+	controller.set_process(false)
+	spawner.set_process(false)
+	director.boss_warning_changed.connect(_on_boss_warning_changed)
+	_advance_to(controller, FIRST_BOSS_SECONDS)
+	assert_eq(
+		controller.get_state(), RunController.RunState.BOSS_INTRO,
+		"La fixture deve raggiungere il primo Boss prima di provare il warning ricorrente."
+	)
+	assert_true(encounter.complete_intro(), "La fixture deve iniziare il primo scontro Boss.")
+	_kill_active_boss(encounter, controller, experience)
+	assert_true(controller.is_running(), "Dopo il primo Boss la run deve riprendere.")
+
+	var recurring_boss_time := (
+		director.get_last_boss_spawn_run_time() + director.get_recurring_window_seconds()
+	)
+	_advance_to(controller, recurring_boss_time - 15.0)
+	assert_true(hud.is_boss_warning_visible(), "Il warning deve comparire anche prima del secondo Boss.")
+	assert_eq(
+		director.get_boss_warning_schedule_index(), 1,
+		"Il warning ricorrente deve anticipare lo schedule_index del secondo Boss."
+	)
+	assert_eq(
+		hud.get_boss_warning_text(), GameHud.BOSS_APPROACHING_TEXT,
+		"Anche i Boss ricorrenti devono usare la frase tematica."
+	)
+	_advance_to(controller, recurring_boss_time - 5.0)
+	assert_eq(hud.get_boss_warning_text(), "BOSS IN 5", "Il secondo Boss deve avere il countdown rosso 5-1.")
+	controller._process(5.0)
+	assert_eq(
+		controller.get_state(), RunController.RunState.BOSS_INTRO,
+		"Alla scadenza ricorrente deve partire la normale Boss Intro."
+	)
+	assert_eq(director.get_active_event_index(), 1, "Il secondo Boss deve usare lo schedule_index annunciato.")
+	assert_false(hud.is_boss_warning_visible(), "Il warning ricorrente deve sparire durante Boss Intro.")
+	assert_true(encounter.complete_intro(), "La fixture deve iniziare anche il secondo scontro Boss.")
+	_kill_active_boss(encounter, controller, experience)
+	var third_boss_time := (
+		director.get_last_boss_spawn_run_time() + director.get_recurring_window_seconds()
+	)
+	_advance_to(controller, third_boss_time - 15.0)
+	assert_eq(
+		director.get_boss_warning_schedule_index(), 2,
+		"La sequenza deve continuare anche dopo il primo Boss ricorrente."
+	)
+	assert_eq(
+		hud.get_boss_warning_text(), GameHud.BOSS_APPROACHING_TEXT,
+		"Il terzo Boss deve ricevere lo stesso preavviso tematico."
+	)
+
+	controller.prepare_restart()
+
+
 func _advance_to(controller: RunController, target_time: float) -> void:
 	controller._process(maxf(target_time - controller.get_run_time(), 0.0))
 
@@ -184,10 +270,19 @@ func _assert_warning_layout(hud: GameHud, movement_slice: Control) -> void:
 		warning_rect, arena_layout.get_safe_area_rect(),
 		"Il warning PS-005 deve restare nella safe area."
 	)
+	var timer_rect := hud.get_timer_slot_rect()
+	assert_almost_eq(
+		warning_rect.get_center().x, timer_rect.get_center().x, FLOAT_TOLERANCE,
+		"Il timer Boss deve essere centrato sotto il timer della run."
+	)
+	assert_true(
+		warning_rect.position.y >= timer_rect.end.y - FLOAT_TOLERANCE,
+		"Il timer Boss deve iniziare sotto il timer della run: timer=%s warning=%s."
+		% [timer_rect, warning_rect]
+	)
 	for occupied_rect in [
 		hud.get_experience_panel_rect(),
 		hud.get_health_panel_rect(),
-		hud.get_timer_slot_rect(),
 		hud.get_pause_button_rect(),
 		hud.get_ability_panel_rect(),
 	]:
@@ -204,6 +299,23 @@ func _assert_warning_layout(hud: GameHud, movement_slice: Control) -> void:
 		and warning_label.mouse_filter == Control.MOUSE_FILTER_IGNORE,
 		"Il warning PS-005 deve essere non interattivo e lasciare passare l'input."
 	)
+
+
+func _kill_active_boss(
+	encounter: BossEncounter, controller: RunController, experience: ExperienceSystem
+) -> void:
+	var boss := encounter.get_active_boss()
+	assert_not_null(boss, "La fixture PS-005 deve avere un Boss attivo da sconfiggere.")
+	if boss == null:
+		return
+	var health := boss.get_health_component()
+	assert_not_null(health, "Il Boss PS-005 deve esporre la propria salute.")
+	if health == null:
+		return
+	boss.take_damage(health.health_current)
+	while controller.get_state() == RunController.RunState.LEVEL_UP:
+		if not experience.complete_level_up():
+			break
 
 
 func _count_warning_phase(phase: GameDirector.BossWarningPhase) -> int:
