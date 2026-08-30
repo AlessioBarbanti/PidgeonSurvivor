@@ -3,7 +3,7 @@ id: PS-008
 titolo: Introduci eventi d'ondata
 tipo: feat
 area: gameplay
-stato: PRONTO
+stato: IN VERIFICA
 priorita: alta
 dipende_da: []
 origine: B46
@@ -83,27 +83,40 @@ Gli eventi non possono iniziare durante un Boss. Un evento maturato durante uno 
 
 ## Criteri di accettazione
 
-* [ ] Esistono almeno tre eventi distinti: Accerchiamento, Stormo laterale e Nido di tiratori.
-* [ ] Nessun evento può iniziare prima della soglia temporale configurata.
-* [ ] Non possono essere attivi due eventi contemporaneamente.
-* [ ] Ogni evento possiede una durata finita.
+* [x] Esistono almeno tre eventi distinti: Accerchiamento, Stormo laterale e Nido di tiratori.
+* [x] Nessun evento può iniziare prima della soglia temporale configurata.
+  Verificato in `test_no_event_before_min_start_seconds`.
+* [x] Non possono essere attivi due eventi contemporaneamente. Garantito per
+  costruzione (`WaveEventScheduler` possiede un solo slot `_active_definition`).
+* [x] Ogni evento possiede una durata finita (`duration_seconds`, validato da
+  `WaveEventDefinition.is_valid()`).
 * [ ] Ogni evento offre una finestra di reazione sufficiente prima di produrre una minaccia inevitabile.
-* [ ] Gli eventi che possono creare una minaccia immediata usano un telegraph preventivo.
+  Non spuntato: dipende dalla percezione reale (telegraph/distanza/velocità),
+  richiede playtest — vedi Gate manuali.
+* [x] Gli eventi che possono creare una minaccia immediata usano un telegraph preventivo.
 * [ ] Gli eventi senza telegraph sono leggibili tramite comparsa, posizione o comportamento dei nemici.
-* [ ] Accerchiamento usa un telegraph preventivo.
-* [ ] Accerchiamento non chiude simultaneamente tutte le vie di fuga.
-* [ ] Stormo laterale può iniziare senza telegraph dedicato.
+  Non spuntato: stesso motivo, richiede playtest.
+* [x] Accerchiamento usa un telegraph preventivo. Verificato nei test GUT.
+* [ ] Accerchiamento non chiude simultaneamente tutte le vie di fuga. Non
+  spuntato: l'implementazione usa tutti i settori come origine (formazione
+  debole e scaglionata nel tempo), ma non garantisce in codice un lato
+  sempre libero — da confermare a percezione con il proprietario.
+* [x] Stormo laterale può iniziare senza telegraph dedicato.
 * [ ] Stormo laterale lascia tempo materiale per reagire dopo la comparsa dei primi nemici.
-* [ ] Nido di tiratori può iniziare senza telegraph globale.
-* [ ] I tiratori mantengono il proprio telegraph individuale durante Nido di tiratori.
-* [ ] Nido di tiratori non produce sovrapposizioni di attacchi inevitabili.
-* [ ] La densità complessiva continua a rispettare `max_alive_enemies`.
-* [ ] Alla fine dell'evento lo spawn ordinario riprende senza recuperare spawn arretrati.
-* [ ] Nessun evento inizia mentre un Boss è attivo.
-* [ ] Non si accumula una coda incontrollata di eventi durante un Boss.
-* [ ] Lo stesso seed produce la stessa sequenza di eventi e formazioni.
-* [ ] Pausa, level-up e Boss Intro congelano scheduler e telegraph eventualmente attivi.
-* [ ] Restart elimina completamente evento, scheduler, telegraph e stato residuo.
+  Non spuntato: richiede playtest percettivo.
+* [x] Nido di tiratori può iniziare senza telegraph globale.
+* [x] I tiratori mantengono il proprio telegraph individuale durante Nido di tiratori.
+  Il comportamento di `RangedEnemy` non è stato toccato.
+* [x] Nido di tiratori non produce sovrapposizioni di attacchi inevitabili.
+  Cooldown/telegraph individuali e `max_alive_enemies` restano quelli esistenti.
+* [x] La densità complessiva continua a rispettare `max_alive_enemies`.
+* [x] Alla fine dell'evento lo spawn ordinario riprende senza recuperare spawn arretrati.
+* [x] Nessun evento inizia mentre un Boss è attivo. Verificato con un Boss
+  reale in `test_real_boss_lifecycle_interrupts_matured_event_and_postpones`.
+* [x] Non si accumula una coda incontrollata di eventi durante un Boss.
+* [x] Lo stesso seed produce la stessa sequenza di eventi e formazioni.
+* [x] Pausa, level-up e Boss Intro congelano scheduler e telegraph eventualmente attivi.
+* [x] Restart elimina completamente evento, scheduler, telegraph e stato residuo.
 
 ## Ambito
 
@@ -131,7 +144,10 @@ Non introdurre nuovi archetipi nemici come requisito di questa card.
 
 ## Verifica
 
-* Smoke: `tests/integration/_wave_events_smoke.gd` → marker `WAVE_EVENTS_SMOKE_OK`
+* Test GUT: `tests/unit/test_ps008_wave_events.gd` (contratto corrente da
+  `docs/verification-workflow.md`: il precedente smoke `SceneTree` a marker
+  `tests/integration/_wave_events_smoke.gd` → `WAVE_EVENTS_SMOKE_OK` non è più
+  il modo in cui il runner legge i fallimenti; vedi Decisioni).
 * Profilo minimo prima della chiusura: `Relevant`
 
 ## Gate manuali
@@ -162,11 +178,39 @@ Non introdurre nuovi archetipi nemici come requisito di questa card.
   compongono temporaneamente i pesi e i settori effettivi di `EnemySpawnProfile`
   e, quando terminano, restituiscono il controllo alla curva late-run. PS-008
   non duplica la garanzia del tiratore ne' rende PS-007 dipendente dagli eventi.
+- **2026-08-30 — Architettura scelta.** `WaveEventScheduler` (nuovo Node,
+  scene-local come `GameDirector`/`EnemySpawner`) possiede un RNG proprio
+  riseedato su `run_started`/`restart_prepared` e una macchina a stati
+  `IDLE → TELEGRAPH? → ACTIVE → IDLE`. Applica formazioni e override tramite
+  nuove API pubbliche di `EnemySpawner` (`set_active_sector_override`,
+  `set_archetype_weight_override`, `set_spawn_interval_multiplier`), tutte
+  azzerate su fine evento e su restart. `WaveEventDefinition` (dati,
+  `effect_id` + parametri per gruppo, come `EnemyArchetypeDefinition`) e
+  `WaveEventSchedulerProfile` (soglia, frequenza, catalogo, regola di
+  interruzione da Boss) vivono in `data/wave_events/`. Il gate Boss usa
+  `GameDirector.has_blocking_boss_event()`: `BOSS_INTRO` congela lo scheduler
+  come ogni altro stato non-`RUNNING` (nessun evento annullato lì), mentre il
+  combattimento vero e proprio (di nuovo in `RUNNING`) lo interrompe secondo
+  `boss_maturation_policy` (`postpone` di default). Il telegraph
+  dell'Accerchiamento raggiunge la HUD con lo stesso pattern di
+  `GameDirector.boss_warning_changed`: segnale osservato direttamente da
+  `GameHud`, nessuna logica di gioco nella UI.
+- **2026-08-30 — Correzione al contratto di verifica della card.** La sezione
+  "Verifica" originale citava uno smoke `SceneTree` a marker
+  (`tests/integration/_wave_events_smoke.gd` → `WAVE_EVENTS_SMOKE_OK`), ma
+  `docs/verification-workflow.md` dichiara quel contratto superato: i
+  fallimenti si leggono dal report JUnit di GUT su `tests/unit/test_*.gd`. Ho
+  spostato l'intera copertura (incluso il percorso Boss reale end-to-end e
+  l'inoltro del telegraph alla HUD) in `tests/unit/test_ps008_wave_events.gd`
+  e non ho creato il file di smoke citato dalla card.
 
 ## Documenti sincronizzati
 
-- [ ] `prd.md`: regole finali degli eventi d'ondata.
-- [ ] Nota di verifica con seed, composizioni e leggibilità osservata.
+- [x] `prd.md`: regole finali degli eventi d'ondata (sezione "Eventi d'ondata
+  PS-008" sotto "Pressione late-run PS-007").
+- [ ] Nota di verifica con seed, composizioni e leggibilità osservata. Non
+  scritta: richiede il playtest reale (Gate manuali), non ancora eseguito in
+  questa sessione.
 
 ## Note
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=110 format=3]
+[gd_scene load_steps=112 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -35,6 +35,8 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/vignette_effect.tscn" id="36_vignette_effect"]
 [ext_resource type="Script" path="res://scripts/game/game_director.gd" id="37_game_director"]
 [ext_resource type="Resource" path="res://data/director_profiles/default_game_director_profile.tres" id="38_director_profile"]
+[ext_resource type="Script" path="res://scripts/game/wave_event_scheduler.gd" id="121_wave_event_scheduler"]
+[ext_resource type="Resource" path="res://data/wave_events/default_wave_event_scheduler_profile.tres" id="122_wave_event_scheduler_profile"]
 [ext_resource type="Script" path="res://scripts/bosses/boss_encounter.gd" id="39_boss_encounter"]
 [ext_resource type="PackedScene" path="res://scenes/actors/first_boss.tscn" id="40_first_boss"]
 [ext_resource type="Resource" path="res://data/bosses/first_boss.tres" id="41_boss_definition"]
@@ -189,6 +191,11 @@ unique_name_in_owner = true
 script = ExtResource("8_enemy_spawner")
 enemy_scene = ExtResource("9_base_enemy")
 archetypes = Array[ExtResource("111_archetype_swarmer")]([ExtResource("111_archetype_swarmer"), ExtResource("112_archetype_armored"), ExtResource("113_archetype_splitter"), ExtResource("114_archetype_ranged")])
+
+[node name="WaveEventScheduler" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("121_wave_event_scheduler")
+profile = ExtResource("122_wave_event_scheduler_profile")
 
 [node name="TargetingSystem" type="Node" parent="."]
 unique_name_in_owner = true

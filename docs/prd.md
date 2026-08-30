@@ -630,6 +630,28 @@ e danno dichiarati dall'archetipo. La curva usa soltanto il tempo logico in
 Gli eventi d'ondata PS-008 sono un layer finito ulteriore e non sostituiscono
 questa progressione ordinaria.
 
+**Eventi d'ondata PS-008:** durante la run possono attivarsi, separatamente
+dallo spawn ordinario, formazioni finite e riconoscibili che compongono
+temporaneamente pesi e settori effettivi di `EnemySpawner` (le stesse API
+dati di PS-007), senza mai introdurre una seconda curva ordinaria parallela.
+Baseline: nessun evento prima di `02:30`, un solo evento attivo alla volta,
+frequenza configurabile (default `45–90 s` di intervallo fra un evento e il
+successivo). Il principio è leggibilità obbligatoria, telegraph opzionale: il
+telegraph è richiesto solo quando la formazione potrebbe creare una minaccia
+immediata prima che il Player abbia il tempo materiale di reagire. Tre eventi
+baseline: **Accerchiamento** (nemici da tutti i settori, richiede telegraph),
+**Stormo laterale** (gruppo compatto da un solo lato, nessun telegraph, i
+primi arrivi sono il segnale) e **Nido di tiratori** (aumento temporaneo del
+peso relativo del tiratore nel pool ordinario esistente, nessun telegraph
+globale, ogni tiratore mantiene il proprio telegraph individuale). Un evento
+non può mai iniziare mentre un Boss è attivo (dalla richiesta alla sua
+uscita); un evento maturato in quella finestra viene interrotto secondo una
+regola dati esplicita del profilo scheduler (`postpone` ritenta appena il
+Boss libera lo scheduler, `discard` lo scarta e ripianifica), e non si
+accumula mai più di un evento in attesa. Scheduler e telegraph avanzano solo
+in `RUNNING` e si azzerano su restart, con RNG proprio riseedato sul seed di
+run: stesso seed, stessa sequenza di eventi e formazioni.
+
 **Audio:** gli eventi di combattimento, progressione, abilità, Boss e terminali
 usano cue brevi su un bus SFX polifonico. La run usa inoltre il loop CC0
 `Super Wreck Roadway (loop)` di Umplix su un bus `Music` separato,

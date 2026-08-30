@@ -29,7 +29,10 @@ var _invalid_scene_warning_emitted := false
 var _active_sectors: Array[int] = ALL_SECTORS.duplicate()
 var _sector_elapsed := 0.0
 var _sector_hold_duration := 0.0
+var _sector_override_active := false
 var _ordinary_spawn_suspended := false
+var _spawn_interval_multiplier := 1.0
+var _archetype_weight_overrides: Dictionary[StringName, float] = {}
 var _last_archetype_spawn_times: Dictionary[StringName, float] = {}
 
 
@@ -44,9 +47,10 @@ func _process(delta: float) -> void:
 	var safe_delta := maxf(delta, 0.0)
 	_cleanup_elapsed += safe_delta
 
-	_sector_elapsed += safe_delta
-	if _sector_elapsed >= _sector_hold_duration:
-		_roll_active_sectors()
+	if not _sector_override_active:
+		_sector_elapsed += safe_delta
+		if _sector_elapsed >= _sector_hold_duration:
+			_roll_active_sectors()
 
 	var cleanup_interval := spawn_profile.get_effective_cleanup_interval()
 	if _cleanup_elapsed >= cleanup_interval:
@@ -61,7 +65,7 @@ func _process(delta: float) -> void:
 	if not _awaiting_initial_spawn:
 		interval = spawn_profile.get_spawn_interval(
 			_run_controller.get_run_time()
-		)
+		) * _spawn_interval_multiplier
 	if _spawn_elapsed < interval:
 		return
 
@@ -153,6 +157,9 @@ func reset_for_run(seed_value: int, clear_existing: bool = true) -> void:
 	_awaiting_initial_spawn = true
 	_invalid_scene_warning_emitted = false
 	_ordinary_spawn_suspended = false
+	_sector_override_active = false
+	_spawn_interval_multiplier = 1.0
+	_archetype_weight_overrides.clear()
 	_last_archetype_spawn_times.clear()
 	_roll_active_sectors()
 	if clear_existing:
@@ -174,6 +181,61 @@ func is_ordinary_spawn_suspended() -> bool:
 
 func get_active_sectors() -> Array[int]:
 	return _active_sectors.duplicate()
+
+
+## Forza temporaneamente i settori attivi (PS-008): sospende la rotazione
+## periodica finche' l'override resta attivo. Usato dagli eventi d'ondata per
+## formazioni riconoscibili (es. tutti i lati per l'Accerchiamento, un solo
+## lato per lo Stormo laterale) senza toccare l'RNG della rotazione ordinaria.
+func set_active_sector_override(sectors: Array[int]) -> void:
+	var safe_sectors := sectors if sectors.size() > 0 else ALL_SECTORS
+	_sector_override_active = true
+	_active_sectors = safe_sectors.duplicate()
+	_sector_elapsed = 0.0
+
+
+func clear_active_sector_override() -> void:
+	if not _sector_override_active:
+		return
+	_sector_override_active = false
+	_roll_active_sectors()
+
+
+func is_sector_override_active() -> bool:
+	return _sector_override_active
+
+
+## Moltiplicatore temporaneo sul peso effettivo di un archetipo (PS-008): usato
+## dal Nido di tiratori per aumentare la presenza relativa del tiratore nel
+## pool ordinario esistente, senza introdurre una seconda curva di pesi.
+func set_archetype_weight_override(archetype_id: StringName, multiplier: float) -> void:
+	if String(archetype_id).is_empty():
+		return
+	_archetype_weight_overrides[archetype_id] = (
+		maxf(multiplier, 0.0) if is_finite(multiplier) else 0.0
+	)
+
+
+func clear_archetype_weight_overrides() -> void:
+	_archetype_weight_overrides.clear()
+
+
+func get_archetype_weight_override(archetype_id: StringName) -> float:
+	return float(_archetype_weight_overrides.get(archetype_id, 1.0))
+
+
+## Moltiplicatore temporaneo sull'intervallo di spawn ordinario (PS-008): usato
+## dagli eventi configurati come "ridotti" invece che "sostituiti". >1 rallenta
+## il ritmo ordinario; 1 lo lascia invariato.
+func set_spawn_interval_multiplier(multiplier: float) -> void:
+	_spawn_interval_multiplier = maxf(multiplier, 0.01) if is_finite(multiplier) else 1.0
+
+
+func get_archetype_by_id(archetype_id: StringName) -> EnemyArchetypeDefinition:
+	for archetype in archetypes:
+		if archetype != null and archetype.id == archetype_id:
+			return archetype
+	return null
 
 
 func try_spawn_enemy() -> BaseEnemy:
@@ -260,13 +322,14 @@ func _pick_archetype(run_time: float) -> EnemyArchetypeDefinition:
 		if not archetype.is_eligible_at(run_time):
 			continue
 		eligible.append(archetype)
-		weights.append(
-			spawn_profile.get_effective_archetype_weight(
-				archetype.spawn_weight,
-				archetype.late_run_weight_multiplier,
-				run_time
-			)
+		var effective_weight := spawn_profile.get_effective_archetype_weight(
+			archetype.spawn_weight,
+			archetype.late_run_weight_multiplier,
+			run_time
 		)
+		if _archetype_weight_overrides.has(archetype.id):
+			effective_weight *= _archetype_weight_overrides[archetype.id]
+		weights.append(effective_weight)
 
 	var guaranteed_ranged := _resolve_guaranteed_ranged(eligible, run_time)
 	if guaranteed_ranged != null:
@@ -670,6 +733,9 @@ func _on_restart_prepared() -> void:
 	_cleanup_elapsed = 0.0
 	_awaiting_initial_spawn = true
 	_ordinary_spawn_suspended = false
+	_sector_override_active = false
+	_spawn_interval_multiplier = 1.0
+	_archetype_weight_overrides.clear()
 	_last_archetype_spawn_times.clear()
 	clear_spawned_enemies()
 

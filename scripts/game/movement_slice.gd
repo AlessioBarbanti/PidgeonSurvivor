@@ -28,6 +28,7 @@ const B22_PHYSICAL_AUTODEFEAT_DELAY_SECONDS := 8.0
 @onready var _game_director: GameDirector = %GameDirector
 @onready var _boss_encounter: BossEncounter = %BossEncounter
 @onready var _enemy_spawner: EnemySpawner = %EnemySpawner
+@onready var _wave_event_scheduler: WaveEventScheduler = %WaveEventScheduler
 @onready var _targeting_system: TargetingSystem = %TargetingSystem
 @onready var _ability_effect_registry: AbilityEffectRegistry = %AbilityEffectRegistry
 @onready var _friend_passive_controller: FriendPassiveController = %FriendPassiveController
@@ -127,6 +128,11 @@ func _ready() -> void:
 		_camera,
 		_boss_projectiles
 	)
+	_wave_event_scheduler.configure(
+		_run_controller,
+		_game_director,
+		_enemy_spawner
+	)
 	_combat_feedback.configure(
 		_run_controller,
 		_enemy_spawner,
@@ -216,7 +222,8 @@ func _ready() -> void:
 		_player.get_health_component(),
 		_experience_system,
 		_ability_controller,
-		_game_director
+		_game_director,
+		_wave_event_scheduler
 	)
 	_hud.set_friend_definition(_player.get_friend_definition())
 	_character_select_overlay.configure(_friend_registry, _ability_effect_registry)
@@ -477,6 +484,10 @@ func get_run_controller() -> RunController:
 
 func get_enemy_spawner() -> EnemySpawner:
 	return _enemy_spawner
+
+
+func get_wave_event_scheduler() -> WaveEventScheduler:
+	return _wave_event_scheduler
 
 
 func get_arena_layout() -> ArenaLayout:
@@ -1160,6 +1171,17 @@ func _validate_current_contract() -> bool:
 		failures.append("EnemySpawner non collegato al Player.")
 	if _enemy_spawner.get_enemy_parent() != _enemies:
 		failures.append("EnemySpawner non collegato al contenitore Enemies.")
+	if _wave_event_scheduler == null:
+		failures.append("WaveEventScheduler PS-008 non presente.")
+	else:
+		if not _wave_event_scheduler.has_valid_configuration():
+			failures.append("WaveEventScheduler PS-008 privo di una configurazione valida.")
+		if _wave_event_scheduler.get_run_controller() != _run_controller:
+			failures.append("WaveEventScheduler PS-008 non collegato al RunController.")
+		if _wave_event_scheduler.get_game_director() != _game_director:
+			failures.append("WaveEventScheduler PS-008 non collegato al GameDirector.")
+		if _wave_event_scheduler.get_enemy_spawner() != _enemy_spawner:
+			failures.append("WaveEventScheduler PS-008 non collegato a EnemySpawner.")
 	if _targeting_system.get_enemy_spawner() != _enemy_spawner:
 		failures.append("TargetingSystem non collegato a EnemySpawner.")
 	if _ability_effect_registry.get_run_controller() != _run_controller:
@@ -1550,6 +1572,10 @@ func _validate_current_contract() -> bool:
 			failures.append("HUD non collegato ad AbilityController.")
 		if _hud.get_game_director() != _game_director:
 			failures.append("HUD PS-005 non collegato al GameDirector.")
+		if _hud.get_wave_event_scheduler() != _wave_event_scheduler:
+			failures.append("HUD PS-008 non collegato al WaveEventScheduler.")
+		if _hud.is_wave_event_telegraph_visible():
+			failures.append("HUD PS-008 deve partire senza telegraph d'ondata visibile.")
 		if _hud.is_boss_warning_visible():
 			failures.append("HUD PS-005 deve partire senza warning Boss visibile.")
 		if _hud.get_friend_definition() != _player.get_friend_definition():

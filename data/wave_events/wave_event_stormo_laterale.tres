@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="WaveEventDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/game/wave_event_definition.gd" id="1_wave_event_definition"]
+
+[resource]
+script = ExtResource("1_wave_event_definition")
+event_id = &"stormo_laterale"
+effect_id = 1
+weight = 1.0
+duration_seconds = 8.0
+requires_telegraph = false
+formation_archetype_id = &"swarmer"
+formation_enemy_count = 10
+formation_spawn_interval_seconds = 0.25
+ordinary_spawn_mode = 1
+ordinary_spawn_interval_multiplier = 1.5

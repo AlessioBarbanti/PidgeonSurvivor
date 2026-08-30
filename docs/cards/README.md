@@ -34,7 +34,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-005](./to_test/PS-005-Boss-timer.md) | Annunciare l'arrivo del Boss | ux | gameplay | IN VERIFICA | alta | — |
 | [PS-006](./to_do/PS-006-bosses-new-abilities.md) | Dare agli Evil una Signature Ability | feat | gameplay | BLOCCATO | alta | PS-004 |
 | [PS-007](./to_test/PS-007-impedire-run-AFK-lategame.md) | Impedire che la late run diventi AFK | feat | gameplay | IN VERIFICA | alta | — |
-| [PS-008](./to_do/PS-008-eventi-di-ondata.md) | Introdurre eventi d'ondata | feat | gameplay | PRONTO | alta | — |
+| [PS-008](./to_test/PS-008-eventi-di-ondata.md) | Introdurre eventi d'ondata | feat | gameplay | IN VERIFICA | alta | — |
 | [PS-009](./to_do/PS-009-trasparenza-dialog-boss.md) | Rendere trasparente la Boss UI sotto il Player | ux | ui | PRONTO | media | — |
 | [PS-010](./idea/PS-010-implementa-difesa-grigliata.md) | Implementare Difesa Grigliata | feat | gameplay | DA DEFINIRE | alta | — |
 | [PS-011](./idea/PS-011-confeziona-prima-release-nativa.md) | Confezionare la prima release nativa | chore | piattaforma | DA DEFINIRE | alta | PS-010 |

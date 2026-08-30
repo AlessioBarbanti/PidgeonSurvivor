@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="WaveEventSchedulerProfile" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/game/wave_event_scheduler_profile.gd" id="1_wave_event_scheduler_profile"]
+[ext_resource type="Resource" path="res://data/wave_events/wave_event_accerchiamento.tres" id="2_accerchiamento"]
+[ext_resource type="Resource" path="res://data/wave_events/wave_event_stormo_laterale.tres" id="3_stormo_laterale"]
+[ext_resource type="Resource" path="res://data/wave_events/wave_event_nido_tiratori.tres" id="4_nido_tiratori"]
+
+[resource]
+script = ExtResource("1_wave_event_scheduler_profile")
+events = Array[WaveEventDefinition]([ExtResource("2_accerchiamento"), ExtResource("3_stormo_laterale"), ExtResource("4_nido_tiratori")])
+min_start_seconds = 150.0
+cooldown_min_seconds = 45.0
+cooldown_max_seconds = 90.0
+boss_maturation_policy = 0

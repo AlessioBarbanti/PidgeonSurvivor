@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="WaveEventDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/game/wave_event_definition.gd" id="1_wave_event_definition"]
+
+[resource]
+script = ExtResource("1_wave_event_definition")
+event_id = &"accerchiamento"
+effect_id = 0
+weight = 1.0
+duration_seconds = 10.0
+requires_telegraph = true
+telegraph_duration_seconds = 2.5
+telegraph_display_text = "ACCERCHIAMENTO IN ARRIVO"
+formation_archetype_id = &"swarmer"
+formation_enemy_count = 8
+formation_spawn_interval_seconds = 0.35
+ordinary_spawn_mode = 2

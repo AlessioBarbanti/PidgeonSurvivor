@@ -23,6 +23,7 @@ const ABILITY_FADE_MARGIN := 24.0
 const BOSS_WARNING_COLOR := Color("ffd166")
 const BOSS_COUNTDOWN_COLOR := Color("ff6b6b")
 const BOSS_APPROACHING_TEXT := "LA GRIGLIA STA FACENDO UN PROFUMINO..."
+const WAVE_EVENT_TELEGRAPH_COLOR := Color("6ee7ff")
 
 @onready var _experience_bar: ProgressBar = %ExperienceBar
 @onready var _experience_kind_label: Label = %ExperienceKindLabel
@@ -35,6 +36,8 @@ const BOSS_APPROACHING_TEXT := "LA GRIGLIA STA FACENDO UN PROFUMINO..."
 @onready var _timer_slot: Control = %TimerSlot
 @onready var _boss_warning_slot: Control = %BossWarningSlot
 @onready var _boss_warning_label: Label = %BossWarningLabel
+@onready var _wave_event_slot: Control = %WaveEventSlot
+@onready var _wave_event_label: Label = %WaveEventLabel
 @onready var _pause_button: Button = %PauseButton
 @onready var _ability_panel: Control = %AbilityPanel
 @onready var _active_ability_button: TouchAbilityButton = %ActiveAbilityButton
@@ -44,6 +47,7 @@ var _health_component: HealthComponent
 var _experience_system: ExperienceSystem
 var _ability_controller: AbilityController
 var _game_director: GameDirector
+var _wave_event_scheduler: WaveEventScheduler
 var _friend_definition: FriendDefinition
 var _health_feedback_remaining := 0.0
 var _ability_ready_pulse_remaining := 0.0
@@ -93,7 +97,8 @@ func configure(
 	health_component: HealthComponent,
 	experience_system: ExperienceSystem,
 	ability_controller: AbilityController = null,
-	game_director: GameDirector = null
+	game_director: GameDirector = null,
+	wave_event_scheduler: WaveEventScheduler = null
 ) -> bool:
 	if (
 		not is_node_ready()
@@ -109,6 +114,7 @@ func configure(
 	_experience_system = experience_system
 	_ability_controller = ability_controller
 	_game_director = game_director
+	_wave_event_scheduler = wave_event_scheduler
 
 	_run_controller.run_time_changed.connect(_on_run_time_changed)
 	_run_controller.state_changed.connect(_on_run_state_changed)
@@ -122,6 +128,10 @@ func configure(
 		_ability_controller.pending_cosplay_changed.connect(_on_pending_cosplay_changed)
 	if is_instance_valid(_game_director):
 		_game_director.boss_warning_changed.connect(_on_boss_warning_changed)
+	if is_instance_valid(_wave_event_scheduler):
+		_wave_event_scheduler.wave_event_telegraph_changed.connect(
+			_on_wave_event_telegraph_changed
+		)
 	_refresh_from_sources()
 	return true
 
@@ -144,6 +154,10 @@ func get_ability_controller() -> AbilityController:
 
 func get_game_director() -> GameDirector:
 	return _game_director if is_instance_valid(_game_director) else null
+
+
+func get_wave_event_scheduler() -> WaveEventScheduler:
+	return _wave_event_scheduler if is_instance_valid(_wave_event_scheduler) else null
 
 
 func set_friend_definition(definition: FriendDefinition) -> bool:
@@ -239,6 +253,10 @@ func get_boss_warning_text() -> String:
 
 func is_boss_warning_visible() -> bool:
 	return is_instance_valid(_boss_warning_label) and _boss_warning_label.visible
+
+
+func is_wave_event_telegraph_visible() -> bool:
+	return is_instance_valid(_wave_event_label) and _wave_event_label.visible
 
 
 func get_pause_button() -> Button:
@@ -503,6 +521,7 @@ func _show_default_values() -> void:
 	_on_progression_changed(1, 0, 1, 0)
 	_show_default_ability()
 	_hide_boss_warning()
+	_hide_wave_event_telegraph()
 
 
 func _disconnect_sources() -> void:
@@ -554,14 +573,25 @@ func _disconnect_sources() -> void:
 		and _game_director.boss_warning_changed.is_connected(_on_boss_warning_changed)
 	):
 		_game_director.boss_warning_changed.disconnect(_on_boss_warning_changed)
+	if (
+		is_instance_valid(_wave_event_scheduler)
+		and _wave_event_scheduler.wave_event_telegraph_changed.is_connected(
+			_on_wave_event_telegraph_changed
+		)
+	):
+		_wave_event_scheduler.wave_event_telegraph_changed.disconnect(
+			_on_wave_event_telegraph_changed
+		)
 
 	_run_controller = null
 	_health_component = null
 	_experience_system = null
 	_ability_controller = null
 	_game_director = null
+	_wave_event_scheduler = null
 	_last_ability_ready = false
 	_hide_boss_warning()
+	_hide_wave_event_telegraph()
 
 
 func _on_run_time_changed(run_time: float) -> void:
@@ -607,6 +637,29 @@ func _hide_boss_warning() -> void:
 		return
 	_boss_warning_label.text = ""
 	_boss_warning_label.visible = false
+
+
+func _on_wave_event_telegraph_changed(
+	_event_id: StringName,
+	display_text: String,
+	phase: WaveEventScheduler.TelegraphPhase,
+	_seconds_remaining: float
+) -> void:
+	if not is_instance_valid(_wave_event_label):
+		return
+	if phase == WaveEventScheduler.TelegraphPhase.ACTIVE and not display_text.is_empty():
+		_wave_event_label.text = display_text
+		_wave_event_label.add_theme_color_override("font_color", WAVE_EVENT_TELEGRAPH_COLOR)
+		_wave_event_label.visible = true
+	else:
+		_hide_wave_event_telegraph()
+
+
+func _hide_wave_event_telegraph() -> void:
+	if not is_instance_valid(_wave_event_label):
+		return
+	_wave_event_label.text = ""
+	_wave_event_label.visible = false
 
 
 func _set_pause_available(available: bool) -> void:

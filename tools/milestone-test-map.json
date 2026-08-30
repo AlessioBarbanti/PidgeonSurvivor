@@ -73,6 +73,22 @@
         "tests/unit/test_b28_horde_density.gd",
         "tests/unit/test_b37_density_direction.gd",
         "tests/unit/test_b38_arena_world.gd",
+        "tests/unit/test_ps007_late_run_pressure.gd",
+        "tests/unit/test_ps008_wave_events.gd"
+      ]
+    },
+    {
+      "patterns": [
+        "scripts/game/wave_event_scheduler.gd",
+        "scripts/game/wave_event_definition.gd",
+        "scripts/game/wave_event_scheduler_profile.gd",
+        "data/wave_events/*"
+      ],
+      "smokes": [
+        "tests/unit/test_ps008_wave_events.gd",
+        "tests/unit/test_b14_game_director.gd",
+        "tests/unit/test_b53_boss_horde_pause.gd",
+        "tests/unit/test_ps005_boss_warning.gd",
         "tests/unit/test_ps007_late_run_pressure.gd"
       ]
     },
@@ -189,7 +205,8 @@
         "tests/unit/test_b53_boss_horde_pause.gd",
         "tests/unit/test_b54_tutorial_flow.gd",
         "tests/unit/test_ps005_boss_warning.gd",
-        "tests/unit/test_ps012_barb_specialities.gd"
+        "tests/unit/test_ps012_barb_specialities.gd",
+        "tests/unit/test_ps008_wave_events.gd"
       ]
     },
     {
@@ -235,7 +252,8 @@
         "tests/unit/test_b54_tutorial_flow.gd",
         "tests/unit/test_typography.gd",
         "tests/unit/test_ps005_boss_warning.gd",
-        "tests/unit/test_ps012_barb_specialities.gd"
+        "tests/unit/test_ps012_barb_specialities.gd",
+        "tests/unit/test_ps008_wave_events.gd"
       ]
     },
     {
