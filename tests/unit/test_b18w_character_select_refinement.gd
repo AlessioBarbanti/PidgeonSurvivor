@@ -317,12 +317,12 @@ func _assert_hierarchy(selector: CharacterSelectOverlay) -> void:
 	assert_eq(
 		selector.get_back_button().text, "INDIETRO", "Back deve avere copy e icona distinti dalle frecce."
 	)
-	var center_style := selector.get_button(&"magno").get_theme_stylebox("normal") as StyleBoxFlat
+	var center_style := selector.get_button(&"magno").get_theme_stylebox("normal") as StyleBoxTexture
 	assert_true(
 		center_style != null
-		and center_style.get_corner_radius(CORNER_TOP_LEFT) <= 2
-		and center_style.get_border_width(SIDE_LEFT) <= 2,
-		"La card centrale deve usare un bordo pixelato sottile."
+		and center_style.texture != null
+		and center_style.texture.resource_path == "res://assets/art/ui/pause/pause_panel_frame.png",
+		"La card centrale deve usare l'artwork cornice di selezione."
 	)
 	var arrow_style := selector.get_next_button().get_theme_stylebox("normal") as StyleBoxFlat
 	assert_true(
