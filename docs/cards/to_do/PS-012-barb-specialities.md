@@ -1,17 +1,18 @@
 ---
-
 id: PS-012
 titolo: Introduci le Specialità di Barb
 tipo: feat
 area: gameplay
 stato: PRONTO
 priorita: alta
+dipende_da: []
+origine:
 milestone:
 creato: 2026-08-30
 aggiornato: 2026-08-30
-----------------------
+---
 
-# PS-010 — Introduci le Specialità di Barb
+# PS-012 — Introduci le Specialità di Barb
 
 ## Contesto
 
@@ -48,7 +49,7 @@ Il primo catalogo utilizza le carte strutturali già esistenti, senza modificarn
 * **Raffica Doppia**;
 * **Esplosione Finale**.
 
-Il catalogo può essere ampliato in futuro, ma PS-010 non introduce nuove Specialità e non ridisegna quelle esistenti.
+Il catalogo può essere ampliato in futuro, ma PS-012 non introduce nuove Specialità e non ridisegna quelle esistenti.
 
 Le forme d'attacco esistenti sono già implementate come modificatori qualitativi della build e devono mantenere il comportamento corrente.
 
@@ -63,7 +64,7 @@ Ogni Specialità:
 * non cambia il proprio `max_rank` esistente se questo è già compreso fra `1` e `5`;
 * utilizza il normale sistema di rank e applicazione degli upgrade.
 
-PS-010 non introduce nuove progressioni per singola Specialità.
+PS-012 non introduce nuove progressioni per singola Specialità.
 
 In particolare non devono essere aggiunti nuovi effetti, nuovi breakpoint o nuove regole per i rank allo scopo di adattare le carte al sistema Barb.
 
@@ -172,7 +173,7 @@ Non modificare:
 
 ## Verifica
 
-* Smoke: `tests/integration/_barb_specialities_smoke.gd` → marker `BARB_SPECIALITIES_SMOKE_OK`
+* GUT: `tests/unit/test_ps012_barb_specialities.gd` → marker `BARB_SPECIALITIES_SMOKE_OK`
 * Profilo minimo prima della chiusura: `Relevant`
 
 ## Gate manuali
@@ -195,7 +196,7 @@ Principio:
 
 **Barb sblocca la meccanica → i normali level-up la potenziano.**
 
-PS-010 modifica il modo in cui queste carte vengono ottenute, non il loro design.
+PS-012 modifica il modo in cui queste carte vengono ottenute, non il loro design.
 
 Le Specialità iniziali sono carte già presenti e funzionanti. Non devono essere reinterpretate o ridisegnate per questo sistema.
 

@@ -102,7 +102,7 @@ Da **non** toccare:
 - i registry degli effetti e i valori di bilanciamento delle passive: qui si
   cambia solo come la fase viene comunicata, non che cosa fa;
 - gli sprite approvati del cast, tracciati in
-  [content-approvals.md](../../content-approvals.md).
+  [characters.md](../../characters.md).
 
 ## Verifica
 

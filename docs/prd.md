@@ -267,9 +267,12 @@ compatibilità invariati.
 
 ### 3.5. Boss, vittoria e chiusura della run
 
-Il primo Boss viene richiesto dal `GameDirector` a `04:00` di clock logico e
-convive con le ondate ordinarie. L'introduzione porta la run in `BOSS_INTRO`,
-ferma clock e gameplay e mostra nella safe area nome, barra HP e una citazione.
+Il primo Boss viene richiesto dal `GameDirector` a `02:00` di clock logico.
+Da `01:45` l'HUD mostra `BOSS IN ARRIVO`; negli ultimi cinque secondi il copy
+diventa `BOSS IN 5` fino a `BOSS IN 1`. Il warning deriva dallo stesso clock
+`RUNNING`, resta congelato in pausa e durante il level up, non intercetta input
+e scompare quando parte `BOSS_INTRO`. L'introduzione ferma clock e gameplay e
+mostra nella safe area nome, barra HP e una citazione.
 Una citazione personale non approvata non viene mai mostrata: la UI usa il
 placeholder sicuro dichiarato nel `BossDefinition`.
 
@@ -302,7 +305,8 @@ Sopravvivenza attuale. La modalità mette al centro del playfield una griglia co
 carne, con salute configurabile e HUD proprio; i nemici possono selezionarla e
 danneggiarla. La run termina in `DEFEAT` se la vita del Player o della griglia
 raggiunge zero. La modalità eredita per la prima versione progressione, pausa,
-lifecycle, Boss a `04:00` e vittoria dopo il Boss, ma conserva stato, seed,
+lifecycle, Boss a `02:00` con warning PS-005 e vittoria dopo il Boss, ma conserva
+stato, seed,
 cleanup e target selection separati per evitare residui tra modalità e restart.
 La selezione della modalità resta in `BOOT`, integrata nel flusso di conferma
 del profilo e non avvia mai una run da sola.
@@ -591,6 +595,19 @@ riceve `1,50 × intervallo_corrente / intervallo_riferimento_pre_B28`; il droppe
 accumula il credito frazionario e consegna solo XP intero. Boss, ricompensa Boss,
 pattern e telegraph restano fuori da questa scala. Pooling o altre ottimizzazioni
 sono ammessi soltanto dopo evidenza profiler Windows e Pixel 9.
+
+**Pressione late-run PS-007:** dopo l'ingresso di tutti gli archetipi, il
+profilo ordinario evolve in modo continuo fra `01:00` e `05:00`: il peso
+relativo del piccione base scende fino al `33%` del valore iniziale, mentre i
+moltiplicatori dati favoriscono progressivamente sciamatori, corazzati,
+divisori e soprattutto tiratori. Anche la probabilita' di usare piu' settori
+sale, senza cambiare HP, danno, targeting, powerup o statistiche del Player.
+Da `03:00`, se il pool non ha generato un tiratore negli ultimi `4 s`, il
+prossimo spawn eleggibile lo garantisce; il colpo conserva telegraph, velocita'
+e danno dichiarati dall'archetipo. La curva usa soltanto il tempo logico in
+`RUNNING`, e determinismo, pausa e restart restano quelli di `EnemySpawner`.
+Gli eventi d'ondata PS-008 sono un layer finito ulteriore e non sostituiscono
+questa progressione ordinaria.
 
 **Audio:** gli eventi di combattimento, progressione, abilità, Boss e terminali
 usano cue brevi su un bus SFX polifonico. La run usa inoltre il loop CC0

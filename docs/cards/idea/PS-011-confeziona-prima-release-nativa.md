@@ -3,7 +3,7 @@ id: PS-011
 titolo: Confeziona la prima release nativa
 tipo: chore
 area: piattaforma
-stato: IDEA
+stato: DA DEFINIRE
 priorita: alta
 dipende_da: [PS-010]
 origine: B20

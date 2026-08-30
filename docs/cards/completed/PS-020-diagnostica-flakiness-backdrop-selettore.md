@@ -50,7 +50,7 @@ dipendere dall'ordine di caricamento o da tempistiche non controllate.
       una modifica al codice di gioco, viene aperta una card separata per
       quella modifica.
       *Condizione non ricorsa: la causa non è nel codice di gioco. È stata
-      comunque aperta [PS-021](../to_do/PS-021-import-orfano-backdrop-bronze.md)
+      comunque aperta [PS-021](./PS-021-import-orfano-backdrop-bronze.md)
       per il residuo di igiene emerso durante la diagnosi.*
 
 ## Ambito
@@ -101,7 +101,7 @@ Non modificare come soluzione di comodo:
   di eseguire i test.
 - **2026-08-30 — Residuo separato.** Il `.import` orfano del vecchio nome
   `character_select_backdrop_bronze.png` è stato spostato su
-  [PS-021](../to_do/PS-021-import-orfano-backdrop-bronze.md) invece di allargare
+  [PS-021](./PS-021-import-orfano-backdrop-bronze.md) invece di allargare
   questa card.
 
 ## Documenti sincronizzati

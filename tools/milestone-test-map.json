@@ -51,7 +51,8 @@
         "tests/unit/test_b14_game_director.gd",
         "tests/unit/test_b15_boss_encounter.gd",
         "tests/unit/test_b16_complete_run.gd",
-        "tests/unit/test_b33_recurring_boss.gd"
+        "tests/unit/test_b33_recurring_boss.gd",
+        "tests/unit/test_ps005_boss_warning.gd"
       ]
     },
     {
@@ -60,6 +61,7 @@
         "scenes/actors/base_enemy.tscn",
         "scripts/game/enemy_spawner.gd",
         "scripts/game/enemy_spawn_profile.gd",
+        "scripts/game/enemy_archetype_definition.gd",
         "data/enemies/*",
         "data/spawn_profiles/*"
       ],
@@ -69,7 +71,8 @@
         "tests/unit/test_b18h_pigeon_enemies.gd",
         "tests/unit/test_b28_horde_density.gd",
         "tests/unit/test_b37_density_direction.gd",
-        "tests/unit/test_b38_arena_world.gd"
+        "tests/unit/test_b38_arena_world.gd",
+        "tests/unit/test_ps007_late_run_pressure.gd"
       ]
     },
     {
@@ -179,7 +182,8 @@
         "tests/unit/test_b38_arena_world.gd",
         "tests/unit/test_b18i_xp_arena_confinement.gd",
         "tests/unit/test_b39_health_pickup.gd",
-        "tests/unit/test_b54_tutorial_flow.gd"
+        "tests/unit/test_b54_tutorial_flow.gd",
+        "tests/unit/test_ps005_boss_warning.gd"
       ]
     },
     {
@@ -223,7 +227,8 @@
         "tests/unit/test_b18w_character_select_refinement.gd",
         "tests/unit/test_b18o_welcome_flow.gd",
         "tests/unit/test_b54_tutorial_flow.gd",
-        "tests/unit/test_typography.gd"
+        "tests/unit/test_typography.gd",
+        "tests/unit/test_ps005_boss_warning.gd"
       ]
     },
     {

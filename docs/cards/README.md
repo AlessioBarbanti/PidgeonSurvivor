@@ -31,13 +31,14 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-002](./completed/PS-002-restyle-proiettili-giocatore-e-nemici.md) | Sostituire i proiettili "debug" con sprite ImageGen leggibili | art | arte | COMPLETATO | media | — |
 | [PS-003](./completed/PS-003-conferma-abilita-passiva-zat.md) | Confermare Guarigione Ritardata | chore | gameplay | COMPLETATO | alta | — |
 | [PS-004](./to_do/PS-004-lega-Tempesta-di-Tuoni-al-danno-recuperabile.md) | Legare Tempesta di Tuoni al danno recuperabile | feat | gameplay | IN CORSO | alta | PS-003 |
-| [PS-005](./to_do/PS-005-Boss-timer.md) | Annunciare l'arrivo del Boss | ux | gameplay | PRONTO | alta | — |
+| [PS-005](./to_test/PS-005-Boss-timer.md) | Annunciare l'arrivo del Boss | ux | gameplay | IN VERIFICA | alta | — |
 | [PS-006](./to_do/PS-006-bosses-new-abilities.md) | Dare agli Evil una Signature Ability | feat | gameplay | BLOCCATO | alta | PS-004 |
-| [PS-007](./to_do/PS-007-impedire-run-AFK-lategame.md) | Impedire che la late run diventi AFK | feat | gameplay | PRONTO | alta | — |
+| [PS-007](./to_test/PS-007-impedire-run-AFK-lategame.md) | Impedire che la late run diventi AFK | feat | gameplay | IN VERIFICA | alta | — |
 | [PS-008](./to_do/PS-008-eventi-di-ondata.md) | Introdurre eventi d'ondata | feat | gameplay | PRONTO | alta | — |
 | [PS-009](./to_do/PS-009-trasparenza-dialog-boss.md) | Rendere trasparente la Boss UI sotto il Player | ux | ui | PRONTO | media | — |
-| [PS-010](./to_do/PS-010-implementa-difesa-grigliata.md) | Implementare Difesa Grigliata | feat | gameplay | PRONTO | alta | — |
-| [PS-011](./to_do/PS-011-confeziona-prima-release-nativa.md) | Confezionare la prima release nativa | chore | piattaforma | BLOCCATO | alta | PS-010 |
+| [PS-010](./idea/PS-010-implementa-difesa-grigliata.md) | Implementare Difesa Grigliata | feat | gameplay | DA DEFINIRE | alta | — |
+| [PS-011](./idea/PS-011-confeziona-prima-release-nativa.md) | Confezionare la prima release nativa | chore | piattaforma | DA DEFINIRE | alta | PS-010 |
+| [PS-012](./to_do/PS-012-barb-specialities.md) | Introdurre le Specialità di Barb | feat | gameplay | PRONTO | alta | — |
 | [PS-013](./to_test/PS-013-crash-typedarray-seconda-offerta-upgrade.md) | Correggere il crash TypedArray alla seconda offerta upgrade | fix | ui | IN VERIFICA | alta | — |
 | [PS-014](./to_test/PS-014-logo-welcome-fuori-viewport.md) | Riportare il logo della welcome dentro il viewport | fix | ui | IN VERIFICA | media | — |
 | [PS-015](./completed/PS-015-bordo-pixelato-card-selettore.md) | Adeguare il test della card centrale del selettore all'artwork di selezione | fix | ui | COMPLETATO | bassa | — |

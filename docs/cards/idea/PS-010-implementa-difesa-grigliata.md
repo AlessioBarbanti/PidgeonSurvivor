@@ -3,7 +3,7 @@ id: PS-010
 titolo: Implementa la modalità Difesa Grigliata
 tipo: feat
 area: gameplay
-stato: IDEA
+stato: DA DEFINIRE
 priorita: alta
 dipende_da: []
 origine: B23
