@@ -18,7 +18,9 @@
       ],
       "smokes": [
         "tests/integration/_movement_slice_smoke.gd",
+        "tests/unit/test_b03_movement_slice.gd",
         "tests/integration/_player_survival_smoke.gd",
+        "tests/unit/test_b06_player_survival.gd",
         "tests/integration/_player_direction_animation_smoke.gd",
         "tests/unit/test_b18c_player_direction_animation.gd",
         "tests/integration/_cast_sprites_smoke.gd",
@@ -102,6 +104,7 @@
         "tests/integration/_combat_slice_smoke.gd",
         "tests/unit/test_b05_combat_slice.gd",
         "tests/integration/_player_survival_smoke.gd",
+        "tests/unit/test_b06_player_survival.gd",
         "tests/integration/_complete_run_smoke.gd",
         "tests/unit/test_b16_complete_run.gd",
         "tests/integration/_b41_weapon_shapes_smoke.gd",
@@ -134,7 +137,9 @@
         "tests/integration/_upgrade_service_smoke.gd",
         "tests/unit/test_b10_upgrade_service.gd",
         "tests/integration/_upgrade_overlay_smoke.gd",
+        "tests/unit/test_b11_upgrade_overlay.gd",
         "tests/integration/_upgrade_effects_smoke.gd",
+        "tests/unit/test_b12_upgrade_effects.gd",
         "tests/integration/_signature_upgrades_smoke.gd",
         "tests/unit/test_b13_signature_upgrades.gd",
         "tests/integration/_summer_grill_smoke.gd",
@@ -169,7 +174,8 @@
       "smokes": [
         "tests/integration/_b39_health_pickup_smoke.gd",
         "tests/unit/test_b39_health_pickup.gd",
-        "tests/integration/_movement_slice_smoke.gd"
+        "tests/integration/_movement_slice_smoke.gd",
+        "tests/unit/test_b03_movement_slice.gd"
       ]
     },
     {
@@ -185,6 +191,7 @@
         "tests/integration/_arena_background_smoke.gd",
         "tests/unit/test_b18s_arena_background.gd",
         "tests/integration/_movement_slice_smoke.gd",
+        "tests/unit/test_b03_movement_slice.gd",
         "tests/integration/_xp_arena_confinement_smoke.gd",
         "tests/unit/test_b18i_xp_arena_confinement.gd",
         "tests/integration/_b38_arena_world_smoke.gd",
@@ -199,7 +206,8 @@
       "smokes": [
         "tests/integration/_b38_arena_world_smoke.gd",
         "tests/unit/test_b38_arena_world.gd",
-        "tests/integration/_movement_slice_smoke.gd"
+        "tests/integration/_movement_slice_smoke.gd",
+        "tests/unit/test_b03_movement_slice.gd"
       ]
     },
     {
@@ -210,6 +218,7 @@
       ],
       "smokes": [
         "tests/integration/_movement_slice_smoke.gd",
+        "tests/unit/test_b03_movement_slice.gd",
         "tests/integration/_complete_run_smoke.gd",
         "tests/unit/test_b16_complete_run.gd",
         "tests/integration/_platform_lifecycle_smoke.gd",
@@ -275,6 +284,7 @@
         "tests/integration/_arena_hud_minimal_smoke.gd",
         "tests/unit/test_b18q_arena_hud_minimal.gd",
         "tests/integration/_upgrade_overlay_smoke.gd",
+        "tests/unit/test_b11_upgrade_overlay.gd",
         "tests/integration/_character_carousel_smoke.gd",
         "tests/unit/test_b18t_character_carousel.gd",
         "tests/integration/_character_select_refinement_smoke.gd",
