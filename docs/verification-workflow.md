@@ -47,6 +47,12 @@ elenca path `tests/unit/test_*.gd`). File solo documentali e master in
 cartelle `hd` non avviano regressioni runtime; una modifica runtime
 sconosciuta fa invece scattare l'intera suite, in modo conservativo.
 
+«Solo documentali» include i `.md` e i `.txt` **ovunque**, anche dentro
+`assets/`: un `ASSET-MANIFEST.md` descrive gli asset, non è un asset. Prima
+finiva fra le path runtime non mappate e faceva scattare il fallback
+`run_all`, cioè ogni card che aggiornava la propria documentazione pagava un
+`Full` invece di un checkpoint.
+
 `Focused` seleziona per contenuto: grep sul testo del file cercando
 `\b<MILESTONE>\b` (case-sensitive). La maggior parte dei test cita la propria
 milestone nei messaggi di asserzione anche quando non compare nel nome del
@@ -54,6 +60,46 @@ file; questo grep è quindi un sovrainsieme sicuro, mai più stretto della sola
 corrispondenza sul nome. Un test può citare più di una milestone (es. un
 raffronto esplicito fra due slice): in quel caso comparirà nel piano
 `Focused` di entrambe, invariato.
+
+## Fallimento di un test e fallimento del batch
+
+I due casi sono distinti e vanno letti in modo diverso.
+
+Un **test rosso** appartiene al proprio script: solo quello risulta `FAIL`,
+con il conteggio nella nota (`GUT: 1/3 test falliti.`). GUT con `-gexit` esce
+con codice non-zero appena un test fallisce, ma quel codice riguarda il
+processo, non gli altri script del batch, che restano `PASS`.
+
+Un **fallimento di batch** compare come step separato `<categoria>-gut-batch`
+e ha solo tre cause, nessuna attribuibile a un singolo script:
+
+- il batch è scaduto (`TIMEOUT`, exit `124`);
+- è comparso un errore motore fuori dalle asserzioni (`SCRIPT ERROR`,
+  `FATAL EXCEPTION`, `CONTRACT_FAIL`, `SMOKE_FAIL`), che vale anche con
+  report GUT verde;
+- il processo è uscito male senza alcun test rosso, cioè è morto fuori dai
+  test.
+
+L'`exit_code` degli step è quello reale del processo e resta nel JSON; nella
+riga leggibile compare solo per gli step non verdi, perché accanto a un `PASS`
+descriverebbe il batch e non lo script.
+
+## Batch lunghi: timeout e avanzamento
+
+Il batch GUT ha un tetto di tempo, `-GutTimeoutSeconds` (default `1800`).
+Alla scadenza il processo viene terminato, il log parziale resta e lo step è
+dichiarato `TIMEOUT`: un test appeso non blocca più la sessione senza dire
+niente.
+
+Ogni minuto il runner stampa una riga di avanzamento con tempo trascorso,
+script completati e ultimo script avviato:
+
+```
+... gut-focused vivo da 00:01:00: 1/2 script, ultimo res://tests/unit/test_x.gd
+```
+
+Va su `Write-Host`, quindi non inquina lo stdout letto da `-AsJson`. Quando un
+batch si pianta, quella riga nomina lo script su cui si è piantato.
 
 ## Cache e diagnostica
 
@@ -63,6 +109,12 @@ quel profilo; un cache hit rimaterializza l'esito per singolo script senza
 rilanciare Godot né riparsare il report. Per gli export viene verificato anche
 l'hash dell'artefatto presente. Cambiare un test invalida solo il batch che lo
 contiene; cambiare il runtime invalida tutti i batch pertinenti.
+
+**Una verifica ripetuta richiede `-NoCache`.** Rilanciare lo stesso comando
+senza `-NoCache` restituisce `CACHED` in un secondo senza avviare Godot: se un
+criterio di accettazione chiede *N* esecuzioni consecutive, le ripetizioni
+dalla seconda in poi non provano nulla. Le righe `cached=` nel riepilogo
+compatto e lo stato `CACHED` per step dicono quando è successo.
 
 La cache è locale e sacrificabile:
 
@@ -80,8 +132,11 @@ La cache è locale e sacrificabile:
 ```
 
 I contratti degli strumenti vengono controllati senza avviare Godot. Il primo
-copre profili e selezione dei test, il secondo la cattura dei processi esterni
-(marker di completamento, ripiego sulla stabilità dell'artefatto, timeout):
+copre profili, selezione dei test e la distinzione fra test rosso e batch
+fallito (`tools/lib/gut-batch-status.ps1`, funzione pura apposta per essere
+verificabile senza Godot); il secondo la cattura dei processi esterni (marker
+di completamento, ripiego sulla stabilità dell'artefatto, timeout,
+avanzamento):
 
 ```powershell
 .\tests\tooling\_milestone_runner_contract.ps1

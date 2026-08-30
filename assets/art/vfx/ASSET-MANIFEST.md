@@ -96,7 +96,7 @@ B18M precedente al refresh):
 | `scripts/abilities/cosplay_accent.gd` | Decal reveal e coriandoli senza anello sottostante | `72521e3e91469c6fc9b4160e8853e5c1d027eb0dd863097996c09b05d0af9664` |
 | `scripts/abilities/thermal_shock.gd` | Decal separati per brina e bloom senza basi o anelli procedurali | `4316a441084c661934991561309e0f18059d7fb344c880dc37b3c2d5814bb09c` |
 | `scripts/abilities/illusion_decoy.gd` | Clone e boombox raster con note animate, senza aura circolare | `44126e90d493708de81e63167c4e75249aa75a855ced1a8b85d347c212053bde` |
-| `scripts/abilities/instinctive_dodge_accent.gd` | Tell Sesto Senso Equino invariato | `57d9f40966aa37c523f4d67f4a235d3ff5671d4b746097d0aca7a29c073847b6` |
+| `scripts/abilities/instinctive_dodge_accent.gd` | Tell Sesto Senso Equino invariato | `6a07ae5b742a3bc92d5a79a4288c075d6e73005a7e00a803e46185dc331c8aa7` |
 
 Budget corrente: massimo un overlay fullscreen, 64 particelle logiche e due
 materiali aggiuntivi per attivazione; zero materiali custom nelle otto famiglie.

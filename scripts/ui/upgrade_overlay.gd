@@ -127,8 +127,10 @@ func get_queue_text() -> String:
 func get_focused_card_index() -> int:
 	if not is_inside_tree():
 		return -1
-	var focus_owner := get_viewport().gui_get_focus_owner()
-	return _cards.find(focus_owner)
+	var focused_card := get_viewport().gui_get_focus_owner() as UpgradeCard
+	if focused_card == null:
+		return -1
+	return _cards.find(focused_card)
 
 
 func focus_card(index: int) -> bool:
@@ -273,9 +275,12 @@ func _apply_selection_lock_state() -> void:
 func _release_card_focus() -> void:
 	if not is_inside_tree():
 		return
-	var focus_owner := get_viewport().gui_get_focus_owner()
-	if focus_owner in _cards:
-		focus_owner.release_focus()
+	# Alla seconda offerta il focus GUI appartiene spesso a un Control esterno
+	# alle carte: cercarlo direttamente in un Array[UpgradeCard] fa fallire la
+	# validazione del TypedArray, quindi si restringe prima il tipo.
+	var focused_card := get_viewport().gui_get_focus_owner() as UpgradeCard
+	if focused_card != null and _cards.has(focused_card):
+		focused_card.release_focus()
 
 
 func _focus_relative(direction: int) -> void:

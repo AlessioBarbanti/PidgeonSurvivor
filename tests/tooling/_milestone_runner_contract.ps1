@@ -57,6 +57,33 @@ if ($docsOnly.regression_smokes.Count -ne 0) {
     throw 'Una modifica solo documentale non deve invalidare regressioni runtime.'
 }
 
+# PS-023: un manifest o un README *dentro* assets/ resta documentazione. Prima
+# finiva fra le path runtime non mappate e faceva scattare run_all, cioe' ogni
+# card che aggiornava la propria documentazione pagava un Full.
+$assetDocsOnly = Invoke-Plan -Profile Relevant -ChangedPath @(
+    'assets/art/vfx/ASSET-MANIFEST.md',
+    'docs/cards/README.md'
+)
+if ($assetDocsOnly.regression_smokes.Count -ne 0) {
+    throw 'Un manifest documentale dentro assets/ non deve far scattare run_all.'
+}
+
+# PS-023: un singolo script runtime mappato deve restare un checkpoint, non
+# diventare la suite intera.
+$singleRuntime = Invoke-Plan -Profile Relevant -ChangedPath @(
+    'scripts/ui/upgrade_overlay.gd',
+    'docs/cards/README.md'
+)
+$allGutTests = @(
+    Get-ChildItem (Join-Path $repoRoot 'tests') -Filter 'test_*.gd' -File -Recurse
+).Count
+if ($singleRuntime.regression_smokes.Count -eq 0) {
+    throw 'Uno script UI mappato deve selezionare le proprie regressioni.'
+}
+if ($singleRuntime.regression_smokes.Count -ge $allGutTests) {
+    throw 'Uno script UI mappato non deve far scattare la suite completa.'
+}
+
 $full = Invoke-Plan -Profile Full -ChangedPath @('docs/development-plan.md')
 $allTestCount = @(Get-ChildItem (Join-Path $repoRoot 'tests') -Filter 'test_*.gd' -File -Recurse).Count
 if (($full.focused_smokes.Count + $full.regression_smokes.Count) -ne $allTestCount) {
@@ -64,6 +91,66 @@ if (($full.focused_smokes.Count + $full.regression_smokes.Count) -ne $allTestCou
 }
 if (-not $full.run_project_smoke -or $full.export_windows -or $full.export_android) {
     throw 'Full deve includere project smoke senza export.'
+}
+
+# PS-023: il batch GUT deve avere un tetto di tempo. Senza, un test appeso
+# appende il runner all'infinito e senza output.
+$runnerParameters = (Get-Command $runner).Parameters
+if (-not $runnerParameters.ContainsKey('GutTimeoutSeconds')) {
+    throw 'Il runner deve esporre -GutTimeoutSeconds: un batch senza tetto puo'' appendersi.'
+}
+$timeoutRange = @(
+    $runnerParameters['GutTimeoutSeconds'].Attributes |
+        Where-Object { $_ -is [System.Management.Automation.ValidateRangeAttribute] }
+)
+if ($timeoutRange.Count -eq 0 -or [int]$timeoutRange[0].MinRange -lt 60) {
+    throw 'Il timeout del batch GUT deve avere un minimo sensato.'
+}
+
+# PS-023: un test rosso e' del suo script, non del batch. GUT con -gexit esce
+# non-zero appena un test fallisce: leggere quell'exit code come fallimento di
+# batch marcava FAIL ogni script del batch.
+. (Join-Path $repoRoot 'tools\lib\gut-batch-status.ps1')
+
+$noReason = @(
+    Get-GutBatchFailureReasons -ExitCode 1 -TimedOut $false -ErrorMarkers @() `
+        -ReportedFailures 1 -TimeoutSeconds 1800
+)
+if ($noReason.Count -ne 0) {
+    throw 'Un test rosso gia'' attribuito al suo script non deve fallire tutto il batch.'
+}
+
+$greenRun = @(
+    Get-GutBatchFailureReasons -ExitCode 0 -TimedOut $false -ErrorMarkers @() `
+        -ReportedFailures 0 -TimeoutSeconds 1800
+)
+if ($greenRun.Count -ne 0) {
+    throw 'Una run pulita non deve produrre motivi di fallimento del batch.'
+}
+
+$deadProcess = @(
+    Get-GutBatchFailureReasons -ExitCode 3 -TimedOut $false -ErrorMarkers @() `
+        -ReportedFailures 0 -TimeoutSeconds 1800
+)
+if ($deadProcess.Count -ne 1) {
+    throw 'Un''uscita anomala senza test rossi deve essere un fallimento di batch.'
+}
+
+# Onesta' dei gate: un errore motore vale anche con report GUT verde.
+$engineError = @(
+    Get-GutBatchFailureReasons -ExitCode 0 -TimedOut $false `
+        -ErrorMarkers @('SCRIPT ERROR') -ReportedFailures 0 -TimeoutSeconds 1800
+)
+if ($engineError.Count -ne 1) {
+    throw 'Un errore motore deve fallire il batch anche con report GUT verde.'
+}
+
+$timedOut = @(
+    Get-GutBatchFailureReasons -ExitCode 0 -TimedOut $true -ErrorMarkers @() `
+        -ReportedFailures 0 -TimeoutSeconds 1800
+)
+if ($timedOut.Count -ne 1 -or $timedOut[0] -notmatch 'TIMEOUT') {
+    throw 'Un batch scaduto deve essere dichiarato TIMEOUT.'
 }
 
 $release = Invoke-Plan -Profile Release -ChangedPath @('docs/development-plan.md')

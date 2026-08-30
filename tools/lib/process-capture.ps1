@@ -161,7 +161,15 @@ function Invoke-CapturedProcess {
         [string]$CompletionPattern,
 
         [ValidateRange(0, 60000)]
-        [int]$CompletionGraceMs = 2000
+        [int]$CompletionGraceMs = 2000,
+
+        # Un batch lungo che non stampa nulla e' indistinguibile da un blocco:
+        # con questi due parametri il chiamante puo' emettere una riga di
+        # avanzamento mentre il processo e' ancora vivo (PS-023).
+        [ValidateRange(0, 600)]
+        [int]$ProgressIntervalSeconds = 0,
+
+        [scriptblock]$ProgressAction
     )
 
     $artifactBefore = $null
@@ -203,10 +211,20 @@ function Invoke-CapturedProcess {
     $lastArtifactSignature = $null
     $artifactStableSinceMs = 0L
     $markerSeenAtMs = -1L
+    $lastProgressMs = 0L
 
     while (-not $process.WaitForExit(250)) {
         Update-StreamCapture -State $stdoutState -CompletionPattern $CompletionPattern
         Update-StreamCapture -State $stderrState -CompletionPattern $CompletionPattern
+
+        if (
+            $ProgressIntervalSeconds -gt 0 -and
+            $null -ne $ProgressAction -and
+            ($stopwatch.ElapsedMilliseconds - $lastProgressMs) -ge ($ProgressIntervalSeconds * 1000)
+        ) {
+            $lastProgressMs = $stopwatch.ElapsedMilliseconds
+            & $ProgressAction $stopwatch.Elapsed $stdoutState.Lines
+        }
 
         if (
             $TimeoutSeconds -gt 0 -and

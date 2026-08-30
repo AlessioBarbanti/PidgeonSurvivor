@@ -202,6 +202,43 @@ func test_composed_input_and_queue() -> void:
 	controller.prepare_restart()
 
 
+func test_second_offer_with_external_focus() -> void:
+	# PS-013: alla seconda offerta il focus GUI appartiene quasi sempre a un
+	# Control esterno alle carte. Cercarlo direttamente in Array[UpgradeCard]
+	# faceva fallire la validazione del TypedArray a ogni nuova offerta.
+	var safe_rect := Rect2(20.0, 20.0, 1240.0, 680.0)
+	var fixture := await _create_overlay_fixture(safe_rect, 1313)
+	var controller := fixture.controller as RunController
+	var overlay := fixture.overlay as UpgradeOverlay
+	var fixture_root := fixture.root as Control
+	var experience := fixture_root.get_node("ExperienceSystem") as ExperienceSystem
+
+	var outsider := Button.new()
+	outsider.name = "OutsiderFocus"
+	outsider.process_mode = Node.PROCESS_MODE_ALWAYS
+	outsider.text = "ESTERNO"
+	fixture_root.add_child(outsider)
+	await wait_process_frames(1)
+	outsider.grab_focus()
+	await wait_process_frames(1)
+	assert_true(outsider.has_focus(), "La fixture deve dare il focus a un Control esterno alle carte.")
+	assert_eq(overlay.get_focused_card_index(), -1, "Un focus esterno non deve risultare una carta focalizzata.")
+
+	assert_true(overlay.submit_card(0), "La prima offerta deve accettare una scelta.")
+	await wait_process_frames(2)
+	assert_true(experience.add_experience(1), "La fixture deve accodare una seconda offerta.")
+	await wait_process_frames(2)
+
+	assert_true(overlay.visible, "La seconda offerta deve essere visibile.")
+	assert_eq(overlay.get_displayed_level(), 3, "La seconda offerta deve annunciare il livello successivo.")
+	assert_eq(overlay.get_focused_card_index(), -1, "La seconda offerta non deve preselezionare nessuna carta.")
+	assert_true(outsider.has_focus(), "Il rilascio del focus non deve toccare i Control esterni alle carte.")
+
+	controller.prepare_restart()
+	fixture_root.queue_free()
+	await wait_process_frames(1)
+
+
 func _create_overlay_fixture(safe_rect: Rect2, seed_value: int) -> Dictionary:
 	var fixture_root := Control.new()
 	fixture_root.name = "UpgradeOverlayFixture"

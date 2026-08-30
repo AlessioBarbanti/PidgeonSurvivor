@@ -27,6 +27,28 @@ Passiva — Guarigione Ritardata: Parte del danno subito resta recuperabile: se 
 Attiva — Tempesta di Tuoni: Una tempesta di fulmini telegrafati cade su punti fissi attorno a Zat, colpendo ogni nemico che si trova sotto le zone d'impatto; il valore sta nel portarci sopra orde e Boss (B43).
 Boss: Evil Zat.
 
+Contratto runtime di Guarigione Ritardata (confermato da PS-003; i valori vivono
+in `data/friends/zat.tres`, la logica in `FriendPassiveController`):
+
+- La quota recuperabile è il `recoverable_fraction` (35%) del danno
+  **applicato**, cioè dopo riduzioni e moltiplicatori e comunque limitato alla
+  vita residua.
+- Il recupero parte dopo `recovery_delay` (3 s) senza subire alcun danno.
+- Il recupero è progressivo e lineare su `recovery_duration` (4 s): la quota si
+  svuota esattamente a fine finestra.
+- Un nuovo colpo somma la propria quota al residuo non ancora restituito e
+  riavvia da capo sia l'attesa sia la finestra di recupero: la penalità è il
+  tempo, mai la quota.
+- L'accumulo non ha tetto e può superare la vita residua.
+- A vita piena — o quando il tetto degli HP massimi è già raggiunto — la quota
+  residua viene scartata per intero al primo tick di recupero.
+- La quota non assorbe il danno letale e non resuscita Zat.
+- Attesa e recupero avanzano solo in `RUNNING`: pausa, level-up e Boss intro li
+  congelano senza consumarli.
+- Restart e cambio personaggio azzerano quota e timer.
+- `get_recoverable_health()` e il segnale `delayed_healing_changed` espongono la
+  quota corrente senza consumarla.
+
 ## Alea
 
 Ruolo: Rischio, fortuna e mischia.  

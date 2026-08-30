@@ -24,6 +24,8 @@ param(
     [int]$AndroidArtifactStableSeconds = 8,
     [ValidateRange(10, 600)]
     [int]$RuntimeTimeoutSeconds = 120,
+    [ValidateRange(60, 3600)]
+    [int]$GutTimeoutSeconds = 1800,
     [ValidateSet('Compact', 'Detailed')]
     [string]$OutputMode = 'Compact',
     [switch]$NoCache,
@@ -130,6 +132,7 @@ function Get-FileContentHash {
 }
 
 . (Join-Path $PSScriptRoot 'lib\process-capture.ps1')
+. (Join-Path $PSScriptRoot 'lib\gut-batch-status.ps1')
 
 
 function Resolve-GodotConsole {
@@ -232,6 +235,17 @@ function Test-IsRuntimePath {
 
     $normalized = $Path.Replace('\', '/')
     if ($normalized -match '(^|/)hd/') {
+        return $false
+    }
+    # Un manifest, un README o un .gdignore dentro assets/ descrivono gli
+    # asset, non sono asset: senza questa esclusione una card che aggiorna la
+    # propria documentazione finisce fra le path runtime non mappate e fa
+    # scattare il fallback run_all, cioe' un Relevant costa quanto un Full
+    # (PS-023).
+    if (
+        $normalized -match '\.(md|txt)$' -or
+        $normalized -match '(^|/)\.gdignore$'
+    ) {
         return $false
     }
     return $normalized -match '^(project\.godot|export_presets\.cfg|scenes/|scripts/|data/|assets/)'
@@ -608,6 +622,8 @@ function Add-GutStepsFromScripts {
         [string]$LogPath,
 
         [int]$DurationMs = 0,
+        [int]$ExitCode = 0,
+        [bool]$TimedOut = $false,
         [switch]$Cached
     )
 
@@ -627,8 +643,8 @@ function Add-GutStepsFromScripts {
             name = "$Category-$($scriptResult.path)"
             category = $Category
             status = $status
-            exit_code = 0
-            timed_out = $false
+            exit_code = if ($Cached) { 0 } else { $ExitCode }
+            timed_out = if ($Cached) { $false } else { $TimedOut }
             duration_ms = $DurationMs
             markers = @()
             error_markers = @()
@@ -699,6 +715,25 @@ function Invoke-GutBatch {
 
     $junitPath = Join-Path $logRoot ($safeName + '.junit.xml')
     $resPaths = @($relativePaths | ForEach-Object { "res://$_" })
+    # Silenzio e blocco si somigliano: una riga al minuto dice che il batch e'
+    # vivo e a che punto e'. Write-Host, non Write-Output, per non inquinare lo
+    # stdout letto da -AsJson (PS-023).
+    $batchLabel = $Category
+    $batchTotal = $resolvedPaths.Count
+    $progressAction = {
+        param([TimeSpan]$Elapsed, [object]$Lines)
+
+        $started = @($Lines | Where-Object { $_ -match 'res://tests/[^\s,]+\.gd' })
+        $last = if ($started.Count -gt 0) {
+            [regex]::Match($started[-1], 'res://tests/[^\s,]+\.gd').Value
+        }
+        else { '(avvio)' }
+        Write-Host (
+            '... gut-{0} vivo da {1:hh\:mm\:ss}: {2}/{3} script, ultimo {4}' -f
+                $batchLabel, $Elapsed, $started.Count, $batchTotal, $last
+        )
+    }.GetNewClosure()
+
     $processResult = Invoke-CapturedProcess -FilePath $GodotPath -Arguments @(
         '--headless',
         '--path', $repoRoot,
@@ -707,20 +742,20 @@ function Invoke-GutBatch {
         ('-gtest=' + ($resPaths -join ',')),
         '-gexit',
         ('-gjunit_xml_file=' + $junitPath)
-    ) -WorkingDirectory $repoRoot
+    ) -WorkingDirectory $repoRoot -TimeoutSeconds $GutTimeoutSeconds `
+        -ProgressIntervalSeconds 60 -ProgressAction $progressAction
 
     [IO.File]::WriteAllText($logPath, $processResult.Output, [Text.UTF8Encoding]::new($false))
 
+    # Un errore Godot (SCRIPT ERROR, FATAL EXCEPTION) puo' comparire senza che
+    # GUT lo traduca in un'asserzione fallita: l'exit code 0 non basta, come
+    # per gli smoke legacy (CLAUDE.md, "Onesta' dei gate"). Da qui la ricerca
+    # testuale sull'intero output, che alimenta Get-GutBatchFailureReasons.
     $errorMarkers = @(
         [regex]::Matches($processResult.Output, $failurePattern) |
             ForEach-Object { $_.Value.ToUpperInvariant() } |
             Sort-Object -Unique
     )
-    # Un errore Godot (SCRIPT ERROR, FATAL EXCEPTION) puo' comparire senza che
-    # GUT lo traduca in un'asserzione fallita: l'exit code 0 non basta, come
-    # per gli smoke legacy (CLAUDE.md, "Onesta' dei gate").
-    $processOk = ($processResult.ExitCode -eq 0) -and (-not $processResult.TimedOut) -and
-        ($errorMarkers.Count -eq 0)
     $rawScripts = Get-GutJUnitResults -XmlPath $junitPath
 
     if ($null -eq $rawScripts) {
@@ -733,7 +768,13 @@ function Invoke-GutBatch {
             duration_ms = $processResult.DurationMs
             markers = @()
             error_markers = @($errorMarkers)
-            note = 'Report JUnit GUT assente o illeggibile: nessun test eseguito o crash prima del report.'
+            note = if ($processResult.TimedOut) {
+                "TIMEOUT dopo $GutTimeoutSeconds s prima che GUT scrivesse il report: " +
+                'processo terminato, log parziale conservato.'
+            }
+            else {
+                'Report JUnit GUT assente o illeggibile: nessun test eseguito o crash prima del report.'
+            }
             log = $logPath
         }
         $steps.Add($step)
@@ -748,14 +789,41 @@ function Invoke-GutBatch {
     # elemento).
     $scripts = @($rawScripts)
 
-    if (-not $processOk) {
-        foreach ($scriptResult in $scripts) {
-            $scriptResult.status = 'FAIL'
+    $addedSteps = @(Add-GutStepsFromScripts -Scripts $scripts -Category $Category `
+        -LogPath $logPath -DurationMs $processResult.DurationMs `
+        -ExitCode $processResult.ExitCode -TimedOut $processResult.TimedOut)
+
+    # GUT con -gexit esce non-zero appena un test fallisce, e quel rosso e' gia'
+    # attribuito al suo script dal report JUnit. Prima bastava quell'exit code
+    # per forzare FAIL su ogni script del batch: 65 righe rosse per un solo test
+    # davvero fallito. Restano fallimenti di batch soltanto le cause non
+    # attribuibili a un singolo script (PS-023).
+    $reportedFailures = @($scripts | Where-Object { $_.status -eq 'FAIL' }).Count
+    $batchReasons = @(Get-GutBatchFailureReasons `
+        -ExitCode $processResult.ExitCode `
+        -TimedOut ([bool]$processResult.TimedOut) `
+        -ErrorMarkers @($errorMarkers) `
+        -ReportedFailures $reportedFailures `
+        -TimeoutSeconds $GutTimeoutSeconds)
+    if ($batchReasons.Count -gt 0) {
+        $batchStep = [pscustomobject]@{
+            name = "$Category-gut-batch"
+            category = $Category
+            status = 'FAIL'
+            exit_code = $processResult.ExitCode
+            timed_out = $processResult.TimedOut
+            duration_ms = $processResult.DurationMs
+            markers = @()
+            error_markers = @($errorMarkers)
+            note = ($batchReasons -join ' ')
+            log = $logPath
+        }
+        $steps.Add($batchStep)
+        $addedSteps = @($addedSteps) + @($batchStep)
+        if (-not $KeepGoing) {
+            $script:halted = $true
         }
     }
-
-    $addedSteps = @(Add-GutStepsFromScripts -Scripts $scripts -Category $Category `
-        -LogPath $logPath -DurationMs $processResult.DurationMs)
     $overallStatus = if (@($addedSteps | Where-Object { $_.status -eq 'FAIL' }).Count -gt 0) {
         'FAIL'
     }
@@ -777,6 +845,21 @@ function Get-CategorySummary {
     return "$successful/$($matching.Count)"
 }
 
+# Il vocabolario interno degli stati resta invariato (PASS/FAIL/CACHED/...):
+# qui si distingue soltanto, in lettura, un batch scaduto da un test rosso.
+function Get-StepDisplayStatus {
+    param([object]$Step)
+
+    if (
+        $Step.status -eq 'FAIL' -and
+        ($Step.PSObject.Properties.Name -contains 'timed_out') -and
+        $Step.timed_out
+    ) {
+        return 'TIMEOUT'
+    }
+    return $Step.status
+}
+
 function Write-RunnerOutput {
     param(
         [Parameter(Mandatory)]
@@ -795,7 +878,16 @@ function Write-RunnerOutput {
             }
             else { '' }
             $noteText = if ([string]::IsNullOrWhiteSpace($step.note)) { '' } else { ' note=' + $step.note }
-            Write-Output "$($step.status) $($step.name) exit=$($step.exit_code)$markerText$noteText"
+            # L'exit code appartiene al processo, non al singolo script del
+            # batch: stamparlo accanto a un PASS ("PASS ... exit=1") confonde.
+            # Resta nel JSON, dove serve alla diagnosi (PS-023).
+            $exitText = if ($step.status -eq 'PASS' -or $step.status -eq 'CACHED') {
+                ''
+            }
+            else { ' exit=' + $step.exit_code }
+            Write-Output (
+                "$(Get-StepDisplayStatus -Step $step) $($step.name)$exitText$markerText$noteText"
+            )
         }
     }
     else {
@@ -824,7 +916,14 @@ function Write-RunnerOutput {
             ($parts -join ' ')
         )
         foreach ($failed in @($steps | Where-Object { $_.status -eq 'FAIL' })) {
-            Write-Output "FAIL step=$($failed.name) exit=$($failed.exit_code) log=$($failed.log)"
+            $failedNote = if ([string]::IsNullOrWhiteSpace($failed.note)) {
+                ''
+            }
+            else { ' note=' + $failed.note }
+            Write-Output (
+                "$(Get-StepDisplayStatus -Step $failed) step=$($failed.name) " +
+                "exit=$($failed.exit_code) log=$($failed.log)$failedNote"
+            )
         }
     }
     Write-Output "LOG_ROOT=$logRoot"
@@ -920,6 +1019,7 @@ try {
     $runnerHash = Get-StringHash -Text (
         "$(Get-FileContentHash -Path $PSCommandPath)|" +
         "$(Get-FileContentHash -Path (Join-Path $PSScriptRoot 'lib\process-capture.ps1'))|" +
+        "$(Get-FileContentHash -Path (Join-Path $PSScriptRoot 'lib\gut-batch-status.ps1'))|" +
         "$(Get-FileContentHash -Path (Resolve-RepositoryPath -Path $TestMap -MustExist))"
     )
     $runtimeHash = Get-CombinedRepositoryHash -Paths @(Get-RepositoryRuntimeFiles)

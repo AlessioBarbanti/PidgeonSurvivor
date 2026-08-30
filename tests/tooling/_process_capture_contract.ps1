@@ -151,4 +151,22 @@ if ($failures.Count -gt 0) {
     exit 1
 }
 
+# PS-023: senza una riga di avanzamento, un batch lungo e' indistinguibile da
+# un blocco. La callback deve essere invocata mentre il processo e' ancora
+# vivo, non alla fine.
+$progressTicks = [Collections.Generic.List[string]]::new()
+$progressResult = Invoke-CapturedProcess -FilePath 'cmd.exe' -Arguments @(
+    '/c', 'ping', '-n', '4', '127.0.0.1'
+) -WorkingDirectory $repoRoot -ProgressIntervalSeconds 1 -ProgressAction {
+    param([TimeSpan]$Elapsed, [object]$Lines)
+
+    $progressTicks.Add("tick $($Elapsed.TotalSeconds)")
+}.GetNewClosure()
+if ($progressResult.ExitCode -ne 0) {
+    throw 'Il comando di prova per l''avanzamento deve terminare correttamente.'
+}
+if ($progressTicks.Count -eq 0) {
+    throw 'Invoke-CapturedProcess deve invocare ProgressAction durante l''esecuzione.'
+}
+
 Write-Output 'PROCESS_CAPTURE_CONTRACT_OK'

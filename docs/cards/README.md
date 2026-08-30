@@ -29,8 +29,8 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 |---|---|---|---|---|---|---|
 | [PS-001](./to_test/PS-001-tell-di-stato-senza-snaturare-lo-sprite.md) | Comunicare la fase della passiva senza ridipingere lo sprite | ux | arte | IN VERIFICA | alta | — |
 | [PS-002](./completed/PS-002-restyle-proiettili-giocatore-e-nemici.md) | Sostituire i proiettili "debug" con sprite ImageGen leggibili | art | arte | COMPLETATO | media | — |
-| [PS-003](./to_do/PS-003-conferma-abilita-passiva-zat.md) | Confermare Guarigione Ritardata | chore | gameplay | PRONTO | alta | — |
-| [PS-004](./to_do/PS-004-lega-Tempesta-di-Tuoni-al-danno-recuperabile.md) | Legare Tempesta di Tuoni al danno recuperabile | feat | gameplay | BLOCCATO | alta | PS-003 |
+| [PS-003](./completed/PS-003-conferma-abilita-passiva-zat.md) | Confermare Guarigione Ritardata | chore | gameplay | COMPLETATO | alta | — |
+| [PS-004](./to_do/PS-004-lega-Tempesta-di-Tuoni-al-danno-recuperabile.md) | Legare Tempesta di Tuoni al danno recuperabile | feat | gameplay | IN CORSO | alta | PS-003 |
 | [PS-005](./to_do/PS-005-Boss-timer.md) | Annunciare l'arrivo del Boss | ux | gameplay | PRONTO | alta | — |
 | [PS-006](./to_do/PS-006-bosses-new-abilities.md) | Dare agli Evil una Signature Ability | feat | gameplay | BLOCCATO | alta | PS-004 |
 | [PS-007](./to_do/PS-007-impedire-run-AFK-lategame.md) | Impedire che la late run diventi AFK | feat | gameplay | PRONTO | alta | — |
@@ -38,11 +38,14 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-009](./to_do/PS-009-trasparenza-dialog-boss.md) | Rendere trasparente la Boss UI sotto il Player | ux | ui | PRONTO | media | — |
 | [PS-010](./to_do/PS-010-implementa-difesa-grigliata.md) | Implementare Difesa Grigliata | feat | gameplay | PRONTO | alta | — |
 | [PS-011](./to_do/PS-011-confeziona-prima-release-nativa.md) | Confezionare la prima release nativa | chore | piattaforma | BLOCCATO | alta | PS-010 |
-| [PS-013](./to_do/PS-013-crash-typedarray-seconda-offerta-upgrade.md) | Correggere il crash TypedArray alla seconda offerta upgrade | fix | ui | PRONTO | alta | — |
+| [PS-013](./to_test/PS-013-crash-typedarray-seconda-offerta-upgrade.md) | Correggere il crash TypedArray alla seconda offerta upgrade | fix | ui | IN VERIFICA | alta | — |
 | [PS-014](./to_test/PS-014-logo-welcome-fuori-viewport.md) | Riportare il logo della welcome dentro il viewport | fix | ui | IN VERIFICA | media | — |
 | [PS-015](./completed/PS-015-bordo-pixelato-card-selettore.md) | Adeguare il test della card centrale del selettore all'artwork di selezione | fix | ui | COMPLETATO | bassa | — |
 | [PS-016](./to_test/PS-016-tutorial-fuori-safe-area.md) | Riportare il tutorial dentro la safe area su tutti i profili | fix | ui | IN VERIFICA | media | — |
 | [PS-017](./completed/PS-017-font-size-locale-selettore-personaggi.md) | Rimuovere il test che vietava font-size locali nel selettore personaggi | fix | ui | COMPLETATO | bassa | — |
 | [PS-018](./completed/PS-018-hud-composta-danno-restart-vita.md) | Correggere danno e restart della vita nella scena HUD composta | fix | gameplay | COMPLETATO | alta | — |
-| [PS-019](./to_do/PS-019-manifest-vfx-hash-non-aggiornato.md) | Riallineare l'hash del manifest VFX per instinctive_dodge_accent | chore | arte | PRONTO | bassa | — |
-| [PS-020](./to_do/PS-020-diagnostica-flakiness-backdrop-selettore.md) | Diagnosticare il fallimento intermittente sul backdrop del selettore | chore | tooling | PRONTO | bassa | — |
+| [PS-019](./completed/PS-019-manifest-vfx-hash-non-aggiornato.md) | Riallineare l'hash del manifest VFX per instinctive_dodge_accent | chore | arte | COMPLETATO | bassa | — |
+| [PS-020](./completed/PS-020-diagnostica-flakiness-backdrop-selettore.md) | Diagnosticare il fallimento intermittente sul backdrop del selettore | chore | tooling | COMPLETATO | bassa | — |
+| [PS-021](./completed/PS-021-import-orfano-backdrop-bronze.md) | Rimuovere l'import orfano del backdrop bronze del selettore | chore | arte | COMPLETATO | bassa | — |
+| [PS-022](./to_do/PS-022-b15-target-registrati-in-piu-suite-completa.md) | Diagnosticare i due target registrati in più di test_b15_boss_encounter | chore | tooling | PRONTO | media | — |
+| [PS-023](./to_test/PS-023-runner-verifica-affidabile.md) | Rendere leggibile e non bloccante il runner di verifica | chore | tooling | IN VERIFICA | alta | — |
