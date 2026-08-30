@@ -1,4 +1,7 @@
-# Pidgeon Survivor — Documento guida di sviluppo
+# Archivio — Pidgeon Survivor, documento guida di sviluppo
+
+> Documento embrionale precedente al PRD corrente. È conservato come materiale
+> storico e non va usato come backlog o fonte di verità operativa.
 
 ## 1. Scopo del documento
 

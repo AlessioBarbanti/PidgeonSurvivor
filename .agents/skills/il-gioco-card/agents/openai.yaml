@@ -1,0 +1,4 @@
+interface:
+  display_name: "IL GIOCO Card"
+  short_description: "Create, implement, and verify an IL GIOCO card"
+  default_prompt: "Use $il-gioco-card to implement and verify the next ready card."

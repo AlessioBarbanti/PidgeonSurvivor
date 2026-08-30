@@ -1,4 +1,7 @@
-# Piano di evoluzione del gameplay — B40–B54
+﻿# Archivio del piano di evoluzione del gameplay — B40–B54
+
+> Proposta storica consolidata il 30 agosto 2026. Le attività correnti sono nel
+> [snapshot del development plan](./development-plan-through-b54-2026-08-30.md) e nella [`board`](../cards/README.md).
 
 **Stato:** proposta del 28 agosto 2026. Il proprietario ha approvato e fatto
 implementare **B40**, **B41**, **B42**, **B43**, **B44**, **B45**, **B47** e
@@ -11,7 +14,7 @@ nella sezione 9.
 
 Questo file è la linea guida di sviluppo per gli interventi di gameplay emersi
 dalla revisione di design del 28 agosto 2026. Ha lo stesso registro di
-[`development-plan.md`](./development-plan.md): ogni voce è una slice
+[`development-plan-through-b54-2026-08-30.md`](./development-plan-through-b54-2026-08-30.md): ogni voce è una slice
 incrementale con contratti verificabili, file coinvolti, marker di smoke e gate.
 
 Regole di ingaggio:
@@ -20,10 +23,10 @@ Regole di ingaggio:
   comportamento. Un blocco `COMPLETATO` resta storico.
 - Una slice diventa eseguibile solo quando è stata **approvata**, riportata in
   `development-plan.md` sezione 6 e — se tocca l'identità di un personaggio —
-  registrata in [`content-approvals.md`](./content-approvals.md) e
-  [`characters.md`](./characters.md).
+  registrata in [`content-approvals.md`](../content-approvals.md) e
+  [`characters.md`](../characters.md).
 - I valori numerici qui proposti sono **punti di partenza da playtest**, non
-  contratti. Diventano autorevoli quando entrano in [`prd.md`](./prd.md) e nei
+  contratti. Diventano autorevoli quando entrano in [`prd.md`](../prd.md) e nei
   `.tres`.
 - Vale integralmente la Definition of Done della sezione 8 del piano di
   sviluppo, più i criteri aggiuntivi della sezione 6 di questo documento.
@@ -1186,7 +1189,7 @@ Il nuovo APK è stato installato sul Pixel 9 con `adb install -r` (`Success`),
 senza avviare l'app. Restano aperti Full/Release, runtime interattivo Windows,
 cold launch e la prova fisica del proprietario su Pixel 9 per tap, swipe, Back, leggibilità 20:9 e
 passaggio finale tutorial → selezione → run. Dettaglio in
-[`b54-verification.md`](./b54-verification.md).
+[`b54-verification.md`](../b54-verification.md).
 
 ## 4. Grafo delle dipendenze
 
@@ -1216,7 +1219,7 @@ identità a quattro profili su otto.
 ## 5. Criteri di accettazione di design
 
 Da applicare come gate **prima** del gate tecnico descritto in
-[`verification-workflow.md`](./verification-workflow.md). Valgono per ogni slice
+[`verification-workflow.md`](../verification-workflow.md). Valgono per ogni slice
 di questo documento e per qualsiasi contenuto futuro.
 
 **Nuova passiva o revisione**
@@ -1265,7 +1268,7 @@ di questo documento e per qualsiasi contenuto futuro.
 
 ## 6. Definition of Done aggiuntiva
 
-Oltre alla sezione 8 di [`development-plan.md`](./development-plan.md), una
+Oltre alla sezione 8 dello [snapshot del piano](./development-plan-through-b54-2026-08-30.md), una
 slice di questo piano è finita solo quando:
 
 - soddisfa i criteri di design della sezione 5;

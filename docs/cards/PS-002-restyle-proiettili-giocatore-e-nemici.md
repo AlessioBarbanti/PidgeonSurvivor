@@ -3,9 +3,10 @@ id: PS-002
 titolo: Sostituire i proiettili "debug" con sprite ImageGen leggibili
 tipo: art
 area: arte
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
-milestone:
+dipende_da: []
+origine:
 creato: 2026-08-29
 aggiornato: 2026-08-29
 ---
@@ -81,6 +82,18 @@ logica di movimento/danno restano invariate.
 - [ ] Controllo percettivo richiesto: sì — confronto diretto vecchio/nuovo
       stile con il proprietario prima di considerare chiusa la card
 
+## Decisioni
+
+- **2026-08-29 — Texture generate sopra geometria autorevole.** Gli sprite
+  rifiniscono l'aspetto; hitbox, raggio, danno e priorità restano in Godot.
+- **2026-08-30 — Chiusura operativa accettata dal proprietario.** I gate
+  percettivi non eseguiti restano dichiarati nelle note e non diventano prove.
+
+## Documenti sincronizzati
+
+- [x] Provenienza, trasformazioni e hash registrati nel manifest asset locale.
+- [x] La priorità visiva dei proiettili ostili resta nel PRD.
+
 ## Note
 
 Opzioni discusse con il proprietario (2026-08-29):
@@ -135,3 +148,9 @@ Opzioni discusse con il proprietario (2026-08-29):
   `lastUpdateTime=2026-08-29 21:11:47`; cold launch del pacchetto corrente con
   zero righe a priorità `E`, zero `SCRIPT ERROR` e zero `FATAL EXCEPTION`. Non
   è evidenza della leggibilità dei proiettili in arena.
+
+### Chiusura operativa del 30 agosto 2026
+
+Il proprietario accetta il candidato corrente e chiude la card senza richiedere
+nuovi export o controlli fisici. Questa accettazione non sostituisce né amplia
+le evidenze tecniche elencate sopra.

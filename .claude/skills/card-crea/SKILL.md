@@ -13,9 +13,8 @@ verificabile e risolvibile da sola in un'altra sessione.
 1. Leggi [docs/cards/README.md](../../../docs/cards/README.md) e le card
    esistenti: se ne esiste una che copre la stessa cosa, **aggiornala** invece di
    duplicarla.
-2. Controlla se il tema appartiene già a una slice del
-   [development plan](../../../docs/development-plan.md). In quel caso la card
-   deve puntarla nel campo `milestone`, non riscriverne il contratto.
+2. Cerca richieste equivalenti, decisioni già prese e riferimenti storici nelle
+   card e nei documenti durevoli. Non creare roadmap o decision log paralleli.
 3. Ispeziona rapidamente il codice interessato quanto basta per nominare i file e
    i contratti in gioco. Una card che sbaglia l'ambito costa più di una card che
    non esiste.
@@ -31,6 +30,8 @@ verificabile e risolvibile da sola in un'altra sessione.
   - `BLOCCATO` se manca una dipendenza: nominala esplicitamente;
   - `DA DEFINIRE` se manca una decisione del proprietario: scrivi la domanda
     precisa da porgli.
+- Compila `dipende_da` con soli ID card; usa `origine` esclusivamente per un
+  riferimento storico B-series, mai come seconda fonte del contratto.
 - I **criteri di accettazione** sono osservabili e binari. "Il pulsante abilità
   resta premibile mentre il joystick è tenuto" è un criterio; "migliorare il
   touch" non lo è.
@@ -39,13 +40,16 @@ verificabile e risolvibile da sola in un'altra sessione.
   registry degli effetti).
 - In Verifica proponi il nome dello smoke e il marker; in Gate manuali marca solo
   i gate realmente pertinenti alla modifica.
+- In `Decisioni` registra le scelte già confermate, quelle aperte e ciò che la
+  card sostituisce. In `Documenti sincronizzati` elenca i contratti durevoli che
+  dovranno ricevere il solo risultato finale.
 
 ## 3. Registra e riporta
 
 1. Aggiungi la riga alla tabella in
    [docs/cards/README.md](../../../docs/cards/README.md).
-2. Non modificare il development plan per una card: se la richiesta è grande
-   abbastanza da meritare una slice B-series, dillo e proponi la promozione.
-3. Riporta al proprietario: ID, titolo, stato scelto, e — se lo stato è
+2. Controlla che metadati, dipendenze e riga della board restino allineati.
+3. Qualunque dimensione del lavoro resta una card: non promuoverla a B-series.
+4. Riporta al proprietario: ID, titolo, stato scelto, e — se lo stato è
    `DA DEFINIRE` o `BLOCCATO` — la domanda o la dipendenza esatta che sblocca.
-4. Non implementare nulla in questa sessione se non ti viene chiesto.
+5. Non implementare nulla in questa sessione se non ti viene chiesto.

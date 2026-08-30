@@ -10,13 +10,13 @@ leggilo prima di toccare il progetto.
 
 Procedure specifiche, in ordine di frequenza d'uso:
 
-- milestone della serie B e card della board: `.agents/skills/il-gioco-milestone/SKILL.md`
-  (formato Codex) oppure `.claude/skills/milestone/` e `.claude/skills/card-risolvi/`;
+- creazione e risoluzione delle card: `.agents/skills/il-gioco-card/SKILL.md`
+  (formato Codex) oppure `.claude/skills/card-crea/` e `.claude/skills/card-risolvi/`;
 - build e installazione Android: `.claude/skills/build-apk/`;
 - smoke test di integrazione: `.claude/skills/smoke-test/`;
 - gate Windows e Android: `.claude/skills/gate-piattaforme/`;
 - asset grafici e audio: `.claude/skills/asset-pipeline/`.
 
-Documenti autorevoli: `docs/development-plan.md` come fonte di verità
-operativa, `docs/prd.md`, `docs/decision-log.md`, `docs/content-approvals.md`,
-`docs/verification-workflow.md` e `docs/setup.md`.
+Documenti autorevoli: `docs/cards/README.md` come unica fonte di verità
+operativa, `docs/prd.md`, `docs/content-approvals.md`, `docs/characters.md`,
+`docs/powerup-catalog.md`, `docs/verification-workflow.md` e `docs/setup.md`.

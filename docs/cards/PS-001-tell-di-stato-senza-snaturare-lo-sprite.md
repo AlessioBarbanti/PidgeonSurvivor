@@ -5,7 +5,8 @@ tipo: ux
 area: arte
 stato: IN CORSO
 priorita: alta
-milestone: B44
+dipende_da: []
+origine: B44
 creato: 2026-08-29
 aggiornato: 2026-08-29
 ---
@@ -27,9 +28,10 @@ tutto verde. Lo stesso vale per le altre sette tinte in
 Aleo caldo/freddo, Lollo concentrato/distratto, Alea positivo/negativo, Migi
 guscio pronto/scudo.
 
-Questa è la controprova del gate percettivo che B44 ha lasciato aperto
-("leggibilità delle tinte a densità massima"): il proprietario ha guardato e la
-soluzione non regge. Finché resta così, B44 non può chiudersi.
+Questa osservazione ha originato un refinement distinto dalla baseline B44: il
+proprietario ha visto che la tinta non regge come soluzione definitiva. B44 è
+stato chiuso operativamente il 30 agosto 2026; questa card resta `IN CORSO`
+finché il nuovo tell non soddisfa i propri criteri.
 
 ## Comportamento atteso
 
@@ -41,15 +43,14 @@ colori. Il segnale si aggiunge al personaggio, non lo sostituisce.
 slice nulla sullo schermo comunicava la modalità corrente. Rimuovere il tint
 senza rimpiazzarlo riapre quel problema invece di chiudere questo.
 
-## Decisione presa
+## Decisioni
 
-Il proprietario ha scelto il **contorno colorato attorno alla sagoma**, sprite
-interno intatto (opzione a, 29 agosto 2026).
+- **2026-08-29 — Contorno colorato attorno alla sagoma.** Lo sprite interno
+  resta intatto; il segnale deve aggiungersi all'identità cromatica.
 
-Scartate: decal a terra, nodo accent procedurale attorno al Player, tinta
-attenuata su rim. Il contorno vince perche' resta visibile anche quando il
-personaggio e' parzialmente coperto da nemici, che e' esattamente la condizione
-in cui il tell serve di piu'.
+- **Alternative scartate — decal a terra, accent separato e tinta attenuata.**
+  Il contorno resta visibile anche quando il personaggio è parzialmente coperto
+  dai nemici, cioè quando il tell serve di più.
 
 ## Criteri di accettazione
 
@@ -113,6 +114,12 @@ Da **non** toccare:
 - [ ] Controllo percettivo richiesto: **sì** — leggibilità del tell a densità
       massima su Windows e Pixel 9, ed è il gate che B44 ha lasciato aperto
 
+## Documenti sincronizzati
+
+- [ ] Documento durevole del tell corrente: sostituire le due tinte di B44 con
+      i due contorni quando la card viene chiusa.
+- [x] Gli snapshot B44 restano storici e non vengono riscritti.
+
 ## Note
 
 ### Che cosa è cambiato
@@ -163,16 +170,9 @@ Su richiesta del proprietario il checkpoint è stato saltato. **Restano da
 eseguire prima di considerare chiusa la parte automatica:**
 
 - `_b45_role_identity_smoke` dopo la modifica (rinominato ma non rieseguito);
-- `.\tools\run-milestone-checks.ps1 -Milestone B44 -Profile Relevant`;
+- `.\tools\run-milestone-checks.ps1 -Milestone PS-001 -Profile Relevant -FocusedSmoke tests/integration/_b44_state_tells_smoke.gd`;
 - `.\tests\tooling\_milestone_runner_contract.ps1`, che valida
   `milestone-test-map.json` dopo la regola aggiunta.
-
-### Da riconciliare quando B44 chiude
-
-La sezione B44 del development plan dice ancora che «Aleo dichiara lo stato
-termico con due tinte distinte». Dopo questa card non è più vero: sono due
-contorni. Non ho toccato il piano perché una card non deve riscrivere il
-contratto di una slice, ma va allineato alla chiusura di B44.
 
 ### Worktree
 

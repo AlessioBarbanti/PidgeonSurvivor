@@ -1,4 +1,7 @@
-# Note di design — prossimi passi
+# Archivio — Note di design del 28 agosto 2026
+
+> Nota temporanea superata: la CTA Boss e lo sprite dello splitter sono stati
+> integrati; il lavoro sui proiettili è tracciato da PS-002.
 
 ## Pulsanti: asset ancora da generare
 

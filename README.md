@@ -65,6 +65,7 @@ godot --editor --path .
 ```
 
 I comandi di export, i prerequisiti Android e le regole sulla firma sono in
-[`docs/setup.md`](docs/setup.md). Il lavoro è ordinato in
-[`docs/development-plan.md`](docs/development-plan.md) e le assunzioni sono
-registrate in [`docs/decision-log.md`](docs/decision-log.md).
+[`docs/setup.md`](docs/setup.md). La
+[mappa della documentazione](docs/README.md) separa contratti, card, verifiche e
+archivio. Tutto il lavoro e le decisioni operative sono nella
+[`board delle card`](docs/cards/README.md).

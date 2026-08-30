@@ -1,6 +1,8 @@
 # Characters — Elenco e descrizioni
 
-Questo file raccoglie in forma separata le descrizioni dei personaggi presenti in `Test_proposta_game_design.md`.
+Questo file raccoglie le descrizioni correnti dei personaggi. La prima proposta
+da cui sono state estratte è conservata soltanto come
+[materiale storico](./archive/game-design-proposal-legacy.md).
 Nomi e testi sono stati approvati dal proprietario del progetto il 17 agosto
 2026. La fonte runtime è `data/friends/*.tres`; il registro completo è in
 [`content-approvals.md`](./content-approvals.md).

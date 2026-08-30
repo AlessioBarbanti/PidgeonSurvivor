@@ -602,7 +602,11 @@ anche durante la pausa e persistiti in `user://audio_settings.cfg`. Le voci
 personali restano separate da questi effetti generici e silenziose finché non
 vengono fornite e approvate.
 
-## 6. Roadmap di sviluppo
+## 6. Perimetro funzionale consolidato
+
+Questa sezione descrive le aree funzionali del prodotto, non priorità o lavoro
+aperto. Stati, dipendenze e ordine di sviluppo vivono esclusivamente nella
+[`board delle card`](./cards/README.md).
 
 1. **Fondazioni del combattimento:** movimento Player, spawner nemici base,
    collisioni e sparo automatico al nemico più vicino.

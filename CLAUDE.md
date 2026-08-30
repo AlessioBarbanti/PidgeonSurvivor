@@ -12,15 +12,18 @@ contratti a memoria: leggili.
 
 | Documento | Ruolo |
 |---|---|
-| [docs/development-plan.md](docs/development-plan.md) | **Fonte di verità operativa**: roadmap, backlog B-series, stati, gate aperti |
+| [docs/cards/README.md](docs/cards/README.md) | **Fonte di verità operativa**: lavoro, priorità, dipendenze e stati |
 | [docs/prd.md](docs/prd.md) | Contratti di prodotto |
-| [docs/decision-log.md](docs/decision-log.md) | Decisioni prese e loro motivazione |
 | [docs/content-approvals.md](docs/content-approvals.md) | Approvazioni di nomi, ritratti, citazioni, audio, provenienza |
+| [docs/characters.md](docs/characters.md) | Catalogo corrente dei personaggi |
+| [docs/powerup-catalog.md](docs/powerup-catalog.md) | Catalogo corrente dei powerup |
 | [docs/verification-workflow.md](docs/verification-workflow.md) | Contratto dei profili del runner di verifica |
 | [docs/setup.md](docs/setup.md) | Toolchain, variabili locali, export, manifest asset |
 | `docs/b*-verification.md` | Evidenze per milestone |
 
-Le note temporanee vanno integrate nel development plan e poi rimosse.
+Ogni lavoro parte da una card. Decisioni e motivazioni restano nella card; il
+contratto risultante viene sincronizzato nel documento durevole pertinente.
+Non creare roadmap, decision log o tracker paralleli.
 
 ## Lingua
 
@@ -82,13 +85,18 @@ font, [tests/integration/](tests/integration/) per gli smoke,
 Un solo entry point:
 
 ```powershell
-.\tools\run-milestone-checks.ps1 -Milestone B23 -Profile Focused   # loop interno
-.\tools\run-milestone-checks.ps1 -Milestone B23 -Profile Relevant  # checkpoint
-.\tools\run-milestone-checks.ps1 -Milestone B23 -Profile Full      # gate automatico
-.\tools\run-milestone-checks.ps1 -Milestone B23 -Profile Release   # export Windows/Android
+.\tools\run-milestone-checks.ps1 -Milestone PS-010 -Profile Focused `
+  -FocusedSmoke tests/integration/_grill_defense_mode_smoke.gd
+.\tools\run-milestone-checks.ps1 -Milestone PS-010 -Profile Relevant `
+  -FocusedSmoke tests/integration/_grill_defense_mode_smoke.gd
+.\tools\run-milestone-checks.ps1 -Milestone PS-010 -Profile Full
+.\tools\run-milestone-checks.ps1 -Milestone PS-010 -Profile Release
 ```
 
-- Ogni slice ha uno smoke deterministico `tests/integration/_*_smoke.gd` con un
+`-Milestone` è il nome tecnico storico del parametro del runner e accetta l'ID
+della card; non implica l'esistenza di una roadmap B-series.
+
+- Ogni card che cambia il runtime ha uno smoke deterministico `tests/integration/_*_smoke.gd` con un
   marker `*_SMOKE_OK` unico e uscita non nulla in caso di errore.
 - Le associazioni file→regressioni vivono in
   [tools/milestone-test-map.json](tools/milestone-test-map.json).
@@ -120,4 +128,4 @@ disponibile non blocca l'implementazione: lascia il gate **aperto** e dichiaralo
 - Nuovi file grafici o audio richiedono una riga nel `ASSET-MANIFEST.md` della
   cartella, con percorso, origine, autore, licenza, trasformazioni e SHA-256.
 - Commit solo su richiesta esplicita, focalizzati, in italiano, nella forma
-  `feat(B23): ...` / `fix(B23): ...`. Non fare push se non richiesto.
+  `feat(PS-010): ...` / `fix(PS-010): ...`. Non fare push se non richiesto.

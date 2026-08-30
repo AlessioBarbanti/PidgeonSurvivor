@@ -1,4 +1,7 @@
-# Decision log
+﻿# Archivio del decision log
+
+> Snapshot storico consolidato il 30 agosto 2026. Le decisioni successive
+> vivono nelle card; i contratti correnti sono nei documenti durevoli.
 
 Ultimo aggiornamento: 28 agosto 2026
 

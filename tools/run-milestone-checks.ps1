@@ -1,7 +1,7 @@
 ﻿[CmdletBinding()]
 param(
     [Parameter(Mandatory)]
-    [ValidatePattern('^[BbMm]\d+[A-Za-z]?$')]
+    [ValidatePattern('^(?:[BbMm]\d+[A-Za-z]?|[Pp][Ss]-\d+)$')]
     [string]$Milestone,
 
     [ValidateSet('Custom', 'Focused', 'Relevant', 'Full', 'Release')]

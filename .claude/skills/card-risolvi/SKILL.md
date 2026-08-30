@@ -5,8 +5,7 @@ description: Risolvi una card della board di Pidgeon Survivor in docs/cards/ —
 
 # Risolvi una card
 
-Stessa disciplina della skill `milestone`, in scala ridotta. La card è il
-contratto: non allargarla e non reinterpretarla.
+La card è l'unico contratto operativo: non allargarla e non reinterpretarla.
 
 ## 1. Prendi la card
 
@@ -16,10 +15,9 @@ contratto: non allargarla e non reinterpretarla.
    priorità più alta e dipendenze chiuse.
 3. Se lo stato è `DA DEFINIRE` o `BLOCCATO`, **fermati**: riporta la domanda o la
    dipendenza registrata nella card e non implementare.
-4. Se la card punta un `milestone` B-series, leggi quella sezione del
-   [development plan](../../../docs/development-plan.md): il contratto della
-   slice ha la precedenza sulla card.
-5. Porta lo stato a `IN CORSO` e aggiorna `aggiornato`.
+4. Se ricevi un vecchio ID B-series, trova la card tramite `origine`; se non
+   esiste, creala prima di implementare.
+5. Porta lo stato a `IN CORSO` e aggiorna `aggiornato` e la board.
 
 ## 2. Implementa
 
@@ -36,12 +34,14 @@ contratto: non allargarla e non reinterpretarla.
 ## 3. Verifica
 
 ```powershell
-.\tools\run-milestone-checks.ps1 -Milestone B23 -Profile Focused
-.\tools\run-milestone-checks.ps1 -Milestone B23 -Profile Relevant
+.\tools\run-milestone-checks.ps1 -Milestone PS-010 -Profile Focused `
+  -FocusedSmoke tests/integration/_grill_defense_mode_smoke.gd
+.\tools\run-milestone-checks.ps1 -Milestone PS-010 -Profile Relevant `
+  -FocusedSmoke tests/integration/_grill_defense_mode_smoke.gd
 ```
 
-Usa l'ID del milestone collegato; se la card non ne ha uno, passa
-`-FocusedSmoke` con il percorso dello smoke pertinente. Exit code `0` non basta:
+Il parametro tecnico storico `-Milestone` accetta l'ID card; passa sempre
+`-FocusedSmoke` con il percorso pertinente quando esiste. Exit code `0` non basta:
 controlla i log per `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL`,
 `CONTRACT_FAIL`. Per i gate di piattaforma applica `gate-piattaforme`.
 
@@ -52,16 +52,17 @@ controlla i log per `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL`,
 2. Aggiorna lo stato:
    - `IN VERIFICA` se gli automatici sono verdi ma restano gate manuali,
      percettivi o su device;
-   - `VERIFICATO` se tutti i gate pertinenti sono chiusi ma manca il commit;
-   - `COMPLETATO` solo dopo il commit dedicato.
-3. Scrivi in Note le decisioni prese, le alternative scartate e i comandi/marker
-   esatti usati come evidenza.
+   - `VERIFICATO` se tutti i gate pertinenti sono chiusi;
+   - `COMPLETATO` quando la card è accettata e chiusa; il commit resta separato.
+3. Scrivi in `Decisioni` le scelte e motivazioni; in Note alternative, comandi e
+   marker esatti usati come evidenza.
 4. Aggiorna la riga nella tabella di
    [docs/cards/README.md](../../../docs/cards/README.md).
-5. Se la modifica cambia un contratto di prodotto, una decisione o
-   un'approvazione, propagala rispettivamente in `prd.md`, `decision-log.md` o
-   `content-approvals.md`.
-6. Commit solo su richiesta: `feat(PS-007): ...` o `fix(PS-007): ...`, in
+5. Controlla che metadati, dipendenze e riga della board restino allineati.
+6. Se cambia la verità corrente, propaga il solo contratto risultante in
+   `prd.md`, `CLAUDE.md`, cataloghi, `content-approvals.md` o `setup.md` e spunta
+   `Documenti sincronizzati`. La motivazione resta nella card.
+7. Commit solo su richiesta: `feat(PS-007): ...` o `fix(PS-007): ...`, in
    italiano, focalizzato. Nessun push se non richiesto.
-7. Riporta: cosa è cambiato, criteri chiusi e criteri lasciati aperti, risultati
+8. Riporta: cosa è cambiato, criteri chiusi e criteri lasciati aperti, risultati
    Windows/Android separati, gate ancora aperti.

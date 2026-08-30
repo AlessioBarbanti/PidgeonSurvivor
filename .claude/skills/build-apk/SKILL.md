@@ -45,17 +45,16 @@ firma e struttura ZIP verdi.
 
 ```powershell
 # Solo export Android + validazione statica (abilita -InspectAndroid da sé).
-.\tools\run-milestone-checks.ps1 -Milestone B23 -ExportAndroid
+.\tools\run-milestone-checks.ps1 -Milestone PS-011 -ExportAndroid -InspectAndroid
 
 # Candidata completa: Full + refresh editor + export/runtime Windows + Android.
-.\tools\run-milestone-checks.ps1 -Milestone B23 -Profile Release
+.\tools\run-milestone-checks.ps1 -Milestone PS-011 -Profile Release
 ```
 
 Note operative:
 
-- Con `-Milestone` il runner esegue **anche** lo smoke focalizzato di quel
-  milestone se ne trova uno col marker corrispondente. Va bene: è una prova in
-  più prima di impacchettare.
+- `-Milestone` è il nome tecnico storico della label e accetta l'ID card. Passa
+  `-FocusedSmoke` quando la card richiede uno smoke non auto-individuabile.
 - `--install-android-build-template` viene passato **solo** se il template non è
   ancora installato, così gli export di routine non perdono `gradle.properties`.
 - Se l'export non esce da solo ma l'APK è valido e l'ispezione statica è tutta

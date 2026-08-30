@@ -1,6 +1,6 @@
 ---
 name: gate-piattaforme
-description: Esegui e riporta onestamente i gate Windows e Android di Pidgeon Survivor — export, ispezione statica dell'APK, installazione e prova fisica su Pixel 9, touch e multitouch, lifecycle. Usala quando si parla di export, APK, adb, device, prova su telefono, chiusura di un gate di piattaforma o quando un milestone sta per passare a VERIFICATO.
+description: Esegui e riporta onestamente i gate Windows e Android di Pidgeon Survivor — export, ispezione statica dell'APK, installazione e prova fisica su Pixel 9, touch e multitouch, lifecycle. Usala quando si parla di export, APK, adb, device, prova su telefono, chiusura di un gate di piattaforma o quando una card sta per passare a VERIFICATO.
 ---
 
 # Gate Windows e Android
@@ -16,7 +16,7 @@ Tre risultati **distinti**, mai fusi in uno solo:
 ## Automatico
 
 ```powershell
-.\tools\run-milestone-checks.ps1 -Milestone B23 -Profile Release
+.\tools\run-milestone-checks.ps1 -Milestone PS-010 -Profile Release
 ```
 
 `Release` esegue `Full`, refresh editor, export/runtime Windows, export e

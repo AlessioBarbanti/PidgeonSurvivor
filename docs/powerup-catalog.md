@@ -1,6 +1,9 @@
-# Powerup — modifiche e nuovi potenziamenti
+# Catalogo dei powerup
 
-Questo documento contiene esclusivamente le modifiche da applicare ai powerup già esistenti e le proposte per i nuovi potenziamenti da introdurre.
+Questo documento raccoglie i powerup correnti e le proposte ancora aperte. Lo
+stato operativo delle implementazioni resta nella
+[`board`](./cards/README.md); questo file descrive identità, effetti e direzione
+visiva del catalogo senza funzionare da backlog parallelo.
 
 ## Modifiche ai potenziamenti esistenti
 
@@ -264,7 +267,7 @@ elementi legati ai piccioni.
 
 ### Ordine consigliato di introduzione
 
-#### Stato prima ondata — implementata, in verifica
+#### Stato prima ondata — completata
 
 Il 27 agosto 2026 sono entrati nel catalogo runtime `Via dalla Griglia!`,
 `Pirofila Rinforzata`, `Il condimento di Barb` e `Bis di Salsiccia`. I quattro
@@ -272,8 +275,9 @@ effetti sono moltiplicatori configurabili, ricostruiti dai rank e azzerati a
 restart o cambio personaggio; velocità proiettile e cooldown sono snapshot
 dell'azione successiva, mentre difesa e XP agiscono sugli eventi successivi.
 `A Tutta Brace!` e `Pinza Lunga` aggiornano inoltre rispettivamente nome e
-icona delle carte storiche `rapid_fire` e `wide_magnet`. La seconda ondata
-resta una proposta non implementata.
+icona delle carte storiche `rapid_fire` e `wide_magnet`. Il proprietario ha
+accettato operativamente la prima ondata il 30 agosto 2026 senza richiedere
+nuove prove. La seconda ondata resta una proposta non implementata.
 
 Prima ondata:
 

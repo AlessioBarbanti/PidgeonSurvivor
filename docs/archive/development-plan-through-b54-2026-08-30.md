@@ -1,7 +1,10 @@
-# Piano di sviluppo — Pidgeon Survivor
+﻿# Archivio del piano di sviluppo — Pidgeon Survivor
 
-Fonte: [`prd.md`](./prd.md)  
-Decisioni: [`decision-log.md`](./decision-log.md)  
+> Snapshot storico consolidato il 30 agosto 2026. Per stato corrente, ordine di
+> lavoro e gate aperti usare la [`board`](../cards/README.md).
+
+Fonte: [`prd.md`](../prd.md)
+Decisioni: [`decision-log-through-2026-08-30.md`](./decision-log-through-2026-08-30.md)
 Stato: il ciclo funzionale e visivo B18C–B18W è completato. Tutti i gate automatici, Windows, Android statici e Pixel 9 già registrati restano chiusi; il 25 agosto 2026 il proprietario ha inoltre accettato la chiusura operativa di B18V, senza trasformare in evidenza tecnica le prove emulatore/soak non registrate. B22 è completato con runtime e controllo percettivo sul Pixel 9 il 26 agosto 2026; B23 resta `PRONTO`. B24 è implementato con baseline candidata `1,25×` ed è `IN VERIFICA` fino al confronto percettivo Windows/Pixel 9 in combattimento reale. Le altre slice B25–B33 restano da implementare senza riaprire o riscrivere i backlog già completati.
 Obiettivo: trasformare il concept in un MVP completo, verificabile su Windows e Android
 
@@ -541,7 +544,7 @@ Stato: `IN VERIFICA`; contratto funzionale chiuso, refresh identità del cast de
 - [x] Test Android reale su Pixel 9: animazione, direzione persistente, pausa,
   lock/resume, restart e multitouch approvati il 24 agosto 2026.
 
-Dettagli ed evidenze: [`b18c-verification.md`](./b18c-verification.md).
+Dettagli ed evidenze: [`b18c-verification.md`](../b18c-verification.md).
 
 #### B18D — Powerslide di Bea
 
@@ -564,7 +567,7 @@ Stato: `COMPLETATO`.
   scia rettilinea indipendente dall'input successivo, pausa e restart approvati
   sul Pixel 9 il 24 agosto 2026.
 
-Dettagli ed evidenze: [`b18d-verification.md`](./b18d-verification.md).
+Dettagli ed evidenze: [`b18d-verification.md`](../b18d-verification.md).
 
 #### B18E — Tuoni di Zat
 
@@ -601,7 +604,7 @@ Contratto definitivo:
 - [x] Gate Pixel 9: multitouch, flash standard/ridotto, 20:9, lifecycle e
   cleanup reale verificati manualmente il 25 agosto 2026.
 
-Dettagli ed evidenze: [`b18e-verification.md`](./b18e-verification.md).
+Dettagli ed evidenze: [`b18e-verification.md`](../b18e-verification.md).
 
 #### B18F — Abilità inseguitrice di Alea
 
@@ -618,7 +621,7 @@ Stato: `COMPLETATO`.
   area centrata su Alea durante il movimento approvati sul Pixel 9 il 24 agosto
   2026.
 
-Dettagli ed evidenze: [`b18f-verification.md`](./b18f-verification.md).
+Dettagli ed evidenze: [`b18f-verification.md`](../b18f-verification.md).
 
 #### B18G — Rank delle abilità principali
 
@@ -665,7 +668,7 @@ compatibilità e anti-ricorsione; non assegna rank alle altre abilità.
   dalla successiva attivazione, lifecycle, restart e cambio personaggio puliti,
   verificati manualmente il 25 agosto 2026.
 
-Dettagli ed evidenze: [`b18g-verification.md`](./b18g-verification.md).
+Dettagli ed evidenze: [`b18g-verification.md`](../b18g-verification.md).
 
 #### B18H — Nemici piccione
 
@@ -692,7 +695,7 @@ Stato: `COMPLETATO`.
 - [x] Runtime Pixel 9 a 20:9: piccioni leggibili, flip coerente, cold launch e
   log del processo puliti il 24 agosto 2026.
 
-Dettagli ed evidenze: [`b18h-verification.md`](./b18h-verification.md).
+Dettagli ed evidenze: [`b18h-verification.md`](../b18h-verification.md).
 
 #### B18I — XP confinato nell'arena
 
@@ -709,7 +712,7 @@ Stato: `COMPLETATO`.
 - [x] Runtime Android reale su Pixel 9 ARM64: drop ai bordi interamente interni
   e raggiungibili, raccolta e cleanup al restart approvati il 24 agosto 2026.
 
-Dettagli ed evidenze: [`b18i-verification.md`](./b18i-verification.md).
+Dettagli ed evidenze: [`b18i-verification.md`](../b18i-verification.md).
 
 #### B18J — Potenziamento Grigliata estiva
 
@@ -734,7 +737,7 @@ Stato: `COMPLETATO`.
   `L'Ansia`, cap, lifecycle, restart e cambio personaggio puliti, verificati
   manualmente il 25 agosto 2026.
 
-Dettagli ed evidenze: [`b18j-verification.md`](./b18j-verification.md).
+Dettagli ed evidenze: [`b18j-verification.md`](../b18j-verification.md).
 
 #### B18K — Pulsante abilità con cooldown circolare
 
@@ -755,7 +758,7 @@ Stato: `COMPLETATO`.
   attivazioni ripetute col secondo dito mentre il joystick possiede il primo
   approvati sul Pixel 9 il 24 agosto 2026.
 
-Dettagli ed evidenze: [`b18k-verification.md`](./b18k-verification.md).
+Dettagli ed evidenze: [`b18k-verification.md`](../b18k-verification.md).
 
 #### B18L — Joystick dinamico
 
@@ -780,7 +783,7 @@ Stato: `COMPLETATO`.
   rilevato uno spostamento causato dal passaggio portrait transitorio del lock;
   la correzione è coperta da smoke e la controprova fisica conserva la posizione.
 
-Dettagli ed evidenze: [`b18l-verification.md`](./b18l-verification.md).
+Dettagli ed evidenze: [`b18l-verification.md`](../b18l-verification.md).
 
 #### B18M — Migliorie grafiche delle abilità
 
@@ -841,7 +844,7 @@ Stato: `IN VERIFICA` dopo il refresh dei VFX runtime del 29 agosto 2026.
   palette copiata, anelli e moti zen, clone/cassa/note. Collisioni, raggio,
   danno, durata, cooldown e priorità di rendering restano invariati.
 - [x] Registrare sorgenti procedurali e icone definitive in
-  [`assets/art/vfx/ASSET-MANIFEST.md`](../assets/art/vfx/ASSET-MANIFEST.md), con
+  [`assets/art/vfx/ASSET-MANIFEST.md`](../../assets/art/vfx/ASSET-MANIFEST.md), con
   origine, autore, licenza, trasformazioni e SHA-256 verificati dallo smoke.
 - [x] Refresh ImageGen: smoke `B18M_ABILITY_VISUALS_SMOKE_OK`, regressione
   completa `32/32`, project smoke, export e runtime Windows con
@@ -851,7 +854,7 @@ Stato: `IN VERIFICA` dopo il refresh dei VFX runtime del 29 agosto 2026.
   otto burst in movimento/densità elevata completato il 25 agosto 2026. Il gate
   B18L resta l'evidenza autorevole separata per il multitouch.
 
-Dettagli ed evidenze: [`b18m-verification.md`](./b18m-verification.md).
+Dettagli ed evidenze: [`b18m-verification.md`](../b18m-verification.md).
 
 #### B18N — Cambia personaggio dal menu pausa
 
@@ -869,7 +872,7 @@ Stato: `COMPLETATO`.
   selezione → nuova run; regressione completa, Windows export e Pixel 9 con log
   privi di `SCRIPT ERROR`, `FATAL EXCEPTION` e touch bloccati.
 
-Dettagli ed evidenze: [`b18n-verification.md`](./b18n-verification.md).
+Dettagli ed evidenze: [`b18n-verification.md`](../b18n-verification.md).
 
 #### B18O — Welcome screen
 
@@ -903,7 +906,7 @@ Stato: `COMPLETATO`.
 - [ ] Ripetere smoke B18O e controllo percettivo della nuova composizione su
   welcome e impostazioni; la verifica su Pixel 9 resta un gate separato.
 
-Dettagli ed evidenze: [`b18o-verification.md`](./b18o-verification.md).
+Dettagli ed evidenze: [`b18o-verification.md`](../b18o-verification.md).
 
 #### B18P — Dimensioni configurabili dei controlli touch
 
@@ -926,7 +929,7 @@ Stato: `COMPLETATO`.
   Pixel 9 con joystick tenuto da un dito e attivazioni ripetute dell'abilità col
   secondo per ogni scala supportata.
 
-Dettagli ed evidenze: [`b18p-verification.md`](./b18p-verification.md).
+Dettagli ed evidenze: [`b18p-verification.md`](../b18p-verification.md).
 
 #### B18Q — Arena e HUD minimo a barre
 
@@ -960,7 +963,7 @@ confronto percettivo manuale 16:9, 18:9, 20:9 e 4:3 chiusi.
 - [x] Verifica percettiva e runtime manuale con interazione fisica a 16:9,
   18:9, 20:9 e 4:3 su Windows e Android fisico completata il 25 agosto 2026.
 
-Dettagli ed evidenze: [`b18q-verification.md`](./b18q-verification.md).
+Dettagli ed evidenze: [`b18q-verification.md`](../b18q-verification.md).
 
 #### B18R — Durata e leggibilità di animazioni e VFX
 
@@ -983,7 +986,7 @@ Stato: `COMPLETATO`.
   runtime Windows, APK Android, percorso reale Pixel 9 e gate percettivo umano
   chiusi il 25 agosto 2026.
 
-Dettagli ed evidenze: [`b18r-verification.md`](./b18r-verification.md).
+Dettagli ed evidenze: [`b18r-verification.md`](../b18r-verification.md).
 
 #### B18S — Sfondo arena ImageGen
 
@@ -1010,7 +1013,7 @@ Stato: `COMPLETATO`.
   percettivo finale a luminosità fisica controllata è stato completato il
   25 agosto 2026 dopo la chiusura di B18Q e B18R.
 
-Dettagli ed evidenze: [`b18s-verification.md`](./b18s-verification.md).
+Dettagli ed evidenze: [`b18s-verification.md`](../b18s-verification.md).
 
 #### B18T — Carosello selezione personaggi
 
@@ -1049,7 +1052,7 @@ gerarchia approvato è tracciato separatamente in B18W.
   La regressione fisica da evento emulato verifica Magno → Bea con D-pad e Bea
   → Zat con un solo tap, senza doppio avanzamento.
 
-Dettagli ed evidenze: [`b18t-verification.md`](./b18t-verification.md).
+Dettagli ed evidenze: [`b18t-verification.md`](../b18t-verification.md).
 
 #### B18W — Raffinamento della selezione personaggi
 
@@ -1098,7 +1101,7 @@ percettivo fisico sul nuovo layout sono accettati il 26 agosto 2026.
   blocco con distanza `6–12` unità; il kit è largo `380` unità e il CTA segue il
   ruolo entro `34`, eliminando il vuoto verticale centrale.
 
-Dettagli ed evidenze: [`b18w-verification.md`](./b18w-verification.md).
+Dettagli ed evidenze: [`b18w-verification.md`](../b18w-verification.md).
 
 #### B18U — Sprite del cast coerenti
 
@@ -1108,7 +1111,7 @@ percettivo fisico del cast in movimento e ad alta densità sul Pixel 9 a 20:9 e
 confronto finale 16:9/4:3 chiusi.
 
 - [x] Sostituire gli sprite Player provvisori degli otto `FriendDefinition` con
-  asset raster originali coerenti con la sezione [Direzione visuale del cast](./characters.md#direzione-visuale-del-cast): Magno tellurico con richiami bovini, Bea pattinatrice, Zat infermiera elettrica, Alea ballerina, Aleo termotecnico (rework del 28 agosto 2026; arte da rigenerare), Lollo cosplayer retrofuturista, Migi con scudo a guscio e Marghe ballerina reggaeton con clone d'ombra.
+  asset raster originali coerenti con la sezione [Direzione visuale del cast](../characters.md#direzione-visuale-del-cast): Magno tellurico con richiami bovini, Bea pattinatrice, Zat infermiera elettrica, Alea ballerina, Aleo termotecnico (rework del 28 agosto 2026; arte da rigenerare), Lollo cosplayer retrofuturista, Migi con scudo a guscio e Marghe ballerina reggaeton con clone d'ombra.
 - [x] Rappresentare esclusivamente archetipi fittizi: nessuno sprite deve
   riprodurre persone reali, loghi o marchi. Il simbolo medico generico a cuore
   di Zat resta consentito; silhouette, palette e posa devono essere leggibili
@@ -1138,9 +1141,9 @@ confronto finale 16:9/4:3 chiusi.
 Le strisce runtime `96×32`, le sorgenti trasparenti `1536×1024` conservate in
 `assets/art/characters/players/hd/`, i prompt, le correzioni rispetto alla
 welcome B18O, le trasformazioni e gli hash sono registrati nel
-[manifest B18U](../assets/art/characters/players/ASSET-MANIFEST.md).
+[manifest B18U](../../assets/art/characters/players/ASSET-MANIFEST.md).
 
-Dettagli ed evidenze: [`b18u-verification.md`](./b18u-verification.md).
+Dettagli ed evidenze: [`b18u-verification.md`](../b18u-verification.md).
 
 #### B18V — Hardening Windows/Android e performance
 
@@ -1154,7 +1157,7 @@ distinti dalle evidenze effettivamente raccolte e non vengono dichiarati eseguit
   documentato; cercare nei log `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL` e
   `CONTRACT_FAIL` senza affidarsi al solo exit code. Focused smoke B18V, 43 smoke
   di regressione, project smoke, export Windows, runtime Windows e ispezione APK
-  sono verdi; dettagli in [`b18v-verification.md`](./b18v-verification.md).
+  sono verdi; dettagli in [`b18v-verification.md`](../b18v-verification.md).
 - [x] Chiudere la matrice Windows, Android 12/API 31 e Android 16/API 36 con
   16:9, 18:9, 20:9, cutout e 4:3, inclusi welcome, selezione, pausa, controlli
   scalati, lifecycle, abilità, Boss, vittoria, sconfitta e cambio personaggio.
@@ -1207,7 +1210,7 @@ Stato: `COMPLETATO`; B20 non è più una dipendenza.
   e due run senza residui; poi regressione, export Windows/Android e verifica
   percettiva/touch su Pixel 9.
 
-Dettagli ed evidenze: [`b22-verification.md`](./b22-verification.md).
+Dettagli ed evidenze: [`b22-verification.md`](../b22-verification.md).
 
 #### B23 — Modalità Difesa Grigliata
 
@@ -1259,7 +1262,7 @@ bordi su 16:9, 18:9, 20:9 e 4:3. Focused, regressione integrale `44/44`, export 
 runtime Windows, build Gradle e APK statico ARM64 sono verdi. Restano aperti il
 confronto percettivo umano su Windows e il percorso fisico Pixel 9 con orde
 dense, Boss e VFX; `adb` non rilevava dispositivi il 26 agosto 2026. Evidenza in
-[`b24-verification.md`](./b24-verification.md).
+[`b24-verification.md`](../b24-verification.md).
 
 #### B25 — Rimuovere la vita circolare sopra il Player
 
@@ -1337,7 +1340,7 @@ pacchetto APK presente è installabile e il percorso welcome → selezione → r
 stato esercitato, senza errori fatali nei log; il profiling frame-time a 60 FPS
 con baseline B28 resta aperto, come anche la conferma di freschezza dell'APK
 dopo un export Android che ha riportato la scomparsa del daemon Gradle. Evidenza:
-[`b28-verification.md`](./b28-verification.md).
+[`b28-verification.md`](../b28-verification.md).
 
 #### B29 — Musica di sottofondo
 
@@ -1357,7 +1360,7 @@ Stato: `IN VERIFICA`.
   run consecutive.
 - [ ] Completare l'ascolto percettivo del loop senza click/stacchi e del mix a
   densità B28 su Windows e Pixel 9; installare e provare l'APK corrente prima di
-  chiudere il gate Android fisico. Evidenza: [`b29-verification.md`](./b29-verification.md).
+  chiudere il gate Android fisico. Evidenza: [`b29-verification.md`](../b29-verification.md).
 
 #### B30 — Boss senza aura circolare viola
 
@@ -1421,7 +1424,7 @@ Stato: `COMPLETATO`.
 - [x] Verificare automaticamente che logo, cast, CTA e ingranaggio non si sovrappongano a 16:9,
   20:9 e 4:3 e che il flusso welcome → impostazioni → welcome resti in `BOOT`.
 
-Evidenza: [`b32-verification.md`](./b32-verification.md). Restano distinti il
+Evidenza: [`b32-verification.md`](../b32-verification.md). Restano distinti il
 controllo percettivo/input Windows e il percorso touch reale su Android.
 
 #### B33 — Run continua e Boss ricorrenti
@@ -1535,7 +1538,7 @@ principale, export/ispezione APK e installazione/cold launch sul Pixel 9; il
 bootstrap stampa marker storici durante ogni avvio, ma non è stato invocato
 alcun test script o runner milestone. Restano aperti il runtime Windows e la
 conferma percettiva/touch fisica, incluso il multitouch joystick più abilità.
-Evidenza: [`b34-verification.md`](./b34-verification.md).
+Evidenza: [`b34-verification.md`](../b34-verification.md).
 
 #### B37 — Densità leggibile e direzione delle orde
 
@@ -1632,7 +1635,7 @@ tema, senza trasformare l'arena in un labirinto.
   molto più grande dello schermo. Provenienza e trasformazione (ritaglio
   alpha, riduzione nearest-neighbor, oscuramento per restare recessiva
   rispetto a Player/nemici/XP/pickup) sono in
-  [`assets/art/arena/ASSET-MANIFEST.md`](../assets/art/arena/ASSET-MANIFEST.md).
+  [`assets/art/arena/ASSET-MANIFEST.md`](../../assets/art/arena/ASSET-MANIFEST.md).
 
 Implementazione del 27 agosto 2026. `EnemySpawner.configure()` e
 `BossEncounter.configure()` guadagnano un parametro opzionale `camera`
@@ -1687,7 +1690,7 @@ massimo e senza annullare la pressione delle orde.
 - [x] Il proprietario ha fornito il master `assets/art/pickups/hd/health_pickup.png`;
   derivato via `tools/process-arena-obstacle.ps1` a `48×51` e assegnato come
   `texture` di default in `health_pickup.tscn`. Provenienza e hash in
-  [`assets/art/pickups/ASSET-MANIFEST.md`](../assets/art/pickups/ASSET-MANIFEST.md).
+  [`assets/art/pickups/ASSET-MANIFEST.md`](../../assets/art/pickups/ASSET-MANIFEST.md).
 
 Implementazione del 27 agosto 2026. `HealthPickupDropper.configure()` segue
 lo stesso pattern opt-in di B38 (`set_world_bounds`, fallback al playfield di
@@ -1712,7 +1715,7 @@ Windows e Android non ancora eseguiti per questa slice.
 
 Stato: `IN VERIFICA`.
 
-Proposta ricevuta in [`gameplay-evolution-plan.md`](./gameplay-evolution-plan.md)
+Proposta ricevuta in [`gameplay-evolution-plan.md`](./gameplay-evolution-plan-2026-08-28.md)
 il 28 agosto 2026, dipendenza radice del piano B40–B48: finche' esiste un solo
 tipo di nemico che cammina dritto verso il Player, ogni verbo difensivo del
 roster collassa sullo stesso risultato osservabile. Il proprietario ha
@@ -1778,7 +1781,7 @@ nodi.
 Stato: `IN VERIFICA`.
 
 Richiesta ricevuta il 28 agosto 2026 dal proprietario, a valle della revisione
-in [`gameplay-evolution-plan.md`](./gameplay-evolution-plan.md): il mazzo
+in [`gameplay-evolution-plan.md`](./gameplay-evolution-plan-2026-08-28.md): il mazzo
 utile era di circa quattordici carte quasi tutte moltiplicatori, e la build
 danno+cadenza al rank massimo restava sotto lo spawn rate al cap (`7,20`
 kill/s contro `8,33` spawn/s).
@@ -1874,7 +1877,7 @@ Stato: `COMPLETATO`.
 Richiesta ricevuta il 28 agosto 2026 dal proprietario, a valle della revisione
 di design: rimuovere le passive che non producono l'effetto dichiarato dal loro
 testo. Razionale completo e matematica in
-[`gameplay-evolution-plan.md`](./gameplay-evolution-plan.md).
+[`gameplay-evolution-plan.md`](./gameplay-evolution-plan-2026-08-28.md).
 
 - [x] `BaseEnemy` guadagna modificatori di danno subito speculari a quelli di
   velocita': una sorgente per ID, composizione moltiplicativa, rimozione
@@ -1976,7 +1979,7 @@ Stato: `IN VERIFICA`.
 Richiesta ricevuta il 28 agosto 2026 dal proprietario, a valle della revisione
 di design: le tre riprogettazioni sono verificabili solo dopo B40 (nemico a
 distanza), già `COMPLETATO`. Razionale, diagnosi D1/D3 e matematica completa in
-[`gameplay-evolution-plan.md`](./gameplay-evolution-plan.md).
+[`gameplay-evolution-plan.md`](./gameplay-evolution-plan-2026-08-28.md).
 
 - [x] **Bea — Sesto Senso Equino.** Sostituisce `evasion_chance` (RNG invisibile)
   con `dodge_cooldown: 9.0`, `iframe_duration: 0.4`, `shove_distance: 90.0`:
@@ -2044,7 +2047,7 @@ playtest contro il tiratore per confermare che le tre identità si distinguano.
 Stato: `IN VERIFICA`.
 
 Richiesta approvata e implementata il 28 agosto 2026 a partire dalla proposta
-in [`gameplay-evolution-plan.md`](./gameplay-evolution-plan.md). Dipende dal
+in [`gameplay-evolution-plan.md`](./gameplay-evolution-plan-2026-08-28.md). Dipende dal
 frontend `BOOT` B18O/B32/B34 e riusa contenuti e icone nemici B40/B49.
 
 - [x] La welcome espone `TUTORIAL` immediatamente sotto `GIOCA`, come CTA
@@ -2098,7 +2101,7 @@ precedente resta evidenza della candidata superata. Il nuovo APK è stato instal
 (`Success`) sul Pixel 9 il 28 agosto 2026, senza avviare l'app. Restano aperti
 Full/Release, runtime Windows interattivo, cold launch e una nuova prova fisica del proprietario su Pixel 9 per
 tap/swipe/Back e accettazione percettiva del carosello.
-Evidenza: [`b54-verification.md`](./b54-verification.md).
+Evidenza: [`b54-verification.md`](../b54-verification.md).
 
 ## 7. Strategia di test
 
@@ -2226,82 +2229,82 @@ B18J, B18M, B18Q, B18S, B18T, B18U e B18W sono chiusi dal 25 agosto 2026 e
 non fanno più parte della prossima iterazione.
 
 Il setup host e gli artefatti generati il 12 agosto 2026 sono registrati in
-[`m0-verification.md`](./m0-verification.md).
+[`m0-verification.md`](../m0-verification.md).
 Il vertical slice di movimento e il gate sul Pixel 9 sono registrati in
-[`b03-verification.md`](./b03-verification.md).
+[`b03-verification.md`](../b03-verification.md).
 Il nemico base, lo spawner dinamico e il gate B04 su Windows e Pixel 9 sono
-registrati in [`b04-verification.md`](./b04-verification.md).
+registrati in [`b04-verification.md`](../b04-verification.md).
 Targeting, arma, proiettile, danno e lo stato del gate B05 sono registrati in
-[`b05-verification.md`](./b05-verification.md).
+[`b05-verification.md`](../b05-verification.md).
 Salute Player, contatto, Game Over, restart e lo stato del gate B06 sono
-registrati in [`b06-verification.md`](./b06-verification.md).
+registrati in [`b06-verification.md`](../b06-verification.md).
 Back, pausa manuale, focus, lifecycle e lo stato del gate B06A sono registrati
-in [`b06a-verification.md`](./b06a-verification.md).
+in [`b06a-verification.md`](../b06a-verification.md).
 Drop, magnete, accredito XP singolo e lo stato del gate B07 sono registrati in
-[`b07-verification.md`](./b07-verification.md).
+[`b07-verification.md`](../b07-verification.md).
 Livelli, soglie, overflow, coda delle scelte e lo stato del gate B08 sono
-registrati in [`b08-verification.md`](./b08-verification.md).
+registrati in [`b08-verification.md`](../b08-verification.md).
 HUD responsive, safe area, vita, XP, timer e lo stato del gate B09 sono
-registrati in [`b09-verification.md`](./b09-verification.md).
+registrati in [`b09-verification.md`](../b09-verification.md).
 Framework abilità attive, Onda d'Urto Tellurica e lo stato del gate B09A sono
-registrati in [`b09a-verification.md`](./b09a-verification.md).
+registrati in [`b09a-verification.md`](../b09a-verification.md).
 Resource upgrade, registry, rank, pesca deterministica e lo stato del gate B10
-sono registrati in [`b10-verification.md`](./b10-verification.md).
+sono registrati in [`b10-verification.md`](../b10-verification.md).
 Overlay safe-area, navigazione multipiattaforma e stato del gate B11 sono
-registrati in [`b11-verification.md`](./b11-verification.md).
+registrati in [`b11-verification.md`](../b11-verification.md).
 Stacking, cap e applicazione runtime degli upgrade statistici B12 sono
-registrati in [`b12-verification.md`](./b12-verification.md).
+registrati in [`b12-verification.md`](../b12-verification.md).
 Catena Gossip, slow periodico, dispersione Birra, shockwave reattiva, vignetta
 e lo stato del gate B13 sono registrati in
-[`b13-verification.md`](./b13-verification.md).
+[`b13-verification.md`](../b13-verification.md).
 Game Director, profilo di spawn, scheduler a soglia singola e stato del gate B14
-sono registrati in [`b14-verification.md`](./b14-verification.md).
+sono registrati in [`b14-verification.md`](../b14-verification.md).
 Primo Boss, intro sicura, due pattern, HP, morte e ricompensa sono registrati in
-[`b15-verification.md`](./b15-verification.md).
+[`b15-verification.md`](../b15-verification.md).
 Vittoria, bilanciamento iniziale, cinque run consecutive e stato del gate B16
-sono registrati in [`b16-verification.md`](./b16-verification.md).
+sono registrati in [`b16-verification.md`](../b16-verification.md).
 Catalogo degli otto amici, controparti Evil, approvazioni e sprite CC0
-sostituibili sono registrati in [`b17-verification.md`](./b17-verification.md) e
-[`content-approvals.md`](./content-approvals.md).
+sostituibili sono registrati in [`b17-verification.md`](../b17-verification.md) e
+[`content-approvals.md`](../content-approvals.md).
 Roster selezionabile, passive runtime, otto abilità attive e stato del gate
-fisico B17A sono registrati in [`b17a-verification.md`](./b17a-verification.md).
+fisico B17A sono registrati in [`b17a-verification.md`](../b17a-verification.md).
 Icone dedicate, gerarchia VFX, cue CC0, mixer persistente e stato del gate B18
-sono registrati in [`b18-verification.md`](./b18-verification.md).
+sono registrati in [`b18-verification.md`](../b18-verification.md).
 HUD compatto, arena procedurale, feedback di combattimento e gate residui B18B
-sono registrati in [`b18b-verification.md`](./b18b-verification.md).
+sono registrati in [`b18b-verification.md`](../b18b-verification.md).
 Animazione laterale del Player, ultima direzione valida e gate B18C sono
-registrati in [`b18c-verification.md`](./b18c-verification.md).
+registrati in [`b18c-verification.md`](../b18c-verification.md).
 Powerslide direzionale di Bea, asset CC0 e gate B18D sono registrati in
-[`b18d-verification.md`](./b18d-verification.md).
+[`b18d-verification.md`](../b18d-verification.md).
 Gran Piroetta inseguitrice di Alea e gate residuo Android sono registrati in
-[`b18f-verification.md`](./b18f-verification.md).
+[`b18f-verification.md`](../b18f-verification.md).
 Rank dichiarativi delle otto abilità, integrazione level-up e gate residuo
-Android sono registrati in [`b18g-verification.md`](./b18g-verification.md).
+Android sono registrati in [`b18g-verification.md`](../b18g-verification.md).
 Piccioni base/speciale, animazione presentazionale e gate Windows/Pixel 9 sono
-registrati in [`b18h-verification.md`](./b18h-verification.md).
+registrati in [`b18h-verification.md`](../b18h-verification.md).
 Confinamento dei drop XP nel playfield e gate residuo Android sono registrati
-in [`b18i-verification.md`](./b18i-verification.md).
+in [`b18i-verification.md`](../b18i-verification.md).
 Grigliata estiva, cura del delta e gate residuo Android sono registrati in
-[`b18j-verification.md`](./b18j-verification.md).
+[`b18j-verification.md`](../b18j-verification.md).
 Pulsante-icona, cooldown radiale, timer centrale e gate residuo Android B18K
-sono registrati in [`b18k-verification.md`](./b18k-verification.md).
+sono registrati in [`b18k-verification.md`](../b18k-verification.md).
 Joystick dinamico, ownership del primo dito e gate fisico condiviso B18K/B18L
-sono registrati in [`b18l-verification.md`](./b18l-verification.md).
+sono registrati in [`b18l-verification.md`](../b18l-verification.md).
 Cambio personaggio dalla pausa, conferma modale e cleanup atomico B18N sono
-registrati in [`b18n-verification.md`](./b18n-verification.md).
+registrati in [`b18n-verification.md`](../b18n-verification.md).
 Welcome, impostazioni iniziali, ritorno dal selettore e cold launch B18O sono
-registrati in [`b18o-verification.md`](./b18o-verification.md).
+registrati in [`b18o-verification.md`](../b18o-verification.md).
 Timing centralizzati, code visive non interattive e gate percettivo B18R sono
-registrati in [`b18r-verification.md`](./b18r-verification.md).
+registrati in [`b18r-verification.md`](../b18r-verification.md).
 Sfondo arena ImageGen, crop responsive, manifest e gate residui B18S sono
-registrati in [`b18s-verification.md`](./b18s-verification.md).
+registrati in [`b18s-verification.md`](../b18s-verification.md).
 Scala visuale B24, invarianti gameplay, matrice responsive ed esito dei gate
 automatici/piattaforma sono registrati in
-[`b24-verification.md`](./b24-verification.md).
+[`b24-verification.md`](../b24-verification.md).
 CTA welcome B32, ingranaggio safe-area e gate rimanenti sono registrati in
-[`b32-verification.md`](./b32-verification.md).
+[`b32-verification.md`](../b32-verification.md).
 Padding B31 per pausa/abilità, scala raddoppiata e gate rimanenti sono
-registrati in [`b31-verification.md`](./b31-verification.md).
+registrati in [`b31-verification.md`](../b31-verification.md).
 Il sistema tipografico di progetto B36, la scala condivisa che sostituisce i 64
 override locali e le due regressioni di layout corrette sono registrati in
-[`b36-verification.md`](./b36-verification.md).
+[`b36-verification.md`](../b36-verification.md).
