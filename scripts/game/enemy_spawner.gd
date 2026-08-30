@@ -30,6 +30,7 @@ var _active_sectors: Array[int] = ALL_SECTORS.duplicate()
 var _sector_elapsed := 0.0
 var _sector_hold_duration := 0.0
 var _ordinary_spawn_suspended := false
+var _last_archetype_spawn_times: Dictionary[StringName, float] = {}
 
 
 func _ready() -> void:
@@ -152,6 +153,7 @@ func reset_for_run(seed_value: int, clear_existing: bool = true) -> void:
 	_awaiting_initial_spawn = true
 	_invalid_scene_warning_emitted = false
 	_ordinary_spawn_suspended = false
+	_last_archetype_spawn_times.clear()
 	_roll_active_sectors()
 	if clear_existing:
 		clear_spawned_enemies()
@@ -195,6 +197,7 @@ func try_spawn_enemy() -> BaseEnemy:
 	var first_enemy := _spawn_archetype_enemy(chosen_archetype, spawn_position)
 	if first_enemy == null:
 		return null
+	_last_archetype_spawn_times[chosen_archetype.id] = _run_controller.get_run_time()
 	for _cluster_index in range(1, chosen_archetype.spawn_cluster_size):
 		if get_alive_count() >= spawn_profile.max_alive_enemies:
 			break
@@ -250,19 +253,50 @@ func _sample_position(playfield_rect: Rect2) -> Vector2:
 ## primi minuti e gli altri entrano progressivamente").
 func _pick_archetype(run_time: float) -> EnemyArchetypeDefinition:
 	var eligible: Array[EnemyArchetypeDefinition] = []
-	var weights: Array[float] = [spawn_profile.base_archetype_weight]
+	var weights: Array[float] = [spawn_profile.get_effective_base_archetype_weight(run_time)]
 	for archetype in archetypes:
 		if archetype == null or not archetype.is_valid():
 			continue
 		if not archetype.is_eligible_at(run_time):
 			continue
 		eligible.append(archetype)
-		weights.append(archetype.spawn_weight)
+		weights.append(
+			spawn_profile.get_effective_archetype_weight(
+				archetype.spawn_weight,
+				archetype.late_run_weight_multiplier,
+				run_time
+			)
+		)
+
+	var guaranteed_ranged := _resolve_guaranteed_ranged(eligible, run_time)
+	if guaranteed_ranged != null:
+		return guaranteed_ranged
 
 	var chosen_index := pick_weighted_index(weights, _rng)
 	if chosen_index <= 0:
 		return null
 	return eligible[chosen_index - 1]
+
+
+func _resolve_guaranteed_ranged(
+	eligible: Array[EnemyArchetypeDefinition],
+	run_time: float
+) -> EnemyArchetypeDefinition:
+	if (
+		spawn_profile == null
+		or run_time < spawn_profile.late_run_ranged_guarantee_start_seconds
+		or String(spawn_profile.late_run_ranged_archetype_id).is_empty()
+	):
+		return null
+	var last_spawn_time := get_last_archetype_spawn_time(
+		spawn_profile.late_run_ranged_archetype_id
+	)
+	if run_time - last_spawn_time < spawn_profile.late_run_ranged_max_gap_seconds:
+		return null
+	for archetype in eligible:
+		if archetype.id == spawn_profile.late_run_ranged_archetype_id:
+			return archetype
+	return null
 
 
 func _spawn_base_enemy(position: Vector2) -> BaseEnemy:
@@ -386,6 +420,10 @@ func get_alive_count() -> int:
 func get_spawned_enemies() -> Array[BaseEnemy]:
 	_prune_invalid_enemies()
 	return _spawned_enemies.duplicate()
+
+
+func get_last_archetype_spawn_time(archetype_id: StringName) -> float:
+	return float(_last_archetype_spawn_times.get(archetype_id, -INF))
 
 
 func get_spawn_elapsed() -> float:
@@ -579,11 +617,18 @@ func _roll_active_sectors() -> void:
 		_sector_hold_duration = 1.0
 		return
 
+	var run_time := (
+		_run_controller.get_run_time()
+		if is_instance_valid(_run_controller)
+		else 0.0
+	)
+	var spike_chance := spawn_profile.get_effective_sector_spike_chance(run_time)
+	var multi_chance := spawn_profile.get_effective_sector_multi_chance(run_time)
 	var roll := _rng.randf()
 	var count := 1
-	if roll < spawn_profile.sector_spike_chance:
+	if roll < spike_chance:
 		count = _rng.randi_range(3, 4)
-	elif roll < spawn_profile.sector_spike_chance + spawn_profile.sector_multi_chance:
+	elif roll < spike_chance + multi_chance:
 		count = 2
 
 	_active_sectors = pick_sector_combination(count, _rng)
@@ -625,6 +670,7 @@ func _on_restart_prepared() -> void:
 	_cleanup_elapsed = 0.0
 	_awaiting_initial_spawn = true
 	_ordinary_spawn_suspended = false
+	_last_archetype_spawn_times.clear()
 	clear_spawned_enemies()
 
 

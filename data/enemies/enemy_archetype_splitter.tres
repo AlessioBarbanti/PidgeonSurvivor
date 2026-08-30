@@ -40,6 +40,7 @@ silhouette_kind = 3
 id = &"splitter"
 scene = ExtResource("2_scene")
 spawn_weight = 1.0
+late_run_weight_multiplier = 1.6
 eligible_time_start = 50.0
 eligible_time_end = 3600.0
 spawn_cluster_size = 1

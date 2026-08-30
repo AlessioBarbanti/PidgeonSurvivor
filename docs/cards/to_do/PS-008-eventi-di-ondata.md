@@ -158,6 +158,11 @@ Non introdurre nuovi archetipi nemici come requisito di questa card.
   consente un solo evento attivo e conserva la riproducibilità del seed.
 - **Baseline da playtest — primo evento dopo 02:30 e almeno tre tipologie.**
 
+- **2026-08-30 — Confine con la curva ordinaria PS-007.** Gli eventi
+  compongono temporaneamente i pesi e i settori effettivi di `EnemySpawnProfile`
+  e, quando terminano, restituiscono il controllo alla curva late-run. PS-008
+  non duplica la garanzia del tiratore ne' rende PS-007 dipendente dagli eventi.
+
 ## Documenti sincronizzati
 
 - [ ] `prd.md`: regole finali degli eventi d'ondata.
@@ -178,3 +183,7 @@ Baseline iniziale:
 * massimo un evento contemporaneo.
 
 Frequenza, durata e composizioni restano valori configurabili da playtest.
+
+L'implementazione deve riusare le API dati PS-007 per pesi effettivi e
+probabilita' multisettore; un evento puo' applicare un override temporaneo, ma
+non deve mantenere una seconda curva ordinaria parallela.

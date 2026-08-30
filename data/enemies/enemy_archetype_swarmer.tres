@@ -39,6 +39,7 @@ silhouette_kind = 1
 id = &"swarmer"
 scene = ExtResource("2_scene")
 spawn_weight = 1.4
+late_run_weight_multiplier = 2.2
 eligible_time_start = 25.0
 eligible_time_end = 3600.0
 spawn_cluster_size = 3

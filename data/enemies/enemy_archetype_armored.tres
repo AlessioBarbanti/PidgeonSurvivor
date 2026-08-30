@@ -39,6 +39,7 @@ silhouette_kind = 2
 id = &"armored"
 scene = ExtResource("2_scene")
 spawn_weight = 0.9
+late_run_weight_multiplier = 1.4
 eligible_time_start = 40.0
 eligible_time_end = 3600.0
 spawn_cluster_size = 1

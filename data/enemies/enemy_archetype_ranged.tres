@@ -39,6 +39,7 @@ silhouette_kind = 4
 id = &"ranged"
 scene = ExtResource("2_scene")
 spawn_weight = 1.2
+late_run_weight_multiplier = 2.5
 eligible_time_start = 15.0
 eligible_time_end = 3600.0
 spawn_cluster_size = 1

@@ -103,6 +103,44 @@ const MINIMUM_INTERVAL_SECONDS := 0.01
 	set(value):
 		base_archetype_weight = maxf(value, 0.0) if is_finite(value) else 0.0
 
+@export_group("Late Run")
+## La curva qualitativa parte dopo l'ingresso di tutti gli archetipi e arriva
+## gradualmente al pieno valore: prima della soglia il pool B40 resta identico.
+@export_range(0.0, 3600.0, 1.0, "or_greater") var late_run_curve_start_seconds := 60.0:
+	set(value):
+		late_run_curve_start_seconds = maxf(value, 0.0) if is_finite(value) else 0.0
+
+@export_range(0.0, 3600.0, 1.0, "or_greater") var late_run_curve_full_seconds := 300.0:
+	set(value):
+		late_run_curve_full_seconds = maxf(value, 0.0) if is_finite(value) else 0.0
+
+## Quota residua del peso del piccione base a curva piena. Non modifica HP,
+## danno o statistiche del Player: cambia soltanto la composizione del pool.
+@export_range(0.0, 1.0, 0.01) var late_run_base_weight_multiplier := 0.33:
+	set(value):
+		late_run_base_weight_multiplier = clampf(value, 0.0, 1.0)
+
+@export_range(0.0, 1.0, 0.01) var late_run_sector_multi_chance := 0.65:
+	set(value):
+		late_run_sector_multi_chance = clampf(value, 0.0, 1.0)
+
+@export_range(0.0, 1.0, 0.01) var late_run_sector_spike_chance := 0.25:
+	set(value):
+		late_run_sector_spike_chance = clampf(value, 0.0, 1.0)
+
+## Dopo questa soglia, il pool non puo' lasciare trascorrere piu' della
+## finestra indicata senza generare il tiratore configurato. La minaccia resta
+## un normale nemico telegrafato, non danno automatico o scaling sulla build.
+@export_range(0.0, 3600.0, 1.0, "or_greater") var late_run_ranged_guarantee_start_seconds := 180.0:
+	set(value):
+		late_run_ranged_guarantee_start_seconds = maxf(value, 0.0) if is_finite(value) else 0.0
+
+@export_range(0.1, 60.0, 0.1, "or_greater") var late_run_ranged_max_gap_seconds := 4.0:
+	set(value):
+		late_run_ranged_max_gap_seconds = maxf(value, 0.1) if is_finite(value) else 0.1
+
+@export var late_run_ranged_archetype_id: StringName = &"ranged"
+
 @export_group("Cleanup")
 @export_range(0.01, 60.0, 0.01, "or_greater") var cleanup_interval := 1.0:
 	set(value):
@@ -139,6 +177,48 @@ func get_experience_reward_scale(run_time: float) -> float:
 	return maxf(
 		get_spawn_interval(run_time) / reference_interval * progression_experience_multiplier,
 		0.0
+	)
+
+
+func get_late_run_progress(run_time: float) -> float:
+	var start := minf(late_run_curve_start_seconds, late_run_curve_full_seconds)
+	var end := maxf(late_run_curve_start_seconds, late_run_curve_full_seconds)
+	if end <= start:
+		return 1.0 if run_time >= end else 0.0
+	return clampf((maxf(run_time, 0.0) - start) / (end - start), 0.0, 1.0)
+
+
+func get_effective_base_archetype_weight(run_time: float) -> float:
+	return base_archetype_weight * lerpf(
+		1.0,
+		late_run_base_weight_multiplier,
+		get_late_run_progress(run_time)
+	)
+
+
+func get_effective_archetype_weight(
+	base_weight: float,
+	late_run_multiplier: float,
+	run_time: float
+) -> float:
+	var safe_weight := maxf(base_weight, 0.0) if is_finite(base_weight) else 0.0
+	var safe_multiplier := maxf(late_run_multiplier, 0.0) if is_finite(late_run_multiplier) else 0.0
+	return safe_weight * lerpf(1.0, safe_multiplier, get_late_run_progress(run_time))
+
+
+func get_effective_sector_multi_chance(run_time: float) -> float:
+	return lerpf(
+		sector_multi_chance,
+		late_run_sector_multi_chance,
+		get_late_run_progress(run_time)
+	)
+
+
+func get_effective_sector_spike_chance(run_time: float) -> float:
+	return lerpf(
+		sector_spike_chance,
+		late_run_sector_spike_chance,
+		get_late_run_progress(run_time)
 	)
 
 

@@ -16,6 +16,12 @@ extends Resource
 	set(value):
 		spawn_weight = maxf(value, 0.0) if is_finite(value) else 0.0
 
+## Moltiplicatore raggiunto gradualmente dalla curva qualitativa PS-007. Non
+## modifica le statistiche dell'archetipo e resta inerte prima della soglia.
+@export_range(0.0, 8.0, 0.01, "or_greater") var late_run_weight_multiplier := 1.0:
+	set(value):
+		late_run_weight_multiplier = maxf(value, 0.0) if is_finite(value) else 0.0
+
 ## Finestra temporale (secondi di run) in cui l'archetipo e' eleggibile.
 @export_range(0.0, 3600.0, 1.0, "or_greater") var eligible_time_start := 0.0:
 	set(value):

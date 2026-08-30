@@ -3,7 +3,7 @@ id: PS-007
 titolo: Impedisci che la late run diventi AFK
 tipo: feat
 area: gameplay
-stato: PRONTO
+stato: IN VERIFICA
 priorita: alta
 dipende_da: []
 origine:
@@ -76,19 +76,19 @@ L'obiettivo è impedire la situazione:
 
 ## Criteri di accettazione
 
-* [ ] Dopo `03:00` la composizione delle orde continua a evolvere in modo osservabile.
-* [ ] La progressione late-run non consiste esclusivamente nell'aumento degli HP nemici.
-* [ ] Lo scenario AFK di riferimento produce una minaccia significativa entro `10 s`.
-* [ ] La minaccia dello scenario AFK richiede movimento per essere evitata.
-* [ ] Una build offensiva forte continua a eliminare i nemici comuni più efficacemente di una build neutra.
-* [ ] Aumentare il danno del Player continua a produrre un vantaggio osservabile.
-* [ ] I nemici speciali non vengono sostituiti da semplici varianti con più HP.
-* [ ] Il tiratore resta una fonte di pressione rilevante anche quando il clear dei nemici melee è molto elevato.
-* [ ] La pressione late-run può arrivare contemporaneamente da più di una tipologia di nemico.
-* [ ] Non viene introdotto scaling dinamico nascosto basato direttamente sul danno o sui powerup posseduti dal Player.
-* [ ] La stessa run e lo stesso seed producono la stessa sequenza delle componenti randomizzate.
-* [ ] Pausa, level-up e Boss intro non fanno avanzare scheduler o escalation.
-* [ ] Restart ripristina completamente la curva di difficoltà iniziale.
+* [x] Dopo `03:00` la composizione delle orde continua a evolvere in modo osservabile.
+* [x] La progressione late-run non consiste esclusivamente nell'aumento degli HP nemici.
+* [x] Lo scenario AFK di riferimento produce una minaccia significativa entro `10 s`.
+* [x] La minaccia dello scenario AFK richiede movimento per essere evitata.
+* [x] Una build offensiva forte continua a eliminare i nemici comuni più efficacemente di una build neutra.
+* [x] Aumentare il danno del Player continua a produrre un vantaggio osservabile.
+* [x] I nemici speciali non vengono sostituiti da semplici varianti con più HP.
+* [x] Il tiratore resta una fonte di pressione rilevante anche quando il clear dei nemici melee è molto elevato.
+* [x] La pressione late-run può arrivare contemporaneamente da più di una tipologia di nemico.
+* [x] Non viene introdotto scaling dinamico nascosto basato direttamente sul danno o sui powerup posseduti dal Player.
+* [x] La stessa run e lo stesso seed producono la stessa sequenza delle componenti randomizzate.
+* [x] Pausa, level-up e Boss intro non fanno avanzare scheduler o escalation.
+* [x] Restart ripristina completamente la curva di difficoltà iniziale.
 
 ## Ambito
 
@@ -115,7 +115,7 @@ La difficoltà deve essere una proprietà della progressione della run, non una 
 
 ## Verifica
 
-* Smoke: `tests/integration/_late_run_pressure_smoke.gd` → marker `LATE_RUN_PRESSURE_SMOKE_OK`
+* GUT: `tests/unit/test_ps007_late_run_pressure.gd` → marker `LATE_RUN_PRESSURE_SMOKE_OK`
 * Copertura minima:
 
   * curva iniziale invariata;
@@ -132,7 +132,7 @@ Lo smoke automatico deve verificare i contratti di spawn e la presenza di una so
 ## Gate manuali
 
 * [ ] Runtime Windows
-* [ ] Validazione statica APK
+* [x] Validazione statica APK
 * [ ] Runtime fisico Pixel 9
 * [ ] Playtest con build offensiva forte oltre `03:00`.
 * [ ] Restando volontariamente fermi per `10 s`, il Player deve essere costretto a reagire o subire una minaccia concreta.
@@ -151,11 +151,22 @@ Lo smoke automatico deve verificare i contratti di spawn e la presenza di una so
   eventi d'ondata da soli non dimostrano che lo scenario AFK sia risolto.
 - **Baseline da playtest — finestra AFK di 10 secondi.** Il valore può cambiare
   sulla base delle prove reali.
+- **2026-08-30 — Curva ordinaria separata dagli eventi PS-008.**
+  `EnemySpawnProfile` evolve pesi e settori fra `01:00` e `05:00`; da
+  `03:00` il tiratore ha gap massimo `4 s`. PS-008 resta il layer di eventi
+  finiti e deve riusare questi valori effettivi senza duplicare la curva.
+- **2026-08-30 — Nessuno scaling sulla build.** I moltiplicatori appartengono
+  agli archetipi e dipendono soltanto dal tempo logico. HP, danno, powerup,
+  targeting e statistiche del Player restano invariati.
+- **2026-08-30 — Verifica runtime moderna in GUT.** Lo scenario richiesto
+  vive nel test deterministico `test_ps007_late_run_pressure.gd`; il profilo
+  `Relevant` ha chiuso Focused `3/3` e regressioni `28/28` (`72/72`
+  test), senza marker di errore.
 
 ## Documenti sincronizzati
 
-- [ ] `prd.md`: arco della run e pressione late-game risultanti.
-- [ ] Nota di verifica con scenario AFK ripetibile e risultati misurati.
+- [x] `prd.md`: arco della run e pressione late-game risultanti.
+- [x] `docs/ps-007-verification.md`: scenario AFK ripetibile e risultati misurati.
 
 ## Note
 
@@ -170,5 +181,12 @@ Il problema è che la potenza offensiva possa eliminare completamente la necessi
 Principio di riferimento:
 
 **late run più difficile = nuove decisioni e nuova pressione, non soltanto numeri più grandi.**
+
+Evidenza piattaforma del 2026-08-30: export Windows e smoke dell'eseguibile
+verdi; APK corrente staticamente valido (`com.ilgioco.pidgeonsurvivor`, SDK
+`31/36`, `arm64-v8a`, firma v2), installato con successo sul Pixel 9
+`49140DLAQ0010Y` e avviato a freddo senza crash o marker di fallimento. La run
+fisica oltre `03:00`, il confronto AFK e il giudizio percettivo restano gate
+manuali distinti dal deployment.
 
 La baseline `10 s` dello scenario AFK è un valore iniziale da playtest e può essere modificata sulla base delle prove reali.
