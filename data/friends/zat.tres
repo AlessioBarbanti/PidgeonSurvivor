@@ -38,11 +38,16 @@ passive_id = &"zat_delayed_healing"
 passive_parameters = {
 "recoverable_fraction": 0.35,
 "recovery_delay": 3.0,
-"recovery_duration": 4.0
+"recovery_duration": 4.0,
+"charge_threshold_medium": 0.05,
+"charge_threshold_high": 0.12,
+"aura_rotation_speed_low": 0.6,
+"aura_rotation_speed_medium": 1.4,
+"aura_rotation_speed_high": 2.6
 }
 active_ability_id = &"zat_lightning_storm"
 active_ability_title = "Tempesta di Tuoni"
-active_ability_description = "Una tempesta di fulmini telegrafati cade su punti fissi attorno a Zat, colpendo ogni nemico che si trova sotto le zone d'impatto."
+active_ability_description = "Un rombo di Tuono il cui danno scala con la carica di Guarigione Ritardata danneggia tutti i nemici."
 base_health_multiplier = 1.1
 base_move_speed_multiplier = 0.95
 base_fire_rate_multiplier = 1.0

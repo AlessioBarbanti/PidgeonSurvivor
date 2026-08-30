@@ -91,7 +91,7 @@ B18M precedente al refresh):
 |---|---|---|
 | `scripts/abilities/earthquake_wave.gd` | Decal tellurico senza cerchio sottostante, in espansione entro il 15% della durata e con opacita' massima `0,62` | `cbc9f558b687f307eb8c0ce7b6730b8b19d84bc86f31f76063ded667f7074d2e` |
 | `scripts/abilities/fire_z_trail.gd` | Tasselli di fiamma specchiati a alternanza lungo il segmento e scintille | `7da85d1ce07c5d0e85ab8ed3b00f011a8d16378eea45bb00a9ec1e5ce6035003` |
-| `scripts/abilities/lightning_storm.gd` | Decal di preavviso e impatto inscritto nell'area, senza anelli procedurali, con flash accessibile | `d814137dfad42d1ad17191113bcbaeae6bb9426d198afff2dd7f4eaa2d811d5d` |
+| `scripts/abilities/lightning_storm.gd` | Preavviso e decal d'impatto inscritti per ogni bersaglio fotografato, tinti per fascia di carica, senza flash fullscreen (PS-004) | `d111ad7172d77c2dc5abbab003b25ce6581ff83c0b1c99529282bcf98203d68e` |
 | `scripts/abilities/ability_area_effect.gd` | Decal Piroetta e Zen senza base circolare; Piroetta a due giri per attivazione | `7e7ed0664d50609d423a9b10bfb68402dac650e6d91bf6746bf43e575eaae31d` |
 | `scripts/abilities/cosplay_accent.gd` | Decal reveal e coriandoli senza anello sottostante | `72521e3e91469c6fc9b4160e8853e5c1d027eb0dd863097996c09b05d0af9664` |
 | `scripts/abilities/thermal_shock.gd` | Decal separati per brina e bloom senza basi o anelli procedurali | `4316a441084c661934991561309e0f18059d7fb344c880dc37b3c2d5814bb09c` |
@@ -118,7 +118,7 @@ storica documentata, ma non è più consumato dal runtime.
 |---|---|---|---|---|---|
 | `scripts/abilities/earthquake_wave.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Anelli concentrici e crepe disegnati con primitive `CanvasItem` | `dcba84a86bef2c0b337df98817eae1aaf4f9f809f318a5c3e4a36aa9fa466b84` |
 | `scripts/abilities/fire_z_trail.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Nastro a due livelli e 16 scintille deterministiche | `e5b7f395566944412d67852c4284e8cc808d9076d59f5e756d5ef1e2b94da305` |
-| `scripts/abilities/lightning_storm.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Nubi e saette telegrafate per fulmine, bagliori residui e overlay accessibile (B43) | `9f55fe6858eaeb32c673b1c237ae26f74aa4f5da9109e363a3bafba6e63b6c63` |
+| `scripts/abilities/lightning_storm.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Fotografa i nemici vivi e colpisce ciascuno con un decal tinto per fascia di carica, nessuna posizione telegrafata fissa (PS-004) | `d111ad7172d77c2dc5abbab003b25ce6581ff83c0b1c99529282bcf98203d68e` |
 | `scripts/abilities/ability_area_effect.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Archi rotanti, pozza con bolle e campo zen con anelli e moti lenti; il campo zen assorbe anche i proiettili ostili nel raggio, stesso disegno (B45) | `4a5eabf0409b07b9dfd95787cf2d0346c92296db5263ec41afdd40206e611578` |
 | `scripts/abilities/cosplay_accent.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Coda B18R non interattiva da 18 coriandoli, con entrata/uscita centralizzate nella palette dell'abilità copiata | `8d62630788467479ff2fbbf1587f753c2212c32e8720e81e1379b80bd2b9cff1` |
 | `scripts/abilities/thermal_shock.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Corona di brina contrattile con 12 schegge e bloom di calore a tre anelli | `581ae10c475c789b2f9c1d623d9b31938181703a4f4e2d58ba8207c526276836` |

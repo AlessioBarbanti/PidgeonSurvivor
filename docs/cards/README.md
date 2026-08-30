@@ -30,7 +30,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-001](./to_test/PS-001-tell-di-stato-senza-snaturare-lo-sprite.md) | Comunicare la fase della passiva senza ridipingere lo sprite | ux | arte | IN VERIFICA | alta | — |
 | [PS-002](./completed/PS-002-restyle-proiettili-giocatore-e-nemici.md) | Sostituire i proiettili "debug" con sprite ImageGen leggibili | art | arte | COMPLETATO | media | — |
 | [PS-003](./completed/PS-003-conferma-abilita-passiva-zat.md) | Confermare Guarigione Ritardata | chore | gameplay | COMPLETATO | alta | — |
-| [PS-004](./to_do/PS-004-lega-Tempesta-di-Tuoni-al-danno-recuperabile.md) | Legare Tempesta di Tuoni al danno recuperabile | feat | gameplay | IN CORSO | alta | PS-003 |
+| [PS-004](./to_test/PS-004-lega-Tempesta-di-Tuoni-al-danno-recuperabile.md) | Legare Tempesta di Tuoni al danno recuperabile | feat | gameplay | IN VERIFICA | alta | PS-003 |
 | [PS-005](./to_test/PS-005-Boss-timer.md) | Annunciare l'arrivo del Boss | ux | gameplay | IN VERIFICA | alta | — |
 | [PS-006](./to_do/PS-006-bosses-new-abilities.md) | Dare agli Evil una Signature Ability | feat | gameplay | BLOCCATO | alta | PS-004 |
 | [PS-007](./to_test/PS-007-impedire-run-AFK-lategame.md) | Impedire che la late run diventi AFK | feat | gameplay | IN VERIFICA | alta | — |
@@ -50,3 +50,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-021](./completed/PS-021-import-orfano-backdrop-bronze.md) | Rimuovere l'import orfano del backdrop bronze del selettore | chore | arte | COMPLETATO | bassa | — |
 | [PS-022](./to_do/PS-022-b15-target-registrati-in-piu-suite-completa.md) | Diagnosticare i due target registrati in più di test_b15_boss_encounter | chore | tooling | PRONTO | media | — |
 | [PS-023](./to_test/PS-023-runner-verifica-affidabile.md) | Rendere leggibile e non bloccante il runner di verifica | chore | tooling | IN VERIFICA | alta | — |
+| [PS-030](./to_do/PS-030-runner-crash-su-test-eliminato.md) | Correggi il crash del runner quando un test viene eliminato | fix | tooling | PRONTO | media | — |

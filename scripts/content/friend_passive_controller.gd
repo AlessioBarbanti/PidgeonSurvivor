@@ -4,6 +4,7 @@ extends Node
 signal passive_equipped(definition: FriendDefinition)
 signal damage_avoided(passive_id: StringName)
 signal delayed_healing_changed(recoverable_health: float)
+signal thunder_charge_tier_changed(tier: int)
 signal shield_changed(active: bool, remaining: float)
 signal random_effect_started(positive: bool, stat_id: StringName, multiplier: float)
 signal thermal_mode_changed(hot: bool)
@@ -53,6 +54,7 @@ var _definition: FriendDefinition
 var _rng := RandomNumberGenerator.new()
 
 var _recoverable_health := 0.0
+var _thunder_charge_tier := ThunderChargeAura.TIER_LOW
 var _recovery_delay_remaining := 0.0
 var _recovery_duration_remaining := 0.0
 var _shield_remaining := 0.0
@@ -87,6 +89,7 @@ func _process(delta: float) -> void:
 	match _definition.passive_id:
 		ZAT_DELAYED_HEALING:
 			_advance_delayed_healing(safe_delta)
+			_advance_thunder_charge_rotation(safe_delta)
 		ALEA_EAGLE_NEVER_MISSES:
 			_advance_alea_effect(safe_delta)
 		ALEO_INTERNAL_THERMOSTAT:
@@ -150,6 +153,29 @@ func get_passive_id() -> StringName:
 
 func get_recoverable_health() -> float:
 	return _recoverable_health
+
+
+## Fascia di carica corrente (PS-004): letta da Tempesta di Tuoni per
+## scalare il danno e dall'aura per il proprio tell. Fuori da Zat resta
+## sempre in fascia bassa.
+func get_thunder_charge_tier() -> int:
+	if (
+		_definition == null
+		or _definition.passive_id != ZAT_DELAYED_HEALING
+		or not is_instance_valid(_player)
+	):
+		return ThunderChargeAura.TIER_LOW
+	var health := _player.get_health_component()
+	if health == null or health.health_max <= 0.0:
+		return ThunderChargeAura.TIER_LOW
+	var ratio := _recoverable_health / health.health_max
+	var high_threshold := _definition.get_passive_float(&"charge_threshold_high", 0.12, 0.0)
+	var medium_threshold := _definition.get_passive_float(&"charge_threshold_medium", 0.05, 0.0)
+	if ratio >= high_threshold:
+		return ThunderChargeAura.TIER_HIGH
+	if ratio >= medium_threshold:
+		return ThunderChargeAura.TIER_MEDIUM
+	return ThunderChargeAura.TIER_LOW
 
 
 func is_shield_active() -> bool:
@@ -289,6 +315,44 @@ func _advance_delayed_healing(delta: float) -> void:
 		_recoverable_health = maxf(_recoverable_health - applied, 0.0)
 	_recovery_duration_remaining = maxf(_recovery_duration_remaining - delta, 0.0)
 	delayed_healing_changed.emit(_recoverable_health)
+	_refresh_thunder_charge_aura()
+
+
+## La rotazione dell'aura avanza a ogni tick di RUNNING indipendentemente dal
+## fatto che la fascia sia cambiata: e' lei stessa, insieme al colore, a
+## comunicare la fascia corrente (PS-004).
+func _advance_thunder_charge_rotation(delta: float) -> void:
+	if is_instance_valid(_player):
+		_player.advance_thunder_charge_aura(delta)
+
+
+## Spinge la fascia corrente sull'aura del Player e annuncia il cambio di
+## fascia. Va chiamata a ogni variazione della quota recuperabile (colpo,
+## recupero, reset) cosi' l'aura resta il tell affidabile della passiva anche
+## fuori dall'attivazione del Tuono (PS-003, D3).
+func _refresh_thunder_charge_aura() -> void:
+	if not is_instance_valid(_player):
+		return
+	if _definition == null or _definition.passive_id != ZAT_DELAYED_HEALING:
+		_player.clear_thunder_charge_aura()
+		_thunder_charge_tier = ThunderChargeAura.TIER_LOW
+		return
+	var tier := get_thunder_charge_tier()
+	_player.set_thunder_charge_tier(tier)
+	_player.set_thunder_charge_rotation_speed(_resolve_thunder_rotation_speed(tier))
+	if tier != _thunder_charge_tier:
+		_thunder_charge_tier = tier
+		thunder_charge_tier_changed.emit(tier)
+
+
+func _resolve_thunder_rotation_speed(tier: int) -> float:
+	match tier:
+		ThunderChargeAura.TIER_MEDIUM:
+			return _definition.get_passive_float(&"aura_rotation_speed_medium", 1.4, 0.0)
+		ThunderChargeAura.TIER_HIGH:
+			return _definition.get_passive_float(&"aura_rotation_speed_high", 2.6, 0.0)
+		_:
+			return _definition.get_passive_float(&"aura_rotation_speed_low", 0.6, 0.0)
 
 
 func _advance_alea_effect(delta: float) -> void:
@@ -810,6 +874,7 @@ func _reset_runtime(seed_value: int) -> void:
 	_refresh_passive_state_outline()
 	if _definition != null and _definition.passive_id == MARGHE_CONTAGIOUS_SMILE:
 		_refresh_marghe_aura()
+	_refresh_thunder_charge_aura()
 	delayed_healing_changed.emit(0.0)
 	shield_changed.emit(false, 0.0)
 	luck_charge_changed.emit(_alea_luck_bonus)
@@ -827,6 +892,7 @@ func _has_valid_dependencies() -> bool:
 func _disconnect_dependencies() -> void:
 	if is_instance_valid(_player):
 		_player.clear_passive_state_outline()
+		_player.clear_thunder_charge_aura()
 		_player.set_momentum_trail_enabled(false)
 		if _player.damaged.is_connected(_on_player_damaged):
 			_player.damaged.disconnect(_on_player_damaged)
@@ -869,6 +935,7 @@ func _on_player_damaged(_player_value: Player, amount: float, _health_current: f
 			AbilityDefinition.MINIMUM_POSITIVE_VALUE
 		)
 		delayed_healing_changed.emit(_recoverable_health)
+		_refresh_thunder_charge_aura()
 	elif (
 		_definition.passive_id == MIGI_TURTLE_SHELL
 		and _shield_cooldown_remaining <= 0.0

@@ -363,21 +363,30 @@ func _execute_lightning_storm(definition: AbilityDefinition, source: Node2D) -> 
 	storm.name = "ThunderStorm"
 	_effect_parent.add_child(storm)
 	storm.targets_affected.connect(_on_targets_affected)
-	# La tempesta dispone i fulmini con un seme preso dall'RNG della run: la
-	# stessa run rigioca la stessa sequenza, run diverse no.
 	if not storm.initialize(
 		source.global_position,
 		definition,
 		_run_controller,
 		_targeting_system,
-		_visual_settings,
-		_arena_layout,
-		_rng.randi()
+		_resolve_zat_thunder_tier(source)
 	):
 		storm.queue_free()
 		return null
 	_track_effect(storm)
 	return storm
+
+
+## La potenza del Tuono dipende dalla fascia di carica corrente di Guarigione
+## Ritardata (PS-004): la legge dalla passiva di Zat senza consumarla. Fuori
+## da Zat (ad esempio Cosplay Casuale su un altro profilo) resta in fascia
+## bassa.
+func _resolve_zat_thunder_tier(source: Node2D) -> int:
+	if not source is Player:
+		return ThunderChargeAura.TIER_LOW
+	var passive := (source as Player).get_passive_controller()
+	if not is_instance_valid(passive):
+		return ThunderChargeAura.TIER_LOW
+	return passive.get_thunder_charge_tier()
 
 
 func _execute_thermal_shock(
@@ -590,18 +599,7 @@ func _can_execute_non_copy(definition: AbilityDefinition, require_running := tru
 				and definition.get_effect_float(&"dash_distance", 0.0, 0.0) > 0.0
 			)
 		LIGHTNING_STORM:
-			return (
-				definition.get_effect_float(
-					&"normal_max_health_damage_ratio",
-					0.0,
-					0.0
-				) > 0.0
-				and definition.get_effect_float(
-					&"boss_max_health_damage_ratio",
-					0.0,
-					0.0
-				) > 0.0
-			)
+			return definition.damage > 0.0
 		GRAND_SPIN, THERMAL_SHOCK:
 			return (
 				definition.area_radius > 0.0

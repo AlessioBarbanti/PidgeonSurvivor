@@ -24,7 +24,7 @@ Boss: Evil Bea.
 
 Ruolo: Gestione del danno e sopravvivenza.  
 Passiva — Guarigione Ritardata: Parte del danno subito resta recuperabile: se Zat evita altri colpi per qualche secondo, quella quota torna indietro.  
-Attiva — Tempesta di Tuoni: Una tempesta di fulmini telegrafati cade su punti fissi attorno a Zat, colpendo ogni nemico che si trova sotto le zone d'impatto; il valore sta nel portarci sopra orde e Boss (B43).
+Attiva — Tempesta di Tuoni: Fotografa tutti i nemici vivi presenti in quel momento e li colpisce con un'unica scarica ciascuno; il danno per bersaglio scala con la quota di HP recuperabili accumulata da Guarigione Ritardata (PS-004).
 Boss: Evil Zat.
 
 Contratto runtime di Guarigione Ritardata (confermato da PS-003; i valori vivono
@@ -48,6 +48,30 @@ in `data/friends/zat.tres`, la logica in `FriendPassiveController`):
 - Restart e cambio personaggio azzerano quota e timer.
 - `get_recoverable_health()` e il segnale `delayed_healing_changed` espongono la
   quota corrente senza consumarla.
+
+Contratto runtime di Tempesta di Tuoni (PS-004; i valori vivono in
+`data/abilities/zat_lightning_storm.tres` e `data/friends/zat.tres`, la logica
+in `scripts/abilities/lightning_storm.gd` e `FriendPassiveController`):
+
+- All'attivazione vengono fotografati i nemici vivi in quel momento
+  (`TargetingSystem.get_alive_targets()`); dopo un breve preavviso
+  (`warning_seconds`, `0,35` s) ricevono tutti un'unica istanza di danno. I
+  nemici comparsi dopo lo snapshot non vengono colpiti.
+- Il danno per bersaglio è `damage` del rank corrente moltiplicato per la
+  fascia di carica al momento dell'attivazione: `×1` sotto il `5%` di HP
+  recuperabili (rispetto alla vita massima di Zat), `×2` fra `5%` e `12%`,
+  `×3` da `12%` in su. Al rank 1: `12 / 24 / 36`.
+- La quota recuperabile non viene consumata dall'attivazione: è solo letta
+  (`FriendPassiveController.get_thunder_charge_tier()`).
+- La stessa fascia guida un'aura orbitante persistente attorno a Zat (1
+  fulmine verde in fascia bassa, 2 gialli in media, 3 rossi in alta, con
+  rotazione crescente): è il tell della quota recuperabile anche fuori
+  dall'attivazione (PS-003, D3), e si azzera in un frame quando la quota
+  viene scartata a vita piena (PS-003, D2).
+- L'aura è puramente visiva: nessuna Area2D, nessuna collisione, nessun
+  effetto di gameplay.
+- Aura e preavviso avanzano solo in `RUNNING`; restart e cambio personaggio
+  rimuovono fascia e VFX residui.
 
 ## Alea
 

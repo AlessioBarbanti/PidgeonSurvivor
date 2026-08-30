@@ -7,8 +7,8 @@
 script = ExtResource("1_definition")
 id = &"ability_rank_zat_lightning_storm"
 title = "Tempesta di Tuoni"
-description = "Potenzia la tempesta: più fulmini, zone più ampie e ricarica più breve."
-effect_summary = "FULMINI · RAGGIO · DANNO · RICARICA"
+description = "Potenzia la Tempesta: più danno per fascia di carica e ricarica più breve."
+effect_summary = "DANNO A FASCIA · RICARICA"
 icon = ExtResource("2_icon")
 effect_id = &"ability_rank"
 effect_parameters = {"ability_id": "zat_lightning_storm"}

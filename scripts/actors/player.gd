@@ -91,6 +91,7 @@ var _momentum_reference_direction := Vector2.ZERO
 var _momentum_trail_enabled := false
 var _momentum_trail_points: PackedVector2Array = PackedVector2Array()
 var _momentum_trail_sample_elapsed := 0.0
+var _thunder_charge_active := false
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 @onready var _health_component: HealthComponent = %HealthComponent
@@ -98,6 +99,7 @@ var _momentum_trail_sample_elapsed := 0.0
 @onready var _ability_controller: AbilityController = %AbilityController
 @onready var _character_sprite: Sprite2D = %CharacterSprite
 @onready var _passive_state_outline: PassiveStateOutline = %PassiveStateOutline
+@onready var _thunder_charge_aura: ThunderChargeAura = %ThunderChargeAura
 
 
 func _ready() -> void:
@@ -314,6 +316,7 @@ func set_run_controller(value: RunController) -> void:
 	_run_controller = value
 	_connect_run_controller()
 	_sync_passive_state_outline_visibility()
+	_sync_thunder_charge_aura_visibility()
 
 
 func get_run_controller() -> RunController:
@@ -431,6 +434,52 @@ func _sync_passive_state_outline_visibility() -> void:
 		return
 	_passive_state_outline.set_state_presented(
 		is_instance_valid(_run_controller) and _run_controller.is_running()
+	)
+
+
+## Aura orbitante di Guarigione Ritardata (PS-004): stesso schema del tell di
+## stato, ma la fascia (numero/colore/velocita') arriva da
+## `FriendPassiveController` invece che da un colore singolo.
+func set_thunder_charge_tier(tier: int) -> bool:
+	if not is_instance_valid(_thunder_charge_aura):
+		return false
+	_thunder_charge_active = true
+	var accepted := _thunder_charge_aura.set_tier(tier)
+	_sync_thunder_charge_aura_visibility()
+	return accepted
+
+
+func set_thunder_charge_rotation_speed(value: float) -> void:
+	if is_instance_valid(_thunder_charge_aura):
+		_thunder_charge_aura.set_rotation_speed(value)
+
+
+func advance_thunder_charge_aura(delta: float) -> void:
+	if is_instance_valid(_thunder_charge_aura):
+		_thunder_charge_aura.advance(delta)
+
+
+func clear_thunder_charge_aura() -> void:
+	_thunder_charge_active = false
+	if is_instance_valid(_thunder_charge_aura):
+		_thunder_charge_aura.set_presented(false)
+
+
+func get_thunder_charge_tier() -> int:
+	return _thunder_charge_aura.get_tier() if is_instance_valid(_thunder_charge_aura) else 0
+
+
+func is_thunder_charge_presented() -> bool:
+	return is_instance_valid(_thunder_charge_aura) and _thunder_charge_aura.is_presented()
+
+
+func _sync_thunder_charge_aura_visibility() -> void:
+	if not is_instance_valid(_thunder_charge_aura):
+		return
+	_thunder_charge_aura.set_presented(
+		_thunder_charge_active
+		and is_instance_valid(_run_controller)
+		and _run_controller.is_running()
 	)
 
 
@@ -835,6 +884,7 @@ func _on_run_state_changed(
 	_current_state: RunController.RunState
 ) -> void:
 	_sync_passive_state_outline_visibility()
+	_sync_thunder_charge_aura_visibility()
 
 
 func _on_run_started(_seed_value: int) -> void:

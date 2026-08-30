@@ -8,72 +8,64 @@
 script = ExtResource("3_rank")
 rank = 1
 cooldown_seconds = 60.0
-duration_seconds = 2.75
+duration_seconds = 0.85
 area_radius = 150.0
-damage = 0.0
-effect_parameters = {"android_flash_alpha": 0.4, "boss_max_health_damage_ratio": 0.008, "flash_fade_seconds": 0.18, "flash_hold_seconds": 0.06, "flash_rise_seconds": 0.06, "normal_max_health_damage_ratio": 0.5, "reduced_flash_alpha": 0.15, "storm_radius": 260.0, "strike_count": 5, "strike_telegraph_seconds": 0.85, "warning_seconds": 0.45, "windows_flash_alpha": 0.55}
+damage = 12.0
+effect_parameters = {"tier_multiplier_high": 3.0, "tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "warning_seconds": 0.35}
 
 [sub_resource type="Resource" id="Rank_2"]
 script = ExtResource("3_rank")
 rank = 2
 cooldown_seconds = 60.0
-duration_seconds = 3.3
+duration_seconds = 0.85
 area_radius = 150.0
-damage = 0.0
-effect_parameters = {"android_flash_alpha": 0.4, "boss_max_health_damage_ratio": 0.008, "flash_fade_seconds": 0.18, "flash_hold_seconds": 0.06, "flash_rise_seconds": 0.06, "normal_max_health_damage_ratio": 0.55, "reduced_flash_alpha": 0.15, "storm_radius": 260.0, "strike_count": 6, "strike_telegraph_seconds": 0.85, "warning_seconds": 0.45, "windows_flash_alpha": 0.55}
+damage = 16.0
+effect_parameters = {"tier_multiplier_high": 3.0, "tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "warning_seconds": 0.35}
 
 [sub_resource type="Resource" id="Rank_3"]
 script = ExtResource("3_rank")
 rank = 3
 cooldown_seconds = 55.0
-duration_seconds = 3.0
+duration_seconds = 0.9
 area_radius = 170.0
-damage = 0.0
-effect_parameters = {"android_flash_alpha": 0.4, "boss_max_health_damage_ratio": 0.009, "flash_fade_seconds": 0.18, "flash_hold_seconds": 0.06, "flash_rise_seconds": 0.06, "normal_max_health_damage_ratio": 0.55, "reduced_flash_alpha": 0.15, "storm_radius": 290.0, "strike_count": 6, "strike_telegraph_seconds": 0.85, "warning_seconds": 0.45, "windows_flash_alpha": 0.55}
+damage = 20.0
+effect_parameters = {"tier_multiplier_high": 3.0, "tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "warning_seconds": 0.35}
 
 [sub_resource type="Resource" id="Rank_4"]
 script = ExtResource("3_rank")
 rank = 4
 cooldown_seconds = 55.0
-duration_seconds = 3.5
+duration_seconds = 0.9
 area_radius = 170.0
-damage = 0.0
-effect_parameters = {"android_flash_alpha": 0.4, "boss_max_health_damage_ratio": 0.01, "flash_fade_seconds": 0.18, "flash_hold_seconds": 0.06, "flash_rise_seconds": 0.06, "normal_max_health_damage_ratio": 0.6, "reduced_flash_alpha": 0.15, "storm_radius": 290.0, "strike_count": 7, "strike_telegraph_seconds": 0.85, "warning_seconds": 0.45, "windows_flash_alpha": 0.55}
+damage = 25.0
+effect_parameters = {"tier_multiplier_high": 3.0, "tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "warning_seconds": 0.35}
 
 [sub_resource type="Resource" id="Rank_5"]
 script = ExtResource("3_rank")
 rank = 5
 cooldown_seconds = 50.0
-duration_seconds = 3.6
+duration_seconds = 0.95
 area_radius = 190.0
-damage = 0.0
-effect_parameters = {"android_flash_alpha": 0.4, "boss_max_health_damage_ratio": 0.01, "flash_fade_seconds": 0.18, "flash_hold_seconds": 0.06, "flash_rise_seconds": 0.06, "normal_max_health_damage_ratio": 0.7, "reduced_flash_alpha": 0.15, "storm_radius": 320.0, "strike_count": 8, "strike_telegraph_seconds": 0.85, "warning_seconds": 0.45, "windows_flash_alpha": 0.55}
+damage = 30.0
+effect_parameters = {"tier_multiplier_high": 3.0, "tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "warning_seconds": 0.35}
 
 [resource]
 script = ExtResource("1_definition")
 id = &"zat_lightning_storm"
 title = "Tempesta di Tuoni"
-description = "Una tempesta di fulmini telegrafati cade su punti fissi attorno a Zat, colpendo ogni nemico che si trova sotto le zone d'impatto."
-effect_summary = "5 FULMINI · 50% VITA MAX DEL NEMICO COLPITO · RICARICA 60 S"
+description = "Fotografa tutti i nemici vivi e li colpisce con un'unica scarica: il danno per bersaglio scala con la carica di Guarigione Ritardata."
+effect_summary = "12/24/36 DANNO A FASCIA · RICARICA 60 S"
 icon = ExtResource("2_icon")
 cooldown_seconds = 60.0
-duration_seconds = 2.75
+duration_seconds = 0.85
 area_radius = 150.0
-damage = 0.0
+damage = 12.0
 effect_id = &"lightning_storm"
 effect_parameters = {
-"android_flash_alpha": 0.4,
-"boss_max_health_damage_ratio": 0.008,
-"flash_fade_seconds": 0.18,
-"flash_hold_seconds": 0.06,
-"flash_rise_seconds": 0.06,
-"normal_max_health_damage_ratio": 0.5,
-"reduced_flash_alpha": 0.15,
-"storm_radius": 260.0,
-"strike_count": 5,
-"strike_telegraph_seconds": 0.85,
-"warning_seconds": 0.45,
-"windows_flash_alpha": 0.55
+"tier_multiplier_high": 3.0,
+"tier_multiplier_low": 1.0,
+"tier_multiplier_medium": 2.0,
+"warning_seconds": 0.35
 }
-tags = Array[StringName]([&"damage", &"multi_target", &"persistent", &"copy_compatible"])
+tags = Array[StringName]([&"damage", &"multi_target", &"copy_compatible"])
 rank_snapshots = Array[ExtResource("3_rank")]([SubResource("Rank_1"), SubResource("Rank_2"), SubResource("Rank_3"), SubResource("Rank_4"), SubResource("Rank_5")])

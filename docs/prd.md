@@ -170,29 +170,32 @@ in base ai tag di compatibilità, in particolare per gli effetti di copia.
 
 #### Zat — Tempesta di Tuoni
 
-- **Tipo:** tempesta di danno percentuale su posizioni telegrafate (B43).
-- **Effetto:** dopo un preavviso di `0,45 s`, il primo di cinque fulmini cade
-  esattamente sull'origine dell'attivazione; i successivi si allontanano a
-  spirale attorno ad essa, ciascuno annunciato da un telegrafo locale prima
-  dell'impatto. La tempesta dura `2,75 s` e colpisce solo i bersagli dentro il
-  raggio del singolo fulmine al momento del suo impatto, inclusi quelli entrati
-  dopo l'attivazione: il valore sta nel portarci sopra orde e Boss, non in un
-  pulsante premuto a caso.
-- **Parametri iniziali:** `cooldown_seconds: 60.0`, `strike_count: 5`,
-  `area_radius (raggio del fulmine): 150.0`, `storm_radius: 260.0`,
-  `normal_max_health_damage_ratio: 0.50`, `boss_max_health_damage_ratio: 0.008`,
-  `warning_seconds: 0.45`, `strike_telegraph_seconds: 0.85`.
-- **Accessibilità:** un solo flash fullscreen per attivazione, acceso sul primo
-  fulmine, alpha massimo `0,55` su Windows e `0,40` su Android, chiuso entro
-  `0,30 s`; l'opzione persistente **Flash ridotti** usa alpha `0,15`, nessuna
-  tenuta. Il budget di flash non cresce con il numero di fulmini: i successivi
-  hanno solo VFX locali.
-- **Nota tecnica:** le posizioni dei fulmini sono fotografate all'attivazione
-  con l'RNG seedato della run (stessa run, stessa tempesta); i bersagli e il
-  danno per ciascun fulmine sono risolti al suo impatto. Cooldown, tempesta e
-  flash avanzano soltanto in `RUNNING`; pausa, morte, cambio profilo e restart
-  non producono impatti tardivi o overlay residui. Il contributo dell'attiva
-  alla vita del Boss resta sotto il `50%` per finestra Boss a ogni rank.
+- **Tipo:** colpo istantaneo su tutti i bersagli vivi, scalato dalla passiva
+  (PS-004).
+- **Effetto:** fotografa i nemici vivi al momento dell'attivazione; dopo un
+  breve preavviso (`warning_seconds`) tutti i bersagli fotografati ricevono
+  un'unica istanza di danno. Il danno per bersaglio è `damage` del rank
+  corrente moltiplicato per la fascia di carica di Guarigione Ritardata al
+  momento dell'attivazione (`×1` sotto il `5%` di HP recuperabili rispetto
+  alla vita massima di Zat, `×2` fra `5%` e `12%`, `×3` da `12%` in su). Nemici
+  comparsi dopo lo snapshot non vengono colpiti; la quota recuperabile viene
+  letta, mai consumata. Non applica knockback, slow o controllo radiale.
+- **Parametri iniziali (rank 1):** `cooldown_seconds: 60.0`, `duration_seconds: 0.85`,
+  `damage: 12.0`, `tier_multiplier_low/medium/high: 1.0/2.0/3.0`,
+  `warning_seconds: 0.35` — fasce `12 / 24 / 36` danni. Soglie di carica
+  (`charge_threshold_medium: 0.05`, `charge_threshold_high: 0.12`) e velocità
+  di rotazione dell'aura (`aura_rotation_speed_low/medium/high`) vivono in
+  `data/friends/zat.tres` (passiva), non nell'attiva.
+- **Tell persistente:** un'aura orbitante attorno a Zat (1 fulmine verde in
+  fascia bassa, 2 gialli in media, 3 rossi in alta, rotazione crescente) resta
+  visibile durante `RUNNING` indipendentemente dall'attivazione: è la lettura
+  della quota recuperabile di Guarigione Ritardata (tell mancante colmato da
+  PS-004, delegato da PS-003/D3). E' puramente VFX: nessuna Area2D, nessuna
+  collisione.
+- **Nota tecnica:** cooldown, preavviso e aura avanzano soltanto in `RUNNING`;
+  pausa, morte, cambio profilo e restart non producono impatti tardivi o VFX
+  residui. Nessun flash fullscreen: il tell immediato sono i decal tinti per
+  fascia disegnati su ogni bersaglio fotografato.
 
 #### Alea — Gran Piroetta
 
@@ -268,11 +271,15 @@ compatibilità invariati.
 ### 3.5. Boss, vittoria e chiusura della run
 
 Il primo Boss viene richiesto dal `GameDirector` a `02:00` di clock logico.
-Da `01:45` l'HUD mostra `BOSS IN ARRIVO`; negli ultimi cinque secondi il copy
-diventa `BOSS IN 5` fino a `BOSS IN 1`. Il warning deriva dallo stesso clock
-`RUNNING`, resta congelato in pausa e durante il level up, non intercetta input
-e scompare quando parte `BOSS_INTRO`. L'introduzione ferma clock e gameplay e
-mostra nella safe area nome, barra HP e una citazione.
+Da `01:45` l'HUD mostra sotto il timer run `LA GRIGLIA STA FACENDO UN
+PROFUMINO...`; negli ultimi cinque secondi il copy diventa `BOSS IN 5` fino a
+`BOSS IN 1` e usa il colore rosso di urgenza. La stessa sequenza anticipa ogni
+Boss ricorrente sulla sua scadenza autorevole, calcolata dallo spawn effettivo
+precedente. Il warning deriva dallo stesso clock `RUNNING`, resta congelato in
+pausa e durante il level up, non intercetta input e scompare quando parte
+`BOSS_INTRO`. Non viene mostrato mentre un Boss è attivo o quando uno spawn è
+già pendente. L'introduzione ferma clock e gameplay e mostra nella safe area
+nome, barra HP e una citazione.
 Una citazione personale non approvata non viene mai mostrata: la UI usa il
 placeholder sicuro dichiarato nel `BossDefinition`.
 
