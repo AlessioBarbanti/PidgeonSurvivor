@@ -179,40 +179,6 @@ function ConvertTo-RepositoryRelativePath {
     return $resolved.Substring($repoRoot.Length + 1).Replace('\', '/')
 }
 
-function Find-FocusedSmokes {
-    param(
-        [Parameter(Mandatory)]
-        [string]$MilestoneId
-    )
-
-    $pattern = '\b' + [regex]::Escape($MilestoneId) + '_[A-Z0-9_]*_SMOKE_OK\b'
-    return @(
-        Get-ChildItem -LiteralPath (Join-Path $repoRoot 'tests\integration') -Filter '*_smoke.gd' -File |
-            Where-Object { Select-String -LiteralPath $_.FullName -Pattern $pattern -Quiet } |
-            ForEach-Object { $_.FullName }
-    )
-}
-
-function Get-AllIntegrationSmokes {
-    return @(
-        Get-ChildItem -LiteralPath (Join-Path $repoRoot 'tests\integration') -Filter '*_smoke.gd' -File |
-            Sort-Object Name |
-            ForEach-Object { $_.FullName }
-    )
-}
-
-# GUT (tests/unit + tests/integration, prefisso test_) e gli smoke legacy
-# (prefisso _, suffisso _smoke.gd) non collidono mai per costruzione: la
-# distinzione tra i due percorsi di esecuzione si basa solo sul nome file.
-function Test-IsGutTestPath {
-    param(
-        [Parameter(Mandatory)]
-        [string]$Path
-    )
-
-    return (Split-Path -Path $Path -Leaf) -like 'test_*.gd'
-}
-
 function Get-AllGutTests {
     return @(
         Get-ChildItem -LiteralPath (Join-Path $repoRoot 'tests') -Filter 'test_*.gd' -File -Recurse |
@@ -288,10 +254,6 @@ function Find-RelevantSmokes {
 
     foreach ($changed in $Paths) {
         $normalized = $changed.Replace('\', '/')
-        if ($normalized -match '^tests/integration/.*_smoke\.gd$') {
-            $selected.Add($normalized) | Out-Null
-            continue
-        }
         if ($normalized -match '^tests/(unit|integration)/.*/?test_[^/]+\.gd$') {
             $selected.Add($normalized) | Out-Null
             continue
@@ -329,9 +291,6 @@ function Find-RelevantSmokes {
     }
 
     if ($runAll -or $unmatchedRuntime.Count -gt 0) {
-        foreach ($smoke in Get-AllIntegrationSmokes) {
-            $selected.Add($smoke) | Out-Null
-        }
         foreach ($test in Get-AllGutTests) {
             $selected.Add($test) | Out-Null
         }
@@ -548,51 +507,6 @@ function Add-ProcessStep {
     return $step
 }
 
-function Invoke-Smoke {
-    param(
-        [Parameter(Mandatory)]
-        [string]$SmokePath,
-
-        [Parameter(Mandatory)]
-        [string]$Category,
-
-        [Parameter(Mandatory)]
-        [string]$GodotPath,
-
-        [Parameter(Mandatory)]
-        [string]$RuntimeHash,
-
-        [Parameter(Mandatory)]
-        [string]$RunnerHash,
-
-        [Parameter(Mandatory)]
-        [string]$GodotVersion
-    )
-
-    $resolvedSmoke = Resolve-RepositoryPath -Path $SmokePath -MustExist
-    $relativeSmoke = ConvertTo-RepositoryRelativePath -Path $resolvedSmoke
-    $name = "$Category-$([IO.Path]::GetFileNameWithoutExtension($resolvedSmoke))"
-    $cacheKey = "smoke|$relativeSmoke"
-    $inputHash = Get-StringHash -Text (
-        "$runnerVersion|$RunnerHash|$GodotVersion|$RuntimeHash|$(Get-FileContentHash -Path $resolvedSmoke)"
-    )
-    $cached = Get-CachedStep -Key $cacheKey -InputHash $inputHash
-    if ($null -ne $cached) {
-        return Add-CachedStep -Name $name -Category $Category -CacheEntry $cached
-    }
-
-    $processResult = Invoke-CapturedProcess -FilePath $GodotPath -Arguments @(
-        '--headless',
-        '--path', $repoRoot,
-        '--resolution', '1280x720',
-        '--script', $relativeSmoke
-    ) -WorkingDirectory $repoRoot
-    $step = Add-ProcessStep -Name $name -Category $Category `
-        -ProcessResult $processResult -RequireSmokeMarker
-    Save-CachedStep -Key $cacheKey -InputHash $inputHash -Step $step
-    return $step
-}
-
 function Get-GutJUnitResults {
     param(
         [Parameter(Mandatory)]
@@ -618,9 +532,8 @@ function Get-GutJUnitResults {
 }
 
 # Una sola invocazione GUT copre molti file: la cache per l'intero batch (non
-# per file, a differenza di Invoke-Smoke) memorizza l'esito per-script cosi'
-# che un cache hit possa rimaterializzare gli stessi $steps senza rilanciare
-# ne' riparsare l'XML.
+# per singolo file) memorizza l'esito per-script cosi' che un cache hit possa
+# rimaterializzare gli stessi $steps senza rilanciare ne' riparsare l'XML.
 function Get-GutCachedBatch {
     param(
         [Parameter(Mandatory)]
@@ -731,9 +644,9 @@ function Add-GutStepsFromScripts {
     return @($added)
 }
 
-# Sostituisce N processi Godot (uno per smoke) con un solo processo GUT: la
-# selettivita' per profilo (Focused/Relevant/Full/Release) resta identica,
-# cambia solo il modo in cui i file scelti vengono eseguiti e riportati.
+# Un solo processo Godot esegue tutti i file selezionati per il batch: la
+# selettivita' per profilo (Focused/Relevant/Full/Release) sceglie quali
+# path passare, non quanti processi lanciare.
 function Invoke-GutBatch {
     param(
         [Parameter(Mandatory)]
@@ -919,7 +832,7 @@ function Write-RunnerOutput {
 
 $changedPaths = @(Get-ChangedRepositoryPaths)
 if ($FocusedSmoke.Count -eq 0) {
-    $FocusedSmoke = @(Find-FocusedSmokes -MilestoneId $Milestone) + @(Find-FocusedGutTests -MilestoneId $Milestone)
+    $FocusedSmoke = @(Find-FocusedGutTests -MilestoneId $Milestone)
 }
 
 switch ($Profile) {
@@ -927,11 +840,11 @@ switch ($Profile) {
         $RegressionSmoke += @(Find-RelevantSmokes -Paths $changedPaths -MapPath $TestMap)
     }
     'Full' {
-        $RegressionSmoke += @(Get-AllIntegrationSmokes) + @(Get-AllGutTests)
+        $RegressionSmoke += @(Get-AllGutTests)
         $RunProjectSmoke = $true
     }
     'Release' {
-        $RegressionSmoke += @(Get-AllIntegrationSmokes) + @(Get-AllGutTests)
+        $RegressionSmoke += @(Get-AllGutTests)
         $RefreshEditor = $true
         $RunProjectSmoke = $true
         $ExportWindows = $true
@@ -960,14 +873,6 @@ $RegressionSmoke = @(
         Where-Object { -not $focusedLookup.ContainsKey($_.ToLowerInvariant()) } |
         Sort-Object -Unique
 )
-
-# Stesso elenco selezionato per profilo, eseguito su due percorsi diversi:
-# Invoke-Smoke (un processo per file) per gli smoke legacy ancora vivi,
-# Invoke-GutBatch (un solo processo) per i file gia' migrati a GUT.
-$FocusedLegacySmoke = @($FocusedSmoke | Where-Object { -not (Test-IsGutTestPath -Path $_) })
-$FocusedGutSmoke = @($FocusedSmoke | Where-Object { Test-IsGutTestPath -Path $_ })
-$RegressionLegacySmoke = @($RegressionSmoke | Where-Object { -not (Test-IsGutTestPath -Path $_) })
-$RegressionGutSmoke = @($RegressionSmoke | Where-Object { Test-IsGutTestPath -Path $_ })
 
 $hasWork = ($FocusedSmoke.Count -gt 0) -or ($RegressionSmoke.Count -gt 0) -or
     $RefreshEditor -or $RunToolchain -or $ExportWindows -or $ExportAndroid -or $InspectAndroid
@@ -1027,22 +932,12 @@ try {
     }
 
     if (-not $halted) {
-        Invoke-GutBatch -Category 'focused' -TestPaths $FocusedGutSmoke -GodotPath $godot `
-            -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion | Out-Null
-    }
-    foreach ($smoke in $FocusedLegacySmoke) {
-        if ($halted) { break }
-        Invoke-Smoke -SmokePath $smoke -Category 'focused' -GodotPath $godot `
+        Invoke-GutBatch -Category 'focused' -TestPaths $FocusedSmoke -GodotPath $godot `
             -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion | Out-Null
     }
 
     if (-not $halted) {
-        Invoke-GutBatch -Category 'regression' -TestPaths $RegressionGutSmoke -GodotPath $godot `
-            -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion | Out-Null
-    }
-    foreach ($smoke in $RegressionLegacySmoke) {
-        if ($halted) { break }
-        Invoke-Smoke -SmokePath $smoke -Category 'regression' -GodotPath $godot `
+        Invoke-GutBatch -Category 'regression' -TestPaths $RegressionSmoke -GodotPath $godot `
             -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion | Out-Null
     }
 
