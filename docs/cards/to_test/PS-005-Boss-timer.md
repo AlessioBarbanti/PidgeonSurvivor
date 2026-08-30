@@ -17,7 +17,7 @@ aggiornato: 2026-08-30
 
 Il primo Boss deve arrivare a `02:00` di tempo di run.
 
-Il giocatore deve sapere in anticipo che il Boss sta per comparire, così può decidere se conservare l'abilità attiva, cercare una posizione migliore o prepararsi allo scontro.
+Il giocatore deve sapere in anticipo che un Boss sta per comparire, così può decidere se conservare l'abilità attiva, cercare una posizione migliore o prepararsi allo scontro. Lo stesso tell deve accompagnare anche gli incontri ricorrenti, non soltanto il primo.
 
 L'attuale Boss Intro comunica il Boss quando l'incontro è già iniziato; serve quindi un tell precedente che non interrompa il gameplay.
 
@@ -27,11 +27,11 @@ Il primo Boss viene schedulato a:
 
 `02:00`
 
-Negli ultimi secondi prima dello spawn compare un avviso visivo all'interno dell'HUD.
+Negli ultimi secondi prima di ogni spawn Boss programmato compare un avviso visivo sotto il timer della run.
 
 Baseline:
 
-* da `01:45` compare **BOSS IN ARRIVO**;
+* da `01:45` compare **LA GRIGLIA STA FACENDO UN PROFUMINO...**;
 * negli ultimi `5` secondi viene mostrato un countdown:
 
   * `BOSS IN 5`
@@ -40,6 +40,11 @@ Baseline:
   * `BOSS IN 2`
   * `BOSS IN 1`
 * a `02:00` l'avviso scompare e parte il normale flusso di Boss Intro.
+
+Per i Boss successivi la stessa sequenza parte `15 s` prima della scadenza
+ricorrente calcolata dallo spawn effettivo del Boss precedente. Se un Boss è
+ancora attivo o la richiesta successiva è già pendente, l'HUD non mostra un
+countdown che non potrebbe concludersi con uno spawn.
 
 L'avviso:
 
@@ -54,8 +59,9 @@ Il preavviso deve permettere al giocatore di comprendere che lo scontro è immin
 ## Criteri di accettazione
 
 * [x] Il primo Boss diventa eleggibile a `02:00` di tempo `RUNNING`.
-* [x] A `01:45` compare l'avviso `BOSS IN ARRIVO`.
+* [x] A `01:45` compare la frase `LA GRIGLIA STA FACENDO UN PROFUMINO...`.
 * [x] Da `01:55` a `01:59` viene mostrato il countdown `5 → 1`.
+* [x] La stessa sequenza warning → countdown viene mostrata prima dei Boss ricorrenti.
 * [x] Il countdown utilizza il tempo di run e non il tempo reale.
 * [x] Pausa e level-up congelano il countdown.
 * [x] Riprendendo la run il countdown continua dal valore corretto.
@@ -64,13 +70,14 @@ Il preavviso deve permettere al giocatore di comprendere che lo scontro è immin
 * [x] L'avviso non rimane visibile durante lo scontro con il Boss.
 * [x] Restart elimina completamente countdown e stato di warning.
 * [x] Il warning non viene mostrato nuovamente per la stessa soglia Boss.
+* [x] Il warning è centrato sotto il timer della run, su una seconda riga senza sovrapposizioni.
 * [x] Nessun elemento dell'avviso copre XP, HP, pausa o controllo abilità.
 
 ## Ambito
 
 Sistemi attesi:
 
-* scheduler del primo Boss;
+* scheduler del primo Boss e dei Boss ricorrenti;
 * HUD;
 * stato di preavviso Boss;
 * clock `RUNNING`;
@@ -95,9 +102,11 @@ Il warning è esclusivamente informativo e non deve introdurre uno stato aggiunt
   * warning a `01:45`;
   * countdown da `5` a `1`;
   * spawn a `02:00`;
+  * warning e countdown del secondo Boss ricorrente;
   * congelamento in pausa;
   * congelamento durante level-up;
   * nessun warning duplicato;
+  * disposizione sotto il timer della run;
   * cleanup al restart.
 * Profilo minimo prima della chiusura: `Relevant`
 
@@ -105,11 +114,12 @@ Il warning è esclusivamente informativo e non deve introdurre uno stato aggiunt
 
 * contratto runner: `MILESTONE_RUNNER_CONTRACT_OK`;
 * contratto cattura processi: `PROCESS_CAPTURE_CONTRACT_OK`;
-* profilo `Focused -NoCache`: PASS sul test PS-005;
-* profilo `Relevant -NoCache`: PASS sul focalizzato e su `22/22` regressioni;
+* profilo `Focused -NoCache`: PASS `3/3` sul test PS-005 aggiornato;
+* profilo `Relevant -NoCache`: PASS sul focalizzato `3/3` e su `12/12` suite
+  di regressione (`22/22` test), incluse HUD responsive e Boss ricorrenti;
 * nessun `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL` o `CONTRACT_FAIL`.
 
-### Evidenza di piattaforma — 2026-08-30
+### Evidenza di piattaforma della baseline precedente — 2026-08-30
 
 * export debug Windows x64 e smoke dell'eseguibile: completati;
 * APK debug: `105702545` byte, SHA-256
@@ -126,14 +136,20 @@ Il warning è esclusivamente informativo e non deve introdurre uno stato aggiunt
 Installazione e cold launch provano il deployment, non sostituiscono la run
 fino al Boss o i gate percettivi elencati sotto.
 
+Queste evidenze appartengono all'APK precedente alla revisione del layout e del
+warning ricorrente. Export, ispezione e runtime della build corrente sono
+quindi nuovamente aperti.
+
 ## Gate manuali
 
 * [ ] Runtime Windows
-* [x] Validazione statica APK
-* [ ] Runtime fisico Pixel 9: run completa fino al primo Boss
+* [ ] Validazione statica APK
+* [ ] Runtime fisico Pixel 9: run completa almeno fino al secondo Boss
 * [ ] Controllo percettivo richiesto: sì
-* [ ] `BOSS IN ARRIVO` è leggibile senza distogliere eccessivamente l'attenzione dal combattimento.
+* [ ] `LA GRIGLIA STA FACENDO UN PROFUMINO...` è leggibile senza distogliere eccessivamente l'attenzione dal combattimento.
 * [ ] Il countdown `5 → 1` è percepibile durante un'orda densa.
+* [ ] Frase e countdown risultano chiaramente sotto il timer della run.
+* [ ] Il warning ricompare correttamente prima del secondo Boss.
 * [ ] L'avviso non copre telegraph, nemici o proiettili importanti.
 * [ ] Il giocatore ha materialmente il tempo di decidere se conservare l'abilità attiva per il Boss.
 * [ ] La transizione tra countdown e Boss Intro risulta chiara e senza duplicazioni visive.
@@ -148,6 +164,13 @@ fino al Boss o i gate percettivi elencati sotto.
   `GameDirector` deriva il warning dalle soglie configurate e dal clock
   `RUNNING`; l'HUD osserva soltanto fase e secondi residui, senza introdurre un
   nuovo stato del `RunController` o un timer locale.
+- **2026-08-30 — Una sequenza per ogni Boss programmato.** Dopo le soglie
+  fisse, il Director deriva il prossimo warning da ultimo spawn effettivo e
+  finestra ricorrente. Non cambia frequenza, accodamento o regole dei Boss.
+- **2026-08-30 — Timer impilati e copy tematico.** Il warning occupa una seconda
+  riga centrata sotto il timer run. Prima del countdown rosso usa `LA GRIGLIA
+  STA FACENDO UN PROFUMINO...`, così il tell anticipa il tema della Boss Intro
+  senza duplicarne il copy.
 
 ## Documenti sincronizzati
 
@@ -165,11 +188,12 @@ Il warning non deve diventare una seconda Boss Intro.
 
 Baseline iniziale:
 
-* warning generale: `15 s`;
+* warning generale tematico: `15 s` prima di ogni Boss programmato;
 * countdown numerico: ultimi `5 s`;
-* primo Boss: `02:00`.
+* primo Boss: `02:00`;
+* Boss ricorrenti: stessa sequenza sulla finestra autorevole già esistente.
 
 Timing e presentazione restano configurabili per eventuale playtest. Restano
-aperti la run manuale Windows, la run Pixel fino al primo Boss e la valutazione
+aperti la run manuale Windows, la run Pixel fino al secondo Boss e la valutazione
 percettiva durante un'orda densa; per questo la card è `IN VERIFICA` e non
 `COMPLETATO`.
