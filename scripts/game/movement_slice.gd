@@ -212,7 +212,8 @@ func _ready() -> void:
 		_run_controller,
 		_player.get_health_component(),
 		_experience_system,
-		_ability_controller
+		_ability_controller,
+		_game_director
 	)
 	_hud.set_friend_definition(_player.get_friend_definition())
 	_character_select_overlay.configure(_friend_registry, _ability_effect_registry)
@@ -1011,9 +1012,9 @@ func _validate_current_contract() -> bool:
 		var boss_thresholds := _game_director.get_thresholds()
 		if (
 			boss_thresholds.size() != 1
-			or not is_equal_approx(boss_thresholds[0], 240.0)
+			or not is_equal_approx(boss_thresholds[0], 120.0)
 		):
-			failures.append("Il profilo Director MVP deve schedulare il Boss a 04:00.")
+			failures.append("Il profilo Director PS-005 deve schedulare il Boss a 02:00.")
 	if _boss_encounter == null:
 		failures.append("BossEncounter non presente.")
 	else:
@@ -1521,6 +1522,10 @@ func _validate_current_contract() -> bool:
 			failures.append("HUD non collegato a ExperienceSystem.")
 		if _hud.get_ability_controller() != _ability_controller:
 			failures.append("HUD non collegato ad AbilityController.")
+		if _hud.get_game_director() != _game_director:
+			failures.append("HUD PS-005 non collegato al GameDirector.")
+		if _hud.is_boss_warning_visible():
+			failures.append("HUD PS-005 deve partire senza warning Boss visibile.")
 		if _hud.get_friend_definition() != _player.get_friend_definition():
 			failures.append("HUD B18B privo del profilo Player corrente.")
 		var top_band_rect := _hud.get_top_band_rect()

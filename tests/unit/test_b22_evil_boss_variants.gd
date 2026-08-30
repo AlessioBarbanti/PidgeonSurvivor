@@ -115,7 +115,7 @@ func test_evil_boss_two_run_cycle() -> void:
 	var baseline := encounter.boss_definition
 	encounter.evil_boss_chance = 1.0
 	for run_index in range(2):
-		controller._process(240.01)
+		controller._process(120.01)
 		var boss := encounter.get_active_boss()
 		var definition := encounter.get_active_definition()
 		assert_eq(

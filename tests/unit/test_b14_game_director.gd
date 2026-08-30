@@ -163,12 +163,12 @@ func test_composed_scene_schedule() -> void:
 	assert_eq(thresholds.size(), 1, "L'MVP deve avere una sola soglia Boss.")
 	if thresholds.size() == 1:
 		assert_almost_eq(
-			thresholds[0], 240.0, FLOAT_TOLERANCE, "La soglia MVP deve usare 240 secondi di clock logico."
+			thresholds[0], 120.0, FLOAT_TOLERANCE, "PS-005 deve usare 120 secondi di clock logico."
 		)
 
-	var delta_to_threshold := 240.0 - controller.get_run_time()
+	var delta_to_threshold := 120.0 - controller.get_run_time()
 	controller._process(maxf(delta_to_threshold, 0.0) + 0.01)
-	assert_eq(_requested_indices, [0], "La scena composta deve richiedere il Boss una volta a 04:00.")
+	assert_eq(_requested_indices, [0], "La scena composta deve richiedere il Boss una volta a 02:00.")
 	controller._process(30.0)
 	assert_eq(_requested_indices, [0], "La scena composta non deve duplicare la soglia consumata.")
 
@@ -176,7 +176,7 @@ func test_composed_scene_schedule() -> void:
 	assert_true(movement_slice.restart_run(14003), "La scena composta deve ripartire in-place.")
 	assert_eq(director.get_triggered_count(), 0, "Il restart composto deve azzerare lo scheduler.")
 	assert_false(director.has_blocking_boss_event(), "Il restart composto deve rimuovere la richiesta in volo.")
-	controller._process(240.01)
+	controller._process(120.01)
 	assert_eq(_requested_indices, [0, 0], "La nuova run composta deve emettere una sola nuova richiesta.")
 
 	controller.prepare_restart()

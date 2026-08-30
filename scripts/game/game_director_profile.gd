@@ -2,10 +2,17 @@ class_name GameDirectorProfile
 extends Resource
 
 const MINIMUM_BOSS_THRESHOLD_SECONDS := 0.001
+const MAXIMUM_WARNING_SECONDS := 120.0
 
 @export var enemy_spawn_profile: EnemySpawnProfile
-@export var boss_thresholds_seconds := PackedFloat32Array([240.0])
+@export var boss_thresholds_seconds := PackedFloat32Array([120.0])
 @export var recurring_boss_window_seconds := 240.0
+@export_range(0.0, MAXIMUM_WARNING_SECONDS, 0.5, "suffix:s") var boss_warning_lead_seconds := 15.0:
+	set(value):
+		boss_warning_lead_seconds = _sanitize_warning_seconds(value)
+@export_range(0.0, MAXIMUM_WARNING_SECONDS, 1.0, "suffix:s") var boss_countdown_seconds := 5.0:
+	set(value):
+		boss_countdown_seconds = _sanitize_warning_seconds(value)
 
 
 func get_effective_boss_thresholds() -> PackedFloat32Array:
@@ -36,9 +43,26 @@ func get_effective_recurring_boss_window() -> float:
 	return recurring_boss_window_seconds
 
 
+func get_effective_boss_warning_lead() -> float:
+	return _sanitize_warning_seconds(boss_warning_lead_seconds)
+
+
+func get_effective_boss_countdown() -> float:
+	return minf(
+		_sanitize_warning_seconds(boss_countdown_seconds),
+		get_effective_boss_warning_lead()
+	)
+
+
 func is_valid() -> bool:
 	return (
 		enemy_spawn_profile != null
 		and not get_effective_boss_thresholds().is_empty()
 		and get_effective_recurring_boss_window() > 0.0
 	)
+
+
+static func _sanitize_warning_seconds(value: float) -> float:
+	if not is_finite(value):
+		return 0.0
+	return clampf(value, 0.0, MAXIMUM_WARNING_SECONDS)

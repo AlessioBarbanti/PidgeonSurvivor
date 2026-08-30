@@ -20,6 +20,8 @@ const ABILITY_FADED_ALPHA := 0.3
 ## sfumatura parte poco prima della sovrapposizione vera, cosi' non scatta
 ## sul pixel di bordo.
 const ABILITY_FADE_MARGIN := 24.0
+const BOSS_WARNING_COLOR := Color("ffd166")
+const BOSS_COUNTDOWN_COLOR := Color("ff6b6b")
 
 @onready var _experience_bar: ProgressBar = %ExperienceBar
 @onready var _experience_kind_label: Label = %ExperienceKindLabel
@@ -30,6 +32,8 @@ const ABILITY_FADE_MARGIN := 24.0
 @onready var _experience_panel: Control = %ExperiencePanel
 @onready var _health_panel: Control = %HealthPanel
 @onready var _timer_slot: Control = %TimerSlot
+@onready var _boss_warning_slot: Control = %BossWarningSlot
+@onready var _boss_warning_label: Label = %BossWarningLabel
 @onready var _pause_button: Button = %PauseButton
 @onready var _ability_panel: Control = %AbilityPanel
 @onready var _active_ability_button: TouchAbilityButton = %ActiveAbilityButton
@@ -38,6 +42,7 @@ var _run_controller: RunController
 var _health_component: HealthComponent
 var _experience_system: ExperienceSystem
 var _ability_controller: AbilityController
+var _game_director: GameDirector
 var _friend_definition: FriendDefinition
 var _health_feedback_remaining := 0.0
 var _ability_ready_pulse_remaining := 0.0
@@ -86,7 +91,8 @@ func configure(
 	run_controller: RunController,
 	health_component: HealthComponent,
 	experience_system: ExperienceSystem,
-	ability_controller: AbilityController = null
+	ability_controller: AbilityController = null,
+	game_director: GameDirector = null
 ) -> bool:
 	if (
 		not is_node_ready()
@@ -101,6 +107,7 @@ func configure(
 	_health_component = health_component
 	_experience_system = experience_system
 	_ability_controller = ability_controller
+	_game_director = game_director
 
 	_run_controller.run_time_changed.connect(_on_run_time_changed)
 	_run_controller.state_changed.connect(_on_run_state_changed)
@@ -112,6 +119,8 @@ func configure(
 		_ability_controller.readiness_changed.connect(_on_ability_readiness_changed)
 		_ability_controller.definition_changed.connect(_on_ability_definition_changed)
 		_ability_controller.pending_cosplay_changed.connect(_on_pending_cosplay_changed)
+	if is_instance_valid(_game_director):
+		_game_director.boss_warning_changed.connect(_on_boss_warning_changed)
 	_refresh_from_sources()
 	return true
 
@@ -130,6 +139,10 @@ func get_experience_system() -> ExperienceSystem:
 
 func get_ability_controller() -> AbilityController:
 	return _ability_controller if is_instance_valid(_ability_controller) else null
+
+
+func get_game_director() -> GameDirector:
+	return _game_director if is_instance_valid(_game_director) else null
 
 
 func set_friend_definition(definition: FriendDefinition) -> bool:
@@ -209,6 +222,22 @@ func get_health_panel_rect() -> Rect2:
 
 func get_timer_slot_rect() -> Rect2:
 	return _timer_slot.get_global_rect()
+
+
+func get_boss_warning_rect() -> Rect2:
+	return (
+		_boss_warning_slot.get_global_rect()
+		if is_instance_valid(_boss_warning_slot)
+		else Rect2()
+	)
+
+
+func get_boss_warning_text() -> String:
+	return _boss_warning_label.text if is_instance_valid(_boss_warning_label) else ""
+
+
+func is_boss_warning_visible() -> bool:
+	return is_instance_valid(_boss_warning_label) and _boss_warning_label.visible
 
 
 func get_pause_button() -> Button:
@@ -455,6 +484,14 @@ func _refresh_from_sources() -> void:
 		_experience_system.experience_total
 	)
 	_refresh_ability_definition()
+	if is_instance_valid(_game_director):
+		_on_boss_warning_changed(
+			_game_director.get_boss_warning_schedule_index(),
+			_game_director.get_boss_warning_phase(),
+			_game_director.get_boss_warning_seconds_remaining()
+		)
+	else:
+		_hide_boss_warning()
 
 
 func _show_default_values() -> void:
@@ -464,6 +501,7 @@ func _show_default_values() -> void:
 	_on_health_changed(0.0, 1.0)
 	_on_progression_changed(1, 0, 1, 0)
 	_show_default_ability()
+	_hide_boss_warning()
 
 
 func _disconnect_sources() -> void:
@@ -510,12 +548,19 @@ func _disconnect_sources() -> void:
 			_ability_controller.pending_cosplay_changed.disconnect(
 				_on_pending_cosplay_changed
 			)
+	if (
+		is_instance_valid(_game_director)
+		and _game_director.boss_warning_changed.is_connected(_on_boss_warning_changed)
+	):
+		_game_director.boss_warning_changed.disconnect(_on_boss_warning_changed)
 
 	_run_controller = null
 	_health_component = null
 	_experience_system = null
 	_ability_controller = null
+	_game_director = null
 	_last_ability_ready = false
+	_hide_boss_warning()
 
 
 func _on_run_time_changed(run_time: float) -> void:
@@ -534,6 +579,33 @@ func _on_run_state_changed(
 	]:
 		_clear_visual_feedback()
 	_refresh_ability_state()
+
+
+func _on_boss_warning_changed(
+	_schedule_index: int,
+	phase: GameDirector.BossWarningPhase,
+	seconds_remaining: int
+) -> void:
+	if not is_instance_valid(_boss_warning_label):
+		return
+	match phase:
+		GameDirector.BossWarningPhase.APPROACHING:
+			_boss_warning_label.text = "BOSS IN ARRIVO"
+			_boss_warning_label.add_theme_color_override("font_color", BOSS_WARNING_COLOR)
+			_boss_warning_label.visible = true
+		GameDirector.BossWarningPhase.COUNTDOWN:
+			_boss_warning_label.text = "BOSS IN %d" % maxi(seconds_remaining, 1)
+			_boss_warning_label.add_theme_color_override("font_color", BOSS_COUNTDOWN_COLOR)
+			_boss_warning_label.visible = true
+		_:
+			_hide_boss_warning()
+
+
+func _hide_boss_warning() -> void:
+	if not is_instance_valid(_boss_warning_label):
+		return
+	_boss_warning_label.text = ""
+	_boss_warning_label.visible = false
 
 
 func _set_pause_available(available: bool) -> void:

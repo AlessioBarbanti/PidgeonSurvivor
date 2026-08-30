@@ -1,6 +1,6 @@
 extends GutGameplayTest
 
-const BOSS_THRESHOLD_SECONDS := 240.01
+const BOSS_THRESHOLD_SECONDS := 120.01
 const LARGE_TICK_SECONDS := 5.0
 
 

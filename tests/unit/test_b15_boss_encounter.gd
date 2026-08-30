@@ -55,7 +55,7 @@ func test_composed_encounter() -> void:
 	spawner.set_process(false)
 	var definition := encounter.boss_definition
 	assert_true(definition != null and definition.is_valid(), "Il profilo Boss composto deve essere valido.")
-	controller._process(240.01)
+	controller._process(120.01)
 	var boss := encounter.get_active_boss()
 	assert_true(
 		controller.get_state() == RunController.RunState.BOSS_INTRO and get_tree().paused,

@@ -110,7 +110,7 @@ func test_pause_change_character_flow() -> void:
 
 	_populate_run_state(movement_slice, player, spawner, weapon, ability, experience, dropper, upgrades)
 	await wait_process_frames(1)
-	controller._process(240.0)
+	controller._process(120.0)
 	await wait_process_frames(1)
 	if controller.get_state() == RunController.RunState.BOSS_INTRO:
 		encounter.complete_intro()

@@ -26,8 +26,8 @@ func test_recurring_boss_schedule() -> void:
 	controller.set_process(false)
 	spawner.set_process(false)
 
-	# 1. Il primo Boss resta eleggibile a 04:00 tramite la soglia fissa esistente.
-	controller._process(240.01)
+	# 1. PS-005 rende il primo Boss eleggibile a 02:00.
+	controller._process(120.01)
 	assert_true(
 		controller.get_state() == RunController.RunState.BOSS_INTRO and get_tree().paused,
 		"La soglia fissa deve aprire BOSS_INTRO per il primo Boss."
@@ -171,8 +171,8 @@ func test_recurring_boss_schedule() -> void:
 	assert_eq(director.get_triggered_count(), 0, "Il restart deve azzerare le soglie fisse consumate.")
 	assert_false(director.has_blocking_boss_event(), "Il restart non deve lasciare un evento Boss attivo.")
 
-	# 11. La nuova run riattiva il primo Boss esattamente a 04:00.
-	controller._process(240.01)
+	# 11. La nuova run riattiva il primo Boss esattamente a 02:00.
+	controller._process(120.01)
 	assert_eq(director.get_active_event_index(), 0, "La nuova run deve ripartire dallo schedule_index 0.")
 	assert_not_null(encounter.get_active_boss(), "La nuova run deve creare di nuovo il primo Boss.")
 

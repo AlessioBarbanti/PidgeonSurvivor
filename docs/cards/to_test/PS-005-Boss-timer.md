@@ -3,7 +3,7 @@ id: PS-005
 titolo: Annuncia l'arrivo del Boss
 tipo: ux
 area: gameplay
-stato: PRONTO
+stato: IN VERIFICA
 priorita: alta
 dipende_da: []
 origine:
@@ -53,18 +53,18 @@ Il preavviso deve permettere al giocatore di comprendere che lo scontro è immin
 
 ## Criteri di accettazione
 
-* [ ] Il primo Boss diventa eleggibile a `02:00` di tempo `RUNNING`.
-* [ ] A `01:45` compare l'avviso `BOSS IN ARRIVO`.
-* [ ] Da `01:55` a `01:59` viene mostrato il countdown `5 → 1`.
-* [ ] Il countdown utilizza il tempo di run e non il tempo reale.
-* [ ] Pausa e level-up congelano il countdown.
-* [ ] Riprendendo la run il countdown continua dal valore corretto.
-* [ ] L'avviso non impedisce movimento, fuoco automatico o uso dell'abilità attiva.
-* [ ] A `02:00` l'avviso viene rimosso prima o contestualmente all'avvio della Boss Intro.
-* [ ] L'avviso non rimane visibile durante lo scontro con il Boss.
-* [ ] Restart elimina completamente countdown e stato di warning.
-* [ ] Il warning non viene mostrato nuovamente per la stessa soglia Boss.
-* [ ] Nessun elemento dell'avviso copre XP, HP, pausa o controllo abilità.
+* [x] Il primo Boss diventa eleggibile a `02:00` di tempo `RUNNING`.
+* [x] A `01:45` compare l'avviso `BOSS IN ARRIVO`.
+* [x] Da `01:55` a `01:59` viene mostrato il countdown `5 → 1`.
+* [x] Il countdown utilizza il tempo di run e non il tempo reale.
+* [x] Pausa e level-up congelano il countdown.
+* [x] Riprendendo la run il countdown continua dal valore corretto.
+* [x] L'avviso non impedisce movimento, fuoco automatico o uso dell'abilità attiva.
+* [x] A `02:00` l'avviso viene rimosso prima o contestualmente all'avvio della Boss Intro.
+* [x] L'avviso non rimane visibile durante lo scontro con il Boss.
+* [x] Restart elimina completamente countdown e stato di warning.
+* [x] Il warning non viene mostrato nuovamente per la stessa soglia Boss.
+* [x] Nessun elemento dell'avviso copre XP, HP, pausa o controllo abilità.
 
 ## Ambito
 
@@ -89,7 +89,7 @@ Il warning è esclusivamente informativo e non deve introdurre uno stato aggiunt
 
 ## Verifica
 
-* Smoke: `tests/integration/_boss_warning_smoke.gd` → marker `BOSS_WARNING_SMOKE_OK`
+* GUT focalizzato: `tests/unit/test_ps005_boss_warning.gd`.
 * Copertura minima:
 
   * warning a `01:45`;
@@ -104,7 +104,7 @@ Il warning è esclusivamente informativo e non deve introdurre uno stato aggiunt
 ## Gate manuali
 
 * [ ] Runtime Windows
-* [ ] Validazione statica APK
+* [x] Validazione statica APK
 * [ ] Runtime fisico Pixel 9: run completa fino al primo Boss
 * [ ] Controllo percettivo richiesto: sì
 * [ ] `BOSS IN ARRIVO` è leggibile senza distogliere eccessivamente l'attenzione dal combattimento.
@@ -119,11 +119,16 @@ Il warning è esclusivamente informativo e non deve introdurre uno stato aggiunt
   giocatore senza diventare una seconda Boss Intro o fermare la run.
 - **Baseline da playtest — 15 secondi di preavviso e countdown finale di 5.**
   I valori restano configurabili e seguono lo scheduler Boss autorevole.
+- **2026-08-30 — Stato nel Director, presentazione nell'HUD.** Il
+  `GameDirector` deriva il warning dalle soglie configurate e dal clock
+  `RUNNING`; l'HUD osserva soltanto fase e secondi residui, senza introdurre un
+  nuovo stato del `RunController` o un timer locale.
 
 ## Documenti sincronizzati
 
-- [ ] `prd.md`: comportamento osservabile del warning, se approvato.
-- [ ] Documento di verifica dedicato, quando esistono evidenze runtime.
+- [x] `prd.md`: soglia, comportamento osservabile e clock del warning.
+- [x] `docs/ps-005-verification.md`: evidenze automatiche e di piattaforma,
+  con i gate manuali ancora aperti.
 
 ## Note
 
@@ -142,3 +147,20 @@ Baseline iniziale:
 * primo Boss: `02:00`.
 
 Timing e presentazione restano configurabili per eventuale playtest.
+
+Evidenze automatiche del 2026-08-30:
+
+* contratto runner: `MILESTONE_RUNNER_CONTRACT_OK`;
+* contratto cattura processi: `PROCESS_CAPTURE_CONTRACT_OK`;
+* profilo `Focused` con `-NoCache`: PASS sul test PS-005;
+* profilo `Relevant` con `-NoCache`: PASS sul focalizzato e su `22/22`
+  regressioni selezionate dalla mappa;
+* scansione del log `Relevant`: nessun `SCRIPT ERROR`, `FATAL EXCEPTION`,
+  `SMOKE_FAIL` o `CONTRACT_FAIL`.
+
+L'APK corrente è stato ispezionato, installato con successo sul Pixel 9
+`49140DLAQ0010Y` e avviato a freddo tramite
+`com.godot.game.GodotAppLauncher`. Il processo è rimasto attivo e il log non
+contiene crash, errori script o marker di fallimento. Restano aperti la run
+manuale Windows, la run Pixel fino al primo Boss e la valutazione percettiva
+durante un'orda densa; per questo la card è `IN VERIFICA` e non `COMPLETATO`.

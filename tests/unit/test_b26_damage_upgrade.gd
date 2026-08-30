@@ -124,7 +124,7 @@ func test_damage_upgrade() -> void:
 		target.queue_free()
 		await wait_process_frames(1)
 
-	controller._process(240.01)
+	controller._process(120.01)
 	var boss := boss_encounter.get_active_boss()
 	assert_true(boss != null, "B26 deve raggiungere il Boss con il normale clock della run.")
 	if boss != null:

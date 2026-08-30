@@ -17,7 +17,7 @@ func test_baseline_boss_uses_dedicated_sprite() -> void:
 	controller.set_process(false)
 	spawner.set_process(false)
 	encounter.evil_boss_chance = 0.0
-	controller._process(240.01)
+	controller._process(120.01)
 	var boss := encounter.get_active_boss()
 	assert_not_null(boss, "BOSS_INTRO deve creare il piccione speciale baseline.")
 	if boss == null:
@@ -58,7 +58,7 @@ func test_evil_boss_uses_dedicated_sprite_and_palette() -> void:
 	controller.set_process(false)
 	spawner.set_process(false)
 	encounter.evil_boss_chance = 1.0
-	controller._process(240.01)
+	controller._process(120.01)
 	var boss := encounter.get_active_boss()
 	var definition := encounter.get_active_definition()
 	assert_true(boss != null and definition != null, "BOSS_INTRO deve creare un Evil quando la probabilità è 1.")
