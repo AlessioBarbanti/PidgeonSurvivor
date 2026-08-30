@@ -101,6 +101,31 @@ Il warning è esclusivamente informativo e non deve introdurre uno stato aggiunt
   * cleanup al restart.
 * Profilo minimo prima della chiusura: `Relevant`
 
+### Evidenza automatica — 2026-08-30
+
+* contratto runner: `MILESTONE_RUNNER_CONTRACT_OK`;
+* contratto cattura processi: `PROCESS_CAPTURE_CONTRACT_OK`;
+* profilo `Focused -NoCache`: PASS sul test PS-005;
+* profilo `Relevant -NoCache`: PASS sul focalizzato e su `22/22` regressioni;
+* nessun `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL` o `CONTRACT_FAIL`.
+
+### Evidenza di piattaforma — 2026-08-30
+
+* export debug Windows x64 e smoke dell'eseguibile: completati;
+* APK debug: `105702545` byte, SHA-256
+  `729EF9617A46009F221F6E2A7D12B780683B5CA0059D8F615684798AB92EE638`;
+* ispezione statica: package `com.ilgioco.pidgeonsurvivor`, min SDK `31`,
+  target SDK `36`, sola ABI `arm64-v8a`, firma v2 e launcher
+  `com.godot.game.GodotAppLauncher`;
+* installazione `adb install -r` sul Pixel 9 `49140DLAQ0010Y`: `Success`;
+* package installato: versione `0.1.0` (`versionCode=1`), ABI
+  `arm64-v8a`, aggiornato il `2026-08-30 16:49:55`;
+* cold launch: `Status: ok`, processo applicazione attivo e nessun crash,
+  errore script o marker di fallimento nel log acquisito.
+
+Installazione e cold launch provano il deployment, non sostituiscono la run
+fino al Boss o i gate percettivi elencati sotto.
+
 ## Gate manuali
 
 * [ ] Runtime Windows
@@ -127,8 +152,6 @@ Il warning è esclusivamente informativo e non deve introdurre uno stato aggiunt
 ## Documenti sincronizzati
 
 - [x] `prd.md`: soglia, comportamento osservabile e clock del warning.
-- [x] `docs/ps-005-verification.md`: evidenze automatiche e di piattaforma,
-  con i gate manuali ancora aperti.
 
 ## Note
 
@@ -146,21 +169,7 @@ Baseline iniziale:
 * countdown numerico: ultimi `5 s`;
 * primo Boss: `02:00`.
 
-Timing e presentazione restano configurabili per eventuale playtest.
-
-Evidenze automatiche del 2026-08-30:
-
-* contratto runner: `MILESTONE_RUNNER_CONTRACT_OK`;
-* contratto cattura processi: `PROCESS_CAPTURE_CONTRACT_OK`;
-* profilo `Focused` con `-NoCache`: PASS sul test PS-005;
-* profilo `Relevant` con `-NoCache`: PASS sul focalizzato e su `22/22`
-  regressioni selezionate dalla mappa;
-* scansione del log `Relevant`: nessun `SCRIPT ERROR`, `FATAL EXCEPTION`,
-  `SMOKE_FAIL` o `CONTRACT_FAIL`.
-
-L'APK corrente è stato ispezionato, installato con successo sul Pixel 9
-`49140DLAQ0010Y` e avviato a freddo tramite
-`com.godot.game.GodotAppLauncher`. Il processo è rimasto attivo e il log non
-contiene crash, errori script o marker di fallimento. Restano aperti la run
-manuale Windows, la run Pixel fino al primo Boss e la valutazione percettiva
-durante un'orda densa; per questo la card è `IN VERIFICA` e non `COMPLETATO`.
+Timing e presentazione restano configurabili per eventuale playtest. Restano
+aperti la run manuale Windows, la run Pixel fino al primo Boss e la valutazione
+percettiva durante un'orda densa; per questo la card è `IN VERIFICA` e non
+`COMPLETATO`.

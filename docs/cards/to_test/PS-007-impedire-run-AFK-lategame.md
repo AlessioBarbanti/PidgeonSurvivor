@@ -129,6 +129,52 @@ La difficoltà deve essere una proprietà della progressione della run, non una 
 
 Lo smoke automatico deve verificare i contratti di spawn e la presenza di una sorgente di minaccia nello scenario di riferimento. La valutazione sul fatto che la run sia effettivamente meno passiva resta anche un gate di playtest.
 
+### Misure della curva
+
+Con i valori correnti, a `03:00` i pesi effettivi sono circa `3,99` base,
+`2,24` sciamatore, `1,08` corazzato, `1,30` divisore e `2,10` tiratore. A
+`05:00` diventano `1,98`, `3,08`, `1,26`, `1,60` e `3,00`: la composizione
+continua a evolvere dopo la soglia AFK senza gonfiare gli HP.
+
+### Scenario AFK automatico
+
+* seed: `1707`;
+* tempo logico: `03:00`;
+* Player fermo;
+* tiratore a `320` unità dalla posizione del Player;
+* cooldown `2,2 s`, telegraph `0,6 s`, viaggio `1,6 s` a velocità `200`;
+* minaccia alla posizione del Player in circa `4,4 s`, entro la finestra di
+  `10 s`.
+
+### Evidenza automatica — 2026-08-30
+
+* refresh editor Godot 4.7.1: superato;
+* profilo `Focused -NoCache`: `3/3` test, marker
+  `LATE_RUN_PRESSURE_SMOKE_OK`, nessun marker di errore;
+* profilo `Relevant -NoCache`: Focused `3/3`, regressioni `28/28` suite
+  (`72/72` test), `29/29` step complessivi, nessun marker di errore;
+* contratto tooling: `MILESTONE_RUNNER_CONTRACT_OK`.
+
+### Evidenza di piattaforma — 2026-08-30
+
+* export debug Windows x64: completato;
+* smoke dell'eseguibile Windows: `SMOKE_OK`, contratti `B03`–`B18W`, `B18V`
+  e `B54` verdi, nessun marker di errore;
+* APK debug: `105702545` byte, SHA-256
+  `729EF9617A46009F221F6E2A7D12B780683B5CA0059D8F615684798AB92EE638`;
+* ispezione statica: `ANDROID_STATIC_VALID`, package
+  `com.ilgioco.pidgeonsurvivor`, min SDK `31`, target SDK `36`, sola ABI
+  `arm64-v8a`, firma v2 valida, launcher
+  `com.godot.game.GodotAppLauncher`, nessun permesso inatteso;
+* installazione `adb install -r` sul Pixel 9 `49140DLAQ0010Y`: `Success`;
+* package installato: versione `0.1.0` (`versionCode=1`), ABI
+  `arm64-v8a`, aggiornato il `2026-08-30 16:49:55`;
+* cold launch: `Status: ok`, processo applicazione attivo e nessun crash,
+  errore script o marker di fallimento nel log acquisito.
+
+Installazione e cold launch provano il deployment, non sostituiscono la run
+fisica oltre `03:00`, il confronto AFK o i gate percettivi elencati sotto.
+
 ## Gate manuali
 
 * [ ] Runtime Windows
@@ -166,7 +212,6 @@ Lo smoke automatico deve verificare i contratti di spawn e la presenza di una so
 ## Documenti sincronizzati
 
 - [x] `prd.md`: arco della run e pressione late-game risultanti.
-- [x] `docs/ps-007-verification.md`: scenario AFK ripetibile e risultati misurati.
 
 ## Note
 
@@ -181,12 +226,5 @@ Il problema è che la potenza offensiva possa eliminare completamente la necessi
 Principio di riferimento:
 
 **late run più difficile = nuove decisioni e nuova pressione, non soltanto numeri più grandi.**
-
-Evidenza piattaforma del 2026-08-30: export Windows e smoke dell'eseguibile
-verdi; APK corrente staticamente valido (`com.ilgioco.pidgeonsurvivor`, SDK
-`31/36`, `arm64-v8a`, firma v2), installato con successo sul Pixel 9
-`49140DLAQ0010Y` e avviato a freddo senza crash o marker di fallimento. La run
-fisica oltre `03:00`, il confronto AFK e il giudizio percettivo restano gate
-manuali distinti dal deployment.
 
 La baseline `10 s` dello scenario AFK è un valore iniziale da playtest e può essere modificata sulla base delle prove reali.
