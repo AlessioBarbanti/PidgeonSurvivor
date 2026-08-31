@@ -146,12 +146,11 @@ func test_evil_boss_two_run_cycle() -> void:
 		assert_not_null(health, "Il Boss Evil deve conservare HealthComponent.")
 		if health == null:
 			return
-		var expected_reward := int(boss.get_experience_reward_value())
 		assert_true(boss.take_damage(health.health_current), "Il danno letale deve sconfiggere l'Evil.")
 		assert_false(boss.take_damage(1.0), "La ricompensa non deve poter essere attivata due volte.")
 		assert_eq(
-			experience.experience_total, expected_reward,
-			"Ogni run deve assegnare una sola ricompensa baseline."
+			experience.experience_total, 0,
+			"La morte del Boss Evil non deve piu' assegnare esperienza diretta."
 		)
 		await wait_process_frames(2)
 		assert_null(encounter.get_active_boss(), "Il Boss sconfitto non deve restare attivo.")

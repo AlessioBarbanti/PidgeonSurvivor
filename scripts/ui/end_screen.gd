@@ -28,17 +28,15 @@ func show_defeat(run_time: float) -> void:
 
 func show_victory(
 	run_time: float,
-	boss_title: String,
-	experience_reward: int
+	boss_title: String
 ) -> void:
 	var safe_boss_title := boss_title.strip_edges()
 	if safe_boss_title.is_empty():
 		safe_boss_title = "BOSS"
 	_title_label.text = "VITTORIA"
-	_summary_label.text = "%s sconfitto in %s  \u2022  +%d XP" % [
+	_summary_label.text = "%s sconfitto in %s" % [
 		safe_boss_title,
 		format_run_time(run_time),
-		maxi(experience_reward, 0),
 	]
 	_restart_button.text = "NUOVA RUN"
 	_show_terminal_screen()

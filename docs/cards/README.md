@@ -48,16 +48,20 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-019](./completed/PS-019-manifest-vfx-hash-non-aggiornato.md) | Riallineare l'hash del manifest VFX per instinctive_dodge_accent | chore | arte | COMPLETATO | bassa | — |
 | [PS-020](./completed/PS-020-diagnostica-flakiness-backdrop-selettore.md) | Diagnosticare il fallimento intermittente sul backdrop del selettore | chore | tooling | COMPLETATO | bassa | — |
 | [PS-021](./completed/PS-021-import-orfano-backdrop-bronze.md) | Rimuovere l'import orfano del backdrop bronze del selettore | chore | arte | COMPLETATO | bassa | — |
-| [PS-022](./to_do/PS-022-b15-target-registrati-in-piu-suite-completa.md) | Diagnosticare i due target registrati in più di test_b15_boss_encounter | chore | tooling | PRONTO | media | — |
+| [PS-022](./to_do/PS-022-b15-target-registrati-in-piu-suite-completa.md) | Diagnosticare i due target registrati in più di test_b15_boss_encounter | chore | tooling | IN CORSO | media | — |
 | [PS-023](./to_test/PS-023-runner-verifica-affidabile.md) | Rendere leggibile e non bloccante il runner di verifica | chore | tooling | IN VERIFICA | alta | — |
 | [PS-024](./to_do/PS-024-riduci-danno-onda-urto-magno.md) | Riduci il danno dell'Onda d'Urto di Magno | fix | gameplay | IN CORSO | alta | — |
 | [PS-026](./to_do/PS-026-rinomina-piccione-speciale-piccione-malvagio.md) | Rinomina Piccione Speciale in Piccione Malvagio | chore | gameplay | IN CORSO | media | — |
 | [PS-027](./to_do/PS-027-rimuovi-artefatto-powerslide-bea.md) | Rimuovi l'artefatto residuo dalla Powerslide di Bea | fix | arte | IN CORSO | media | — |
 | [PS-030](./to_do/PS-030-runner-crash-su-test-eliminato.md) | Correggi il crash del runner quando un test viene eliminato | fix | tooling | IN CORSO | media | — |
+| [PS-031](./to_do/PS-031-runner-crasha-su-warning-stderr-di-git.md) | Il runner crasha su un warning stderr di git invece di continuare | fix | tooling | PRONTO | media | — |
+| [PS-032](./completed/PS-032-seed-run-non-deterministico-nei-test-gut.md) | Il seed di run non deterministico nei test GUT causa flakiness sparsa | fix | tooling | COMPLETATO | alta | — |
 | [PS-033](./to_test/PS-033-riquadro-vita-boss-minimale-floating.md) | Eliminare l'HUD dedicata del Boss, vita solo overhead | ux | ui | IN VERIFICA | media | — |
+| [PS-034](./to_test/PS-034-rimuovi-xp-fissa-ricompensa-boss.md) | Rimuovere la ricompensa XP fissa dalla sconfitta del Boss | fix | gameplay | IN VERIFICA | alta | — |
 | [PS-036](./to_test/PS-036-Barb-specialities-ux-enhance.md) | Rendi distinta la schermata delle Specialità di Barb | ux | ui | IN VERIFICA | media | — |
 | [PS-037](./to_do/PS-037-alza-probabilita-evil-boss-50.md) | Alza la probabilità Evil Boss dal 25% al 50% | chore | gameplay | IN CORSO | media | — |
 | [PS-038](./completed/PS-038-documentazione-game-design-review-interna.md) | Documentazione di game design per review interna | chore | docs | COMPLETATO | media | — |
 | [PS-039](./to_do/PS-039-api-mancante-vittoria-ricompensa-boss.md) | Regressione sulla ricompensa XP del Boss dopo PS-006 | fix | gameplay | IN CORSO | alta | — |
 | [PS-040](./to_do/PS-040-iframe-atterraggio-powerslide-bea.md) | Aggiungi i-frame all'atterraggio della Powerslide di Bea | feat | gameplay | IN CORSO | media | — |
 | [PS-041](./to_do/PS-041-scia-slancio-magno-non-si-resetta.md) | La scia di slancio di Magno non si azzera all'avvio di una nuova partita | fix | gameplay | IN CORSO | media | — |
+| [PS-042](./to_do/PS-042-subordina-scintille-powerslide-bea.md) | Subordina le scintille della Powerslide al nastro di fuoco | fix | arte | PRONTO | media | — |

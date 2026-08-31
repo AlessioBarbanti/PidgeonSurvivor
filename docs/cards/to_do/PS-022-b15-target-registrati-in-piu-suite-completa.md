@@ -3,7 +3,7 @@ id: PS-022
 titolo: Diagnostica i due target registrati in più di test_b15_boss_encounter
 tipo: chore
 area: tooling
-stato: PRONTO
+stato: IN CORSO
 priorita: media
 dipende_da: []
 origine: PS-013
@@ -42,16 +42,22 @@ entità che la fixture crea esplicitamente.
 
 ## Criteri di accettazione
 
-- [ ] Identificato e documentato qui che cosa registra i due bersagli
+- [x] Identificato e documentato qui che cosa registra i due bersagli
       aggiuntivi (adds del Boss, spawn residuo, stato non ripulito da un test
-      precedente nello stesso processo, o altro).
+      precedente nello stesso processo, o altro). — vedi Decisioni: non è
+      stato residuo tra test, è RNG di spawn non seminato dentro questo
+      stesso test.
 - [ ] `test_b15_boss_encounter.gd` passa sia in isolamento sia dentro un
-      profilo `Full`, per tre esecuzioni consecutive con `-NoCache`.
-- [ ] Se la causa è nella fixture, il test viene reso deterministico senza
-      allentare le asserzioni sui conteggi.
+      profilo `Full`, per tre esecuzioni consecutive con `-NoCache`. — run in
+      corso, vedi Note per i log via via raccolti.
+- [x] Se la causa è nella fixture, il test viene reso deterministico senza
+      allentare le asserzioni sui conteggi. — la causa è nella fixture (vedi
+      Decisioni); `assert_eq(..., 2, ...)` e `assert_eq(..., 1, ...)` restano
+      invariati.
 - [ ] Se la causa è nel codice di gioco (registrazione doppia o mancata
       deregistrazione nel `TargetingSystem`), il problema viene descritto qui
-      e spostato su una card dedicata.
+      e spostato su una card dedicata. — non applicabile: la causa non è nel
+      codice di gioco.
 
 ## Ambito
 
@@ -81,6 +87,61 @@ Non modificare come soluzione di comodo:
 - **2026-08-30 — Card separata, aperta durante PS-013.** Emersa nella suite
   completa lanciata per verificare PS-013, ma indipendente da quel fix e
   precedente ad esso; allargare PS-013 avrebbe mescolato due problemi.
+- **2026-08-30 — Causa isolata: seed di spawn non fissato dalla fixture, non
+  stato residuo tra test.** `instantiate_movement_slice()` fa partire la run
+  tramite `_should_auto_start_default_character()` in
+  [scripts/game/movement_slice.gd](../../../scripts/game/movement_slice.gd),
+  vero sotto `--headless` (`DisplayServer.get_name() == "headless"`), che
+  chiama `_start_selected_run(_resolve_run_seed())`. `_resolve_run_seed()`
+  cade sul fallback `int(Time.get_unix_time_from_system())` perché il batch
+  GUT del runner non passa `--smoke-test`/`--run-seed=` (quegli flag esistono
+  solo per l'eseguibile esportato, vedi `tools/run-milestone-checks.ps1` riga
+  ~1085). Il seed reale del turno arriva quindi da `Time.get_unix_time_from_system()`
+  — diverso ogni secondo — e alimenta l'RNG privato di
+  `EnemySpawner` ([scripts/game/enemy_spawner.gd](../../../scripts/game/enemy_spawner.gd))
+  via `_on_run_started`. La riga 105 del test (prima della correzione) chiamava
+  `spawner.try_spawn_enemy()` con quell'RNG non seminato dal test: se
+  `_pick_archetype()` estrae lo Sciame
+  (`data/enemies/enemy_archetype_swarmer.tres`, `spawn_cluster_size = 3`,
+  eleggibile da 25s e con `late_run_weight_multiplier` che lo rinforza a
+  120s), quella singola chiamata registra **3** bersagli invece di 1 — le
+  "due unità in più" osservate, che restano registrate anche dopo la morte
+  del Boss perché non sono legate al suo ciclo di vita. Non è flakiness
+  isolamento-vs-suite: è puramente probabilistico sul secondo reale in cui
+  gira il test, quindi può (raramente) fallire anche in isolamento e passare
+  anche dentro `Full`. `WaveEventScheduler` è stato escluso come causa:
+  `min_start_seconds = 150.0` nel profilo dati resta sempre sopra i 120.01s
+  di run_time usati dal test, quindi il suo scheduler non parte mai in questo
+  scenario. `GameDirector` non ha un proprio `_process`/`_physics_process`:
+  è puramente reattivo al segnale di `RunController`, quindi disattivarlo non
+  serviva.
+- **2026-08-30 — Fix nella fixture: azzerare `spawner.archetypes` prima dello
+  spawn deliberato dell'"ordinary_enemy".** Con `archetypes = []`,
+  `_pick_archetype()` ritorna sempre `null` e `try_spawn_enemy()` produce
+  sempre esattamente il piccione base (nessun cluster), qualunque sia il seed
+  del turno. Non serviva un fix nel codice di gioco: il comportamento di
+  gioco (cluster di spawn per archetipi come lo Sciame) è corretto e voluto,
+  solo il test doveva neutralizzare quella variabile per un'asserzione a
+  conteggio esatto.
+- **2026-08-31 — Segnalazione collaterale: il seed di run non deterministico
+  è un problema più ampio.** Verificando questa card con `-Profile Full
+  -NoCache`, `test_b13_signature_upgrades.gd` è crashato per lo stesso
+  meccanismo (`try_spawn_enemy()` con RNG non pinnato) in un file
+  completamente diverso. Aperta [PS-032](./PS-032-seed-run-non-deterministico-nei-test-gut.md)
+  per il fix strutturale; qui resta solo il fix locale a
+  `test_b15_boss_encounter.gd`.
+- **2026-08-30 — Segnalazione collaterale: fragilità del runner sui warning
+  `git diff` con CRLF.** Durante la verifica, `run-milestone-checks.ps1` è
+  crashato su `git.exe : warning: ... CRLF will be replaced by LF ...`
+  perché lo script gira con `$ErrorActionPreference = 'Stop'` e PowerShell
+  5.1 trasforma l'output stderr di un comando nativo reindirizzato
+  (`2>$null`) in un `NativeCommandError` terminante anche a exit code `0`
+  (causa nota, non specifica di questa card). Sbloccato normalizzando a LF
+  l'unico file CRLF nell'albero di lavoro
+  (`docs/cards/to_test/PS-009-trasparenza-dialog-boss.md`, residuo da
+  [PS-009](../to_test/PS-009-trasparenza-dialog-boss.md)), non toccando lo
+  script. Il runner resta comunque fragile su qualunque file CRLF futuro:
+  vale la pena una card dedicata se ricapita, ma è fuori ambito qui.
 
 ## Note
 

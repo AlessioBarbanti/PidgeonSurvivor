@@ -174,29 +174,37 @@ Card: [docs/cards/to_test/PS-008-eventi-di-ondata.md](./cards/to_test/PS-008-eve
 loro validità di design (leggibilità percettiva) non è ancora confermata dal
 proprietario.
 
-## Ricompensa XP del Boss
+## Ricompensa della sconfitta del Boss
 
-Il Boss non passa dallo spawner ordinario, quindi non riceve il drop XP
-automatico di `ExperienceDropper` (riservato ai nemici osservati tramite
-`EnemySpawner.enemy_spawned`, vedi
-[systems-difficulty.md](./systems-difficulty.md)). La ricompensa è concessa
-esplicitamente da `movement_slice._on_boss_defeated_for_experience_reward`
-(collegato al segnale `BossEncounter.boss_defeated`), che legge
-`BaseEnemy.get_experience_reward_value()` sul Boss appena sconfitto
-(`experience_amount = 50` dichiarato sulla scena,
-`scenes/actors/first_boss.tscn:31`, identico per baseline ed Evil perché
-condividono la stessa scena) e la accredita con
-`ExperienceSystem.add_experience()`. Lo stesso valore resta disponibile per
-`EndScreen.show_victory` (ramo `VICTORY`, oggi non raggiungibile in
-produzione — vedi [systems-difficulty.md](./systems-difficulty.md)) tramite
-`_last_boss_experience_reward`, azzerato a ogni restart (PS-039).
+La sconfitta di un Boss **non assegna esperienza**. L'unica ricompensa è la
+Specialità di Barb (PS-012): `movement_slice._on_boss_defeated_for_barb_reward`
+è collegato a `BossEncounter.boss_defeated` e chiama
+`UpgradeService.queue_barb_reward()`, che apre lo stato `BARB_REWARD` (o accoda
+l'offerta se la run non è `RUNNING` nello stesso istante). A Specialità
+esaurite subentra il fallback a due bonus upgrade consecutivi già previsto da
+PS-012 (`UpgradeService.BARB_BONUS_SELECTIONS`), pescati dallo **stesso pool**
+del level-up ordinario (`UpgradeRegistry.get_eligible_definitions`).
 
-**Nota storica.** Prima di PS-039, `BossDefinition` dichiarava un campo
-`experience_reward` da cui questo valore avrebbe dovuto derivare; era già
-orfano (nessuna proprietà con quel nome sulla classe) quando `data/bosses/first_boss.tres`
-lo impostava, e la sua rimozione durante PS-006 aveva lasciato tre test e due
-handler di `movement_slice.gd` a referenziare campi/metodi non più
-esistenti — un regresso silenzioso sul percorso `DEFEAT`, non solo su
-`VICTORY`. Corretto da PS-039: vedi
-[docs/cards/completed/PS-039-api-mancante-vittoria-ricompensa-boss.md](./cards/completed/PS-039-api-mancante-vittoria-ricompensa-boss.md)
-per la cronologia completa.
+La distinzione è deliberata e va preservata: il fallback concede due
+**potenziamenti**, non esperienza né livelli. `select_barb_bonus_upgrade()` alza
+solo il rank dell'upgrade scelto ed emette `upgrade_selected(..., 0)` con livello
+`0`; non tocca `ExperienceSystem`. Accreditare XP al posto dei potenziamenti
+falserebbe le altre metriche che dipendono dalla curva di esperienza (ritmo dei
+level-up ordinari, scala di difficoltà, letture di bilanciamento), che devono
+restare guidate dal solo drop dei nemici comuni.
+
+Il Boss non passa dallo spawner ordinario, quindi non riceve nemmeno il drop XP
+automatico di `ExperienceDropper`, riservato ai nemici osservati tramite
+`EnemySpawner.enemy_spawned` (vedi
+[systems-difficulty.md](./systems-difficulty.md)). L'`experience_amount = 50`
+dichiarato su `scenes/actors/first_boss.tscn:31` è ereditato da `BaseEnemy` ma
+resta **inerte**: nessun consumatore lo legge per il Boss.
+
+**Nota storica.** `BossDefinition` dichiarava un campo `experience_reward` (50 in
+`data/bosses/first_boss.tres`) letto da `BossEncounter._on_boss_died()`. PS-006 lo
+rimosse insieme al meccanismo che lo leggeva, lasciando però due handler di
+`movement_slice.gd` collegati con arità sbagliata al segnale `boss_defeated` — un
+errore a runtime a ogni morte del Boss. PS-039 corresse l'arità e ripristinò la
+concessione XP, interpretando la rimozione come regressione. PS-034 ha poi
+stabilito, su richiesta esplicita del proprietario, che la rimozione era voluta:
+la concessione XP è stata revocata, l'arità corretta da PS-039 resta.

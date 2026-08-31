@@ -216,9 +216,10 @@ func _build_fixture(seed_value: int) -> Dictionary:
 	):
 		return {}
 
-	# L'avvio automatico della scena usa un seed non deterministico (orologio
-	# di sistema): per confrontare due run serve forzare il seed richiesto
-	# passando da un terminale, come fa il flusso reale di restart.
+	# L'avvio automatico della scena usa il seed fisso di test (PS-032), non
+	# quello richiesto dal chiamante: per confrontare due run serve forzare il
+	# seed richiesto passando da un terminale, come fa il flusso reale di
+	# restart.
 	if not controller.is_terminal():
 		controller.request_defeat()
 	assert_true(

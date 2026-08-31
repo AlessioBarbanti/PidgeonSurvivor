@@ -10,12 +10,17 @@ const FLOAT_TOLERANCE := 0.001
 const MOVEMENT_SLICE_SCENE := preload("res://scenes/game/movement_slice.tscn")
 const INITIAL_VIEWPORT_SIZE := Vector2i(1280, 720)
 
+## Seed fisso per ogni run avviata dai test GUT tramite
+## instantiate_movement_slice(): rende deterministico l'RNG di spawn (PS-032).
+const GUT_TEST_RUN_SEED := 1
+
 
 func instantiate_movement_slice(viewport_size: Vector2i = INITIAL_VIEWPORT_SIZE) -> Control:
 	get_tree().root.content_scale_size = viewport_size
 	get_tree().root.size = viewport_size
 	await wait_process_frames(2)
 	var slice := MOVEMENT_SLICE_SCENE.instantiate() as Control
+	slice.set("gut_test_run_seed_override", GUT_TEST_RUN_SEED)
 	add_child_autofree(slice)
 	await wait_process_frames(2)
 	return slice

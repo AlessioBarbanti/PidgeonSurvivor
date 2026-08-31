@@ -216,8 +216,9 @@ func test_composed_boss_defeat_opens_barb_reward_end_to_end() -> void:
 	var boss_health := boss.get_health_component()
 	assert_true(boss.take_damage(boss_health.health_max), "Il danno letale deve concludere il Boss.")
 
-	# La ricompensa XP del Boss può innescare un level-up nello stesso frame:
-	# Barb resta in coda finché quel level-up non si chiude (vedi
+	# Un level-up di un nemico ordinario può essere ancora in corso nello
+	# stesso frame della morte del Boss: Barb resta in coda finché quel
+	# level-up non si chiude (vedi
 	# UpgradeService._on_run_state_changed_for_barb_reward).
 	var guard := 0
 	while controller.get_state() == RunController.RunState.LEVEL_UP and guard < 10:

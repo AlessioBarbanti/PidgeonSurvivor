@@ -172,6 +172,18 @@ Non modificare:
   avrebbe continuato a suggerire (falsamente) che `BossDefinition` fosse la
   fonte della ricompensa XP.
 
+- **2026-08-31 — La concessione XP di questa card è revocata da PS-034.**
+  Il proprietario ha confermato che la rimozione della ricompensa XP del Boss
+  operata da PS-006 era **voluta**, non una regressione: le Specialità di Barb
+  sono l'unica ricompensa della sconfitta di un Boss. Al merge di questo ramo
+  in `main` sono stati quindi disfatti `_on_boss_defeated_for_experience_reward`,
+  `_last_boss_experience_reward` e il valore XP passato a
+  `EndScreen.show_victory()`. **Resta valido e in `main`** il resto della card:
+  la correzione dell'arità dei due handler di `boss_defeated`
+  (`_on_boss_defeated_for_horde_pause`, `_on_boss_defeated_for_barb_reward`),
+  che era il regresso reale sul ramo `DEFEAT`. Vedi
+  [PS-034](../to_test/PS-034-rimuovi-xp-fissa-ricompensa-boss.md).
+
 ## Documenti sincronizzati
 
 - [x] `docs/enemies-bosses.md` — sezione "Ricompensa XP del Boss" riscritta

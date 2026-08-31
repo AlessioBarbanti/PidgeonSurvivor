@@ -311,10 +311,11 @@ marcata del Player. Durate, danni, velocità, numero di proiettili e raggi sono
 parametri dati; raggi e velocità sono unità logiche del mondo Godot, non pixel
 fisici del display.
 
-La morte atomica del Boss assegna una sola ricompensa XP e richiede `VICTORY`,
-che blocca clock, danni, spawn e progressione. La schermata finale mostra Boss,
-tempo e ricompensa e consente una nuova run in-place. Il restart elimina Boss,
-proiettili, offerte, XP, cooldown ed effetti appartenenti alla run precedente.
+La morte atomica del Boss assegna la ricompensa Barb (§3.3) come unica
+ricompensa e richiede `VICTORY`, che blocca clock, danni, spawn e
+progressione. La schermata finale mostra Boss, tempo e ricompensa e consente
+una nuova run in-place. Il restart elimina Boss, proiettili, offerte, XP,
+cooldown ed effetti appartenenti alla run precedente.
 
 ### 3.5A. Evoluzioni prima del packaging finale: Boss Evil e Difesa Grigliata
 

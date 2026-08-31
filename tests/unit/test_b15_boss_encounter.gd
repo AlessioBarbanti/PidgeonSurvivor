@@ -101,6 +101,12 @@ func test_composed_encounter() -> void:
 	assert_true(encounter.complete_intro(), "AFFRONTA deve chiudere l'introduzione.")
 	assert_true(controller.is_running() and not get_tree().paused, "Dopo l'intro la run deve riprendere.")
 
+	# PS-022 (ridondante dopo PS-032, che fissa il seed di run per tutti i
+	# test GUT: lasciato per non dipendere dall'ordine di estrazione pesata).
+	# Senza archetipi il pool pesato ha solo il piccione base: try_spawn_enemy()
+	# produce sempre esattamente un nemico, mai un cluster (es. lo Sciame,
+	# spawn_cluster_size 3, che altrimenti registra 3 bersagli invece di 1).
+	spawner.archetypes = []
 	var ordinary_enemy := spawner.try_spawn_enemy()
 	assert_true(ordinary_enemy != null, "Il Boss deve poter convivere con un nemico base.")
 	assert_eq(targeting.get_registered_count(), 2, "Targeting deve contenere Boss e nemico base.")
@@ -139,7 +145,6 @@ func test_composed_encounter() -> void:
 	)
 
 	var health_before_hit := boss_health.health_current
-	var expected_reward := int(boss.get_experience_reward_value())
 	assert_true(boss.take_damage(100.0), "Il Boss deve ricevere danno dai sistemi condivisi.")
 	assert_almost_eq(
 		boss_health.health_current, health_before_hit - 100.0, FLOAT_TOLERANCE, "Il Boss deve applicare il danno tramite HealthComponent."
@@ -147,7 +152,7 @@ func test_composed_encounter() -> void:
 	assert_true(boss.take_damage(boss_health.health_current), "Il danno letale deve concludere il Boss una sola volta.")
 	assert_true(not controller.is_terminal(), "La morte del primo Boss non deve piu' chiudere la run (B33).")
 	assert_true(
-		experience.experience_total == expected_reward, "La morte del Boss deve assegnare la ricompensa XP una sola volta."
+		experience.experience_total == 0, "La morte del Boss non deve piu' assegnare esperienza diretta: la ricompensa e' la Specialita' di Barb."
 	)
 	assert_true(not end_screen.visible, "La morte del Boss non deve mostrare EndScreen (B33).")
 

@@ -5,6 +5,12 @@ const B22_PHYSICAL_VERIFICATION_FLAG := "user://b22_physical_verification.flag"
 const B22_PHYSICAL_VERIFICATION_SEED := 4
 const B22_PHYSICAL_AUTODEFEAT_DELAY_SECONDS := 8.0
 
+## Impostato da tests/unit/helpers/gameplay_test.gd su questa istanza, prima
+## che entri nell'albero, cosicche' l'auto-avvio headless in _ready() usi un
+## seed fisso invece dell'orologio di sistema (PS-032). Zero fuori dai test:
+## non tocca --run-seed=, --smoke-test ne' l'eseguibile esportato.
+var gut_test_run_seed_override := 0
+
 @export_group("Safe Area Controls")
 ## Extra left/bottom distance from the OS safe area for edge gestures.
 ## Values are viewport units, so they stay independent from device pixels.
@@ -69,7 +75,6 @@ const B22_PHYSICAL_AUTODEFEAT_DELAY_SECONDS := 8.0
 
 var _last_logged_safe_area := Rect2()
 var _last_logged_joystick_rect := Rect2()
-var _last_boss_experience_reward := 0
 
 
 func _ready() -> void:
@@ -83,7 +88,6 @@ func _ready() -> void:
 	_boss_encounter.boss_spawned.connect(_on_boss_spawned_for_horde_pause)
 	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_horde_pause)
 	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_barb_reward)
-	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_experience_reward)
 	_hud.pause_requested.connect(_on_pause_requested)
 	_end_screen.restart_requested.connect(_on_restart_requested)
 	_end_screen.change_character_requested.connect(_on_change_character_requested)
@@ -158,7 +162,6 @@ func _ready() -> void:
 		_enemies,
 		_boss_projectiles,
 		_targeting_system,
-		_experience_system,
 		_boss_ui,
 		_friend_registry,
 		_camera
@@ -668,7 +671,6 @@ func restart_run(seed_value: int = 0) -> bool:
 	_input_router.suspend_input()
 	_player.clear_movement_input()
 	_end_screen.hide_end_screen()
-	_last_boss_experience_reward = 0
 	if not _run_controller.restart_run(next_seed):
 		_show_terminal_screen(
 			_run_controller.get_state(),
@@ -834,6 +836,8 @@ func _resolve_run_seed() -> int:
 			return int(argument.trim_prefix("--run-seed="))
 	if OS.get_cmdline_user_args().has("--smoke-test"):
 		return 1
+	if gut_test_run_seed_override != 0:
+		return gut_test_run_seed_override
 	return int(Time.get_unix_time_from_system())
 
 
@@ -1766,21 +1770,12 @@ func _on_boss_defeated_for_horde_pause(_boss: FirstBoss) -> void:
 	_enemy_spawner.set_ordinary_spawn_suspended(false)
 
 
-## La ricompensa Boss (PS-012) resta accodata da UpgradeService se la run e'
-## gia' entrata in LEVEL_UP nello stesso frame (XP del Boss che fa salire di
-## livello): riparte da sola non appena lo stato torna RUNNING.
+## La ricompensa Boss (PS-012) resta accodata da UpgradeService se la run non
+## e' gia' RUNNING nello stesso istante (es. un level-up di un nemico ordinario
+## in corso, o un nuovo Boss gia' pendente): riparte da sola non appena lo
+## stato torna RUNNING.
 func _on_boss_defeated_for_barb_reward(_boss: FirstBoss) -> void:
 	_upgrade_service.queue_barb_reward()
-
-
-## PS-039: la ricompensa XP del Boss non passa da EnemySpawner/ExperienceDropper
-## (il Boss non e' mai spawnato dallo spawner ordinario), quindi va concessa qui
-## esplicitamente invece di affidarsi al drop automatico dei nemici comuni.
-func _on_boss_defeated_for_experience_reward(boss: FirstBoss) -> void:
-	var reward := int(boss.get_experience_reward_value())
-	_last_boss_experience_reward = reward
-	if reward > 0:
-		_experience_system.add_experience(reward)
 
 
 ## Tell del Sesto Senso Equino di Bea (B45): la passiva non conosce nodi
@@ -1806,8 +1801,7 @@ func _show_terminal_screen(
 		RunController.RunState.VICTORY:
 			_end_screen.show_victory(
 				run_time,
-				_boss_encounter.get_last_defeated_title(),
-				_last_boss_experience_reward
+				_boss_encounter.get_last_defeated_title()
 			)
 		RunController.RunState.DEFEAT:
 			_end_screen.show_defeat(run_time)
