@@ -50,8 +50,21 @@ corner_radius_top_right = 18
 corner_radius_bottom_right = 18
 corner_radius_bottom_left = 18
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_meta_panel"]
+bg_color = Color(0.055, 0.09, 0.145, 0.85)
+border_width_top = 2
+border_color = Color(0.34, 0.52, 0.6, 0.55)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+content_margin_left = 10.0
+content_margin_top = 8.0
+content_margin_right = 10.0
+content_margin_bottom = 8.0
+
 [node name="UpgradeCard" type="Button"]
-custom_minimum_size = Vector2(250, 360)
+custom_minimum_size = Vector2(250, 392)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -137,7 +150,17 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
-[node name="EffectSummaryLabel" type="Label" parent="Margins/Content"]
+[node name="MetaPanel" type="PanelContainer" parent="Margins/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_meta_panel")
+
+[node name="MetaLayout" type="VBoxContainer" parent="Margins/Content/MetaPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="EffectSummaryLabel" type="Label" parent="Margins/Content/MetaPanel/MetaLayout"]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
@@ -148,9 +171,9 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
-[node name="RankLabel" type="Label" parent="Margins/Content"]
+[node name="RankLabel" type="Label" parent="Margins/Content/MetaPanel/MetaLayout"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 46)
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(0.55, 0.94, 0.72, 1)

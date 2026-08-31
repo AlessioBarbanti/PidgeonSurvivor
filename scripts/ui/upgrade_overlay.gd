@@ -7,7 +7,13 @@ const CARD_COUNT := UpgradeService.DEFAULT_OFFER_SIZE
 # Il pollice sta ancora muovendo il joystick quando le carte compaiono: questa
 # finestra breve scarta il tap accidentale sopra la carta appena disegnata.
 const SELECTION_LOCK_SECONDS := 0.45
+# PS-046: il titolo non deve intersecare il rettangolo normalmente occupato
+# dal cronometro nella fascia superiore dell'HUD (GameHud.GAMEPLAY_TOP_INSET).
+const TOP_BAND_CLEARANCE := 16.0
+const CONTENT_TOP_MARGIN := GameHud.GAMEPLAY_TOP_INSET + TOP_BAND_CLEARANCE
 
+@onready var _safe_margins: MarginContainer = %SafeMargins
+@onready var _dimmer: ColorRect = $Dimmer
 @onready var _level_label: Label = %LevelLabel
 @onready var _queue_label := get_node_or_null("SafeMargins/Layout/QueueLabel") as Label
 @onready var _cards: Array[UpgradeCard] = [
@@ -28,6 +34,8 @@ var _selection_unlock_msec := 0
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	set_process(false)
+	if is_instance_valid(_safe_margins):
+		_safe_margins.add_theme_constant_override("margin_top", int(CONTENT_TOP_MARGIN))
 	for index in _cards.size():
 		var card := _cards[index]
 		card.upgrade_chosen.connect(_on_card_chosen)
@@ -118,6 +126,16 @@ func get_displayed_level() -> int:
 
 func get_level_text() -> String:
 	return _level_label.text if is_instance_valid(_level_label) else ""
+
+
+func get_level_label_rect() -> Rect2:
+	return _level_label.get_global_rect() if is_instance_valid(_level_label) else Rect2()
+
+
+## PS-046: espone lo stato del velo per gli smoke, cosi' una regressione dello
+## z-index che lo rimanda dietro l'HUD viene colta senza un confronto pixel.
+func get_dimmer_z_index() -> int:
+	return _dimmer.z_index if is_instance_valid(_dimmer) else -9999
 
 
 func get_queue_text() -> String:

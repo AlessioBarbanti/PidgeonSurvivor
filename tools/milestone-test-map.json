@@ -142,7 +142,8 @@
         "tests/unit/test_b13_signature_upgrades.gd",
         "tests/unit/test_b18j_summer_grill.gd",
         "tests/unit/test_b41_weapon_shapes.gd",
-        "tests/unit/test_ps012_barb_specialities.gd"
+        "tests/unit/test_ps012_barb_specialities.gd",
+        "tests/unit/test_ps047_upgrade_card_hierarchy.gd"
       ]
     },
     {
@@ -156,7 +157,8 @@
         "tests/unit/test_b38_arena_world.gd",
         "tests/unit/test_b39_health_pickup.gd",
         "tests/unit/test_b41_weapon_shapes.gd",
-        "tests/unit/test_ps012_barb_specialities.gd"
+        "tests/unit/test_ps012_barb_specialities.gd",
+        "tests/unit/test_ps047_upgrade_card_hierarchy.gd"
       ]
     },
     {
@@ -254,7 +256,9 @@
         "assets/art/ui/barb_reward/*"
       ],
       "smokes": [
-        "tests/unit/test_ps036_barb_reward_visual_identity.gd"
+        "tests/unit/test_ps036_barb_reward_visual_identity.gd",
+        "tests/unit/test_ps046_level_up_modal_isolation.gd",
+        "tests/unit/test_ps047_upgrade_card_hierarchy.gd"
       ]
     },
     {
@@ -277,7 +281,9 @@
         "tests/unit/test_ps005_boss_warning.gd",
         "tests/unit/test_ps012_barb_specialities.gd",
         "tests/unit/test_ps008_wave_events.gd",
-        "tests/unit/test_ps036_barb_reward_visual_identity.gd"
+        "tests/unit/test_ps036_barb_reward_visual_identity.gd",
+        "tests/unit/test_ps046_level_up_modal_isolation.gd",
+        "tests/unit/test_ps047_upgrade_card_hierarchy.gd"
       ]
     },
     {

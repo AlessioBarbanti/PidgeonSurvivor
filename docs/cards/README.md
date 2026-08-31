@@ -81,8 +81,8 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-043](./5_completed/PS-043-riallinea-board-con-i-file-card.md) | Riallineare la board ai file-card realmente presenti | chore | docs | COMPLETATO | alta | — |
 | [PS-044](./4_to_test/PS-044-catture-ui-oneste-e-rappresentative.md) | Rendere il pacchetto di catture UI onesto e rappresentativo | chore | tooling | IN VERIFICA | alta | — |
 | [PS-045](./4_to_test/PS-045-gerarchia-visiva-arena-di-run.md) | Riequilibrare composizione e leggibilità dell'arena 20:9 | ux | arte | IN VERIFICA | alta | — |
-| [PS-046](./2_to_do/PS-046-isola-il-modal-di-level-up.md) | Isolare il modal di level-up da HUD e cronometro | ux | ui | PRONTO | alta | — |
-| [PS-047](./2_to_do/PS-047-gerarchia-carte-upgrade.md) | Compattare e gerarchizzare le carte upgrade | ux | ui | BLOCCATO | alta | PS-046 |
+| [PS-046](./4_to_test/PS-046-isola-il-modal-di-level-up.md) | Isolare il modal di level-up da HUD e cronometro | ux | ui | IN VERIFICA | alta | — |
+| [PS-047](./4_to_test/PS-047-gerarchia-carte-upgrade.md) | Compattare e gerarchizzare le carte upgrade | ux | ui | IN VERIFICA | alta | PS-046 |
 | [PS-048](./2_to_do/PS-048-fedelta-al-runtime-di-tre-pagine-tutorial.md) | Allineare tre pagine del tutorial a ciò che il gioco mostra davvero | ux | ui | PRONTO | media | — |
 | [PS-049](./2_to_do/PS-049-genera-illustrazioni-tutorial.md) | Generare le tre illustrazioni definitive del tutorial | art | arte | BLOCCATO | media | PS-048 |
 | [PS-050](./2_to_do/PS-050-uniforma-impostazioni-welcome-alla-pausa.md) | Uniformare le impostazioni della welcome al sistema della pausa | ux | ui | PRONTO | media | — |
