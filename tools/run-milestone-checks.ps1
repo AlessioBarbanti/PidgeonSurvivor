@@ -269,7 +269,13 @@ function Find-RelevantSmokes {
     foreach ($changed in $Paths) {
         $normalized = $changed.Replace('\', '/')
         if ($normalized -match '^tests/(unit|integration)/.*/?test_[^/]+\.gd$') {
-            $selected.Add($normalized) | Out-Null
+            # Un test eliminato compare comunque in git diff --name-only HEAD:
+            # senza questo controllo il path cancellato finiva nel set
+            # "focused"/regressione e faceva crashare Resolve-RepositoryPath
+            # -MustExist piu' avanti nella pipeline (PS-030).
+            if (Test-Path -LiteralPath (Join-Path $repoRoot $normalized) -PathType Leaf) {
+                $selected.Add($normalized) | Out-Null
+            }
             continue
         }
         if (-not (Test-IsRuntimePath -Path $normalized)) {

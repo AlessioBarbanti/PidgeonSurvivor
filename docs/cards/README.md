@@ -53,7 +53,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-024](./to_do/PS-024-riduci-danno-onda-urto-magno.md) | Riduci il danno dell'Onda d'Urto di Magno | fix | gameplay | IN CORSO | alta | — |
 | [PS-026](./to_do/PS-026-rinomina-piccione-speciale-piccione-malvagio.md) | Rinomina Piccione Speciale in Piccione Malvagio | chore | gameplay | IN CORSO | media | — |
 | [PS-027](./to_do/PS-027-rimuovi-artefatto-powerslide-bea.md) | Rimuovi l'artefatto residuo dalla Powerslide di Bea | fix | arte | IN CORSO | media | — |
-| [PS-030](./to_do/PS-030-runner-crash-su-test-eliminato.md) | Correggi il crash del runner quando un test viene eliminato | fix | tooling | PRONTO | media | — |
+| [PS-030](./to_do/PS-030-runner-crash-su-test-eliminato.md) | Correggi il crash del runner quando un test viene eliminato | fix | tooling | IN CORSO | media | — |
 | [PS-033](./to_test/PS-033-riquadro-vita-boss-minimale-floating.md) | Eliminare l'HUD dedicata del Boss, vita solo overhead | ux | ui | IN VERIFICA | media | — |
 | [PS-036](./to_test/PS-036-Barb-specialities-ux-enhance.md) | Rendi distinta la schermata delle Specialità di Barb | ux | ui | IN VERIFICA | media | — |
 | [PS-037](./to_do/PS-037-alza-probabilita-evil-boss-50.md) | Alza la probabilità Evil Boss dal 25% al 50% | chore | gameplay | IN CORSO | media | — |

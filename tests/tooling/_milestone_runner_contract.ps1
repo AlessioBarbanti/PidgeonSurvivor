@@ -84,6 +84,18 @@ if ($singleRuntime.regression_smokes.Count -ge $allGutTests) {
     throw 'Uno script UI mappato non deve far scattare la suite completa.'
 }
 
+# PS-030: un test eliminato (git rm, non modificato) resta nel diff di
+# git diff --name-only HEAD ma non ha piu' nulla da eseguire. Deve essere
+# escluso dal set di regressione senza far crashare il plan.
+$deletedTestPath = 'tests/unit/test_ps030_deleted_placeholder.gd'
+if (Test-Path -LiteralPath (Join-Path $repoRoot $deletedTestPath) -PathType Leaf) {
+    throw "Fixture PS-030 inattesa su disco: $deletedTestPath deve non esistere."
+}
+$deletedTest = Invoke-Plan -Profile Relevant -ChangedPath @($deletedTestPath)
+if ($deletedTest.regression_smokes -contains $deletedTestPath) {
+    throw 'Un file di test cancellato non deve comparire nel set di regressione.'
+}
+
 $full = Invoke-Plan -Profile Full -ChangedPath @('docs/development-plan.md')
 $allTestCount = @(Get-ChildItem (Join-Path $repoRoot 'tests') -Filter 'test_*.gd' -File -Recurse).Count
 if (($full.focused_smokes.Count + $full.regression_smokes.Count) -ne $allTestCount) {

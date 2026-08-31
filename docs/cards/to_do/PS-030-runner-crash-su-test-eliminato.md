@@ -3,12 +3,12 @@ id: PS-030
 titolo: Correggi il crash del runner quando un test viene eliminato
 tipo: fix
 area: tooling
-stato: PRONTO
+stato: IN CORSO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-30
-aggiornato: 2026-08-30
+aggiornato: 2026-08-31
 ---
 
 # PS-030 — Correggi il crash del runner quando un test viene eliminato
@@ -93,6 +93,13 @@ Non modificare:
   problema del tooling di verifica, non del contratto di Tempesta di Tuoni, e
   PS-004 lo ha aggirato con `-ChangedPath` esplicito invece di allargare il
   proprio ambito.
+- **2026-08-31 — Filtro spostato in `Find-RelevantSmokes`, non in
+  `Get-ChangedRepositoryPaths`.** `Get-ChangedRepositoryPaths` resta fedele al
+  diff (incluse le cancellazioni) perché alimenta anche `changed_paths` nel
+  report del plan; filtrare lì avrebbe nascosto la cancellazione dal report.
+  Il path di un test cancellato viene invece scartato solo nel punto in cui
+  `Find-RelevantSmokes` decide se aggiungerlo al set "focused"/regressione,
+  con un controllo `Test-Path` sul file reale prima di `$selected.Add`.
 
 ## Documenti sincronizzati
 
@@ -107,3 +114,13 @@ Riproduzione minima: da un branch con almeno un test tracciato,
 `-ChangedPath`) riproduce `runner-fatal.log` con
 `System.Management.Automation.PropertyNotFoundException` o
 `File non trovato: ...` a seconda del punto della pipeline raggiunto.
+
+**Verifica non eseguita.** Il fix è stato implementato in
+`Find-RelevantSmokes` (`tools/run-milestone-checks.ps1`) e coperto da un nuovo
+caso in `tests/tooling/_milestone_runner_contract.ps1` (path di test
+inesistente passato come `-ChangedPath`, deve restare fuori da
+`regression_smokes`), ma nessuno dei due è stato eseguito: questa sessione
+remota non ha PowerShell né `pwsh` disponibili. Nessun criterio di
+accettazione è stato spuntato per questo motivo. Chi riprende la card con
+accesso a PowerShell deve lanciare `tests/tooling/_milestone_runner_contract.ps1`
+e il profilo `Relevant` prima di chiudere.
