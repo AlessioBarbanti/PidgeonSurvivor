@@ -2,11 +2,11 @@ extends GutGameplayTest
 
 const EXPECTED_RANKS: Dictionary = {
 	&"magno_earthquake_shockwave": [
-		[8.0, 0.0, 220.0, 20.0, {"knockback_force": 300.0, "stun_duration": 0.2}],
-		[8.0, 0.0, 220.0, 26.0, {"knockback_force": 300.0, "stun_duration": 0.2}],
-		[8.0, 0.0, 260.0, 26.0, {"knockback_force": 300.0, "stun_duration": 0.2}],
-		[7.0, 0.0, 260.0, 26.0, {"knockback_force": 300.0, "stun_duration": 0.25}],
-		[7.0, 0.0, 280.0, 36.0, {"knockback_force": 380.0, "stun_duration": 0.25}],
+		[8.0, 0.0, 220.0, 8.0, {"knockback_force": 300.0, "stun_duration": 0.2}],
+		[8.0, 0.0, 220.0, 9.0, {"knockback_force": 300.0, "stun_duration": 0.2}],
+		[8.0, 0.0, 260.0, 9.0, {"knockback_force": 300.0, "stun_duration": 0.2}],
+		[7.0, 0.0, 260.0, 9.0, {"knockback_force": 300.0, "stun_duration": 0.25}],
+		[7.0, 0.0, 280.0, 11.0, {"knockback_force": 380.0, "stun_duration": 0.25}],
 	],
 	&"bea_fire_z_trail": [
 		[10.0, 4.0, 0.0, 6.0, {"dash_distance": 320.0, "trail_width": 40.0}],

@@ -3,12 +3,12 @@ id: PS-024
 titolo: Riduci il danno dell'Onda d'Urto di Magno
 tipo: fix
 area: gameplay
-stato: IN CORSO
+stato: IN VERIFICA
 priorita: alta
 dipende_da: []
 origine: B45
 creato: 2026-08-30
-aggiornato: 2026-08-30
+aggiornato: 2026-08-31
 ---
 
 # PS-024 — Riduci il danno dell'Onda d'Urto di Magno
@@ -95,12 +95,30 @@ Non modificare:
   del piccione base — mai un clear garantito nemmeno al massimo
   investimento. Resta soggetto a conferma con playtest reale (vedi Note).
 
+- **2026-08-31 — Verifica eseguita: la card aveva lasciato tre test rossi in
+  `main`.** Il profilo `Relevant` non era mai stato lanciato (nessun Godot
+  nella sessione che ha implementato la card). Al primo lancio reale sono
+  emersi tre fallimenti causati dal cambio dei dati senza aggiornare chi li
+  asserisce:
+  `test_b09a_active_ability.gd` (contratto dati `damage == 20` e due
+  asserzioni sul danno inflitto, `100 → 80` invece di `100 → 92`) e
+  `test_b18g_ability_ranks.gd` (tabella `EXPECTED_RANKS` con i valori
+  `20 / 26 / 26 / 26 / 36`). Allineati ai valori voluti dalla card.
+  Il terzo fallimento (`test_b18m_ability_visuals.gd`, SHA-256 di
+  `fire_z_trail.gd`) non appartiene a questa card: è di PS-027.
+- **2026-08-31 — Corretta un'assunzione sbagliata di questa card.** La voce
+  "Documenti sincronizzati" dichiarava che `prd.md` non elencasse i valori
+  numerici delle attive: è falso, la sezione "Magno — Onda d'Urto Tellurica"
+  dichiarava `damage: 20` fra i parametri iniziali. È proprio quel
+  disallineamento a far fallire l'asserzione "Il danno dati deve rispettare
+  il PRD". Il PRD è stato aggiornato a `damage: 8`.
+
 ## Documenti sincronizzati
 
-- [ ] `prd.md`, se cambiano i valori autorevoli dell'abilità — non
-      aggiornato: `prd.md` non elenca i valori numerici di rank delle
-      abilità attive (solo la descrizione qualitativa in 3.4), quindi resta
-      accurato senza modifiche.
+- [x] `prd.md` §3.4, sezione "Magno — Onda d'Urto Tellurica": parametri
+      iniziali aggiornati da `damage: 20` a `damage: 8`. La voce precedente
+      di questa card affermava che il PRD non elencasse valori numerici e
+      non andasse toccato: era sbagliata (vedi Decisioni).
 - [ ] `characters.md` e `content-approvals.md`, solo se cambia il copy
       pubblico o il contratto descrittivo — non richiesto: la descrizione
       "Genera un'onda d'urto che danneggia e respinge i nemici vicini" resta
@@ -113,9 +131,25 @@ Non modificare:
 
 Non fissare in questa card un nuovo valore numerico definitivo: il danno corretto va scelto tramite playtest mantenendo fermo il principio **knockback forte + danno leggero**.
 
-**Verifica non eseguita.** Il fix è stato implementato e controllato per
-lettura (valori dati, formula del momentum invariata, nuovo test), ma non è
-stato lanciato `run-milestone-checks.ps1`: nessun Godot/PowerShell
-disponibile in questo ambiente. Il profilo `Relevant` su Windows e il
-controllo percettivo su device restano i gate aperti prima di poter chiudere
-la card `COMPLETATO`.
+**Verifica eseguita il 2026-08-31.**
+
+```
+.	oolsun-milestone-checks.ps1 -Milestone PS-024 -Profile Relevant `
+  -FocusedSmoke tests/unit/test_ps024_magno_shockwave_balance.gd `
+  -RegressionSmoke tests/unit/test_b09a_active_ability.gd,`
+tests/unit/test_b18g_ability_ranks.gd,tests/unit/test_b18m_ability_visuals.gd `
+  -NoCache
+```
+
+`PASS focused=1/1 regression=3/3 steps=4/4` — 6 test, 814 assert, zero
+`[Failed]`, nessun `SCRIPT ERROR` né `FATAL EXCEPTION` nei log.
+
+Nota sul runner: con il working tree pulito il profilo `Relevant` non deriva
+alcun percorso e lo script termina con *"Impossibile associare l'argomento al
+parametro 'Paths' perché è una matrice vuota"*. Serve `-ChangedPath` o
+`-RegressionSmoke` espliciti per verificare una card già committata. Vicino a
+PS-030 e PS-031, ma distinto: vale la pena aprirci una card se ricapita.
+
+Restano aperti il gate `Runtime Windows` e il controllo percettivo: il valore
+`8 / 9 / 9 / 9 / 11` è dichiarato dalla card stessa come scelta da confermare
+con playtest reale, non come valore definitivo.

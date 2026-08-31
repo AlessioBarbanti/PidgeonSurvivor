@@ -90,7 +90,7 @@ B18M precedente al refresh):
 | Percorso | Funzione corrente | SHA-256 |
 |---|---|---|
 | `scripts/abilities/earthquake_wave.gd` | Decal tellurico senza cerchio sottostante, in espansione entro il 15% della durata e con opacita' massima `0,62` | `cbc9f558b687f307eb8c0ce7b6730b8b19d84bc86f31f76063ded667f7074d2e` |
-| `scripts/abilities/fire_z_trail.gd` | Tasselli di fiamma specchiati a alternanza lungo il segmento e scintille | `7da85d1ce07c5d0e85ab8ed3b00f011a8d16378eea45bb00a9ec1e5ce6035003` |
+| `scripts/abilities/fire_z_trail.gd` | Tasselli di fiamma specchiati a alternanza lungo il segmento e scintille, senza le polyline a bordo dritto sottostanti (PS-027) | `57854ec6cd2f263eef9978e98059a34a6a97849244100e2542045d241883e8bc` |
 | `scripts/abilities/lightning_storm.gd` | Preavviso e decal d'impatto inscritti per ogni bersaglio fotografato, tinti per fascia di carica, senza flash fullscreen (PS-004) | `d111ad7172d77c2dc5abbab003b25ce6581ff83c0b1c99529282bcf98203d68e` |
 | `scripts/abilities/ability_area_effect.gd` | Decal Piroetta e Zen senza base circolare; Piroetta a due giri per attivazione | `7e7ed0664d50609d423a9b10bfb68402dac650e6d91bf6746bf43e575eaae31d` |
 | `scripts/abilities/cosplay_accent.gd` | Decal reveal e coriandoli senza anello sottostante | `72521e3e91469c6fc9b4160e8853e5c1d027eb0dd863097996c09b05d0af9664` |

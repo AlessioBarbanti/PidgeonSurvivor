@@ -173,7 +173,7 @@ in base ai tag di compatibilità, in particolare per gli effetti di copia.
 - **Tipo:** area radiale.
 - **Effetto:** infligge danno e knockback ai nemici nel raggio.
 - **Parametri iniziali:** `cooldown_seconds: 8.0`, `area_radius: 220`,
-  `damage: 20`, `knockback_force: 300`, `stun_duration: 0.2` opzionale.
+  `damage: 8`, `knockback_force: 300`, `stun_duration: 0.2` opzionale.
 - **Nota tecnica:** applicare separatamente danno e forza radiale; i layer di
   collisione devono escludere gli oggetti statici.
 

@@ -3,7 +3,7 @@ id: PS-027
 titolo: Rimuovi l'artefatto residuo dalla Powerslide di Bea
 tipo: fix
 area: arte
-stato: IN CORSO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
@@ -130,6 +130,24 @@ Non modificare:
   `_draw()`: `_apply_damage_tick`, `_is_point_near_trail` e
   `_build_straight_path` sono intatti.
 
+- **2026-08-31 — L'hash del manifest VFX era rimasto indietro.** La card ha
+  modificato `scripts/abilities/fire_z_trail.gd` senza aggiornare il suo
+  SHA-256 in `assets/art/vfx/ASSET-MANIFEST.md`, e questo faceva fallire
+  `test_b18m_ability_visuals.gd` ("SHA-256 non registrato") in `main`, non
+  visto perché la verifica non era eseguibile nella sessione che ha
+  implementato la card. Aggiornata la riga della tabella *Integrazione
+  corrente* a `57854ec6cd2f263eef9978e98059a34a6a97849244100e2542045d241883e8bc`,
+  con menzione della rimozione delle polyline. La riga gemella nella sezione
+  *Sorgenti procedurali runtime* è stata lasciata intatta: il manifest la
+  dichiara esplicitamente come storico precedente al refresh, riscriverla
+  falsificherebbe un record datato. Stessa famiglia di PS-019.
+- **2026-08-31 — Aperta PS-042 sullo stesso `_draw()`.** Il proprietario ha
+  segnalato con screenshot che le scintille (`draw_colored_polygon`) sono
+  fino al 53% più opache del nastro su cui poggiano. È un elemento diverso
+  da quello di questa card — sopra la scia, non sotto Bea — quindi vive in
+  [PS-042](./PS-042-subordina-scintille-powerslide-bea.md) e non riapre
+  PS-027.
+
 ## Documenti sincronizzati
 
 - [ ] `prd.md` o `CLAUDE.md`: non richiesto salvo scoperta di un contratto visuale documentato errato.
@@ -140,12 +158,24 @@ Non modificare:
 
 Prima di eliminare fisicamente la risorsa dal repository, verificare che non sia referenziata da altre scene o abilità. Non applicabile in pratica: la causa reale non era una risorsa (vedi sotto).
 
-**Verifica non eseguita.** Il fix è stato implementato e controllato per
-lettura (rimozione mirata, nessun'altra riga toccata) più un test
-automatico nuovo, ma non è stato lanciato `run-milestone-checks.ps1`:
-nessun Godot/PowerShell disponibile in questo ambiente. Il profilo
-`Relevant` su Windows e il controllo percettivo su device restano i gate
-aperti prima di poter chiudere la card `COMPLETATO`.
+**Verifica eseguita il 2026-08-31.**
+
+```
+.	oolsun-milestone-checks.ps1 -Milestone PS-027 -Profile Relevant `
+  -FocusedSmoke tests/unit/test_ps027_bea_powerslide_visual_cleanup.gd `
+  -ChangedPath scripts/abilities/fire_z_trail.gd -NoCache
+```
+
+`PASS focused=1/1 regression=7/7 steps=8/8` — 22 test, 1.217 assert, zero
+`[Failed]`, nessun `SCRIPT ERROR` né `FATAL EXCEPTION` nei log. Il verde è
+stato ottenuto solo dopo l'aggiornamento dell'hash del manifest (vedi
+Decisioni): prima di quello `test_b18m_ability_visuals.gd` era rosso.
+
+Restano aperti il gate `Runtime Windows` e il controllo percettivo su device.
+Il criterio su restart e cambio personaggio è parzialmente coperto da
+`test_b18m_ability_visuals.gd` ("Restart/cleanup deve rimuovere anche gli
+accenti B18M", ora verde), ma il percorso di cambio personaggio a runtime
+non è stato esercitato: il criterio resta aperto.
 
 ### 2026-08-31 — Cronologia dell'indagine
 

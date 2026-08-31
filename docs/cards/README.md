@@ -50,9 +50,9 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-021](./completed/PS-021-import-orfano-backdrop-bronze.md) | Rimuovere l'import orfano del backdrop bronze del selettore | chore | arte | COMPLETATO | bassa | — |
 | [PS-022](./to_do/PS-022-b15-target-registrati-in-piu-suite-completa.md) | Diagnosticare i due target registrati in più di test_b15_boss_encounter | chore | tooling | IN CORSO | media | — |
 | [PS-023](./to_test/PS-023-runner-verifica-affidabile.md) | Rendere leggibile e non bloccante il runner di verifica | chore | tooling | IN VERIFICA | alta | — |
-| [PS-024](./to_do/PS-024-riduci-danno-onda-urto-magno.md) | Riduci il danno dell'Onda d'Urto di Magno | fix | gameplay | IN CORSO | alta | — |
+| [PS-024](./to_test/PS-024-riduci-danno-onda-urto-magno.md) | Riduci il danno dell'Onda d'Urto di Magno | fix | gameplay | IN VERIFICA | alta | — |
 | [PS-026](./to_do/PS-026-rinomina-piccione-speciale-piccione-malvagio.md) | Rinomina Piccione Speciale in Piccione Malvagio | chore | gameplay | IN CORSO | media | — |
-| [PS-027](./to_do/PS-027-rimuovi-artefatto-powerslide-bea.md) | Rimuovi l'artefatto residuo dalla Powerslide di Bea | fix | arte | IN CORSO | media | — |
+| [PS-027](./to_test/PS-027-rimuovi-artefatto-powerslide-bea.md) | Rimuovi l'artefatto residuo dalla Powerslide di Bea | fix | arte | IN VERIFICA | media | — |
 | [PS-030](./to_do/PS-030-runner-crash-su-test-eliminato.md) | Correggi il crash del runner quando un test viene eliminato | fix | tooling | IN CORSO | media | — |
 | [PS-031](./to_do/PS-031-runner-crasha-su-warning-stderr-di-git.md) | Il runner crasha su un warning stderr di git invece di continuare | fix | tooling | PRONTO | media | — |
 | [PS-032](./completed/PS-032-seed-run-non-deterministico-nei-test-gut.md) | Il seed di run non deterministico nei test GUT causa flakiness sparsa | fix | tooling | COMPLETATO | alta | — |

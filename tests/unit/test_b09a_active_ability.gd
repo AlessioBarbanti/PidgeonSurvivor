@@ -25,7 +25,7 @@ func test_definition_and_world_units() -> void:
 	assert_almost_eq(
 		definition.area_radius, 220.0, ACTIVE_ABILITY_FLOAT_TOLERANCE, "Il raggio dati deve rispettare il PRD."
 	)
-	assert_almost_eq(definition.damage, 20.0, ACTIVE_ABILITY_FLOAT_TOLERANCE, "Il danno dati deve rispettare il PRD.")
+	assert_almost_eq(definition.damage, 8.0, ACTIVE_ABILITY_FLOAT_TOLERANCE, "Il danno dati deve rispettare il PRD.")
 	assert_almost_eq(
 		definition.get_effect_float(&"knockback_force"), 300.0, ACTIVE_ABILITY_FLOAT_TOLERANCE,
 		"Il knockback deve provenire dai dati."
@@ -171,8 +171,8 @@ func test_composed_ability() -> void:
 	input_router._process(0.0)
 	assert_eq(_activation_count, 1, "Una pressione tastiera deve produrre una sola attivazione.")
 	assert_almost_eq(
-		inside_health.health_current, maxf(inside_health.health_max - 20.0, 0.0), ACTIVE_ABILITY_FLOAT_TOLERANCE,
-		"Il nemico nel raggio deve subire 20 danni."
+		inside_health.health_current, maxf(inside_health.health_max - 8.0, 0.0), ACTIVE_ABILITY_FLOAT_TOLERANCE,
+		"Il nemico nel raggio deve subire 8 danni."
 	)
 	assert_almost_eq(
 		outside_health.health_current, outside_health.health_max, ACTIVE_ABILITY_FLOAT_TOLERANCE,
@@ -304,7 +304,7 @@ func test_composed_ability() -> void:
 		assert_eq(_activation_count, 4, "La seconda run deve avere una sola connessione input.")
 		var second_run_health := second_run_enemy.get_health_component()
 		assert_almost_eq(
-			second_run_health.health_current, maxf(second_run_health.health_max - 20.0, 0.0),
+			second_run_health.health_current, maxf(second_run_health.health_max - 8.0, 0.0),
 			ACTIVE_ABILITY_FLOAT_TOLERANCE, "L'abilita deve funzionare nella seconda run."
 		)
 
