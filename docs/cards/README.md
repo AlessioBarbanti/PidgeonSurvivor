@@ -60,3 +60,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-038](./completed/PS-038-documentazione-game-design-review-interna.md) | Documentazione di game design per review interna | chore | docs | COMPLETATO | media | — |
 | [PS-039](./to_do/PS-039-api-mancante-vittoria-ricompensa-boss.md) | Regressione sulla ricompensa XP del Boss dopo PS-006 | fix | gameplay | IN CORSO | alta | — |
 | [PS-040](./to_do/PS-040-iframe-atterraggio-powerslide-bea.md) | Aggiungi i-frame all'atterraggio della Powerslide di Bea | feat | gameplay | IN CORSO | media | — |
+| [PS-041](./to_do/PS-041-scia-slancio-magno-non-si-resetta.md) | La scia di slancio di Magno non si azzera all'avvio di una nuova partita | fix | gameplay | PRONTO | media | — |
