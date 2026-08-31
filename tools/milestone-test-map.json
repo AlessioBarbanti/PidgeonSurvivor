@@ -181,7 +181,8 @@
         "tests/unit/test_b18s_arena_background.gd",
         "tests/unit/test_b03_movement_slice.gd",
         "tests/unit/test_b18i_xp_arena_confinement.gd",
-        "tests/unit/test_b38_arena_world.gd"
+        "tests/unit/test_b38_arena_world.gd",
+        "tests/unit/test_ps045_arena_visual_hierarchy.gd"
       ]
     },
     {
@@ -191,7 +192,8 @@
       ],
       "smokes": [
         "tests/unit/test_b38_arena_world.gd",
-        "tests/unit/test_b03_movement_slice.gd"
+        "tests/unit/test_b03_movement_slice.gd",
+        "tests/unit/test_ps045_arena_visual_hierarchy.gd"
       ]
     },
     {
@@ -215,7 +217,8 @@
         "tests/unit/test_ps005_boss_warning.gd",
         "tests/unit/test_ps012_barb_specialities.gd",
         "tests/unit/test_ps008_wave_events.gd",
-        "tests/unit/test_ps044_ui_capture_states.gd"
+        "tests/unit/test_ps044_ui_capture_states.gd",
+        "tests/unit/test_ps045_arena_visual_hierarchy.gd"
       ]
     },
     {

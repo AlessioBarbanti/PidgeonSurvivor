@@ -312,71 +312,83 @@ z_index = 1
 texture_filter = 1
 
 [node name="Fireplace" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
-position = Vector2(0, -620)
+position = Vector2(140, -560)
 footprint_size = Vector2(260, 260)
 texture = ExtResource("102_obstacle_fireplace")
 
 [node name="TableA" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
-position = Vector2(-260, 40)
+position = Vector2(-380, -80)
 footprint_size = Vector2(150, 150)
 texture = ExtResource("103_obstacle_wooden_table")
 
 [node name="BenchA" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
-position = Vector2(-260, 330)
+position = Vector2(-380, 210)
 footprint_size = Vector2(176, 126)
 texture = ExtResource("104_obstacle_bench")
 
 [node name="TableB" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
-position = Vector2(260, 40)
+position = Vector2(520, 60)
 footprint_size = Vector2(150, 150)
 texture = ExtResource("103_obstacle_wooden_table")
 
 [node name="BenchB" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
-position = Vector2(260, 330)
+position = Vector2(760, 260)
 footprint_size = Vector2(176, 126)
 texture = ExtResource("104_obstacle_bench")
 
 [node name="Clothesline" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
-position = Vector2(-950, 0)
+position = Vector2(-1020, 60)
 footprint_size = Vector2(150, 250)
 texture = ExtResource("105_obstacle_clothesline")
 collision_segments = Array[Rect2]([Rect2(-0.5, -0.5, 0.18, 1.0), Rect2(0.32, -0.5, 0.18, 1.0)])
 
 [node name="ClotheslineB" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
-position = Vector2(950, 0)
+position = Vector2(860, -480)
 footprint_size = Vector2(150, 250)
 texture = ExtResource("105_obstacle_clothesline")
 collision_segments = Array[Rect2]([Rect2(-0.5, -0.5, 0.18, 1.0), Rect2(0.32, -0.5, 0.18, 1.0)])
 
 [node name="StoneWashbasin" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
-position = Vector2(-950, -350)
+position = Vector2(-620, -340)
 footprint_size = Vector2(110, 124)
 texture = ExtResource("107_obstacle_stone_washbasin")
 
 [node name="StoneWashbasinB" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
-position = Vector2(950, -350)
+position = Vector2(1030, 420)
 footprint_size = Vector2(110, 124)
 texture = ExtResource("107_obstacle_stone_washbasin")
 
 [node name="TableC" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
-position = Vector2(-550, 340)
+position = Vector2(-160, 480)
 footprint_size = Vector2(150, 150)
 texture = ExtResource("103_obstacle_wooden_table")
 
 [node name="BenchC" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
-position = Vector2(-550, 630)
+position = Vector2(100, 640)
 footprint_size = Vector2(176, 126)
 texture = ExtResource("104_obstacle_bench")
 
 [node name="TableD" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
-position = Vector2(550, 340)
+position = Vector2(-720, 520)
 footprint_size = Vector2(150, 150)
 texture = ExtResource("103_obstacle_wooden_table")
 
 [node name="BenchD" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
-position = Vector2(550, 630)
+position = Vector2(-980, 340)
 footprint_size = Vector2(176, 126)
 texture = ExtResource("104_obstacle_bench")
+
+[node name="IceCooler" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(380, -230)
+footprint_size = Vector2(90, 70)
+placeholder_color = Color(0.62, 0.74, 0.78, 1.0)
+placeholder_outline_color = Color(0.32, 0.42, 0.46, 1.0)
+
+[node name="WoodCrateStack" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
+position = Vector2(350, 480)
+footprint_size = Vector2(130, 110)
+placeholder_color = Color(0.42, 0.31, 0.19, 1.0)
+placeholder_outline_color = Color(0.22, 0.15, 0.08, 1.0)
 
 [node name="InputRouter" type="Node" parent="."]
 unique_name_in_owner = true

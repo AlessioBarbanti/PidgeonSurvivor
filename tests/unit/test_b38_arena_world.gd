@@ -274,11 +274,15 @@ func test_composed_scene() -> void:
 		"La camera deve restare stabile al centro e scorrere solo vicino ai bordi."
 	)
 
-	var expected_obstacle_count := 13
+	var expected_obstacle_count := 15
 	assert_true(
 		obstacles.get_child_count() == expected_obstacle_count,
 		"L'arena deve contenere %d ostacoli piazzati, trovati %d." % [expected_obstacle_count, obstacles.get_child_count()]
 	)
+	# PS-045: IceCooler e WoodCrateStack sono segnaposto in attesa dell'arte
+	# definitiva (card di generazione successiva); tutti gli altri ostacoli
+	# devono gia' avere una texture assegnata.
+	var pending_art_obstacles := ["IceCooler", "WoodCrateStack"]
 	for child in obstacles.get_children():
 		var obstacle := child as StaticObstacle
 		assert_true(obstacle != null, "Ogni figlio di Obstacles deve essere uno StaticObstacle.")
@@ -291,10 +295,11 @@ func test_composed_scene() -> void:
 		assert_true(
 			world_rect.grow(2.0).encloses(obstacle.get_footprint_rect()), "%s deve restare dentro l'arena." % obstacle.name
 		)
-		assert_true(
-			obstacle.texture != null,
-			"%s deve avere gia' una texture assegnata invece del solo segnaposto." % obstacle.name
-		)
+		if not pending_art_obstacles.has(obstacle.name):
+			assert_true(
+				obstacle.texture != null,
+				"%s deve avere gia' una texture assegnata invece del solo segnaposto." % obstacle.name
+			)
 		if obstacle.name.begins_with("Clothesline"):
 			assert_true(
 				not obstacle.collision_segments.is_empty(),

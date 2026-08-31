@@ -80,7 +80,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-042](./2_to_do/PS-042-subordina-scintille-powerslide-bea.md) | Subordina le scintille della Powerslide al nastro di fuoco | fix | arte | PRONTO | media | — |
 | [PS-043](./5_completed/PS-043-riallinea-board-con-i-file-card.md) | Riallineare la board ai file-card realmente presenti | chore | docs | COMPLETATO | alta | — |
 | [PS-044](./4_to_test/PS-044-catture-ui-oneste-e-rappresentative.md) | Rendere il pacchetto di catture UI onesto e rappresentativo | chore | tooling | IN VERIFICA | alta | — |
-| [PS-045](./2_to_do/PS-045-gerarchia-visiva-arena-di-run.md) | Riequilibrare composizione e leggibilità dell'arena 20:9 | ux | arte | PRONTO | alta | — |
+| [PS-045](./4_to_test/PS-045-gerarchia-visiva-arena-di-run.md) | Riequilibrare composizione e leggibilità dell'arena 20:9 | ux | arte | IN VERIFICA | alta | — |
 | [PS-046](./2_to_do/PS-046-isola-il-modal-di-level-up.md) | Isolare il modal di level-up da HUD e cronometro | ux | ui | PRONTO | alta | — |
 | [PS-047](./2_to_do/PS-047-gerarchia-carte-upgrade.md) | Compattare e gerarchizzare le carte upgrade | ux | ui | BLOCCATO | alta | PS-046 |
 | [PS-048](./2_to_do/PS-048-fedelta-al-runtime-di-tre-pagine-tutorial.md) | Allineare tre pagine del tutorial a ciò che il gioco mostra davvero | ux | ui | PRONTO | media | — |
@@ -93,3 +93,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-055](./1_idea/PS-055-filosofia-della-vittoria.md) | Decidere la filosofia della vittoria fra Survival e Difesa Grigliata | chore | gameplay | DA DEFINIRE | media | — |
 | [PS-056](./2_to_do/PS-056-ducking-e-stinger-nei-momenti-chiave.md) | Aggiungere ducking e stinger su warning, Boss e ricompensa Barb | feat | audio | PRONTO | bassa | — |
 | [PS-057](./2_to_do/PS-057-errori-fisica-su-split-del-piccione-viola.md) | Eliminare gli errori di fisica quando il piccione viola si sdoppia | fix | gameplay | PRONTO | media | — |
+| [PS-058](./2_to_do/PS-058-genera-arte-nuovi-prop-arena.md) | Generare l'arte definitiva dei nuovi prop dell'arena | art | arte | PRONTO | media | PS-045 |
