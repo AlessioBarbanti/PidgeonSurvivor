@@ -11,8 +11,6 @@ creato: 2026-08-31
 aggiornato: 2026-08-31
 ---
 
-# ** ATTENZIONE CARD PROBABILMENTE GIA SVOLTA **
-
 
 # PS-042 — Subordina le scintille della Powerslide al nastro di fuoco
 
