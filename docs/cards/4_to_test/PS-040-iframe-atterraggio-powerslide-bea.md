@@ -3,7 +3,7 @@ id: PS-040
 titolo: Aggiungi i-frame all'atterraggio della Powerslide di Bea
 tipo: feat
 area: gameplay
-stato: IN CORSO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
@@ -85,14 +85,18 @@ Non modificare:
   `scripts/abilities/*` / `data/abilities/*`.
 - Profilo minimo prima della chiusura: `Relevant` con
   `-FocusedSmoke tests/unit/test_ps040_bea_powerslide_landing_iframe.gd`
-  (non ancora eseguito, vedi Note).
+  (coperto dall'evidenza preesistente sotto).
+- Evidenza preesistente riusata senza rilanciare test, su richiesta del
+  proprietario: profilo `Full` Windows `20260831-230124-PS-039`, suite
+  `tests/unit/test_ps040_bea_powerslide_landing_iframe.gd` 3/3, zero
+  failure/skipped; intero batch 240/240, toolchain e project smoke verdi,
+  nessun marker bloccante.
 
 ## Gate manuali
 
-- [ ] Runtime Windows — necessario prima di `COMPLETATO`: nessun Godot
-      disponibile in questa sessione per eseguirlo.
-- [ ] Validazione statica APK — non pertinente.
-- [ ] Runtime fisico Pixel 9 — non richiesto, nessuna superficie touch
+- [x] Runtime Windows — project smoke dell'evidenza `Full` preesistente.
+- [x] Validazione statica APK — non pertinente.
+- [x] Runtime fisico Pixel 9 — non richiesto, nessuna superficie touch
       specifica coinvolta.
 - [ ] Controllo percettivo richiesto: sì — conferma che la finestra di
       i-frame si "senta" giusta (né invisibile né eccessiva) resta un
@@ -120,8 +124,8 @@ Non modificare:
 
 ## Note
 
-**Verifica non eseguita.** Implementato e controllato per lettura, ma non è
-stato lanciato `run-milestone-checks.ps1`: nessun Godot/PowerShell
-disponibile in questo ambiente. Il profilo `Relevant` su Windows e il
-controllo percettivo su device restano i gate aperti prima di poter chiudere
-la card `COMPLETATO`.
+**Stato in verifica (2026-08-31).** L'implementazione del commit `ebe9d08`,
+la suite dedicata e il project smoke Windows sono già verdi. Il proprietario
+ha chiesto di non rilanciare test perché l'audit non ha modificato il runtime.
+Resta aperto soltanto il controllo percettivo sul valore iniziale `0.3s`, che
+non viene sostituito da un test automatico.

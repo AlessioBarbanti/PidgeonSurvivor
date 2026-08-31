@@ -75,7 +75,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-037](./4_to_test/PS-037-alza-probabilita-evil-boss-50.md) | Alza la probabilità Evil Boss dal 25% al 50% | chore | gameplay | IN VERIFICA | media | — |
 | [PS-038](./5_completed/PS-038-documentazione-game-design-review-interna.md) | Documentazione di game design per review interna | chore | docs | COMPLETATO | media | — |
 | [PS-039](./5_completed/PS-039-api-mancante-vittoria-ricompensa-boss.md) | Regressione sulla ricompensa XP del Boss dopo PS-006 | fix | gameplay | COMPLETATO | alta | — |
-| [PS-040](./3_in_sprint/PS-040-iframe-atterraggio-powerslide-bea.md) | Aggiungi i-frame all'atterraggio della Powerslide di Bea | feat | gameplay | IN CORSO | media | — |
+| [PS-040](./4_to_test/PS-040-iframe-atterraggio-powerslide-bea.md) | Aggiungi i-frame all'atterraggio della Powerslide di Bea | feat | gameplay | IN VERIFICA | media | — |
 | [PS-041](./3_in_sprint/PS-041-scia-slancio-magno-non-si-resetta.md) | La scia di slancio di Magno non si azzera all'avvio di una nuova partita | fix | gameplay | IN CORSO | media | — |
 | [PS-042](./2_to_do/PS-042-subordina-scintille-powerslide-bea.md) | Subordina le scintille della Powerslide al nastro di fuoco | fix | arte | PRONTO | media | — |
 | [PS-043](./5_completed/PS-043-riallinea-board-con-i-file-card.md) | Riallineare la board ai file-card realmente presenti | chore | docs | COMPLETATO | alta | — |
