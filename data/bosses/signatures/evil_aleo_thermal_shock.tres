@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BossSignatureDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/bosses/boss_signature_definition.gd" id="1_signature"]
+
+[resource]
+script = ExtResource("1_signature")
+id = &"evil_aleo_thermal_shock"
+friend_id = &"aleo"
+title = "Shock Termico"
+effect_id = &"boss_thermal_shock"
+telegraph_duration = 1.0
+duration_seconds = 2.0
+recovery_seconds = 0.5
+area_radius = 150.0
+damage = 30.0
+effect_parameters = {"cold_seconds": 1.2, "slow_factor": 0.62}
+accent_color = Color(0.42, 0.86, 1, 0.82)

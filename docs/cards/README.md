@@ -32,7 +32,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-003](./completed/PS-003-conferma-abilita-passiva-zat.md) | Confermare Guarigione Ritardata | chore | gameplay | COMPLETATO | alta | — |
 | [PS-004](./to_test/PS-004-lega-Tempesta-di-Tuoni-al-danno-recuperabile.md) | Legare Tempesta di Tuoni al danno recuperabile | feat | gameplay | IN VERIFICA | alta | PS-003 |
 | [PS-005](./to_test/PS-005-Boss-timer.md) | Annunciare l'arrivo del Boss | ux | gameplay | IN VERIFICA | alta | — |
-| [PS-006](./to_do/PS-006-bosses-new-abilities.md) | Dare agli Evil una Signature Ability | feat | gameplay | BLOCCATO | alta | PS-004 |
+| [PS-006](./to_test/PS-006-bosses-new-abilities.md) | Dare agli Evil una Signature Ability | feat | gameplay | IN VERIFICA | alta | PS-004 |
 | [PS-007](./to_test/PS-007-impedire-run-AFK-lategame.md) | Impedire che la late run diventi AFK | feat | gameplay | IN VERIFICA | alta | — |
 | [PS-008](./to_test/PS-008-eventi-di-ondata.md) | Introdurre eventi d'ondata | feat | gameplay | IN VERIFICA | alta | — |
 | [PS-009](./completed/PS-009-trasparenza-dialog-boss.md) | Rendere trasparente la Boss UI sotto il Player | ux | ui | COMPLETATO | media | — |

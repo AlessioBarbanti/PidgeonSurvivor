@@ -326,8 +326,28 @@ piccione speciale può apparire un `Evil <Nome>` estratto casualmente dagli otto
 profili. In questa
 prima versione Evil riusa lo sprite del relativo Player con palette viola scura
 e accenti magenta ad alto contrasto; mantiene statistiche, hitbox e i due
-pattern del piccione Boss. Le abilità del personaggio non sono ancora disponibili
-ai Boss Evil e richiedono una successiva slice dati/comportamentale.
+pattern del piccione Boss.
+
+PS-006 completa gli Evil con una **Signature Ability** per profilo, dichiarata
+nel catalogo `data/bosses/evil_signature_catalog.tres` e assegnata alla variante
+al momento della risoluzione. La Signature entra come terzo pattern della
+rotazione Boss: entrambi i pattern comuni (salva radiale e colpo mirato)
+restano. Regole comuni delle Signature:
+
+- reinterpretano l'attiva del personaggio corrispondente con **parametri Boss
+  propri**; bilanciarle non tocca le `AbilityDefinition` del roster giocabile e
+  viceversa;
+- hanno sempre un telegraph che mostra la forma esatta di ciò che sta per
+  diventare pericoloso; nessuna infligge danno inevitabile, perché il
+  posizionamento basta a evitarla;
+- ogni scelta casuale (la copia di Evil Lollo) dipende solo da seed della run,
+  indice della soglia Boss e numero d'uso, quindi è riproducibile;
+- avanzano solo in `RUNNING`: pausa, `BOSS_INTRO` e stati terminali le
+  congelano, mentre morte del Boss e restart eliminano aree, scie, cloni,
+  telegraph e rallentamenti imposti al Player.
+
+Il piccione speciale baseline non ha Signature e resta sui due soli pattern
+comuni.
 
 B23 introduce una seconda modalità, **Difesa Grigliata**, accanto alla
 Sopravvivenza attuale. La modalità mette al centro del playfield una griglia con

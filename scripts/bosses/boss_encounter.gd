@@ -4,7 +4,7 @@ extends Node
 signal boss_intro_started(boss: FirstBoss, schedule_index: int)
 signal boss_intro_completed(boss: FirstBoss, schedule_index: int)
 signal boss_spawned(boss: FirstBoss, schedule_index: int)
-signal boss_defeated(boss: FirstBoss, experience_reward: int)
+signal boss_defeated(boss: FirstBoss)
 
 const EVIL_BODY_COLOR := Color(0.24, 0.055, 0.34, 1.0)
 const EVIL_OUTLINE_COLOR := Color(0.055, 0.01, 0.09, 1.0)
@@ -16,6 +16,9 @@ const SCHEDULE_SEED_FACTOR := 0x045D9F3B
 
 @export var boss_scene: PackedScene
 @export var boss_definition: BossDefinition
+## Catalogo delle Signature Evil (PS-006): la variante composta riceve la
+## mossa del profilo estratto senza toccare il Boss baseline.
+@export var signature_catalog: BossSignatureCatalog
 @export_range(0.0, 1.0, 0.01) var evil_boss_chance := 0.25
 
 var _run_controller: RunController
@@ -26,14 +29,12 @@ var _player: Player
 var _enemy_parent: Node
 var _boss_projectile_parent: Node
 var _targeting_system: TargetingSystem
-var _experience_system: ExperienceSystem
 var _boss_ui: BossUI
 var _friend_registry: FriendRegistry
 var _active_boss: FirstBoss
 var _active_definition: BossDefinition
 var _active_schedule_index := -1
 var _reward_granted := false
-var _last_experience_reward := 0
 var _last_defeated_title := ""
 
 
@@ -54,7 +55,6 @@ func configure(
 	enemy_parent: Node,
 	boss_projectile_parent: Node,
 	targeting_system: TargetingSystem,
-	experience_system: ExperienceSystem,
 	boss_ui: BossUI,
 	friend_registry: FriendRegistry,
 	camera: Camera2D = null
@@ -68,7 +68,6 @@ func configure(
 	_enemy_parent = enemy_parent
 	_boss_projectile_parent = boss_projectile_parent
 	_targeting_system = targeting_system
-	_experience_system = experience_system
 	_boss_ui = boss_ui
 	_friend_registry = friend_registry
 	_connect_dependencies()
@@ -91,11 +90,10 @@ func has_valid_configuration() -> bool:
 		and is_instance_valid(_boss_projectile_parent)
 		and _boss_projectile_parent.is_inside_tree()
 		and is_instance_valid(_targeting_system)
-		and is_instance_valid(_experience_system)
-		and _experience_system.get_run_controller() == _run_controller
 		and is_instance_valid(_boss_ui)
 		and is_instance_valid(_friend_registry)
 		and _friend_registry.is_catalog_valid()
+		and (signature_catalog == null or signature_catalog.is_valid())
 	)
 
 
@@ -119,7 +117,6 @@ func complete_intro() -> bool:
 func reset_for_run() -> void:
 	_clear_active_boss(true)
 	_reward_granted = false
-	_last_experience_reward = 0
 	_last_defeated_title = ""
 	if is_instance_valid(_boss_ui):
 		_boss_ui.reset_presentation()
@@ -152,8 +149,13 @@ func resolve_definition_for_event(seed_value: int, schedule_index: int) -> BossD
 		profiles,
 		seed_value,
 		schedule_index,
-		evil_boss_chance
+		evil_boss_chance,
+		signature_catalog
 	)
+
+
+func get_signature_catalog() -> BossSignatureCatalog:
+	return signature_catalog
 
 
 static func resolve_variant(
@@ -161,7 +163,8 @@ static func resolve_variant(
 	profiles: Array[FriendDefinition],
 	run_seed: int,
 	schedule_index: int,
-	evil_chance: float
+	evil_chance: float,
+	signatures: BossSignatureCatalog = null
 ) -> BossDefinition:
 	if baseline == null or not baseline.is_valid():
 		return null
@@ -191,11 +194,11 @@ static func resolve_variant(
 	evil_definition.accent_color = EVIL_ACCENT_COLOR
 	evil_definition.telegraph_color = EVIL_TELEGRAPH_COLOR
 	evil_definition.sprite_modulate = EVIL_SPRITE_MODULATE
+	# La Signature resta la risorsa condivisa del catalogo: nessuno la muta a
+	# runtime, quindi bilanciarla in un solo `.tres` vale per ogni incontro.
+	if signatures != null:
+		evil_definition.signature = signatures.resolve_for_friend(selected_profile.id)
 	return evil_definition
-
-
-func get_last_experience_reward() -> int:
-	return _last_experience_reward
 
 
 func get_last_defeated_title() -> String:
@@ -305,6 +308,19 @@ func _spawn_boss(schedule_index: int) -> FirstBoss:
 		push_error("BossEncounter: configurazione Boss non valida.")
 		return null
 
+	# Contesto della Signature (PS-006): candidati copiabili da Evil Lollo,
+	# indice della soglia per l'estrazione seedata e i due nodi che ospitano
+	# aree e clone.
+	var copy_candidates: Array[BossSignatureDefinition] = []
+	if signature_catalog != null:
+		copy_candidates = signature_catalog.get_copy_candidates()
+	boss.configure_signature(
+		copy_candidates,
+		schedule_index,
+		_targeting_system,
+		_enemy_parent
+	)
+
 	var spawn_position := calculate_spawn_position(
 		get_visible_reference_rect(),
 		_player.global_position,
@@ -396,7 +412,6 @@ func _disconnect_dependencies() -> void:
 	_enemy_parent = null
 	_boss_projectile_parent = null
 	_targeting_system = null
-	_experience_system = null
 	_boss_ui = null
 	_friend_registry = null
 
@@ -422,9 +437,6 @@ func _on_boss_died(boss: BaseEnemy) -> void:
 	if defeated_definition == null:
 		defeated_definition = boss_definition
 	_last_defeated_title = defeated_definition.get_safe_title()
-	_last_experience_reward = 0
-	if _experience_system.add_experience(defeated_definition.experience_reward):
-		_last_experience_reward = defeated_definition.experience_reward
 
 	if dying_boss.died.is_connected(_on_boss_died):
 		dying_boss.died.disconnect(_on_boss_died)
@@ -435,7 +447,7 @@ func _on_boss_died(boss: BaseEnemy) -> void:
 	_active_schedule_index = -1
 
 	_game_director.complete_active_boss_event()
-	boss_defeated.emit(dying_boss, _last_experience_reward)
+	boss_defeated.emit(dying_boss)
 
 
 func _on_boss_tree_exiting() -> void:

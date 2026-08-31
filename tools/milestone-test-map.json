@@ -24,7 +24,8 @@
         "tests/unit/test_b17a_complete_roster_abilities.gd",
         "tests/unit/test_b38_arena_world.gd",
         "tests/unit/test_ps003_zat_delayed_healing.gd",
-        "tests/unit/test_ps004_zat_thunder_charge.gd"
+        "tests/unit/test_ps004_zat_thunder_charge.gd",
+        "tests/unit/test_ps006_evil_signature_abilities.gd"
       ]
     },
     {
@@ -39,7 +40,8 @@
         "tests/unit/test_b22_evil_boss_variants.gd",
         "tests/unit/test_b17_friend_content.gd",
         "tests/unit/test_b33_recurring_boss.gd",
-        "tests/unit/test_b38_arena_world.gd"
+        "tests/unit/test_b38_arena_world.gd",
+        "tests/unit/test_ps006_evil_signature_abilities.gd"
       ]
     },
     {
@@ -104,7 +106,8 @@
         "tests/unit/test_b05_combat_slice.gd",
         "tests/unit/test_b06_player_survival.gd",
         "tests/unit/test_b16_complete_run.gd",
-        "tests/unit/test_b41_weapon_shapes.gd"
+        "tests/unit/test_b41_weapon_shapes.gd",
+        "tests/unit/test_ps006_evil_signature_abilities.gd"
       ]
     },
     {
@@ -340,6 +343,16 @@
         "tests/unit/test_b17_friend_content.gd",
         "tests/unit/test_ps003_zat_delayed_healing.gd",
         "tests/unit/test_ps004_zat_thunder_charge.gd"
+      ]
+    },
+    {
+      "patterns": [
+        "scenes/actors/boss_decoy.tscn",
+        "data/bosses/signatures/*"
+      ],
+      "smokes": [
+        "tests/unit/test_ps006_evil_signature_abilities.gd",
+        "tests/unit/test_b22_evil_boss_variants.gd"
       ]
     }
   ]

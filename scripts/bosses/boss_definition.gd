@@ -20,7 +20,6 @@ enum VisualKind {
 @export_range(0.0, 2000.0, 1.0, "or_greater") var move_speed := 85.0
 @export_range(1.0, 256.0, 0.5, "or_greater") var collision_radius := 46.0
 @export_range(0.0, 1000000.0, 1.0, "or_greater") var contact_damage := 25.0
-@export_range(1, 1000000, 1, "or_greater") var experience_reward := 50
 
 @export_group("Pattern cadence")
 @export_range(0.01, 60.0, 0.01, "or_greater") var initial_attack_delay := 1.5
@@ -38,6 +37,11 @@ enum VisualKind {
 @export_range(0.01, 10.0, 0.01, "or_greater") var targeted_telegraph_duration := 1.0
 @export_range(1.0, 1024.0, 1.0, "or_greater") var targeted_blast_radius := 115.0
 @export_range(0.0, 1000000.0, 0.1, "or_greater") var targeted_blast_damage := 26.0
+
+@export_group("Signature")
+## Signature Ability dell'Evil (PS-006). Il piccione baseline non ne ha:
+## resta `null` e il Boss gira sui due soli pattern comuni.
+@export var signature: BossSignatureDefinition
 
 @export_group("Visual")
 @export var visual_kind := VisualKind.SPECIAL_PIGEON
@@ -78,6 +82,10 @@ func is_evil_variant() -> bool:
 	return visual_kind == VisualKind.EVIL_FRIEND
 
 
+func has_signature() -> bool:
+	return signature != null and signature.is_valid()
+
+
 func is_valid() -> bool:
 	return (
 		not id.is_empty()
@@ -89,6 +97,7 @@ func is_valid() -> bool:
 			not is_evil_variant()
 			or (friend_profile != null and friend_profile.is_valid())
 		)
+		and (signature == null or signature.is_valid())
 		and is_finite(health_max)
 		and health_max > 0.0
 		and is_finite(move_speed)
@@ -97,7 +106,6 @@ func is_valid() -> bool:
 		and collision_radius > 0.0
 		and is_finite(contact_damage)
 		and contact_damage >= 0.0
-		and experience_reward > 0
 		and _is_positive_finite(initial_attack_delay)
 		and _is_positive_finite(pattern_interval)
 		and _is_positive_finite(radial_telegraph_duration)

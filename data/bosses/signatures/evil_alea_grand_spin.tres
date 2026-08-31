@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BossSignatureDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/bosses/boss_signature_definition.gd" id="1_signature"]
+
+[resource]
+script = ExtResource("1_signature")
+id = &"evil_alea_grand_spin"
+friend_id = &"alea"
+title = "Gran Piroetta"
+effect_id = &"boss_grand_spin"
+telegraph_duration = 1.0
+duration_seconds = 3.2
+recovery_seconds = 0.8
+area_radius = 120.0
+damage = 9.0
+effect_parameters = {"hits_per_second": 2.0, "chase_speed": 128.0, "turn_rate": 1.15}
+accent_color = Color(1, 0.34, 0.72, 0.8)

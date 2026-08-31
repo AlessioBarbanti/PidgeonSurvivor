@@ -11,21 +11,21 @@ Nomi e testi sono stati approvati dal proprietario del progetto il 17 agosto
 Ruolo: Mobilità e controllo delle orde.  
 Passiva — Flusso Aerodinamico Bovino: Muovendosi dritto accumula slancio: più è veloce, più forte è la sua onda.  
 Attiva — Onda d'Urto Tellurica: Genera un'onda d'urto che danneggia e respinge i nemici vicini, più forte quanto più slancio Magno ha accumulato.
-Boss: Evil Magno.
+Boss: Evil Magno — Signature *Onda d'Urto Tellurica*: dopo un forte impatto a terra telegrafato, un fronte anulare parte dal Boss e si espande verso l'esterno, danneggiando e respingendo una sola volta chi attraversa. La versione Boss non usa lo slancio del Player.
 
 ## Bea
 
 Ruolo: Evasione e riposizionamento.  
 Passiva — Sesto Senso Equino: Ogni 9 secondi annulla il colpo che la colpirebbe: Bea scarta d'istinto lontano dal pericolo e resta invulnerabile per un istante.<br>
 Attiva — Powerslide: Scatto istantaneo nell'ultima direzione di movimento, che lascia dietro di sé una scia di fuoco.
-Boss: Evil Bea.
+Boss: Evil Bea — Signature *Powerslide*: una linea di preavviso mostra direzione e traiettoria, poi Bea scatta lungo quella linea e lascia una scia di fuoco che infligge danno nel tempo e restringe temporaneamente lo spazio sicuro.
 
 ## Zat
 
 Ruolo: Gestione del danno e sopravvivenza.  
 Passiva — Guarigione Ritardata: Parte del danno subito resta recuperabile: se Zat evita altri colpi per qualche secondo, quella quota torna indietro.  
 Attiva — Tempesta di Tuoni: Fotografa tutti i nemici vivi presenti in quel momento e li colpisce con un'unica scarica ciascuno; il danno per bersaglio scala con la quota di HP recuperabili accumulata da Guarigione Ritardata (PS-004).
-Boss: Evil Zat.
+Boss: Evil Zat — Signature *Tempesta di Tuoni*: l'aura orbitante di PS-004 dichiara la fascia di carica, che qui sale con il danno già subito dal Boss; dopo il telegraph il Tuono colpisce soltanto dentro il raggio annunciato, quindi resta evitabile.
 
 Contratto runtime di Guarigione Ritardata (confermato da PS-003; i valori vivono
 in `data/friends/zat.tres`, la logica in `FriendPassiveController`):
@@ -78,35 +78,35 @@ in `scripts/abilities/lightning_storm.gd` e `FriendPassiveController`):
 Ruolo: Rischio, fortuna e mischia.  
 Passiva — L’Aquila Non Sbaglia Mai: Ogni 10 secondi tira un effetto a caso: uccidere nemici aiuta la sorte (ogni kill carica la fortuna del tiro successivo, che la spende per intero).  
 Attiva — Gran Piroetta: Una rotazione rapida che colpisce ripetutamente tutti i nemici vicini.
-Boss: Evil Alea.
+Boss: Evil Alea — Signature *Gran Piroetta*: entra in rotazione con un'area di contatto sempre visibile e insegue a velocità ridotta senza poter cambiare direzione all'istante.
 
 ## Aleo
 
 Ruolo: Sbalzo termico e gestione del danno.  
 Passiva — Termostato Interno: Sopra metà vita scalda e infligge più danno; sotto metà raffredda, incassa meno e la brina rallenta e logora i nemici vicini. Un'aura ciano o arancio dichiara sempre la modalità corrente.  
 Attiva — Shock Termico: Congela un'area per un istante, poi la fa esplodere di calore: i nemici ancora brinati subiscono danno raddoppiato.
-Boss: Evil Aleo.
+Boss: Evil Aleo — Signature *Shock Termico*: un'area ciano rallenta chi vi resta dentro, poi la stessa area detona; il rallentamento lascia comunque il tempo di uscire.
 
 ## Lollo
 
 Ruolo: Velocità, caos e imprevedibilità.  
 Passiva — Iperfocus ADHD: Alterna a intervalli casuali una fase di iperfocus (movimento e cadenza di fuoco molto più rapidi) e una fase distratta (movimento e cadenza sotto la norma); ogni nemico ucciso accorcia la sola distrazione. Un contorno colorato attorno alla sagoma dichiara la fase corrente senza alterare i colori del personaggio.<br>
 Attiva — Cosplay Casuale: Estrae in anticipo l'abilità di un altro personaggio e la mostra sul pulsante: la prossima attivazione lancia quella.
-Boss: Evil Lollo.
+Boss: Evil Lollo — Signature *Cosplay Casuale*: prepara in anticipo la Signature di un altro Evil, la annuncia disegnandone il telegraph e la esegue con i parametri Boss di quella copiata. Non può copiare Cosplay Casuale, quindi non genera ricorsione.
 
 ## Migi
 
 Ruolo: Difesa e controllo delle orde.  
 Passiva — Guscio Tartarughina: Le placche del guscio annullano i primi colpi e si ricaricano; sotto il 35% di vita la Tartarughina tira fuori il carapace.  
 Attiva — Rallentamento Zen: Crea una zona che rallenta fortemente i nemici vicini e assorbe i proiettili che vi entrano.
-Boss: Evil Migi.
+Boss: Evil Migi — Signature *Rallentamento Zen*: una zona attorno al Boss rallenta il Player e assorbe i proiettili alleati che vi entrano, senza infliggere danno diretto.
 
 ## Marghe
 
 Ruolo: Indebolimento e distrazione dei nemici.  
 Passiva — Sorriso Contagioso: I nemici vicini subiscono più danno da ogni fonte, arma e abilità comprese (i Boss non ne risentono), e sono marcati da una tinta magenta riconoscibile.  
 Attiva — Reggaeton time!: Genera un clone che balla reggaeton e diventa il bersaglio dei nemici vicini.
-Boss: Evil Marghe.
+Boss: Evil Marghe — Signature *Reggaeton time!*: genera un clone ballerino distinguibile dal Boss reale, che l'auto-targeting del Player può preferire mentre Marghe continua a usare i propri pattern.
 
 ## Direzione visuale del cast
 

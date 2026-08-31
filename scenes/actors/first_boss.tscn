@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/bosses/first_boss.gd" id="1_first_boss"]
 [ext_resource type="Script" path="res://scripts/components/health_component.gd" id="2_health"]
@@ -6,6 +6,8 @@
 [ext_resource type="Script" path="res://scripts/components/contact_damage.gd" id="4_contact"]
 [ext_resource type="Resource" path="res://data/bosses/first_boss.tres" id="5_boss_definition"]
 [ext_resource type="PackedScene" path="res://scenes/combat/boss_projectile.tscn" id="6_boss_projectile"]
+[ext_resource type="PackedScene" path="res://scenes/actors/boss_decoy.tscn" id="7_boss_decoy"]
+[ext_resource type="Script" path="res://scripts/vfx/thunder_charge_aura.gd" id="8_thunder_charge_aura"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_boss"]
 resource_local_to_scene = true
@@ -34,11 +36,18 @@ accent_color = Color(1, 0.68, 0.16, 1)
 outline_width = 6.0
 definition = ExtResource("5_boss_definition")
 projectile_scene = ExtResource("6_boss_projectile")
+decoy_scene = ExtResource("7_boss_decoy")
 
 [node name="BossSprite" type="Sprite2D" parent="."]
 unique_name_in_owner = true
 z_index = 1
 texture_filter = 1
+
+[node name="ThunderChargeAura" type="Node2D" parent="."]
+unique_name_in_owner = true
+z_index = 2
+visible = false
+script = ExtResource("8_thunder_charge_aura")
 
 [node name="CollisionShape" type="CollisionShape2D" parent="."]
 unique_name_in_owner = true

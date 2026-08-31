@@ -37,6 +37,10 @@ var _death_burst_damage_multiplier := 0.0
 
 
 func _ready() -> void:
+	# Simmetrico a BossProjectile: la zona Zen di Evil Migi (PS-006) assorbe i
+	# proiettili alleati e ha bisogno di poterli enumerare senza conoscere il
+	# nodo che li ospita.
+	add_to_group(&"player_projectiles")
 	_make_collision_shape_unique()
 	_sync_collision_radius()
 	_sync_visual_scale()

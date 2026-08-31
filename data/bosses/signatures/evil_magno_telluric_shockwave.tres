@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BossSignatureDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/bosses/boss_signature_definition.gd" id="1_signature"]
+
+[resource]
+script = ExtResource("1_signature")
+id = &"evil_magno_telluric_shockwave"
+friend_id = &"magno"
+title = "Onda d'Urto Tellurica"
+effect_id = &"boss_telluric_shockwave"
+telegraph_duration = 1.3
+duration_seconds = 2.0
+recovery_seconds = 0.6
+area_radius = 420.0
+damage = 22.0
+effect_parameters = {"expansion_speed": 260.0, "front_thickness": 54.0, "knockback_force": 420.0, "knockback_seconds": 0.22}
+accent_color = Color(1, 0.62, 0.16, 0.82)

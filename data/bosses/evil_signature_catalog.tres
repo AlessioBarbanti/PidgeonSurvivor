@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="BossSignatureCatalog" load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/bosses/boss_signature_catalog.gd" id="1_catalog"]
+[ext_resource type="Resource" path="res://data/bosses/signatures/evil_magno_telluric_shockwave.tres" id="2_magno"]
+[ext_resource type="Resource" path="res://data/bosses/signatures/evil_bea_powerslide.tres" id="3_bea"]
+[ext_resource type="Resource" path="res://data/bosses/signatures/evil_zat_thunder_storm.tres" id="4_zat"]
+[ext_resource type="Resource" path="res://data/bosses/signatures/evil_alea_grand_spin.tres" id="5_alea"]
+[ext_resource type="Resource" path="res://data/bosses/signatures/evil_aleo_thermal_shock.tres" id="6_aleo"]
+[ext_resource type="Resource" path="res://data/bosses/signatures/evil_lollo_random_cosplay.tres" id="7_lollo"]
+[ext_resource type="Resource" path="res://data/bosses/signatures/evil_migi_zen_slowdown.tres" id="8_migi"]
+[ext_resource type="Resource" path="res://data/bosses/signatures/evil_marghe_reggaeton_clone.tres" id="9_marghe"]
+
+[resource]
+script = ExtResource("1_catalog")
+signatures = Array[ExtResource("2_magno")]([ExtResource("2_magno"), ExtResource("3_bea"), ExtResource("4_zat"), ExtResource("5_alea"), ExtResource("6_aleo"), ExtResource("7_lollo"), ExtResource("8_migi"), ExtResource("9_marghe")])

@@ -1,4 +1,4 @@
-[gd_scene load_steps=112 format=3]
+[gd_scene load_steps=113 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -40,6 +40,7 @@
 [ext_resource type="Script" path="res://scripts/bosses/boss_encounter.gd" id="39_boss_encounter"]
 [ext_resource type="PackedScene" path="res://scenes/actors/first_boss.tscn" id="40_first_boss"]
 [ext_resource type="Resource" path="res://data/bosses/first_boss.tres" id="41_boss_definition"]
+[ext_resource type="Resource" path="res://data/bosses/evil_signature_catalog.tres" id="123_evil_signature_catalog"]
 [ext_resource type="PackedScene" path="res://scenes/ui/boss_ui.tscn" id="42_boss_ui"]
 [ext_resource type="Script" path="res://scripts/content/friend_registry.gd" id="43_friend_registry"]
 [ext_resource type="Resource" path="res://data/friends/magno.tres" id="44_magno"]
@@ -185,6 +186,7 @@ unique_name_in_owner = true
 script = ExtResource("39_boss_encounter")
 boss_scene = ExtResource("40_first_boss")
 boss_definition = ExtResource("41_boss_definition")
+signature_catalog = ExtResource("123_evil_signature_catalog")
 
 [node name="EnemySpawner" type="Node" parent="."]
 unique_name_in_owner = true

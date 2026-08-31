@@ -6,6 +6,9 @@ signal damaged(player: Player, amount: float, health_current: float)
 signal died(player: Player)
 signal friend_changed(definition: FriendDefinition)
 signal facing_direction_changed(direction: Vector2)
+## PS-006: le Signature Evil rallentano il Player dall'esterno; la HUD e i
+## test leggono il risultato senza toccare i moltiplicatori di upgrade.
+signal external_speed_modifiers_changed(player: Player, effective_multiplier: float)
 
 @export_group("Content")
 @export var friend_definition: FriendDefinition
@@ -92,6 +95,9 @@ var _momentum_trail_enabled := false
 var _momentum_trail_points: PackedVector2Array = PackedVector2Array()
 var _momentum_trail_sample_elapsed := 0.0
 var _thunder_charge_active := false
+var _external_speed_modifiers: Dictionary = {}
+var _external_impulse_velocity := Vector2.ZERO
+var _external_impulse_remaining := 0.0
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 @onready var _health_component: HealthComponent = %HealthComponent
@@ -137,7 +143,16 @@ func _physics_process(delta: float) -> void:
 		0.0
 	)
 	_health_component.advance_invulnerability(safe_delta)
-	velocity = movement_input * move_speed
+	if _external_impulse_remaining > 0.0:
+		velocity = _external_impulse_velocity
+		_external_impulse_remaining = maxf(
+			_external_impulse_remaining - safe_delta,
+			0.0
+		)
+		if _external_impulse_remaining <= 0.0:
+			_external_impulse_velocity = Vector2.ZERO
+	else:
+		velocity = movement_input * move_speed
 	move_and_slide()
 	_clamp_to_playfield()
 	_advance_character_animation(safe_delta)
@@ -267,6 +282,8 @@ func take_contact_damage(amount: float, source_position: Vector2 = Vector2.INF) 
 
 func reset_for_run() -> void:
 	_death_handled = false
+	clear_external_speed_modifiers()
+	clear_external_impulse()
 	_damage_flash_remaining = 0.0
 	_damage_reaction_remaining = 0.0
 	reset_upgrade_stat_multipliers()
@@ -488,6 +505,80 @@ func reset_character_stat_multipliers() -> void:
 	_character_pickup_radius_multiplier = 1.0
 	_character_health_max_multiplier = 1.0
 	_recalculate_effective_stats(true)
+
+
+## Rallentamento imposto da una fonte esterna al Player (le Signature Evil di
+## PS-006). Vive in un dizionario separato dai moltiplicatori di upgrade e di
+## personaggio: quando l'effetto scade il Player torna esattamente alla
+## velocita' che aveva, senza che nessuno debba ricordarsela.
+func set_external_speed_modifier(modifier_id: StringName, multiplier: float) -> bool:
+	if (
+		String(modifier_id).is_empty()
+		or not is_finite(multiplier)
+		or multiplier <= 0.0
+	):
+		return false
+	if (
+		_external_speed_modifiers.has(modifier_id)
+		and is_equal_approx(float(_external_speed_modifiers[modifier_id]), multiplier)
+	):
+		return true
+	_external_speed_modifiers[modifier_id] = multiplier
+	_recalculate_effective_stats(true)
+	external_speed_modifiers_changed.emit(self, get_external_speed_multiplier())
+	return true
+
+
+func remove_external_speed_modifier(modifier_id: StringName) -> bool:
+	if not _external_speed_modifiers.erase(modifier_id):
+		return false
+	_recalculate_effective_stats(true)
+	external_speed_modifiers_changed.emit(self, get_external_speed_multiplier())
+	return true
+
+
+func clear_external_speed_modifiers() -> void:
+	if _external_speed_modifiers.is_empty():
+		return
+	_external_speed_modifiers.clear()
+	_recalculate_effective_stats(true)
+	external_speed_modifiers_changed.emit(self, 1.0)
+
+
+func has_external_speed_modifier(modifier_id: StringName) -> bool:
+	return _external_speed_modifiers.has(modifier_id)
+
+
+func get_external_speed_multiplier() -> float:
+	var multiplier := 1.0
+	for value: Variant in _external_speed_modifiers.values():
+		multiplier *= maxf(float(value), 0.0)
+	return multiplier
+
+
+## Spinta imposta dall'esterno (knockback dell'Onda d'Urto Tellurica). Per la
+## sua durata sostituisce l'input di movimento, poi il controllo torna intero
+## al giocatore: non tocca ne' statistiche ne' comandi.
+func apply_external_impulse(impulse_velocity: Vector2, duration: float) -> bool:
+	if (
+		not impulse_velocity.is_finite()
+		or impulse_velocity.is_zero_approx()
+		or not is_finite(duration)
+		or duration <= 0.0
+	):
+		return false
+	_external_impulse_velocity = impulse_velocity
+	_external_impulse_remaining = duration
+	return true
+
+
+func clear_external_impulse() -> void:
+	_external_impulse_velocity = Vector2.ZERO
+	_external_impulse_remaining = 0.0
+
+
+func is_external_impulse_active() -> bool:
+	return _external_impulse_remaining > 0.0
 
 
 func reset_upgrade_stat_multipliers() -> void:
@@ -761,7 +852,7 @@ func _apply_character_frame() -> void:
 
 
 func _recalculate_effective_stats(preserve_health_ratio: bool) -> void:
-	move_speed = get_base_move_speed() * _move_speed_multiplier
+	move_speed = get_base_move_speed() * _move_speed_multiplier * get_external_speed_multiplier()
 	pickup_radius = get_base_pickup_radius() * _pickup_radius_multiplier
 	if is_instance_valid(_health_component):
 		_health_component.set_health_max(

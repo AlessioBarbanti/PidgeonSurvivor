@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="BossSignatureDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/bosses/boss_signature_definition.gd" id="1_signature"]
+
+[resource]
+script = ExtResource("1_signature")
+id = &"evil_marghe_reggaeton_clone"
+friend_id = &"marghe"
+title = "Reggaeton time!"
+effect_id = &"boss_reggaeton_clone"
+telegraph_duration = 1.0
+duration_seconds = 6.0
+recovery_seconds = 0.3
+area_radius = 0.0
+damage = 0.0
+effect_parameters = {"clone_health": 260.0, "clone_offset": 130.0, "clone_radius": 34.0}
+accent_color = Color(0.35, 0.92, 1, 0.8)
