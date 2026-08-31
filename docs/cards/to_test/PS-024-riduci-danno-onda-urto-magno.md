@@ -144,6 +144,29 @@ tests/unit/test_b18g_ability_ranks.gd,tests/unit/test_b18m_ability_visuals.gd `
 `PASS focused=1/1 regression=3/3 steps=4/4` — 6 test, 814 assert, zero
 `[Failed]`, nessun `SCRIPT ERROR` né `FATAL EXCEPTION` nei log.
 
+**Profilo `Full` eseguito il 2026-08-31**, per accertare che nessun altro test
+asserisse i vecchi valori:
+
+```
+.	oolsun-milestone-checks.ps1 -Milestone PS-024 -Profile Full -NoCache -KeepGoing
+```
+
+Il primo giro ha trovato una **quarta** vittima che nessun profilo `Relevant`
+copriva: `test_b18r_visual_timing.gd:153`, un guard
+`assert_almost_eq(definition.damage, 20.0, ..., "B18R non deve cambiare il
+danno.")` che sorveglia che le modifiche al timing visivo non tocchino il
+bilanciamento. Faceva il suo mestiere: il danno era davvero cambiato, ma il
+cambiamento e' voluto da questa card. Allineato a `8.0`.
+
+Secondo giro dopo la correzione: `PASS focused=1/1 regression=79/79
+toolchain=1/1 steps=81/81` — 79 script, 236 test, 20.344 assert, zero
+`[Failed]`, log puliti.
+
+**Lezione operativa:** questa card ha rotto quattro test sparsi in file che non
+nominano Magno (`b09a`, `b18g`, `b18r`, piu' il PRD). Nessun profilo mirato li
+avrebbe trovati tutti: serviva `Full`, che il contratto di progetto richiede
+gia' prima della chiusura di una card.
+
 Nota sul runner: con il working tree pulito il profilo `Relevant` non deriva
 alcun percorso e lo script termina con *"Impossibile associare l'argomento al
 parametro 'Paths' perché è una matrice vuota"*. Serve `-ChangedPath` o

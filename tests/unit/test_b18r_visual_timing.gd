@@ -150,7 +150,7 @@ func _assert_non_interactive_ability_tail(
 		definition.duration_seconds, 0.0, TIMING_FLOAT_TOLERANCE, "B18R non deve aggiungere durata gameplay."
 	)
 	assert_almost_eq(definition.area_radius, 220.0, TIMING_FLOAT_TOLERANCE, "B18R non deve cambiare il raggio.")
-	assert_almost_eq(definition.damage, 20.0, TIMING_FLOAT_TOLERANCE, "B18R non deve cambiare il danno.")
+	assert_almost_eq(definition.damage, 8.0, TIMING_FLOAT_TOLERANCE, "B18R non deve cambiare il danno.")
 
 	var effect := registry.execute_effect(definition, player) as EarthquakeWave
 	var burst := registry.get_last_icon_burst()
