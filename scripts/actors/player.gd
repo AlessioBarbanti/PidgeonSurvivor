@@ -445,6 +445,20 @@ func has_passive_state_outline() -> bool:
 	)
 
 
+## Osservabilita' per lo smoke PS-029: spessore del colore di stato e del
+## bordo di separazione scuro, senza esporre l'intero nodo di disegno.
+func get_passive_state_outline_thickness() -> float:
+	if not is_instance_valid(_passive_state_outline):
+		return 0.0
+	return _passive_state_outline.thickness
+
+
+func get_passive_state_outline_separator_thickness() -> float:
+	if not is_instance_valid(_passive_state_outline):
+		return 0.0
+	return _passive_state_outline.separator_thickness
+
+
 func is_passive_state_outline_presented() -> bool:
 	return (
 		is_instance_valid(_passive_state_outline)

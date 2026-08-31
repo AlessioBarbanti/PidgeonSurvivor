@@ -36,15 +36,21 @@ const MINIMUM_MULTIPLIER := 0.001
 ## Ridipingevano il personaggio: Alea in fase positiva diventava tutta verde.
 ## Ora sono colori opachi disegnati attorno alla sagoma, quindi vanno scelti
 ## saturi e dentro gamma per restare leggibili a densita' alta.
+##
+## PS-029: `OUTLINE_LOLLO_DISTRACTED` e `OUTLINE_MIGI_SHIELD` erano desaturati
+## o quasi identici alla loro controparte (differenza cromatica minima,
+## criterio di accettazione esplicito), quindi si mimetizzavano con lo sfondo
+## arena o l'uno con l'altro. Rifatti piu' saturi e distanti in tonalita' dalla
+## rispettiva fase opposta; le altre coppie avevano gia' contrasto sufficiente.
 const OUTLINE_NEUTRAL := Color(0.0, 0.0, 0.0, 0.0)
 const OUTLINE_ALEO_HOT := Color(1.0, 0.55, 0.18, 1.0)
 const OUTLINE_ALEO_COLD := Color(0.35, 0.78, 1.0, 1.0)
 const OUTLINE_LOLLO_FOCUSED := Color(1.0, 0.88, 0.28, 1.0)
-const OUTLINE_LOLLO_DISTRACTED := Color(0.62, 0.62, 0.72, 1.0)
+const OUTLINE_LOLLO_DISTRACTED := Color(0.30, 0.36, 0.98, 1.0)
 const OUTLINE_ALEA_POSITIVE := Color(0.36, 1.0, 0.52, 1.0)
 const OUTLINE_ALEA_NEGATIVE := Color(1.0, 0.38, 0.42, 1.0)
 const OUTLINE_MIGI_SHELL_READY := Color(0.32, 0.94, 0.84, 1.0)
-const OUTLINE_MIGI_SHIELD := Color(0.16, 1.0, 0.88, 1.0)
+const OUTLINE_MIGI_SHIELD := Color(0.68, 0.32, 1.0, 1.0)
 
 var _run_controller: RunController
 var _player: Player

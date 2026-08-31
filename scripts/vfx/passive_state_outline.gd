@@ -30,10 +30,24 @@ const OFFSET_DIRECTIONS: Array[Vector2] = [
 ## Spessore in unita' locali dello sprite. Lo sprite del cast e' gia' scalato
 ## (scena `1,65` per `visual_scale_multiplier`), quindi il contorno cresce con
 ## il personaggio invece di assottigliarsi.
-@export_range(0.5, 8.0, 0.1) var thickness := 2.0:
+@export_range(0.5, 8.0, 0.1) var thickness := 4.0:
 	set(value):
-		thickness = clampf(value, 0.5, 8.0) if is_finite(value) else 2.0
+		thickness = clampf(value, 0.5, 8.0) if is_finite(value) else 4.0
 		queue_redraw()
+
+## Spessore aggiuntivo di un bordo di separazione scuro, disegnato piu'
+## esterno e sotto al colore di stato (PS-029). Contro sfondi arena, orde
+## dense o nemici dai colori simili al tell, la sola tinta satura puo'
+## mimetizzarsi; il bordo scuro crea un margine di contrasto indipendente
+## dalla combinazione cromatica di sfondo e stato. Valori alzati oltre la
+## prima stima dopo segnalazione diretta del proprietario: la sagoma restava
+## sottile soprattutto su schermo Android.
+@export_range(0.0, 4.0, 0.1) var separator_thickness := 2.0:
+	set(value):
+		separator_thickness = clampf(value, 0.0, 4.0) if is_finite(value) else 2.0
+		queue_redraw()
+
+const SEPARATOR_COLOR := Color(0.04, 0.03, 0.07, 1.0)
 
 var _color := Color(0.0, 0.0, 0.0, 0.0)
 var _sprite: Sprite2D
@@ -137,6 +151,13 @@ func _draw() -> void:
 		-1.0 if _sprite.flip_h else 1.0,
 		-1.0 if _sprite.flip_v else 1.0
 	)
+	# Bordo di separazione scuro, piu' esterno: garantisce contrasto contro
+	# qualunque sfondo prima ancora che intervenga il colore di stato.
+	if separator_thickness > 0.0:
+		var separator_reach := thickness + separator_thickness
+		for direction in OFFSET_DIRECTIONS:
+			draw_set_transform(direction * separator_reach, 0.0, flip_scale)
+			draw_texture(texture, top_left, SEPARATOR_COLOR)
 	for direction in OFFSET_DIRECTIONS:
 		draw_set_transform(direction * thickness, 0.0, flip_scale)
 		draw_texture(texture, top_left, _color)
