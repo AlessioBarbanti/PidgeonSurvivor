@@ -174,21 +174,29 @@ Card: [docs/cards/to_test/PS-008-eventi-di-ondata.md](./cards/to_test/PS-008-eve
 loro validità di design (leggibilità percettiva) non è ancora confermata dal
 proprietario.
 
-## Discrepanza osservata: ricompensa XP del Boss sul percorso `VICTORY`
+## Ricompensa XP del Boss
 
-Durante questa ricognizione è emerso un problema adiacente, fuori
-dall'ambito di sola documentazione di questa card: `first_boss.tres`
-dichiara `experience_reward = 50`, ma `BossDefinition` non espone alcun
-campo con quel nome — il valore è orfano e ignorato al load. La XP reale del
-Boss è impostata direttamente sulla scena
-(`scenes/actors/first_boss.tscn:31`, `experience_amount = 50` di
-`BaseEnemy`). Inoltre `movement_slice.gd:1797` chiama
-`_boss_encounter.get_last_experience_reward()`, un metodo che
-`BossEncounter` non definisce da nessuna parte nel repository. Questa
-chiamata vive sul ramo `RunController.RunState.VICTORY` di
-`_show_terminal_screen()`, ramo oggi **non raggiungibile** in produzione
-(`request_victory()` non è invocato da alcuno script di gioco, solo dai
-test — vedi [systems-difficulty.md](./systems-difficulty.md)): per questo
-non risulta un errore osservato a runtime. Non corretto in questa card
-(nessuna modifica a `scripts/`/`scenes/` è nel suo ambito); segnalato in una
-card dedicata, [PS-039](./cards/to_do/PS-039-api-mancante-vittoria-ricompensa-boss.md).
+Il Boss non passa dallo spawner ordinario, quindi non riceve il drop XP
+automatico di `ExperienceDropper` (riservato ai nemici osservati tramite
+`EnemySpawner.enemy_spawned`, vedi
+[systems-difficulty.md](./systems-difficulty.md)). La ricompensa è concessa
+esplicitamente da `movement_slice._on_boss_defeated_for_experience_reward`
+(collegato al segnale `BossEncounter.boss_defeated`), che legge
+`BaseEnemy.get_experience_reward_value()` sul Boss appena sconfitto
+(`experience_amount = 50` dichiarato sulla scena,
+`scenes/actors/first_boss.tscn:31`, identico per baseline ed Evil perché
+condividono la stessa scena) e la accredita con
+`ExperienceSystem.add_experience()`. Lo stesso valore resta disponibile per
+`EndScreen.show_victory` (ramo `VICTORY`, oggi non raggiungibile in
+produzione — vedi [systems-difficulty.md](./systems-difficulty.md)) tramite
+`_last_boss_experience_reward`, azzerato a ogni restart (PS-039).
+
+**Nota storica.** Prima di PS-039, `BossDefinition` dichiarava un campo
+`experience_reward` da cui questo valore avrebbe dovuto derivare; era già
+orfano (nessuna proprietà con quel nome sulla classe) quando `data/bosses/first_boss.tres`
+lo impostava, e la sua rimozione durante PS-006 aveva lasciato tre test e due
+handler di `movement_slice.gd` a referenziare campi/metodi non più
+esistenti — un regresso silenzioso sul percorso `DEFEAT`, non solo su
+`VICTORY`. Corretto da PS-039: vedi
+[docs/cards/completed/PS-039-api-mancante-vittoria-ricompensa-boss.md](./cards/completed/PS-039-api-mancante-vittoria-ricompensa-boss.md)
+per la cronologia completa.

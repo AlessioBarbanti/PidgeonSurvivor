@@ -1,124 +1,193 @@
 ---
 id: PS-039
-titolo: API mancante su BossEncounter nel ramo VICTORY dell'EndScreen
+titolo: Regressione sulla ricompensa XP del Boss dopo PS-006
 tipo: fix
 area: gameplay
-stato: PRONTO
-priorita: bassa
+stato: IN CORSO
+priorita: alta
 dipende_da: []
 origine:
 creato: 2026-08-31
 aggiornato: 2026-08-31
 ---
 
-# PS-039 — API mancante su `BossEncounter` nel ramo `VICTORY` dell'EndScreen
+# PS-039 — Regressione sulla ricompensa XP del Boss dopo PS-006
 
 ## Contesto
 
 Scoperta durante la ricognizione per PS-038 (documentazione di game design),
-non nel suo ambito perché quella card è di sola documentazione.
+come API mancante isolata sul solo ramo `VICTORY`. Un'indagine più a fondo
+(`git log -p -S "experience_reward"`) ha mostrato che il problema reale è
+molto più ampio di quanto inizialmente descritto: **il criterio originale di
+questa card era sottostimato e viene corretto qui, non riscritto di
+nascosto.**
 
-`scripts/game/movement_slice.gd:1788-1798` (`_show_terminal_screen`), ramo
-`RunController.RunState.VICTORY`:
+Il commit `8d0d108` (`feat(PS-006): dai agli Evil una Signature Ability`) ha
+rimosso da `BossDefinition` il campo
+`@export var experience_reward := 50` e, in `BossEncounter`, il meccanismo
+che lo leggeva (`_last_experience_reward`, `get_last_experience_reward()`,
+la chiamata a `_experience_system.add_experience(...)` in `_on_boss_died`,
+il secondo parametro del segnale `boss_defeated`). Non ha però aggiornato
+tutti i consumatori rimasti:
 
-```gdscript
-RunController.RunState.VICTORY:
-    _end_screen.show_victory(
-        run_time,
-        _boss_encounter.get_last_defeated_title(),
-        _boss_encounter.get_last_experience_reward()
-    )
-```
+1. **`movement_slice.gd:83-84`** (ora `84-85`) collegava
+   `_on_boss_defeated_for_horde_pause(_boss, _experience_reward)` e
+   `_on_boss_defeated_for_barb_reward(_boss, _experience_reward)` — entrambi
+   con due parametri obbligatori senza default — al segnale
+   `boss_defeated(boss)`, ora a un solo argomento. In Godot 4, collegare un
+   metodo con più parametri obbligatori di quelli emessi dal segnale genera
+   un errore a runtime **a ogni singola morte del Boss** (path `DEFEAT`,
+   quindi pienamente raggiungibile in produzione, non solo `VICTORY`).
+2. **`movement_slice.gd:1797`** chiamava
+   `_boss_encounter.get_last_experience_reward()`, metodo non più esistente
+   — ma solo sul ramo `VICTORY`, oggi non raggiungibile in produzione (vedi
+   `docs/systems-difficulty.md`).
+3. **Il Boss non grantiva più alcuna XP al giocatore**: la chiamata a
+   `_experience_system.add_experience(...)` era dentro il blocco rimosso da
+   PS-006 e non aveva un sostituto altrove. Il Boss non passa dallo spawner
+   ordinario, quindi non riceve nemmeno il drop automatico di
+   `ExperienceDropper` riservato ai nemici comuni.
+4. **Tre test referenziavano il campo rimosso** (`definition.experience_reward`
+   / `baseline.experience_reward` su una `BossDefinition` tipizzata, quindi
+   un errore di parsing, non solo un'asserzione rossa):
+   `tests/unit/test_b15_boss_encounter.gd:149`,
+   `tests/unit/test_b16_complete_run.gd:113`,
+   `tests/unit/test_b22_evil_boss_variants.gd:152,184`.
+5. **`data/bosses/first_boss.tres`** dichiarava ancora `experience_reward = 50`,
+   valore dati orfano ignorato al load da quando il campo non esiste più
+   sulla classe.
 
-`BossEncounter` (`scripts/bosses/boss_encounter.gd`) espone
-`get_last_defeated_title()` ma **non** `get_last_experience_reward()`: il
-metodo non esiste in nessun file del repository (verificato via grep su
-`scripts/`). Se questo ramo venisse mai eseguito, la chiamata fallirebbe a
-runtime.
-
-Non è oggi un difetto osservabile: `RunController.request_victory()` non è
-invocato da alcuno script di produzione (solo dai test), quindi lo stato
-`VICTORY` è dormiente nella vertical slice attuale (vedi
-`docs/systems-difficulty.md`). È comunque un'API rotta che romperebbe il
-primo utilizzo reale di `VICTORY`, quando/se una condizione di vittoria
-verrà cablata.
-
-Correlata: `data/bosses/first_boss.tres` dichiara `experience_reward = 50`,
-ma `BossDefinition` non ha alcun campo con quel nome — è un valore dati
-orfano, ignorato al load. La XP reale del Boss viene invece da
-`scenes/actors/first_boss.tscn:31` (`experience_amount = 50` di
-`BaseEnemy`). Non è detto che la soluzione debba passare da
-`BossDefinition`: potrebbe bastare far leggere a `_show_terminal_screen` la
-ricompensa già nota altrove (es. dal segnale `boss_defeated` o da
-`BaseEnemy.get_experience_reward_value()`), invece di aggiungere un metodo
-nuovo a `BossEncounter`.
+Il commit PS-006 dichiara "Verifica: profili Focused (17 test, 1318 assert)
+e Relevant verdi, senza SCRIPT ERROR nei log" — non è stato possibile
+riconciliare questa affermazione con lo stato del codice trovato; non è
+oggetto di questa card stabilire perché, solo correggere lo stato attuale.
 
 ## Comportamento atteso
 
-Il ramo `VICTORY` di `_show_terminal_screen` compila ed esegue senza
-chiamare API inesistenti, mostrando in `EndScreen` una ricompensa XP
-coerente con quella realmente assegnata dal Boss appena sconfitto.
+- Ogni morte del Boss (baseline o Evil) continua a sospendere/riprendere lo
+  spawn ordinario e ad accodare la ricompensa Barb, senza errori a runtime.
+- Ogni morte del Boss assegna al giocatore la stessa quantità di XP
+  dichiarata sulla scena (`experience_amount` di `BaseEnemy`), esattamente
+  come prima della rimozione PS-006 introduceva il regresso.
+- Il ramo `VICTORY` di `_show_terminal_screen` compila ed esegue senza
+  chiamare API inesistenti, mostrando in `EndScreen` la ricompensa XP
+  realmente assegnata dall'ultimo Boss sconfitto.
+- I test Boss tornano a fare riferimento solo a campi/metodi realmente
+  esistenti.
 
 ## Criteri di accettazione
 
-- [ ] `_show_terminal_screen` non chiama più `get_last_experience_reward()`
-      su `BossEncounter` (o il metodo viene aggiunto con un'implementazione
-      reale, a scelta di chi implementa — vedi Note per l'alternativa).
-- [ ] Il valore passato a `EndScreen.show_victory` corrisponde alla
-      ricompensa XP realmente assegnata alla morte dell'ultimo Boss (non un
-      valore fisso o il campo orfano `experience_reward` del `.tres`).
-- [ ] Il ramo `DEFEAT` di `_show_terminal_screen` non cambia comportamento.
-- [ ] Nessuna modifica al valore XP realmente erogato al giocatore: è un fix
-      dell'API di lettura per la UI, non del bilanciamento.
+- [x] `_on_boss_defeated_for_horde_pause` e `_on_boss_defeated_for_barb_reward`
+      hanno la stessa arità del segnale `boss_defeated(boss: FirstBoss)`
+      (un solo parametro): niente più errore "troppo pochi argomenti" a ogni
+      morte del Boss.
+- [x] Il Boss (baseline ed Evil) accredita XP al giocatore alla morte,
+      tramite un nuovo handler dedicato
+      (`_on_boss_defeated_for_experience_reward`) che legge
+      `BaseEnemy.get_experience_reward_value()` sul Boss appena sconfitto e
+      chiama `ExperienceSystem.add_experience()`.
+- [x] `_show_terminal_screen` non chiama più `get_last_experience_reward()`
+      su `BossEncounter`: usa il valore già noto da
+      `_last_boss_experience_reward`, azzerato a ogni `restart_run()`.
+- [x] Il ramo `DEFEAT` di `_show_terminal_screen` non cambia comportamento
+      (nessuna riga toccata in quel ramo).
+- [x] Nessuna modifica al valore XP realmente erogato al giocatore: resta
+      `experience_amount = 50` dichiarato sulla scena, solo la via di lettura
+      cambia.
+- [x] I tre test che referenziavano `experience_reward` su `BossDefinition`
+      sono stati aggiornati per leggere
+      `BaseEnemy.get_experience_reward_value()` invece del campo rimosso.
+- [x] Il campo dati orfano `experience_reward = 50` è stato rimosso da
+      `data/bosses/first_boss.tres` (nessun consumer lo legge più; lasciarlo
+      avrebbe continuato a suggerire una fonte di verità sbagliata).
 
 ## Ambito
 
-- `scripts/game/movement_slice.gd` (`_show_terminal_screen`).
-- `scripts/bosses/boss_encounter.gd`, solo se la soluzione scelta aggiunge
-  un metodo reale invece di leggere il valore da un'altra fonte già
-  disponibile.
+- `scripts/game/movement_slice.gd`: firme dei due handler esistenti, nuovo
+  handler per la ricompensa XP, nuovo campo `_last_boss_experience_reward`,
+  reset al restart, ramo `VICTORY` di `_show_terminal_screen`.
+- `tests/unit/test_b15_boss_encounter.gd`,
+  `tests/unit/test_b16_complete_run.gd`,
+  `tests/unit/test_b22_evil_boss_variants.gd`: sostituita la lettura del
+  campo rimosso con il valore reale letto dal Boss.
+- `data/bosses/first_boss.tres`: rimossa la riga dati orfana.
+- `docs/enemies-bosses.md`: sezione sulla ricompensa XP del Boss aggiornata
+  allo stato post-fix (era stata scritta da PS-038 come segnalazione del
+  problema, non più accurata dopo questo fix).
 
 Non modificare:
 
-- `data/bosses/first_boss.tres` (il campo `experience_reward` orfano può
-  restare tale o essere ripulito in una card a parte se si decide di
-  ricollegarlo a `BossDefinition`; non è richiesto da questa card);
+- `scripts/bosses/boss_encounter.gd`: la firma del segnale `boss_defeated`
+  resta a un solo parametro come l'ha lasciata PS-006; la responsabilità
+  della ricompensa XP resta in `movement_slice.gd`, che già possiede
+  `ExperienceSystem`, invece di reintrodurre quella dipendenza in
+  `BossEncounter`;
 - alcuna probabilità, statistica o pattern Boss;
+- il valore di `experience_amount` sulla scena (resta `50`);
 - lo stato `VICTORY` stesso o le condizioni che lo raggiungono: questa card
-  corregge solo la UI di un ramo già esistente, non introduce una condizione
-  di vittoria.
+  corregge un ramo già esistente, non introduce una condizione di vittoria.
 
 ## Verifica
 
-- Test: nuovo `tests/unit/test_ps039_boss_victory_reward.gd` (o estensione
-  di un test Boss esistente) che invoca `request_victory()` direttamente
-  (come già fanno altri test) e verifica che `_show_terminal_screen` non
-  sollevi errori e che `EndScreen` mostri la ricompensa corretta.
+- Test esistenti aggiornati (non nuovi): `tests/unit/test_b15_boss_encounter.gd`,
+  `tests/unit/test_b16_complete_run.gd`,
+  `tests/unit/test_b22_evil_boss_variants.gd` coprono già la morte del Boss
+  baseline ed Evil, singola e su due run consecutive; con il fix tornano a
+  parsare ed eseguire, verificando la ricompensa XP con il valore reale
+  invece del campo rimosso.
 - Profilo minimo prima della chiusura: `Relevant` con
-  `-FocusedSmoke tests/unit/test_ps039_boss_victory_reward.gd`.
+  `-FocusedSmoke tests/unit/test_b15_boss_encounter.gd`.
+- **Non eseguito in questa sessione**: ambiente Linux senza Godot/PowerShell,
+  il toolchain di verifica del progetto è Windows-only (`docs/setup.md`).
+  Vedi Note.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
+- [ ] Runtime Windows — necessario prima di `COMPLETATO`: nessun Godot
+      disponibile in questa sessione per eseguirlo.
 - [ ] Validazione statica APK — non pertinente, nessuna superficie Android
       specifica.
-- [ ] Runtime fisico Pixel 9 — non richiesto, `VICTORY` resta dormiente in
-      produzione anche dopo il fix.
+- [ ] Runtime fisico Pixel 9 — non richiesto per questo fix (nessuna
+      superficie touch/lifecycle coinvolta).
 - [ ] Controllo percettivo richiesto: no.
 
 ## Decisioni
 
-- **2026-08-31 — Scoperta durante PS-038, aperta come card separata.** La
+- **2026-08-31 — Scoperta durante PS-038, corretta come card separata.** La
   ricognizione per la documentazione di game design non modifica codice: il
-  problema va corretto in una card dedicata invece di allargare PS-038.
+  problema è stato aperto qui invece di allargare PS-038.
+- **2026-08-31 — Criterio originale sottostimato, corretto qui.** La prima
+  stesura di questa card copriva solo il ramo `VICTORY` (priorità bassa,
+  dormiente). L'indagine per implementarla ha mostrato che lo stesso
+  regresso rompe anche il ramo `DEFEAT` a ogni singola morte del Boss
+  (i due handler con arità sbagliata) e azzera silenziosamente la ricompensa
+  XP del Boss in ogni run. Priorità alzata da bassa ad alta di conseguenza.
+- **2026-08-31 — Responsabilità della ricompensa XP resta in
+  `movement_slice.gd`, non reintrodotta in `BossEncounter`.** PS-006 aveva
+  deliberatamente rimosso la dipendenza da `ExperienceSystem` dentro
+  `BossEncounter`; reintrodurla per questo fix avrebbe ampliato la
+  superficie toccata senza necessità, dato che `movement_slice.gd` possiede
+  già entrambi i riferimenti ed è già il punto che ascolta `boss_defeated`.
+- **2026-08-31 — Rimosso il campo dati orfano nel `.tres`.** Lasciarlo
+  avrebbe continuato a suggerire (falsamente) che `BossDefinition` fosse la
+  fonte della ricompensa XP.
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno atteso: correzione interna, nessun contratto pubblico cambia.
+- [x] `docs/enemies-bosses.md` — sezione "Ricompensa XP del Boss" riscritta
+      per descrivere il meccanismo corrente invece della segnalazione del
+      bug.
 
 ## Note
 
-Priorità bassa perché il ramo non è oggi raggiungibile in produzione: non è
-urgente, ma lasciarlo rotto significa che il giorno in cui `VICTORY` verrà
-cablato per davvero, l'EndScreen di vittoria fallirà silenziosamente o con
-`SCRIPT ERROR` al primo utilizzo.
+**Verifica non eseguita.** Il fix è stato implementato e controllato per
+lettura (firme, tipi, punti di connessione, valori attesi), ma non è stato
+lanciato `run-milestone-checks.ps1`: nessun Godot/PowerShell disponibile in
+questo ambiente. Il profilo `Relevant` su Windows resta il gate aperto prima
+di poter chiudere la card `COMPLETATO`.
+
+Priorità alzata da bassa ad alta durante l'implementazione: il regresso
+sul ramo `DEFEAT` (handler con arità sbagliata a ogni morte del Boss) e
+l'azzeramento silenzioso della ricompensa XP del Boss erano entrambi già in
+produzione su `main`, non solo un rischio futuro sul ramo `VICTORY` come
+la stesura iniziale della card lasciava intendere.

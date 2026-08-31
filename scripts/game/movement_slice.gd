@@ -69,6 +69,7 @@ const B22_PHYSICAL_AUTODEFEAT_DELAY_SECONDS := 8.0
 
 var _last_logged_safe_area := Rect2()
 var _last_logged_joystick_rect := Rect2()
+var _last_boss_experience_reward := 0
 
 
 func _ready() -> void:
@@ -82,6 +83,7 @@ func _ready() -> void:
 	_boss_encounter.boss_spawned.connect(_on_boss_spawned_for_horde_pause)
 	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_horde_pause)
 	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_barb_reward)
+	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_experience_reward)
 	_hud.pause_requested.connect(_on_pause_requested)
 	_end_screen.restart_requested.connect(_on_restart_requested)
 	_end_screen.change_character_requested.connect(_on_change_character_requested)
@@ -666,6 +668,7 @@ func restart_run(seed_value: int = 0) -> bool:
 	_input_router.suspend_input()
 	_player.clear_movement_input()
 	_end_screen.hide_end_screen()
+	_last_boss_experience_reward = 0
 	if not _run_controller.restart_run(next_seed):
 		_show_terminal_screen(
 			_run_controller.get_state(),
@@ -1759,15 +1762,25 @@ func _on_boss_spawned_for_horde_pause(_boss: FirstBoss, _schedule_index: int) ->
 	_enemy_spawner.set_ordinary_spawn_suspended(true)
 
 
-func _on_boss_defeated_for_horde_pause(_boss: FirstBoss, _experience_reward: int) -> void:
+func _on_boss_defeated_for_horde_pause(_boss: FirstBoss) -> void:
 	_enemy_spawner.set_ordinary_spawn_suspended(false)
 
 
 ## La ricompensa Boss (PS-012) resta accodata da UpgradeService se la run e'
 ## gia' entrata in LEVEL_UP nello stesso frame (XP del Boss che fa salire di
 ## livello): riparte da sola non appena lo stato torna RUNNING.
-func _on_boss_defeated_for_barb_reward(_boss: FirstBoss, _experience_reward: int) -> void:
+func _on_boss_defeated_for_barb_reward(_boss: FirstBoss) -> void:
 	_upgrade_service.queue_barb_reward()
+
+
+## PS-039: la ricompensa XP del Boss non passa da EnemySpawner/ExperienceDropper
+## (il Boss non e' mai spawnato dallo spawner ordinario), quindi va concessa qui
+## esplicitamente invece di affidarsi al drop automatico dei nemici comuni.
+func _on_boss_defeated_for_experience_reward(boss: FirstBoss) -> void:
+	var reward := int(boss.get_experience_reward_value())
+	_last_boss_experience_reward = reward
+	if reward > 0:
+		_experience_system.add_experience(reward)
 
 
 ## Tell del Sesto Senso Equino di Bea (B45): la passiva non conosce nodi
@@ -1794,7 +1807,7 @@ func _show_terminal_screen(
 			_end_screen.show_victory(
 				run_time,
 				_boss_encounter.get_last_defeated_title(),
-				_boss_encounter.get_last_experience_reward()
+				_last_boss_experience_reward
 			)
 		RunController.RunState.DEFEAT:
 			_end_screen.show_defeat(run_time)

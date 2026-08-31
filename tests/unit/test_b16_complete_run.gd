@@ -103,6 +103,7 @@ func _run_one_cycle(
 		"La run deve contenere proiettili Boss da ripulire."
 	)
 	var boss_health := boss.get_health_component()
+	var expected_reward := int(boss.get_experience_reward_value())
 	assert_true(
 		boss.take_damage(boss_health.health_current), "Il Boss deve morire nella run %d." % (run_index + 1)
 	)
@@ -110,7 +111,7 @@ func _run_one_cycle(
 		controller.is_terminal(), "La morte del Boss non deve piu' chiudere la run %d (B33)." % (run_index + 1)
 	)
 	assert_eq(
-		experience.experience_total, definition.experience_reward,
+		experience.experience_total, expected_reward,
 		"La ricompensa Boss deve essere atomica in ogni run."
 	)
 	assert_true(experience.pending_level_ups > 0, "La ricompensa deve conservare i level-up maturati.")

@@ -18,7 +18,6 @@ health_max = 2400.0
 move_speed = 85.0
 collision_radius = 46.0
 contact_damage = 25.0
-experience_reward = 50
 initial_attack_delay = 1.5
 pattern_interval = 2.5
 radial_telegraph_duration = 0.75

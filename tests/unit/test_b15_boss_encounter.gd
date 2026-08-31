@@ -139,6 +139,7 @@ func test_composed_encounter() -> void:
 	)
 
 	var health_before_hit := boss_health.health_current
+	var expected_reward := int(boss.get_experience_reward_value())
 	assert_true(boss.take_damage(100.0), "Il Boss deve ricevere danno dai sistemi condivisi.")
 	assert_almost_eq(
 		boss_health.health_current, health_before_hit - 100.0, FLOAT_TOLERANCE, "Il Boss deve applicare il danno tramite HealthComponent."
@@ -146,7 +147,7 @@ func test_composed_encounter() -> void:
 	assert_true(boss.take_damage(boss_health.health_current), "Il danno letale deve concludere il Boss una sola volta.")
 	assert_true(not controller.is_terminal(), "La morte del primo Boss non deve piu' chiudere la run (B33).")
 	assert_true(
-		experience.experience_total == definition.experience_reward, "La morte del Boss deve assegnare la ricompensa XP una sola volta."
+		experience.experience_total == expected_reward, "La morte del Boss deve assegnare la ricompensa XP una sola volta."
 	)
 	assert_true(not end_screen.visible, "La morte del Boss non deve mostrare EndScreen (B33).")
 
