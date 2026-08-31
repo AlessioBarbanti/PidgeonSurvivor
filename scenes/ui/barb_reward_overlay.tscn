@@ -1,7 +1,38 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/barb_reward_overlay.gd" id="1_overlay"]
 [ext_resource type="PackedScene" path="res://scenes/ui/upgrade_card.tscn" id="2_card"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/barb_reward/generated/barb_portrait.png" id="3_portrait"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_header"]
+bg_color = Color(0.105, 0.025, 0.014, 0.98)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.86, 0.49, 0.12, 0.94)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0.02, 0.005, 0.002, 0.8)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mode"]
+bg_color = Color(0.25, 0.065, 0.02, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.96, 0.55, 0.12, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 12.0
+content_margin_top = 3.0
+content_margin_right = 12.0
+content_margin_bottom = 3.0
 
 [node name="BarbRewardOverlay" type="Control"]
 process_mode = 3
@@ -43,25 +74,74 @@ theme_override_constants/margin_bottom = 16
 [node name="Layout" type="VBoxContainer" parent="SafeMargins"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 10
 
-[node name="TitleLabel" type="Label" parent="SafeMargins/Layout"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 43)
+[node name="HeaderPanel" type="PanelContainer" parent="SafeMargins/Layout"]
+custom_minimum_size = Vector2(0, 148)
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.35, 0.55, 1)
-theme_type_variation = &"TitleL"
-text = "LE SPECIALITÀ DI BARB"
+theme_override_styles/panel = SubResource("StyleBoxFlat_header")
+
+[node name="HeaderContent" type="Control" parent="SafeMargins/Layout/HeaderPanel"]
+custom_minimum_size = Vector2(0, 142)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="BarbPortrait" type="TextureRect" parent="SafeMargins/Layout/HeaderPanel/HeaderContent"]
+unique_name_in_owner = true
+z_index = 2
+layout_mode = 0
+offset_left = 6.0
+offset_top = -7.0
+offset_right = 184.0
+offset_bottom = 143.0
+mouse_filter = 2
+texture = ExtResource("3_portrait")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TextMargins" type="MarginContainer" parent="SafeMargins/Layout/HeaderPanel/HeaderContent"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 190
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 190
+theme_override_constants/margin_bottom = 8
+
+[node name="HeaderText" type="VBoxContainer" parent="SafeMargins/Layout/HeaderPanel/HeaderContent/TextMargins"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="ModeCenter" type="CenterContainer" parent="SafeMargins/Layout/HeaderPanel/HeaderContent/TextMargins/HeaderText"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ModeLabel" type="Label" parent="SafeMargins/Layout/HeaderPanel/HeaderContent/TextMargins/HeaderText/ModeCenter"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.72, 0.24, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_mode")
+theme_type_variation = &"TitleXS"
+text = "NUOVA SPECIALITÀ"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="SubtitleLabel" type="Label" parent="SafeMargins/Layout"]
+[node name="TitleLabel" type="Label" parent="SafeMargins/Layout/HeaderPanel/HeaderContent/TextMargins/HeaderText"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 28)
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 mouse_filter = 2
-text = "Ricompensa Boss: scegli la Specialità da sbloccare"
+theme_override_colors/font_color = Color(1, 0.83, 0.38, 1)
+theme_type_variation = &"TitleL"
+text = "LE SPECIALITÀ DI BARB"
 horizontal_alignment = 1
 vertical_alignment = 1
 

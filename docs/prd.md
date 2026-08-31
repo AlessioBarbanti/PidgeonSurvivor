@@ -127,6 +127,14 @@ selezioni upgrade bonus consecutive tramite lo stesso pool e le stesse regole
 del level-up, senza avanzare livello o XP. Restart e cambio personaggio
 azzerano tutti gli sblocchi.
 
+La ricompensa usa una variante visiva dedicata della selezione a tre carte:
+header caldo con caricatura pixel-art di Barb e badge `NUOVA SPECIALITÀ`, più
+bordo oro/arancio sulle vere Specialità. Quando il catalogo è esaurito, la
+stessa cornice e caricatura restano presenti ma titolo e badge diventano
+`IL PREMIO DI BARB` / `RICOMPENSA BONUS` e le carte tornano al trattamento
+freddo del level-up normale. Questa distinzione è solo presentativa: focus,
+input, lock anti-tap, offerta e assegnazione dei rank restano invariati.
+
 ### 3.4. Sistema delle abilità attive
 
 Ogni personaggio ha una sola abilità attiva assegnata dalla propria definizione.

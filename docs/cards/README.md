@@ -52,3 +52,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-023](./to_test/PS-023-runner-verifica-affidabile.md) | Rendere leggibile e non bloccante il runner di verifica | chore | tooling | IN VERIFICA | alta | — |
 | [PS-030](./to_do/PS-030-runner-crash-su-test-eliminato.md) | Correggi il crash del runner quando un test viene eliminato | fix | tooling | PRONTO | media | — |
 | [PS-033](./to_test/PS-033-riquadro-vita-boss-minimale-floating.md) | Eliminare l'HUD dedicata del Boss, vita solo overhead | ux | ui | IN VERIFICA | media | — |
+| [PS-036](./to_test/PS-036-Barb-specialities-ux-enhance.md) | Rendi distinta la schermata delle Specialità di Barb | ux | ui | IN VERIFICA | media | — |

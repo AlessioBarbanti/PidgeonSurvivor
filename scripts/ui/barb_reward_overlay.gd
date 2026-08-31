@@ -9,7 +9,8 @@ const MAX_CARD_COUNT := 3
 const SELECTION_LOCK_SECONDS := 0.45
 
 @onready var _title_label: Label = %TitleLabel
-@onready var _subtitle_label: Label = %SubtitleLabel
+@onready var _mode_label: Label = %ModeLabel
+@onready var _portrait: TextureRect = %BarbPortrait
 @onready var _cards: Array[UpgradeCard] = [
 	%BarbCard1,
 	%BarbCard2,
@@ -88,6 +89,7 @@ func hide_offer() -> void:
 	visible = false
 	if is_node_ready():
 		for card in _cards:
+			card.set_speciality_treatment(false)
 			card.clear_card()
 			card.visible = true
 	_restore_touch_joystick()
@@ -131,8 +133,12 @@ func get_title_text() -> String:
 	return _title_label.text if is_instance_valid(_title_label) else ""
 
 
-func get_subtitle_text() -> String:
-	return _subtitle_label.text if is_instance_valid(_subtitle_label) else ""
+func get_mode_text() -> String:
+	return _mode_label.text if is_instance_valid(_mode_label) else ""
+
+
+func get_portrait_texture() -> Texture2D:
+	return _portrait.texture if is_instance_valid(_portrait) else null
 
 
 func get_focused_card_index() -> int:
@@ -205,14 +211,15 @@ func _unhandled_input(event: InputEvent) -> void:
 func _show_offer(
 	offers: Array[UpgradeDefinition],
 	is_bonus: bool,
-	bonus_index: int,
-	bonus_total: int
+	_bonus_index: int,
+	_bonus_total: int
 ) -> void:
 	if offers.is_empty() or offers.size() > MAX_CARD_COUNT or not is_instance_valid(_upgrade_service):
 		hide_offer()
 		return
 
 	for index in MAX_CARD_COUNT:
+		_cards[index].set_speciality_treatment(not is_bonus)
 		if index < offers.size():
 			var definition := offers[index]
 			if not _cards[index].configure(
@@ -229,12 +236,12 @@ func _show_offer(
 
 	_active_card_count = offers.size()
 	_is_bonus_mode = is_bonus
-	_title_label.text = "LE SPECIALITÀ DI BARB"
-	_subtitle_label.text = (
-		"Tutte le Specialità sono sbloccate  •  potenziamento bonus %d/%d" % [bonus_index, bonus_total]
-		if is_bonus
-		else "Ricompensa Boss: scegli la Specialità da sbloccare"
+	_mode_label.text = "RICOMPENSA BONUS" if is_bonus else "NUOVA SPECIALITÀ"
+	_mode_label.add_theme_color_override(
+		&"font_color",
+		Color(0.76, 0.84, 0.92, 1.0) if is_bonus else Color(1.0, 0.72, 0.24, 1.0)
 	)
+	_title_label.text = "IL PREMIO DI BARB" if is_bonus else "LE SPECIALITÀ DI BARB"
 	_hide_touch_joystick()
 	visible = true
 	_accepting_selection = true

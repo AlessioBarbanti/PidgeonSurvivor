@@ -236,6 +236,17 @@
     },
     {
       "patterns": [
+        "scripts/ui/barb_reward_overlay.gd",
+        "scripts/ui/upgrade_card.gd",
+        "scenes/ui/barb_reward_overlay.tscn",
+        "assets/art/ui/barb_reward/*"
+      ],
+      "smokes": [
+        "tests/unit/test_ps036_barb_reward_visual_identity.gd"
+      ]
+    },
+    {
+      "patterns": [
         "scripts/ui/*",
         "scenes/ui/*",
         "assets/art/ui/*",
@@ -253,7 +264,8 @@
         "tests/unit/test_typography.gd",
         "tests/unit/test_ps005_boss_warning.gd",
         "tests/unit/test_ps012_barb_specialities.gd",
-        "tests/unit/test_ps008_wave_events.gd"
+        "tests/unit/test_ps008_wave_events.gd",
+        "tests/unit/test_ps036_barb_reward_visual_identity.gd"
       ]
     },
     {

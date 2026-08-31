@@ -12,9 +12,12 @@ signal upgrade_chosen(upgrade_id: StringName)
 
 var _definition: UpgradeDefinition
 var _offer_index := -1
+var _speciality_treatment := false
+var _base_styles: Dictionary[StringName, StyleBox] = {}
 
 
 func _ready() -> void:
+	_cache_base_styles()
 	pressed.connect(_on_pressed)
 	clear_card()
 
@@ -71,6 +74,17 @@ func get_offer_index() -> int:
 	return _offer_index
 
 
+func set_speciality_treatment(enabled: bool) -> void:
+	_speciality_treatment = enabled
+	if not is_node_ready():
+		return
+	_apply_visual_treatment()
+
+
+func is_speciality_treatment_enabled() -> bool:
+	return _speciality_treatment
+
+
 func get_title_text() -> String:
 	return _title_label.text if is_instance_valid(_title_label) else ""
 
@@ -100,6 +114,51 @@ func _build_tooltip(definition: UpgradeDefinition) -> String:
 	if summary.is_empty():
 		return "%s: %s" % [definition.title, definition.description]
 	return "%s: %s\n%s" % [definition.title, definition.description, summary]
+
+
+func _cache_base_styles() -> void:
+	for style_name in [&"normal", &"hover", &"pressed", &"focus", &"disabled"]:
+		var style := get_theme_stylebox(style_name)
+		if style != null:
+			_base_styles[style_name] = style
+
+
+func _apply_visual_treatment() -> void:
+	if not _speciality_treatment:
+		for style_name in _base_styles:
+			add_theme_stylebox_override(style_name, _base_styles[style_name])
+		return
+
+	add_theme_stylebox_override(
+		&"normal",
+		_make_speciality_style(Color(0.105, 0.037, 0.019, 0.99), Color(0.90, 0.48, 0.10, 1.0), 4)
+	)
+	add_theme_stylebox_override(
+		&"hover",
+		_make_speciality_style(Color(0.15, 0.055, 0.022, 1.0), Color(1.0, 0.68, 0.18, 1.0), 4)
+	)
+	add_theme_stylebox_override(
+		&"pressed",
+		_make_speciality_style(Color(0.22, 0.075, 0.022, 1.0), Color(1.0, 0.86, 0.42, 1.0), 5)
+	)
+	var focus_style := _make_speciality_style(Color.TRANSPARENT, Color(1.0, 0.86, 0.28, 1.0), 6)
+	focus_style.draw_center = false
+	add_theme_stylebox_override(&"focus", focus_style)
+	add_theme_stylebox_override(
+		&"disabled",
+		_make_speciality_style(Color(0.075, 0.027, 0.018, 0.98), Color(0.63, 0.34, 0.10, 0.92), 4)
+	)
+
+
+func _make_speciality_style(background: Color, border: Color, width: int) -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = background
+	style.border_color = border
+	style.set_border_width_all(width)
+	style.set_corner_radius_all(18)
+	style.border_blend = true
+	style.anti_aliasing = false
+	return style
 
 
 func _on_pressed() -> void:
