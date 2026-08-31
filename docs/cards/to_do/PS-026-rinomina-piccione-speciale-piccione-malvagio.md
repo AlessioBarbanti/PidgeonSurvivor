@@ -3,12 +3,12 @@ id: PS-026
 titolo: Rinomina Piccione Speciale in Piccione Malvagio
 tipo: chore
 area: gameplay
-stato: PRONTO
+stato: IN CORSO
 priorita: media
 dipende_da: []
 origine: B22
 creato: 2026-08-30
-aggiornato: 2026-08-30
+aggiornato: 2026-08-31
 ---
 
 # PS-026 — Rinomina Piccione Speciale in Piccione Malvagio
@@ -29,13 +29,35 @@ Le varianti `Evil <Nome>` restano invariate.
 
 ## Criteri di accettazione
 
-- [ ] La Boss Intro mostra `Piccione Malvagio` per il Boss baseline.
+- [ ] La Boss Intro mostra `Piccione Malvagio` per il Boss baseline. Implementato
+      (`data/bosses/first_boss.tres:13` + `get_safe_title()`) e coperto dal
+      nuovo test `tests/unit/test_ps026_boss_baseline_display_name.gd`; non
+      spuntato perché il profilo `Focused`/`Relevant` di
+      `run-milestone-checks.ps1` non è eseguibile in questo ambiente (nessun
+      Godot/PowerShell disponibile), quindi resta da eseguire su Windows.
 - [ ] Ogni altra UI runtime che mostra il nome del Boss baseline usa `Piccione Malvagio`.
-- [ ] Nessun testo pubblico runtime mostra ancora `Piccione Speciale`.
-- [ ] Le controparti `Evil <Nome>` conservano i propri nomi.
-- [ ] Il cambio di nome non modifica statistiche, sprite, hitbox, pattern o probabilità di selezione del Boss.
-- [ ] Gli ID tecnici e i path non vengono rinominati senza una necessità esplicita.
-- [ ] Restart e selezione seedata dei Boss restano invariati.
+      `get_safe_title()` è l'unico punto che alimenta Boss Intro ed EndScreen
+      (`scripts/bosses/boss_definition.gd:63-66`, `scripts/bosses/boss_encounter.gd:439`,
+      `scripts/ui/end_screen.gd:31-39`); non spuntato per lo stesso motivo del
+      criterio precedente.
+- [ ] Nessun testo pubblico runtime mostra ancora `Piccione Speciale`. Grep di
+      repository conferma zero occorrenze runtime residue dopo la modifica;
+      non spuntato perché non ho potuto eseguire il gioco per un controllo a
+      schermo.
+- [x] Le controparti `Evil <Nome>` conservano i propri nomi. Non toccate:
+      restano derivate da `FriendDefinition.evil_display_name`
+      (`scripts/content/friend_definition.gd:47,233-237`), indipendenti dal
+      titolo del Boss baseline.
+- [x] Il cambio di nome non modifica statistiche, sprite, hitbox, pattern o
+      probabilità di selezione del Boss. Unica riga toccata in
+      `first_boss.tres` è `title`; `evil_boss_chance` resta `0.25`
+      (`scripts/bosses/boss_encounter.gd:22`, invariato).
+- [x] Gli ID tecnici e i path non vengono rinominati senza una necessità
+      esplicita. `id = &"special_pigeon"` invariato.
+- [ ] Restart e selezione seedata dei Boss restano invariati. Nessuna modifica
+      a `resolve_variant`/`resolve_definition_for_event`; non spuntato perché
+      manca l'esecuzione reale della suite `test_b22_evil_boss_variants.gd` in
+      questo ambiente.
 
 ## Ambito
 
@@ -54,8 +76,15 @@ Non modificare:
 
 ## Verifica
 
-- Smoke: `tests/integration/_evil_pigeon_name_smoke.gd` → marker `EVIL_PIGEON_NAME_SMOKE_OK`
-- Profilo minimo prima della chiusura: `Relevant`
+- Test: `tests/unit/test_ps026_boss_baseline_display_name.gd` (`extends
+  GutGameplayTest`). La card indicava originariamente uno smoke a script
+  `SceneTree` con marker `EVIL_PIGEON_NAME_SMOKE_OK`: quel contratto non
+  esiste più (vedi `docs/verification-workflow.md`, tutti i test vivono in
+  `tests/unit/test_*.gd` con report GUT), quindi la formulazione è corretta
+  qui invece di crearne uno stile obsoleto.
+- Profilo minimo prima della chiusura: `Relevant` con
+  `-FocusedSmoke tests/unit/test_ps026_boss_baseline_display_name.gd`
+  (non ancora eseguito, vedi Note).
 
 ## Gate manuali
 
@@ -68,13 +97,43 @@ Non modificare:
 
 - **2026-08-30 — Il Boss baseline si chiama pubblicamente `Piccione Malvagio`.** Il precedente nome `Piccione Speciale` viene rimosso dal copy rivolto al giocatore.
 - **Sostituisce:** nome pubblico `Piccione Speciale`.
+- **2026-08-31 — Unico punto di verità del nome pubblico.** Il nome vive solo
+  in `data/bosses/first_boss.tres:title`; Boss Intro ed EndScreen lo leggono
+  entrambi tramite `BossDefinition.get_safe_title()`, quindi una modifica
+  localizzata basta senza toccare `boss_ui.gd` o `end_screen.gd`.
+- **2026-08-31 — Confine sui test esistenti.** Ho corretto solo l'asserzione
+  di `tests/unit/test_b17_friend_content.gd` che confrontava letteralmente il
+  titolo pubblico (`get_safe_title() == "PICCIONE SPECIALE"`). I messaggi di
+  asserzione in `test_b22_evil_boss_variants.gd`, `test_b30_boss_no_circular_aura.gd`
+  e i due controlli interni in `scripts/game/movement_slice.gd:1059,1676` usano
+  "piccione speciale" come prosa descrittiva interna, non come copy pubblico:
+  restano invariati per non allargare la card oltre il nome mostrato al
+  giocatore.
+- **2026-08-31 — Verifica automatica corretta ma non eseguita.** La card
+  citava un contratto a smoke `SceneTree` con marker, ormai sostituito da GUT
+  (`docs/verification-workflow.md`). Ho scritto il test GUT corretto ma non
+  ho potuto lanciare `run-milestone-checks.ps1` in questa sessione: l'ambiente
+  è Linux senza Godot né PowerShell, mentre il toolchain di verifica del
+  progetto è Windows-only (`docs/setup.md`).
 
 ## Documenti sincronizzati
 
-- [ ] `prd.md`, se contiene il nome pubblico precedente.
-- [ ] `content-approvals.md`, se il nome del Boss baseline è registrato nel catalogo approvato.
-- [ ] Nota `*-verification.md`, se sono state prodotte nuove evidenze.
+- [x] `prd.md`: sostituite le tre occorrenze di "piccione speciale" con
+  "piccione malvagio" (§3.5A, §3.6).
+- [x] `content-approvals.md`: il file non esiste nel repository, nessuna
+  sincronizzazione necessaria.
+- [ ] Nota `*-verification.md`: nessuna nuova nota di verifica creata, in
+  linea con le altre card PS-0xx che non ne aprono una dedicata; le evidenze
+  restano in questa card.
 
 ## Note
 
 Preferire un cambio di contenuto localizzato. Non rinominare automaticamente file e ID storici solo per uniformarli al nuovo copy.
+
+**Stato aperto (2026-08-31).** Implementazione e sincronizzazione doc
+completate; nessun gate automatico o manuale è stato eseguito in questa
+sessione per assenza del toolchain Windows/Godot. Prima di portare la card a
+`COMPLETATO` serve: `Relevant` (poi `Full`/`Release` se la card lo richiede)
+su Windows con
+`-FocusedSmoke tests/unit/test_ps026_boss_baseline_display_name.gd`, più i
+gate manuali elencati sopra.

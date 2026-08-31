@@ -10,7 +10,7 @@ region = Rect2(0, 0, 48, 48)
 [resource]
 script = ExtResource("1_boss_definition")
 id = &"special_pigeon"
-title = "PICCIONE SPECIALE"
+title = "PICCIONE MALVAGIO"
 quote = "Citazione personale in attesa di approvazione."
 quote_approved = false
 safe_quote_placeholder = "Qualcuno ha sentito profumo di griglia."

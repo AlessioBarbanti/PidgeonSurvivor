@@ -319,10 +319,10 @@ proiettili, offerte, XP, cooldown ed effetti appartenenti alla run precedente.
 ### 3.5A. Evoluzioni prima del packaging finale: Boss Evil e Difesa Grigliata
 
 Prima del packaging finale B20, il Boss di riferimento diventa il piccione
-speciale B18H. B22 aggiunge una sostituzione configurabile, con probabilità
-iniziale `25%` e
+malvagio B18H. B22 aggiunge una sostituzione configurabile, con probabilità
+iniziale `50%` (PS-037, in origine `25%`) e
 scelta deterministica da seed della run più indice della soglia: al posto del
-piccione speciale può apparire un `Evil <Nome>` estratto casualmente dagli otto
+piccione malvagio può apparire un `Evil <Nome>` estratto casualmente dagli otto
 profili. In questa
 prima versione Evil riusa lo sprite del relativo Player con palette viola scura
 e accenti magenta ad alto contrasto; mantiene statistiche, hitbox e i due
@@ -346,7 +346,7 @@ restano. Regole comuni delle Signature:
   congelano, mentre morte del Boss e restart eliminano aree, scie, cloni,
   telegraph e rallentamenti imposti al Player.
 
-Il piccione speciale baseline non ha Signature e resta sui due soli pattern
+Il piccione malvagio baseline non ha Signature e resta sui due soli pattern
 comuni.
 
 B23 introduce una seconda modalità, **Difesa Grigliata**, accanto alla
@@ -371,7 +371,7 @@ Marghe. Ogni profilo dichiara in un `FriendDefinition` identità, ruolo, passiva
 parametri runtime della passiva, attiva, ID abilità, ritratto sostituibile e la
 controparte Boss denominata `Evil <Nome>`. Il Player della vertical slice M4 è
 Magno; B17A rende selezionabili e giocabili tutti gli otto profili prima della
-run. Da B22 ogni incontro parte dal piccione speciale baseline e può risolversi
+run. Da B22 ogni incontro parte dal piccione malvagio baseline e può risolversi
 in uno degli otto Evil secondo probabilità dati e seed della run.
 
 Una welcome screen precede la selezione e non inizializza alcuna run. `GIOCA`
