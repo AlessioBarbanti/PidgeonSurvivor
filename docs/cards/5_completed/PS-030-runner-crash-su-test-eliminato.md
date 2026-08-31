@@ -3,7 +3,7 @@ id: PS-030
 titolo: Correggi il crash del runner quando un test viene eliminato
 tipo: fix
 area: tooling
-stato: IN CORSO
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
@@ -47,13 +47,13 @@ nel modo leggibile già in uso per gli altri casi (vedi
 
 ## Criteri di accettazione
 
-- [ ] Eliminare un file `tests/**/test_*.gd` tracciato da git e rilanciare il
+- [x] Eliminare un file `tests/**/test_*.gd` tracciato da git e rilanciare il
       profilo `Relevant` (senza `-ChangedPath` esplicito) non produce
       `runner-fatal.log` né un'eccezione .NET non gestita.
-- [ ] Il file cancellato non compare nel set "focused"/regressione della corsa.
-- [ ] Modificare (non cancellare) un file di test esistente continua a
+- [x] Il file cancellato non compare nel set "focused"/regressione della corsa.
+- [x] Modificare (non cancellare) un file di test esistente continua a
       inserirlo nel set "focused" come oggi.
-- [ ] Nessuna regressione sul comportamento per path runtime non mappati
+- [x] Nessuna regressione sul comportamento per path runtime non mappati
       (fallback `run_all`) né sulla cache dei batch `PASS`.
 
 ## Ambito
@@ -78,13 +78,18 @@ Non modificare:
   equivalente) e verifica che non lanci eccezioni e che il path non compaia nel
   set risultante.
 - Profilo minimo prima della chiusura: `Relevant`
+- **2026-08-31 — contratto tooling PASS su Windows**:
+  `tests/tooling/_milestone_runner_contract.ps1` ha restituito
+  `MILESTONE_RUNNER_CONTRACT_OK`. Su richiesta del proprietario non è stato
+  rilanciato un profilo GUT ridondante, poiché la card modifica solo il piano
+  PowerShell e non il runtime di gioco.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: non applicabile, tooling PowerShell)
-- [ ] Controllo percettivo richiesto: no
+- [x] Runtime Windows: non richiesto, tooling PowerShell.
+- [x] Validazione statica APK: non richiesta.
+- [x] Runtime fisico Pixel 9: non richiesto, tooling PowerShell.
+- [x] Controllo percettivo richiesto: no.
 
 ## Decisioni
 
@@ -103,8 +108,8 @@ Non modificare:
 
 ## Documenti sincronizzati
 
-- [ ] `docs/verification-workflow.md`, se il comportamento documentato per i
-      path non mappati o per la selezione `Relevant` cambia.
+- [x] `docs/verification-workflow.md`: nessun aggiornamento richiesto; il
+      comportamento documentato dei path esistenti e non mappati non cambia.
 
 ## Note
 
@@ -115,12 +120,6 @@ Riproduzione minima: da un branch con almeno un test tracciato,
 `System.Management.Automation.PropertyNotFoundException` o
 `File non trovato: ...` a seconda del punto della pipeline raggiunto.
 
-**Verifica non eseguita.** Il fix è stato implementato in
-`Find-RelevantSmokes` (`tools/run-milestone-checks.ps1`) e coperto da un nuovo
-caso in `tests/tooling/_milestone_runner_contract.ps1` (path di test
-inesistente passato come `-ChangedPath`, deve restare fuori da
-`regression_smokes`), ma nessuno dei due è stato eseguito: questa sessione
-remota non ha PowerShell né `pwsh` disponibili. Nessun criterio di
-accettazione è stato spuntato per questo motivo. Chi riprende la card con
-accesso a PowerShell deve lanciare `tests/tooling/_milestone_runner_contract.ps1`
-e il profilo `Relevant` prima di chiudere.
+**Chiusura 2026-08-31.** Il fix era già presente nel commit `4709d5e`. Il
+contratto PowerShell dedicato è verde; il filtro `Test-Path` agisce solo sui
+test cancellati e lascia invariati diff riportato, fallback runtime e cache.
