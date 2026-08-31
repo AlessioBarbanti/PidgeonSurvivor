@@ -16,6 +16,10 @@ contratti a memoria: leggili.
 | [docs/prd.md](docs/prd.md) | Contratti di prodotto |
 | [docs/characters.md](docs/characters.md) | Catalogo corrente dei personaggi |
 | [docs/powerup-catalog.md](docs/powerup-catalog.md) | Catalogo corrente dei powerup |
+| [docs/enemies-bosses.md](docs/enemies-bosses.md) | Catalogo corrente di nemici e sistema Boss |
+| [docs/systems-difficulty.md](docs/systems-difficulty.md) | Stato corrente di loop di run, spawn e curva di difficoltà |
+| [docs/ui-ux-flow.md](docs/ui-ux-flow.md) | Stato corrente del flusso schermate, HUD e input |
+| [docs/visual-audio-identity.md](docs/visual-audio-identity.md) | Stato corrente di identità visiva e audio |
 | [docs/verification-workflow.md](docs/verification-workflow.md) | Contratto dei profili del runner di verifica |
 | [docs/setup.md](docs/setup.md) | Toolchain, variabili locali, export, manifest asset |
 | `docs/b*-verification.md` | Evidenze per milestone |
