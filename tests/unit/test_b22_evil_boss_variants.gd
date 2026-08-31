@@ -76,14 +76,14 @@ func test_evil_boss_resolver_contract() -> void:
 		"Seed e indice soglia uguali devono risolvere lo stesso Evil."
 	)
 
-	encounter.evil_boss_chance = 0.25
+	encounter.evil_boss_chance = 0.5
 	var evil_count := 0
 	for seed_value in range(1, 401):
 		if encounter.resolve_definition_for_event(seed_value, 0).is_evil_variant():
 			evil_count += 1
 	assert_true(
-		evil_count >= 70 and evil_count <= 130,
-		"Il default 25% deve produrre una distribuzione plausibile e deterministica."
+		evil_count >= 160 and evil_count <= 240,
+		"Il default 50% (PS-037) deve produrre una distribuzione plausibile e deterministica."
 	)
 
 	controller.prepare_restart()
