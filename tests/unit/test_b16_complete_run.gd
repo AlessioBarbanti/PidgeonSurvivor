@@ -169,5 +169,4 @@ func _run_one_cycle(
 	assert_eq(movement_slice.get_pickup_parent().get_child_count(), 0, "Nessun pickup deve restare.")
 	assert_null(encounter.get_active_boss(), "Nessun Boss deve restare dopo il restart.")
 	assert_false(boss_ui.is_intro_visible(), "Il restart deve nascondere l'intro.")
-	assert_false(boss_ui.is_boss_health_visible(), "Il restart deve nascondere gli HP Boss.")
 	assert_false(end_screen.visible, "Il restart deve nascondere EndScreen.")

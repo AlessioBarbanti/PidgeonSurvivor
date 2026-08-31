@@ -320,11 +320,6 @@ func _is_dynamic_joystick_origin_valid(viewport_position: Vector2) -> bool:
 		return false
 	if _hud.is_touch_origin_excluded(viewport_position):
 		return false
-	if (
-		_boss_ui.is_boss_health_visible()
-		and _boss_ui.get_boss_health_panel_rect().has_point(viewport_position)
-	):
-		return false
 	return not (
 		_upgrade_overlay.visible
 		or _barb_reward_overlay.visible
@@ -1071,7 +1066,7 @@ func _validate_current_contract() -> bool:
 				failures.append("La citazione Boss non approvata deve usare il placeholder sicuro.")
 	if _boss_ui == null:
 		failures.append("BossUI non presente.")
-	elif _boss_ui.is_intro_visible() or _boss_ui.is_boss_health_visible():
+	elif _boss_ui.is_intro_visible():
 		failures.append("BossUI deve essere nascosta prima della soglia Boss.")
 	if _platform_lifecycle == null:
 		failures.append("PlatformLifecycle non presente.")

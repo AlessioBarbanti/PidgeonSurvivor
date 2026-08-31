@@ -35,7 +35,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-006](./to_do/PS-006-bosses-new-abilities.md) | Dare agli Evil una Signature Ability | feat | gameplay | BLOCCATO | alta | PS-004 |
 | [PS-007](./to_test/PS-007-impedire-run-AFK-lategame.md) | Impedire che la late run diventi AFK | feat | gameplay | IN VERIFICA | alta | — |
 | [PS-008](./to_test/PS-008-eventi-di-ondata.md) | Introdurre eventi d'ondata | feat | gameplay | IN VERIFICA | alta | — |
-| [PS-009](./to_do/PS-009-trasparenza-dialog-boss.md) | Rendere trasparente la Boss UI sotto il Player | ux | ui | PRONTO | media | — |
+| [PS-009](./completed/PS-009-trasparenza-dialog-boss.md) | Rendere trasparente la Boss UI sotto il Player | ux | ui | COMPLETATO | media | — |
 | [PS-010](./idea/PS-010-implementa-difesa-grigliata.md) | Implementare Difesa Grigliata | feat | gameplay | DA DEFINIRE | alta | — |
 | [PS-011](./idea/PS-011-confeziona-prima-release-nativa.md) | Confezionare la prima release nativa | chore | piattaforma | DA DEFINIRE | alta | PS-010 |
 | [PS-012](./to_test/PS-012-barb-specialities.md) | Introdurre le Specialità di Barb | feat | gameplay | IN VERIFICA | alta | — |
@@ -51,3 +51,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-022](./to_do/PS-022-b15-target-registrati-in-piu-suite-completa.md) | Diagnosticare i due target registrati in più di test_b15_boss_encounter | chore | tooling | PRONTO | media | — |
 | [PS-023](./to_test/PS-023-runner-verifica-affidabile.md) | Rendere leggibile e non bloccante il runner di verifica | chore | tooling | IN VERIFICA | alta | — |
 | [PS-030](./to_do/PS-030-runner-crash-su-test-eliminato.md) | Correggi il crash del runner quando un test viene eliminato | fix | tooling | PRONTO | media | — |
+| [PS-033](./to_test/PS-033-riquadro-vita-boss-minimale-floating.md) | Eliminare l'HUD dedicata del Boss, vita solo overhead | ux | ui | IN VERIFICA | media | — |

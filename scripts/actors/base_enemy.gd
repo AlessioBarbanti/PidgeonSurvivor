@@ -67,6 +67,20 @@ signal damage_taken_modifiers_changed(enemy: BaseEnemy, effective_multiplier: fl
 @export_range(0.0, 1.0, 0.01) var hit_reaction_duration := PresentationTimings.ENEMY_HIT_REACTION_SECONDS
 @export_range(0.0, 0.5, 0.01) var hit_squash_strength := 0.16
 
+## Spessore della barra vita disegnata sopra il nemico. I Boss la ingrandiscono
+## per restare leggibili senza una HUD dedicata (PS-033).
+@export_range(1.0, 32.0, 0.5, "or_greater") var health_bar_thickness: float = 4.0:
+	set(value):
+		health_bar_thickness = maxf(value, 1.0) if is_finite(value) else 4.0
+		queue_redraw()
+
+## Moltiplicatore della lunghezza della barra vita rispetto al diametro del
+## nemico (`collision_radius * 2.0`).
+@export_range(0.5, 4.0, 0.05, "or_greater") var health_bar_length_scale: float = 1.0:
+	set(value):
+		health_bar_length_scale = clampf(value, 0.5, 4.0) if is_finite(value) else 1.0
+		queue_redraw()
+
 var _target: Node2D
 var _pursuit_offset := Vector2.ZERO
 var _run_controller: RunController
@@ -763,10 +777,13 @@ func _draw_health_bar() -> void:
 	if health_max <= 0.0 or health_current >= health_max or health_current <= 0.0:
 		return
 
-	var bar_size := Vector2(collision_radius * 2.0, 4.0)
+	var bar_size := Vector2(
+		collision_radius * 2.0 * health_bar_length_scale,
+		health_bar_thickness
+	)
 	var bar_position := Vector2(
 		-bar_size.x * 0.5,
-		-collision_radius - outline_width - 10.0
+		-collision_radius - outline_width - 6.0 - bar_size.y
 	)
 	draw_rect(Rect2(bar_position, bar_size), outline_color, true)
 	var fill_ratio := clampf(health_current / health_max, 0.0, 1.0)

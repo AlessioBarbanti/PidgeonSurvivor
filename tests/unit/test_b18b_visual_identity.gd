@@ -16,7 +16,6 @@ func test_visual_identity_contract() -> void:
 	var feedback := movement_slice.get_combat_feedback() as CombatFeedback
 	var audio := movement_slice.get_game_audio() as GameAudio
 	var joystick := movement_slice.get_node_or_null("UI/SafeAreaRoot/TouchJoystick") as TouchJoystick
-	var boss_ui := movement_slice.get_boss_ui() as BossUI
 
 	assert_not_null(controller, "B18B richiede RunController.")
 	assert_not_null(player, "B18B richiede Player.")
@@ -48,7 +47,7 @@ func test_visual_identity_contract() -> void:
 		audio.stop_all()
 		audio.set_muted(true, false)
 
-	_assert_compact_hud(hud, joystick, boss_ui)
+	_assert_compact_hud(hud, joystick)
 	_assert_arena_identity(arena_view)
 	_assert_joystick_contract(joystick)
 	_assert_combat_feedback(controller, player, spawner, ability, hud, feedback)
@@ -60,7 +59,7 @@ func test_visual_identity_contract() -> void:
 	)
 
 
-func _assert_compact_hud(hud: GameHud, joystick: TouchJoystick, boss_ui: BossUI) -> void:
+func _assert_compact_hud(hud: GameHud, joystick: TouchJoystick) -> void:
 	var top_band := hud.get_top_band_rect()
 	var xp_line := hud.get_experience_panel_rect()
 	var pause_button := hud.get_pause_button_rect()
@@ -92,11 +91,6 @@ func _assert_compact_hud(hud: GameHud, joystick: TouchJoystick, boss_ui: BossUI)
 	assert_false(
 		joystick_rect.intersects(ability_panel, true), "Joystick e icona abilita devono restare separati."
 	)
-	if boss_ui != null:
-		var boss_rect := boss_ui.get_boss_health_panel_rect()
-		assert_true(
-			not boss_rect.has_area() or top_band.end.y <= boss_rect.position.y, "Boss UI e fascia HUD non devono sovrapporsi."
-		)
 
 
 func _assert_arena_identity(arena_view: ArenaView) -> void:

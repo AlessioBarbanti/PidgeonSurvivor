@@ -329,7 +329,6 @@ func _spawn_boss(schedule_index: int) -> FirstBoss:
 	_active_boss.died.connect(_on_boss_died)
 	_active_boss.tree_exiting.connect(_on_boss_tree_exiting, CONNECT_ONE_SHOT)
 	_targeting_system.register_target(_active_boss)
-	_boss_ui.bind_boss(_active_boss, _active_definition)
 	_boss_ui.show_intro(_active_definition)
 	boss_spawned.emit(_active_boss, schedule_index)
 	boss_intro_started.emit(_active_boss, schedule_index)
@@ -443,8 +442,6 @@ func _on_boss_tree_exiting() -> void:
 	_active_boss = null
 	_active_definition = null
 	_active_schedule_index = -1
-	if is_instance_valid(_boss_ui):
-		_boss_ui.clear_boss()
 
 
 func _on_restart_prepared() -> void:

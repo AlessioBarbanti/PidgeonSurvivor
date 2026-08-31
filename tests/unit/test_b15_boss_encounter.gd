@@ -68,9 +68,11 @@ func test_composed_encounter() -> void:
 
 	assert_true(director.get_active_boss() == boss, "Il Director deve tracciare il Boss creato.")
 	assert_true(targeting.has_target(boss), "Il Boss deve essere un bersaglio vivo dell'arma.")
-	assert_true(boss_ui.get_boss() == boss, "La barra Boss deve osservare l'istanza attiva.")
 	assert_true(boss_ui.is_intro_visible(), "La citazione deve apparire durante BOSS_INTRO.")
-	assert_true(boss_ui.is_boss_health_visible(), "Gli HP Boss devono essere visibili dall'introduzione.")
+	assert_true(
+		boss.health_bar_thickness > 4.0 and boss.health_bar_length_scale > 1.0,
+		"PS-033: senza HUD dedicata il Boss deve ingrandire la propria barra vita overhead rispetto ai nemici comuni."
+	)
 	var continue_button := boss_ui.get_node_or_null("IntroLayer/Center/IntroPanel/VBox/ContinueButton") as Button
 	var continue_style := continue_button.get_theme_stylebox("normal") as StyleBoxTexture if continue_button != null else null
 	assert_true(
@@ -85,9 +87,6 @@ func test_composed_encounter() -> void:
 	)
 	assert_rect_inside(
 		boss_ui.get_intro_panel_rect(), arena_layout.get_safe_area_rect(), "Il pannello intro Boss deve restare nella safe area."
-	)
-	assert_rect_inside(
-		boss_ui.get_boss_health_panel_rect(), arena_layout.get_safe_area_rect(), "La barra HP Boss deve restare nella safe area."
 	)
 	var boss_health := boss.get_health_component()
 	assert_almost_eq(boss_health.health_max, definition.health_max, FLOAT_TOLERANCE, "Gli HP Boss devono provenire dal Resource.")
@@ -142,7 +141,7 @@ func test_composed_encounter() -> void:
 	var health_before_hit := boss_health.health_current
 	assert_true(boss.take_damage(100.0), "Il Boss deve ricevere danno dai sistemi condivisi.")
 	assert_almost_eq(
-		boss_ui.get_boss_health_value(), health_before_hit - 100.0, FLOAT_TOLERANCE, "La barra HP Boss deve aggiornarsi via segnale."
+		boss_health.health_current, health_before_hit - 100.0, FLOAT_TOLERANCE, "Il Boss deve applicare il danno tramite HealthComponent."
 	)
 	assert_true(boss.take_damage(boss_health.health_current), "Il danno letale deve concludere il Boss una sola volta.")
 	assert_true(not controller.is_terminal(), "La morte del primo Boss non deve piu' chiudere la run (B33).")
@@ -173,6 +172,5 @@ func test_composed_encounter() -> void:
 	assert_eq(spawner.get_alive_count(), 0, "Il restart deve eliminare i nemici della run precedente.")
 	assert_eq(targeting.get_registered_count(), 0, "Il restart deve svuotare il targeting.")
 	assert_true(not boss_ui.is_intro_visible(), "Il restart deve chiudere l'intro Boss.")
-	assert_true(not boss_ui.is_boss_health_visible(), "Il restart deve nascondere gli HP Boss.")
 
 	controller.prepare_restart()

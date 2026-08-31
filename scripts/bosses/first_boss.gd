@@ -15,6 +15,11 @@ signal attack_executed(
 const RADIAL_VOLLEY := &"radial_volley"
 const TARGETED_BLAST := &"targeted_blast"
 
+## PS-033: senza più una HUD dedicata, la barra vita disegnata da BaseEnemy
+## sopra lo sprite resta l'unico indicatore del Boss e va resa più leggibile.
+const BOSS_HEALTH_BAR_THICKNESS := 9.0
+const BOSS_HEALTH_BAR_LENGTH_SCALE := 1.6
+
 @export var definition: BossDefinition
 @export var projectile_scene: PackedScene
 
@@ -33,6 +38,8 @@ var _active_projectiles: Array[BossProjectile] = []
 
 func _ready() -> void:
 	super._ready()
+	health_bar_thickness = BOSS_HEALTH_BAR_THICKNESS
+	health_bar_length_scale = BOSS_HEALTH_BAR_LENGTH_SCALE
 	_sync_boss_visual()
 
 
@@ -49,7 +56,6 @@ func _physics_process(delta: float) -> void:
 
 func _draw() -> void:
 	super._draw()
-	_draw_boss_mark()
 	_draw_active_telegraph()
 
 
@@ -322,18 +328,6 @@ func _execute_targeted_blast() -> int:
 	if player.global_position.distance_squared_to(_targeted_position) > effective_radius * effective_radius:
 		return 0
 	return 1 if player.take_contact_damage(definition.targeted_blast_damage, _targeted_position) else 0
-
-
-func _draw_boss_mark() -> void:
-	var crown_y := -collision_radius - 12.0
-	var crown_points := PackedVector2Array([
-		Vector2(-collision_radius * 0.55, crown_y),
-		Vector2(-collision_radius * 0.28, crown_y - 18.0),
-		Vector2.ZERO + Vector2(0.0, crown_y - 5.0),
-		Vector2(collision_radius * 0.28, crown_y - 18.0),
-		Vector2(collision_radius * 0.55, crown_y),
-	])
-	draw_polyline(crown_points, accent_color, 6.0, true)
 
 
 func _draw_active_telegraph() -> void:
