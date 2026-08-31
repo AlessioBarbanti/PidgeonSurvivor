@@ -3,12 +3,12 @@ id: PS-027
 titolo: Rimuovi l'artefatto residuo dalla Powerslide di Bea
 tipo: fix
 area: arte
-stato: PRONTO
+stato: DA DEFINIRE
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-30
-aggiornato: 2026-08-30
+aggiornato: 2026-08-31
 ---
 
 # PS-027 — Rimuovi l'artefatto residuo dalla Powerslide di Bea
@@ -81,3 +81,45 @@ Non modificare:
 ## Note
 
 Prima di eliminare fisicamente la risorsa dal repository, verificare che non sia referenziata da altre scene o abilità.
+
+### 2026-08-31 — Indagine statica senza esito, card spostata a DA DEFINIRE
+
+Ho investigato a fondo senza poter eseguire Godot (ambiente Linux senza
+motore in questa sessione) e non ho trovato alcun nodo, script o risorsa che
+disegni un elemento grafico legacy durante la Powerslide. Percorsi
+controllati ed esclusi:
+
+- `scripts/abilities/fire_z_trail.gd` (l'unico script che implementa
+  l'attiva di Bea): disegna solo scia, tasselli di fiamma e scintille dalla
+  texture corrente; nessun nodo o `preload` legacy.
+- `data/friends/bea.tres`: nessun campo referenzia SVG o asset obsoleti.
+- `scenes/game/movement_slice.tscn`: `FireZTrail` non ha una `.tscn`
+  propria (istanziata da script), nessun nodo residuo collegato a Bea.
+- `assets/art/third_party/pinhead_inline_skate/inline_skate.svg` esiste ma
+  non è referenziato da alcun `.tres`/`.tscn`/`.gd` (`grep` su tutto il
+  repository): è solo provenienza storica, non viene mai caricato a
+  runtime.
+- Il vecchio pittogramma `icons/abilities/powerslide.svg` non esiste più sul
+  disco: nessun riferimento rotto.
+- `assets/art/vfx/abilities/generated/fire_trail.png`: canale alfa corretto
+  (trasparente ai bordi, opaco al centro — verificato con Pillow), nessun
+  artefatto di rendering; le due forme a "goccia" visibili nella texture
+  sono braci/scintille disegnate intenzionalmente nello stesso stile
+  dell'illustrazione, non un residuo.
+- `Player.set_momentum_trail_enabled()` (la scia di slancio, un sistema
+  diverso appartenente a Magno) è attivata solo quando
+  `passive_id == MAGNO_AERODYNAMIC_FLOW`: non si attiva per Bea.
+- `instinctive_dodge_triggered` (il tell della passiva di Bea, B45) è
+  emesso solo da `resolve_incoming_damage()`, un percorso completamente
+  separato dall'attivazione della Powerslide.
+- Nessun VFX generico "sotto ogni abilità" in `AbilityController` o
+  `CombatFeedback`: l'esecuzione delega interamente a
+  `AbilityEffectRegistry.execute_effect()`, specifico per `fire_z_trail`.
+
+**Domanda per il proprietario:** non riesco a identificare l'artefatto per
+lettura statica del codice — serve un'informazione che solo tu hai. Puoi
+fornire uno screenshot o una registrazione della Powerslide con l'artefatto
+visibile, o descriverlo con più precisione (forma, colore, in che momento
+esatto della Powerslide appare — attivazione, durante lo scatto, o alla
+fine)? Con quello individuo il file esatto invece di modificare codice alla
+cieca.
