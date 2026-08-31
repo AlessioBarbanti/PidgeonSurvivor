@@ -1057,8 +1057,8 @@ func _validate_current_contract() -> bool:
 				or boss_definition.id != &"special_pigeon"
 			):
 				failures.append("B22 richiede il piccione speciale come Boss baseline.")
-			if not is_equal_approx(_boss_encounter.evil_boss_chance, 0.25):
-				failures.append("B22 richiede evil_boss_chance dati al 25%.")
+			if not is_equal_approx(_boss_encounter.evil_boss_chance, 0.5):
+				failures.append("PS-037 richiede evil_boss_chance dati al 50%.")
 			if (
 				not boss_definition.quote_approved
 				and boss_definition.get_safe_quote() != boss_definition.safe_quote_placeholder

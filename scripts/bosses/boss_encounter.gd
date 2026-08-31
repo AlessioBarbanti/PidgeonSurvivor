@@ -19,7 +19,7 @@ const SCHEDULE_SEED_FACTOR := 0x045D9F3B
 ## Catalogo delle Signature Evil (PS-006): la variante composta riceve la
 ## mossa del profilo estratto senza toccare il Boss baseline.
 @export var signature_catalog: BossSignatureCatalog
-@export_range(0.0, 1.0, 0.01) var evil_boss_chance := 0.25
+@export_range(0.0, 1.0, 0.01) var evil_boss_chance := 0.5
 
 var _run_controller: RunController
 var _game_director: GameDirector

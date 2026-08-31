@@ -41,7 +41,8 @@
         "tests/unit/test_b17_friend_content.gd",
         "tests/unit/test_b33_recurring_boss.gd",
         "tests/unit/test_b38_arena_world.gd",
-        "tests/unit/test_ps006_evil_signature_abilities.gd"
+        "tests/unit/test_ps006_evil_signature_abilities.gd",
+        "tests/unit/test_ps026_boss_baseline_display_name.gd"
       ]
     },
     {

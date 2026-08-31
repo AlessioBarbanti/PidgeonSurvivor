@@ -177,8 +177,8 @@ func test_composed_scene_uses_approved_catalog() -> void:
 		boss_encounter != null
 		and boss_encounter.boss_definition.id == &"special_pigeon"
 		and not boss_encounter.boss_definition.is_evil_variant()
-		and boss_encounter.boss_definition.get_safe_title() == "PICCIONE SPECIALE",
-		"Il Boss baseline B22 deve essere il piccione speciale approvato."
+		and boss_encounter.boss_definition.get_safe_title() == "PICCIONE MALVAGIO",
+		"Il Boss baseline B22 deve essere il piccione malvagio approvato."
 	)
 	assert_true(
 		boss_encounter != null and boss_encounter.boss_definition.get_safe_portrait() != null,
