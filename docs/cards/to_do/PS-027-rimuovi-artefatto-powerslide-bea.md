@@ -3,7 +3,7 @@ id: PS-027
 titolo: Rimuovi l'artefatto residuo dalla Powerslide di Bea
 tipo: fix
 area: arte
-stato: DA DEFINIRE
+stato: IN CORSO
 priorita: media
 dipende_da: []
 origine:
@@ -29,15 +29,42 @@ La rimozione deve essere esclusivamente visuale e non deve modificare traiettori
 
 ## Criteri di accettazione
 
-- [ ] Nessun vecchio SVG o artefatto grafico residuo compare sotto Bea durante la Powerslide.
-- [ ] L'artefatto non compare al primo frame dell'attivazione.
-- [ ] L'artefatto non compare durante lo spostamento.
-- [ ] L'artefatto non rimane visibile alla conclusione dell'abilità.
-- [ ] La scia di fuoco corrente resta visibile e invariata.
-- [ ] Direzione e distanza della Powerslide restano invariate.
-- [ ] Danno, durata, hitbox e collisioni restano invariati.
-- [ ] Restart e cambio personaggio non lasciano nodi o risorse visuali residue.
-- [ ] La risorsa legacy non resta referenziata dal runtime se non è più utilizzata da nessun altro sistema.
+- [x] Nessun vecchio SVG o artefatto grafico residuo compare sotto Bea
+      durante la Powerslide. **Causa reale trovata** (non era un asset SVG
+      ma una forma geometrica disegnata dal codice, screenshot del
+      proprietario alla mano): `fire_z_trail.gd:_draw()` disegnava due
+      `draw_polyline()` a bordo dritto e larghezza costante (`_trail_width`,
+      `40` al rank 1) *sotto* la texture di fiamma stampata. Il nastro di
+      fiamma è ondulato e non riempie l'intera larghezza in ogni punto: dove
+      si assottiglia, il bordo dritto della polyline sottostante spuntava
+      fuori — esattamente il "rettangolo/riga sotto" segnalato. Rimosse
+      entrambe le chiamate.
+- [x] L'artefatto non compare al primo frame dell'attivazione — non
+      disegnato più in nessun frame, la rimozione è nel corpo di `_draw()`
+      eseguito a ogni frame.
+- [x] L'artefatto non compare durante lo spostamento — idem.
+- [x] L'artefatto non rimane visibile alla conclusione dell'abilità — idem,
+      nessuna logica diversa a fine durata: `_draw()` smette di essere
+      chiamato quando il nodo si libera (`_finish_effect()`, invariato).
+- [x] La scia di fuoco corrente resta visibile e invariata. I tasselli di
+      texture (`draw_texture_rect` con `FIRE_TRAIL_TEXTURE`) e le scintille
+      (`draw_colored_polygon`) non sono stati toccati: solo le due
+      `draw_polyline` sono state rimosse.
+- [x] Direzione e distanza della Powerslide restano invariate.
+      `_build_straight_path()` non è stato toccato; coperto da
+      `test_ps027_bea_powerslide_visual_cleanup.gd`.
+- [x] Danno, durata, hitbox e collisioni restano invariati.
+      `_apply_damage_tick()` e `_is_point_near_trail()` non sono stati
+      toccati (usano `_path_points`/`_trail_width`, indipendenti dal
+      disegno); coperto dallo stesso test.
+- [ ] Restart e cambio personaggio non lasciano nodi o risorse visuali
+      residue — coperto solo per il caso "fine naturale della durata" nel
+      test automatico; il caso restart/cambio personaggio non è stato
+      eseguito a runtime (nessun Godot in questa sessione).
+- [x] La risorsa legacy non resta referenziata dal runtime se non è più
+      utilizzata da nessun altro sistema — non era una risorsa/asset ma
+      codice inline (`Color` letterali dentro `draw_polyline`); nessun file
+      da ripulire.
 
 ## Ambito
 
@@ -57,20 +84,51 @@ Non modificare:
 
 ## Verifica
 
-- Smoke: `tests/integration/_bea_powerslide_visual_cleanup_smoke.gd` → marker `BEA_POWERSLIDE_VISUAL_CLEANUP_SMOKE_OK`
-- Profilo minimo prima della chiusura: `Relevant`
+- Test: `tests/unit/test_ps027_bea_powerslide_visual_cleanup.gd` (`extends
+  GutGameplayTest`). La card indicava originariamente uno smoke a script
+  `SceneTree` in `tests/integration/`: quel contratto non è la convenzione
+  corrente (vedi `docs/verification-workflow.md`, tutti i test vivono in
+  `tests/unit/test_*.gd` con report GUT), quindi la formulazione è corretta
+  qui invece di crearne uno stile obsoleto. Il test copre due cose: (1) per
+  lettura del sorgente, che `draw_polyline` non compare più in
+  `fire_z_trail.gd`; (2) a runtime, che direzione, distanza, danno del primo
+  tick e cleanup a fine durata restano invariati. L'assenza *visiva* del
+  bordo non è verificabile in un test headless senza cattura del rendering:
+  resta un gate percettivo.
+- Registrato in `tools/milestone-test-map.json` sotto la regola
+  `scripts/abilities/*` / `data/abilities/*`.
+- Profilo minimo prima della chiusura: `Relevant` con
+  `-FocusedSmoke tests/unit/test_ps027_bea_powerslide_visual_cleanup.gd`
+  (non ancora eseguito, vedi Note).
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: Bea → Powerslide in almeno quattro direzioni → osserva attivazione, scia e fine abilità)
-- [ ] Controllo percettivo richiesto: sì
+- [ ] Runtime Windows — necessario prima di `COMPLETATO`: nessun Godot
+      disponibile in questa sessione per eseguirlo.
+- [ ] Validazione statica APK — non pertinente, nessuna superficie Android
+      specifica.
+- [ ] Runtime fisico Pixel 9 (percorso: Bea → Powerslide in almeno quattro
+      direzioni → osserva attivazione, scia e fine abilità) — non eseguito.
+- [ ] Controllo percettivo richiesto: sì — è l'unico modo per confermare
+      che il bordo non spunta più fuori in nessuna direzione/rank; lo
+      screenshot del proprietario ha identificato la causa ma non sostituisce
+      la conferma a schermo dopo il fix.
 
 ## Decisioni
 
 - **2026-08-30 — Rimuovere il residuo visuale legacy dalla Powerslide.** L'attiva deve mostrare soltanto gli elementi grafici appartenenti alla direzione corrente.
 - **Sostituisce:** presenza del vecchio artefatto/SVG residuo sotto l'abilità.
+- **2026-08-31 — Causa trovata dopo uno screenshot del proprietario, non era
+  un asset.** L'indagine statica per file/scene/dati non aveva trovato nulla
+  perché l'artefatto non è un SVG o un nodo residuo: è la geometria delle
+  due `draw_polyline()` di `_draw()` (il "glow" sotto la texture), che
+  probabilmente precedevano l'introduzione della texture pixel-art
+  `fire_trail.png` ed erano rimaste come base sotto di essa. Rimosse
+  entrambe; texture e scintille restano invariate.
+- **2026-08-31 — Nessun cambiamento a dati o hitbox.** L'unico file toccato
+  per il comportamento è `scripts/abilities/fire_z_trail.gd`, solo dentro
+  `_draw()`: `_apply_damage_tick`, `_is_point_near_trail` e
+  `_build_straight_path` sono intatti.
 
 ## Documenti sincronizzati
 
@@ -80,14 +138,22 @@ Non modificare:
 
 ## Note
 
-Prima di eliminare fisicamente la risorsa dal repository, verificare che non sia referenziata da altre scene o abilità.
+Prima di eliminare fisicamente la risorsa dal repository, verificare che non sia referenziata da altre scene o abilità. Non applicabile in pratica: la causa reale non era una risorsa (vedi sotto).
 
-### 2026-08-31 — Indagine statica senza esito, card spostata a DA DEFINIRE
+**Verifica non eseguita.** Il fix è stato implementato e controllato per
+lettura (rimozione mirata, nessun'altra riga toccata) più un test
+automatico nuovo, ma non è stato lanciato `run-milestone-checks.ps1`:
+nessun Godot/PowerShell disponibile in questo ambiente. Il profilo
+`Relevant` su Windows e il controllo percettivo su device restano i gate
+aperti prima di poter chiudere la card `COMPLETATO`.
 
-Ho investigato a fondo senza poter eseguire Godot (ambiente Linux senza
-motore in questa sessione) e non ho trovato alcun nodo, script o risorsa che
-disegni un elemento grafico legacy durante la Powerslide. Percorsi
-controllati ed esclusi:
+### 2026-08-31 — Cronologia dell'indagine
+
+Prima fase, senza screenshot: ho investigato a fondo senza poter eseguire
+Godot (ambiente Linux senza motore in questa sessione) e non ho trovato
+alcun nodo, script o risorsa che disegni un elemento grafico legacy durante
+la Powerslide. Percorsi controllati ed esclusi (nessuno di questi era la
+causa, ma restano un utile inventario di cosa NON è coinvolto):
 
 - `scripts/abilities/fire_z_trail.gd` (l'unico script che implementa
   l'attiva di Bea): disegna solo scia, tasselli di fiamma e scintille dalla
@@ -123,3 +189,17 @@ visibile, o descriverlo con più precisione (forma, colore, in che momento
 esatto della Powerslide appare — attivazione, durante lo scatto, o alla
 fine)? Con quello individuo il file esatto invece di modificare codice alla
 cieca.
+
+### 2026-08-31 — Risolta dopo lo screenshot
+
+Il proprietario ha fornito uno screenshot in-run: un bordo dritto e netto,
+color magenta/bordeaux, visibile lungo il lato della scia di fuoco proprio
+dove il nastro ondulato di fiamma si assottiglia. Riletto `_draw()` di
+`fire_z_trail.gd` con quell'indizio: le due `draw_polyline(_path_points,
+Color(...), _trail_width o _trail_width*0.34, true)` disegnate *prima* dei
+tasselli di texture sono un rettangolo a bordo dritto di larghezza
+costante (`_trail_width = 40` al rank 1); il nastro di fiamma stampato sopra
+ha invece una silhouette ondulata che non copre sempre l'intera larghezza —
+nei punti più sottili il bordo dritto della polyline sottostante resta
+visibile. Rimosse entrambe le chiamate: vedi Criteri di accettazione e
+Decisioni per il dettaglio del fix.

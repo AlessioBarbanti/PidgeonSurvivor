@@ -123,7 +123,8 @@
         "tests/unit/test_b18m_ability_visuals.gd",
         "tests/unit/test_b17a_complete_roster_abilities.gd",
         "tests/unit/test_ps004_zat_thunder_charge.gd",
-        "tests/unit/test_ps024_magno_shockwave_balance.gd"
+        "tests/unit/test_ps024_magno_shockwave_balance.gd",
+        "tests/unit/test_ps027_bea_powerslide_visual_cleanup.gd"
       ]
     },
     {
