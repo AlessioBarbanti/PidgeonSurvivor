@@ -42,7 +42,7 @@ passive_parameters = {
 }
 active_ability_id = &"bea_fire_z_trail"
 active_ability_title = "Powerslide"
-active_ability_description = "Scatto istantaneo nell'ultima direzione di movimento, che lascia dietro di sé una scia di fuoco."
+active_ability_description = "Scatto istantaneo nell'ultima direzione di movimento, invulnerabile all'atterraggio, che lascia dietro di sé una scia di fuoco."
 base_health_multiplier = 0.9
 base_move_speed_multiplier = 1.1
 base_fire_rate_multiplier = 1.0

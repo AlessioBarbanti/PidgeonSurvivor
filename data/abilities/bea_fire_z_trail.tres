@@ -11,7 +11,7 @@ cooldown_seconds = 10.0
 duration_seconds = 4.0
 area_radius = 0.0
 damage = 6.0
-effect_parameters = {"dash_distance": 320.0, "trail_duration": 4.0, "trail_tick_interval": 0.25, "trail_width": 40.0}
+effect_parameters = {"dash_distance": 320.0, "trail_duration": 4.0, "trail_tick_interval": 0.25, "trail_width": 40.0, "iframe_duration": 0.3}
 
 [sub_resource type="Resource" id="Rank_2"]
 script = ExtResource("3_rank")
@@ -20,7 +20,7 @@ cooldown_seconds = 10.0
 duration_seconds = 4.0
 area_radius = 0.0
 damage = 8.0
-effect_parameters = {"dash_distance": 320.0, "trail_duration": 4.0, "trail_tick_interval": 0.25, "trail_width": 40.0}
+effect_parameters = {"dash_distance": 320.0, "trail_duration": 4.0, "trail_tick_interval": 0.25, "trail_width": 40.0, "iframe_duration": 0.3}
 
 [sub_resource type="Resource" id="Rank_3"]
 script = ExtResource("3_rank")
@@ -29,7 +29,7 @@ cooldown_seconds = 10.0
 duration_seconds = 4.0
 area_radius = 0.0
 damage = 8.0
-effect_parameters = {"dash_distance": 380.0, "trail_duration": 4.0, "trail_tick_interval": 0.25, "trail_width": 48.0}
+effect_parameters = {"dash_distance": 380.0, "trail_duration": 4.0, "trail_tick_interval": 0.25, "trail_width": 48.0, "iframe_duration": 0.3}
 
 [sub_resource type="Resource" id="Rank_4"]
 script = ExtResource("3_rank")
@@ -38,7 +38,7 @@ cooldown_seconds = 9.0
 duration_seconds = 5.0
 area_radius = 0.0
 damage = 8.0
-effect_parameters = {"dash_distance": 380.0, "trail_duration": 5.0, "trail_tick_interval": 0.25, "trail_width": 48.0}
+effect_parameters = {"dash_distance": 380.0, "trail_duration": 5.0, "trail_tick_interval": 0.25, "trail_width": 48.0, "iframe_duration": 0.3}
 
 [sub_resource type="Resource" id="Rank_5"]
 script = ExtResource("3_rank")
@@ -47,13 +47,13 @@ cooldown_seconds = 9.0
 duration_seconds = 5.0
 area_radius = 0.0
 damage = 11.0
-effect_parameters = {"dash_distance": 440.0, "trail_duration": 5.0, "trail_tick_interval": 0.25, "trail_width": 56.0}
+effect_parameters = {"dash_distance": 440.0, "trail_duration": 5.0, "trail_tick_interval": 0.25, "trail_width": 56.0, "iframe_duration": 0.3}
 
 [resource]
 script = ExtResource("1_definition")
 id = &"bea_fire_z_trail"
 title = "Powerslide"
-description = "Scatto istantaneo nell'ultima direzione di movimento, che lascia dietro di sé una scia di fuoco."
+description = "Scatto istantaneo nell'ultima direzione di movimento, invulnerabile all'atterraggio, che lascia dietro di sé una scia di fuoco."
 effect_summary = "DANNO 6 · SCATTO 320 · SCIA 4 S · RICARICA 10 S"
 icon = ExtResource("2_icon")
 cooldown_seconds = 10.0
@@ -65,7 +65,8 @@ effect_parameters = {
 "dash_distance": 320.0,
 "trail_duration": 4.0,
 "trail_tick_interval": 0.25,
-"trail_width": 40.0
+"trail_width": 40.0,
+"iframe_duration": 0.3
 }
 tags = Array[StringName]([&"mobility", &"damage", &"persistent", &"copy_compatible"])
 rank_snapshots = Array[ExtResource("3_rank")]([SubResource("Rank_1"), SubResource("Rank_2"), SubResource("Rank_3"), SubResource("Rank_4"), SubResource("Rank_5")])
