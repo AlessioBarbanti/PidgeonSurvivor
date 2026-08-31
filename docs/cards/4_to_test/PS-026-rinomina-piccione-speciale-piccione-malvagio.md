@@ -47,8 +47,8 @@ Le varianti `Evil <Nome>` restano invariate.
       titolo del Boss baseline.
 - [x] Il cambio di nome non modifica statistiche, sprite, hitbox, pattern o
       probabilità di selezione del Boss. Unica riga toccata in
-      `first_boss.tres` è `title`; `evil_boss_chance` resta `0.25`
-      (`scripts/bosses/boss_encounter.gd:22`, invariato).
+      `first_boss.tres` è `title`; la probabilità, invariata da PS-026, è
+      stata successivamente portata a `0.5` da PS-037.
 - [x] Gli ID tecnici e i path non vengono rinominati senza una necessità
       esplicita. `id = &"special_pigeon"` invariato.
 - [x] Restart e selezione seedata dei Boss restano invariati. Nessuna modifica

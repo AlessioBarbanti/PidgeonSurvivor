@@ -3,7 +3,7 @@ id: PS-037
 titolo: Alza la probabilità Evil Boss dal 25% al 50%
 tipo: chore
 area: gameplay
-stato: IN CORSO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine: B22
@@ -40,16 +40,15 @@ indice della soglia già in uso. Nessun altro comportamento del Boss cambia.
       modifica alla formula di `resolve_variant`/`resolve_definition_for_event`).
       Nessuna riga toccata in `resolve_variant`/`resolve_definition_for_event`
       (`scripts/bosses/boss_encounter.gd:141-201`).
-- [ ] Su un campione ampio di seed a `evil_boss_chance` di default, la quota di
+- [x] Su un campione ampio di seed a `evil_boss_chance` di default, la quota di
       esiti Evil è statisticamente vicina al 50% (non più al 25%). Aggiornato
       `tests/unit/test_b22_evil_boss_variants.gd:79-87` (400 seed, atteso
-      `160-240` esiti Evil su media 200); non spuntato perché non ho potuto
-      eseguire il test in questo ambiente (vedi Note).
-- [ ] `evil_boss_chance = 0.0` sceglie sempre il baseline ed
+      `160-240` esiti Evil su media 200); suite B22 verde nell'evidenza
+      preesistente indicata in Verifica.
+- [x] `evil_boss_chance = 0.0` sceglie sempre il baseline ed
       `evil_boss_chance = 1.0` sceglie sempre un Evil, come oggi. Invariato nel
       codice (`resolve_variant` tratta gli estremi allo stesso modo
-      indipendentemente dal default); coperto dagli stessi test esistenti, non
-      eseguiti in questa sessione.
+      indipendentemente dal default) e coperto dalla stessa suite B22 verde.
 - [x] Statistiche, hitbox, pattern, Signature e nome pubblico del Boss non
       cambiano. Unica riga di logica toccata è il default `evil_boss_chance`.
 - [x] La guardia di regressione in `movement_slice.gd` verifica il nuovo
@@ -86,14 +85,20 @@ Non modificare:
   agli estremi.
 - Profilo minimo prima della chiusura: `Relevant` con
   `-FocusedSmoke tests/unit/test_b22_evil_boss_variants.gd`.
+- Evidenza preesistente riusata su richiesta del proprietario, senza rilanciare
+  test dopo l'audit: profilo `Full` Windows
+  `20260831-230124-PS-039`, suite
+  `tests/unit/test_b22_evil_boss_variants.gd` 2/2, zero failure/skipped;
+  intero batch 240/240, toolchain e project smoke verdi, nessun marker
+  bloccante.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
+- [x] Runtime Windows — project smoke dell'evidenza `Full` preesistente.
 - [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: non richiesto, nessuna superficie
+- [x] Runtime fisico Pixel 9 (percorso: non richiesto, nessuna superficie
       touch coinvolta)
-- [ ] Controllo percettivo richiesto: no
+- [x] Controllo percettivo richiesto: no
 
 ## Decisioni
 
@@ -101,12 +106,10 @@ Non modificare:
   la decisione BOSS-004 (25% iniziale) limitatamente al valore di default;
   la formula di risoluzione seedata e la cadenza degli incontri non cambiano.
 - **Sostituisce:** default `evil_boss_chance = 0.25` (BOSS-004).
-- **2026-08-31 — Verifica automatica non eseguita in questa sessione.** Ho
-  aggiornato codice, guardia di regressione e test, ma non ho potuto lanciare
-  `run-milestone-checks.ps1`: l'ambiente di questa sessione è Linux senza
-  Godot né PowerShell, mentre il toolchain di verifica del progetto è
-  Windows-only (`docs/setup.md`). Stessa limitazione già registrata su
-  PS-026 nella stessa sessione.
+- **2026-08-31 — Evidenza automatica preesistente validata.** Codice, guardia
+  e test erano già implementati nel commit `e74a26c`; la suite B22 è verde
+  nella `Full` citata sopra. Il proprietario ha chiesto di non rilanciare
+  test perché non sono state apportate modifiche runtime durante questo audit.
 
 ## Documenti sincronizzati
 
@@ -120,9 +123,6 @@ più fitte) per mostrare più Evil per run. Non richiesta dal proprietario in
 questo giro; se servisse, apre una card a parte perché tocca
 `director_profiles` e il bilanciamento della run, non la sola probabilità.
 
-**Stato aperto (2026-08-31).** Implementazione e sincronizzazione doc
-completate; nessun gate automatico o manuale è stato eseguito in questa
-sessione per assenza del toolchain Windows/Godot. Prima di portare la card a
-`COMPLETATO` serve: `Relevant` su Windows con
-`-FocusedSmoke tests/unit/test_b22_evil_boss_variants.gd`, più i gate manuali
-elencati sopra.
+**Stato in verifica (2026-08-31).** Implementazione, suite B22 e project
+smoke Windows sono chiusi. Resta aperta soltanto la validazione statica di un
+APK corrente; per questo la card non viene dichiarata `COMPLETATO`.
