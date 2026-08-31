@@ -3,7 +3,7 @@ id: PS-041
 titolo: La scia di slancio di Magno non si azzera all'avvio di una nuova partita
 tipo: fix
 area: gameplay
-stato: IN CORSO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
@@ -92,14 +92,18 @@ Non modificare:
   `scripts/actors/player.gd`.
 - Profilo minimo prima della chiusura: `Relevant` con
   `-FocusedSmoke tests/unit/test_ps041_magno_trail_reset_redraw.gd`
-  (non ancora eseguito, vedi Note).
+  (coperto dall'evidenza preesistente sotto).
+- Evidenza preesistente riusata senza rilanciare test, su richiesta del
+  proprietario: profilo `Full` Windows `20260831-230124-PS-039`, suite
+  `tests/unit/test_ps041_magno_trail_reset_redraw.gd` 2/2, zero
+  failure/skipped; intero batch 240/240, toolchain e project smoke verdi,
+  nessun marker bloccante.
 
 ## Gate manuali
 
-- [ ] Runtime Windows — necessario prima di `COMPLETATO`: nessun Godot
-      disponibile in questa sessione per eseguirlo.
-- [ ] Validazione statica APK — non pertinente.
-- [ ] Runtime fisico Pixel 9 — non richiesto, nessuna superficie touch
+- [x] Runtime Windows — project smoke dell'evidenza `Full` preesistente.
+- [x] Validazione statica APK — non pertinente.
+- [x] Runtime fisico Pixel 9 — non richiesto, nessuna superficie touch
       specifica coinvolta.
 - [ ] Controllo percettivo richiesto: sì — percorso: equipaggia Magno,
       accumula slancio, muori o premi restart, verifica che la scia non sia
@@ -118,13 +122,12 @@ Non modificare:
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno atteso: comportamento non documentato esplicitamente altrove.
+- [x] Nessuno atteso: comportamento non documentato esplicitamente altrove.
 
 ## Note
 
-**Verifica non eseguita.** Il fix è stato implementato e controllato per
-lettura (due righe aggiunte, stesso pattern già in uso altrove nello stesso
-file) più un nuovo test, ma non è stato lanciato
-`run-milestone-checks.ps1`: nessun Godot/PowerShell disponibile in questo
-ambiente. Il profilo `Relevant` su Windows e il controllo percettivo su
-device restano i gate aperti prima di poter chiudere la card `COMPLETATO`.
+**Stato in verifica (2026-08-31).** Il fix del commit `5a4ac6a`, la suite
+dedicata e il project smoke Windows sono già verdi. Il proprietario ha chiesto
+di non rilanciare test perché l'audit non ha modificato il runtime. Resta
+aperto soltanto il controllo percettivo sul frame immediatamente successivo
+al reset, che il test headless non può sostituire.
