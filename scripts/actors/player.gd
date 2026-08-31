@@ -292,7 +292,13 @@ func reset_for_run() -> void:
 	_last_movement_direction = DEFAULT_FACING_DIRECTION
 	_momentum_ratio = 0.0
 	_momentum_reference_direction = Vector2.ZERO
-	_momentum_trail_points.clear()
+	# PS-041: svuotare l'array non basta. CanvasItem non si ridisegna da solo
+	# quando i dati cambiano: senza questa richiesta esplicita, l'ultimo
+	# frame disegnato dalla run precedente resta a schermo finche'
+	# _advance_momentum_trail() non ridisegna al primo tick utile.
+	if not _momentum_trail_points.is_empty():
+		_momentum_trail_points.clear()
+		queue_redraw()
 	_momentum_trail_sample_elapsed = 0.0
 	if is_instance_valid(_health_component):
 		_health_component.set_health_max(get_base_health_max())
