@@ -169,11 +169,11 @@ come da contratto `CLAUDE.md`.
 ## Pressione late-run e assenza di AFK
 
 Non esiste un sistema unico "anti-AFK": l'obiettivo è dichiarato dalla card
-`PS-007` ([docs/cards/to_test/PS-007-impedire-run-AFK-lategame.md](./cards/to_test/PS-007-impedire-run-AFK-lategame.md),
+`PS-007` ([docs/cards/4_to_test/PS-007-impedire-run-AFK-lategame.md](./cards/4_to_test/PS-007-impedire-run-AFK-lategame.md),
 `IN VERIFICA`) e delegato interamente alla curva qualitativa descritta sopra
 (peso piccione in calo, moltiplicatori late-run, garanzia tiratore, settori
 multipli), più il layer opzionale degli eventi d'ondata `PS-008`
-([docs/cards/to_test/PS-008-eventi-di-ondata.md](./cards/to_test/PS-008-eventi-di-ondata.md),
+([docs/cards/4_to_test/PS-008-eventi-di-ondata.md](./cards/4_to_test/PS-008-eventi-di-ondata.md),
 `IN VERIFICA`). Principio dichiarato nella card: *"late run più difficile =
 nuove decisioni e nuova pressione, non soltanto numeri più grandi"*. Entrambe
 le card hanno gate di playtest percettivo ancora aperti: il risultato

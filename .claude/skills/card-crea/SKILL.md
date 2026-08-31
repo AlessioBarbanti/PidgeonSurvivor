@@ -28,11 +28,11 @@ verificabile e risolvibile da sola in un'altra sessione.
   i campi del frontmatter. Date in formato `YYYY-MM-DD`.
 - Stato iniziale:
   - `PRONTO` se il contratto è chiaro e le dipendenze sono chiuse: salva in
-    `to_do/`;
+    `2_to_do/`;
   - `BLOCCATO` se manca una dipendenza: nominala esplicitamente e salva in
-    `to_do/`;
+    `2_to_do/`;
   - `DA DEFINIRE` se manca una decisione del proprietario: scrivi la domanda
-    precisa da porgli e salva in `idea/`.
+    precisa da porgli e salva in `1_idea/`.
 - Compila `dipende_da` con soli ID card; usa `origine` esclusivamente per un
   riferimento storico B-series, mai come seconda fonte del contratto.
 - I **criteri di accettazione** sono osservabili e binari. "Il pulsante abilità

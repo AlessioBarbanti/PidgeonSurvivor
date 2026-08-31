@@ -12,9 +12,12 @@ development plan or decision log.
 
 1. Run `git status --short`; preserve unrelated work.
 2. Read `docs/cards/README.md` and the selected card under
-   `docs/cards/{idea,to_do,to_test,completed}/PS-*.md`. For "next",
-   finish `IN CORSO` first, then select the highest-priority dependency-ready
-   `PRONTO` card; break ties by numeric ID.
+   `docs/cards/{1_idea,2_to_do,3_in_sprint,4_to_test,5_completed}/PS-*.md`.
+   For "next": check `3_in_sprint/` first and continue there if it still has
+   cards; otherwise pick the highest-priority dependency-ready `PRONTO` card
+   from `2_to_do/` (a prerequisite counts as closed once it reaches
+   `IN VERIFICA`, not only `COMPLETATO`) plus its dependency chain, and move
+   that whole block into `3_in_sprint/`; break ties by numeric ID.
 3. For a legacy B-series request, search the card frontmatter field `origine`.
    If no card owns that work, create one before implementation.
 4. Stop on `DA DEFINIRE` or `BLOCCATO` and report the exact question or unmet
@@ -24,8 +27,8 @@ development plan or decision log.
 
 ## Implement and decide
 
-1. Set the card to `IN CORSO`, move it to `docs/cards/to_do/`, and update the
-   board row, link, and date.
+1. Set the card to `IN CORSO`, move it to `docs/cards/3_in_sprint/` (if not
+   already there), and update the board row, link, and date.
 2. Implement only its acceptance criteria. Put adjacent work in a new card.
 3. Preserve typed, scene-local, signal-driven GDScript; keep data declarative
    and logic in registries/controllers.
@@ -74,8 +77,8 @@ changes, run `tests/tooling/_milestone_runner_contract.ps1`.
 1. Check only criteria and gates actually satisfied.
 2. Use `IN VERIFICA` while manual gates remain and `COMPLETATO` when the
    required evidence is complete and the card is accepted and closed. Move
-   `IN VERIFICA` cards to `docs/cards/to_test/`; move `COMPLETATO` cards to
-   `docs/cards/completed/`.
+   `IN VERIFICA` cards to `docs/cards/4_to_test/`; move `COMPLETATO` cards to
+   `docs/cards/5_completed/`.
 3. Update `Decisioni`, `Documenti sincronizzati`, `Note`, date, and the board row.
 4. Check that card metadata, dependencies, and the board row stay aligned.
 5. Add asset/audio provenance and hashes to the local manifest when applicable.

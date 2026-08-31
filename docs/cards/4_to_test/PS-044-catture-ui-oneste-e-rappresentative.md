@@ -67,7 +67,7 @@ esistono davvero.
       simulata: `06_boss_intro` mostra la variante Evil che il gioco genera per
       quel seed e `06b_boss_fight` mostra il Boss in campo.
 - [x] Nessuna cattura documenta uno stato dormiente: `VICTORY` resta fuori dal
-      pacchetto finché [PS-055](../idea/PS-055-filosofia-della-vittoria.md) non
+      pacchetto finché [PS-055](../1_idea/PS-055-filosofia-della-vittoria.md) non
       decide se Survival possa essere vinta.
 
 ## Ambito
@@ -152,13 +152,13 @@ Non toccare:
   `RunController` ma è dormiente: Survival è endless e da PS-033 la morte del
   Boss non chiude la run. Fotografarlo mostrerebbe una schermata che il gioco
   non raggiunge, cioè esattamente il difetto che questa card chiude. Rientrerà
-  quando [PS-055](../idea/PS-055-filosofia-della-vittoria.md) avrà una
+  quando [PS-055](../1_idea/PS-055-filosofia-della-vittoria.md) avrà una
   risposta.
 - **2026-08-31 — Gli errori di fisica emersi durante la cattura restano
   fuori.** L'incontro Boss con arena popolata fa emergere righe `ERROR: Can't
   change this state while flushing queries` dallo split del piccione viola:
   problema reale ma di gameplay, aperto come
-  [PS-057](../to_do/PS-057-errori-fisica-su-split-del-piccione-viola.md) invece
+  [PS-057](../2_to_do/PS-057-errori-fisica-su-split-del-piccione-viola.md) invece
   di allargare questa card.
 
 ## Documenti sincronizzati
@@ -170,7 +170,7 @@ Non toccare:
       profili con i loro percorsi, le regole che rendono una cattura
       utilizzabile come evidenza e il fatto che il pacchetto `20x9` non è un
       gate Android.
-- [x] `docs/cards/to_test/PS-036-Barb-specialities-ux-enhance.md`: percorsi
+- [x] `docs/cards/4_to_test/PS-036-Barb-specialities-ux-enhance.md`: percorsi
       delle evidenze riallineati a `05b_barb_speciality.png` e
       `05c_barb_bonus.png`.
 

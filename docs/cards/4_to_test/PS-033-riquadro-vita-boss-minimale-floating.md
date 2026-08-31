@@ -25,7 +25,7 @@ comparire solo come la barra overhead già disegnata sopra ogni nemico da
 leggibile su un'entità con molta più vita e uno scontro più lungo.
 
 Questa card assorbe ed estende quanto fatto in precedenza sullo stesso
-elemento; supersede anche [PS-009](../completed/PS-009-trasparenza-dialog-boss.md)
+elemento; supersede anche [PS-009](../5_completed/PS-009-trasparenza-dialog-boss.md)
 (trasparenza del pannello sotto il Player), il cui oggetto (il pannello
 stesso) non esiste più — vedi quella card per la nota di chiusura.
 

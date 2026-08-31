@@ -1,0 +1,113 @@
+---
+id: PS-049
+titolo: Generare le tre illustrazioni definitive del tutorial
+tipo: art
+area: arte
+stato: BLOCCATO
+priorita: media
+dipende_da: [PS-048]
+origine:
+creato: 2026-08-31
+aggiornato: 2026-08-31
+---
+
+# PS-049 — Generare le tre illustrazioni definitive del tutorial
+
+## Contesto
+
+[PS-048](./PS-048-fedelta-al-runtime-di-tre-pagine-tutorial.md) corregge tre
+pagine e le cabla su segnaposto `fake_*.png`. Questa card sostituisce i fake
+con arte definitiva mantenendo composizione, ingombri e significato già
+validati.
+
+Le nuove catture 20:9 confermano che cornice e contenitore del tutorial sono
+già coerenti: l'intervento riguarda solo le tre illustrazioni.
+
+## Comportamento atteso
+
+Le illustrazioni sembrano parte del gioco e rappresentano fedelmente i segnali
+runtime: confronto di stato per l'abilità, sequenza XP → livello → carta e
+vocabolario dei telegraph. Non diventano vignette decorative scollegate dagli
+elementi che il giocatore incontrerà.
+
+## Criteri di accettazione
+
+### `tutorial_ability_button.png`
+
+- [ ] Mostra il vero pulsante abilità dell'HUD, non un'icona generica.
+- [ ] Gli stati `PRONTA` e `IN RICARICA` sono confrontabili e il riempimento
+      circolare è la differenza dominante.
+- [ ] Un accenno dell'angolo di schermo comunica la posizione in basso a
+      destra senza aggiungere un HUD fittizio.
+
+### `tutorial_pickups.png`
+
+- [ ] XP e cura riprendono forma e colori degli elementi runtime correnti.
+- [ ] La carta di scelta è riconoscibile come esito del level-up.
+- [ ] La lettura XP → livello → carta è chiara; la cura resta un recupero vita
+      parallelo e non un passaggio obbligatorio della sequenza.
+
+### `tutorial_telegraphs.png`
+
+- [ ] Mostra almeno tre forme di zona pericolosa distinte, per esempio linea,
+      anello e area.
+- [ ] Forme, trasparenze e colori sono coerenti con i telegraph runtime.
+- [ ] Nessuna forma viene presentata come il segnale universale dei Boss.
+
+### Comuni
+
+- [ ] I file definitivi sostituiscono i percorsi `fake_*.png` cablati da
+      PS-048 e i riferimenti nei `.tres` vengono aggiornati.
+- [ ] Nessun `fake_*.png` resta sotto `assets/art/ui/tutorial/`.
+- [ ] Ogni immagine è leggibile nelle catture 1280×720 e Pixel 9 20:9 senza
+      testo microscopico o dettagli essenziali affidati a pochi pixel.
+- [ ] Palette, cornici e pixel density sono coerenti con le altre pagine.
+- [ ] Ogni nuovo file ha una riga in
+      `assets/art/ui/tutorial/ASSET-MANIFEST.md` con percorso, origine, autore,
+      licenza, trasformazioni e SHA-256; i master HD restano esclusi dagli
+      export.
+
+## Ambito
+
+- `assets/art/ui/tutorial/hd/` e
+  `assets/art/ui/tutorial/generated/`.
+- `assets/art/ui/tutorial/ASSET-MANIFEST.md`.
+- `data/tutorial/ability.tres`, `data/tutorial/progression.tres`,
+  `data/tutorial/boss.tres`, solo per sostituire i percorsi fake.
+
+Non toccare:
+
+- testo, ordine e struttura stabiliti da PS-048;
+- contenitore, navigazione e safe area del tutorial;
+- script e gameplay.
+
+## Verifica
+
+- Smoke: riusa `tests/unit/test_ps048_tutorial_runtime_fidelity.gd`, esteso
+  per verificare che nessuna pagina punti a un file con prefisso `fake_`.
+- Profilo minimo prima della chiusura: `Relevant`
+
+## Gate manuali
+
+- [ ] Runtime Windows
+- [ ] Validazione statica APK — i master HD restano esclusi dai tre preset
+- [ ] Runtime fisico Pixel 9: pagine 3, 4 e 6 alla scala reale
+- [ ] Controllo percettivo richiesto: sì — le immagini insegnano gli stessi
+      segnali che compaiono nella run
+
+## Decisioni
+
+- **2026-08-31 — I fake restano il contratto di passaggio.** PS-049 li
+  sostituisce solo dopo che contenuto e ingombri sono stati validati in PS-048.
+- **2026-08-31 — Fedeltà prima della decorazione.** Ogni licenza stilistica è
+  subordinata alla riconoscibilità degli elementi runtime.
+
+## Documenti sincronizzati
+
+- [ ] `assets/art/ui/tutorial/ASSET-MANIFEST.md`.
+- [ ] `docs/visual-audio-identity.md`, se emerge una convenzione durevole.
+
+## Note
+
+Conservare master HD, derivato runtime, prompt, trasformazioni e hash secondo
+la pipeline asset del repository.

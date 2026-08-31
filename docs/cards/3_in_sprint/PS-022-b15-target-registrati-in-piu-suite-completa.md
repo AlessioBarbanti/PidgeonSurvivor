@@ -25,7 +25,7 @@ due conteggi del `TargetingSystem`:
 
 Sempre esattamente **due bersagli registrati in più**. Lo stesso test passa
 in isolamento (`Focused` sul solo file). Non è una regressione di
-[PS-013](../to_test/PS-013-crash-typedarray-seconda-offerta-upgrade.md): le stesse due
+[PS-013](../4_to_test/PS-013-crash-typedarray-seconda-offerta-upgrade.md): le stesse due
 asserzioni erano già fallite il 2026-08-29 alle 01:26 nello smoke legacy
 equivalente `tests/integration/_boss_encounter_smoke.gd`, che girava in un
 processo tutto suo (log `20260829-012625-B18M`,
@@ -138,8 +138,8 @@ Non modificare come soluzione di comodo:
   (`2>$null`) in un `NativeCommandError` terminante anche a exit code `0`
   (causa nota, non specifica di questa card). Sbloccato normalizzando a LF
   l'unico file CRLF nell'albero di lavoro
-  (`docs/cards/to_test/PS-009-trasparenza-dialog-boss.md`, residuo da
-  [PS-009](../to_test/PS-009-trasparenza-dialog-boss.md)), non toccando lo
+  (`docs/cards/4_to_test/PS-009-trasparenza-dialog-boss.md`, residuo da
+  [PS-009](../4_to_test/PS-009-trasparenza-dialog-boss.md)), non toccando lo
   script. Il runner resta comunque fragile su qualunque file CRLF futuro:
   vale la pena una card dedicata se ricapita, ma è fuori ambito qui.
 

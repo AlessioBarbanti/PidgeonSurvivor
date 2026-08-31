@@ -33,7 +33,7 @@ produrre un esito `PASS`/`FAIL` leggibile — anche se `git diff` è
 tecnicamente riuscito.
 
 Scoperto il 2026-08-30 lavorando su
-[PS-022](../to_do/PS-022-b15-target-registrati-in-piu-suite-completa.md): un
+[PS-022](../2_to_do/PS-022-b15-target-registrati-in-piu-suite-completa.md): un
 file card era rimasto con CRLF dopo un `git mv`, e la prima invocazione del
 runner in quella sessione è crashata. Aggirato per quella sessione
 normalizzando manualmente il file a LF, senza toccare lo script.
@@ -122,7 +122,7 @@ lasciarlo propagare come eccezione) e decidere in base al solo
 `$LASTEXITCODE`, non alla presenza di testo su stderr.
 
 Osservazione collaterale, non in ambito qui: durante la stessa sessione sono
-stati trovati sei file card (`PS-024`..`PS-029` in `docs/cards/to_do/`) non
+stati trovati sei file card (`PS-024`..`PS-029` in `docs/cards/2_to_do/`) non
 presenti nella tabella di [docs/cards/README.md](../README.md). Non è stato
 verificato se sono card valide dimenticate nella board o file da altre fonti;
 segnalato al proprietario, non corretto qui perché fuori ambito.

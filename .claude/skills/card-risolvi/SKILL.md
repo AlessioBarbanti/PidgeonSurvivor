@@ -10,15 +10,27 @@ La card è l'unico contratto operativo: non allargarla e non reinterpretarla.
 ## 1. Prendi la card
 
 1. `git status --short`: preserva ogni modifica preesistente.
-2. Apri la card indicata. Se ti è stato chiesto "la prossima", scegli in
-   [docs/cards/README.md](../../../docs/cards/README.md) la card `PRONTO` con
-   priorità più alta e dipendenze chiuse.
+2. Apri la card indicata. Se ti è stato chiesto "la prossima" (o equivalenti
+   come "procediamo con la prossima card"):
+   - Controlla prima [docs/cards/3_in_sprint/](../../../docs/cards/3_in_sprint/).
+     Se contiene ancora card, prendi quella `PRONTO` a priorità più alta (a
+     parità, ID crescente) e vai al punto 5.
+   - Se `3_in_sprint/` è vuota, scegli in
+     [docs/cards/README.md](../../../docs/cards/README.md) la card `2_to_do`
+     in stato `PRONTO` a priorità più alta con dipendenze chiuse (prerequisito
+     almeno `IN VERIFICA`, non serve `COMPLETATO`). Aggiungi al blocco la sua
+     catena di dipendenza — le card che ne dipendono e quelle da cui dipende —
+     fino al confine naturale del filone. Se non è chiaro quali card
+     includere, **fermati e chiedi al proprietario** prima di spostare
+     qualunque file.
+   - Sposta l'intero blocco scelto in `docs/cards/3_in_sprint/` e aggiorna i
+     link nella board, poi riparti dalla prima card del blocco.
 3. Se lo stato è `DA DEFINIRE` o `BLOCCATO`, **fermati**: riporta la domanda o la
    dipendenza registrata nella card e non implementare.
 4. Se ricevi un vecchio ID B-series, trova la card tramite `origine`; se non
    esiste, creala prima di implementare.
-5. Porta lo stato a `IN CORSO`, sposta la card in `docs/cards/to_do/` e aggiorna
-   `aggiornato`, stato e link nella board.
+5. Porta lo stato a `IN CORSO`, sposta la card in `docs/cards/3_in_sprint/`
+   (se non ci è già) e aggiorna `aggiornato`, stato e link nella board.
 
 ## 2. Implementa
 
@@ -56,8 +68,8 @@ piattaforma applica `gate-piattaforme`.
      percettivi o su device;
    - `COMPLETATO` quando tutti i gate pertinenti sono chiusi e la card è
      accettata; il commit resta separato.
-   Sposta `IN VERIFICA` in `docs/cards/to_test/` e `COMPLETATO` in
-   `docs/cards/completed/`.
+   Sposta `IN VERIFICA` in `docs/cards/4_to_test/` e `COMPLETATO` in
+   `docs/cards/5_completed/`.
 3. Scrivi in `Decisioni` le scelte e motivazioni; in Note alternative, comandi e
    marker esatti usati come evidenza.
 4. Aggiorna stato e link della riga nella tabella di

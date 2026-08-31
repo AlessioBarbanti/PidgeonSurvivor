@@ -144,8 +144,8 @@ Valori numerici (telegraph `0.9-1.3s`, durata `1.0-6.0s`, danno `0-30` con
 Cosplay/Reggaeton a `0` perché non infliggono danno diretto, raggio area
 `0-420`) vivono in `data/bosses/signatures/*.tres` e non sono duplicati qui.
 Due card di bilanciamento sono ancora aperte e **non riflesse** nei valori
-correnti: `docs/cards/to_do/PS-024-riduci-danno-onda-urto-magno.md` e
-`docs/cards/to_do/PS-025-aumenta-dimensioni-avvertimento-boss.md`.
+correnti: `docs/cards/2_to_do/PS-024-riduci-danno-onda-urto-magno.md` e
+`docs/cards/2_to_do/PS-025-aumenta-dimensioni-avvertimento-boss.md`.
 
 ### Cadenza incontri
 
@@ -169,7 +169,7 @@ tre eventi baseline (`data/wave_events/*.tres`):
 | Stormo laterale | 8s | Nessuno | 10 `swarmer`, uno ogni 0.25s | Ridotto (×1.5 intervallo) |
 | Nido di tiratori | 14s | Nessuno (ogni tiratore mantiene il proprio) | Peso `ranged` ×4 nel pool esistente | Invariato |
 
-Card: [docs/cards/to_test/PS-008-eventi-di-ondata.md](./cards/to_test/PS-008-eventi-di-ondata.md),
+Card: [docs/cards/4_to_test/PS-008-eventi-di-ondata.md](./cards/4_to_test/PS-008-eventi-di-ondata.md),
 `IN VERIFICA` — i valori sopra sono quelli correnti nel codice/dati, ma la
 loro validità di design (leggibilità percettiva) non è ancora confermata dal
 proprietario.
