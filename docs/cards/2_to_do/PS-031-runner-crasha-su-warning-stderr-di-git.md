@@ -33,7 +33,7 @@ produrre un esito `PASS`/`FAIL` leggibile — anche se `git diff` è
 tecnicamente riuscito.
 
 Scoperto il 2026-08-30 lavorando su
-[PS-022](../2_to_do/PS-022-b15-target-registrati-in-piu-suite-completa.md): un
+[PS-022](../5_completed/PS-022-b15-target-registrati-in-piu-suite-completa.md): un
 file card era rimasto con CRLF dopo un `git mv`, e la prima invocazione del
 runner in quella sessione è crashata. Aggirato per quella sessione
 normalizzando manualmente il file a LF, senza toccare lo script.

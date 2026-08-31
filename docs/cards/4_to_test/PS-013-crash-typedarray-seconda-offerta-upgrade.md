@@ -133,7 +133,7 @@ Profilo `Relevant` (log `20260830-133544-PS-013`): il calcolo delle path
 modificate ha degenerato in suite completa, 65 script e 160 test, 159 verdi.
 L'unico rosso è `test_b15_boss_encounter.gd`, che passa in isolamento e
 falliva già il 2026-08-29 prima di questa modifica: spostato su
-[PS-022](../2_to_do/PS-022-b15-target-registrati-in-piu-suite-completa.md).
+[PS-022](../5_completed/PS-022-b15-target-registrati-in-piu-suite-completa.md).
 
 **Prova che la regressione è davvero coperta.** Ripristinando
 `scripts/ui/upgrade_overlay.gd` alla versione di HEAD e rilanciando il solo

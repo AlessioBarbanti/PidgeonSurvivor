@@ -58,7 +58,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-019](./5_completed/PS-019-manifest-vfx-hash-non-aggiornato.md) | Riallinea l'hash del manifest VFX per instinctive_dodge_accent | chore | arte | COMPLETATO | bassa | — |
 | [PS-020](./5_completed/PS-020-diagnostica-flakiness-backdrop-selettore.md) | Diagnostica il fallimento intermittente sul backdrop del selettore | chore | tooling | COMPLETATO | bassa | — |
 | [PS-021](./5_completed/PS-021-import-orfano-backdrop-bronze.md) | Rimuovi l'import orfano del backdrop bronze del selettore | chore | arte | COMPLETATO | bassa | — |
-| [PS-022](./3_in_sprint/PS-022-b15-target-registrati-in-piu-suite-completa.md) | Diagnostica i due target registrati in più di test_b15_boss_encounter | chore | tooling | IN CORSO | media | — |
+| [PS-022](./5_completed/PS-022-b15-target-registrati-in-piu-suite-completa.md) | Diagnostica i due target registrati in più di test_b15_boss_encounter | chore | tooling | COMPLETATO | media | — |
 | [PS-023](./4_to_test/PS-023-runner-verifica-affidabile.md) | Rendi leggibile e non bloccante il runner di verifica | chore | tooling | IN VERIFICA | alta | — |
 | [PS-024](./4_to_test/PS-024-riduci-danno-onda-urto-magno.md) | Riduci il danno dell'Onda d'Urto di Magno | fix | gameplay | IN VERIFICA | alta | — |
 | [PS-025](./2_to_do/PS-025-aumenta-dimensioni-avvertimento-boss.md) | Aumenta le dimensioni dell'avvertimento Boss | ux | ui | PRONTO | media | — |

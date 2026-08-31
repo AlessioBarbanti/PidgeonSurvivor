@@ -42,7 +42,7 @@ più nemici registrati di quanti il test ne aspetti.
 
 Trovato due volte lo stesso giorno (2026-08-31, ora locale del repository):
 
-1. [PS-022](../4_to_test/PS-022-b15-target-registrati-in-piu-suite-completa.md) —
+1. [PS-022](./PS-022-b15-target-registrati-in-piu-suite-completa.md) —
    `test_b15_boss_encounter.gd` registrava 2 bersagli in più nel
    `TargetingSystem` quando lo Sciame veniva estratto per lo spawn manuale di
    riga 105. Risolto azzerando `spawner.archetypes` in quel test, ma è un
@@ -89,7 +89,7 @@ in isolamento come dentro qualunque profilo batch.
 - [x] Verificato a campione se altri test che chiamano `try_spawn_enemy()`
       senza azzerare `archetypes` (grep su `tests/unit/`) sono esposti allo
       stesso rischio; documentato qui l'elenco trovato. Vedi Decisioni.
-- [x] Il fix in [PS-022](../4_to_test/PS-022-b15-target-registrati-in-piu-suite-completa.md)
+- [x] Il fix in [PS-022](./PS-022-b15-target-registrati-in-piu-suite-completa.md)
       (`spawner.archetypes = []` in `test_b15_boss_encounter.gd`) può restare
       com'è: non è in conflitto con un seed fisso a monte, è solo ridondante
       una volta chiusa questa card. Lasciato invariato; aggiornato solo il

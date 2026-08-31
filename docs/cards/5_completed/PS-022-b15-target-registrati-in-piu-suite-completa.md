@@ -3,12 +3,12 @@ id: PS-022
 titolo: Diagnostica i due target registrati in più di test_b15_boss_encounter
 tipo: chore
 area: tooling
-stato: IN CORSO
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine: PS-013
 creato: 2026-08-30
-aggiornato: 2026-08-30
+aggiornato: 2026-08-31
 ---
 
 # PS-022 — Diagnostica i due target registrati in più di test_b15_boss_encounter
@@ -47,16 +47,16 @@ entità che la fixture crea esplicitamente.
       precedente nello stesso processo, o altro). — vedi Decisioni: non è
       stato residuo tra test, è RNG di spawn non seminato dentro questo
       stesso test.
-- [ ] `test_b15_boss_encounter.gd` passa sia in isolamento sia dentro un
-      profilo `Full`, per tre esecuzioni consecutive con `-NoCache`. — run in
-      corso, vedi Note per i log via via raccolti.
+- [x] `test_b15_boss_encounter.gd` passa sia in isolamento sia dentro un
+      profilo `Full`, per tre esecuzioni consecutive con `-NoCache`. Vedi
+      Verifica per i log e i conteggi JUnit.
 - [x] Se la causa è nella fixture, il test viene reso deterministico senza
       allentare le asserzioni sui conteggi. — la causa è nella fixture (vedi
       Decisioni); `assert_eq(..., 2, ...)` e `assert_eq(..., 1, ...)` restano
       invariati.
-- [ ] Se la causa è nel codice di gioco (registrazione doppia o mancata
+- [x] Se la causa è nel codice di gioco (registrazione doppia o mancata
       deregistrazione nel `TargetingSystem`), il problema viene descritto qui
-      e spostato su una card dedicata. — non applicabile: la causa non è nel
+      e spostato su una card dedicata. Non applicabile: la causa non è nel
       codice di gioco.
 
 ## Ambito
@@ -74,13 +74,24 @@ Non modificare come soluzione di comodo:
 
 - Test: `tests/unit/test_b15_boss_encounter.gd`.
 - Profilo minimo prima della chiusura: `Full` con `-NoCache`, ripetuto.
+- Tre `Full -NoCache` consecutive già registrate durante PS-032, con B15 nel
+  batch di regressione: `20260831-002336-PS-032`,
+  `20260831-004826-PS-032`, `20260831-011251-PS-032`. In ciascun JUnit la
+  suite B15 riporta 2 test, zero failure e zero skipped; il primo profilo era
+  rosso solo per una flakiness PS-009 estranea, mentre B15 era verde.
+- Tre passaggi focused/isolati sull'HEAD corrente: `20260831-225256-PS-039`,
+  `20260831-230124-PS-039` e `20260831-233508-PS-022`; ogni JUnit riporta
+  2/2 test B15 verdi. Il secondo run è anche un profilo `Full` corrente da
+  240/240 test, toolchain e project smoke verdi.
+- Nessuno dei log citati contiene `SCRIPT ERROR`, `FATAL EXCEPTION`,
+  `SMOKE_FAIL` o `CONTRACT_FAIL`.
 
 ## Gate manuali
 
-- [ ] Runtime Windows: non richiesto per la sola diagnosi.
-- [ ] Validazione statica APK: non richiesta.
-- [ ] Runtime fisico Pixel 9: non richiesto.
-- [ ] Controllo percettivo richiesto: no.
+- [x] Runtime Windows: non richiesto per la sola diagnosi.
+- [x] Validazione statica APK: non richiesta.
+- [x] Runtime fisico Pixel 9: non richiesto.
+- [x] Controllo percettivo richiesto: no.
 
 ## Decisioni
 
@@ -157,3 +168,7 @@ Frequenza osservata il 2026-08-30: **un fallimento su tre** esecuzioni della
 suite completa. Verde in `20260830-140828-PS-021` e in `20260830-144237-PS-023`
 (69/69), rosso in `20260830-133544-PS-013`. Chi riprende la card non si aspetti
 di riprodurlo al primo colpo: serve ripetere con `-NoCache`.
+
+**Chiusura 2026-08-31.** Il fix locale era già presente nel commit
+`d67b16b` insieme al lavoro PS-034/PS-032. La validazione sopra conferma che
+non serve un'ulteriore modifica al runtime o alle asserzioni esatte.
