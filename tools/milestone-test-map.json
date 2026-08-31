@@ -25,7 +25,8 @@
         "tests/unit/test_b38_arena_world.gd",
         "tests/unit/test_ps003_zat_delayed_healing.gd",
         "tests/unit/test_ps004_zat_thunder_charge.gd",
-        "tests/unit/test_ps006_evil_signature_abilities.gd"
+        "tests/unit/test_ps006_evil_signature_abilities.gd",
+        "tests/unit/test_ps041_magno_trail_reset_redraw.gd"
       ]
     },
     {
