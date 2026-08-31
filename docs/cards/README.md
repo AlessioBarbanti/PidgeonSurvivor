@@ -64,7 +64,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-025](./2_to_do/PS-025-aumenta-dimensioni-avvertimento-boss.md) | Aumenta le dimensioni dell'avvertimento Boss | ux | ui | PRONTO | media | — |
 | [PS-026](./4_to_test/PS-026-rinomina-piccione-speciale-piccione-malvagio.md) | Rinomina Piccione Speciale in Piccione Malvagio | chore | gameplay | IN VERIFICA | media | — |
 | [PS-027](./4_to_test/PS-027-rimuovi-artefatto-powerslide-bea.md) | Rimuovi l'artefatto residuo dalla Powerslide di Bea | fix | arte | IN VERIFICA | media | — |
-| [PS-028](./2_to_do/PS-028-rendi-piroetta-alea-circolare.md) | Rendi circolare la rotazione della Gran Piroetta | art | arte | PRONTO | media | — |
+| [PS-028](./4_to_test/PS-028-rendi-piroetta-alea-circolare.md) | Rendi circolare la rotazione della Gran Piroetta | art | arte | IN VERIFICA | media | — |
 | [PS-029](./4_to_test/PS-029-rendi-tell-stato-personaggi-piu-visibili.md) | Rendi più visibili i tell di stato dei personaggi | ux | gameplay | IN VERIFICA | alta | — |
 | [PS-030](./5_completed/PS-030-runner-crash-su-test-eliminato.md) | Correggi il crash del runner quando un test viene eliminato | fix | tooling | COMPLETATO | media | — |
 | [PS-031](./2_to_do/PS-031-runner-crasha-su-warning-stderr-di-git.md) | Il runner crasha su un warning stderr di git invece di continuare | fix | tooling | PRONTO | media | — |

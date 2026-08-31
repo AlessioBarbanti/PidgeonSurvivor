@@ -147,6 +147,12 @@ Non modificare:
 - **2026-09-01 — Nuovo test GUT dedicato invece del percorso smoke citato
   dalla card.** Vedi sezione Verifica: il percorso originale non esiste più
   nel repository dopo il cutover GUT.
+- **2026-09-01 — Coordinare il gate percettivo di Alea con PS-028.** La
+  [Gran Piroetta aggiornata](./PS-028-rendi-piroetta-alea-circolare.md) usa ora
+  una corona più circolare e priva di stelle grandi. Quando i gate verranno
+  ripresi, il tell attivo di Alea va osservato anche durante questo VFX per
+  verificare che resti leggibile; nessun gate è stato eseguito in questa
+  sessione e lo stato della card resta invariato.
 
 ## Documenti sincronizzati
 

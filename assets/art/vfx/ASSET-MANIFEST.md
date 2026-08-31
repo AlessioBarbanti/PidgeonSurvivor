@@ -61,6 +61,15 @@ richiesta ha specificato un fondale cromatico uniforme; ImageGen built-in ha
 restituito direttamente PNG RGBA con angoli trasparenti, quindi la rimozione
 chroma non e stata necessaria.
 
+Eccezione PS-028, 1 settembre 2026: la rigenerazione della Gran Piroetta ha
+usato come riferimento il raster precedente e un fondale uniforme `#00FF00`,
+perché i primi output trasparenti incorporavano il motivo a scacchi. Il chroma
+è stato rimosso con alpha morbido basato sull'eccesso di verde
+`G - max(R, B)` e despill dei bordi; il master RGBA risultante è stato poi
+ricampionato senza crop a `512×512` con `tools/process-ability-vfx.ps1` e
+soglia alpha `32`. Generatore: OpenAI ImageGen built-in; autore: progetto IL
+GIOCO con assistenza OpenAI ImageGen; licenza: Licenza del progetto.
+
 I master `1254x1254` sono conservati in `assets/art/vfx/abilities/hd/`, esclusi
 da import ed export con `.gdignore` e preset. `tools/process-ability-vfx.ps1`
 li ricampiona sull'intero canvas a `512x512` RGBA con bicubica di alta qualita e
@@ -77,7 +86,7 @@ rigenerarli in pixel-art e separarli in CanvasItem distinti resta aperta.
 | Onda d'Urto Tellurica | `assets/art/vfx/abilities/hd/earthquake_wave_source.png` | `assets/art/vfx/abilities/generated/earthquake_wave.png` | Anello irregolare, otto crepe radiali, pietre e polvere ocra, centro aperto | `a66138b384e95efb63148c089947bb2728fad0952f8b6d3ae35177197596e858` | `9c33cb3ab22902ea7375d43b31a835252513171000687d07c07c5641ec905383` |
 | Powerslide | `assets/art/vfx/abilities/hd/fire_trail_source.png` | `assets/art/vfx/abilities/generated/fire_trail.png` | Nastro orizzontale di fiamma con nucleo crema, corpo arancio e bordo magenta raccordabile | `09105cd15307dba9cc29889a08d570af2800004667ef599a61ba292179f1214e` | `4a6e63783e4a7d3f48f331abc612bca8c9db53e2bd57d8e07c393f519b9aaeae` |
 | Tempesta di Tuoni | `assets/art/vfx/abilities/hd/lightning_impact_source.png` | `assets/art/vfx/abilities/generated/lightning_impact.png` | Impatto elettrico con starburst, archi spezzati e quattro forche radiali | `7b564bdb06ee057b5b1e3b94bcee918226ef2654174a90f64cd5eab0c5195f5c` | `96edc537d5ae9a533aee35d7c8901e7c9243b14508a3f626761bd3463453bb90` |
-| Gran Piroetta | `assets/art/vfx/abilities/hd/grand_spin_source.png` | `assets/art/vfx/abilities/generated/grand_spin.png` | Due falci opposte rosa/oro, centro aperto e scintille leggibili | `bcf540ee372cab1ac0a602c16d1bb79f977d91bbdcbcb548ca18aa649b32bf90` | `5356600d2fe6bbf8720c44d558e19a496e21121736f18a58893330bb149f03be` |
+| Gran Piroetta | `assets/art/vfx/abilities/hd/grand_spin_source.png` | `assets/art/vfx/abilities/generated/grand_spin.png` | Corona pixel-art rosa/magenta, crema e oro realmente circolare, centro aperto, peso uniforme sui quattro quadranti, moto orario continuo e nessuna stella; stesso centro e raggio apparente del riferimento | `d6c32c1844bdd5273616f5728ea411ee5befa77be61449df41b530acec2923bf` | `cb9db79e4c11a50f8dee24730e63f6fc41824625b2badf0fc8d9948b5084d918` |
 | Shock Termico - brina | `assets/art/vfx/abilities/hd/thermal_frost_source.png` | `assets/art/vfx/abilities/generated/thermal_frost.png` | Corona di lastre e dodici punte di ghiaccio rivolte verso il centro | `4b5bcf8148305ffc90a2ce7188d75fc1e0c4ac3a22b00e03bd8dc55cb2d51e17` | `22d59f73f0ef4516e4242903d744836857513ab12a95d2e40980b593b5b041a6` |
 | Shock Termico - bloom | `assets/art/vfx/abilities/hd/thermal_bloom_source.png` | `assets/art/vfx/abilities/generated/thermal_bloom.png` | Detonazione arancio con nucleo bianco e tre anelli spezzati | `31d2586485bfd7b604e922b6e1bebb3e91271a1032d713c1e14c3b6b52e6fa86` | `04a279732475d5019a73eae403b6b56f938fa125a3d2f3548ed7ec266ac88952` |
 | Cosplay Casuale | `assets/art/vfx/abilities/hd/cosplay_reveal_source.png` | `assets/art/vfx/abilities/generated/cosplay_reveal.png` | Reveal stellato con nastri ciano, viola e oro, piu coriandoli radi | `dda7841cb5f68c0986488502f05762e92ec9aca49f8c9ef5c59a55bfb03c47e2` | `7564e6792f9c2dd42cf2c27a3c3a796460185e38986070d4a972b82df6206999` |

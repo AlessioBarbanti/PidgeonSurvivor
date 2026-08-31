@@ -8,7 +8,7 @@ priorita: alta
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-08-31
+aggiornato: 2026-09-01
 ---
 
 # PS-043 — Riallineare la board ai file-card realmente presenti
@@ -19,8 +19,8 @@ La review del 31 agosto 2026 ha rilevato che
 [docs/cards/README.md](../README.md) elenca 38 righe mentre sotto
 `docs/cards/` esistono 41 file-card. Tre card attive non compaiono nella board:
 [PS-025](../2_to_do/PS-025-aumenta-dimensioni-avvertimento-boss.md),
-[PS-028](../2_to_do/PS-028-rendi-piroetta-alea-circolare.md) e
-[PS-029](../2_to_do/PS-029-rendi-tell-stato-personaggi-piu-visibili.md).
+[PS-028](../4_to_test/PS-028-rendi-piroetta-alea-circolare.md) e
+[PS-029](../4_to_test/PS-029-rendi-tell-stato-personaggi-piu-visibili.md).
 
 Il disallineamento va anche nella direzione opposta: la board conteneva righe
 per PS-010 e PS-011 mentre i due file non erano più presenti sotto
@@ -100,6 +100,9 @@ Non toccare:
 - **2026-08-31 — Nessun controllo automatico permanente.** L'audit è stato
   eseguito con uno script usa-e-getta fuori dal repository: aggiungere un gate
   al runner sarebbe una card separata, non un'estensione silenziosa di questa.
+- **2026-09-01 — Manutenzione dei link dopo l'avanzamento di PS-028 e PS-029.**
+  I due riferimenti storici ora puntano a `4_to_test`; contenuto e stato
+  `COMPLETATO` di PS-043 restano invariati.
 
 ## Documenti sincronizzati
 
