@@ -172,6 +172,47 @@ Questo non prova installazione, cold launch, touch, multitouch, lifecycle,
 prestazioni o qualità percettiva sul device. Tali risultati restano gate
 separati nelle note di verifica collegate dalla card.
 
+## Pacchetto di catture UI
+
+Le revisioni visive e le evidenze percettive partono da un pacchetto di
+schermate rigenerabile, prodotto da un solo entry point:
+
+```powershell
+godot_console --path . --script tools/_capture_ui_screenshots.gd
+```
+
+Lo script non è un test: guida il flusso reale `welcome → tutorial → selezione
+→ run → pausa → terminale` e salva un PNG per stato. I formati prodotti sono
+dichiarati in un solo punto dello script, non passati da riga di comando, così
+il contenuto del pacchetto non dipende da come lo si invoca:
+
+| Profilo | Viewport | Percorso |
+|---|---|---|
+| `16x9` | `1280×720` | `exports/ui-screenshots/` |
+| `20x9` | `2424×1080` | `exports/ui-screenshots/pixel9-20x9/` |
+
+I due pacchetti hanno gli stessi nomi di file. `exports/` è ignorato da git: le
+catture sono artefatti locali e vanno rigenerate, mai commesse.
+
+Regole che rendono il pacchetto utilizzabile come evidenza:
+
+- ogni scatto dichiara lo stato del `RunController` che si aspetta, e non viene
+  salvato se lo stato non corrisponde o se è visibile un modale che quello
+  stato non prevede: una composizione impossibile fallisce la cattura invece di
+  finire in un PNG;
+- gli stati si raggiungono dal percorso reale — il Boss dalla soglia del
+  `GameDirector`, la ricompensa Barb da `UpgradeService`, la pausa dal
+  `PlatformLifecycle` — mai simulandoli, perché una simulazione documenta un
+  incontro che quel seed non produce;
+- i valori mostrati sono quelli della sessione: il tempo del riepilogo
+  terminale è lo stesso tempo di run dell'HUD;
+- uno stato dormiente non entra nel pacchetto finché non è raggiungibile
+  giocando.
+
+**Il pacchetto `20x9` non è un gate Android.** È una simulazione di viewport
+eseguita su Windows: non prova installazione, cold launch, touch, multitouch,
+lifecycle né qualità percettiva sul device, che restano risultati separati.
+
 ## Igiene del contesto Codex
 
 Usare una conversazione per una card o checkpoint coerente. Prima di

@@ -231,8 +231,10 @@ La caricatura di Barb deve essere trattata come asset UI dedicato e non come sem
 - I tre preset Windows/APK/AAB escludono
   `assets/art/ui/barb_reward/hd/**`; il test focused verifica il contratto.
 - Screenshot ispezionati a `1280x720`:
-  `exports/ui-screenshots/ps036/01_barb_speciality.png` e
-  `exports/ui-screenshots/ps036/02_barb_bonus.png`. In entrambe la caricatura
+  `exports/ui-screenshots/05b_barb_speciality.png` e
+  `exports/ui-screenshots/05c_barb_bonus.png` (percorsi riallineati da PS-044:
+  le due modalita' Barb non hanno piu' uno script di cattura dedicato, sono
+  scattate dal percorso reale della run nel pacchetto canonico). In entrambe la caricatura
   resta nell'header senza coprire le carte; sblocco caldo/oro e bonus con carte
   fredde risultano distinti. La cattura aggiornata non contiene sottotitoli:
   badge e titolo restano centrati senza vuoti anomali.
