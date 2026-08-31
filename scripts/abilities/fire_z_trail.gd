@@ -64,6 +64,7 @@ func initialize(
 	_build_straight_path(source, definition, arena_layout)
 	global_position = Vector2.ZERO
 	_source.global_position = _path_points[-1]
+	_grant_landing_invulnerability(definition)
 	_apply_damage_tick()
 	_tick_remaining = _tick_interval
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
@@ -209,6 +210,20 @@ func _build_straight_path(
 	if is_instance_valid(arena_layout) and actual_end == desired_end and not source.get_world_bounds().has_area():
 		actual_end = arena_layout.clamp_circle_center(desired_end, source.collision_radius)
 	_path_points = PackedVector2Array([origin, actual_end])
+
+
+## PS-040: protegge l'atterraggio, il momento piu' rischioso dello scatto
+## (Bea si teletrasporta senza preavviso per il nemico, potenzialmente vicino
+## a un bersaglio). Zero o assente disabilita senza errori; usa lo stesso
+## meccanismo "prendi il massimo" del Sesto Senso Equino, quindi non si somma
+## ad altre fonti di invulnerabilita' gia' attive.
+func _grant_landing_invulnerability(definition: AbilityDefinition) -> void:
+	var iframe_duration := definition.get_effect_float(&"iframe_duration", 0.0, 0.0)
+	if iframe_duration <= 0.0:
+		return
+	var health := _source.get_health_component()
+	if is_instance_valid(health):
+		health.grant_invulnerability(iframe_duration)
 
 
 func _finish_effect() -> void:

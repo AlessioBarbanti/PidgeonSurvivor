@@ -17,7 +17,7 @@ Boss: Evil Magno — Signature *Onda d'Urto Tellurica*: dopo un forte impatto a 
 
 Ruolo: Evasione e riposizionamento.  
 Passiva — Sesto Senso Equino: Ogni 9 secondi annulla il colpo che la colpirebbe: Bea scarta d'istinto lontano dal pericolo e resta invulnerabile per un istante.<br>
-Attiva — Powerslide: Scatto istantaneo nell'ultima direzione di movimento, che lascia dietro di sé una scia di fuoco.
+Attiva — Powerslide: Scatto istantaneo nell'ultima direzione di movimento, invulnerabile all'atterraggio, che lascia dietro di sé una scia di fuoco.
 Boss: Evil Bea — Signature *Powerslide*: una linea di preavviso mostra direzione e traiettoria, poi Bea scatta lungo quella linea e lascia una scia di fuoco che infligge danno nel tempo e restringe temporaneamente lo spazio sicuro.
 
 ## Zat
