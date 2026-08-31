@@ -3,7 +3,7 @@ id: PS-038
 titolo: Documentazione di game design per review interna
 tipo: chore
 area: docs
-stato: IN CORSO
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
@@ -46,24 +46,34 @@ valore reinventato a memoria), aggiunti alla tabella delle fonti di verità di
 
 ## Criteri di accettazione
 
-- [ ] `docs/enemies-bosses.md` esiste e ogni archetipo nemico e ogni
+- [x] `docs/enemies-bosses.md` esiste e ogni archetipo nemico e ogni
       comportamento Boss/Evil descritto cita il file dati o script sorgente
       corrente.
-- [ ] `docs/systems-difficulty.md` esiste e descrive stati di
+- [x] `docs/systems-difficulty.md` esiste e descrive stati di
       `RunController`, spawn e curva di difficoltà di `GameDirector` citando
       i file/parametri sorgente correnti, senza contraddire `prd.md`.
-- [ ] `docs/ui-ux-flow.md` esiste e descrive il flusso schermate, `InputRouter`
+- [x] `docs/ui-ux-flow.md` esiste e descrive il flusso schermate, `InputRouter`
       e `PlatformLifecycle` citando i file sorgente correnti.
-- [ ] `docs/visual-audio-identity.md` esiste, descrive lo stato attuale di
+- [x] `docs/visual-audio-identity.md` esiste, descrive lo stato attuale di
       arte/audio e rimanda agli `ASSET-MANIFEST.md` pertinenti invece di
       duplicarli.
-- [ ] Nessuno dei quattro documenti introduce un valore, un contratto o un
+- [x] Nessuno dei quattro documenti introduce un valore, un contratto o un
       comportamento non verificabile nel codice/dati al momento della
-      stesura.
-- [ ] `CLAUDE.md` elenca i quattro nuovi documenti nella tabella delle fonti
+      stesura. Metodo: quattro ricognizioni dedicate sul codice/dati sorgente
+      più uno spot-check successivo con `grep`/lettura diretta su un
+      campione di affermazioni forti (stati `RunController`, soglie Boss,
+      Signature Registry, curva XP, offerte upgrade, pesi archetipi). Lo
+      spot-check ha trovato e corretto un errore reale: la tabella delle
+      Signature aveva scambiato le meccaniche fra Alea/Aleo/Migi/Marghe,
+      corretto confrontando `boss_signature_registry.gd:26-52` con
+      `characters.md`. Non è stata verificata riga per riga ogni singola
+      citazione dei quattro documenti: resta un rischio residuo su
+      affermazioni minori non ricontrollate a campione.
+- [x] `CLAUDE.md` elenca i quattro nuovi documenti nella tabella delle fonti
       di verità.
-- [ ] Nessun file runtime (`scripts/`, `scenes/`, `data/`) viene modificato da
-      questa card.
+- [x] Nessun file runtime (`scripts/`, `scenes/`, `data/`) viene modificato da
+      questa card (`git status --short` conferma solo `CLAUDE.md`,
+      `docs/cards/` e i quattro nuovi `docs/*.md`).
 
 ## Ambito
 
@@ -93,10 +103,10 @@ Non modificare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows — non pertinente, nessun cambiamento runtime.
-- [ ] Validazione statica APK — non pertinente.
-- [ ] Runtime fisico Pixel 9 — non pertinente.
-- [ ] Controllo percettivo richiesto: no.
+- [x] Runtime Windows — non pertinente, nessun cambiamento runtime.
+- [x] Validazione statica APK — non pertinente.
+- [x] Runtime fisico Pixel 9 — non pertinente.
+- [x] Controllo percettivo richiesto: no.
 
 ## Decisioni
 
@@ -106,10 +116,21 @@ Non modificare:
 - **2026-08-31 — Quattro documenti separati per argomento**, invece di un
   unico file lungo, per restare coerenti con la struttura a cataloghi già in
   uso e non creare un tracker parallelo.
+- **2026-08-31 — Ricognizione delegata, stesura e verifica trattenute.**
+  Quattro ricognizioni in sola lettura hanno raccolto il materiale grezzo con
+  citazioni file:riga; la prosa finale e lo spot-check di coerenza restano
+  fatti in prima persona, non delegati.
+- **2026-08-31 — Problema adiacente aperto come card separata, non corretto
+  qui.** La ricognizione Boss ha trovato un'API mancante
+  (`BossEncounter.get_last_experience_reward()`) sul ramo `VICTORY` di
+  `_show_terminal_screen`, oggi non raggiungibile in produzione. Non
+  corretto in questa card (sola documentazione): aperta come
+  [PS-039](../to_do/PS-039-api-mancante-vittoria-ricompensa-boss.md), priorità
+  bassa.
 
 ## Documenti sincronizzati
 
-- [ ] `CLAUDE.md` — riga aggiunta per ciascuno dei quattro nuovi documenti
+- [x] `CLAUDE.md` — riga aggiunta per ciascuno dei quattro nuovi documenti
       nella tabella "Fonti di verità".
 
 ## Note
