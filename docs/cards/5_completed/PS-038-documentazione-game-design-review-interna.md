@@ -125,7 +125,7 @@ Non modificare:
   (`BossEncounter.get_last_experience_reward()`) sul ramo `VICTORY` di
   `_show_terminal_screen`, oggi non raggiungibile in produzione. Non
   corretto in questa card (sola documentazione): aperta come
-  [PS-039](../2_to_do/PS-039-api-mancante-vittoria-ricompensa-boss.md).
+  [PS-039](./PS-039-api-mancante-vittoria-ricompensa-boss.md).
   L'indagine per implementarla ha poi mostrato che il regresso era più ampio
   di quanto stimato qui (rompeva anche il ramo `DEFEAT`, non solo
   `VICTORY`): la card PS-039 riporta la cronologia corretta.
