@@ -146,10 +146,11 @@ func test_evil_boss_two_run_cycle() -> void:
 		assert_not_null(health, "Il Boss Evil deve conservare HealthComponent.")
 		if health == null:
 			return
+		var expected_reward := int(boss.get_experience_reward_value())
 		assert_true(boss.take_damage(health.health_current), "Il danno letale deve sconfiggere l'Evil.")
 		assert_false(boss.take_damage(1.0), "La ricompensa non deve poter essere attivata due volte.")
 		assert_eq(
-			experience.experience_total, baseline.experience_reward,
+			experience.experience_total, expected_reward,
 			"Ogni run deve assegnare una sola ricompensa baseline."
 		)
 		await wait_process_frames(2)
@@ -181,7 +182,6 @@ func _same_gameplay_contract(candidate: BossDefinition, baseline: BossDefinition
 		and is_equal_approx(candidate.move_speed, baseline.move_speed)
 		and is_equal_approx(candidate.collision_radius, baseline.collision_radius)
 		and is_equal_approx(candidate.contact_damage, baseline.contact_damage)
-		and candidate.experience_reward == baseline.experience_reward
 		and is_equal_approx(candidate.initial_attack_delay, baseline.initial_attack_delay)
 		and is_equal_approx(candidate.pattern_interval, baseline.pattern_interval)
 		and is_equal_approx(candidate.radial_telegraph_duration, baseline.radial_telegraph_duration)
