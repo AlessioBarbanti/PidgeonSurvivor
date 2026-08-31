@@ -97,18 +97,6 @@ func _draw() -> void:
 		0.0,
 		1.0
 	)
-	draw_polyline(
-		_path_points,
-		Color(0.32, 0.04, 0.2, alpha * 0.58),
-		_trail_width,
-		true
-	)
-	draw_polyline(
-		_path_points,
-		Color(1.0, 0.42, 0.72, alpha),
-		maxf(_trail_width * 0.34, 4.0),
-		true
-	)
 	var origin := _path_points[0]
 	var destination := _path_points[1]
 	var direction := (destination - origin).normalized()
