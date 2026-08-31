@@ -62,7 +62,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-023](./4_to_test/PS-023-runner-verifica-affidabile.md) | Rendi leggibile e non bloccante il runner di verifica | chore | tooling | IN VERIFICA | alta | — |
 | [PS-024](./4_to_test/PS-024-riduci-danno-onda-urto-magno.md) | Riduci il danno dell'Onda d'Urto di Magno | fix | gameplay | IN VERIFICA | alta | — |
 | [PS-025](./2_to_do/PS-025-aumenta-dimensioni-avvertimento-boss.md) | Aumenta le dimensioni dell'avvertimento Boss | ux | ui | PRONTO | media | — |
-| [PS-026](./3_in_sprint/PS-026-rinomina-piccione-speciale-piccione-malvagio.md) | Rinomina Piccione Speciale in Piccione Malvagio | chore | gameplay | IN CORSO | media | — |
+| [PS-026](./4_to_test/PS-026-rinomina-piccione-speciale-piccione-malvagio.md) | Rinomina Piccione Speciale in Piccione Malvagio | chore | gameplay | IN VERIFICA | media | — |
 | [PS-027](./4_to_test/PS-027-rimuovi-artefatto-powerslide-bea.md) | Rimuovi l'artefatto residuo dalla Powerslide di Bea | fix | arte | IN VERIFICA | media | — |
 | [PS-028](./2_to_do/PS-028-rendi-piroetta-alea-circolare.md) | Rendi circolare la rotazione della Gran Piroetta | art | arte | PRONTO | media | — |
 | [PS-029](./2_to_do/PS-029-rendi-tell-stato-personaggi-piu-visibili.md) | Rendi più visibili i tell di stato dei personaggi | ux | gameplay | PRONTO | alta | — |

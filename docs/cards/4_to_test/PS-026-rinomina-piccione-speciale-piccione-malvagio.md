@@ -3,7 +3,7 @@ id: PS-026
 titolo: Rinomina Piccione Speciale in Piccione Malvagio
 tipo: chore
 area: gameplay
-stato: IN CORSO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine: B22
@@ -29,21 +29,18 @@ Le varianti `Evil <Nome>` restano invariate.
 
 ## Criteri di accettazione
 
-- [ ] La Boss Intro mostra `Piccione Malvagio` per il Boss baseline. Implementato
+- [x] La Boss Intro mostra `Piccione Malvagio` per il Boss baseline. Implementato
       (`data/bosses/first_boss.tres:13` + `get_safe_title()`) e coperto dal
-      nuovo test `tests/unit/test_ps026_boss_baseline_display_name.gd`; non
-      spuntato perché il profilo `Focused`/`Relevant` di
-      `run-milestone-checks.ps1` non è eseguibile in questo ambiente (nessun
-      Godot/PowerShell disponibile), quindi resta da eseguire su Windows.
-- [ ] Ogni altra UI runtime che mostra il nome del Boss baseline usa `Piccione Malvagio`.
+      test `tests/unit/test_ps026_boss_baseline_display_name.gd`, verde su
+      Windows il 2026-08-31.
+- [x] Ogni altra UI runtime che mostra il nome del Boss baseline usa `Piccione Malvagio`.
       `get_safe_title()` è l'unico punto che alimenta Boss Intro ed EndScreen
-      (`scripts/bosses/boss_definition.gd:63-66`, `scripts/bosses/boss_encounter.gd:439`,
-      `scripts/ui/end_screen.gd:31-39`); non spuntato per lo stesso motivo del
-      criterio precedente.
-- [ ] Nessun testo pubblico runtime mostra ancora `Piccione Speciale`. Grep di
-      repository conferma zero occorrenze runtime residue dopo la modifica;
-      non spuntato perché non ho potuto eseguire il gioco per un controllo a
-      schermo.
+      (`scripts/bosses/boss_definition.gd:63-66`,
+      `scripts/bosses/boss_encounter.gd:439`, `scripts/ui/end_screen.gd:31-39`);
+      il test composto verifica la Boss Intro.
+- [x] Nessun testo pubblico runtime mostra ancora `Piccione Speciale`. Il grep
+      di repository conferma zero occorrenze nei dati e nel codice runtime;
+      le occorrenze residue sono prosa interna di test/guard o note storiche.
 - [x] Le controparti `Evil <Nome>` conservano i propri nomi. Non toccate:
       restano derivate da `FriendDefinition.evil_display_name`
       (`scripts/content/friend_definition.gd:47,233-237`), indipendenti dal
@@ -54,10 +51,9 @@ Le varianti `Evil <Nome>` restano invariate.
       (`scripts/bosses/boss_encounter.gd:22`, invariato).
 - [x] Gli ID tecnici e i path non vengono rinominati senza una necessità
       esplicita. `id = &"special_pigeon"` invariato.
-- [ ] Restart e selezione seedata dei Boss restano invariati. Nessuna modifica
-      a `resolve_variant`/`resolve_definition_for_event`; non spuntato perché
-      manca l'esecuzione reale della suite `test_b22_evil_boss_variants.gd` in
-      questo ambiente.
+- [x] Restart e selezione seedata dei Boss restano invariati. Nessuna modifica
+      a `resolve_variant`/`resolve_definition_for_event`; il test focused e la
+      `Full` corrente coprono rispettivamente restart/Evil e la suite B22.
 
 ## Ambito
 
@@ -83,15 +79,19 @@ Non modificare:
   `tests/unit/test_*.gd` con report GUT), quindi la formulazione è corretta
   qui invece di crearne uno stile obsoleto.
 - Profilo minimo prima della chiusura: `Relevant` con
-  `-FocusedSmoke tests/unit/test_ps026_boss_baseline_display_name.gd`
-  (non ancora eseguito, vedi Note).
+  `-FocusedSmoke tests/unit/test_ps026_boss_baseline_display_name.gd`.
+- **2026-08-31 — focused PASS su Windows**: 2/2 test, zero failure JUnit,
+  log `20260831-233847-PS-026`; nessun marker bloccante.
+- **2026-08-31 — `Full` PASS sull'HEAD runtime corrente**: 240/240 test di
+  regressione, incluso `test_ps026_boss_baseline_display_name.gd` 2/2;
+  toolchain e project smoke verdi, log `20260831-230124-PS-039`.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
+- [x] Runtime Windows — project smoke del profilo `Full` superato.
 - [ ] Validazione statica APK
 - [ ] Runtime fisico Pixel 9 (percorso: genera Boss baseline → verifica nome in Boss Intro e HUD)
-- [ ] Controllo percettivo richiesto: no
+- [x] Controllo percettivo richiesto: no
 
 ## Decisioni
 
@@ -109,12 +109,9 @@ Non modificare:
   "piccione speciale" come prosa descrittiva interna, non come copy pubblico:
   restano invariati per non allargare la card oltre il nome mostrato al
   giocatore.
-- **2026-08-31 — Verifica automatica corretta ma non eseguita.** La card
-  citava un contratto a smoke `SceneTree` con marker, ormai sostituito da GUT
-  (`docs/verification-workflow.md`). Ho scritto il test GUT corretto ma non
-  ho potuto lanciare `run-milestone-checks.ps1` in questa sessione: l'ambiente
-  è Linux senza Godot né PowerShell, mentre il toolchain di verifica del
-  progetto è Windows-only (`docs/setup.md`).
+- **2026-08-31 — Verifica automatica eseguita su Windows.** Il contratto GUT
+  sostitutivo dello smoke legacy passa sia focused sia nella `Full`; resta
+  aperto soltanto il percorso Android dichiarato nei gate.
 
 ## Documenti sincronizzati
 
@@ -122,7 +119,7 @@ Non modificare:
   "piccione malvagio" (§3.5A, §3.6).
 - [x] `content-approvals.md`: il file non esiste nel repository, nessuna
   sincronizzazione necessaria.
-- [ ] Nota `*-verification.md`: nessuna nuova nota di verifica creata, in
+- [x] Nota `*-verification.md`: nessuna nuova nota di verifica creata, in
   linea con le altre card PS-0xx che non ne aprono una dedicata; le evidenze
   restano in questa card.
 
@@ -130,10 +127,7 @@ Non modificare:
 
 Preferire un cambio di contenuto localizzato. Non rinominare automaticamente file e ID storici solo per uniformarli al nuovo copy.
 
-**Stato aperto (2026-08-31).** Implementazione e sincronizzazione doc
-completate; nessun gate automatico o manuale è stato eseguito in questa
-sessione per assenza del toolchain Windows/Godot. Prima di portare la card a
-`COMPLETATO` serve: `Relevant` (poi `Full`/`Release` se la card lo richiede)
-su Windows con
-`-FocusedSmoke tests/unit/test_ps026_boss_baseline_display_name.gd`, più i
-gate manuali elencati sopra.
+**Stato in verifica (2026-08-31).** Implementazione, focused, suite completa
+e project smoke Windows sono chiusi. `adb devices -l` non rileva il Pixel 9:
+validazione statica dell'APK e runtime fisico restano aperti, quindi la card
+non viene dichiarata `COMPLETATO`.
