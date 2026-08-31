@@ -3,7 +3,7 @@ id: PS-039
 titolo: Regressione sulla ricompensa XP del Boss dopo PS-006
 tipo: fix
 area: gameplay
-stato: IN CORSO
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine:
@@ -137,19 +137,24 @@ Non modificare:
   invece del campo rimosso.
 - Profilo minimo prima della chiusura: `Relevant` con
   `-FocusedSmoke tests/unit/test_b15_boss_encounter.gd`.
-- **Non eseguito in questa sessione**: ambiente Linux senza Godot/PowerShell,
-  il toolchain di verifica del progetto è Windows-only (`docs/setup.md`).
-  Vedi Note.
+- **2026-08-31 — `Relevant` PASS su Windows** con focused
+  `tests/unit/test_b15_boss_encounter.gd`: 2 test focused e 50 test di
+  regressione, zero failure JUnit; nessun `SCRIPT ERROR`, `FATAL EXCEPTION`,
+  `SMOKE_FAIL` o `CONTRACT_FAIL` nei log.
+- **2026-08-31 — `Full` PASS su Windows**: 2 test focused e 240 test di
+  regressione, zero failure JUnit; toolchain e project smoke superati. Il log
+  di teardown contiene leak di risorse/RID già tollerati dal runner, ma
+  nessuno dei marker bloccanti del contratto.
 
 ## Gate manuali
 
-- [ ] Runtime Windows — necessario prima di `COMPLETATO`: nessun Godot
-      disponibile in questa sessione per eseguirlo.
-- [ ] Validazione statica APK — non pertinente, nessuna superficie Android
+- [x] Runtime Windows — project smoke superato dal profilo `Full` del
+      2026-08-31.
+- [x] Validazione statica APK — non pertinente, nessuna superficie Android
       specifica.
-- [ ] Runtime fisico Pixel 9 — non richiesto per questo fix (nessuna
+- [x] Runtime fisico Pixel 9 — non richiesto per questo fix (nessuna
       superficie touch/lifecycle coinvolta).
-- [ ] Controllo percettivo richiesto: no.
+- [x] Controllo percettivo richiesto: no.
 
 ## Decisioni
 
@@ -192,11 +197,12 @@ Non modificare:
 
 ## Note
 
-**Verifica non eseguita.** Il fix è stato implementato e controllato per
-lettura (firme, tipi, punti di connessione, valori attesi), ma non è stato
-lanciato `run-milestone-checks.ps1`: nessun Godot/PowerShell disponibile in
-questo ambiente. Il profilo `Relevant` su Windows resta il gate aperto prima
-di poter chiudere la card `COMPLETATO`.
+**Verifica eseguita su Windows il 2026-08-31.** `Relevant` e `Full` sono
+passati sull'HEAD che contiene sia il fix di arità sopravvissuto sia la
+decisione successiva di PS-034. L'evidenza chiude quindi il regresso runtime
+ancora valido senza reintrodurre la ricompensa XP esplicitamente revocata.
+Log: `%TEMP%\il-gioco-verification\20260831-225256-PS-039` e
+`%TEMP%\il-gioco-verification\20260831-230124-PS-039`.
 
 Priorità alzata da bassa ad alta durante l'implementazione: il regresso
 sul ramo `DEFEAT` (handler con arità sbagliata a ogni morte del Boss) e
