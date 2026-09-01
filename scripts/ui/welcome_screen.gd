@@ -15,7 +15,7 @@ signal touch_control_scale_changed(control_id: StringName, value: float)
 @onready var _actions_frame: PanelContainer = %ActionsFrame
 @onready var _background: TextureRect = %Background
 @onready var _main_actions: VBoxContainer = %MainActions
-@onready var _settings_panel: VBoxContainer = %SettingsPanel
+@onready var _settings_panel: PanelContainer = %SettingsPanel
 @onready var _play_button: Button = %PlayButton
 @onready var _tutorial_button: Button = %TutorialButton
 @onready var _settings_button: Button = %SettingsButton
@@ -148,6 +148,12 @@ func get_settings_button_rect() -> Rect2:
 
 func get_close_settings_button() -> Button:
 	return _close_settings_button if is_instance_valid(_close_settings_button) else null
+
+
+## PS-050: espone il pannello impostazioni per verificare che condivida la
+## cornice e la grammatica visiva della pausa (vedi PauseOverlay.get_pause_panel_rect()).
+func get_settings_panel() -> PanelContainer:
+	return _settings_panel if is_instance_valid(_settings_panel) else null
 
 
 func get_volume_slider() -> HSlider:

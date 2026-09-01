@@ -280,6 +280,7 @@
         "tests/unit/test_b18o_welcome_flow.gd",
         "tests/unit/test_b54_tutorial_flow.gd",
         "tests/unit/test_ps048_tutorial_runtime_fidelity.gd",
+        "tests/unit/test_ps050_welcome_settings_system.gd",
         "tests/unit/test_typography.gd",
         "tests/unit/test_ps005_boss_warning.gd",
         "tests/unit/test_ps025_boss_warning_size.gd",

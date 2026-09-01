@@ -1,12 +1,31 @@
-[gd_scene load_steps=23 format=3]
+[gd_scene load_steps=29 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/welcome_screen.gd" id="1_welcome"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/welcome/welcome_ability_cast_background.png" id="2_background"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/welcome/welcome_logo.png" id="3_logo"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/character_select/character_select_cta_base.png" id="4_cta"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/character_select/secondary_button_cta_base.png" id="5_secondary_cta"]
+[ext_resource type="Script" path="res://scripts/ui/pixel_arcade_slider.gd" id="6_slider"]
+[ext_resource type="Script" path="res://scripts/ui/pixel_arcade_toggle.gd" id="7_toggle"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/pause/pause_panel_frame.png" id="8_settings_frame"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_actions_frame"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_settings_panel"]
+texture = ExtResource("8_settings_frame")
+texture_margin_left = 56.0
+texture_margin_top = 52.0
+texture_margin_right = 56.0
+texture_margin_bottom = 52.0
+content_margin_left = 58.0
+content_margin_top = 48.0
+content_margin_right = 58.0
+content_margin_bottom = 46.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_settings_separator"]
+bg_color = Color(0.345, 0.294, 0.204, 0.72)
+content_margin_top = 1.0
+content_margin_bottom = 1.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_play_normal"]
 bg_color = Color(0.98, 0.49, 0.055, 1)
@@ -337,13 +356,17 @@ theme_override_styles/pressed = SubResource("StyleBoxTexture_secondary_pressed")
 theme_override_styles/focus = SubResource("StyleBoxEmpty_secondary_focus")
 text = "TUTORIAL"
 
-[node name="SettingsPanel" type="VBoxContainer" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent"]
+[node name="SettingsPanel" type="PanelContainer" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_styles/panel = SubResource("StyleBoxTexture_settings_panel")
 
-[node name="SettingsTitle" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel"]
+[node name="SettingsContent" type="VBoxContainer" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="SettingsTitle" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.78, 0.18, 1)
 theme_override_colors/font_outline_color = Color(0.13, 0.025, 0.008, 1)
@@ -352,20 +375,32 @@ theme_override_constants/outline_size = 5
 text = "IMPOSTAZIONI"
 horizontal_alignment = 1
 
-[node name="VolumeRow" type="HBoxContainer" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel"]
+[node name="AudioSeparator" type="HSeparator" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxFlat_settings_separator")
+
+[node name="AudioTitle" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
+theme_override_colors/font_outline_color = Color(0.09, 0.055, 0.02, 1)
+theme_override_constants/outline_size = 2
+theme_type_variation = &"TitleXS"
+text = "AUDIO"
+
+[node name="VolumeRow" type="HBoxContainer" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="VolumeCaption" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/VolumeRow"]
-custom_minimum_size = Vector2(150, 0)
+[node name="VolumeCaption" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent/VolumeRow"]
+custom_minimum_size = Vector2(142, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_type_variation = &"BodyM"
 text = "Volume audio"
 
-[node name="VolumeSlider" type="HSlider" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/VolumeRow"]
+[node name="VolumeSlider" type="HSlider" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent/VolumeRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 48)
+custom_minimum_size = Vector2(180, 44)
 layout_mode = 2
 size_flags_horizontal = 3
 min_value = 0.0
@@ -373,50 +408,73 @@ max_value = 1.0
 step = 0.05
 value = 0.8
 focus_neighbor_bottom = NodePath("../../MuteCheckButton")
+script = ExtResource("6_slider")
 
-[node name="VolumeValueLabel" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/VolumeRow"]
+[node name="VolumeValueLabel" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent/VolumeRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.87, 0.42, 1)
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_type_variation = &"ValueNumeric"
 text = "80%"
 horizontal_alignment = 2
 
-[node name="MuteCheckButton" type="CheckButton" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel"]
+[node name="MuteCheckButton" type="CheckButton" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 50)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 focus_neighbor_top = NodePath("../VolumeRow/VolumeSlider")
 focus_neighbor_bottom = NodePath("../ReducedFlashesCheckButton")
-theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_type_variation = &"CheckLabel"
 text = "AUDIO DISATTIVATO"
+script = ExtResource("7_toggle")
 
-[node name="ReducedFlashesCheckButton" type="CheckButton" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel"]
+[node name="AccessibilitySeparator" type="HSeparator" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxFlat_settings_separator")
+
+[node name="AccessibilityTitle" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
+theme_override_colors/font_outline_color = Color(0.09, 0.055, 0.02, 1)
+theme_override_constants/outline_size = 2
+theme_type_variation = &"TitleXS"
+text = "ACCESSIBILITÀ"
+
+[node name="ReducedFlashesCheckButton" type="CheckButton" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 50)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 focus_neighbor_top = NodePath("../MuteCheckButton")
 focus_neighbor_bottom = NodePath("../AbilitySizeRow/AbilitySizeSlider")
-theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_type_variation = &"CheckLabel"
 text = "FLASH RIDOTTI"
+script = ExtResource("7_toggle")
 
-[node name="AbilitySizeRow" type="HBoxContainer" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel"]
+[node name="ControlsTitle" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
+theme_override_colors/font_outline_color = Color(0.09, 0.055, 0.02, 1)
+theme_override_constants/outline_size = 2
+theme_type_variation = &"TitleXS"
+text = "CONTROLLI TOUCH"
+
+[node name="AbilitySizeRow" type="HBoxContainer" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Caption" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/AbilitySizeRow"]
-custom_minimum_size = Vector2(150, 0)
+[node name="Caption" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent/AbilitySizeRow"]
+custom_minimum_size = Vector2(142, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_type_variation = &"BodyM"
 text = "Icona abilità"
 
-[node name="AbilitySizeSlider" type="HSlider" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/AbilitySizeRow"]
+[node name="AbilitySizeSlider" type="HSlider" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent/AbilitySizeRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 48)
+custom_minimum_size = Vector2(180, 42)
 layout_mode = 2
 size_flags_horizontal = 3
 min_value = 1.0
@@ -425,30 +483,31 @@ step = 0.25
 value = 1.25
 focus_neighbor_top = NodePath("../../ReducedFlashesCheckButton")
 focus_neighbor_bottom = NodePath("../../JoystickSizeRow/JoystickSizeSlider")
+script = ExtResource("6_slider")
 
-[node name="AbilitySizeValueLabel" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/AbilitySizeRow"]
+[node name="AbilitySizeValueLabel" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent/AbilitySizeRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.87, 0.42, 1)
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_type_variation = &"ValueNumeric"
 text = "125%"
 horizontal_alignment = 2
 
-[node name="JoystickSizeRow" type="HBoxContainer" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel"]
+[node name="JoystickSizeRow" type="HBoxContainer" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Caption" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/JoystickSizeRow"]
-custom_minimum_size = Vector2(150, 0)
+[node name="Caption" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent/JoystickSizeRow"]
+custom_minimum_size = Vector2(142, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_type_variation = &"BodyM"
 text = "Joystick"
 
-[node name="JoystickSizeSlider" type="HSlider" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/JoystickSizeRow"]
+[node name="JoystickSizeSlider" type="HSlider" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent/JoystickSizeRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(220, 48)
+custom_minimum_size = Vector2(180, 42)
 layout_mode = 2
 size_flags_horizontal = 3
 min_value = 0.85
@@ -457,17 +516,18 @@ step = 0.15
 value = 1.0
 focus_neighbor_top = NodePath("../../AbilitySizeRow/AbilitySizeSlider")
 focus_neighbor_bottom = NodePath("../../CloseSettingsButton")
+script = ExtResource("6_slider")
 
-[node name="JoystickSizeValueLabel" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/JoystickSizeRow"]
+[node name="JoystickSizeValueLabel" type="Label" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent/JoystickSizeRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.87, 0.42, 1)
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_type_variation = &"ValueNumeric"
 text = "100%"
 horizontal_alignment = 2
 
-[node name="CloseSettingsButton" type="Button" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel"]
+[node name="CloseSettingsButton" type="Button" parent="Margin/Center/ContentPanel/ActionsFrame/ActionsContent/SettingsPanel/SettingsContent"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
