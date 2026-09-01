@@ -99,4 +99,6 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-061](./5_completed/PS-061-catture-ui-in-ci-per-validazione-remota.md) | Eseguire il pacchetto di catture UI in CI per la validazione visiva remota | chore | tooling | COMPLETATO | media | PS-044, PS-060 |
 | [PS-062](./5_completed/PS-062-setup-sandbox-remoto-validazione-locale.md) | Script di setup Godot nel sandbox remoto per validare prima di commit/push | chore | tooling | COMPLETATO | media | — |
 | [PS-063](./4_to_test/PS-063-metapanel-trabocca-carte-upgrade.md) | Il MetaPanel delle carte upgrade esce dal bordo della carta | fix | ui | IN VERIFICA | alta | PS-047 |
-| [PS-064](./2_to_do/PS-064-top-level-ignora-offset-safe-area.md) | I nodi top_level dei modal ignorano l'offset del safe-rect del display | fix | ui | PRONTO | media | PS-059 |
+| [PS-064](./4_to_test/PS-064-top-level-ignora-offset-safe-area.md) | I nodi top_level dei modal ignorano l'offset del safe-rect del display | fix | ui | IN VERIFICA | alta | PS-059 |
+| [PS-065](./2_to_do/PS-065-barb-reward-header-non-entra-in-safe-area.md) | L'header del premio Barb non entra nel rettangolo sicuro a risoluzioni compatte | fix | ui | PRONTO | media | PS-064 |
+| [PS-066](./4_to_test/PS-066-rimuovi-numero-scorciatoia-carte.md) | Rimuovere il numero di scorciatoia visibile dalle carte upgrade | fix | ui | IN VERIFICA | bassa | PS-047 |

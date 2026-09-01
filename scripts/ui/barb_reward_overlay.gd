@@ -38,6 +38,14 @@ func _ready() -> void:
 	set_process(false)
 	if is_instance_valid(_safe_margins):
 		_safe_margins.add_theme_constant_override("margin_top", int(CONTENT_TOP_MARGIN))
+	# `apply_safe_area()` normalmente arriva da `movement_slice.gd`
+	# (`_apply_layout()`), che non esiste nei fixture di test che instanziano
+	# questa scena da sola dentro un Control "nudo" posizionato a mano
+	# (test_ps047/b11/ps036). La propria `resized` copre quel caso: essendo
+	# ancorato FULL_RECT al genitore reale, il proprio rect riflette già
+	# quello giusto non appena il genitore ha la size definitiva.
+	resized.connect(_sync_safe_margins_to_own_rect)
+	_sync_safe_margins_to_own_rect()
 	for index in _cards.size():
 		var card := _cards[index]
 		card.upgrade_chosen.connect(_on_card_chosen)
@@ -143,6 +151,24 @@ func get_title_text() -> String:
 
 func get_title_label_rect() -> Rect2:
 	return _title_label.get_global_rect() if is_instance_valid(_title_label) else Rect2()
+
+
+## `SafeMargins` è `top_level` (PS-059, necessario per disegnare sopra il
+## `Dimmer`): un nodo `top_level` ancora se stesso al rettangolo del viewport,
+## non a quello del suo antenato logico, perdendo l'offset e il
+## ridimensionamento che `SafeAreaRoot` applicherebbe normalmente (PS-064).
+## L'orchestratore (`movement_slice.gd`) chiama questo metodo ogni volta che
+## ricalcola la safe area, cosi' header e carte restano dentro il rettangolo
+## vero invece che nel viewport intero.
+func apply_safe_area(rect: Rect2) -> void:
+	if not is_node_ready() or not is_instance_valid(_safe_margins):
+		return
+	_safe_margins.position = rect.position
+	_safe_margins.size = rect.size
+
+
+func _sync_safe_margins_to_own_rect() -> void:
+	apply_safe_area(get_global_rect())
 
 
 ## PS-046: espone lo stato del velo per gli smoke, cosi' una regressione dello

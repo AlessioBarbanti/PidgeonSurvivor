@@ -61,22 +61,17 @@ color = Color(0.058, 0.008, 0.02, 0.93)
 unique_name_in_owner = true
 top_level = true
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_bottom = 10
 
 [node name="Layout" type="VBoxContainer" parent="SafeMargins"]
 layout_mode = 2
 mouse_filter = 2
 alignment = 1
-theme_override_constants/separation = 10
+theme_override_constants/separation = 6
 
 [node name="HeaderPanel" type="PanelContainer" parent="SafeMargins/Layout"]
 custom_minimum_size = Vector2(0, 148)

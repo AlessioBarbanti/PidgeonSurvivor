@@ -343,6 +343,8 @@ func _apply_layout() -> void:
 	_safe_area_root.position = safe_area.position
 	_safe_area_root.size = safe_area.size
 	_apply_bar_horizontal_margins(safe_area)
+	_upgrade_overlay.apply_safe_area(safe_area)
+	_barb_reward_overlay.apply_safe_area(safe_area)
 
 	var joystick_rect := calculate_bottom_left_control_rect(
 		safe_area,

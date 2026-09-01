@@ -3,7 +3,6 @@ extends Button
 
 signal upgrade_chosen(upgrade_id: StringName)
 
-@onready var _shortcut_label: Label = %ShortcutLabel
 @onready var _icon: TextureRect = %Icon
 @onready var _title_label: Label = %TitleLabel
 @onready var _description_label: Label = %DescriptionLabel
@@ -35,7 +34,6 @@ func configure(
 
 	_definition = definition
 	_offer_index = offer_index
-	_shortcut_label.text = "%d" % (offer_index + 1)
 	_icon.texture = definition.icon
 	_title_label.text = definition.title.to_upper()
 	_description_label.text = definition.description
@@ -106,7 +104,6 @@ func clear_card() -> void:
 	tooltip_text = ""
 	if not is_node_ready():
 		return
-	_shortcut_label.text = ""
 	_icon.texture = null
 	_title_label.text = ""
 	_description_label.text = ""
