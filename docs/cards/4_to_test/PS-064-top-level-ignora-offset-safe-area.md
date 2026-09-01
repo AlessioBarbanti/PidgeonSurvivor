@@ -208,8 +208,12 @@ Non toccato:
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno finché il gate percettivo del proprietario non conferma la
-      correzione su device.
+- [x] [docs/ui-ux-flow.md](../../ui-ux-flow.md) — aggiunta una voce su come
+      `_apply_layout()` inoltra la safe area a `UpgradeOverlay`/
+      `BarbRewardOverlay` via `apply_safe_area()`, e sul centraggio sul
+      viewport invece che sulla safe area. Il contratto di codice è
+      documentato indipendentemente dal gate percettivo su device, ancora
+      aperto (vedi Gate manuali).
 
 ## Note
 

@@ -169,13 +169,25 @@ Due concetti distinti:
   `get_visible_reference_rect()` (righe 109-119): stessa dimensione del
   playfield ma **ricentrata sulla vista camera corrente**.
 - Adattamento a risoluzioni diverse (Windows vs Android landscape):
-  `movement_slice._apply_layout()` (righe 333-373) posiziona la safe area
+  `movement_slice._apply_layout()` (righe 338-380) posiziona la safe area
   root sulla safe area calcolata da `ArenaLayout`, ma ancora le barre XP/HP
   al **viewport** con margini simmetrici percentuali
-  (`_apply_bar_horizontal_margins`, righe 376-390) — così le barre non
+  (`_apply_bar_horizontal_margins`, righe 383-397) — così le barre non
   restano "attaccate" da un lato quando la safe area è asimmetrica (notch o
   cutout Android). Nessuna coordinata `1280×720` hardcoded, coerente con
   `CLAUDE.md`.
+- **`UpgradeOverlay`/`BarbRewardOverlay` e la safe area (PS-064).** Il velo e
+  il contenitore di titolo/carte di questi due modali sono `top_level`
+  (necessario da PS-059 per disegnare sopra ogni altro elemento dell'HUD):
+  un nodo `top_level` non eredita la trasformazione del proprio antenato,
+  quindi ignorerebbe la posizione/size che `SafeAreaRoot` applicherebbe
+  altrimenti. `_apply_layout()` inoltra perciò la stessa `safe_area` anche a
+  `UpgradeOverlay.apply_safe_area()`/`BarbRewardOverlay.apply_safe_area()`,
+  che riposizionano il loro `SafeMargins` esplicitamente. Titolo e carte si
+  centrano poi sull'altezza del **viewport** (non della safe area, che può
+  divergere) restando comunque vincolati a non coprire la fascia HUD
+  superiore (contratto PS-046) né uscire dal bordo inferiore della safe
+  area — vedi `_reflow_top_margin()` in entrambi gli script.
 
 ## Gate aperti
 
