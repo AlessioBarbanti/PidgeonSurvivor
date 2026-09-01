@@ -44,7 +44,7 @@ del documento architetturale, non una lacuna di questo file.
 | Cartella | PNG | Manifest | Note |
 |---|---|---|---|
 | `icons/upgrades` | 41 | [ASSET-MANIFEST.md](../assets/art/icons/upgrades/ASSET-MANIFEST.md) | Icone potenziamenti |
-| `characters/players` (+ `carousel/`, `hd/`) | 24 | [ASSET-MANIFEST.md](../assets/art/characters/players/ASSET-MANIFEST.md) | 8 strisce Player, identity pass 28/08/2026 |
+| `characters/<id>` (`hd/`, `generated/`) | 40 | [ASSET-MANIFEST.md](../assets/art/characters/ASSET-MANIFEST.md) | 8 personaggi, Player + Evil, identity pass 28/08/2026 |
 | `vfx/abilities` | 18 | [ASSET-MANIFEST.md](../assets/art/vfx/ASSET-MANIFEST.md) | Copre anche `vfx/projectiles` e `icons/abilities` |
 | `icons/passives` | 16 | [ASSET-MANIFEST.md](../assets/art/icons/passives/ASSET-MANIFEST.md) | Dichiara approvazione percettiva finale ancora aperta |
 | `enemies/pigeons` (+ `hd/`) | 16 | [ASSET-MANIFEST.md](../assets/art/enemies/pigeons/ASSET-MANIFEST.md) | Sprite piccioni per archetipo |

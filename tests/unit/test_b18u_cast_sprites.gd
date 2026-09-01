@@ -2,63 +2,63 @@ extends GutGameplayTest
 
 const EXPECTED_CAST := {
 	&"magno": {
-		"path": "res://assets/art/characters/players/magno.png",
+		"path": "res://assets/art/characters/magno/generated/sprite.png",
 		"sha256": "BF3CDDC9AFAC4028A037B588DEF3A0E8C0F7562C6952662E772A9432240766BB",
 		"passive": &"magno_aerodynamic_flow",
 		"ability": &"magno_earthquake_shockwave",
 	},
 	&"bea": {
-		"path": "res://assets/art/characters/players/bea.png",
+		"path": "res://assets/art/characters/bea/generated/sprite.png",
 		"sha256": "0646F8C7E1486C548A3C1F96090297E826EA5EC419B698AAC6C4A74144256CB3",
 		"passive": &"bea_sixth_sense",
 		"ability": &"bea_fire_z_trail",
 	},
 	&"zat": {
-		"path": "res://assets/art/characters/players/zat.png",
+		"path": "res://assets/art/characters/zat/generated/sprite.png",
 		"sha256": "A3B621F76C222873017A21E2206A072A71D908713B4A59BBAEA5AD7B9867E0FA",
 		"passive": &"zat_delayed_healing",
 		"ability": &"zat_lightning_storm",
 	},
 	&"alea": {
-		"path": "res://assets/art/characters/players/alea.png",
+		"path": "res://assets/art/characters/alea/generated/sprite.png",
 		"sha256": "5FA4E05D766D22F323B18BD2D61B0059CA5298C19B386A794C6EFB14FD8FDD51",
 		"passive": &"alea_eagle_never_misses",
 		"ability": &"alea_grand_spin",
 	},
 	&"aleo": {
-		"path": "res://assets/art/characters/players/aleo.png",
+		"path": "res://assets/art/characters/aleo/generated/sprite.png",
 		"sha256": "2408BC57B90877DE4F34C99BB9A0FD6404E33B61A542A19263CCE7B2C99149C6",
 		"passive": &"aleo_internal_thermostat",
 		"ability": &"aleo_thermal_shock",
 	},
 	&"lollo": {
-		"path": "res://assets/art/characters/players/lollo.png",
+		"path": "res://assets/art/characters/lollo/generated/sprite.png",
 		"sha256": "633751EE7DB25DDC92F3156BE4898124923894A4F6722D52045B2AC49F74BA31",
 		"passive": &"lollo_hyperactivity",
 		"ability": &"lollo_random_cosplay",
 	},
 	&"migi": {
-		"path": "res://assets/art/characters/players/migi.png",
+		"path": "res://assets/art/characters/migi/generated/sprite.png",
 		"sha256": "CC2C6CFC7A7CE160AD0870FE3DC6166771242610CABE7A89F9E72EE6E1446430",
 		"passive": &"migi_turtle_shell",
 		"ability": &"migi_zen_slowdown",
 	},
 	&"marghe": {
-		"path": "res://assets/art/characters/players/marghe.png",
+		"path": "res://assets/art/characters/marghe/generated/sprite.png",
 		"sha256": "30CA08F5BF1E59F0D6856B69B487C77CF75A8F0314827C3FB62F73096349DB9C",
 		"passive": &"marghe_contagious_smile",
 		"ability": &"marghe_shadow_deception",
 	},
 }
 const EXPECTED_HD := {
-	&"magno": ["res://assets/art/characters/players/hd/magno_source.png", "2EA717859B91B420B97F8D9975D67A3C827BA94CC4355739A4DB4FE370F836A5"],
-	&"bea": ["res://assets/art/characters/players/hd/bea_source.png", "3C6B26826B9A6B5708174AE6EDB42F1F652A120DE0B17C3405DCAB8CB756059D"],
-	&"zat": ["res://assets/art/characters/players/hd/zat_source.png", "DD1EB3F249F37426E9573DE02C2E0292F32A932A0C2059F82325D1F92919780B"],
-	&"alea": ["res://assets/art/characters/players/hd/alea_source.png", "61C760FA609852BA31F5C24CE43626EA41228AAC6DFC9371D78D83F65408FEA5"],
-	&"aleo": ["res://assets/art/characters/players/hd/aleo_source.png", "53999B4B51D97A918B5AC8F68444417E07B8B17EA4837C239173C5DEF4C787DE"],
-	&"lollo": ["res://assets/art/characters/players/hd/lollo_source.png", "CA66A174E501BEAB30CA3076F3682CCE955E488EC6EB8BBFC3C7734FDC1CF424"],
-	&"migi": ["res://assets/art/characters/players/hd/migi_source.png", "04EDEE8F99B5849384D268BD35CB4E498EA80BEA1FA961A67BD19B8D1DC75499"],
-	&"marghe": ["res://assets/art/characters/players/hd/marghe_source.png", "D20B2CBA8B5FEB9A70D62D5E5CBEDFAB96E0FC9BB4E1C954B9BDBEC782A1872C"],
+	&"magno": ["res://assets/art/characters/magno/hd/poses.png", "2EA717859B91B420B97F8D9975D67A3C827BA94CC4355739A4DB4FE370F836A5"],
+	&"bea": ["res://assets/art/characters/bea/hd/poses.png", "3C6B26826B9A6B5708174AE6EDB42F1F652A120DE0B17C3405DCAB8CB756059D"],
+	&"zat": ["res://assets/art/characters/zat/hd/poses.png", "DD1EB3F249F37426E9573DE02C2E0292F32A932A0C2059F82325D1F92919780B"],
+	&"alea": ["res://assets/art/characters/alea/hd/poses.png", "61C760FA609852BA31F5C24CE43626EA41228AAC6DFC9371D78D83F65408FEA5"],
+	&"aleo": ["res://assets/art/characters/aleo/hd/poses.png", "53999B4B51D97A918B5AC8F68444417E07B8B17EA4837C239173C5DEF4C787DE"],
+	&"lollo": ["res://assets/art/characters/lollo/hd/poses.png", "CA66A174E501BEAB30CA3076F3682CCE955E488EC6EB8BBFC3C7734FDC1CF424"],
+	&"migi": ["res://assets/art/characters/migi/hd/poses.png", "04EDEE8F99B5849384D268BD35CB4E498EA80BEA1FA961A67BD19B8D1DC75499"],
+	&"marghe": ["res://assets/art/characters/marghe/hd/poses.png", "D20B2CBA8B5FEB9A70D62D5E5CBEDFAB96E0FC9BB4E1C954B9BDBEC782A1872C"],
 }
 
 
@@ -84,13 +84,14 @@ func test_cast_sprites_contract() -> void:
 
 func _assert_cast_resources(player: Player, registry: FriendRegistry) -> void:
 	assert_eq(registry.get_definitions().size(), 8, "B18U deve coprire esattamente otto profili.")
-	assert_true(
-		FileAccess.file_exists("res://assets/art/characters/players/hd/.gdignore"),
-		"Le sorgenti HD B18U devono restare fuori dall'import runtime."
-	)
+	for friend_id in EXPECTED_CAST.keys():
+		assert_true(
+			FileAccess.file_exists("res://assets/art/characters/%s/hd/.gdignore" % friend_id),
+			"%s: le sorgenti HD B18U devono restare fuori dall'import runtime." % friend_id
+		)
 	var export_presets := FileAccess.get_file_as_string("res://export_presets.cfg")
 	assert_eq(
-		export_presets.count("assets/art/characters/players/hd/**"), 3,
+		export_presets.count("assets/art/characters/*/hd/**"), 3,
 		"Ogni preset deve escludere le sorgenti HD B18U."
 	)
 	for definition in registry.get_definitions():

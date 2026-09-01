@@ -182,16 +182,16 @@ func test_character_carousel_contract() -> void:
 func _assert_hd_portraits(registry: FriendRegistry, selector: CharacterSelectOverlay) -> void:
 	var presets := FileAccess.get_file_as_string("res://export_presets.cfg")
 	assert_true(
-		presets.contains("assets/art/characters/players/hd/**"), "Le sorgenti HD devono restare escluse dagli export."
-	)
-	assert_true(
-		FileAccess.file_exists("res://assets/art/characters/players/hd/.gdignore"),
-		"Le sorgenti HD non devono essere importate da Godot."
+		presets.contains("assets/art/characters/*/hd/**"), "Le sorgenti HD devono restare escluse dagli export."
 	)
 	for friend_id in EXPECTED_IDS:
 		var definition := registry.resolve_definition(friend_id)
-		var expected_runtime_path := "res://assets/art/characters/players/carousel/%s.png" % friend_id
-		var expected_hd_path := "res://assets/art/characters/players/hd/%s_source.png" % friend_id
+		var expected_runtime_path := "res://assets/art/characters/%s/generated/carousel.png" % friend_id
+		var expected_hd_path := "res://assets/art/characters/%s/hd/poses.png" % friend_id
+		assert_true(
+			FileAccess.file_exists("res://assets/art/characters/%s/hd/.gdignore" % friend_id),
+			"%s: le sorgenti HD non devono essere importate da Godot." % friend_id
+		)
 		assert_true(FileAccess.file_exists(expected_hd_path), "%s deve conservare il master HD." % friend_id)
 		assert_not_null(
 			definition.get_public_selection_portrait(), "%s deve avere il ritratto carosello." % friend_id

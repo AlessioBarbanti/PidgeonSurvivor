@@ -64,7 +64,7 @@ non cambia colore in base al Boss.
 - `data/bosses/signatures/*.tres`, per valorizzare l'icona.
 - `data/friends/*.tres`, solo per il campo `evil_portrait`.
 - Segnaposto da creare in questa card:
-  - `assets/art/characters/evil/generated/fake_evil_<id>.png` per gli otto
+  - `assets/art/characters/<id>/generated/fake_evil_portrait.png` per gli otto
     personaggi;
   - `assets/art/icons/signatures/generated/fake_signature_<signature_id>.png`
     per le otto Signature.

@@ -4,7 +4,7 @@ Fondale della schermata iniziale di Pidgeon Survivor, prodotto con la modalità
 built-in di OpenAI ImageGen. La versione runtime corrente è il refresh identità
 del cast del 28 agosto 2026: usa come edit target la reference pixel-art
 approvata e come riferimenti di identità gli otto master del proprietario in
-`assets/art/characters/players/hd/`. I riferimenti derivano da fotografie di
+`assets/art/characters/<id>/hd/poses.png`. I riferimenti derivano da fotografie di
 persone reali fornite e autorizzate esplicitamente dal proprietario; il
 risultato resta una caricatura pixel-art non fotorealistica. Il runtime non
 dipende dal servizio di generazione.

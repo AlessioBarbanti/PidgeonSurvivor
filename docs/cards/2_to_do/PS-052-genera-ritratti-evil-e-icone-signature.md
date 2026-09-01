@@ -75,8 +75,8 @@ arena sia con l'`accent_color` dichiarato nei dati.
 
 ## Ambito
 
-- `assets/art/characters/evil/hd/` e
-  `assets/art/characters/evil/generated/`.
+- `assets/art/characters/<id>/hd/` e
+  `assets/art/characters/<id>/generated/`, per gli otto personaggi.
 - `assets/art/icons/signatures/hd/` e
   `assets/art/icons/signatures/generated/`.
 - I relativi `ASSET-MANIFEST.md`.
@@ -116,7 +116,7 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] `assets/art/characters/evil/ASSET-MANIFEST.md`.
+- [ ] `assets/art/characters/ASSET-MANIFEST.md`.
 - [ ] `assets/art/icons/signatures/ASSET-MANIFEST.md`.
 - [ ] `docs/visual-audio-identity.md`: ritratti Evil e icone Signature finali.
 - [ ] `docs/characters.md`, se cambia lo stato di approvazione dei ritratti.

@@ -122,7 +122,7 @@ Il 28 agosto 2026 tutte e otto le strisce sprite sono state rigenerate dal
 proprietario in un passaggio di identità, insieme alle due icone di Aleo. La
 tabella qui sotto resta la direzione approvata; ciò che è effettivamente entrato
 nel runtime, con versioni promosse e hash, è in
-`assets/art/characters/players/ASSET-MANIFEST.md`.
+`assets/art/characters/ASSET-MANIFEST.md`.
 
 | Personaggio | Descrizione visuale |
 |---|---|
