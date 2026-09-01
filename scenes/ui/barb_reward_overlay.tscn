@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" path="res://assets/art/ui/barb_reward/generated/barb_portrait.png" id="3_portrait"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_header"]
-bg_color = Color(0.105, 0.025, 0.014, 0.98)
+bg_color = Color(0.2, 0.08, 0.045, 0.98)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3

@@ -131,22 +131,22 @@ func _apply_visual_treatment() -> void:
 
 	add_theme_stylebox_override(
 		&"normal",
-		_make_speciality_style(Color(0.105, 0.037, 0.019, 0.99), Color(0.90, 0.48, 0.10, 1.0), 4)
+		_make_speciality_style(Color(0.22, 0.1, 0.06, 0.99), Color(0.90, 0.48, 0.10, 1.0), 4)
 	)
 	add_theme_stylebox_override(
 		&"hover",
-		_make_speciality_style(Color(0.15, 0.055, 0.022, 1.0), Color(1.0, 0.68, 0.18, 1.0), 4)
+		_make_speciality_style(Color(0.28, 0.13, 0.07, 1.0), Color(1.0, 0.68, 0.18, 1.0), 4)
 	)
 	add_theme_stylebox_override(
 		&"pressed",
-		_make_speciality_style(Color(0.22, 0.075, 0.022, 1.0), Color(1.0, 0.86, 0.42, 1.0), 5)
+		_make_speciality_style(Color(0.34, 0.16, 0.08, 1.0), Color(1.0, 0.86, 0.42, 1.0), 5)
 	)
 	var focus_style := _make_speciality_style(Color.TRANSPARENT, Color(1.0, 0.86, 0.28, 1.0), 6)
 	focus_style.draw_center = false
 	add_theme_stylebox_override(&"focus", focus_style)
 	add_theme_stylebox_override(
 		&"disabled",
-		_make_speciality_style(Color(0.075, 0.027, 0.018, 0.98), Color(0.63, 0.34, 0.10, 0.92), 4)
+		_make_speciality_style(Color(0.15, 0.07, 0.045, 0.98), Color(0.63, 0.34, 0.10, 0.92), 4)
 	)
 
 

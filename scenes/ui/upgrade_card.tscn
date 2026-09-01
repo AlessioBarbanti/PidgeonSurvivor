@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/ui/upgrade_card.gd" id="1_card"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_normal"]
-bg_color = Color(0.035, 0.063, 0.11, 0.98)
+bg_color = Color(0.11, 0.16, 0.22, 0.98)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
@@ -15,7 +15,7 @@ corner_radius_bottom_right = 18
 corner_radius_bottom_left = 18
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pressed"]
-bg_color = Color(0.075, 0.16, 0.23, 1)
+bg_color = Color(0.16, 0.22, 0.3, 1)
 border_width_left = 4
 border_width_top = 4
 border_width_right = 4
@@ -39,7 +39,7 @@ corner_radius_bottom_right = 18
 corner_radius_bottom_left = 18
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_disabled"]
-bg_color = Color(0.025, 0.04, 0.065, 0.96)
+bg_color = Color(0.075, 0.105, 0.14, 0.96)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3

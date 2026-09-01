@@ -258,7 +258,8 @@
       "smokes": [
         "tests/unit/test_ps036_barb_reward_visual_identity.gd",
         "tests/unit/test_ps046_level_up_modal_isolation.gd",
-        "tests/unit/test_ps047_upgrade_card_hierarchy.gd"
+        "tests/unit/test_ps047_upgrade_card_hierarchy.gd",
+        "tests/unit/test_ps059_upgrade_modal_contrast.gd"
       ]
     },
     {
@@ -284,7 +285,8 @@
         "tests/unit/test_ps008_wave_events.gd",
         "tests/unit/test_ps036_barb_reward_visual_identity.gd",
         "tests/unit/test_ps046_level_up_modal_isolation.gd",
-        "tests/unit/test_ps047_upgrade_card_hierarchy.gd"
+        "tests/unit/test_ps047_upgrade_card_hierarchy.gd",
+        "tests/unit/test_ps059_upgrade_modal_contrast.gd"
       ]
     },
     {
