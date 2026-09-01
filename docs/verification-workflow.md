@@ -213,6 +213,14 @@ Regole che rendono il pacchetto utilizzabile come evidenza:
 eseguita su Windows: non prova installazione, cold launch, touch, multitouch,
 lifecycle né qualità percettiva sul device, che restano risultati separati.
 
+**Percorso alternativo senza display locale (PS-061):** il workflow
+[`.github/workflows/ui-screenshots.yml`](../.github/workflows/ui-screenshots.yml)
+esegue lo stesso `tools/_capture_ui_screenshots.gd` in CI (Xvfb al posto di un
+display reale, `godot --path .` senza `--headless` perché lo script legge
+`root.get_texture().get_image()`) e pubblica `exports/ui-screenshots/**` come
+artifact scaricabile, azionabile da "Actions" con `workflow_dispatch`. Non
+sostituisce il percorso locale sopra.
+
 ## Igiene del contesto Codex
 
 Usare una conversazione per una card o checkpoint coerente. Prima di

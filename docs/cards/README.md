@@ -96,3 +96,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-058](./2_to_do/PS-058-genera-arte-nuovi-prop-arena.md) | Generare l'arte definitiva dei nuovi prop dell'arena | art | arte | PRONTO | media | PS-045 |
 | [PS-059](./3_in_sprint/PS-059-schiarisci-contrasto-modal-level-up.md) | Schiarire il contrasto fra velo e carte nei modal di scelta | fix | ui | IN CORSO | alta | PS-046, PS-047 |
 | [PS-060](./5_completed/PS-060-ci-build-apk-github-release.md) | Compilare l'APK Android in CI e pubblicarlo come GitHub Release | chore | tooling | COMPLETATO | media | — |
+| [PS-061](./3_in_sprint/PS-061-catture-ui-in-ci-per-validazione-remota.md) | Eseguire il pacchetto di catture UI in CI per la validazione visiva remota | chore | tooling | IN CORSO | media | PS-044, PS-060 |

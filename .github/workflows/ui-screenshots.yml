@@ -1,0 +1,68 @@
+name: UI screenshots pack
+
+# PS-061: esegue tools/_capture_ui_screenshots.gd (PS-044) in CI, cosi' una
+# sessione senza display locale (Windows, editor) può comunque ottenere e
+# ispezionare il pacchetto di catture UI. Lo script salva PNG leggendo
+# root.get_texture().get_image(): serve un vero contesto di rendering, non
+# --headless (che qui non produce pixel), quindi si usa Xvfb per simulare un
+# display su un runner Linux. Non sostituisce il percorso locale Windows
+# documentato in docs/verification-workflow.md.
+#
+# Trigger solo manuale: non ha senso farlo scattare a ogni push.
+
+on:
+  workflow_dispatch: {}
+
+env:
+  GODOT_VERSION: "4.7.1-stable"
+
+jobs:
+  capture-ui-screenshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Xvfb and Mesa software GL
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends xvfb mesa-utils libgl1-mesa-dri libglx-mesa0
+
+      - name: Install Godot ${{ env.GODOT_VERSION }}
+        run: |
+          set -euo pipefail
+          curl -fsSL -o godot.zip \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          unzip -q godot.zip -d godot_bin
+          sudo install -m 0755 "godot_bin/Godot_v${GODOT_VERSION}_linux.x86_64" /usr/local/bin/godot
+          godot --version
+
+      - name: Capture UI screenshots (tools/_capture_ui_screenshots.gd)
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          set -euo pipefail
+          xvfb-run --auto-servernum --server-args="-screen 0 2424x1080x24" \
+            godot --path . --script tools/_capture_ui_screenshots.gd 2>&1 | tee capture.log
+          echo "--- controllo honesty gate ---"
+          if grep -qE 'SCRIPT ERROR|FATAL EXCEPTION' capture.log; then
+            echo "SCRIPT ERROR/FATAL EXCEPTION nel log: la cattura non è pulita." >&2
+            exit 1
+          fi
+          if grep -q 'CAPTURE_FAIL' capture.log; then
+            echo "Uno o più scatti sono falliti (CAPTURE_FAIL)." >&2
+            exit 1
+          fi
+          grep -q 'CAPTURE_DONE' capture.log || {
+            echo "Marker CAPTURE_DONE assente: la cattura non si è conclusa correttamente." >&2
+            exit 1
+          }
+
+      - name: Upload UI screenshots artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-screenshots
+          path: exports/ui-screenshots/**
+          if-no-files-found: error
