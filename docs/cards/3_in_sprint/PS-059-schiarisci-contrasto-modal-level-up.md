@@ -200,6 +200,13 @@ Non toccare:
 - **2026-09-01 — PS-046 aggiornata con una nota di correzione**, non
   riscritta: la sua diagnosi "z_index negativo" restava una causa reale (senza
   quel fix l'HUD tornava visibile sopra il modal) ma incompleta.
+- **2026-09-01 — [Run #3](https://github.com/AlessioBarbanti/PidgeonSurvivor/actions/runs/33479512890)
+  del workflow PS-060 verde con questo fix**, APK aggiornato sulla stessa
+  Release `android-debug-latest`. Questo conferma solo che l'export/firma/ABI
+  restano corretti (stessa ispezione statica di PS-060) — **non** conferma il
+  comportamento visivo reale, che nessun automatismo di questa sessione può
+  verificare. La card resta `IN CORSO` finché il proprietario non riprova il
+  level-up sul device.
 
 ## Documenti sincronizzati
 

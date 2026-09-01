@@ -74,11 +74,11 @@ committare il binario nella cronologia git.
       duplicate a ogni run manuale.
       *Release `android-debug-latest` pubblicata con asset
       `pidgeon-survivor-debug.apk` (~101 MB), confermata via
-      `get_release_by_tag`. La parte "aggiorna invece di duplicare" non è
-      stata riosservata con un terzo run in questa sessione: si affida al
-      comportamento documentato di `softprops/action-gh-release` (stesso
-      `tag_name` → release esistente aggiornata), non a un'osservazione
-      diretta ripetuta.*
+      `get_release_by_tag`. **Aggiornamento 2026-09-01:** un run #3
+      successivo (fix PS-059 sul draw order) ha confermato anche la parte
+      "aggiorna invece di duplicare": stessa Release (`id 380263638`),
+      asset sostituito con un nuovo id/digest/timestamp invece di crearne
+      una seconda.*
 - [x] `/exports/`, `/android/build/` e le altre voci di `.gitignore` restano
       invariate: il workflow non richiede di tracciare artefatti generati.
       *`.gitignore` non toccato in nessun commit di questa card.*
