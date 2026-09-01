@@ -99,7 +99,7 @@ B18M precedente al refresh):
 | Percorso | Funzione corrente | SHA-256 |
 |---|---|---|
 | `scripts/abilities/earthquake_wave.gd` | Decal tellurico senza cerchio sottostante, in espansione entro il 15% della durata e con opacita' massima `0,62` | `cbc9f558b687f307eb8c0ce7b6730b8b19d84bc86f31f76063ded667f7074d2e` |
-| `scripts/abilities/fire_z_trail.gd` | Tasselli di fiamma specchiati a alternanza lungo il segmento e scintille, senza le polyline a bordo dritto sottostanti (PS-027) | `57854ec6cd2f263eef9978e98059a34a6a97849244100e2542045d241883e8bc` |
+| `scripts/abilities/fire_z_trail.gd` | Tasselli di fiamma specchiati a alternanza lungo il segmento e scintille subordinate al nastro per opacita', taglia e tinta (PS-042) | `39346b07d7aef0f95b88b2dd29092bfd02150e2ff52c0ec4166fe07fec54193c` |
 | `scripts/abilities/lightning_storm.gd` | Preavviso e decal d'impatto inscritti per ogni bersaglio fotografato, tinti per fascia di carica, senza flash fullscreen (PS-004) | `d111ad7172d77c2dc5abbab003b25ce6581ff83c0b1c99529282bcf98203d68e` |
 | `scripts/abilities/ability_area_effect.gd` | Decal Piroetta e Zen senza base circolare; Piroetta a due giri per attivazione | `7e7ed0664d50609d423a9b10bfb68402dac650e6d91bf6746bf43e575eaae31d` |
 | `scripts/abilities/cosplay_accent.gd` | Decal reveal e coriandoli senza anello sottostante | `72521e3e91469c6fc9b4160e8853e5c1d027eb0dd863097996c09b05d0af9664` |
@@ -126,7 +126,7 @@ storica documentata, ma non è più consumato dal runtime.
 | Percorso | Origine | Autore | Licenza | Trasformazioni | SHA-256 |
 |---|---|---|---|---|---|
 | `scripts/abilities/earthquake_wave.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Anelli concentrici e crepe disegnati con primitive `CanvasItem` | `dcba84a86bef2c0b337df98817eae1aaf4f9f809f318a5c3e4a36aa9fa466b84` |
-| `scripts/abilities/fire_z_trail.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Nastro a due livelli e 16 scintille deterministiche | `e5b7f395566944412d67852c4284e8cc808d9076d59f5e756d5ef1e2b94da305` |
+| `scripts/abilities/fire_z_trail.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Nastro a due livelli e 16 scintille deterministiche, subordinate al nastro per opacita', taglia e tinta (PS-042) | `39346b07d7aef0f95b88b2dd29092bfd02150e2ff52c0ec4166fe07fec54193c` |
 | `scripts/abilities/lightning_storm.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Fotografa i nemici vivi e colpisce ciascuno con un decal tinto per fascia di carica, nessuna posizione telegrafata fissa (PS-004) | `d111ad7172d77c2dc5abbab003b25ce6581ff83c0b1c99529282bcf98203d68e` |
 | `scripts/abilities/ability_area_effect.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Archi rotanti, pozza con bolle e campo zen con anelli e moti lenti; il campo zen assorbe anche i proiettili ostili nel raggio, stesso disegno (B45) | `4a5eabf0409b07b9dfd95787cf2d0346c92296db5263ec41afdd40206e611578` |
 | `scripts/abilities/cosplay_accent.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Coda B18R non interattiva da 18 coriandoli, con entrata/uscita centralizzate nella palette dell'abilità copiata | `8d62630788467479ff2fbbf1587f753c2212c32e8720e81e1379b80bd2b9cff1` |

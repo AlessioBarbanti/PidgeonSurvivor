@@ -126,7 +126,8 @@
         "tests/unit/test_ps004_zat_thunder_charge.gd",
         "tests/unit/test_ps024_magno_shockwave_balance.gd",
         "tests/unit/test_ps027_bea_powerslide_visual_cleanup.gd",
-        "tests/unit/test_ps040_bea_powerslide_landing_iframe.gd"
+        "tests/unit/test_ps040_bea_powerslide_landing_iframe.gd",
+        "tests/unit/test_ps042_bea_powerslide_spark_subordination.gd"
       ]
     },
     {

@@ -3,12 +3,12 @@ id: PS-042
 titolo: Subordina le scintille della Powerslide al nastro di fuoco
 tipo: fix
 area: arte
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-08-31
+aggiornato: 2026-09-01
 ---
 
 
@@ -52,22 +52,30 @@ danno o collisioni della Powerslide.
 
 ## Criteri di accettazione
 
-- [ ] L'opacità massima di una scintilla è **strettamente minore** di
+- [x] L'opacità massima di una scintilla è **strettamente minore** di
       `STAMP_ALPHA` (0.62) nello stesso frame, per ogni valore dell'alpha di
-      dissolvenza della scia.
-- [ ] La tinta delle scintille non è più `Color(1.0, 0.88, 0.36)`, ma un colore
+      dissolvenza della scia. `SPARK_ALPHA_BASE + SPARK_ALPHA_SWING = 0.52 <
+      0.62`; la dissolvenza moltiplica entrambe allo stesso modo quindi il
+      margine vale per ogni frame.
+- [x] La tinta delle scintille non è più `Color(1.0, 0.88, 0.36)`, ma un colore
       appartenente alla palette del nastro
-      (`assets/art/vfx/abilities/generated/fire_trail.png`).
-- [ ] Le scintille sono più piccole di oggi (`spark_size` corrente: `2.0 +
-      spark_index % 3`, quindi 2–4 unità).
+      (`assets/art/vfx/abilities/generated/fire_trail.png`). Campionata
+      dai pixel reali della texture (fascia arancio del corpo,
+      `Color(0.988, 0.62, 0.055)`).
+- [x] Le scintille sono più piccole di oggi (`spark_size` corrente: `2.0 +
+      spark_index % 3`, quindi 2–4 unità). Ora `1.2 + (spark_index % 3) * 0.6`,
+      cioè 1.2–2.4.
 - [ ] Nessun rombo giallo pieno si distingue dal nastro nello screenshot di
-      confronto sullo stesso punto della scia.
-- [ ] La famiglia visiva resta `powerslide_ribbon_and_sparks` e
+      confronto sullo stesso punto della scia. Gate percettivo, vedi Gate
+      manuali.
+- [x] La famiglia visiva resta `powerslide_ribbon_and_sparks` e
       `get_visual_particle_count()` resta entro `MAX_VISUAL_PARTICLES` di
       `test_b18m_ability_visuals.gd` (il test impone un tetto, non un minimo).
-- [ ] Traiettoria, distanza, durata, danno e collisioni della Powerslide
-      restano invariati.
-- [ ] Le due `draw_polyline` rimosse da PS-027 non tornano.
+- [x] Traiettoria, distanza, durata, danno e collisioni della Powerslide
+      restano invariati. Non toccati; regressione confermata da
+      `test_ps040_bea_powerslide_landing_iframe.gd`.
+- [x] Le due `draw_polyline` rimosse da PS-027 non tornano. Confermato da
+      `test_ps027_bea_powerslide_visual_cleanup.gd` e dal nuovo smoke.
 
 ## Ambito
 
@@ -122,6 +130,14 @@ modifica non tocca codice di piattaforma, input o lifecycle.
 - **Non sostituisce PS-027**, che resta aperta sul proprio criterio di cleanup
   (restart e cambio personaggio). Le due card toccano la stessa funzione ma
   elementi diversi.
+- **2026-09-01 — Tinta campionata dalla texture reale, non a occhio.** Letti i
+  pixel di `fire_trail.png` con `System.Drawing` per evitare un colore
+  inventato che "assomiglia" alla fiamma senza appartenerle davvero; scelta
+  la fascia arancio del corpo (nucleo crema e bordo magenta erano gli altri
+  due estremi della palette, meno adatti a un dettaglio piccolo).
+- **2026-09-01 — Margine di alpha ampio, non al limite.** `0.52` contro un
+  tetto di `0.62` lascia margine percettibile invece di un rispetto
+  puramente numerico del criterio.
 
 ## Documenti sincronizzati
 
@@ -133,6 +149,32 @@ modifica non tocca codice di piattaforma, input o lifecycle.
 Segnalazione del proprietario con screenshot, 2026-08-31: rombi gialli visibili
 lungo tutta la scia, più evidenti nella metà iniziale dove l'alpha di
 dissolvenza è ancora vicina a 1.
+
+Evidenza di chiusura automatica (2026-09-01):
+
+```powershell
+.\tools\run-milestone-checks.ps1 -Milestone PS-042 -Profile Focused `
+  -FocusedSmoke tests/unit/test_ps042_bea_powerslide_spark_subordination.gd -RefreshEditor
+# PASS focused=1/1
+
+.\tools\run-milestone-checks.ps1 -Milestone PS-042 -Profile Relevant `
+  -FocusedSmoke tests/unit/test_ps042_bea_powerslide_spark_subordination.gd `
+  -ChangedPath scripts/abilities/fire_z_trail.gd,tests/unit/test_ps042_bea_powerslide_spark_subordination.gd,tools/milestone-test-map.json,assets/art/vfx/ASSET-MANIFEST.md
+# PASS regression=8/8, nessun SCRIPT ERROR/FATAL EXCEPTION nei log
+```
+
+`-ChangedPath` esplicito perché il working tree conteneva, per un altro
+workflow in corso (PS-052), nuovi PNG non tracciati sotto `assets/art/` non
+ancora mappati in `tools/milestone-test-map.json`: senza `-ChangedPath` la
+rilevazione automatica dei path modificati li considerava "runtime non
+mappati" e faceva scattare `run_all`, con un batch da 87 script che è andato
+in TIMEOUT dopo 30 minuti. Non è un difetto di questa card.
+
+Aggiornato anche `assets/art/vfx/ASSET-MANIFEST.md`: le due righe che
+tracciano l'hash di `fire_z_trail.gd` avevano gia' valori disallineati fra
+loro prima di questa card; portate entrambe all'hash corrente
+(`39346b07d7aef0f95b88b2dd29092bfd02150e2ff52c0ec4166fe07fec54193c`), come
+richiesto da `test_b18m_ability_visuals.gd::test_manifest_contract`.
 
 Misure di partenza, da `fire_z_trail.gd`:
 

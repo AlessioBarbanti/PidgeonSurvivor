@@ -15,6 +15,20 @@ const FIRE_TRAIL_TEXTURE := preload(
 const STAMP_SPACING_RATIO := 0.72
 ## Opacita' del singolo tassello, tarata per la sovrapposizione qui sopra.
 const STAMP_ALPHA := 0.62
+## Alpha di base di una scintilla, prima dello swing sinusoidale sotto.
+## PS-042: la somma con SPARK_ALPHA_SWING resta sotto STAMP_ALPHA cosi' la
+## scintilla non legge mai piu' opaca del nastro su cui poggia, qualunque sia
+## l'alpha di dissolvenza della scia (che moltiplica entrambe allo stesso modo).
+const SPARK_ALPHA_BASE := 0.28
+const SPARK_ALPHA_SWING := 0.24
+## Tinta campionata dalla fascia arancio del corpo di fire_trail.png, al posto
+## del giallo piatto: la scintilla legge come dettaglio della fiammata invece
+## che come forma sovrapposta di un'altra tinta.
+const SPARK_COLOR := Color(0.988, 0.62, 0.055)
+## Raggio della scintilla lungo la direzione della scia; PS-042 la riduce
+## rispetto ai 2.0-4.0 precedenti.
+const SPARK_SIZE_BASE := 1.2
+const SPARK_SIZE_STEP := 0.6
 
 var _source: Player
 var _definition: AbilityDefinition
@@ -128,8 +142,9 @@ func _draw() -> void:
 		var phase := elapsed * 7.0 + float(spark_index) * 2.17
 		var center := origin.lerp(destination, ratio)
 		center += normal * sin(phase) * _trail_width * 0.42
-		var spark_size := 2.0 + float(spark_index % 3)
-		var spark_color := Color(1.0, 0.88, 0.36, alpha * (0.55 + 0.4 * sin(phase) ** 2))
+		var spark_size := SPARK_SIZE_BASE + float(spark_index % 3) * SPARK_SIZE_STEP
+		var spark_alpha := alpha * (SPARK_ALPHA_BASE + SPARK_ALPHA_SWING * sin(phase) ** 2)
+		var spark_color := Color(SPARK_COLOR.r, SPARK_COLOR.g, SPARK_COLOR.b, spark_alpha)
 		draw_colored_polygon(
 			PackedVector2Array([
 				center + direction * spark_size * 1.8,
