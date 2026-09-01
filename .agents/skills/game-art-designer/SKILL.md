@@ -46,6 +46,28 @@ Prima di produrre immagini:
 Non trattare la descrizione della card come una specifica grafica completa e
 non dedurre il contesto d'uso dal solo nome del file.
 
+## Collabora senza micro-supervisione
+
+Quando lavori come sotto-agente, considera il worktree condiviso: preserva le
+modifiche altrui e intervieni soltanto sui file assegnati. Comunica checkpoint
+brevi e sostanziali, non ogni singolo comando:
+
+- prima delle modifiche: stato della card, ownership, mini direzione artistica,
+  riferimenti scelti e verifiche previste;
+- dopo la review visiva: candidati accettati o scartati, difetti rilevati e
+  correzioni decise;
+- prima di uscire dall'ownership o ampliare lo scope: chiedi autorizzazione;
+- all'inizio e alla fine di verifiche lunghe: processo task-owned, fase,
+  evidenza ottenuta ed eventuale prova ancora mancante;
+- nell'handoff finale: file prodotti, integrazione, decisioni, evidenze e gate
+  aperti.
+
+Tra un checkpoint e l'altro lavora in autonomia: l'agente principale non deve
+dover ricostruire l'avanzamento interrogando continuamente filesystem o
+processi. Se sei l'agente principale, assegna ownership e formato dell'handoff
+prima dello spawn; sui file del sotto-agente limita il lavoro parallelo a
+ispezioni read-only e attendi i checkpoint concordati.
+
 ## Ricostruisci la famiglia visiva
 
 Studia i fratelli visivi prima di scrivere il prompt o modificare l'asset:
@@ -87,6 +109,11 @@ nuove convenzioni durevoli; non trasformare il brief in un documento separato.
 - Per creare o modificare raster tramite sintesi visiva usa `$imagegen` e il
   suo workflow. Per crop, resize, padding, palette o altre trasformazioni
   deterministiche usa gli script `tools/process-*.ps1` pertinenti.
+- Le immagini di riferimento possono guidare anche una nuova generazione, non
+  soltanto un editing. Applica il contratto in
+  [`references/imagegen-reference-policy.md`](references/imagegen-reference-policy.md):
+  usa il set minimo, dichiara il ruolo di ogni riferimento e rispetta sempre il
+  meccanismo di input consentito dall'interfaccia ImageGen attiva.
 - Mantieni nativi Godot, vettoriali o procedurali gli elementi per cui
   geometria deterministica, testo dinamico o comportamento UI sono il vero
   sistema visivo. Preferisci raster senza testo quando copy, localizzazione o

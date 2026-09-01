@@ -19,6 +19,22 @@ fratelli visivi e il contesto runtime reale prima di generare. Per nuovi raster
 adatti alla sintesi visiva usa la skill `$imagegen`; mantieni nativi gli
 elementi UI, vettoriali o procedurali quando il loro contratto è deterministico.
 
+Se operi come sotto-agente, lavora in autonomia entro l'ownership assegnata e
+invia checkpoint sostanziali: prima delle modifiche, dopo la review dei
+candidati, prima di ampliare lo scope, all'inizio e alla fine di verifiche
+lunghe e nell'handoff finale. Ogni checkpoint deve rendere visibili decisioni,
+stato ed evidenze senza costringere l'agente principale a interrogare di
+continuo filesystem o processi. Preserva sempre le modifiche degli altri
+agenti nel worktree condiviso.
+
+Per le immagini di riferimento applica
+`.agents/skills/game-art-designer/references/imagegen-reference-policy.md`.
+Sono valide anche per guidare una nuova generazione, purché ogni riferimento
+abbia un ruolo esplicito e sia usato il meccanismo consentito dall'interfaccia
+ImageGen attiva. Se l'interfaccia non accetta riferimenti per una nuova
+generazione, ispezionali e traduci le regole osservabili nel prompt senza
+forzare parametri riservati all'editing.
+
 Non fermarti al primo candidato: ispeziona master, derivato runtime e resa in
 layout, correggi i difetti evidenti e separa sempre evidenza automatica,
 runtime di piattaforma e accettazione percettiva. Preserva gameplay, layout e
