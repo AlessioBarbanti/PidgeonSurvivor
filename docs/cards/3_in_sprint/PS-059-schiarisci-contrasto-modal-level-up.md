@@ -38,6 +38,24 @@ Nessun binario Godot era disponibile in questa sessione per catturare uno
 screenshot di conferma pixel-per-pixel: la verifica visiva resta un gate
 manuale da chiudere durante l'implementazione.
 
+**Aggiornamento 2026-09-01 (device reale, dopo il primo fix di colore):** il
+proprietario ha compilato l'APK con il fix di contrasto sopra e lo ha provato
+su device fisico — il modal era ancora "praticamente tutto nero", identico a
+prima, nonostante i colori dei pannelli fossero stati resi visibilmente più
+chiari. Questo esclude il contrasto colore come causa unica: il proprietario
+ha correttamente sospettato uno z-index. Causa radice reale, trovata
+rileggendo la semantica di `CanvasItem.top_level` in Godot: il `Dimmer` ha
+`top_level = true` (per coprire l'intero viewport oltre il safe-rect
+calcolato da `ArenaLayout`/`SafeAreaRoot`). Un CanvasItem `top_level` viene
+riparentato dal renderer direttamente al canvas del `CanvasLayer`, non al suo
+Control padre — quindi per l'ordine di disegno il `Dimmer` competeva con
+l'intero sottoalbero di `SafeAreaRoot` (HUD, `UpgradeOverlay`/`SafeMargins`
+compresi) come blocco unico, invece che con `SafeMargins` come fratello
+diretto. Essendo entrato nel canvas dopo `SafeAreaRoot` (essendo annidato più
+in profondità), disegnava sopra tutto quel blocco — carte comprese, non solo
+HUD. Il fix di colore di PS-059 non poteva funzionare perché il colore della
+carta non arrivava mai a schermo: veniva sempre ridipinto sopra dal velo.
+
 ## Comportamento atteso
 
 Aprendo un'offerta di livello o una ricompensa Barb, chi gioca distingue
@@ -78,16 +96,31 @@ l'isolamento da HUD e cronometro introdotto da PS-046.
       *Toccati solo `bg_color` di `StyleBoxFlat` in tre `.tscn`/`.gd` di
       presentazione; nessun file in `data/upgrades/`, `UpgradeEffectRegistry`
       o `UpgradeService` modificato.*
+- [ ] Il `SafeMargins` di `UpgradeOverlay` e `BarbRewardOverlay` disegna
+      sopra il rispettivo `Dimmer` per davvero (non solo "colore più chiaro"):
+      entrambi condividono lo stesso ordinamento di disegno `top_level`,
+      cosi' le carte non vengono ridipinte sopra dal velo.
+      *Aggiunto `top_level = true` a `SafeMargins` in entrambe le scene,
+      cosi' compete nello stesso elenco "piatto" del canvas del `Dimmer`
+      invece che nel sottoalbero di `SafeAreaRoot`. Nuovo test
+      `test_ps059_safe_margins_shares_dimmer_top_level_draw_order` verifica
+      staticamente `top_level` su entrambi i nodi e che `SafeMargins` abbia
+      indice maggiore del `Dimmer`. Non eseguito realmente in questa sessione
+      (nessun Godot disponibile): resta da confermare con un run CI +
+      controllo percettivo reale.*
 - [ ] Controllo percettivo su schermo reale (Windows e/o Pixel 9): il modal
       non viene più descritto come "tutto nero" o illeggibile.
-      *Non verificabile in questa sessione: nessun device né build
-      disponibili. Resta gate manuale del proprietario.*
+      *Non ancora confermato dopo QUESTO secondo fix. Il primo fix (solo
+      colore) è stato provato su device reale ed è risultato insufficiente —
+      vedi Contesto. Resta gate manuale del proprietario da rifare con la
+      nuova build.*
 
 ## Ambito
 
-- `scenes/ui/upgrade_overlay.tscn` (colore `Dimmer`).
-- `scenes/ui/barb_reward_overlay.tscn` (colore del pannello header; `Dimmer`
-  non toccato, vedi Decisioni).
+- `scenes/ui/upgrade_overlay.tscn` (colore `Dimmer`; `top_level` su
+  `SafeMargins`).
+- `scenes/ui/barb_reward_overlay.tscn` (colore del pannello header; `top_level`
+  su `SafeMargins`; `Dimmer` non toccato, vedi Decisioni).
 - `scenes/ui/upgrade_card.tscn` (`StyleBoxFlat_normal`, `_pressed`,
   `_disabled`).
 - `scripts/ui/upgrade_card.gd` (`_apply_visual_treatment`): gli stessi colori
@@ -151,6 +184,22 @@ Non toccare:
   effettivamente lanciati nel motore. La card resta `IN CORSO` invece di
   `IN VERIFICA` finché qualcuno non esegue davvero il profilo `Relevant` su
   Windows.
+- **2026-09-01 — Il fix di solo colore era insufficiente: causa radice reale
+  è l'ordine di disegno di `top_level`, non il contrasto.** Confermato da un
+  test su device reale con la build CI di PS-060 (stessi colori più chiari di
+  questa card, stesso risultato "tutto nero"). Aggiunto `top_level = true`
+  a `SafeMargins` in entrambe le scene invece di rimuoverlo dal `Dimmer`:
+  rimuoverlo dal `Dimmer` avrebbe fatto perdere la copertura full-bleed oltre
+  il safe-rect (motivo originale del flag, verificato in `arena_layout.gd`:
+  `_safe_area_root.position`/`.size` derivano da
+  `DisplayServer.get_display_safe_area()`, non da un letterbox 20:9 fisso).
+  In pratica `safe_area.position` è quasi sempre `(0,0)` sui device reali
+  testabili (nessun notch aggressivo), quindi il cambio di posizionamento
+  introdotto da `top_level` su `SafeMargins` non dovrebbe essere visibile —
+  ma non è stato verificato su un device con un vero inset per notch.
+- **2026-09-01 — PS-046 aggiornata con una nota di correzione**, non
+  riscritta: la sua diagnosi "z_index negativo" restava una causa reale (senza
+  quel fix l'HUD tornava visibile sopra il modal) ma incompleta.
 
 ## Documenti sincronizzati
 

@@ -6,6 +6,18 @@ extends GutGameplayTest
 ## risulti "tutto nero" come segnalato dal proprietario. Non verifica pixel
 ## resi a schermo: legge i Color effettivi delle risorse di stile. La resa
 ## percettiva reale resta un gate manuale (vedi card).
+##
+## Causa radice reale (scoperta dopo un secondo test su device con lo stesso
+## risultato "tutto nero" nonostante i colori più chiari): il `Dimmer` ha
+## `top_level = true` per coprire l'intero viewport (bypassando lo shrink di
+## SafeAreaRoot per il safe-rect del display). In Godot, un CanvasItem
+## `top_level` viene riparentato al canvas del CanvasLayer invece che al suo
+## Control padre: per l'ordine di disegno competeva quindi con l'intero
+## sottoalbero di SafeAreaRoot (HUD compreso) come blocco unico, invece che
+## con `SafeMargins` come fratello locale — e disegnava sopra tutto, carte
+## comprese. Anche `SafeMargins` è ora `top_level = true`: cosi' entrambi
+## competono nello stesso elenco "piatto" del canvas, con `SafeMargins`
+## disegnato dopo (sopra) il `Dimmer` per ordine di ingresso nell'albero.
 
 const UPGRADE_OVERLAY_SCENE := preload("res://scenes/ui/upgrade_overlay.tscn")
 const BARB_OVERLAY_SCENE := preload("res://scenes/ui/barb_reward_overlay.tscn")
@@ -71,7 +83,44 @@ func test_ps059_barb_speciality_card_panel_is_lighter_than_dimmer() -> void:
 			speciality_style.bg_color, dimmer.color, "Pannello carta (BARB_SPECIALITY)"
 		)
 
+
+func test_ps059_safe_margins_shares_dimmer_top_level_draw_order() -> void:
+	var upgrade_overlay := UPGRADE_OVERLAY_SCENE.instantiate() as UpgradeOverlay
+	add_child_autofree(upgrade_overlay)
+	await wait_process_frames(1)
+	_assert_top_level_after_dimmer(upgrade_overlay, "UpgradeOverlay")
+
+	var barb_overlay := BARB_OVERLAY_SCENE.instantiate() as BarbRewardOverlay
+	add_child_autofree(barb_overlay)
+	await wait_process_frames(1)
+	_assert_top_level_after_dimmer(barb_overlay, "BarbRewardOverlay")
+
 	print("UPGRADE_MODAL_CONTRAST_SMOKE_OK")
+
+
+func _assert_top_level_after_dimmer(overlay: Control, label: String) -> void:
+	var dimmer := overlay.get_node_or_null("Dimmer") as ColorRect
+	var safe_margins := overlay.get_node_or_null("SafeMargins") as MarginContainer
+	assert_true(
+		dimmer != null and safe_margins != null,
+		"%s deve avere sia Dimmer che SafeMargins." % label
+	)
+	if dimmer == null or safe_margins == null:
+		return
+
+	# Un Dimmer top_level viene riparentato al canvas del CanvasLayer, non al
+	# suo Control padre: senza che anche SafeMargins sia top_level, i due
+	# competono in elenchi di disegno diversi e il Dimmer puo' finire sopra le
+	# carte invece che sotto (causa radice reale di questa card).
+	assert_true(dimmer.top_level, "%s: il Dimmer deve restare top_level per coprire l'intero viewport." % label)
+	assert_true(
+		safe_margins.top_level,
+		"%s: SafeMargins deve essere top_level come il Dimmer, altrimenti compete nell'ordine di disegno sbagliato." % label
+	)
+	assert_true(
+		safe_margins.get_index() > dimmer.get_index(),
+		"%s: SafeMargins deve entrare nell'albero dopo il Dimmer per disegnare sopra di esso." % label
+	)
 
 
 func _assert_lighter_than_dimmer(panel_color: Color, dimmer_color: Color, label: String) -> void:

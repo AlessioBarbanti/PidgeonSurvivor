@@ -59,6 +59,7 @@ color = Color(0.058, 0.008, 0.02, 0.93)
 
 [node name="SafeMargins" type="MarginContainer" parent="."]
 unique_name_in_owner = true
+top_level = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

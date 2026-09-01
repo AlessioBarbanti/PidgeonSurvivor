@@ -138,6 +138,18 @@ Non toccare:
 - **2026-09-01 — Margine superiore legato a `GameHud.GAMEPLAY_TOP_INSET`
   invece di un valore duplicato.** Evita che i due margini derivino e
   disallineino nel tempo dal contratto della fascia HUD.
+- **2026-09-01 — Correzione: la causa radice sopra descritta era incompleta.**
+  Un controllo su device reale (PS-059) ha mostrato il modal ancora quasi
+  tutto nero anche dopo questa card. Causa reale: `Dimmer` ha `top_level =
+  true` per coprire l'intero viewport oltre il safe-rect; un CanvasItem
+  `top_level` viene riparentato al canvas del `CanvasLayer` invece che al suo
+  Control padre, quindi per l'ordine di disegno competeva con l'intero
+  sottoalbero di `SafeAreaRoot` (HUD compreso) come blocco unico — non con
+  `SafeMargins` come fratello locale — e poteva disegnare sopra le carte
+  oltre che sopra l'HUD. La rimozione di `z_index = -10` restava comunque
+  necessaria (altrimenti l'HUD tornava visibile sopra il modal), ma non
+  bastava. Fix completo in PS-059: anche `SafeMargins` è ora `top_level =
+  true`.
 
 ## Documenti sincronizzati
 
