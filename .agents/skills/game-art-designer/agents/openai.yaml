@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pidgeon Survivor Art Director"
+  short_description: "Design and integrate coherent game-ready art"
+  default_prompt: "Use $game-art-designer to resolve the next ready art card for Pidgeon Survivor."
