@@ -14,7 +14,7 @@
         "scripts/actors/player.gd",
         "scenes/actors/player.tscn",
         "data/friends/*",
-        "assets/art/characters/players/*"
+        "assets/art/characters/*/generated/*"
       ],
       "smokes": [
         "tests/unit/test_b03_movement_slice.gd",
@@ -203,7 +203,8 @@
       "patterns": [
         "scripts/game/movement_slice.gd",
         "scenes/game/movement_slice.tscn",
-        "scripts/game/run_controller.gd"
+        "scripts/game/run_controller.gd",
+        "scripts/game/run_summary.gd"
       ],
       "smokes": [
         "tests/unit/test_b03_movement_slice.gd",
@@ -221,7 +222,8 @@
         "tests/unit/test_ps012_barb_specialities.gd",
         "tests/unit/test_ps008_wave_events.gd",
         "tests/unit/test_ps044_ui_capture_states.gd",
-        "tests/unit/test_ps045_arena_visual_hierarchy.gd"
+        "tests/unit/test_ps045_arena_visual_hierarchy.gd",
+        "tests/unit/test_ps053_run_summary.gd"
       ]
     },
     {
@@ -281,6 +283,7 @@
         "tests/unit/test_b54_tutorial_flow.gd",
         "tests/unit/test_ps048_tutorial_runtime_fidelity.gd",
         "tests/unit/test_ps050_welcome_settings_system.gd",
+        "tests/unit/test_ps053_run_summary.gd",
         "tests/unit/test_typography.gd",
         "tests/unit/test_ps005_boss_warning.gd",
         "tests/unit/test_ps025_boss_warning_size.gd",

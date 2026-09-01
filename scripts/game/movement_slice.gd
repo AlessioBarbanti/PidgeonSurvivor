@@ -75,6 +75,10 @@ var gut_test_run_seed_override := 0
 
 var _last_logged_safe_area := Rect2()
 var _last_logged_joystick_rect := Rect2()
+## PS-053: nessun sistema tiene gia' un totale dei Boss sconfitti nella run
+## (solo il segnale boss_defeated e l'ultimo titolo); il riepilogo finale lo
+## richiede, quindi il conteggio vive qui invece che in BossEncounter.
+var _defeated_boss_count := 0
 
 
 func _ready() -> void:
@@ -88,6 +92,8 @@ func _ready() -> void:
 	_boss_encounter.boss_spawned.connect(_on_boss_spawned_for_horde_pause)
 	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_horde_pause)
 	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_barb_reward)
+	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_summary)
+	_run_controller.run_started.connect(_on_run_started_for_summary)
 	_hud.pause_requested.connect(_on_pause_requested)
 	_end_screen.restart_requested.connect(_on_restart_requested)
 	_end_screen.change_character_requested.connect(_on_change_character_requested)
@@ -1541,7 +1547,7 @@ func _validate_current_contract() -> bool:
 		failures.append("B18U deve mostrare le strisce Player con filtro nearest.")
 	for friend_definition in _friend_registry.get_definitions():
 		var expected_cast_path := (
-			"res://assets/art/characters/players/%s.png" % friend_definition.id
+			"res://assets/art/characters/%s/generated/sprite.png" % friend_definition.id
 		)
 		var cast_idle := friend_definition.get_gameplay_idle_right() as AtlasTexture
 		var cast_walk := friend_definition.get_gameplay_walk_right_frames()
@@ -1803,14 +1809,60 @@ func _show_terminal_screen(
 	final_state: RunController.RunState,
 	run_time: float
 ) -> void:
+	var summary := _build_run_summary(run_time)
 	match final_state:
 		RunController.RunState.VICTORY:
 			_end_screen.show_victory(
-				run_time,
+				summary,
 				_boss_encounter.get_last_defeated_title()
 			)
 		RunController.RunState.DEFEAT:
-			_end_screen.show_defeat(run_time)
+			_end_screen.show_defeat(summary)
+
+
+## PS-053: costruisce lo snapshot dai dati gia' posseduti da run, esperienza,
+## Boss e servizio upgrade, cosi' EndScreen non dipende direttamente dai
+## sistemi di gameplay.
+func _build_run_summary(run_time: float) -> RunSummary:
+	var summary := RunSummary.new()
+	var friend := _player.get_friend_definition()
+	if friend != null:
+		summary.character_name = friend.get_public_display_name()
+		summary.character_portrait = friend.get_public_selection_portrait()
+	summary.level = _experience_system.level
+	summary.bosses_defeated = _defeated_boss_count
+	summary.run_time = run_time
+	summary.top_upgrades = _build_top_upgrade_entries()
+	return summary
+
+
+## Rango decrescente; a parita' di rango l'id testuale decide, cosi' il
+## risultato non cambia riaprendo la stessa schermata (PS-053).
+func _build_top_upgrade_entries() -> Array[RunSummary.UpgradeEntry]:
+	var ranks := _upgrade_service.get_ranks()
+	var entries: Array[RunSummary.UpgradeEntry] = []
+	for definition in _upgrade_registry.get_definitions():
+		var rank: int = ranks.get(definition.id, 0)
+		if rank <= 0:
+			continue
+		entries.append(RunSummary.UpgradeEntry.new(definition, rank))
+	entries.sort_custom(
+		func(a: RunSummary.UpgradeEntry, b: RunSummary.UpgradeEntry) -> bool:
+			if a.rank != b.rank:
+				return a.rank > b.rank
+			return String(a.definition.id) < String(b.definition.id)
+	)
+	if entries.size() > 3:
+		entries.resize(3)
+	return entries
+
+
+func _on_boss_defeated_for_summary(_boss: FirstBoss) -> void:
+	_defeated_boss_count += 1
+
+
+func _on_run_started_for_summary(_seed_value: int) -> void:
+	_defeated_boss_count = 0
 
 
 func _on_restart_requested() -> void:
