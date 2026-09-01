@@ -3,7 +3,7 @@ id: PS-060
 titolo: Compilare l'APK Android in CI e pubblicarlo come GitHub Release
 tipo: chore
 area: tooling
-stato: IN CORSO
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
@@ -37,27 +37,51 @@ committare il binario nella cronologia git.
 
 ## Criteri di accettazione
 
-- [ ] Il workflow è azionabile manualmente da GitHub Actions
+- [x] Il workflow è azionabile manualmente da GitHub Actions
       (`workflow_dispatch`) e non richiede input diversi da quelli di
       default.
-- [ ] Il workflow installa Godot 4.7.1 headless e i relativi template di
+      *Lanciato due volte da questa sessione via `run_workflow` senza alcun
+      input: [run #1](https://github.com/AlessioBarbanti/PidgeonSurvivor/actions/runs/33477655843)
+      (fallito, vedi sotto) e
+      [run #2](https://github.com/AlessioBarbanti/PidgeonSurvivor/actions/runs/33478203059)
+      (verde).*
+- [x] Il workflow installa Godot 4.7.1 headless e i relativi template di
       export, JDK 17 e Android SDK/NDK con le stesse versioni di
       `docs/setup.md`, senza introdurre valori diversi o non documentati.
-- [ ] Il workflow esporta il preset `Android APK` già presente in
+      *Confermato dai log del run #2: `Godot Engine v4.7.1.stable.official`,
+      JDK 17 Temurin, `build-tools;36.1.0`/`ndk;29.0.14206865` installati e
+      usati (aapt2/apksigner letti dal path con quella versione esatta).*
+- [x] Il workflow esporta il preset `Android APK` già presente in
       `export_presets.cfg` (nessun preset nuovo, nessuna modifica ai preset
       esistenti) producendo un `.apk` firmato con il keystore di debug
       predefinito di Godot (nessun segreto nuovo nel repository).
-- [ ] Prima di pubblicare, il workflow esegue almeno l'ispezione statica
+      *`export_presets.cfg` non toccato in nessun commit di questa card;
+      badging dell'APK reale conferma package, versionName e ABI attesi.*
+- [x] Prima di pubblicare, il workflow esegue almeno l'ispezione statica
       minima descritta in `docs/setup.md` (package
       `com.ilgioco.pidgeonsurvivor`, `minSdk` 31, `targetSdk` 36, sola ABI
       `arm64-v8a`, firma valida) e fallisce se un controllo non passa, invece
       di pubblicare un artefatto rotto.
-- [ ] L'APK risultante è allegato come asset di una GitHub Release (non
+      *Comportamento osservato in entrambe le direzioni: il run #1 è
+      realmente fallito quando un controllo (bug di case-sensitivity nel mio
+      grep, non nell'APK) non ha combaciato, senza pubblicare nulla; il run
+      #2, con lo stesso APK sostanzialmente equivalente, ha superato package,
+      `minSdkVersion:'31'`, `targetSdkVersion:'36'`, ABI `arm64-v8a` e
+      `apksigner verify` prima di procedere.*
+- [x] L'APK risultante è allegato come asset di una GitHub Release (non
       committato in nessuna cartella del repository); una Release precedente
       con lo stesso tag viene aggiornata invece di accumulare release
       duplicate a ogni run manuale.
-- [ ] `/exports/`, `/android/build/` e le altre voci di `.gitignore` restano
+      *Release `android-debug-latest` pubblicata con asset
+      `pidgeon-survivor-debug.apk` (~101 MB), confermata via
+      `get_release_by_tag`. La parte "aggiorna invece di duplicare" non è
+      stata riosservata con un terzo run in questa sessione: si affida al
+      comportamento documentato di `softprops/action-gh-release` (stesso
+      `tag_name` → release esistente aggiornata), non a un'osservazione
+      diretta ripetuta.*
+- [x] `/exports/`, `/android/build/` e le altre voci di `.gitignore` restano
       invariate: il workflow non richiede di tracciare artefatti generati.
+      *`.gitignore` non toccato in nessun commit di questa card.*
 
 ## Ambito
 
@@ -84,12 +108,15 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows: non pertinente, il percorso locale non cambia.
-- [ ] Validazione statica APK: eseguita in CI come parte del workflow (vedi
-      criteri di accettazione), da confermare con un run reale osservato.
-- [ ] Runtime fisico Pixel 9: non richiesto da questa card (verifica solo che
-      l'APK si generi e sia strutturalmente valido, non il gameplay).
-- [ ] Controllo percettivo richiesto: no.
+- [x] Runtime Windows: non pertinente, il percorso locale non cambia.
+- [x] Validazione statica APK: eseguita in CI e osservata verde sul
+      [run #2](https://github.com/AlessioBarbanti/PidgeonSurvivor/actions/runs/33478203059)
+      (`Static APK inspection`, conclusion `success`).
+- [x] Runtime fisico Pixel 9: non richiesto da questa card (verifica solo che
+      l'APK si generi e sia strutturalmente valido, non il gameplay). Non
+      installato su device reale in questa sessione: resta un controllo
+      facoltativo del proprietario, non un gate bloccante per questa card.
+- [x] Controllo percettivo richiesto: no.
 
 ## Decisioni
 
@@ -108,10 +135,25 @@ Non toccare:
   Android è lento (SDK/NDK grandi, build Gradle); non ha senso farlo scattare
   automaticamente a ogni push finché non lo richiede un flusso di rilascio
   reale.
+- **2026-09-01 — Push diretto su `main` autorizzato esplicitamente dal
+  proprietario per questa card.** GitHub registra un workflow
+  `workflow_dispatch` solo se il file esiste sul branch di default: senza
+  questo il workflow non era azionabile né verificabile da nessuno. Fatto
+  fast-forward, nessun conflitto, nessuna cronologia riscritta.
+- **2026-09-01 — Run #1 fallito per un bug del mio script di verifica, non
+  dell'export.** `aapt2` produceva correttamente `minSdkVersion:'31'`; il
+  controllo cercava `sdkVersion:'31'` (S minuscola), mai combaciante per
+  case-sensitivity. Corretto il pattern e, insieme, il rilevamento del
+  marker `[ DONE ] export` (Godot lo stampa circondato da codici ANSI anche
+  in headless: il grep letterale non lo vedeva mai, ma non era comunque
+  bloccante). Fix in un commit separato, rilanciato come run #2, verde.
+- **2026-09-01 — Card chiusa `COMPLETATO` su un run reale osservato verde,
+  non su un file YAML "che sembra corretto".** Vedi i link ai run nei criteri
+  sopra.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/setup.md`: breve nota che rimanda al workflow CI come percorso
+- [x] `docs/setup.md`: breve nota che rimanda al workflow CI come percorso
       alternativo per ottenere un APK senza toolchain locale.
 
 ## Note
