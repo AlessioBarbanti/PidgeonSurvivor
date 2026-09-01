@@ -3,7 +3,7 @@ id: PS-049
 titolo: Generare le tre illustrazioni definitive del tutorial
 tipo: art
 area: arte
-stato: BLOCCATO
+stato: PRONTO
 priorita: media
 dipende_da: [PS-048]
 origine:

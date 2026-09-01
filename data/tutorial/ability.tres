@@ -1,10 +1,7 @@
-[gd_resource type="Resource" script_class="TutorialPageDefinition" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="TutorialPageDefinition" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/tutorial_page_definition.gd" id="1_page"]
-[ext_resource type="Texture2D" path="res://assets/art/icons/abilities/generated/lightning.png" id="2_lightning"]
-[ext_resource type="Texture2D" path="res://assets/art/icons/abilities/generated/grand_spin.png" id="3_spin"]
-[ext_resource type="Texture2D" path="res://assets/art/icons/abilities/generated/zen.png" id="4_zen"]
-[ext_resource type="Texture2D" path="res://assets/art/icons/abilities/generated/earthquake.png" id="5_earthquake"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/tutorial/generated/fake_tutorial_ability_button.png" id="2_artwork"]
 
 [resource]
 script = ExtResource("1_page")
@@ -12,5 +9,4 @@ id = &"ability"
 eyebrow = "ABILITÀ ATTIVA"
 title = "QUANDO IL CERCHIO È PIENO, PREMI"
 body = "Ogni personaggio ha un'abilità sua, con una ricarica. Il cerchio in basso a destra la mostra: quando è pieno, è pronta."
-showcase_layout = 0
-showcase_textures = Array[Texture2D]([ExtResource("2_lightning"), ExtResource("3_spin"), ExtResource("4_zen"), ExtResource("5_earthquake")])
+artwork = ExtResource("2_artwork")

@@ -3,12 +3,12 @@ id: PS-048
 titolo: Allineare tre pagine del tutorial a ciò che il gioco mostra davvero
 tipo: ux
 area: ui
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-08-31
+aggiornato: 2026-09-01
 ---
 
 # PS-048 — Allineare tre pagine del tutorial a ciò che il gioco mostra davvero
@@ -43,25 +43,26 @@ Le tre pagine mostrano esattamente ciò che il testo insegna:
 
 ## Criteri di accettazione
 
-- [ ] La pagina `ability` mostra il pulsante abilità dell'HUD in stato pronto e
+- [x] La pagina `ability` mostra il pulsante abilità dell'HUD in stato pronto e
       in stato di ricarica, non una griglia di abilità diverse.
-- [ ] La pagina `progression` mostra XP, pickup di cura e carta di scelta con
+- [x] La pagina `progression` mostra XP, pickup di cura e carta di scelta con
       aspetto coerente al runtime, non quattro icone upgrade.
-- [ ] La pagina `boss` mostra almeno tre forme di zona pericolosa distinte,
+- [x] La pagina `boss` mostra almeno tre forme di zona pericolosa distinte,
       per esempio linea, anello e area.
-- [ ] Il testo della pagina `boss` insegna a uscire dalla zona pericolosa senza
+- [x] Il testo della pagina `boss` insegna a uscire dalla zona pericolosa senza
       affermare che tutti gli attacchi abbiano la stessa forma.
-- [ ] Il testo resta in italiano comune e ogni pagina è ancorata a un elemento
+- [x] Il testo resta in italiano comune e ogni pagina è ancorata a un elemento
       concreto dell'interfaccia.
-- [ ] Le sei pagine restano sei, nello stesso ordine, con contenitore,
+- [x] Le sei pagine restano sei, nello stesso ordine, con contenitore,
       navigazione, swipe e contatore invariati.
-- [ ] Le nuove illustrazioni sono cablate come `artwork` nei rispettivi `.tres`
+- [x] Le nuove illustrazioni sono cablate come `artwork` nei rispettivi `.tres`
       e puntano ai tre file segnaposto elencati in Ambito.
-- [ ] I segnaposto riproducono già composizione e ingombri finali e sono
+- [x] I segnaposto riproducono già composizione e ingombri finali e sono
       chiaramente riconoscibili dal prefisso `fake_`.
-- [ ] `TutorialPageDefinition.is_valid()` resta vero per tutte le pagine.
-- [ ] Il tutorial resta nella safe area su 16:9, 20:9 e 4:3 senza regredire
-      rispetto a PS-016.
+- [x] `TutorialPageDefinition.is_valid()` resta vero per tutte le pagine.
+- [x] Il tutorial resta nella safe area su 16:9, 20:9 e 4:3 senza regredire
+      rispetto a PS-016. Coperto da `test_b54_tutorial_flow.gd` (profili
+      1280×720, 1600×720, 960×720).
 
 ## Ambito
 
@@ -107,13 +108,55 @@ Non toccare:
   definitivo impediscono di scambiarli per arte approvata.
 - **2026-08-31 — La pagina Boss insegna il principio, non una forma.** Mostra
   più pericoli reali e non dichiara un telegraph universale.
+- **2026-09-01 — Ability e Progression passano da vetrina a icone ad artwork
+  singolo.** Lo stesso contratto `artwork: Texture2D` già usato da Boss
+  (`TutorialPageDefinition.is_valid()` lo accetta in alternativa a
+  `showcase_textures`): nessuna modifica allo script richiesta, la card non
+  ha dovuto toccare `tutorial_page_definition.gd`/`tutorial_preview.gd`.
+- **2026-09-01 — Segnaposto generati proceduralmente, non con ImageGen.**
+  Forme piatte con filigrana "SEGNAPOSTO" diagonale e bordo tratteggiato,
+  colori e geometria ricalcati dal runtime reale (`touch_ability_button.gd`,
+  `experience_pickup.gd`, `first_boss.gd`/`boss_definition.gd`): è
+  l'adattamento geometrico/procedurale che la board affida a `card-risolvi`,
+  non generazione di nuova arte (competenza del Game Art Designer, PS-049).
+- **2026-09-01 — `tutorial_boss.png` resta sul disco, non referenziato.**
+  Rimosso solo dal riferimento in `boss.tres`; non cancellato ne' rimosso
+  dal manifest, fuori ambito per questa card. PS-049 decide cosa farne
+  quando produce l'arte definitiva delle tre pagine.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/prd.md`: contenuto delle pagine del tutorial.
-- [ ] `docs/ui-ux-flow.md`, se cambia la struttura di una pagina.
+- [ ] `docs/prd.md`: contenuto delle pagine del tutorial. Rimandato a dopo
+      PS-049: il contenuto testuale non cambia, solo l'illustrazione (oggi
+      segnaposto); sincronizzare ora duplicherebbe il lavoro.
+- [x] `docs/ui-ux-flow.md`: verificato, non descrive il contenuto per-pagina
+      del tutorial (solo la meccanica del flusso `welcome → tutorial →
+      selezione`), quindi nessuna riga da aggiornare.
 
 ## Note
 
 I segnaposto non vengono registrati come asset definitivi. Provenienza,
 licenza, trasformazioni e SHA-256 vengono completati in PS-049.
+
+Evidenza di chiusura (2026-09-01):
+
+```powershell
+.\tools\run-milestone-checks.ps1 -Milestone PS-048 -Profile Focused `
+  -FocusedSmoke tests/unit/test_ps048_tutorial_runtime_fidelity.gd -RefreshEditor
+# PASS focused=1/1
+
+.\tools\run-milestone-checks.ps1 -Milestone PS-048 -Profile Relevant `
+  -FocusedSmoke tests/unit/test_ps048_tutorial_runtime_fidelity.gd `
+  -ChangedPath data/tutorial/ability.tres,data/tutorial/progression.tres,data/tutorial/boss.tres,assets/art/ui/tutorial/generated/fake_tutorial_ability_button.png,assets/art/ui/tutorial/generated/fake_tutorial_pickups.png,assets/art/ui/tutorial/generated/fake_tutorial_telegraphs.png,tests/unit/test_b54_tutorial_flow.gd,tests/unit/test_ps048_tutorial_runtime_fidelity.gd
+# regression=14/17: le uniche 2 righe rosse sono test_ps036/test_ps047,
+# difetto preesistente e indipendente tracciato in PS-067.
+```
+
+`-ChangedPath` esplicito per lo stesso motivo di PS-042: nuovi PNG non
+tracciati sotto `assets/art/` per PS-052 (altro workflow in corso) non
+ancora mappati, altrimenti `run_all`.
+
+`-RefreshEditor` necessario alla prima esecuzione perché i tre `fake_*.png`
+sono nuovi: senza import generato, ogni `.tres` che li referenzia fallisce
+il parsing e l'errore si propaga a tutta la sessione di test (osservato
+inizialmente come cascata di fallimenti non correlati in altri script).

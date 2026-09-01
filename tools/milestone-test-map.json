@@ -279,6 +279,7 @@
         "tests/unit/test_b18w_character_select_refinement.gd",
         "tests/unit/test_b18o_welcome_flow.gd",
         "tests/unit/test_b54_tutorial_flow.gd",
+        "tests/unit/test_ps048_tutorial_runtime_fidelity.gd",
         "tests/unit/test_typography.gd",
         "tests/unit/test_ps005_boss_warning.gd",
         "tests/unit/test_ps025_boss_warning_size.gd",
@@ -296,7 +297,8 @@
       ],
       "smokes": [
         "tests/unit/test_b54_tutorial_flow.gd",
-        "tests/unit/test_b18o_welcome_flow.gd"
+        "tests/unit/test_b18o_welcome_flow.gd",
+        "tests/unit/test_ps048_tutorial_runtime_fidelity.gd"
       ]
     },
     {

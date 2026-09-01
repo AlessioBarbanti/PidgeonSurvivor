@@ -10,13 +10,6 @@ const EXPECTED_ENEMY_SPRITE_PATHS: Array[String] = [
 	"res://assets/art/enemies/pigeons/pigeon_splitter.png",
 	"res://assets/art/enemies/pigeons/pigeon_ranged.png",
 ]
-const EXPECTED_UPGRADE_ICON_PATHS: Array[String] = [
-	"res://assets/art/icons/upgrades/generated/meat_fork_damage.png",
-	"res://assets/art/icons/upgrades/generated/fire_rate.png",
-	"res://assets/art/icons/upgrades/generated/move_speed.png",
-	"res://assets/art/icons/upgrades/generated/bis_di_salsiccia.png",
-]
-const RETIRED_UPGRADE_ICON_PATH := "res://assets/art/icons/upgrades/generated/pickup_range.png"
 const ABILITY_PAGE_INDEX := 2
 const PROGRESSION_PAGE_INDEX := 3
 const ENEMIES_PAGE_INDEX := 4
@@ -28,8 +21,13 @@ const LOOP_CONTINUITY_TOLERANCE := 2.5
 const TUTORIAL_ARTWORK_PATHS: Array[String] = [
 	"res://assets/art/ui/tutorial/generated/tutorial_objective.png",
 	"res://assets/art/ui/tutorial/generated/tutorial_movement.png",
-	"res://assets/art/ui/tutorial/generated/tutorial_boss.png",
 ]
+## PS-048: ability, progression e boss sono passate da vetrina a icone a un
+## singolo artwork fedele al runtime; i tre file sono segnaposto "fake_"
+## in attesa dell'arte definitiva di PS-049.
+const ABILITY_ARTWORK_PATH := "res://assets/art/ui/tutorial/generated/fake_tutorial_ability_button.png"
+const PROGRESSION_ARTWORK_PATH := "res://assets/art/ui/tutorial/generated/fake_tutorial_pickups.png"
+const BOSS_ARTWORK_PATH := "res://assets/art/ui/tutorial/generated/fake_tutorial_telegraphs.png"
 const LAYOUT_PROFILES: Array[Vector2i] = [
 	Vector2i(1280, 720),
 	Vector2i(1600, 720),
@@ -112,9 +110,8 @@ func test_tutorial_flow() -> void:
 	assert_eq(tutorial.get_next_button().text, "AVANTI", "Il CTA intermedio deve chiamarsi AVANTI.")
 	assert_true(
 		tutorial.pages[0].artwork.resource_path == TUTORIAL_ARTWORK_PATHS[0]
-		and tutorial.pages[1].artwork.resource_path == TUTORIAL_ARTWORK_PATHS[1]
-		and tutorial.pages[5].artwork.resource_path == TUTORIAL_ARTWORK_PATHS[2],
-		"Obiettivo, movimento e Boss devono usare gli artwork tutorial dedicati."
+		and tutorial.pages[1].artwork.resource_path == TUTORIAL_ARTWORK_PATHS[1],
+		"Obiettivo e movimento devono usare gli artwork tutorial dedicati."
 	)
 	assert_true(not tutorial.is_preview_animation_active(), "L'artwork della prima pagina deve restare immobile.")
 	await wait_process_frames(2)
@@ -146,8 +143,8 @@ func test_tutorial_flow() -> void:
 	await wait_process_frames(2)
 	assert_eq(tutorial.get_current_page_index(), 1, "Uno swipe a destra deve tornare di una pagina.")
 
-	await _assert_grid_page(tutorial, ABILITY_PAGE_INDEX, "03 / 06", "Abilità", [])
-	await _assert_grid_page(tutorial, PROGRESSION_PAGE_INDEX, "04 / 06", "Potenziamenti", EXPECTED_UPGRADE_ICON_PATHS)
+	await _assert_artwork_page(tutorial, ABILITY_PAGE_INDEX, "03 / 06", "Abilità", ABILITY_ARTWORK_PATH)
+	await _assert_artwork_page(tutorial, PROGRESSION_PAGE_INDEX, "04 / 06", "Potenziamenti", PROGRESSION_ARTWORK_PATH)
 
 	assert_true(tutorial.show_page(ENEMIES_PAGE_INDEX), "La pagina Nemici deve essere raggiungibile.")
 	await wait_process_frames(2)
@@ -180,6 +177,11 @@ func test_tutorial_flow() -> void:
 	await wait_process_frames(2)
 	assert_eq(tutorial.get_next_button().text, "GIOCA", "L'ultima pagina deve sostituire AVANTI con GIOCA.")
 	assert_true(not tutorial.is_preview_animation_active(), "L'artwork della pagina Boss deve restare immobile.")
+	assert_true(
+		tutorial.pages[BOSS_PAGE_INDEX].artwork != null
+		and tutorial.pages[BOSS_PAGE_INDEX].artwork.resource_path == BOSS_ARTWORK_PATH,
+		"PS-048: la pagina Boss deve mostrare i tre telegraph (linea, anello, area)."
+	)
 	await _assert_layout_profiles(movement_slice, welcome, tutorial)
 
 	## Il ritorno avviene dalla pagina Nemici: e' l'unica animata, quindi l'unica
@@ -208,32 +210,23 @@ func test_tutorial_flow() -> void:
 		controller.prepare_restart()
 
 
-func _assert_grid_page(
-	tutorial: TutorialScreen, page_index: int, expected_counter: String, context: String, expected_icon_paths: Array[String]
+## PS-048: ability e progression non mostrano piu' una vetrina a icone ma un
+## singolo artwork fedele al runtime (stesso contratto gia' usato da Boss).
+func _assert_artwork_page(
+	tutorial: TutorialScreen, page_index: int, expected_counter: String, context: String, expected_artwork_path: String
 ) -> void:
 	assert_true(tutorial.show_page(page_index), "%s: la pagina deve essere raggiungibile." % context)
 	await wait_process_frames(2)
 	assert_eq(tutorial.get_page_counter_text(), expected_counter, "%s: il contatore deve mostrare %s." % [context, expected_counter])
-	assert_eq(tutorial.get_showcase_item_count(), 4, "%s: la vetrina deve avere quattro icone." % context)
-	assert_eq(tutorial.get_gallery_column_count(), 2, "%s: le quattro icone devono stare in una matrice 2×2." % context)
 	assert_eq(
-		tutorial.get_gallery_label_count(), 0, "%s: la vetrina non deve reintrodurre una galleria di nomi tecnici." % context
+		tutorial.get_showcase_item_count(), 0, "%s: l'artwork singolo non deve avere una vetrina a icone." % context
 	)
-	var textures := tutorial.get_showcase_textures()
-	for texture in textures:
-		assert_true(
-			texture != null and texture.resource_path != RETIRED_UPGRADE_ICON_PATH,
-			"%s: l'arte RACCOLTA non deve comparire nella vetrina." % context
-		)
-	if not expected_icon_paths.is_empty():
-		assert_eq(textures.size(), expected_icon_paths.size(), "%s: la vetrina deve elencare le icone attese." % context)
-		if textures.size() == expected_icon_paths.size():
-			for index in expected_icon_paths.size():
-				assert_true(
-					textures[index] != null and textures[index].resource_path == expected_icon_paths[index],
-					"%s: lo slot %d deve usare %s." % [context, index, expected_icon_paths[index]]
-				)
-	assert_true(not tutorial.is_preview_animation_active(), "%s: le icone della vetrina devono restare immobili." % context)
+	assert_true(
+		tutorial.pages[page_index].artwork != null
+		and tutorial.pages[page_index].artwork.resource_path == expected_artwork_path,
+		"%s: deve usare l'artwork %s." % [context, expected_artwork_path]
+	)
+	assert_true(not tutorial.is_preview_animation_active(), "%s: l'artwork deve restare immobile." % context)
 
 
 func _assert_continuous_loop(tutorial: TutorialScreen, context: String) -> void:

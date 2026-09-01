@@ -88,8 +88,8 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-045](./4_to_test/PS-045-gerarchia-visiva-arena-di-run.md) | Riequilibrare composizione e leggibilità dell'arena 20:9 | ux | arte | IN VERIFICA | alta | — |
 | [PS-046](./4_to_test/PS-046-isola-il-modal-di-level-up.md) | Isolare il modal di level-up da HUD e cronometro | ux | ui | IN VERIFICA | alta | — |
 | [PS-047](./4_to_test/PS-047-gerarchia-carte-upgrade.md) | Compattare e gerarchizzare le carte upgrade | ux | ui | IN VERIFICA | alta | PS-046 |
-| [PS-048](./2_to_do/PS-048-fedelta-al-runtime-di-tre-pagine-tutorial.md) | Allineare tre pagine del tutorial a ciò che il gioco mostra davvero | ux | ui | PRONTO | media | — |
-| [PS-049](./2_to_do/PS-049-genera-illustrazioni-tutorial.md) | Generare le tre illustrazioni definitive del tutorial | art | arte | BLOCCATO | media | PS-048 |
+| [PS-048](./4_to_test/PS-048-fedelta-al-runtime-di-tre-pagine-tutorial.md) | Allineare tre pagine del tutorial a ciò che il gioco mostra davvero | ux | ui | IN VERIFICA | media | — |
+| [PS-049](./2_to_do/PS-049-genera-illustrazioni-tutorial.md) | Generare le tre illustrazioni definitive del tutorial | art | arte | PRONTO | media | PS-048 |
 | [PS-050](./2_to_do/PS-050-uniforma-impostazioni-welcome-alla-pausa.md) | Uniformare le impostazioni della welcome al sistema della pausa | ux | ui | PRONTO | media | — |
 | [PS-051](./2_to_do/PS-051-identita-individuale-degli-evil.md) | Dare identità individuale agli Evil nella Boss intro | ux | ui | PRONTO | media | — |
 | [PS-052](./2_to_do/PS-052-genera-ritratti-evil-e-icone-signature.md) | Generare i ritratti Evil e le icone Signature definitivi | art | arte | BLOCCATO | media | PS-051 |
