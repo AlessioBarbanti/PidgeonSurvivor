@@ -98,3 +98,5 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-060](./5_completed/PS-060-ci-build-apk-github-release.md) | Compilare l'APK Android in CI e pubblicarlo come GitHub Release | chore | tooling | COMPLETATO | media | — |
 | [PS-061](./5_completed/PS-061-catture-ui-in-ci-per-validazione-remota.md) | Eseguire il pacchetto di catture UI in CI per la validazione visiva remota | chore | tooling | COMPLETATO | media | PS-044, PS-060 |
 | [PS-062](./5_completed/PS-062-setup-sandbox-remoto-validazione-locale.md) | Script di setup Godot nel sandbox remoto per validare prima di commit/push | chore | tooling | COMPLETATO | media | — |
+| [PS-063](./4_to_test/PS-063-metapanel-trabocca-carte-upgrade.md) | Il MetaPanel delle carte upgrade esce dal bordo della carta | fix | ui | IN VERIFICA | alta | PS-047 |
+| [PS-064](./2_to_do/PS-064-top-level-ignora-offset-safe-area.md) | I nodi top_level dei modal ignorano l'offset del safe-rect del display | fix | ui | PRONTO | media | PS-059 |

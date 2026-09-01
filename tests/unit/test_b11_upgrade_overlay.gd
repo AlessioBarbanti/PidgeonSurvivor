@@ -64,9 +64,9 @@ func test_responsive_layouts() -> void:
 			)
 			assert_eq(card.get_rank_text(), "RANGO 0  >  1", "%s: la carta deve anticipare il nuovo rank." % profile_name)
 			assert_true(
-				icon != null and icon.custom_minimum_size == Vector2(192.0, 192.0)
-				and icon_center != null and icon_center.custom_minimum_size.y >= 198.0,
-				"%s: carta %d deve riservare un'area icona 192x192." % [profile_name, index + 1]
+				icon != null and icon.custom_minimum_size == Vector2(106.0, 106.0)
+				and icon_center != null and icon_center.custom_minimum_size.y >= 112.0,
+				"%s: carta %d deve riservare un'area icona 106x106." % [profile_name, index + 1]
 			)
 		if cards.size() == 3:
 			assert_true(

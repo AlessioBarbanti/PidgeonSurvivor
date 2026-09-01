@@ -86,14 +86,14 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/margin_left = 22
-theme_override_constants/margin_top = 18
+theme_override_constants/margin_top = 14
 theme_override_constants/margin_right = 22
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_bottom = 16
 
 [node name="Content" type="VBoxContainer" parent="Margins"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
 [node name="Header" type="HBoxContainer" parent="Margins/Content"]
 layout_mode = 2
@@ -116,13 +116,13 @@ size_flags_horizontal = 3
 mouse_filter = 2
 
 [node name="IconCenter" type="CenterContainer" parent="Margins/Content"]
-custom_minimum_size = Vector2(0, 198)
+custom_minimum_size = Vector2(0, 112)
 layout_mode = 2
 mouse_filter = 2
 
 [node name="Icon" type="TextureRect" parent="Margins/Content/IconCenter"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(192, 192)
+custom_minimum_size = Vector2(106, 106)
 layout_mode = 2
 mouse_filter = 2
 expand_mode = 3

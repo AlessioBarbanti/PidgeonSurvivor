@@ -14,10 +14,12 @@ var _definition: UpgradeDefinition
 var _offer_index := -1
 var _speciality_treatment := false
 var _base_styles: Dictionary[StringName, StyleBox] = {}
+var _base_minimum_size := Vector2.ZERO
 
 
 func _ready() -> void:
 	_cache_base_styles()
+	_base_minimum_size = custom_minimum_size
 	pressed.connect(_on_pressed)
 	clear_card()
 
@@ -44,7 +46,57 @@ func configure(
 	]
 	tooltip_text = _build_tooltip(definition)
 	disabled = false
+	# Fire-and-forget: subito dopo configure() la carta non ha ancora la sua
+	# larghezza reale assegnata da `Cards` (nemmeno a fine frame, un
+	# `call_deferred` non basta), e un'etichetta con autowrap misurata a
+	# larghezza non definitiva riporta un'altezza minima gonfiata (va a capo
+	# come se fosse strettissima). Un paio di frame dopo la larghezza è
+	# quella vera e il wrapping è quello che si vede a schermo.
+	_grow_to_fit_content()
 	return true
+
+
+## `Margins` è posizionato con ancore, non gestito da un Container del
+## bottone: Godot non ricalcola da solo `custom_minimum_size` in base al suo
+## contenuto. Senza questo, un titolo o una descrizione più lunghi del
+## previsto (testo variabile per carta) fanno traboccare il `MetaPanel` sotto
+## il bordo della carta invece di allargarla. `_base_minimum_size` resta il
+## pavimento dichiarato in scena; qui si cresce solo se il contenuto reale
+## richiede di più, cosi' `Cards` (che stira tutte le carte alla stessa
+## altezza) vede sempre il fabbisogno vero di questa carta specifica.
+##
+## Non usa `margins.get_combined_minimum_size()` sull'intero sottoalbero:
+## interrogata prima che la riga abbia assegnato la larghezza reale, restituisce
+## un'altezza gonfiata (un'etichetta con autowrap misurata a larghezza ~0 va a
+## capo come se fosse strettissima). Sommare le altezze minime dei singoli figli
+## — già corrette, perché ciascuna riflette la propria larghezza reale assegnata
+## — evita il problema.
+func _grow_to_fit_content() -> void:
+	# La riga assegna la larghezza reale delle carte solo un paio di frame
+	# dopo configure(): prima di allora ogni misura di un'etichetta con
+	# autowrap è inattendibile (vedi commento sopra la chiamata).
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if not is_inside_tree():
+		return
+
+	var content := get_node_or_null("Margins/Content") as VBoxContainer
+	if content == null:
+		return
+	var margins := get_node("Margins") as MarginContainer
+	var separation: int = content.get_theme_constant(&"separation")
+	var required_height: float = (
+		margins.get_theme_constant(&"margin_top")
+		+ margins.get_theme_constant(&"margin_bottom")
+		+ separation * maxi(content.get_child_count() - 1, 0)
+	)
+	for child in content.get_children():
+		if child is Control:
+			required_height += (child as Control).get_combined_minimum_size().y
+
+	custom_minimum_size = Vector2(
+		_base_minimum_size.x, maxf(_base_minimum_size.y, required_height)
+	)
 
 
 func clear_card() -> void:
