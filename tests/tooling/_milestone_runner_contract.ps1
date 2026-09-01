@@ -165,6 +165,43 @@ if ($timedOut.Count -ne 1 -or $timedOut[0] -notmatch 'TIMEOUT') {
     throw 'Un batch scaduto deve essere dichiarato TIMEOUT.'
 }
 
+# PS-031: un warning innocuo su stderr di git (CRLF vs. eol=lf di
+# .gitattributes) con exit code 0 non deve crashare Get-ChangedRepositoryPaths.
+# Riproduce il caso originale sporcando temporaneamente un file tracked con
+# CRLF, senza passare -ChangedPath cosi' la selezione usa i comandi git reali.
+$crlfProbePath = Join-Path $repoRoot 'docs\cards\_TEMPLATE.md'
+$originalCrlfProbeBytes = [IO.File]::ReadAllBytes($crlfProbePath)
+try {
+    $originalCrlfProbeText = [IO.File]::ReadAllText($crlfProbePath)
+    [IO.File]::WriteAllText($crlfProbePath, ($originalCrlfProbeText -replace "(?<!`r)`n", "`r`n"))
+
+    $previousPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $combinedProbe = @(& git -C $repoRoot diff --name-only HEAD -- 2>&1)
+    } finally {
+        $ErrorActionPreference = $previousPreference
+    }
+    $stderrProbe = @($combinedProbe | Where-Object { $_ -is [Management.Automation.ErrorRecord] })
+    if ($stderrProbe.Count -eq 0) {
+        throw 'Fixture PS-031: il file di prova non produce un warning CRLF su stderr, impossibile riprodurre il caso.'
+    }
+
+    # Git normalizza il CRLF prima di calcolare il diff: a contenuto invariato
+    # il file di prova non compare fra i changed_paths (nessuna riga
+    # realmente diversa), ma il warning sulla normalizzazione futura resta su
+    # stderr. E' esattamente il caso originale: e' il warning innocuo a dover
+    # non crashare il plan, non una modifica reale del file.
+    $crlfJson = & $runner -Milestone PS-031 -Profile Relevant `
+        -FocusedSmoke 'tests/unit/test_b24_player_visual_scale.gd' -PlanOnly -NoCache -AsJson
+    if ($LASTEXITCODE -ne 0) {
+        throw "Il plan e' crashato con un warning CRLF su stderr di git (exit $LASTEXITCODE): $crlfJson"
+    }
+    $null = $crlfJson | ConvertFrom-Json
+} finally {
+    [IO.File]::WriteAllBytes($crlfProbePath, $originalCrlfProbeBytes)
+}
+
 $release = Invoke-Plan -Profile Release -ChangedPath @('docs/development-plan.md')
 if (
     -not $release.refresh_editor -or

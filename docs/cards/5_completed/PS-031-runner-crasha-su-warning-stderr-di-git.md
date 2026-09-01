@@ -3,12 +3,12 @@ id: PS-031
 titolo: Il runner crasha su un warning stderr di git invece di continuare
 tipo: fix
 area: tooling
-stato: PRONTO
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-30
-aggiornato: 2026-08-30
+aggiornato: 2026-09-01
 ---
 
 # PS-031 — Il runner crasha su un warning stderr di git invece di continuare
@@ -48,16 +48,16 @@ zero) resta invece un errore riportato chiaramente.
 
 ## Criteri di accettazione
 
-- [ ] Un warning innocuo su stderr di `git diff --name-only HEAD --` (o di
+- [x] Un warning innocuo su stderr di `git diff --name-only HEAD --` (o di
       `git ls-files --others --exclude-standard`) con exit code `0` non
       interrompe l'esecuzione del runner.
-- [ ] Un fallimento reale di uno di questi due comandi (exit code diverso da
+- [x] Un fallimento reale di uno di questi due comandi (exit code diverso da
       zero) continua a essere riportato come errore chiaro, non silenziato.
-- [ ] Il fix copre `Get-ChangedRepositoryPaths` e qualunque altra chiamata
+- [x] Il fix copre `Get-ChangedRepositoryPaths` e qualunque altra chiamata
       dello script allo stesso pattern (`& git ... 2>$null` sotto
       `$ErrorActionPreference = 'Stop'`), se ne esistono altre con lo stesso
       rischio.
-- [ ] Riprodotto il caso originale (un file tracked con line ending CRLF in
+- [x] Riprodotto il caso originale (un file tracked con line ending CRLF in
       un repo con `eol=lf`) e verificato che con il fix il runner non crasha
       più su quel warning.
 
@@ -83,10 +83,10 @@ zero) resta invece un errore riportato chiaramente.
 
 ## Gate manuali
 
-- [ ] Runtime Windows: non richiesto, è un fix di tooling.
-- [ ] Validazione statica APK: non richiesta.
-- [ ] Runtime fisico Pixel 9: non richiesto.
-- [ ] Controllo percettivo richiesto: no.
+- [x] Runtime Windows: non richiesto, è un fix di tooling.
+- [x] Validazione statica APK: non richiesta.
+- [x] Runtime fisico Pixel 9: non richiesto.
+- [x] Controllo percettivo richiesto: no.
 
 ## Decisioni
 
@@ -94,10 +94,37 @@ zero) resta invece un errore riportato chiaramente.
   verificava PS-022, ma è un problema del runner indipendente da quella
   diagnosi; PS-022 lo ha solo aggirato normalizzando un file, senza toccare
   lo script.
+- **2026-09-01 — `Invoke-GitLines` come unico punto d'ingresso.** Le quattro
+  chiamate a processi esterni con il pattern a rischio
+  (`Get-ChangedRepositoryPaths` ×2, `Get-RepositoryRuntimeFiles` ×2) sono
+  state fatte convergere su un helper condiviso che abbassa
+  `$ErrorActionPreference` a `Continue` solo per la durata della chiamata
+  nativa (ripristinandolo subito dopo in un `finally`), lascia il `2>$null`
+  invariato e decide solo in base a `$LASTEXITCODE`. Scartata l'idea di
+  disattivare `$ErrorActionPreference = 'Stop'` globalmente: avrebbe
+  nascosto anche errori legittimi altrove nello script, contro il vincolo
+  esplicito in "Ambito".
+- **2026-09-01 — Riproduzione automatizzata in `_milestone_runner_contract.ps1`.**
+  Il test sporca temporaneamente `docs/cards/_TEMPLATE.md` con CRLF (poi lo
+  ripristina in un `finally`), verifica che il warning compaia davvero su
+  stderr e poi invoca il runner reale (senza `-ChangedPath`, così passa da
+  `Get-ChangedRepositoryPaths`) aspettandosi exit `0`. Nota emersa in corso
+  d'opera: con contenuto altrimenti identico, `git diff --name-only` non
+  elenca il file fra i changed path (git normalizza il CRLF prima del
+  confronto) pur emettendo comunque il warning: è esattamente lo scenario
+  del bug originale, quindi il test verifica l'assenza di crash sul plan
+  invece di una comparsa nei changed path.
+- **2026-09-01 — Verifica del fallimento reale.** Confermato a mano in
+  PowerShell che un comando git realmente fallito (`git show` su un ref
+  inesistente) restituisce `$LASTEXITCODE` diverso da zero anche con
+  `$ErrorActionPreference = 'Continue'` durante la chiamata: il throw
+  esistente su `$LASTEXITCODE -ne 0` resta quindi corretto e non è stato
+  aggiunto un fixture end-to-end dedicato per questo ramo (comporterebbe
+  corrompere temporaneamente lo stato del repo di test).
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno atteso: è un dettaglio di robustezza del runner, non un
+- [x] Nessuno atteso: è un dettaglio di robustezza del runner, non un
       contratto di prodotto o di architettura.
 
 ## Note
@@ -126,3 +153,17 @@ stati trovati sei file card (`PS-024`..`PS-029` in `docs/cards/2_to_do/`) non
 presenti nella tabella di [docs/cards/README.md](../README.md). Non è stato
 verificato se sono card valide dimenticate nella board o file da altre fonti;
 segnalato al proprietario, non corretto qui perché fuori ambito.
+
+Evidenza di chiusura (2026-09-01):
+
+```powershell
+.\tests\tooling\_milestone_runner_contract.ps1
+# MILESTONE_RUNNER_CONTRACT_OK
+```
+
+include ora anche la riproduzione automatica del caso CRLF originale (sporca
+`docs/cards/_TEMPLATE.md` con CRLF, verifica il warning su stderr, invoca il
+runner reale senza `-ChangedPath` e si aspetta exit `0`, poi ripristina il
+file in un `finally`). Verificato inoltre a mano, fuori dal test, che un
+comando git realmente fallito (`git show` su un ref inesistente) restituisce
+comunque `$LASTEXITCODE` diverso da zero con lo stesso pattern.

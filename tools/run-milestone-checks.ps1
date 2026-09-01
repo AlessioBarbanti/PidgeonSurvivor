@@ -210,19 +210,43 @@ function Find-FocusedGutTests {
     )
 }
 
+function Invoke-GitLines {
+    # PS 5.1 promuove ogni riga di stderr di un comando nativo redirezionato
+    # (anche con 2>$null) a NativeCommandError quando $ErrorActionPreference
+    # e' 'Stop', facendo fallire lo script pure con exit code 0 (es. warning
+    # CRLF/eol=lf di git). Abbassare la preference solo per la durata della
+    # chiamata nativa evita la promozione senza nascondere un vero fallimento,
+    # che resta rilevato dal solo $LASTEXITCODE (PS-031).
+    param(
+        [Parameter(Mandatory)]
+        [string[]]$GitArgs,
+
+        [Parameter(Mandatory)]
+        [string]$FailureMessage
+    )
+
+    $previousPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        $lines = @(& git -C $repoRoot @GitArgs 2>$null)
+    } finally {
+        $ErrorActionPreference = $previousPreference
+    }
+    if ($LASTEXITCODE -ne 0) {
+        throw $FailureMessage
+    }
+    return @($lines)
+}
+
 function Get-ChangedRepositoryPaths {
     if ($ChangedPath.Count -gt 0) {
         return @($ChangedPath | ForEach-Object { $_.Replace('\', '/') } | Sort-Object -Unique)
     }
 
-    $tracked = @(& git -C $repoRoot diff --name-only HEAD -- 2>$null)
-    if ($LASTEXITCODE -ne 0) {
-        throw 'git diff --name-only HEAD fallito durante la selezione dei test.'
-    }
-    $untracked = @(& git -C $repoRoot ls-files --others --exclude-standard 2>$null)
-    if ($LASTEXITCODE -ne 0) {
-        throw 'git ls-files --others fallito durante la selezione dei test.'
-    }
+    $tracked = Invoke-GitLines -GitArgs @('diff', '--name-only', 'HEAD', '--') `
+        -FailureMessage 'git diff --name-only HEAD fallito durante la selezione dei test.'
+    $untracked = Invoke-GitLines -GitArgs @('ls-files', '--others', '--exclude-standard') `
+        -FailureMessage 'git ls-files --others fallito durante la selezione dei test.'
     return @(
         @($tracked) + @($untracked) |
             ForEach-Object { $_.Replace('\', '/') } |
@@ -319,14 +343,10 @@ function Find-RelevantSmokes {
 }
 
 function Get-RepositoryRuntimeFiles {
-    $tracked = @(& git -C $repoRoot ls-files 2>$null)
-    if ($LASTEXITCODE -ne 0) {
-        throw 'git ls-files fallito durante il calcolo della cache.'
-    }
-    $untracked = @(& git -C $repoRoot ls-files --others --exclude-standard 2>$null)
-    if ($LASTEXITCODE -ne 0) {
-        throw 'git ls-files --others fallito durante il calcolo della cache.'
-    }
+    $tracked = Invoke-GitLines -GitArgs @('ls-files') `
+        -FailureMessage 'git ls-files fallito durante il calcolo della cache.'
+    $untracked = Invoke-GitLines -GitArgs @('ls-files', '--others', '--exclude-standard') `
+        -FailureMessage 'git ls-files --others fallito durante il calcolo della cache.'
     return @(
         @($tracked) + @($untracked) |
             ForEach-Object { $_.Replace('\', '/') } |

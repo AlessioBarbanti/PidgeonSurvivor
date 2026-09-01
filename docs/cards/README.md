@@ -72,7 +72,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-028](./4_to_test/PS-028-rendi-piroetta-alea-circolare.md) | Rendi circolare la rotazione della Gran Piroetta | art | arte | IN VERIFICA | media | — |
 | [PS-029](./4_to_test/PS-029-rendi-tell-stato-personaggi-piu-visibili.md) | Rendi più visibili i tell di stato dei personaggi | ux | gameplay | IN VERIFICA | alta | — |
 | [PS-030](./5_completed/PS-030-runner-crash-su-test-eliminato.md) | Correggi il crash del runner quando un test viene eliminato | fix | tooling | COMPLETATO | media | — |
-| [PS-031](./2_to_do/PS-031-runner-crasha-su-warning-stderr-di-git.md) | Il runner crasha su un warning stderr di git invece di continuare | fix | tooling | PRONTO | media | — |
+| [PS-031](./5_completed/PS-031-runner-crasha-su-warning-stderr-di-git.md) | Il runner crasha su un warning stderr di git invece di continuare | fix | tooling | COMPLETATO | media | — |
 | [PS-032](./5_completed/PS-032-seed-run-non-deterministico-nei-test-gut.md) | Il seed di run non deterministico nei test GUT causa flakiness sparsa | fix | tooling | COMPLETATO | alta | — |
 | [PS-033](./4_to_test/PS-033-riquadro-vita-boss-minimale-floating.md) | Elimina l'HUD dedicata del Boss, la vita resta solo overhead | ux | ui | IN VERIFICA | media | — |
 | [PS-034](./4_to_test/PS-034-rimuovi-xp-fissa-ricompensa-boss.md) | Rimuovi la ricompensa XP fissa dalla sconfitta del Boss | fix | gameplay | IN VERIFICA | alta | — |
