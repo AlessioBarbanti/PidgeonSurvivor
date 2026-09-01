@@ -62,6 +62,14 @@ runtime devono controllare soltanto risorse incluse nel PCK/APK.
 
 Gli output sono esclusi da Git. Dalla root del repository:
 
+**Percorso alternativo senza toolchain locale (PS-060):** il workflow
+[`.github/workflows/android-debug-release.yml`](../.github/workflows/android-debug-release.yml)
+compila lo stesso preset `Android APK` in CI (versioni allineate a questa
+pagina) e pubblica l'APK di debug come asset della Release
+`android-debug-latest` su GitHub, azionabile da "Actions" con
+`workflow_dispatch`. Non sostituisce il percorso locale sotto: resta l'unico
+modo per i gate manuali di `gate-piattaforme` (Windows, device fisico).
+
 Chiudere eventuali altre istanze dell'editor sullo stesso progetto prima di un
 export CLI: la build riesce anche con l'editor aperto, ma su Windows la console
 può restare agganciata all'istanza già attiva.

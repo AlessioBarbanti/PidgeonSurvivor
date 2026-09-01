@@ -1,0 +1,165 @@
+name: Android debug APK → GitHub Release
+
+# PS-060: compila l'APK Android di debug in CI e lo pubblica come asset di una
+# GitHub Release, cosi' una sessione di lavoro senza toolchain locale (Godot,
+# JDK, Android SDK/NDK) può comunque ottenere un APK scaricabile. Le versioni
+# installate qui devono restare allineate a docs/setup.md; se cambia una
+# versione lì, aggiornarla anche negli "env" sotto.
+#
+# Trigger solo manuale: l'export Android è lento (SDK/NDK, build Gradle) e non
+# ha senso farlo scattare a ogni push finché non lo richiede un flusso di
+# rilascio reale.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+env:
+  GODOT_VERSION: "4.7.1-stable"
+  JAVA_VERSION: "17"
+  ANDROID_BUILD_TOOLS: "36.1.0"
+  ANDROID_PLATFORM: "android-36"
+  ANDROID_NDK_VERSION: "29.0.14206865"
+  ANDROID_CMAKE_VERSION: "3.10.2.4988404"
+  APK_PATH: "exports/android/pidgeon-survivor-debug.apk"
+  PACKAGE_ID: "com.ilgioco.pidgeonsurvivor"
+
+jobs:
+  build-android-debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Android SDK cmdline-tools
+        uses: android-actions/setup-android@v3
+
+      - name: Install pinned Android SDK/NDK packages
+        run: |
+          set -euo pipefail
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager \
+            "platforms;${ANDROID_PLATFORM}" \
+            "build-tools;${ANDROID_BUILD_TOOLS}" \
+            "ndk;${ANDROID_NDK_VERSION}" \
+            "cmake;${ANDROID_CMAKE_VERSION}"
+
+      - name: Install Godot ${{ env.GODOT_VERSION }} (headless) and export templates
+        run: |
+          set -euo pipefail
+          curl -fsSL -o godot.zip \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          unzip -q godot.zip -d godot_bin
+          sudo install -m 0755 "godot_bin/Godot_v${GODOT_VERSION}_linux.x86_64" /usr/local/bin/godot
+
+          curl -fsSL -o export_templates.tpz \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz"
+          template_dir="${HOME}/.local/share/godot/export_templates/${GODOT_VERSION/-/.}"
+          mkdir -p "${template_dir}"
+          unzip -q export_templates.tpz -d /tmp/godot_templates
+          mv /tmp/godot_templates/templates/* "${template_dir}/"
+
+          godot --version
+
+      - name: Configure Godot editor settings for Java/Android SDK
+        run: |
+          set -euo pipefail
+          mkdir -p "${HOME}/.config/godot"
+          cat > "${HOME}/.config/godot/editor_settings-4.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/java_sdk_path = "${JAVA_HOME}"
+          export/android/android_sdk_path = "${ANDROID_HOME}"
+          EOF
+
+      - name: Export "Android APK" preset
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "${APK_PATH}")"
+
+          godot --headless --path . \
+            --install-android-build-template \
+            --export-debug "Android APK" "${APK_PATH}" 2>&1 | tee export.log &
+          export_pid=$!
+
+          marker_seen=false
+          for _ in $(seq 1 180); do
+            if grep -qE '^\[ DONE \]\s+export\b' export.log; then
+              marker_seen=true
+              break
+            fi
+            if ! kill -0 "${export_pid}" 2>/dev/null; then
+              break
+            fi
+            sleep 5
+          done
+
+          # Il processo Godot headless può restare aperto dopo il marker su
+          # alcune build (vedi docs/setup.md): concedere una breve grazia poi
+          # terminarlo esplicitamente, l'esito lo decide solo l'APK prodotto.
+          sleep 2
+          if kill -0 "${export_pid}" 2>/dev/null; then
+            kill "${export_pid}" 2>/dev/null || true
+            sleep 2
+            kill -9 "${export_pid}" 2>/dev/null || true
+          fi
+          wait "${export_pid}" 2>/dev/null || true
+
+          if [ "${marker_seen}" != "true" ]; then
+            echo "Marker '[ DONE ] export' non visto nel log: vedi export.log per la diagnosi." >&2
+          fi
+          test -s "${APK_PATH}" || { echo "APK non prodotto in ${APK_PATH}." >&2; exit 1; }
+
+      - name: Static APK inspection
+        run: |
+          set -euo pipefail
+          build_tools="${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS}"
+          badging="$("${build_tools}/aapt2" dump badging "${APK_PATH}")"
+          echo "${badging}"
+
+          echo "${badging}" | grep -q "package: name='${PACKAGE_ID}'" \
+            || { echo "Package id inatteso." >&2; exit 1; }
+          echo "${badging}" | grep -q "sdkVersion:'31'" \
+            || { echo "minSdk inatteso." >&2; exit 1; }
+          echo "${badging}" | grep -q "targetSdkVersion:'36'" \
+            || { echo "targetSdk inatteso." >&2; exit 1; }
+          echo "${badging}" | grep -q "native-code: 'arm64-v8a'" \
+            || { echo "ABI nativa inattesa." >&2; exit 1; }
+
+          "${build_tools}/apksigner" verify --verbose --print-certs "${APK_PATH}"
+
+          # Solo librerie native arm64-v8a nello zip, come da docs/setup.md.
+          if unzip -l "${APK_PATH}" | awk '{print $4}' | grep '^lib/' | grep -qv '^lib/arm64-v8a/'; then
+            echo "Trovate librerie native fuori da lib/arm64-v8a/." >&2
+            exit 1
+          fi
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pidgeon-survivor-debug-apk
+          path: ${{ env.APK_PATH }}
+          if-no-files-found: error
+
+      - name: Publish as GitHub Release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-debug-latest
+          name: "Pidgeon Survivor — Android debug (auto)"
+          body: |
+            APK Android di debug generato automaticamente dal workflow CI
+            (PS-060) sul commit ${{ github.sha }}. Non è una build firmata di
+            release: usa il keystore di debug predefinito di Godot.
+          prerelease: true
+          fail_on_unmatched_files: true
+          files: ${{ env.APK_PATH }}
