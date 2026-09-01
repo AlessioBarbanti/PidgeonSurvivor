@@ -39,6 +39,13 @@ jobs:
           sudo install -m 0755 "godot_bin/Godot_v${GODOT_VERSION}_linux.x86_64" /usr/local/bin/godot
           godot --version
 
+      - name: Warm up Godot import cache (RefreshEditor)
+        run: |
+          set -euo pipefail
+          godot --headless --editor --path . --quit 2>&1 | tee warmup.log || true
+          echo "--- ultime righe della cache warm-up ---"
+          tail -n 40 warmup.log
+
       - name: Capture UI screenshots (tools/_capture_ui_screenshots.gd)
         env:
           LIBGL_ALWAYS_SOFTWARE: "1"
