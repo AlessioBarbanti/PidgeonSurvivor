@@ -8,7 +8,7 @@ priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-08-31
+aggiornato: 2026-09-01
 ---
 
 # PS-051 — Dare identità individuale agli Evil nella Boss intro
@@ -113,3 +113,12 @@ Non toccare:
 
 I fake sono dichiaratamente temporanei e non vengono registrati come asset
 finali; PS-052 completa manifest e provenienza.
+
+- **2026-09-01 — Produzione art-only anticipata.** Su richiesta del
+  proprietario, il Pidgeon Survivor Art Director ha prodotto e revisionato gli
+  otto ritratti Evil e le otto icone Signature definitive, con master in `hd/`,
+  derivati `256x256` in `generated/` e manifest locali. Il lotto non è stato
+  integrato: nessun `.tres`, script, scena, test, fallback, stato o criterio di
+  questa card è cambiato. PS-051 continua quindi a definire i `fake_*.png` come
+  contratto temporaneo d'implementazione; il collegamento dei file definitivi e
+  la loro accettazione percettiva restano responsabilità di PS-052.
