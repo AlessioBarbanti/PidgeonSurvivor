@@ -35,6 +35,7 @@ var _barb_overlay: BarbRewardOverlay
 var _boss_ui: BossUI
 var _pause_overlay: PauseOverlay
 var _end_screen: EndScreen
+var _touch_joystick: TouchJoystick
 var _out_dir := OUT_DIR
 var _profile_id := ""
 var _failures: Array[String] = []
@@ -98,6 +99,7 @@ func _capture_profile(viewport_size: Vector2i) -> void:
 	_boss_ui = _slice.get_boss_ui() as BossUI
 	_pause_overlay = _slice.get_pause_overlay() as PauseOverlay
 	_end_screen = _slice.get_end_screen() as EndScreen
+	_touch_joystick = _slice.get_touch_joystick() as TouchJoystick
 
 	# La cattura gira con il focus sul terminale: senza staccare il lifecycle il
 	# focus-out manda la run in MANUAL_PAUSE e ogni scatto di gameplay
@@ -409,6 +411,7 @@ func _detach_lifecycle(lifecycle: PlatformLifecycle) -> void:
 
 
 func _shot(shot_name: String, expected_state: RunController.RunState) -> void:
+	_prepare_pixel_joystick_preview(expected_state)
 	await _frames(3)
 	var violation := _describe_state_violation(shot_name, expected_state)
 	if not violation.is_empty():
@@ -422,6 +425,20 @@ func _shot(shot_name: String, expected_state: RunController.RunState) -> void:
 	var path := "%s/%s.png" % [_out_dir, shot_name]
 	var error := image.save_png(path)
 	print("SHOT %s %s -> %s (err %d)" % [_profile_id, shot_name, path, error])
+
+
+## Il joystick "floating" è invisibile a riposo anche su Android: nella vita
+## reale compare solo mentre lo si tocca. Il pacchetto 16:9 (Windows, niente
+## touch) resta fedele così com'è; solo il pacchetto Pixel deve mostrare come
+## appare in uso, non la sua assenza.
+func _prepare_pixel_joystick_preview(expected_state: RunController.RunState) -> void:
+	if _profile_id != "20x9" or _touch_joystick == null:
+		return
+	if expected_state != RunController.RunState.RUNNING:
+		return
+	if not _touch_joystick.visible:
+		return
+	_touch_joystick.preview_engaged_for_capture()
 
 
 ## Rifiuta lo scatto quando lo stato non e' quello richiesto o quando e'

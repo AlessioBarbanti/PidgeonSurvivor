@@ -168,6 +168,15 @@ func _draw() -> void:
 	)
 
 
+## Sola per tools/_capture_ui_screenshots.gd: il joystick "floating" resta
+## invisibile finché non viene toccato, ma il pacchetto Pixel deve documentare
+## anche il suo aspetto in uso, non solo la sua assenza a riposo.
+func preview_engaged_for_capture() -> void:
+	if _active_pointer == NO_POINTER:
+		_active_pointer = DEBUG_MOUSE_POINTER
+	queue_redraw()
+
+
 func reset_input() -> void:
 	var was_active := is_active()
 	_active_pointer = NO_POINTER

@@ -640,6 +640,10 @@ func get_hud() -> GameHud:
 	return _hud
 
 
+func get_touch_joystick() -> TouchJoystick:
+	return _touch_joystick
+
+
 func get_platform_lifecycle() -> PlatformLifecycle:
 	return _platform_lifecycle
 
