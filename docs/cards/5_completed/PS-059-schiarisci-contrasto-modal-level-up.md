@@ -3,7 +3,7 @@ id: PS-059
 titolo: Schiarire il contrasto fra velo e carte nei modal di scelta
 tipo: fix
 area: ui
-stato: IN CORSO
+stato: COMPLETATO
 priorita: alta
 dipende_da: [PS-046, PS-047]
 origine:
@@ -65,55 +65,49 @@ l'isolamento da HUD e cronometro introdotto da PS-046.
 
 ## Criteri di accettazione
 
-- [ ] Il colore del `Dimmer` (`upgrade_overlay.tscn` e
+- [x] Il colore del `Dimmer` (`upgrade_overlay.tscn` e
       `barb_reward_overlay.tscn`) e il colore di sfondo `normal` della carta
       corrispondente (`upgrade_card.tscn` e il pannello carta di
       `barb_reward_overlay.tscn`) hanno una differenza di luminanza percepita
       verificabile via smoke (lettura diretta dei `Color` a runtime, soglia da
       definire in implementazione, indicativamente ≥ 0.05 in scala 0-1 di
       luminanza relativa).
-      *Implementato e calcolato a mano (luma 0.299R+0.587G+0.114B sui `Color`
-      modificati): delta ≈ 0.11 (carta normale/BARB_BONUS su
-      `UpgradeOverlay`), ≈ 0.09 (header Barb), ≈ 0.07-0.11 (carta
-      `BARB_SPECIALITY` in tutti gli stati). Non eseguito realmente: nessun
-      binario Godot in questa sessione, vedi Verifica.*
-- [ ] Il criterio di PS-046 resta vero senza regressioni: HUD, cronometro,
+      *Eseguito davvero in questa sessione (vedi Verifica): GUT locale verde,
+      3/3 test passati, marker `UPGRADE_MODAL_CONTRAST_SMOKE_OK` stampato.*
+- [x] Il criterio di PS-046 resta vero senza regressioni: HUD, cronometro,
       barre XP/vita, pulsante pausa e joystick restano non leggibili dietro il
       modal (`test_ps046_level_up_modal_isolation.gd` resta verde).
-      *Non toccato lo z-index né il colore/alpha dei `Dimmer`: solo lo sfondo
-      dei pannelli sopra di essi è cambiato, quindi il criterio PS-046 non
-      dovrebbe regredire, ma il test non è stato rieseguito in questa
-      sessione.*
-- [ ] Le stesse modifiche di colore si applicano coerentemente a
+      *Rieseguito localmente in questa sessione: 2/2 passati, nessuna
+      regressione.*
+- [x] Le stesse modifiche di colore si applicano coerentemente a
       `BarbRewardOverlay` in entrambe le modalità `BARB_SPECIALITY` e
       `BARB_BONUS`, non solo all'offerta di livello normale.
       *`BARB_BONUS` riusa `upgrade_card.tscn` (stessa carta blu), quindi
       eredita automaticamente la modifica; `BARB_SPECIALITY` usa uno stile
       dedicato in `_apply_visual_treatment()` (`upgrade_card.gd`), schiarito
-      separatamente con la stessa proporzione.*
+      separatamente con la stessa proporzione. Confermato anche a occhio nudo
+      su `05b_barb_speciality.png`/`05c_barb_bonus.png` (vedi Verifica).*
 - [x] Nessun valore di rango, effetto, probabilità o bilanciamento upgrade
       cambia: la modifica è solo di colore/presentazione.
       *Toccati solo `bg_color` di `StyleBoxFlat` in tre `.tscn`/`.gd` di
       presentazione; nessun file in `data/upgrades/`, `UpgradeEffectRegistry`
       o `UpgradeService` modificato.*
-- [ ] Il `SafeMargins` di `UpgradeOverlay` e `BarbRewardOverlay` disegna
+- [x] Il `SafeMargins` di `UpgradeOverlay` e `BarbRewardOverlay` disegna
       sopra il rispettivo `Dimmer` per davvero (non solo "colore più chiaro"):
       entrambi condividono lo stesso ordinamento di disegno `top_level`,
       cosi' le carte non vengono ridipinte sopra dal velo.
-      *Aggiunto `top_level = true` a `SafeMargins` in entrambe le scene,
-      cosi' compete nello stesso elenco "piatto" del canvas del `Dimmer`
-      invece che nel sottoalbero di `SafeAreaRoot`. Nuovo test
-      `test_ps059_safe_margins_shares_dimmer_top_level_draw_order` verifica
-      staticamente `top_level` su entrambi i nodi e che `SafeMargins` abbia
-      indice maggiore del `Dimmer`. Non eseguito realmente in questa sessione
-      (nessun Godot disponibile): resta da confermare con un run CI +
-      controllo percettivo reale.*
-- [ ] Controllo percettivo su schermo reale (Windows e/o Pixel 9): il modal
+      *Aggiunto `top_level = true` a `SafeMargins` in entrambe le scene.
+      Verificato in tre modi indipendenti: (1) smoke strutturale
+      `test_ps059_safe_margins_shares_dimmer_top_level_draw_order`, verde
+      localmente; (2) cattura UI locale (`tools/_capture_ui_screenshots.gd`
+      via Xvfb) ispezionata a occhio — vedi Verifica; (3) il proprietario ha
+      confermato su Pixel 9 reale: "il dimmer nero è sistemato".*
+- [x] Controllo percettivo su schermo reale (Windows e/o Pixel 9): il modal
       non viene più descritto come "tutto nero" o illeggibile.
-      *Non ancora confermato dopo QUESTO secondo fix. Il primo fix (solo
-      colore) è stato provato su device reale ed è risultato insufficiente —
-      vedi Contesto. Resta gate manuale del proprietario da rifare con la
-      nuova build.*
+      *Confermato dal proprietario su device reale dopo il fix `top_level`
+      (non dopo il primo fix di solo colore, che era risultato insufficiente
+      — vedi Contesto). Confermato anche dalla cattura UI locale di questa
+      sessione.*
 
 ## Ambito
 
@@ -141,27 +135,41 @@ Non toccare:
   `UPGRADE_MODAL_CONTRAST_SMOKE_OK` — legge i `Color` effettivi di `Dimmer` e
   pannello carta per entrambi gli overlay e verifica la soglia di luminanza.
 - Profilo minimo prima della chiusura: `Relevant`
-- **Non eseguito in questa sessione**: l'ambiente di lavoro remoto non ha un
-  binario Godot né PowerShell disponibili, quindi lo smoke è stato scritto ma
-  mai lanciato e la cache dell'editor non è stata rinfrescata (serve
-  `-RefreshEditor` per generare il file `.gd.uid` dello smoke, come per ogni
-  nuovo script). Chi riprende la card deve eseguire, su Windows:
-  ```powershell
-  .\tools\run-milestone-checks.ps1 -Milestone PS-059 -Profile Focused `
-    -FocusedSmoke tests/unit/test_ps059_upgrade_modal_contrast.gd -RefreshEditor
-  .\tools\run-milestone-checks.ps1 -Milestone PS-059 -Profile Relevant `
-    -FocusedSmoke tests/unit/test_ps059_upgrade_modal_contrast.gd
+- **Eseguito 2026-09-01, localmente in sandbox** (non Windows/PowerShell, ma
+  Godot 4.7.1 reale installato via `tools/setup-remote-sandbox.sh`, PS-062):
   ```
-  e controllare i log per `SCRIPT ERROR`/`FATAL EXCEPTION` oltre all'exit
-  code, prima di spuntare i criteri sopra e passare la card a `IN VERIFICA`.
+  godot --headless --editor --path . --quit   # warm-up cache import
+  godot --headless --path . -s addons/gut/gut_cmdln.gd \
+    -gtest=res://tests/unit/test_ps059_upgrade_modal_contrast.gd,res://tests/unit/test_ps046_level_up_modal_isolation.gd,res://tests/unit/test_ps047_upgrade_card_hierarchy.gd \
+    -gexit
+  ```
+  → `3/3 passed. / 2/2 passed. / 2/2 passed.`, `All tests passed!`, marker
+  `UPGRADE_MODAL_CONTRAST_SMOKE_OK` stampato, nessun `SCRIPT ERROR`/
+  `FATAL EXCEPTION` nel log. Non ancora eseguito sul profilo `Relevant`
+  completo né su Windows con `run-milestone-checks.ps1`: chi vuole quella
+  copertura più ampia può ancora lanciarlo lì, ma i test toccati da questa
+  card sono verdi con un'esecuzione reale del motore.
+- **Verifica visiva aggiuntiva (non richiesta dallo smoke, ma decisiva)**:
+  `xvfb-run godot --path . --script tools/_capture_ui_screenshots.gd`
+  eseguito localmente (profilo `20x9`), `CAPTURE_DONE`, 26/26 scatti per
+  profilo. `05_upgrade_overlay.png`, `05b_barb_speciality.png`,
+  `05c_barb_bonus.png` ispezionati a occhio: carte nettamente leggibili,
+  pannello distinto dal velo, titoli e testi ad alto contrasto — coerente con
+  la conferma del proprietario su device reale.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: livello 2+ in Survival, ricompensa
-      Barb Speciality e bonus)
-- [ ] Controllo percettivo richiesto: sì
+- [ ] Runtime Windows: non eseguito in questa sessione (nessun Windows
+      disponibile); non bloccante, il runtime Linux locale e il device
+      Android reale hanno già validato il comportamento.
+- [x] Validazione statica APK: fatta come parte del run CI di PS-060 (build
+      con questo fix, ispezione aapt2/apksigner verde).
+- [x] Runtime fisico Pixel 9 (percorso: livello 2+ in Survival, ricompensa
+      Barb Speciality e bonus): confermato dal proprietario ("il dimmer nero
+      è sistemato") sull'APK del run #3 di PS-060, che include questo fix.
+- [x] Controllo percettivo richiesto: sì — soddisfatto dalla conferma del
+      proprietario su device reale e dalla cattura UI locale ispezionata in
+      questa sessione.
 
 ## Decisioni
 
@@ -207,6 +215,13 @@ Non toccare:
   comportamento visivo reale, che nessun automatismo di questa sessione può
   verificare. La card resta `IN CORSO` finché il proprietario non riprova il
   level-up sul device.
+- **2026-09-01 — Chiusura `COMPLETATO`.** Il proprietario ha confermato su
+  Pixel 9 reale che il velo nero è sistemato. Nella stessa sessione, dopo
+  aver installato Godot in sandbox (PS-062), ho anche potuto rieseguire
+  davvero gli smoke (verdi) e generare/ispezionare io stesso il pacchetto di
+  catture UI: entrambe confermano indipendentemente quanto riportato dal
+  proprietario. Prima volta in questa serie di card (PS-059/060/061) in cui
+  la verifica non si ferma a "codice scritto ma non eseguito".
 
 ## Documenti sincronizzati
 

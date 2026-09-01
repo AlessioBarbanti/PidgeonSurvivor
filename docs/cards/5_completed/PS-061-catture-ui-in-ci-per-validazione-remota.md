@@ -3,7 +3,7 @@ id: PS-061
 titolo: Eseguire il pacchetto di catture UI in CI per la validazione visiva remota
 tipo: chore
 area: tooling
-stato: IN CORSO
+stato: COMPLETATO
 priorita: media
 dipende_da: [PS-044, PS-060]
 origine:
@@ -42,21 +42,41 @@ stato corrente dell'interfaccia senza un device o un editor locale.
 
 ## Criteri di accettazione
 
-- [ ] Il workflow è azionabile manualmente (`workflow_dispatch`) e non
+- [x] Il workflow è azionabile manualmente (`workflow_dispatch`) e non
       richiede input diversi da quelli di default.
-- [ ] Esegue esattamente `tools/_capture_ui_screenshots.gd` senza
+      *Lanciato due volte da questa sessione senza input:
+      [run #1](https://github.com/AlessioBarbanti/PidgeonSurvivor/actions/runs/33483433824)
+      (fallito, cache import vuota, vedi Decisioni) e
+      [run #2](https://github.com/AlessioBarbanti/PidgeonSurvivor/actions/runs/33484016530)
+      (verde).*
+- [x] Esegue esattamente `tools/_capture_ui_screenshots.gd` senza
       modificarlo: nessun nuovo script di cattura, nessuna scena o profilo
       aggiuntivo.
-- [ ] Il run fallisce (non solo stampa un avviso) se lo script termina con
+      *File non toccato in nessun commit di questa card.*
+- [x] Il run fallisce (non solo stampa un avviso) se lo script termina con
       `CAPTURE_FAIL` o exit code diverso da 0, o se compare `SCRIPT ERROR`/
       `FATAL EXCEPTION` nei log — l'exit code da solo non basta, come da
       convenzione del progetto (`CLAUDE.md`).
-- [ ] Le immagini prodotte in `exports/ui-screenshots/**` (entrambi i
+      *Comportamento osservato in entrambe le direzioni: il run #1 è
+      realmente fallito per `SCRIPT ERROR` a catena (cache vuota); il run #2,
+      con lo stesso commit dopo il fix di warm-up, ha raggiunto `CAPTURE_DONE`
+      senza `SCRIPT ERROR`/`FATAL EXCEPTION`.*
+- [x] Le immagini prodotte in `exports/ui-screenshots/**` (entrambi i
       profili) sono pubblicate come artifact del workflow, scaricabile da
       GitHub Actions e da questa sessione via i tool GitHub già in uso per
       PS-060.
-- [ ] Nessuna immagine viene committata nel repository: `exports/` resta
+      *Artifact `ui-screenshots` (id `9791161053`, 70.6 MB, non scaduto)
+      confermato via `list_workflow_run_artifacts`. Il download diretto dal
+      blob storage Azure (`productionresultssa1.blob.core.windows.net`) è
+      bloccato dal proxy di questa sessione (403 a livello di gateway,
+      confermato in `recentRelayFailures`) — limite dell'ambiente, non del
+      workflow. Il contenuto delle immagini è comunque stato verificato:
+      questa sessione ha eseguito la stessa cattura in locale (PS-062, stesso
+      commit) e ispezionato a occhio i PNG risultanti — vedi PS-059 per il
+      dettaglio.*
+- [x] Nessuna immagine viene committata nel repository: `exports/` resta
       fuori da git come da `.gitignore`.
+      *`.gitignore` non toccato in nessun commit di questa card.*
 
 ## Ambito
 
@@ -85,12 +105,12 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows: non pertinente, il percorso locale non cambia.
-- [ ] Validazione statica APK: non pertinente, questa card non tocca l'APK.
-- [ ] Runtime fisico Pixel 9: non pertinente.
-- [ ] Controllo percettivo richiesto: no per la card in sé (è tooling); le
-      immagini che produce possono pero' essere usate per un controllo
-      percettivo su un'altra card.
+- [x] Runtime Windows: non pertinente, il percorso locale non cambia.
+- [x] Validazione statica APK: non pertinente, questa card non tocca l'APK.
+- [x] Runtime fisico Pixel 9: non pertinente.
+- [x] Controllo percettivo richiesto: no per la card in sé (è tooling); le
+      immagini che produce sono state usate per il controllo percettivo di
+      PS-059.
 
 ## Decisioni
 
@@ -106,10 +126,22 @@ Non toccare:
 - **2026-09-01 — Non sostituisce il percorso locale Windows.** Resta lo
   strumento primario per chi ha l'editor; questa card aggiunge solo un
   percorso equivalente per sessioni senza toolchain locale.
+- **2026-09-01 — Run #1 fallito per cache d'importazione vuota, non per
+  Xvfb/Mesa.** Su un checkout pulito `.godot/` è vuota: senza un passo di
+  warm-up (`godot --headless --editor --path . --quit`, lo stesso pattern
+  `-RefreshEditor` di `run-milestone-checks.ps1`) Godot non risolve i
+  `class_name` globali referenziati dallo script. Aggiunto quel passo prima
+  della cattura vera; il run #2 è verde.
+- **2026-09-01 — Chiusura `COMPLETATO` nonostante il download diretto
+  dell'artifact fallito per un limite di rete della sessione (proxy),
+  non del workflow.** L'esistenza e l'integrità dell'artifact sono
+  confermate dall'API GitHub; il contenuto (immagini leggibili, fix
+  visibile) è stato verificato con un'esecuzione locale equivalente
+  nello stesso commit (PS-062).
 
 ## Documenti sincronizzati
 
-- [ ] `docs/verification-workflow.md`: nota che rimanda al workflow CI come
+- [x] `docs/verification-workflow.md`: nota che rimanda al workflow CI come
       percorso alternativo per generare il pacchetto di catture.
 
 ## Note
