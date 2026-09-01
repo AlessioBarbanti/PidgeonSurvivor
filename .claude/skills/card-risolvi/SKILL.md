@@ -14,22 +14,35 @@ La card è l'unico contratto operativo: non allargarla e non reinterpretarla.
    come "procediamo con la prossima card"):
    - Controlla prima [docs/cards/3_in_sprint/](../../../docs/cards/3_in_sprint/).
      Se contiene ancora card, prendi quella `PRONTO` a priorità più alta (a
-     parità, ID crescente) e vai al punto 5.
+     parità, ID crescente) **che non richieda generazione di asset** (vedi
+     punto 3) e vai al punto 6.
    - Se `3_in_sprint/` è vuota, scegli in
      [docs/cards/README.md](../../../docs/cards/README.md) la card `2_to_do`
      in stato `PRONTO` a priorità più alta con dipendenze chiuse (prerequisito
-     almeno `IN VERIFICA`, non serve `COMPLETATO`). Aggiungi al blocco la sua
+     almeno `IN VERIFICA`, non serve `COMPLETATO`) **che non richieda
+     generazione di asset** (vedi punto 3). Aggiungi al blocco la sua
      catena di dipendenza — le card che ne dipendono e quelle da cui dipende —
      fino al confine naturale del filone. Se non è chiaro quali card
      includere, **fermati e chiedi al proprietario** prima di spostare
      qualunque file.
    - Sposta l'intero blocco scelto in `docs/cards/3_in_sprint/` e aggiorna i
      link nella board, poi riparti dalla prima card del blocco.
-3. Se lo stato è `DA DEFINIRE` o `BLOCCATO`, **fermati**: riporta la domanda o la
+3. Non lavorare card `tipo: art` il cui comportamento atteso o criteri di
+   accettazione prevedono la creazione o generazione di nuovi asset grafici
+   (non la sola integrazione, l'adattamento geometrico/procedurale o il riuso
+   di arte esistente): sono di competenza dell'agente Game Art Designer su
+   Codex (`.codex/agents/game-art-designer.toml`,
+   `.agents/skills/game-art-designer/SKILL.md`), che questa skill non può
+   invocare. Se la incontri scegliendo "la prossima card", scartala e passa
+   alla candidata successiva idonea per priorità (a parità, ID crescente); se
+   il proprietario l'ha chiesta esplicitamente per ID, **fermati** e
+   riportaglielo invece di implementare, a meno che non ti chieda
+   esplicitamente di procedere comunque tu.
+4. Se lo stato è `DA DEFINIRE` o `BLOCCATO`, **fermati**: riporta la domanda o la
    dipendenza registrata nella card e non implementare.
-4. Se ricevi un vecchio ID B-series, trova la card tramite `origine`; se non
+5. Se ricevi un vecchio ID B-series, trova la card tramite `origine`; se non
    esiste, creala prima di implementare.
-5. Porta lo stato a `IN CORSO`, sposta la card in `docs/cards/3_in_sprint/`
+6. Porta lo stato a `IN CORSO`, sposta la card in `docs/cards/3_in_sprint/`
    (se non ci è già) e aggiorna `aggiornato`, stato e link nella board.
 
 ## 2. Implementa

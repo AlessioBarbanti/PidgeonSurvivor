@@ -32,6 +32,11 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
   filone; l'intero blocco si sposta in `3_in_sprint/` e si parte dalla prima.
   In caso di dubbio su quali card includere nel blocco, si chiede al
   proprietario prima di spostare i file.
+- Card `tipo: art` che richiedono creare o generare nuovi asset grafici (non
+  la sola integrazione, l'adattamento geometrico/procedurale o il riuso di
+  arte esistente) sono di competenza dell'agente Game Art Designer su Codex
+  (`.codex/agents/game-art-designer.toml`); la skill `card-risolvi` su Claude
+  non le seleziona automaticamente come "prossima card" né le implementa.
 - Decisioni e motivazioni restano nella card. Il contratto risultante viene
   sincronizzato in PRD, `CLAUDE.md`, cataloghi o approvazioni pertinenti.
 - Una card completata resta storica; un cambiamento successivo apre una nuova
