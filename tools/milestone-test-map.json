@@ -279,6 +279,7 @@
         "tests/unit/test_b54_tutorial_flow.gd",
         "tests/unit/test_typography.gd",
         "tests/unit/test_ps005_boss_warning.gd",
+        "tests/unit/test_ps025_boss_warning_size.gd",
         "tests/unit/test_ps012_barb_specialities.gd",
         "tests/unit/test_ps008_wave_events.gd",
         "tests/unit/test_ps036_barb_reward_visual_identity.gd",

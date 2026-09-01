@@ -255,6 +255,14 @@ func is_boss_warning_visible() -> bool:
 	return is_instance_valid(_boss_warning_label) and _boss_warning_label.visible
 
 
+## PS-025: espone la taglia del font per lo smoke, cosi' una regressione che
+## rimpicciolisce il warning viene colta senza un confronto pixel.
+func get_boss_warning_font_size() -> int:
+	if not is_instance_valid(_boss_warning_label):
+		return 0
+	return _boss_warning_label.get_theme_font_size(&"font_size")
+
+
 func is_wave_event_telegraph_visible() -> bool:
 	return is_instance_valid(_wave_event_label) and _wave_event_label.visible
 
