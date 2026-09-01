@@ -27,17 +27,18 @@ La card è l'unico contratto operativo: non allargarla e non reinterpretarla.
      qualunque file.
    - Sposta l'intero blocco scelto in `docs/cards/3_in_sprint/` e aggiorna i
      link nella board, poi riparti dalla prima card del blocco.
-3. Non lavorare card `tipo: art` il cui comportamento atteso o criteri di
-   accettazione prevedono la creazione o generazione di nuovi asset grafici
-   (non la sola integrazione, l'adattamento geometrico/procedurale o il riuso
-   di arte esistente): sono di competenza dell'agente Game Art Designer su
-   Codex (`.codex/agents/game-art-designer.toml`,
-   `.agents/skills/game-art-designer/SKILL.md`), che questa skill non può
-   invocare. Se la incontri scegliendo "la prossima card", scartala e passa
-   alla candidata successiva idonea per priorità (a parità, ID crescente); se
-   il proprietario l'ha chiesta esplicitamente per ID, **fermati** e
-   riportaglielo invece di implementare, a meno che non ti chieda
-   esplicitamente di procedere comunque tu.
+3. Non lavorare direttamente card `tipo: art` il cui comportamento atteso o
+   criteri di accettazione prevedono la creazione o generazione di nuovi asset
+   grafici (non la sola integrazione, l'adattamento geometrico/procedurale o
+   il riuso di arte esistente): sono di competenza dell'agente Game Art
+   Designer (`.agents/skills/game-art-designer/SKILL.md`), disponibile sia su
+   Claude (`.claude/agents/game-art-designer.md`) sia su Codex
+   (`.codex/agents/game-art-designer.toml`). Se la incontri scegliendo "la
+   prossima card", scartala e passa alla candidata successiva idonea per
+   priorità (a parità, ID crescente); se il proprietario l'ha chiesta
+   esplicitamente per ID, **fermati** e proponi di invocare l'agente
+   `game-art-designer` invece di implementarne tu la parte grafica, a meno che
+   non ti chieda esplicitamente di procedere comunque tu.
 4. Se lo stato è `DA DEFINIRE` o `BLOCCATO`, **fermati**: riporta la domanda o la
    dipendenza registrata nella card e non implementare.
 5. Se ricevi un vecchio ID B-series, trova la card tramite `origine`; se non

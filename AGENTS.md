@@ -15,7 +15,11 @@ Procedure specifiche, in ordine di frequenza d'uso:
 - build e installazione Android: `.claude/skills/build-apk/`;
 - smoke test di integrazione: `.claude/skills/smoke-test/`;
 - gate Windows e Android: `.claude/skills/gate-piattaforme/`;
-- asset grafici e audio: `.claude/skills/asset-pipeline/`.
+- asset grafici e audio (integrazione, derivazione, manifest): `.claude/skills/asset-pipeline/`;
+- creazione o generazione di nuovi asset grafici per card `tipo: art`:
+  agente Game Art Designer (`.agents/skills/game-art-designer/SKILL.md`), su
+  Claude (`.claude/agents/game-art-designer.md`) o su Codex
+  (`.codex/agents/game-art-designer.toml`).
 
 Documenti autorevoli: `docs/cards/README.md` come unica fonte di verità
 operativa, `docs/prd.md`, `docs/characters.md`, `docs/powerup-catalog.md`,

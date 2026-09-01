@@ -34,9 +34,12 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
   proprietario prima di spostare i file.
 - Card `tipo: art` che richiedono creare o generare nuovi asset grafici (non
   la sola integrazione, l'adattamento geometrico/procedurale o il riuso di
-  arte esistente) sono di competenza dell'agente Game Art Designer su Codex
+  arte esistente) sono di competenza dell'agente Game Art Designer
+  (`.agents/skills/game-art-designer/SKILL.md`), disponibile sia su Claude
+  (`.claude/agents/game-art-designer.md`) sia su Codex
   (`.codex/agents/game-art-designer.toml`); la skill `card-risolvi` su Claude
-  non le seleziona automaticamente come "prossima card" né le implementa.
+  non le seleziona automaticamente come "prossima card" e le implementa solo
+  delegandole a quell'agente.
 - Decisioni e motivazioni restano nella card. Il contratto risultante viene
   sincronizzato in PRD, `CLAUDE.md`, cataloghi o approvazioni pertinenti.
 - Una card completata resta storica; un cambiamento successivo apre una nuova

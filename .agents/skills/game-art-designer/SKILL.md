@@ -106,9 +106,13 @@ nuove convenzioni durevoli; non trasformare il brief in un documento separato.
 
 - Riusa o deriva arte esistente quando rappresenta già fedelmente il runtime
   o la famiglia; non ridisegnare inutilmente elementi approvati.
-- Per creare o modificare raster tramite sintesi visiva usa `$imagegen` e il
-  suo workflow. Per crop, resize, padding, palette o altre trasformazioni
-  deterministiche usa gli script `tools/process-*.ps1` pertinenti.
+- Per creare o modificare raster tramite sintesi visiva usa l'interfaccia
+  ImageGen attiva e il suo workflow (su Codex `$imagegen`; su Claude i tool
+  MCP `mcp__plugin_imagegen_imagegen__generate_image`,
+  `mcp__plugin_imagegen_imagegen__edit_image` e
+  `mcp__plugin_imagegen_imagegen__generate_image_set`). Per crop, resize,
+  padding, palette o altre trasformazioni deterministiche usa gli script
+  `tools/process-*.ps1` pertinenti.
 - Le immagini di riferimento possono guidare anche una nuova generazione, non
   soltanto un editing. Applica il contratto in
   [`references/imagegen-reference-policy.md`](references/imagegen-reference-policy.md):
