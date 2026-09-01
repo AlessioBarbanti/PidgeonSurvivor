@@ -79,6 +79,27 @@ Due percorsi alimentano `apply_safe_area()`, entrambi necessari:
   ad `apply_safe_area()`, senza richiedere alcuna modifica ai tre file di
   test.
 
+**Raffinamento 2026-09-01, richiesto dal proprietario dopo aver visto la
+prima correzione**: il container (titolo + carte) deve centrarsi
+sull'altezza del **viewport**, non della safe area — misurato che con una
+cattura reale via Xvfb la safe area può risultare più piccola e non centrata
+nel viewport (in quel caso per una posizione della finestra X11 diversa da
+`(0,0)`, non riproducibile su un device fisico fullscreen, ma il principio
+vale comunque). `_reflow_top_margin()` in `upgrade_overlay.gd`/
+`barb_reward_overlay.gd` calcola ora la posizione assoluta desiderata
+(centrata sull'altezza di `get_viewport().get_visible_rect()`) e la
+traduce in un `margin_top` per `SafeMargins`, vincolata dentro la safe area
+(clearance minima dalla fascia HUD in alto, margine base in fondo). `Layout`
+è passato da `alignment = CENTER` a `BEGIN`: con l'algoritmo che già calcola
+la posizione assoluta del contenuto, il centraggio nativo del
+`VBoxContainer` sommava un secondo livello di centraggio (sulla propria
+size, ora maggiore del contenuto) e produceva un doppio spostamento.
+Verificato con una cattura reale: il centro del blocco titolo+carte ora
+combacia con quello del viewport quando c'è spazio, e resta ancorato sotto
+l'HUD quando non ce n'è (comportamento identico a prima in quel caso,
+nessuna regressione misurata sui profili 16:9/20:9/4:3 dei tre file di
+test).
+
 ## Criteri di accettazione
 
 - [x] Con un `safe_area` simulato non allineato a `(0,0)` e più piccolo del

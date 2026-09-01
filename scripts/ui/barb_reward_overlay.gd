@@ -13,6 +13,7 @@ const TOP_BAND_CLEARANCE := 16.0
 const CONTENT_TOP_MARGIN := GameHud.GAMEPLAY_TOP_INSET + TOP_BAND_CLEARANCE
 
 @onready var _safe_margins: MarginContainer = %SafeMargins
+@onready var _layout: VBoxContainer = %Layout
 @onready var _dimmer: ColorRect = $Dimmer
 @onready var _title_label: Label = %TitleLabel
 @onready var _mode_label: Label = %ModeLabel
@@ -36,8 +37,6 @@ var _selection_unlock_msec := 0
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	set_process(false)
-	if is_instance_valid(_safe_margins):
-		_safe_margins.add_theme_constant_override("margin_top", int(CONTENT_TOP_MARGIN))
 	# `apply_safe_area()` normalmente arriva da `movement_slice.gd`
 	# (`_apply_layout()`), che non esiste nei fixture di test che instanziano
 	# questa scena da sola dentro un Control "nudo" posizionato a mano
@@ -165,10 +164,49 @@ func apply_safe_area(rect: Rect2) -> void:
 		return
 	_safe_margins.position = rect.position
 	_safe_margins.size = rect.size
+	_reflow_top_margin()
 
 
 func _sync_safe_margins_to_own_rect() -> void:
 	apply_safe_area(get_global_rect())
+
+
+## Il proprietario vuole header e carte centrati sull'altezza dell'area
+## sicura (equivalente al viewport: l'inset strutturale è simmetrico) invece
+## che spostati in basso da un margine superiore fisso pensato solo per non
+## coprire la fascia HUD (PS-046). Un margine fisso riserverebbe sempre
+## `CONTENT_TOP_MARGIN`, anche quando il contenuto è basso e ci sarebbe
+## ampio spazio per centrarlo per davvero: qui si centra normalmente, e si
+## passa al margine fisso (il vecchio comportamento) solo se altrimenti il
+## titolo finirebbe più vicino alla fascia HUD del minimo consentito.
+func _reflow_top_margin() -> void:
+	if not is_instance_valid(_safe_margins) or not is_instance_valid(_layout) or not is_inside_tree():
+		return
+	var base_margin: float = _safe_margins.get_theme_constant(&"margin_bottom")
+	var content_height := _measure_layout_min_height()
+	var safe_top: float = _safe_margins.position.y
+	var safe_bottom: float = safe_top + _safe_margins.size.y
+	# Il proprietario vuole il container centrato sull'altezza del *viewport*,
+	# non della safe area: coincidono quando l'inset e' simmetrico e la
+	# finestra e' a (0,0), ma la safe area puo' risultare piu' piccola o non
+	# centrata (es. un window manager di test che non piazza la finestra a
+	# (0,0)). Resta comunque vincolato dentro la safe area: clearance minima
+	# dalla fascia HUD in alto (PS-046), margine base in fondo.
+	var viewport_center := get_viewport().get_visible_rect().size.y / 2.0
+	var target_top := viewport_center - content_height / 2.0
+	var min_top := safe_top + CONTENT_TOP_MARGIN
+	var max_top := safe_bottom - base_margin - content_height
+	var absolute_top := min_top if max_top < min_top else clampf(target_top, min_top, max_top)
+	_safe_margins.add_theme_constant_override("margin_top", int(absolute_top - safe_top))
+
+
+func _measure_layout_min_height() -> float:
+	var separation: int = _layout.get_theme_constant(&"separation")
+	var total := separation * maxi(_layout.get_child_count() - 1, 0) as float
+	for child in _layout.get_children():
+		if child is Control:
+			total += (child as Control).get_combined_minimum_size().y
+	return total
 
 
 ## PS-046: espone lo stato del velo per gli smoke, cosi' una regressione dello
@@ -294,6 +332,19 @@ func _show_offer(
 	_selection_unlock_msec = Time.get_ticks_msec() + int(SELECTION_LOCK_SECONDS * 1000.0)
 	_apply_selection_lock_state()
 	set_process(true)
+	_reflow_top_margin()
+	# Le carte possono crescere oltre la loro altezza base un paio di frame
+	# dopo configure() (PS-063, testo eccezionalmente lungo): questa chiamata
+	# ricalcola il margine col contenuto vero, altrimenti resterebbe basato
+	# sull'altezza base già superata.
+	_defer_reflow_top_margin()
+
+
+func _defer_reflow_top_margin() -> void:
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if is_instance_valid(self) and is_inside_tree():
+		_reflow_top_margin()
 
 
 func _submit_selection(upgrade_id: StringName) -> bool:
