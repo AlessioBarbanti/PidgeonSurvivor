@@ -8,7 +8,7 @@ priorita: media
 dipende_da: [PS-048]
 origine:
 creato: 2026-08-31
-aggiornato: 2026-08-31
+aggiornato: 2026-09-01
 ---
 
 # PS-049 — Generare le tre illustrazioni definitive del tutorial
@@ -101,6 +101,17 @@ Non toccare:
   sostituisce solo dopo che contenuto e ingombri sono stati validati in PS-048.
 - **2026-08-31 — Fedeltà prima della decorazione.** Ogni licenza stilistica è
   subordinata alla riconoscibilità degli elementi runtime.
+- **2026-09-01 — Fonte delle tre illustrazioni: catture aggiornate o arte già
+  esistente, non disegni scollegati dal runtime.** Rigenerare
+  `tools/_capture_ui_screenshots.gd` prima di produrre le illustrazioni: il
+  pacchetto Pixel 9 (`exports/ui-screenshots/pixel9-20x9/`) ora mostra anche
+  il joystick "floating" attivo, non solo il pulsante abilità. Usare queste
+  catture come riferimento diretto per comporre `tutorial_ability_button.png`
+  e `tutorial_pickups.png`; dove un elemento runtime ha già una sprite
+  definitiva in `assets/art/`, riusare quella invece di ridisegnarla. Generare
+  arte nuova solo per ciò che le catture e l'arte esistente non coprono (per
+  esempio le forme di zona di `tutorial_telegraphs.png`, che non sono un
+  singolo elemento fotografabile).
 
 ## Documenti sincronizzati
 
