@@ -1,4 +1,4 @@
-[gd_scene load_steps=113 format=3]
+[gd_scene load_steps=115 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -107,6 +107,8 @@
 [ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_clothesline.png" id="105_obstacle_clothesline"]
 [ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_stone_washbasin.png" id="107_obstacle_stone_washbasin"]
 [ext_resource type="Texture2D" path="res://assets/art/arena/generated/texture_gravel.png" id="108_texture_gravel"]
+[ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_ice_cooler.png" id="120_obstacle_ice_cooler"]
+[ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_wood_crate_stack.png" id="121_obstacle_wood_crate_stack"]
 [ext_resource type="Script" path="res://scripts/progression/health_pickup_dropper.gd" id="109_health_pickup_dropper"]
 [ext_resource type="PackedScene" path="res://scenes/pickups/health_pickup.tscn" id="110_health_pickup"]
 [ext_resource type="Resource" path="res://data/enemies/enemy_archetype_swarmer.tres" id="111_archetype_swarmer"]
@@ -381,12 +383,14 @@ texture = ExtResource("104_obstacle_bench")
 [node name="IceCooler" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
 position = Vector2(380, -230)
 footprint_size = Vector2(90, 70)
+texture = ExtResource("120_obstacle_ice_cooler")
 placeholder_color = Color(0.62, 0.74, 0.78, 1.0)
 placeholder_outline_color = Color(0.32, 0.42, 0.46, 1.0)
 
 [node name="WoodCrateStack" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
 position = Vector2(350, 480)
 footprint_size = Vector2(130, 110)
+texture = ExtResource("121_obstacle_wood_crate_stack")
 placeholder_color = Color(0.42, 0.31, 0.19, 1.0)
 placeholder_outline_color = Color(0.22, 0.15, 0.08, 1.0)
 

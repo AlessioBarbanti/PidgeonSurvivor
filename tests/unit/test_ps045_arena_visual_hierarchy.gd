@@ -47,6 +47,13 @@ func test_ps045_arena_visual_hierarchy() -> void:
 			"%s invade lo spazio minimo di manovra al centro dell'arena." % obstacle.name
 		)
 
+	for obstacle_name in ["IceCooler", "WoodCrateStack"]:
+		var obstacle := obstacles.get_node_or_null(obstacle_name) as StaticObstacle
+		assert_true(
+			obstacle != null and obstacle.texture != null,
+			"PS-058: %s deve usare il derivato raster definitivo." % obstacle_name
+		)
+
 	# Nessuna coppia di prop della stessa famiglia deve restare l'immagine
 	# speculare di un'altra: la composizione deve leggersi come irregolare.
 	for i in static_obstacles.size():

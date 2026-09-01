@@ -93,7 +93,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-055](./1_idea/PS-055-filosofia-della-vittoria.md) | Decidere la filosofia della vittoria fra Survival e Difesa Grigliata | chore | gameplay | DA DEFINIRE | media | — |
 | [PS-056](./2_to_do/PS-056-ducking-e-stinger-nei-momenti-chiave.md) | Aggiungere ducking e stinger su warning, Boss e ricompensa Barb | feat | audio | PRONTO | bassa | — |
 | [PS-057](./2_to_do/PS-057-errori-fisica-su-split-del-piccione-viola.md) | Eliminare gli errori di fisica quando il piccione viola si sdoppia | fix | gameplay | PRONTO | media | — |
-| [PS-058](./2_to_do/PS-058-genera-arte-nuovi-prop-arena.md) | Generare l'arte definitiva dei nuovi prop dell'arena | art | arte | PRONTO | media | PS-045 |
+| [PS-058](./4_to_test/PS-058-genera-arte-nuovi-prop-arena.md) | Generare l'arte definitiva dei nuovi prop dell'arena | art | arte | IN VERIFICA | media | PS-045 |
 | [PS-059](./5_completed/PS-059-schiarisci-contrasto-modal-level-up.md) | Schiarire il contrasto fra velo e carte nei modal di scelta | fix | ui | COMPLETATO | alta | PS-046, PS-047 |
 | [PS-060](./5_completed/PS-060-ci-build-apk-github-release.md) | Compilare l'APK Android in CI e pubblicarlo come GitHub Release | chore | tooling | COMPLETATO | media | — |
 | [PS-061](./5_completed/PS-061-catture-ui-in-ci-per-validazione-remota.md) | Eseguire il pacchetto di catture UI in CI per la validazione visiva remota | chore | tooling | COMPLETATO | media | PS-044, PS-060 |

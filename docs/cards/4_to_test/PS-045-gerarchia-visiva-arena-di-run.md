@@ -142,7 +142,7 @@ verifica percettiva durante una vera ondata affollata.
 
 ### Card collegata
 
-- [PS-058 — Generare l'arte definitiva dei nuovi prop dell'arena](../2_to_do/PS-058-genera-arte-nuovi-prop-arena.md):
+- [PS-058 — Generare l'arte definitiva dei nuovi prop dell'arena](./PS-058-genera-arte-nuovi-prop-arena.md):
   produce le texture ImageGen definitive di `IceCooler` e `WoodCrateStack` al
   posto del segnaposto introdotto qui. Si sblocca quando questa card entra in
   `4_to_test`.
