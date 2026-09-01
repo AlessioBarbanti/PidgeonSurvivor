@@ -104,13 +104,26 @@ Non toccare:
 ## Gate manuali
 
 - [ ] Runtime Windows: non eseguito in questa sessione.
-- [ ] Validazione statica APK: da confermare con un run CI (PS-060) su
-      questo commit.
+- [x] Validazione statica APK: confermata via CI (workflow PS-060,
+      `android-debug-release.yml`) sul commit `d3c72b0`. Il primo run
+      (`33501795354`, tentativo 1) era fallito al passo "Export Android APK
+      preset" con `ERROR: Export: Target folder does not exist or is
+      inaccessible: "exports/android"` dopo soli ~22s (contro i ~2.5min
+      normali) — nessuna causa reale trovata nel log (workflow YAML e
+      sequenza `mkdir -p`/export identiche ai due run precedenti riusciti,
+      nessun asset o file di workflow toccato da questa card): trattato come
+      flake del runner. Riesguito con `rerun_failed_jobs`: tentativo 2
+      completato con successo, `aapt2 dump badging` e `apksigner verify`
+      passati, APK pubblicato su
+      https://github.com/AlessioBarbanti/PidgeonSurvivor/releases/tag/android-debug-latest
+      (asset `pidgeon-survivor-debug.apk`, 105 MB, corpo release che cita
+      `d3c72b0aa43adf2d08fe2e8f1ef65de9bd96f897`).
 - [ ] Runtime fisico Pixel 9: da riconfermare dal proprietario dopo la
       nuova build (il fix precedente del velo, PS-059, era già confermato;
       questa card cambia solo le carte).
 - [ ] Controllo percettivo richiesto: sì — il proprietario ha già visto e
-      confermato la direzione sugli screenshot generati in sessione.
+      confermato la direzione sugli screenshot generati in sessione; resta
+      da confermare sul device fisico con la build appena pubblicata.
 
 ## Decisioni
 
