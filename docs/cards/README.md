@@ -94,8 +94,8 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-048](./4_to_test/PS-048-fedelta-al-runtime-di-tre-pagine-tutorial.md) | Allineare tre pagine del tutorial a ciò che il gioco mostra davvero | ux | ui | IN VERIFICA | media | — |
 | [PS-049](./4_to_test/PS-049-genera-illustrazioni-tutorial.md) | Generare le tre illustrazioni definitive del tutorial | art | arte | IN VERIFICA | media | PS-048 |
 | [PS-050](./4_to_test/PS-050-uniforma-impostazioni-welcome-alla-pausa.md) | Uniformare le impostazioni della welcome al sistema della pausa | ux | ui | IN VERIFICA | media | — |
-| [PS-051](./2_to_do/PS-051-identita-individuale-degli-evil.md) | Dare identità individuale agli Evil nella Boss intro | ux | ui | PRONTO | media | — |
-| [PS-052](./2_to_do/PS-052-genera-ritratti-evil-e-icone-signature.md) | Generare i ritratti Evil e le icone Signature definitivi | art | arte | BLOCCATO | media | PS-051 |
+| [PS-051](./4_to_test/PS-051-identita-individuale-degli-evil.md) | Dare identità individuale agli Evil nella Boss intro | ux | ui | IN VERIFICA | media | — |
+| [PS-052](./2_to_do/PS-052-genera-ritratti-evil-e-icone-signature.md) | Generare i ritratti Evil e le icone Signature definitivi | art | arte | PRONTO | media | PS-051 |
 | [PS-053](./4_to_test/PS-053-riepilogo-finale-della-run.md) | Trasformare la schermata finale in un riepilogo della run | feat | ui | IN VERIFICA | media | — |
 | [PS-054](./2_to_do/PS-054-presenza-del-personaggio-nel-selettore.md) | Adattare il selettore personaggi al 20:9 | ux | ui | PRONTO | media | — |
 | [PS-055](./1_idea/PS-055-filosofia-della-vittoria.md) | Decidere la filosofia della vittoria fra Survival e Difesa Grigliata | chore | gameplay | DA DEFINIRE | media | — |

@@ -3,12 +3,12 @@ id: PS-051
 titolo: Dare identità individuale agli Evil nella Boss intro
 tipo: ux
 area: ui
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-09-01
+aggiornato: 2026-09-02
 ---
 
 # PS-051 — Dare identità individuale agli Evil nella Boss intro
@@ -36,26 +36,26 @@ non cambia colore in base al Boss.
 
 ## Criteri di accettazione
 
-- [ ] Una intro Evil mostra il ritratto risolto dal relativo
+- [x] Una intro Evil mostra il ritratto risolto dal relativo
       `FriendDefinition`.
-- [ ] Una intro Evil mostra l'icona della Signature attiva.
-- [ ] Nome e almeno un dettaglio della cornice riprendono l'`accent_color`
+- [x] Una intro Evil mostra l'icona della Signature attiva.
+- [x] Nome e almeno un dettaglio della cornice riprendono l'`accent_color`
       della Signature senza compromettere contrasto e leggibilità.
-- [ ] Il Piccione Malvagio mostra il ritratto già dichiarato in
+- [x] Il Piccione Malvagio mostra il ritratto già dichiarato in
       `data/bosses/first_boss.tres` e non presenta un'icona Signature o uno
       spazio vuoto dedicato.
-- [ ] La CTA mantiene stile e colore attuali in entrambe le varianti; la tinta
+- [x] La CTA mantiene stile e colore attuali in entrambe le varianti; la tinta
       personale non ne cambia la semantica.
-- [ ] Con ritratto, icona o Signature mancanti la intro ricompone gli elementi
+- [x] Con ritratto, icona o Signature mancanti la intro ricompone gli elementi
       restanti senza buchi, errori di script o texture nulle visibili.
-- [ ] `BossSignatureDefinition` espone un campo icona tipizzato e ogni `.tres`
+- [x] `BossSignatureDefinition` espone un campo icona tipizzato e ogni `.tres`
       sotto `data/bosses/signatures/` lo valorizza.
-- [ ] Gli otto `evil_portrait` e le otto icone puntano ai segnaposto
+- [x] Gli otto `evil_portrait` e le otto icone puntano ai segnaposto
       `fake_*.png` elencati in Ambito; i fallback esistenti restano invariati.
-- [ ] Titolo e citazione continuano a provenire dai dati del Boss.
-- [ ] `RunController` resta l'unica autorità su `BOSS_INTRO`: la UI osserva e
+- [x] Titolo e citazione continuano a provenire dai dati del Boss.
+- [x] `RunController` resta l'unica autorità su `BOSS_INTRO`: la UI osserva e
       invia soltanto l'intenzione `AFFRONTA`.
-- [ ] Il pannello resta nella safe area su 16:9, 20:9 e 4:3.
+- [x] Il pannello resta nella safe area su 16:9, 20:9 e 4:3.
 
 ## Ambito
 
@@ -84,6 +84,13 @@ Non toccare:
   variante Evil con ritratto/icona/accento, CTA invariata e fallback con dati
   mancanti.
 - Profilo minimo prima della chiusura: `Relevant`
+- **Esito reale**: profilo `Focused` eseguito il 2026-09-02, marker
+  `BOSS_INTRO_IDENTITY_SMOKE_OK`, verde. Il profilo `Relevant` è stato
+  interrotto due volte da chiusure accidentali del processo Godot durante la
+  regressione batch (non un fallimento del codice: nessun `SCRIPT ERROR` né
+  `FATAL EXCEPTION` nei log parziali) e il proprietario ha deciso
+  esplicitamente di non rieseguirlo e di considerare la verifica valida così.
+  Il profilo `Relevant` completo **non è stato eseguito con esito verde**.
 
 ## Gate manuali
 
@@ -103,11 +110,16 @@ Non toccare:
 - **2026-08-31 — Nessun colore CTA prescritto.** La nuova cattura mostra il
   trattamento viola corrente; la card lo preserva invece di imporre l'arancio
   dedotto dagli screenshot obsoleti.
+- **2026-09-02 — Profilo `Relevant` accettato senza esecuzione verde.** Su
+  decisione esplicita del proprietario, dopo due interruzioni accidentali del
+  processo Godot durante la regressione batch. Il profilo `Focused` mirato è
+  verde. La card chiude quindi su `IN VERIFICA`, non `COMPLETATO`; i gate
+  manuali restano tutti aperti.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/enemies-bosses.md`: anatomia delle due varianti di Boss intro.
-- [ ] `docs/visual-audio-identity.md`: stato dei ritratti Evil.
+- [x] `docs/enemies-bosses.md`: anatomia delle due varianti di Boss intro.
+- [x] `docs/visual-audio-identity.md`: stato dei ritratti Evil.
 
 ## Note
 

@@ -3,12 +3,12 @@ id: PS-052
 titolo: Generare i ritratti Evil e le icone Signature definitivi
 tipo: art
 area: arte
-stato: BLOCCATO
+stato: PRONTO
 priorita: media
 dipende_da: [PS-051]
 origine:
 creato: 2026-08-31
-aggiornato: 2026-08-31
+aggiornato: 2026-09-02
 ---
 
 # PS-052 — Generare i ritratti Evil e le icone Signature definitivi
