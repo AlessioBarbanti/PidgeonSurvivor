@@ -68,8 +68,13 @@ Non toccare:
 - `BossEncounter`, `GameDirector` e l'arbitraggio degli stati in
   `RunController`;
 - il bilanciamento, i timer e i pattern d'attacco della boss fight;
-- `PS-056` (resta la card del ducking leggero; questa introduce la traccia
-  sostenuta, sono cose diverse).
+- gli altri momenti di ducking di PS-056 (avvertimento Boss, level-up,
+  ricompensa Barb): questa card possiede in esclusiva solo la transizione
+  `BOSS_INTRO`/`boss_defeated` sul bus `Music`;
+- il layer di intensità late-run di [PS-081](./PS-081-layer-musicale-intensita-late-run.md):
+  quella card legge questa transizione per interrompere/riprendere il proprio
+  layer, ma questa card resta l'unica autorità su cosa suona durante
+  `BOSS_INTRO`.
 
 ## Verifica
 
@@ -96,6 +101,13 @@ Non toccare:
   ("nessuna nuova traccia musicale completa") era una scelta di scope della
   card ducking/stinger, non una regola di progetto: qui una traccia nuova è
   esplicitamente ammessa.
+- **2026-09-02 — Questa card vince su `BOSS_INTRO`, PS-056 si ritira da quel
+  momento.** Le due card agganciavano lo stesso segnale
+  (`boss_intro_started`) sullo stesso bus `Music`: PS-056 voleva un ducking
+  temporaneo sulla musica di run, questa card la sostituisce del tutto con
+  un crossfade. Il proprietario ha scelto questa card come autorità
+  esclusiva su `BOSS_INTRO`/`boss_defeated`; PS-056 resta responsabile solo
+  di avvertimento Boss, level-up e ricompensa Barb.
 - **2026-09-02 — Sourcing rimandato all'implementazione.** Nessuna traccia
   sorgente è stata scelta in fase di apertura di questa card; la ricerca di
   un asset CC0 adatto avviene quando la card viene presa in carico.

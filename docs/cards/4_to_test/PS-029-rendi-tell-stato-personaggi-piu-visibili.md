@@ -8,7 +8,7 @@ priorita: alta
 dipende_da: []
 origine: B44
 creato: 2026-08-30
-aggiornato: 2026-09-01
+aggiornato: 2026-09-02
 ---
 
 # PS-029 — Rendi più visibili i tell di stato dei personaggi
@@ -153,6 +153,18 @@ Non modificare:
   ripresi, il tell attivo di Alea va osservato anche durante questo VFX per
   verificare che resti leggibile; nessun gate è stato eseguito in questa
   sessione e lo stato della card resta invariato.
+- **2026-09-02 — Eredita la bocciatura di PS-001: il meccanismo che questa
+  card rinforzava è bocciato, non solo da rifinire.** Il proprietario ha
+  bocciato `PassiveStateOutline` per tutti e quattro i personaggi (rompe la
+  silhouette pixel-art, non si integra esteticamente). Spessore, separatore e
+  contrasto cromatico introdotti qui restano una diagnosi tecnica corretta
+  ("la leggibilità non deve dipendere solo dal colore") ma si applicano a un
+  meccanismo che va sostituito, non solo rifinito ulteriormente. I criteri
+  percettivi ancora aperti sopra restano intenzionalmente non spuntati. La
+  responsabilità di trovare una soluzione sostitutiva passa a
+  [PS-079](../2_to_do/PS-079-particellare-tell-stato-personaggi.md); questa
+  card resta storica come evidenza che il problema non era la scelta dei
+  colori.
 
 ## Documenti sincronizzati
 

@@ -8,7 +8,7 @@ priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-08-31
+aggiornato: 2026-09-02
 ---
 
 # PS-054 — Adattare il selettore personaggi al 20:9
@@ -27,6 +27,16 @@ Sul Pixel 9 è l'intera composizione a essere sottodimensionata: il selettore
 occupa una porzione centrale ridotta, lascia molto spazio laterale e rende le
 anteprime adiacenti troppo piccole. Il personaggio selezionato è leggibile, ma
 non ha ancora la presenza promessa dalla welcome.
+
+**Nota di coordinamento con [PS-069](./PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md).**
+Quella card (oggi `BLOCCATO` da PS-068) tocca lo stesso
+`character_select_overlay.tscn`/`.gd` per integrare un ritratto busto nuovo e
+può ripensare la composizione da zero. Le due card restano indipendenti — chi
+risolve questa può procedere subito riusando solo asset esistenti, come
+previsto qui sotto — ma chi la prende deve sapere che PS-069 potrebbe
+rilavorare lo stesso albero di scena in un secondo momento; PS-069 già
+obbliga chi la risolve a dichiarare se sostituisce questa card o se le due
+convivono.
 
 ## Comportamento atteso
 
@@ -102,6 +112,10 @@ Non toccare:
   lascerebbe anteprime e pannelli ancora più deboli.
 - **2026-08-31 — Priorità portata a media.** Il Pixel 9 è il riferimento fisico
   del progetto e il sottoutilizzo del 20:9 è presente in tutte le otto viste.
+- **2026-09-02 — Resta `PRONTO` nonostante la sovrapposizione con PS-069.**
+  Il proprietario ha scelto di non bloccarla: è un miglioramento valido a se
+  stante anche se PS-069 dovesse poi ridisegnare la stessa scena da zero.
+  Solo un riferimento incrociato, nessuna dipendenza formale.
 
 ## Documenti sincronizzati
 

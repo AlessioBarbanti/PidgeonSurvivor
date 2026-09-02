@@ -8,7 +8,7 @@ priorita: alta
 dipende_da: []
 origine: B44
 creato: 2026-08-29
-aggiornato: 2026-08-30
+aggiornato: 2026-09-02
 ---
 
 # PS-001 — Comunicare la fase della passiva senza ridipingere lo sprite
@@ -56,6 +56,19 @@ senza rimpiazzarlo riapre quel problema invece di chiudere questo.
   della run.** Il contorno è visibile solo in `RunController.RUNNING`; pausa,
   modali, terminali e `BOOT` lo nascondono senza perdere la fase da ripresentare
   alla ripresa. Il restart riporta la passiva alla propria fase iniziale.
+- **2026-09-02 — Gate percettivo chiuso con esito negativo: il contorno è
+  bocciato.** Il proprietario, giocando la run, ha bocciato `PassiveStateOutline`
+  per tutti e quattro i personaggi che lo usano (Aleo, Lollo, Alea, Migi):
+  rompe la leggibilità della silhouette pixel-art e non si integra
+  esteticamente con lo stile del gioco. Non è un problema di spessore o
+  colore (già ritoccati da PS-029): è il meccanismo stesso — un ricalco del
+  profilo dello sprite — a non funzionare. I criteri percettivi ancora aperti
+  sopra restano intenzionalmente non spuntati: non passeranno mai con questa
+  implementazione. La responsabilità di trovare una soluzione sostitutiva
+  passa a [PS-079](../2_to_do/PS-079-particellare-tell-stato-personaggi.md);
+  questa card resta storica come primo tentativo (contorno invece di tinta
+  piena) e come diagnosi valida del problema originale di B44, non come
+  contratto ancora da chiudere con l'implementazione attuale.
 
 ## Criteri di accettazione
 

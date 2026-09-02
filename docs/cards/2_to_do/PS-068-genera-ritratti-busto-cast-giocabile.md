@@ -53,6 +53,10 @@ già approvate.
       all'`AtlasTexture` CC0.
 - [ ] `portraits_are_placeholders` viene aggiornato a `false` solo dopo
       l'accettazione percettiva del proprietario sugli otto busti.
+- [ ] `tests/unit/test_b17_friend_content.gd` non assume più che `portrait`
+      sia un ritaglio `32x32`: l'asserzione va aggiornata insieme al nuovo
+      asset, seguendo lo stesso trattamento già applicato al lato
+      `evil_portrait` da [PS-070](./PS-070-aggiorna-aspettativa-32x32-evil-portrait-b17.md).
 - [ ] Ogni nuovo file possiede master HD e derivato runtime separati, secondo
       la struttura `hd/` / `generated/` già in uso per il cast.
 - [ ] Il manifest registra percorso, prompt/origine, autore, licenza,
@@ -86,6 +90,9 @@ Non toccare:
   dedicato) → marker `FRIEND_PORTRAIT_ASSETS_SMOKE_OK` — verifica che tutti gli
   otto `FriendDefinition` risolvano `portrait`/`portrait_placeholder` su un
   asset diverso dall'`AtlasTexture` CC0 e che nessun riferimento resti rotto.
+- Aggiorna anche `tests/unit/test_b17_friend_content.gd`: l'asserzione che
+  `portrait` sia un ritaglio `32x32` (già superata per `evil_portrait` da
+  PS-070) va rimossa o resa condizionale a `portraits_are_placeholders`.
 - Profilo minimo prima della chiusura: `Relevant`
 
 ## Gate manuali
@@ -106,6 +113,12 @@ Non toccare:
 - **2026-09-02 — Nessuna decisione ancora presa su dove il busto verrà
   mostrato in UI.** La sola integrazione nel selettore personaggi è
   responsabilità di PS-069, che dipende da questa card.
+- **2026-09-02 — Questa card possiede l'aggiornamento del lato `portrait` in
+  `test_b17_friend_content.gd`.** PS-070 ha corretto solo il lato
+  `evil_portrait` della stessa asserzione, dichiarando esplicitamente di non
+  anticipare il lato `portrait` finché l'asset placeholder non viene
+  sostituito. Quel momento è questa card: chi la risolve deve toccare quella
+  riga di test, non limitarsi al nuovo asset.
 
 ## Documenti sincronizzati
 

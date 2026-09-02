@@ -99,7 +99,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-053](./4_to_test/PS-053-riepilogo-finale-della-run.md) | Trasformare la schermata finale in un riepilogo della run | feat | ui | IN VERIFICA | media | — |
 | [PS-054](./2_to_do/PS-054-presenza-del-personaggio-nel-selettore.md) | Adattare il selettore personaggi al 20:9 | ux | ui | PRONTO | media | — |
 | [PS-055](./1_idea/PS-055-filosofia-della-vittoria.md) | Decidere la filosofia della vittoria fra Survival e Difesa Grigliata | chore | gameplay | DA DEFINIRE | media | — |
-| [PS-056](./2_to_do/PS-056-ducking-e-stinger-nei-momenti-chiave.md) | Aggiungere ducking e stinger su warning, Boss, level-up e ricompensa Barb | feat | audio | PRONTO | bassa | — |
+| [PS-056](./2_to_do/PS-056-ducking-e-stinger-nei-momenti-chiave.md) | Aggiungere ducking e stinger su avvertimento Boss, level-up e ricompensa Barb | feat | audio | PRONTO | bassa | — |
 | [PS-057](./4_to_test/PS-057-errori-fisica-su-split-del-piccione-viola.md) | Eliminare gli errori di fisica quando il piccione viola si sdoppia | fix | gameplay | IN VERIFICA | media | — |
 | [PS-058](./4_to_test/PS-058-genera-arte-nuovi-prop-arena.md) | Generare l'arte definitiva dei nuovi prop dell'arena | art | arte | IN VERIFICA | media | PS-045 |
 | [PS-059](./5_completed/PS-059-schiarisci-contrasto-modal-level-up.md) | Schiarire il contrasto fra velo e carte nei modal di scelta | fix | ui | COMPLETATO | alta | PS-046, PS-047 |
@@ -122,3 +122,6 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-076](./2_to_do/PS-076-aumenta-densita-nemica-a-schermo.md) | Aumenta la densità nemica a schermo a parità di rischio e progressione | chore | gameplay | PRONTO | alta | — |
 | [PS-077](./2_to_do/PS-077-espandi-pool-specialita-barb.md) | Espandi il pool delle Specialità di Barb con le carte signature rimaste | feat | gameplay | PRONTO | media | PS-012 |
 | [PS-078](./2_to_do/PS-078-tematizza-catalogo-specialita-barb.md) | Tematizza il catalogo delle Specialità di Barb come piatti speciali del grigliatore | art | arte | BLOCCATO | media | PS-077 |
+| [PS-079](./2_to_do/PS-079-particellare-tell-stato-personaggi.md) | Sostituisci il contorno bocciato con un particellare non aderente | ux | arte | PRONTO | alta | — |
+| [PS-080](./2_to_do/PS-080-musica-vittoria-sconfitta.md) | Aggiungi una musica dedicata a vittoria e sconfitta | feat | audio | PRONTO | media | — |
+| [PS-081](./2_to_do/PS-081-layer-musicale-intensita-late-run.md) | Aggiungi un layer musicale di intensità crescente late-run | feat | audio | PRONTO | media | — |

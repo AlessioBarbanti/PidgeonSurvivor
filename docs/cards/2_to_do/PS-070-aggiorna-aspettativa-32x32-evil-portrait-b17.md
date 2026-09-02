@@ -41,6 +41,15 @@ resta un ritaglio placeholder `32x32` dallo spritesheet CC0 (finché
 `portraits_are_placeholders` lo dichiara tale), mentre `evil_portrait` è
 arte dedicata per personaggio e non deve più essere vincolata a `32x32`.
 
+**Nota di scadenza esplicita.** Questa correzione vale solo finché `portrait`
+resta un placeholder. [PS-068](./PS-068-genera-ritratti-busto-cast-giocabile.md)
+sostituirà `portrait`/`portrait_placeholder` con un busto definitivo non
+`32x32`: quando accadrà, la stessa asserzione tornerà a fallire dal lato
+`portrait`, con lo stesso pattern di errore risolto qui per `evil_portrait`.
+PS-068 possiede esplicitamente l'aggiornamento di questa riga di test per il
+lato `portrait` (vedi la sua sezione Verifica); questa card non deve
+anticiparlo né renderlo incondizionato.
+
 ## Criteri di accettazione
 
 - [ ] `test_catalog_and_approvals` non assume più che `evil_portrait` sia
@@ -89,6 +98,11 @@ Non toccare:
   (che tocca `data/bosses/signatures/*.tres`, pattern che aggancia questo
   smoke in `tools/milestone-test-map.json`), ma la causa è indipendente e
   precedente: risale a PS-051.
+- **2026-09-02 — Non anticipare il lato `portrait`.** PS-068 romperà di
+  nuovo questa stessa asserzione, dal lato opposto, quando sostituirà
+  `portrait` con un busto definitivo. Il proprietario ha scelto che sia
+  PS-068 ad aggiornare quella parte quando arriva, non questa card in
+  anticipo su un asset che non esiste ancora.
 
 ## Documenti sincronizzati
 
