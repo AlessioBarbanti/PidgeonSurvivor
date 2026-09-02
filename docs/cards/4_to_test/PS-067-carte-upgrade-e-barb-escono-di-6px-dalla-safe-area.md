@@ -3,12 +3,12 @@ id: PS-067
 titolo: Le carte upgrade e Barb escono di 6px dalla safe area
 tipo: fix
 area: ui
-stato: PRONTO
+stato: IN VERIFICA
 priorita: alta
 dipende_da: []
 origine:
 creato: 2026-09-01
-aggiornato: 2026-09-01
+aggiornato: 2026-09-02
 ---
 
 # PS-067 — Le carte upgrade e Barb escono di 6px dalla safe area
@@ -59,14 +59,16 @@ aspect ratio testati da PS-036/PS-047, senza ridurre l'altezza minima
 
 ## Criteri di accettazione
 
-- [ ] `tests/unit/test_ps036_barb_reward_visual_identity.gd` passa su tutti
+- [x] `tests/unit/test_ps036_barb_reward_visual_identity.gd` passa su tutti
       e tre i profili (16:9, 20:9 cutout, 4:3).
-- [ ] `tests/unit/test_ps047_upgrade_card_hierarchy.gd` passa, offerta
+- [x] `tests/unit/test_ps047_upgrade_card_hierarchy.gd` passa, offerta
       normale e `BARB_SPECIALITY`/`BARB_BONUS`.
-- [ ] Il fix non riduce `custom_minimum_size` della carta né la fa crescere
+- [x] Il fix non riduce `custom_minimum_size` della carta né la fa crescere
       oltre le dimensioni verificate da PS-047 (invarianza su focus e su
-      modal più alto del necessario).
-- [ ] Nessuna regressione sulla geometria di `test_b18m_ability_visuals.gd`,
+      modal più alto del necessario). Nessuna modifica a
+      `upgrade_card.gd`/`.tscn`: il fix resta interamente nel calcolo del
+      margine dei due overlay.
+- [x] Nessuna regressione sulla geometria di `test_b18m_ability_visuals.gd`,
       `test_ps046_level_up_modal_isolation.gd` e
       `test_ps059_upgrade_modal_contrast.gd`, che condividono lo stesso
       modal di scelta.
@@ -100,11 +102,14 @@ Non toccare:
 ## Gate manuali
 
 - [ ] Runtime Windows: verifica visiva delle tre schermate di scelta upgrade
-      su almeno un profilo 20:9.
-- [ ] Validazione statica APK: non richiesta se il fix resta lato UI 2D.
+      su almeno un profilo 20:9. **Aperto**: nessun ambiente Windows
+      disponibile in questa sessione (sandbox Linux remoto), solo
+      validazione headless via Godot/GUT.
+- [ ] Validazione statica APK: non richiesta, il fix resta lato UI 2D.
 - [ ] Runtime fisico Pixel 9: non richiesto per la sola geometria, utile se
-      il fix cambia margini condivisi con altri modal.
-- [ ] Controllo percettivo richiesto: no, il criterio è geometrico e già
+      il fix cambia margini condivisi con altri modal (non è questo il
+      caso: nessuna scena toccata, solo lo script che calcola il margine).
+- [x] Controllo percettivo richiesto: no, il criterio è geometrico e già
       verificato dagli smoke esistenti.
 
 ## Decisioni
@@ -113,6 +118,31 @@ Non toccare:
   difetto è emerso durante la verifica di quel blocco ma è indipendente: le
   quattro card non toccano `upgrade_card`/`upgrade_overlay`/
   `barb_reward_overlay`.
+- **2026-09-02 — Causa reale: `MarginContainer` che si autoingrandisce, non
+  solo la formula di clamp.** Riprodotto il fallimento in un sandbox Linux
+  con Godot 4.7.1 headless (`tools/setup-remote-sandbox.sh`, non c'è
+  PowerShell in questa sessione). La prima ipotesi — che il ramo
+  `min_top if max_top < min_top` di `_reflow_top_margin()` ignorasse il
+  margine inferiore quando la clearance dalla fascia HUD e il contenuto non
+  ci stanno insieme nella safe area — era necessaria ma non sufficiente:
+  aggiungendo un clamp duro `[safe_top, safe_bottom - content_height]` il
+  numero prodotto (314) restava identico. Instrumentando il calcolo è
+  emerso che `_safe_margins` (un `MarginContainer`) viene forzato dal motore
+  a crescere oltre il rettangolo assegnato quando il proprio contenuto
+  (header/titolo + carte + margine) supera l'altezza disponibile — la sua
+  `size` combacia con la propria minimum-size, non con quella assegnata da
+  `apply_safe_area()`. Il codice rileggeva `_safe_margins.position`/`.size`
+  a ogni `_reflow_top_margin()`, quindi la prima inflazione veniva scambiata
+  per la "vera" safe area e ne causava altre a catena (700 → 710 → 716px di
+  fondo osservati per l'offerta Barb, invece di 700). Fix: la safe area
+  ricevuta va conservata (`_safe_rect`) e usata per tutta la matematica del
+  margine, mai riletta dal nodo; il clamp duro resta comunque necessario per
+  il caso (reale, sull'offerta Barb) in cui clearance HUD + contenuto +
+  margine base eccedono l'altezza disponibile anche a bordi corretti — in
+  quel caso si cede sulla clearance HUD (soft), mai sul contenimento nella
+  safe area (hard). Applicato identico a `upgrade_overlay.gd` (stessa
+  funzione duplicata) per coerenza, anche se l'offerta normale non
+  manifestava il sintomo con le altezze attuali.
 
 ## Documenti sincronizzati
 

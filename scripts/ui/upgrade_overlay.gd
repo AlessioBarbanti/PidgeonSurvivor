@@ -30,6 +30,14 @@ var _accepting_selection := false
 var _joystick_was_visible := false
 var _joystick_hidden_by_overlay := false
 var _selection_unlock_msec := 0
+# PS-067: `_safe_margins` e' un MarginContainer. Quando il contenuto (titolo +
+# carte) supera l'altezza disponibile, il motore forza il suo `size` a
+# crescere fino alla dimensione minima richiesta (margine + contenuto),
+# superando il rettangolo assegnato. Rileggere `_safe_margins.size` dopo
+# quel momento restituirebbe un'area "sicura" gonfiata e non quella reale:
+# il rect ricevuto va quindi conservato qui e usato per tutta la matematica
+# del margine, non riletto dal nodo.
+var _safe_rect := Rect2()
 
 
 func _ready() -> void:
@@ -149,6 +157,7 @@ func get_level_label_rect() -> Rect2:
 func apply_safe_area(rect: Rect2) -> void:
 	if not is_node_ready() or not is_instance_valid(_safe_margins):
 		return
+	_safe_rect = rect
 	_safe_margins.position = rect.position
 	_safe_margins.size = rect.size
 	_reflow_top_margin()
@@ -171,8 +180,12 @@ func _reflow_top_margin() -> void:
 		return
 	var base_margin: float = _safe_margins.get_theme_constant(&"margin_bottom")
 	var content_height := _measure_layout_min_height()
-	var safe_top: float = _safe_margins.position.y
-	var safe_bottom: float = safe_top + _safe_margins.size.y
+	# PS-067: `_safe_margins.size` puo' essere gia' stato forzato dal motore
+	# oltre il rettangolo assegnato (vedi commento su `_safe_rect`): usare il
+	# rect conservato invece di rileggerlo dal nodo evita che una prima
+	# inflazione ne causi altre a catena.
+	var safe_top: float = _safe_rect.position.y
+	var safe_bottom: float = _safe_rect.end.y
 	# Il proprietario vuole il container centrato sull'altezza del *viewport*,
 	# non della safe area: coincidono quando l'inset e' simmetrico e la
 	# finestra e' a (0,0), ma la safe area puo' risultare piu' piccola o non
@@ -181,8 +194,15 @@ func _reflow_top_margin() -> void:
 	# dalla fascia HUD in alto (PS-046), margine base in fondo.
 	var viewport_center := get_viewport().get_visible_rect().size.y / 2.0
 	var target_top := viewport_center - content_height / 2.0
-	var min_top := safe_top + CONTENT_TOP_MARGIN
-	var max_top := safe_bottom - base_margin - content_height
+	# PS-067: restare dentro la safe area e' un vincolo duro (bordi fisici,
+	# cutout, PS-064) che non puo' mai cedere. La clearance dalla fascia HUD e
+	# il margine base sono preferenze morbide: quando il contenuto e' troppo
+	# alto per soddisfarle entrambe, si stringe la preferenza fino al bordo
+	# duro invece di lasciar traboccare la carta oltre la safe area.
+	var hard_min_top := safe_top
+	var hard_max_top := maxf(safe_bottom - content_height, hard_min_top)
+	var min_top := clampf(safe_top + CONTENT_TOP_MARGIN, hard_min_top, hard_max_top)
+	var max_top := clampf(safe_bottom - base_margin - content_height, hard_min_top, hard_max_top)
 	var absolute_top := min_top if max_top < min_top else clampf(target_top, min_top, max_top)
 	_safe_margins.add_theme_constant_override("margin_top", int(absolute_top - safe_top))
 

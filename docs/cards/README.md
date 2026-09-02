@@ -110,6 +110,6 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-064](./4_to_test/PS-064-top-level-ignora-offset-safe-area.md) | I nodi top_level dei modal ignorano l'offset del safe-rect del display | fix | ui | IN VERIFICA | alta | PS-059 |
 | [PS-065](./2_to_do/PS-065-barb-reward-header-non-entra-in-safe-area.md) | L'header del premio Barb non entra nel rettangolo sicuro a risoluzioni compatte | fix | ui | PRONTO | media | PS-064 |
 | [PS-066](./4_to_test/PS-066-rimuovi-numero-scorciatoia-carte.md) | Rimuovere il numero di scorciatoia visibile dalle carte upgrade | fix | ui | IN VERIFICA | bassa | PS-047 |
-| [PS-067](./2_to_do/PS-067-carte-upgrade-e-barb-escono-di-6px-dalla-safe-area.md) | Le carte upgrade e Barb escono di 6px dalla safe area | fix | ui | PRONTO | alta | — |
+| [PS-067](./4_to_test/PS-067-carte-upgrade-e-barb-escono-di-6px-dalla-safe-area.md) | Le carte upgrade e Barb escono di 6px dalla safe area | fix | ui | IN VERIFICA | alta | — |
 | [PS-068](./2_to_do/PS-068-genera-ritratti-busto-cast-giocabile.md) | Generare i ritratti busto definitivi del cast giocabile | art | arte | PRONTO | media | — |
 | [PS-069](./2_to_do/PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md) | Ridisegnare il selettore personaggi per ospitare i ritratti busto | ux | ui | BLOCCATO | media | PS-068 |
