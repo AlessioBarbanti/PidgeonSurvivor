@@ -15,7 +15,12 @@ assets/art/characters/<id>/
 ```
 
 I master `hd/` restano esclusi dall'import Godot (`.gdignore` per ciascun
-`<id>/hd/`) e dagli export (`assets/art/characters/*/hd/**` nei preset). Solo
+`<id>/hd/`) e dagli export (`assets/art/characters/*/hd/**` nei preset). Le
+reference fotografiche autorizzate vivono invece in
+`docs/characters/references/<id>/` — materiale di documentazione e
+provenienza, non un asset da derivare — anch'esse protette da `.gdignore` ed
+escluse dai preset (`docs/characters/references/**`). Il documento di
+direzione visuale di ciascun personaggio è in `docs/characters/<id>.md`. Solo
 `generated/` è consumato dal runtime.
 
 ## Parte 1 — Strisce Player (B18U)
@@ -25,8 +30,10 @@ con OpenAI ImageGen built-in per il progetto IL GIOCO. La baseline iniziale non
 usava fotografie o persone reali; l'identity pass del 28 agosto 2026 la supera
 per tutti gli otto profili usando riferimenti fotografici forniti e autorizzati
 esplicitamente dal proprietario. I risultati restano caricature pixel-art e non
-contengono marche, loghi o personaggi di terzi. Il prompt del rework Aleo è in
-`docs/aleo-rework-art-prompts.md`.
+contengono marche, loghi o personaggi di terzi. Il registro dei prompt
+disponibili (inclusi i due originali recuperati per Aleo e Magno) e delle
+reference fotografiche archiviate è in
+`docs/archive/generation-prompts-and-references.md`.
 Origine: progetto IL GIOCO; autore: progetto IL GIOCO con assistenza OpenAI
 ImageGen; licenza: Licenza del progetto.
 
@@ -37,6 +44,23 @@ capelli, corporature, costumi e palette. Il fondale non e incorporato nei file
 Player e nessuna UI o scena della welcome entra nelle texture runtime.
 
 ### Identity pass del 28 agosto 2026
+
+### Reference fotografiche archiviate il 2 settembre 2026, spostate sotto `docs/` il 2 settembre 2026 (PS-084)
+
+Le fotografie originali autorizzate dal proprietario sono conservate in
+`docs/characters/references/<id>/source-XX.png` (spostate da
+`assets/art/characters/references/<id>/` senza alterare i byte), tutte fuori da
+import ed export. Origine: asset del progetto forniti dal proprietario; autore
+e licenza: non applicabili a una reference privata del proprietario.
+Trasformazione: nessuna (solo normalizzazione deterministica dei nomi in
+minuscolo al momento dell'archiviazione). Ruolo: `subject reference` per
+future generazioni in caricatura pixel-art, mai runtime.
+
+La tabella completa con dimensioni e SHA-256 è nel registro storico
+`docs/archive/generation-prompts-and-references.md`; non duplicarla qui per
+evitare due fonti di integrità divergenti. La sintesi della direzione visuale
+per personaggio, con i percorsi correnti dei master, è in
+`docs/characters/<id>.md`.
 
 Le otto strisce sono state rigenerate dal proprietario del progetto in un
 passaggio di identita successivo alla baseline B18U. I master conferiti erano
@@ -66,7 +90,7 @@ sono state rieseguite con gli stessi script e gli stessi parametri.
 Per `aleo` il passaggio accompagna inoltre il rework gameplay da muratore a
 termotecnico. Come per gli altri sette profili, la direzione visuale usa un
 riferimento autorizzato e resta una caricatura pixel-art. I prompt specifici di
-Aleo sono in `docs/aleo-rework-art-prompts.md`.
+Aleo sono nel registro storico `docs/archive/generation-prompts-and-references.md`.
 
 ### Prompt condiviso della baseline del 25 agosto
 
@@ -90,11 +114,11 @@ preservare tre pose, baseline, scala, pixel-art e chroma.
 
 | ID | Soggetto e locomozione richiesti | Correzione finale rispetto al primo output |
 |---|---|---|
-| `magno` | Uomo energumeno tellurico, molto largo e muscoloso, outfit terra, piccoli richiami bovini, passo pesante | Rimossa ogni anatomia animale del primo output: Magno resta umano come nella welcome, con soli motivi a corna/emblema bovino |
+| `magno` | Uomo energumeno tellurico, molto largo e muscoloso, outfit terra, piccoli richiami bovini, passo pesante | Rimossa ogni anatomia animale del primo output: Magno resta umano come nella welcome, con soli motivi a corna/emblema bovino. Il successivo identity pass ha un prompt integrale recuperato nel [registro storico](../../../docs/archive/generation-prompts-and-references.md#magno--originale-recuperato) |
 | `bea` | Pattinatrice agile senza casco, capelli scuri lunghi e ricci, giacca viola, protezioni e roller, falcata da skating | Nessuna correzione: confronto diretto con Bea B18O positivo; scia e Powerslide restano VFX separati |
 | `zat` | Infermiera elettrica in bianco-ciano, simbolo medico generico a cuore, caschetto, passo rapido | Rimosso completamente il copricapo generato; caschetto teal e divisa sono allineati alla welcome, senza Croce Rossa |
 | `alea` | Ballerina classica, tutu leggibile, passi eleganti | Capelli portati al biondo caldo e costume a bianco-avorio con oro come nella welcome; nastro e aquila restano VFX separati |
-| `aleo` | Muratore con casco, cazzuola, piccolo secchio e stivali, passo robusto | Reso giovane e senza barba; gilet arancio sostituito da abito da lavoro verde oliva e giallo coerente con la welcome. **Da rigenerare**: il rework del 28 agosto 2026 trasforma Aleo in un termotecnico; prompt aggiornato in [`docs/aleo-rework-art-prompts.md`](../../../docs/aleo-rework-art-prompts.md) |
+| `aleo` | Muratore con casco, cazzuola, piccolo secchio e stivali, passo robusto | Reso giovane e senza barba; gilet arancio sostituito da abito da lavoro verde oliva e giallo coerente con la welcome. **Da rigenerare**: il rework del 28 agosto 2026 trasforma Aleo in un termotecnico; prompt aggiornato nel [registro storico](../../../docs/archive/generation-prompts-and-references.md#aleo--originale-recuperato) |
 | `lollo` | Cosplayer iperattivo con capelli scuri, tuta blu, dettagli gialli, goggles e accessori wasteland originali | Nessuna correzione: confronto diretto con Lollo B18O positivo; nessun numero, marchio o costume riconoscibile |
 | `migi` | Donna calma con capelli neri e occhiali, outfit teal, scudo a guscio compatto, passo deliberato | Nessuna correzione: confronto diretto con Migi B18O positivo; cupola e onde rallentanti restano VFX separati |
 | `marghe` | Ballerina reggaeton con capelli neri molto lunghi, magenta-oro e passo ritmico | Corporatura resa piu morbida e piena e palette spostata al viola, magenta e oro come nella welcome; clone d'ombra resta VFX separato |

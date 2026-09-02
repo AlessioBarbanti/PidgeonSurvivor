@@ -111,7 +111,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-065](./4_to_test/PS-065-barb-reward-header-non-entra-in-safe-area.md) | L'header del premio Barb non entra nel rettangolo sicuro a risoluzioni compatte | fix | ui | IN VERIFICA | media | PS-064 |
 | [PS-066](./4_to_test/PS-066-rimuovi-numero-scorciatoia-carte.md) | Rimuovere il numero di scorciatoia visibile dalle carte upgrade | fix | ui | IN VERIFICA | bassa | PS-047 |
 | [PS-067](./4_to_test/PS-067-carte-upgrade-e-barb-escono-di-6px-dalla-safe-area.md) | Le carte upgrade e Barb escono di 6px dalla safe area | fix | ui | IN VERIFICA | alta | — |
-| [PS-068](./2_to_do/PS-068-genera-ritratti-busto-cast-giocabile.md) | Generare i ritratti busto definitivi del cast giocabile | art | arte | PRONTO | media | — |
+| [PS-068](./3_in_sprint/PS-068-genera-ritratti-busto-cast-giocabile.md) | Generare i ritratti busto definitivi del cast giocabile | art | arte | IN CORSO | media | — |
 | [PS-069](./2_to_do/PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md) | Ridisegnare il selettore personaggi per ospitare i ritratti busto | ux | ui | BLOCCATO | media | PS-068 |
 | [PS-070](./2_to_do/PS-070-aggiorna-aspettativa-32x32-evil-portrait-b17.md) | Aggiorna l'aspettativa 32x32 su evil_portrait in test_b17_friend_content | fix | tooling | PRONTO | bassa | — |
 | [PS-071](./4_to_test/PS-071-pannello-boss-intro-esce-dalla-safe-area.md) | Il pannello della Boss Intro esce dalla safe area | fix | ui | IN VERIFICA | media | — |
@@ -125,3 +125,6 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-079](./2_to_do/PS-079-particellare-tell-stato-personaggi.md) | Sostituisci il contorno bocciato con un particellare non aderente | ux | arte | PRONTO | alta | — |
 | [PS-080](./2_to_do/PS-080-musica-vittoria-sconfitta.md) | Aggiungi una musica dedicata a vittoria e sconfitta | feat | audio | PRONTO | media | — |
 | [PS-081](./2_to_do/PS-081-layer-musicale-intensita-late-run.md) | Aggiungi un layer musicale di intensità crescente late-run | feat | audio | PRONTO | media | — |
+| [PS-082](./2_to_do/PS-082-camera-non-centrata-su-restart.md) | Ricentra davvero la camera sul personaggio al restart | fix | gameplay | PRONTO | media | — |
+| [PS-083](./4_to_test/PS-083-storicizza-prompt-e-reference-generazione.md) | Storicizzare prompt e reference di generazione | chore | arte | IN VERIFICA | bassa | — |
+| [PS-084](./4_to_test/PS-084-direzione-visuale-per-personaggio-e-reference-cast.md) | Documentare la direzione visuale per personaggio e collegarla agli agenti art | chore | arte | IN VERIFICA | media | — |

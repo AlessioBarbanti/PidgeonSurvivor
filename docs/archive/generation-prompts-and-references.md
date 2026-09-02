@@ -146,8 +146,10 @@ foto come asset runtime o per un output fotorealistico.
 ### Stato delle fonti
 
 I due prompt seguenti sono **prompt originali recuperati**, copiati senza
-modificarne il testo da `img_char_prompts.md` il 2 settembre 2026. Il file
-sorgente resta utile come copia di lavoro; questo archivio è il punto di
+modificarne il testo da `img_char_prompts.md` il 2 settembre 2026 e verificati
+per corrispondenza visiva con i master correnti (`aleo/hd/poses.png`,
+`magno/hd/poses.png`). Il file sorgente è stato rimosso lo stesso giorno dopo
+l'archiviazione verbatim: questo archivio resta il solo punto di
 consultazione storico. I prompt per Alea, Bea, Lollo, Marghe, Migi e Zat non
 sono presenti nel checkout come messaggi ImageGen originali: la sezione
 successiva li dichiara invece **ricostruzioni probabili**, non prove storiche.

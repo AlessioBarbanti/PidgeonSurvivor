@@ -20,17 +20,21 @@ del documento architetturale, non una lacuna di questo file.
   otto profili (Zat, Bea, Aleo, Alea, Lollo, Migi, Marghe, Magno, con le
   rispettive Evil) seguono la direzione presentazionale approvata per il
   fondale della welcome screen, tradotta in silhouette leggibili. Nessun
-  personaggio rappresenta persone reali, con l'eccezione dichiarata di Aleo
-  (ispirato ai tratti di una persona reale con consenso esplicito del
-  proprietario, rework del 28/08/2026): resta comunque "una caricatura
-  pixel-art e non una somiglianza fotografica". L'intero cast di sprite è
-  stato rigenerato in un passaggio di identità unico il 28/08/2026.
+  profilo è una somiglianza fotografica: tutti restano caricature pixel-art.
+  L'identity pass del 28/08/2026 ha però superato la baseline iniziale (senza
+  fotografie) per tutti e otto i profili, usando riferimenti fotografici
+  forniti e autorizzati esplicitamente dal proprietario come `subject
+  reference` (dettaglio per personaggio in `docs/characters/<id>.md`, foto in
+  `docs/characters/references/<id>/`); Aleo resta il solo rework
+  dichiaratamente ispirato ai tratti di una persona reale con consenso
+  esplicito documentato oltre alla semplice reference. L'intero cast di
+  sprite è stato rigenerato in un passaggio di identità unico il 28/08/2026.
 - **Stile pixel-art**: confermato in modo ricorrente nei manifest di
   cartella, per esempio `assets/art/arena/ASSET-MANIFEST.md` ("caricatured
   pixel-art arcade... polished hand-crafted pixel art, restrained chunky
   pixel clusters") e `assets/art/enemies/pigeons/ASSET-MANIFEST.md`
   (contorno plum scuro, piuma lavanda, becco e zampe arancio per i
-  piccioni nemici). `docs/archive/aleo-rework-art-prompts.md` conserva i
+  piccioni nemici). `docs/archive/generation-prompts-and-references.md` conserva i
   prompt storici dello stile ("crisp dark outline, limited palette, chunky
   readable pixel clusters") come evidenza, non come contratto corrente.
 

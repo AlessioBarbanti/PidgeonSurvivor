@@ -77,11 +77,20 @@ Studia i fratelli visivi prima di scrivere il prompt o modificare l'asset:
 - scena e catture runtime correnti, inclusi i profili di viewport richiesti;
 - `docs/visual-audio-identity.md`, cataloghi di dominio e
   `ASSET-MANIFEST.md` pertinenti;
+- se l'asset riguarda un personaggio del cast, `docs/characters/<id>.md`,
+  quando esiste: riassume silhouette, palette, costume, accessori e
+  grammatica pixel-art già ricostruiti in un passaggio precedente, e
+  l'eventuale reference fotografica autorizzata in
+  `docs/characters/references/<id>/`;
 - prompt e master precedenti che hanno prodotto fratelli approvati.
 
 Ispeziona visivamente i file e, quando disponibile, la loro resa nel layout.
-Manifest, prompt storici e nomi file sono indizi, non sostituti dell'ispezione.
-Gli elementi in `docs/archive/` sono evidenza storica, non contratto corrente.
+Manifest, prompt storici, nomi file e `docs/characters/<id>.md` sono indizi
+che accelerano la ricostruzione, non sostituti dell'ispezione: se un file di
+direzione visuale sembra in contraddizione con i master reali o con
+`ASSET-MANIFEST.md`, questi ultimi restano autorevoli e il file va segnalato
+come da correggere, non seguito alla lettera. Gli elementi in `docs/archive/`
+sono evidenza storica, non contratto corrente.
 
 Estrai le regole implicite della famiglia: silhouette, proporzioni, palette,
 pixel density, outline, ombre, illuminazione, livello di dettaglio, grado di
@@ -158,7 +167,11 @@ decisione invece di aggirarlo.
 Determina se l'asset stabilisce o modifica una convenzione per portrait,
 Specialita', upgrade, Boss reward, icone, schermate, nemici, prop o VFX. In tal
 caso descrivi la regola riutilizzabile e sincronizza
-`docs/visual-audio-identity.md` solo se è diventata verità corrente. Mantieni
+`docs/visual-audio-identity.md` solo se è diventata verità corrente. Se la
+modifica riguarda un personaggio specifico del cast e `docs/characters/<id>.md`
+esiste, aggiorna anche quel file con il solo risultato durevole (non con il
+brief o i candidati scartati), così resta uno specchio fedele dei master
+correnti invece di incoraggiare a rincorrere una lettura pregressa. Mantieni
 identità individuale e grammatica condivisa in equilibrio.
 
 ## Integra e verifica
