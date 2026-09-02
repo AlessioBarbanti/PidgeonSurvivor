@@ -99,7 +99,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-053](./4_to_test/PS-053-riepilogo-finale-della-run.md) | Trasformare la schermata finale in un riepilogo della run | feat | ui | IN VERIFICA | media | — |
 | [PS-054](./2_to_do/PS-054-presenza-del-personaggio-nel-selettore.md) | Adattare il selettore personaggi al 20:9 | ux | ui | PRONTO | media | — |
 | [PS-055](./1_idea/PS-055-filosofia-della-vittoria.md) | Decidere la filosofia della vittoria fra Survival e Difesa Grigliata | chore | gameplay | DA DEFINIRE | media | — |
-| [PS-056](./2_to_do/PS-056-ducking-e-stinger-nei-momenti-chiave.md) | Aggiungere ducking e stinger su warning, Boss e ricompensa Barb | feat | audio | PRONTO | bassa | — |
+| [PS-056](./2_to_do/PS-056-ducking-e-stinger-nei-momenti-chiave.md) | Aggiungere ducking e stinger su warning, Boss, level-up e ricompensa Barb | feat | audio | PRONTO | bassa | — |
 | [PS-057](./4_to_test/PS-057-errori-fisica-su-split-del-piccione-viola.md) | Eliminare gli errori di fisica quando il piccione viola si sdoppia | fix | gameplay | IN VERIFICA | media | — |
 | [PS-058](./4_to_test/PS-058-genera-arte-nuovi-prop-arena.md) | Generare l'arte definitiva dei nuovi prop dell'arena | art | arte | IN VERIFICA | media | PS-045 |
 | [PS-059](./5_completed/PS-059-schiarisci-contrasto-modal-level-up.md) | Schiarire il contrasto fra velo e carte nei modal di scelta | fix | ui | COMPLETATO | alta | PS-046, PS-047 |
@@ -115,3 +115,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-069](./2_to_do/PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md) | Ridisegnare il selettore personaggi per ospitare i ritratti busto | ux | ui | BLOCCATO | media | PS-068 |
 | [PS-070](./2_to_do/PS-070-aggiorna-aspettativa-32x32-evil-portrait-b17.md) | Aggiorna l'aspettativa 32x32 su evil_portrait in test_b17_friend_content | fix | tooling | PRONTO | bassa | — |
 | [PS-071](./4_to_test/PS-071-pannello-boss-intro-esce-dalla-safe-area.md) | Il pannello della Boss Intro esce dalla safe area | fix | ui | IN VERIFICA | media | — |
+| [PS-072](./2_to_do/PS-072-audio-schivata-sesto-senso-equino-bea.md) | Dai un audio alla schivata Sesto Senso Equino di Bea | feat | audio | PRONTO | media | — |
+| [PS-073](./2_to_do/PS-073-musica-boss-dedicata.md) | Introduci una musica Boss dedicata | feat | audio | PRONTO | media | — |
+| [PS-074](./2_to_do/PS-074-suono-click-generico-bottoni-ui.md) | Aggiungi un suono di click ai bottoni UI oggi silenziosi | ux | audio | PRONTO | bassa | — |
+| [PS-075](./2_to_do/PS-075-sfx-morte-nemico.md) | Aggiungi un SFX alla morte dei nemici | feat | audio | PRONTO | media | — |
