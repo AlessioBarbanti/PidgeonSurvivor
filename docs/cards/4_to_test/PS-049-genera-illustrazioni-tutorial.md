@@ -3,12 +3,12 @@ id: PS-049
 titolo: Generare le tre illustrazioni definitive del tutorial
 tipo: art
 area: arte
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: [PS-048]
 origine:
 creato: 2026-08-31
-aggiornato: 2026-09-01
+aggiornato: 2026-09-02
 ---
 
 # PS-049 — Generare le tre illustrazioni definitive del tutorial
@@ -34,35 +34,36 @@ elementi che il giocatore incontrerà.
 
 ### `tutorial_ability_button.png`
 
-- [ ] Mostra il vero pulsante abilità dell'HUD, non un'icona generica.
-- [ ] Gli stati `PRONTA` e `IN RICARICA` sono confrontabili e il riempimento
+- [x] Mostra il vero pulsante abilità dell'HUD, non un'icona generica.
+- [x] Gli stati `PRONTA` e `IN RICARICA` sono confrontabili e il riempimento
       circolare è la differenza dominante.
-- [ ] Un accenno dell'angolo di schermo comunica la posizione in basso a
+- [x] Un accenno dell'angolo di schermo comunica la posizione in basso a
       destra senza aggiungere un HUD fittizio.
 
 ### `tutorial_pickups.png`
 
-- [ ] XP e cura riprendono forma e colori degli elementi runtime correnti.
-- [ ] La carta di scelta è riconoscibile come esito del level-up.
-- [ ] La lettura XP → livello → carta è chiara; la cura resta un recupero vita
+- [x] XP e cura riprendono forma e colori degli elementi runtime correnti.
+- [x] La carta di scelta è riconoscibile come esito del level-up.
+- [x] La lettura XP → livello → carta è chiara; la cura resta un recupero vita
       parallelo e non un passaggio obbligatorio della sequenza.
 
 ### `tutorial_telegraphs.png`
 
-- [ ] Mostra almeno tre forme di zona pericolosa distinte, per esempio linea,
+- [x] Mostra almeno tre forme di zona pericolosa distinte, per esempio linea,
       anello e area.
-- [ ] Forme, trasparenze e colori sono coerenti con i telegraph runtime.
-- [ ] Nessuna forma viene presentata come il segnale universale dei Boss.
+- [x] Forme, trasparenze e colori sono coerenti con i telegraph runtime.
+- [x] Nessuna forma viene presentata come il segnale universale dei Boss.
 
 ### Comuni
 
-- [ ] I file definitivi sostituiscono i percorsi `fake_*.png` cablati da
+- [x] I file definitivi sostituiscono i percorsi `fake_*.png` cablati da
       PS-048 e i riferimenti nei `.tres` vengono aggiornati.
-- [ ] Nessun `fake_*.png` resta sotto `assets/art/ui/tutorial/`.
-- [ ] Ogni immagine è leggibile nelle catture 1280×720 e Pixel 9 20:9 senza
-      testo microscopico o dettagli essenziali affidati a pochi pixel.
-- [ ] Palette, cornici e pixel density sono coerenti con le altre pagine.
-- [ ] Ogni nuovo file ha una riga in
+- [x] Nessun `fake_*.png` resta sotto `assets/art/ui/tutorial/`.
+- [x] Ogni immagine è leggibile nelle catture 1280×720 e Pixel 9 20:9 senza
+      testo microscopico o dettagli essenziali affidati a pochi pixel — verificato
+      solo a schermo (vedi Gate manuali per la resa reale su Windows/Pixel 9).
+- [x] Palette, cornici e pixel density sono coerenti con le altre pagine.
+- [x] Ogni nuovo file ha una riga in
       `assets/art/ui/tutorial/ASSET-MANIFEST.md` con percorso, origine, autore,
       licenza, trasformazioni e SHA-256; i master HD restano esclusi dagli
       export.
@@ -91,9 +92,14 @@ Non toccare:
 
 - [ ] Runtime Windows
 - [ ] Validazione statica APK — i master HD restano esclusi dai tre preset
+      (verificato solo nel `exclude_filter` di `export_presets.cfg`, non su un
+      APK esportato)
 - [ ] Runtime fisico Pixel 9: pagine 3, 4 e 6 alla scala reale
 - [ ] Controllo percettivo richiesto: sì — le immagini insegnano gli stessi
-      segnali che compaiono nella run
+      segnali che compaiono nella run. Fatta solo una prima lettura dei tre
+      derivati fuori contesto (non nel contenitore tutorial reale, non su
+      device): coerenti fra loro e con i criteri, ma il gate resta aperto
+      finché non vengono viste nel contenitore a scala reale.
 
 ## Decisioni
 
@@ -112,11 +118,29 @@ Non toccare:
   arte nuova solo per ciò che le catture e l'arte esistente non coprono (per
   esempio le forme di zona di `tutorial_telegraphs.png`, che non sono un
   singolo elemento fotografabile).
+- **2026-09-02 — Ogni illustrazione è un composito, non una singola
+  generazione AI.** Solo lo sfondo ambientale è ImageGen (Codex CLI
+  `gpt-image`, `generate_image_set` per uno style guide condiviso); gli
+  elementi che i criteri richiedono fedeli al runtime (disco abilità, cristallo
+  XP, forme di telegraph) sono ridisegnati deterministicamente con
+  Python/Pillow dai valori esatti letti negli script (`touch_ability_button.gd`,
+  `experience_pickup.gd`, `first_boss.gd`) o ritagliati da catture runtime
+  reali. Dettagli, prompt e provenienza completi in
+  `assets/art/ui/tutorial/ASSET-MANIFEST.md`.
+- **2026-09-02 — Profilo `Relevant` non eseguito, per decisione esplicita del
+  proprietario.** Solo il profilo `Focused` su
+  `tests/unit/test_ps048_tutorial_runtime_fidelity.gd` è stato eseguito ed è
+  verde. Registrato come rinuncia operativa, non come evidenza di
+  regressione verificata: se emergono problemi di import o riferimenti
+  incrociati, vanno controllati alla prossima verifica utile del profilo
+  `Relevant`.
 
 ## Documenti sincronizzati
 
-- [ ] `assets/art/ui/tutorial/ASSET-MANIFEST.md`.
-- [ ] `docs/visual-audio-identity.md`, se emerge una convenzione durevole.
+- [x] `assets/art/ui/tutorial/ASSET-MANIFEST.md`.
+- [x] `docs/visual-audio-identity.md` — riga `ui/tutorial` aggiornata con la
+      convenzione "sfondo ImageGen + composizione deterministica di elementi
+      runtime reali".
 
 ## Note
 
