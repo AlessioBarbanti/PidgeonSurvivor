@@ -7,6 +7,10 @@ extends GutGameplayTest
 
 const BOSS_UI_SCENE := preload("res://scenes/ui/boss_ui.tscn")
 const REFERENCE_SIGNATURE := preload("res://data/bosses/signatures/evil_alea_grand_spin.tres")
+const SIGNATURE_CATALOG: BossSignatureCatalog = preload("res://data/bosses/evil_signature_catalog.tres")
+const FRIEND_IDS_WITH_EVIL_VARIANT := [
+	"alea", "aleo", "bea", "lollo", "magno", "marghe", "migi", "zat",
+]
 const ASPECT_PROFILES := [
 	{"name": "16:9", "viewport": Vector2i(1280, 720), "safe_rect": Rect2(20.0, 20.0, 1240.0, 680.0)},
 	{"name": "20:9", "viewport": Vector2i(1600, 720), "safe_rect": Rect2(64.0, 20.0, 1472.0, 680.0)},
@@ -211,3 +215,50 @@ func test_boss_intro_recomposes_gracefully_when_portrait_or_icon_are_missing() -
 	)
 
 	print("BOSS_INTRO_IDENTITY_SMOKE_OK")
+
+
+## PS-052: gli otto ritratti Evil e le otto icone Signature devono risolvere
+## gli asset definitivi prodotti dalla card, non i segnaposto `fake_*.png`
+## cablati da PS-051, e restare tutti distinti fra loro.
+func test_ps052_evil_portraits_and_signature_icons_resolve_definitive_art() -> void:
+	var portrait_paths: Array[String] = []
+	for friend_id in FRIEND_IDS_WITH_EVIL_VARIANT:
+		var friend := load("res://data/friends/%s.tres" % friend_id) as FriendDefinition
+		assert_true(friend != null, "Il friend \"%s\" deve caricarsi." % friend_id)
+		if friend == null:
+			continue
+		assert_true(
+			friend.portraits_approved and friend.evil_portrait != null,
+			"\"%s\" deve avere un evil_portrait approvato per mostrarlo davvero in game." % friend_id
+		)
+		if friend.evil_portrait == null:
+			continue
+		var portrait_path := friend.evil_portrait.resource_path
+		assert_false(
+			portrait_path.contains("fake_"),
+			"\"%s\": evil_portrait deve risolvere l'asset definitivo, non un segnaposto (%s)." % [friend_id, portrait_path]
+		)
+		assert_false(
+			portrait_paths.has(portrait_path),
+			"\"%s\": evil_portrait non deve riusare il file di un altro Evil (%s)." % [friend_id, portrait_path]
+		)
+		portrait_paths.append(portrait_path)
+
+	assert_eq(SIGNATURE_CATALOG.signatures.size(), 8, "Il catalogo Evil deve contenere le otto Signature.")
+	var icon_paths: Array[String] = []
+	for signature in SIGNATURE_CATALOG.signatures:
+		assert_not_null(signature.icon, "La Signature \"%s\" deve avere un'icona valorizzata." % signature.id)
+		if signature.icon == null:
+			continue
+		var icon_path := signature.icon.resource_path
+		assert_false(
+			icon_path.contains("fake_"),
+			"\"%s\": l'icona deve risolvere l'asset definitivo, non un segnaposto (%s)." % [signature.id, icon_path]
+		)
+		assert_false(
+			icon_paths.has(icon_path),
+			"\"%s\": l'icona non deve riusare il file di un'altra Signature (%s)." % [signature.id, icon_path]
+		)
+		icon_paths.append(icon_path)
+
+	print("PS052_EVIL_ART_INTEGRATION_SMOKE_OK")

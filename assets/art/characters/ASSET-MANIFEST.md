@@ -172,13 +172,15 @@ runtime.
 
 ## Parte 2 — Ritratti Evil (PS-052)
 
-### Produzione art-only del 1 settembre 2026
+### Produzione art-only del 1 settembre 2026, integrazione del 2 settembre 2026
 
 Gli otto ritratti definitivi sono stati prodotti in anticipo rispetto
-all'integrazione prevista da PS-052. I file esistono come master HD e derivati
-runtime, ma **non sono referenziati** da `data/friends/*.tres`, scene o script.
-PS-051 e PS-052 mantengono stato, fallback e criteri correnti; l'accettazione
-percettiva del proprietario resta aperta.
+all'integrazione prevista da PS-052. `data/friends/*.tres` referenzia ora
+`<id>/generated/evil_portrait.png` al posto dei segnaposto
+`fake_evil_portrait.png` introdotti da PS-051, rimossi dalle cartelle runtime.
+`evil_portrait_placeholder` resta il fallback dichiarato; l'accettazione
+percettiva del proprietario (silhouette, leggibilità alla dimensione reale
+della Boss intro) resta aperta.
 
 - Origine: OpenAI ImageGen built-in, a partire dalla direzione visuale del cast
   del progetto IL GIOCO.

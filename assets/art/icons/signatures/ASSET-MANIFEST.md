@@ -1,11 +1,12 @@
 # Manifest asset — Icone Signature Evil PS-052
 
-## Produzione art-only del 1 settembre 2026
+## Produzione art-only del 1 settembre 2026, integrazione del 2 settembre 2026
 
 Le otto icone definitive sono state prodotte in anticipo rispetto
-all'integrazione prevista da PS-052. I file esistono come master HD e derivati
-runtime, ma **non sono referenziati** da `data/bosses/signatures/*.tres`, scene o
-script. I valori di gameplay e gli `accent_color` restano invariati;
+all'integrazione prevista da PS-052. `data/bosses/signatures/*.tres`
+referenzia ora `generated/evil_<id>_<signature>.png` al posto dei segnaposto
+`fake_signature_evil_*.png` introdotti da PS-051, rimossi dalle cartelle
+runtime. I valori di gameplay e gli `accent_color` restano invariati;
 l'accettazione percettiva del proprietario resta aperta.
 
 - Origine: OpenAI ImageGen built-in.

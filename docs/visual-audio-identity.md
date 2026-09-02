@@ -63,18 +63,19 @@ del documento architetturale, non una lacuna di questo file.
 | `third_party/eldiran_rpg_characters` | 2 | `LICENSE.md` | Sprite RPG 32×32 CC0, vedi nota sotto |
 | `third_party/pinhead_inline_skate` | 1 | `LICENSE.md` | Provenienza storica, sostituito da `icons/abilities/generated/powerslide.png` |
 
-### Stato dei ritratti Evil nella Boss Intro (PS-051)
+### Stato dei ritratti Evil nella Boss Intro (PS-051, integrato da PS-052)
 
-PS-051 ha dato identità individuale alla Boss Intro degli Evil: ogni
-`data/friends/*.tres` valorizza `evil_portrait` con un segnaposto procedurale
-dedicato (`assets/art/characters/<id>/generated/fake_evil_portrait.png`,
-busto stilizzato tinto con l'`accent_color` della Signature del profilo),
-distinto dal precedente ritaglio condiviso del foglio CC0 di terze parti
+PS-051 ha dato identità individuale alla Boss Intro degli Evil. PS-052 ha
+prodotto e integrato gli asset definitivi: ogni `data/friends/*.tres`
+valorizza `evil_portrait` con il busto dedicato del personaggio
+(`assets/art/characters/<id>/generated/evil_portrait.png`), distinto dal
+precedente ritaglio condiviso del foglio CC0 di terze parti
 (`assets/art/third_party/eldiran_rpg_characters/…png`), che resta solo come
 `evil_portrait_placeholder` di fallback. Ogni `data/bosses/signatures/*.tres`
 espone inoltre un'icona dedicata
-(`assets/art/icons/signatures/generated/fake_signature_<signature_id>.png`)
-tramite il nuovo campo `BossSignatureDefinition.icon`.
+(`assets/art/icons/signatures/generated/evil_<signature_id>.png`) tramite il
+campo `BossSignatureDefinition.icon`. I sedici segnaposto `fake_*.png`
+introdotti da PS-051 sono stati rimossi dalle cartelle runtime.
 
 `BossUI` ([scripts/ui/boss_ui.gd](../scripts/ui/boss_ui.gd)) mostra ritratto e
 icona quando il Boss è un Evil, e tinge nome e cornice con l'`accent_color`
@@ -82,15 +83,9 @@ della Signature (mescolato a bianco per restare leggibile); il Piccione
 Malvagio (`data/bosses/first_boss.tres`) non ha Signature e resta sul
 trattamento neutro, senza slot icona.
 
-Questi sedici `fake_*.png` sono segnaposto dichiaratamente temporanei, non
-registrati come asset finali: producono soltanto ingombro e identità
-cromatica corrette per validare UI e fallback. Otto ritratti e otto icone
-**definitivi** sono già stati prodotti in anticipo dal Pidgeon Survivor Art
-Director (master in `hd/`, derivati in `generated/evil_portrait.png` e
-`generated/evil_<signature_id>.png`) ma restano non integrati: la loro
-sostituzione dei sedici `fake_*.png`, l'aggiornamento dei manifest e
-l'accettazione percettiva del proprietario restano responsabilità di
-[PS-052](../docs/cards/2_to_do/PS-052-genera-ritratti-evil-e-icone-signature.md).
+L'accettazione percettiva del proprietario (silhouette, leggibilità alla
+dimensione reale della Boss intro sul Pixel 9) resta un gate manuale aperto
+su [PS-052](../docs/cards/4_to_test/PS-052-genera-ritratti-evil-e-icone-signature.md).
 
 ## Audio
 
