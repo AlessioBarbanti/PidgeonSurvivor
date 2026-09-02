@@ -97,7 +97,6 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-051](./4_to_test/PS-051-identita-individuale-degli-evil.md) | Dare identità individuale agli Evil nella Boss intro | ux | ui | IN VERIFICA | media | — |
 | [PS-052](./4_to_test/PS-052-genera-ritratti-evil-e-icone-signature.md) | Generare i ritratti Evil e le icone Signature definitivi | art | arte | IN VERIFICA | media | PS-051 |
 | [PS-053](./4_to_test/PS-053-riepilogo-finale-della-run.md) | Trasformare la schermata finale in un riepilogo della run | feat | ui | IN VERIFICA | media | — |
-| [PS-054](./2_to_do/PS-054-presenza-del-personaggio-nel-selettore.md) | Adattare il selettore personaggi al 20:9 | ux | ui | PRONTO | media | — |
 | [PS-055](./1_idea/PS-055-filosofia-della-vittoria.md) | Decidere la filosofia della vittoria fra Survival e Difesa Grigliata | chore | gameplay | DA DEFINIRE | media | — |
 | [PS-056](./2_to_do/PS-056-ducking-e-stinger-nei-momenti-chiave.md) | Aggiungere ducking e stinger su avvertimento Boss, level-up e ricompensa Barb | feat | audio | PRONTO | bassa | — |
 | [PS-057](./4_to_test/PS-057-errori-fisica-su-split-del-piccione-viola.md) | Eliminare gli errori di fisica quando il piccione viola si sdoppia | fix | gameplay | IN VERIFICA | media | — |

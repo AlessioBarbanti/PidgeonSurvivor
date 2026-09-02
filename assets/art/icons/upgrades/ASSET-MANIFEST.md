@@ -51,6 +51,9 @@ pixel-art arcade coerente col Forchettone da Braciere, contorno scuro, carni
 rosso-brune grigliate, osso avorio, scintille ambra, nessun testo, badge,
 cornice, persona, arma da fuoco o oggetto estraneo. Specifiche per carta:
 
+I prompt integrali effettivamente usati e la reference di stile con hash sono
+storicizzati in `docs/archive/generation-prompts-and-references.md`.
+
 - **Colpo Perforante:** un unico spiedino metallico attraversa esattamente tre
   bocconi di carne disossata, in diagonale, con punta e scintille di
   penetrazione leggibili.

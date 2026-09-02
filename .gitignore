@@ -24,17 +24,9 @@ local.properties
 Thumbs.db
 
 #Private
-docs/characters/references/alea/source-01.png
-docs/characters/references/aleo/source-01.png
-docs/characters/references/bea/source-01.png
-docs/characters/references/bea/source-02.png
-docs/characters/references/bea/source-03.png
-docs/characters/references/lollo/source-01.png
-docs/characters/references/magno/source-01.png
-docs/characters/references/marghe/source-01.png
-docs/characters/references/marghe/source-02.png
-docs/characters/references/migi/source-01.png
-docs/characters/references/zat/source-01.png
-docs/characters/references/zat/source-02.png
-docs/characters/references/zat/source-03.png
-docs/characters/references/zat/source-04.png
+# Fotografie originali del cast (mai asset runtime, mai da pushare): ignora
+# ogni cartella per personaggio e qualunque file al suo interno, cosicche'
+# nuove reference non richiedano una riga dedicata. README.md e .gdignore
+# restano tracciati perche' vivono direttamente in references/, non in una
+# sottocartella per personaggio.
+docs/characters/references/*/
