@@ -76,7 +76,8 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.008, 0.005, 0.02, 0.86)
 
-[node name="Center" type="CenterContainer" parent="IntroLayer"]
+[node name="Center" type="MarginContainer" parent="IntroLayer"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -92,6 +93,7 @@ layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_intro_panel")
 
 [node name="VBox" type="VBoxContainer" parent="IntroLayer/Center/IntroPanel"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 18
 

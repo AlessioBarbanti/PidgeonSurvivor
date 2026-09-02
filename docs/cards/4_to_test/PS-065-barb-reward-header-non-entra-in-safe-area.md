@@ -3,12 +3,12 @@ id: PS-065
 titolo: L'header del premio Barb non entra nel rettangolo sicuro a risoluzioni compatte
 tipo: fix
 area: ui
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: [PS-064]
 origine:
 creato: 2026-09-01
-aggiornato: 2026-09-01
+aggiornato: 2026-09-02
 ---
 
 # PS-065 — L'header del premio Barb non entra nel rettangolo sicuro a risoluzioni compatte
@@ -59,17 +59,18 @@ titolo.
 
 ## Criteri di accettazione
 
-- [ ] `test_ps047_upgrade_card_hierarchy.gd` (`BARB_SPECIALITY`,
+- [x] `test_ps047_upgrade_card_hierarchy.gd` (`BARB_SPECIALITY`,
       `BARB_BONUS`) e `test_ps036_barb_reward_visual_identity.gd` tornano
       verdi sulle assert "carta fuori safe area", senza indebolire
-      `LAYOUT_TOLERANCE` né rimuovere il controllo.
-- [ ] Il ritratto di Barb resta riconoscibile: qualunque riduzione visiva va
-      proposta al proprietario per conferma esplicita (stesso precedente di
-      PS-063 per l'icona delle carte upgrade), non decisa qui senza
-      screenshot di conferma.
-- [ ] Nessuna regressione sul contratto di altezza uniforme delle carte
-      (PS-047) né sul minimo di 392px stabilito da PS-063, a meno che il
-      proprietario non scelga esplicitamente di abbassarlo per questo caso.
+      `LAYOUT_TOLERANCE` né rimuovere il controllo. Verificato sui tre
+      profili (16:9, 20:9 cutout, 4:3) coperti da `test_ps036`: tutti verdi
+      senza modifiche a questa card (vedi Decisioni).
+- [x] Il ritratto di Barb resta riconoscibile: **nessuna riduzione è stata
+      necessaria**, quindi non serve una conferma del proprietario su un
+      cambiamento che non è avvenuto.
+- [x] Nessuna regressione sul contratto di altezza uniforme delle carte
+      (PS-047) né sul minimo di 392px stabilito da PS-063: entrambi restano
+      intatti, verificato dagli stessi smoke.
 
 ## Ambito
 
@@ -97,14 +98,17 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico: nessun device disponibile con inset reale sufficiente
-      a riprodurre visivamente lo sconfinamento; verifica principalmente
-      automatica (`safe_area` simulato).
-- [ ] Controllo percettivo richiesto: sì, sul ritratto di Barb dopo
-      qualunque riduzione — chiedere conferma al proprietario prima di
-      considerarla definitiva.
+- [ ] Runtime Windows. **Aperto**: nessun ambiente Windows disponibile in
+      questa sessione (sandbox Linux remoto), solo validazione headless via
+      Godot/GUT.
+- [ ] Validazione statica APK. **Aperto**: non compilato in questa sessione;
+      il fix comunque non tocca asset o preset export.
+- [x] Runtime fisico: non richiesto per questa card — nessuna modifica
+      visiva è stata applicata (vedi Decisioni), quindi non c'è nulla da
+      riprodurre su device oltre a quanto già coperto dagli smoke.
+- [x] Controllo percettivo richiesto: no. Il ritratto di Barb non è stato
+      toccato: la condizione che avrebbe richiesto conferma del proprietario
+      (una riduzione visiva) non si è verificata.
 
 ## Decisioni
 
@@ -112,13 +116,46 @@ Non toccare:
   indipendente (spazio insufficiente, non posizione sbagliata) e la
   soluzione plausibile tocca un asset visivo che richiede una decisione del
   proprietario, non un default tecnico deciso qui.
+- **2026-09-02 — Risolta da PS-067 senza intervento diretto, nessuna
+  riduzione visiva necessaria.** [PS-067](../4_to_test/PS-067-carte-upgrade-e-barb-escono-di-6px-dalla-safe-area.md)
+  ha corretto lo stesso meccanismo di causa alla radice in
+  `barb_reward_overlay.gd`/`upgrade_overlay.gd`: (1) `_reflow_top_margin()`
+  rileggeva `_safe_margins.size`, che il motore forza a crescere oltre il
+  rettangolo assegnato quando il contenuto non ci sta, innescando un loop di
+  auto-inflazione della "safe area" percepita; (2) anche a bordi corretti, il
+  vecchio ramo `min_top if max_top < min_top` ignorava del tutto il margine
+  inferiore quando la clearance HUD e il contenuto non ci stavano insieme.
+  Il fix di PS-067 conserva il rect ricevuto (`_safe_rect`, mai riletto dal
+  nodo) e tratta il contenimento nella safe area come vincolo duro, con la
+  clearance HUD come preferenza morbida che cede quando necessario — la
+  stessa logica generale copre anche il caso Barb più alto (header 148px)
+  descritto da questa card, incluso il profilo 4:3 con carte a 407px di
+  altezza. Rieseguiti `test_ps036_barb_reward_visual_identity.gd` e
+  `test_ps047_upgrade_card_hierarchy.gd` su `HEAD` (dopo PS-067 e PS-052,
+  senza ulteriori modifiche): entrambi verdi su tutti i profili, incluso il
+  caso 4:3 citato nel Contesto. Non è stata necessaria alcuna riduzione del
+  ritratto di Barb, quindi il gate percettivo previsto da questa card non si
+  applica più.
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno finché non è chiaro il contratto risultante.
+- [x] Nessuno atteso: il contratto risultante (contenimento nella safe area
+      come vincolo duro) è già stato sincronizzato da PS-067 dove rilevante;
+      questa card non introduce alcun cambiamento visivo o di contratto
+      proprio.
 
 ## Note
 
 Priorità `media`: lo sconfinamento non è oggi visivamente percepibile alla
 risoluzione reale testata; resta un margine di sicurezza eroso da chiudere,
 non un difetto visivo osservato.
+
+Evidenza di chiusura (2026-09-02), Godot 4.7.1 headless in sandbox Linux:
+
+```
+godot --headless --path . -s addons/gut/gut_cmdln.gd \
+  -gtest=tests/unit/test_ps036_barb_reward_visual_identity.gd,tests/unit/test_ps047_upgrade_card_hierarchy.gd \
+  -gexit
+```
+
+`3/3` e `2/2` test passati, nessun `SCRIPT ERROR`/`FATAL EXCEPTION` nei log.

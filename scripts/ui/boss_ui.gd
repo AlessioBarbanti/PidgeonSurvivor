@@ -12,8 +12,19 @@ const DEFAULT_PANEL_MODULATE := Color(1, 1, 1, 1)
 const ACCENT_TITLE_MIX := 0.34
 const ACCENT_FRAME_MIX := 0.62
 
+# PS-071: separazione preferita fra i blocchi del pannello (ritratto, titolo,
+# citazione, CTA). E' una preferenza morbida: quando il contenuto reale
+# (titolo/citazione più lunghi del solito) non entra nella safe area con
+# questo spacing, si restringe fino al minimo prima di lasciare traboccare
+# il pannello, che è invece un vincolo duro (vedi _reflow_intro_panel_position).
+const VBOX_SEPARATION_PREFERRED := 18
+const VBOX_SEPARATION_MIN := 8
+const VBOX_GAP_COUNT := 4
+
 @onready var _intro_layer: Control = %IntroLayer
+@onready var _intro_position: MarginContainer = %Center
 @onready var _intro_panel: PanelContainer = %IntroPanel
+@onready var _intro_vbox: VBoxContainer = %VBox
 @onready var _portrait_frame: Control = %PortraitFrame
 @onready var _portrait_texture: TextureRect = %PortraitTexture
 @onready var _signature_icon: TextureRect = %SignatureIcon
@@ -32,6 +43,16 @@ func _ready() -> void:
 	if current_style != null:
 		_base_panel_style = current_style.duplicate() as StyleBoxTexture
 		_intro_panel.add_theme_stylebox_override(&"panel", _base_panel_style)
+	# PS-071: `BossUI` è un `Control` semplice (non un `Container`), quindi la
+	# sua `size` riflette sempre il rettangolo assegnato da `SafeAreaRoot`
+	# (la vera safe area) e non viene mai gonfiata dal contenuto del
+	# pannello, a differenza di `%Center` (un `MarginContainer`, che come
+	# ogni `Container` non può riportare una size più piccola della propria
+	# minima). La vecchia `CenterContainer` centrava senza mai contenere:
+	# quando titolo/citazione più lunghi del solito superavano l'altezza
+	# disponibile, il pannello sconfinava dalla safe area.
+	resized.connect(_reflow_intro_panel_position)
+	_reflow_intro_panel_position()
 	reset_presentation()
 
 
@@ -50,7 +71,51 @@ func show_intro(definition: BossDefinition) -> bool:
 	_intro_layer.visible = true
 	_continue_button.disabled = false
 	_continue_button.call_deferred("grab_focus")
+	_reflow_intro_panel_position()
+	# Il testo di titolo/citazione può assestare il proprio wrapping un paio
+	# di frame dopo l'assegnazione (stesso caso di PS-063 sulle carte
+	# upgrade): questa chiamata ricalcola col contenuto vero, altrimenti il
+	# clamp resterebbe basato sull'altezza misurata prima dell'assestamento.
+	_defer_reflow_intro_panel_position()
 	return true
+
+
+func _defer_reflow_intro_panel_position() -> void:
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if is_instance_valid(self) and is_inside_tree():
+		_reflow_intro_panel_position()
+
+
+## PS-071: centra il pannello nel rettangolo di `BossUI` (che coincide con la
+## safe area, vedi `_ready()`), restringendo prima la spaziatura interna fino
+## al minimo consentito se il contenuto reale non ci sta con lo spacing
+## preferito, e azzerando infine i margini di centratura piuttosto che
+## lasciar traboccare il pannello: il contenimento nella safe area è un
+## vincolo duro, la spaziatura e la centratura sono preferenze morbide.
+func _reflow_intro_panel_position() -> void:
+	if (
+		not is_instance_valid(_intro_position)
+		or not is_instance_valid(_intro_panel)
+		or not is_instance_valid(_intro_vbox)
+		or not is_inside_tree()
+	):
+		return
+	_intro_vbox.add_theme_constant_override("separation", VBOX_SEPARATION_PREFERRED)
+	var available := size
+	var content := _intro_panel.get_combined_minimum_size()
+	var deficit_y := content.y - available.y
+	if deficit_y > 0.0:
+		var shrink_per_gap := ceili(deficit_y / VBOX_GAP_COUNT)
+		var separation := maxi(VBOX_SEPARATION_PREFERRED - shrink_per_gap, VBOX_SEPARATION_MIN)
+		_intro_vbox.add_theme_constant_override("separation", separation)
+		content = _intro_panel.get_combined_minimum_size()
+	var margin_x := maxf((available.x - content.x) / 2.0, 0.0)
+	var margin_y := maxf((available.y - content.y) / 2.0, 0.0)
+	_intro_position.add_theme_constant_override("margin_left", int(margin_x))
+	_intro_position.add_theme_constant_override("margin_right", int(margin_x))
+	_intro_position.add_theme_constant_override("margin_top", int(margin_y))
+	_intro_position.add_theme_constant_override("margin_bottom", int(margin_y))
 
 
 func _apply_portrait(portrait: Texture2D) -> void:
