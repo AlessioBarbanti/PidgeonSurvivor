@@ -84,6 +84,16 @@
     },
     {
       "patterns": [
+        "scripts/actors/splitter_enemy.gd",
+        "scenes/actors/splitter_enemy.tscn"
+      ],
+      "smokes": [
+        "tests/unit/test_ps057_splitter_spawn_physics.gd",
+        "tests/unit/test_b40_enemy_archetypes.gd"
+      ]
+    },
+    {
+      "patterns": [
         "scripts/game/wave_event_scheduler.gd",
         "scripts/game/wave_event_definition.gd",
         "scripts/game/wave_event_scheduler_profile.gd",

@@ -35,4 +35,15 @@ func _on_died() -> void:
 	):
 		return
 	for _fragment_index in fragment_count:
-		spawner.spawn_archetype_instance(fragment_definition, spawn_position)
+		# PS-057: la morte arriva sincrona dal flush delle query fisiche
+		# (projectile.try_hit -> take_damage -> died), lo stesso momento in
+		# cui il server fisico rifiuta ogni cambiamento di stato. Aggiungere
+		# subito un frammento alla scena tocca il server fisico fin dentro
+		# add_child() (le sue CollisionShape2D entrano nell'albero) e poi in
+		# _ready() (duplicazione delle shape, abilitazione di Hurtbox e
+		# ContactDamage): differire l'intero spawn al prossimo punto sicuro
+		# elimina la causa alla radice invece di rincorrere ogni singola
+		# chiamata rifiutata. spawn_archetype_instance() resta sincrona per
+		# gli altri chiamanti (wave_event_scheduler.gd ne usa il valore di
+		# ritorno), quindi il rinvio resta qui, non nello spawner.
+		spawner.call_deferred("spawn_archetype_instance", fragment_definition, spawn_position)
