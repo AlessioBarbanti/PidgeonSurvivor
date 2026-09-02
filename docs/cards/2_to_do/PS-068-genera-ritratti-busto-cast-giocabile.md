@@ -1,0 +1,120 @@
+---
+id: PS-068
+titolo: Generare i ritratti busto definitivi del cast giocabile
+tipo: art
+area: arte
+stato: PRONTO
+priorita: media
+dipende_da: []
+origine:
+creato: 2026-09-02
+aggiornato: 2026-09-02
+---
+
+# PS-068 — Generare i ritratti busto definitivi del cast giocabile
+
+## Contesto
+
+Ogni `FriendDefinition` espone un campo `portrait` (busto ravvicinato) distinto
+da `selection_portrait` (arte a figura intera usata oggi nel carosello del
+selettore, derivata dalle pose HD B18U). Per tutti e otto i personaggi
+`portrait` e `portrait_placeholder` puntano ancora allo stesso ritaglio
+`AtlasTexture` dello spritesheet di terze parti CC0 (Eldiran
+`RPGCharacterSprites32x32-transparent.png`), nonostante `portraits_approved`
+sia già `true` in ciascun `.tres`: non esiste quindi un vero ritratto busto
+"buono" per i Player, a differenza degli Evil, che ora hanno un busto
+definitivo prodotto da PS-051/PS-052 con la stessa grammatica pixel-art del
+resto del cast.
+
+## Comportamento atteso
+
+Ogni personaggio giocabile possiede un ritratto busto originale, alla stessa
+qualità e con la stessa griglia di produzione dei ritratti Evil, riconoscibile
+come controparte "buona" dello stesso soggetto e coerente con le pose HD B18U
+già approvate.
+
+## Criteri di accettazione
+
+- [ ] Sono presenti otto ritratti busto: Alea, Aleo, Bea, Lollo, Magno, Marghe,
+      Migi, Zat.
+- [ ] Ogni busto conserva silhouette, acconciatura, corporatura, costume e
+      accessori distintivi già approvati nelle pose HD B18U e nel carosello
+      selezione, senza reinventare l'identità del personaggio.
+- [ ] Gli otto ritratti condividono una sola grammatica di produzione (taglio,
+      inquadratura, outline, palette, trattamento pixel-art), analoga a quella
+      usata per i ritratti Evil, mantenendo comunque leggibile la differenza
+      Player/Evil se i due busti compaiono nello stesso contesto.
+- [ ] Ogni ritratto è leggibile alla dimensione minima prevista dal suo utilizzo
+      runtime (almeno quella del busto Evil in Boss intro).
+- [ ] Nessun ritratto definitivo riusa lo spritesheet CC0 di terze parti
+      (`RPGCharacterSprites32x32-transparent.png`).
+- [ ] `portrait` e `portrait_placeholder` di ciascun `data/friends/<id>.tres`
+      puntano al nuovo busto definitivo; nessuno dei due campi resta legato
+      all'`AtlasTexture` CC0.
+- [ ] `portraits_are_placeholders` viene aggiornato a `false` solo dopo
+      l'accettazione percettiva del proprietario sugli otto busti.
+- [ ] Ogni nuovo file possiede master HD e derivato runtime separati, secondo
+      la struttura `hd/` / `generated/` già in uso per il cast.
+- [ ] Il manifest registra percorso, prompt/origine, autore, licenza,
+      trasformazioni e SHA-256 per ciascun nuovo file; i master HD restano
+      esclusi dai preset export.
+
+## Ambito
+
+- `assets/art/characters/<id>/hd/` e `assets/art/characters/<id>/generated/`,
+  per gli otto personaggi: nuovo file busto Player (nome da scegliere in
+  coerenza con `evil_portrait.png`, per esempio `portrait.png`).
+- `assets/art/characters/ASSET-MANIFEST.md`.
+- `data/friends/*.tres`, solo per i campi `portrait`, `portrait_placeholder`,
+  `portrait_source`, `portraits_are_placeholders` e metadati di
+  approvazione/provenienza.
+
+Non toccare:
+
+- `selection_portrait` (`carousel.png`) e la sua risoluzione nel carosello:
+  resta l'arte a figura intera già approvata; questa card produce un asset
+  aggiuntivo, non la sostituisce.
+- `evil_portrait`, gli asset e i dati Evil (PS-051/PS-052).
+- `scripts/ui/character_select_overlay.gd` e qualunque scena UI: l'eventuale
+  esposizione del nuovo busto nel selettore è oggetto di [PS-069](./PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md).
+- valori di gameplay, passive, abilità attive dei Friend.
+
+## Verifica
+
+- Smoke: estendi `tests/unit/test_friend_definition_portraits.gd` (o crea
+  `tests/unit/test_ps068_friend_portrait_assets.gd` se non esiste un test
+  dedicato) → marker `FRIEND_PORTRAIT_ASSETS_SMOKE_OK` — verifica che tutti gli
+  otto `FriendDefinition` risolvano `portrait`/`portrait_placeholder` su un
+  asset diverso dall'`AtlasTexture` CC0 e che nessun riferimento resti rotto.
+- Profilo minimo prima della chiusura: `Relevant`
+
+## Gate manuali
+
+- [ ] Runtime Windows
+- [ ] Validazione statica APK — master HD esclusi dai tre preset
+- [ ] Runtime fisico Pixel 9: non richiesto da questa card in isolamento,
+      salvo che il busto sia già esposto in una UI esistente
+- [ ] Controllo percettivo richiesto: sì — accettazione del proprietario sugli
+      otto busti e confronto con pose HD, carosello e ritratti Evil
+
+## Decisioni
+
+- **2026-09-02 — Asset aggiuntivo, non sostituzione del carosello.** Il busto
+  ravvicinato è un nuovo asset con proprio scopo (analogo a `evil_portrait`);
+  `selection_portrait` a figura intera resta invariato e continua a essere
+  usato dove già lo è oggi.
+- **2026-09-02 — Nessuna decisione ancora presa su dove il busto verrà
+  mostrato in UI.** La sola integrazione nel selettore personaggi è
+  responsabilità di PS-069, che dipende da questa card.
+
+## Documenti sincronizzati
+
+- [ ] `assets/art/characters/ASSET-MANIFEST.md`.
+- [ ] `docs/visual-audio-identity.md`: ritratti busto Player definitivi.
+- [ ] `docs/characters.md`, se cambia lo stato di approvazione dei ritratti.
+
+## Note
+
+Riusa la stessa pipeline di produzione (master HD trasparente,
+trasformazione deterministica verso il derivato runtime, manifest con hash)
+già rodata per i ritratti Evil in PS-052.
