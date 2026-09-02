@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b7vov72imfmu6"
-path="res://.godot/imported/fake_tutorial_telegraphs.png-88ffcf6a294619e84ae0a14ef84f0aaa.ctex"
+uid="uid://cy5120ve5g8cc"
+path="res://.godot/imported/tutorial_pickups.png-167d04193e96bef331ce0671f2e88031.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/ui/tutorial/generated/fake_tutorial_telegraphs.png"
-dest_files=["res://.godot/imported/fake_tutorial_telegraphs.png-88ffcf6a294619e84ae0a14ef84f0aaa.ctex"]
+source_file="res://assets/art/ui/tutorial/generated/tutorial_pickups.png"
+dest_files=["res://.godot/imported/tutorial_pickups.png-167d04193e96bef331ce0671f2e88031.ctex"]
 
 [params]
 

@@ -617,8 +617,11 @@ secondaria. Apre in `BOOT` un carosello di sei pagine su scopo della run,
 movimento e sparo automatico, abilità attiva, XP e carte, archetipi nemici e
 Boss. Frecce, indicatori, swipe, tastiera/controller e Back condividono un solo
 indice; l'ultima pagina apre il selettore senza creare la run. Copy e visual
-sono dati separati dal layout. Obiettivo, movimento e Boss usano artwork
-editoriali originali dedicati; abilità, progressione e nemici riusano le icone
+sono dati separati dal layout. Obiettivo, movimento, abilità, progressione e
+Boss usano ciascuno un artwork dedicato (obiettivo e movimento come crop di
+una scena illustrata condivisa; abilità, progressione e Boss come
+composizioni fedeli agli elementi HUD/gameplay reali — pulsante abilità,
+XP/cura/carta di scelta, forme di telegraph); solo nemici riusa le icone
 runtime già approvate. Il solo movimento delle visual è presentazionale, non
 usa nodi gameplay o RNG e si ferma fuori dal tutorial; i concetti restano
 comprensibili anche senza animazione, audio o colore. Sulla prima pagina il

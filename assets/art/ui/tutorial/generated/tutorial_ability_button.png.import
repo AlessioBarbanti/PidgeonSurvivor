@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://u6utcwxoox6"
-path="res://.godot/imported/fake_tutorial_ability_button.png-bd47d5c3e5175a949d44ce3a277161e0.ctex"
+uid="uid://dawskfggqwnoq"
+path="res://.godot/imported/tutorial_ability_button.png-bf01626c3977c97c560ebc9ba47be424.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/ui/tutorial/generated/fake_tutorial_ability_button.png"
-dest_files=["res://.godot/imported/fake_tutorial_ability_button.png-bd47d5c3e5175a949d44ce3a277161e0.ctex"]
+source_file="res://assets/art/ui/tutorial/generated/tutorial_ability_button.png"
+dest_files=["res://.godot/imported/tutorial_ability_button.png-bf01626c3977c97c560ebc9ba47be424.ctex"]
 
 [params]
 

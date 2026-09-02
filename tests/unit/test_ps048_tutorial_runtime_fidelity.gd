@@ -1,12 +1,13 @@
 extends GutTest
 
-## PS-048 — Le pagine `ability`, `progression` e `boss` del tutorial devono
-## mostrare esattamente cio' che il testo insegna: il pulsante abilita' reale
-## (non una griglia di icone), i pickup e la carta di scelta reali (non le
-## icone upgrade) e piu' forme di telegraph (non un unico avvertimento
-## universale). Verifica sui dati (`.tres`), non sul rendering: il controllo
-## percettivo resta un gate manuale, dopo che PS-049 avra' sostituito i
-## segnaposto con l'arte definitiva.
+## PS-048/PS-049 — Le pagine `ability`, `progression` e `boss` del tutorial
+## devono mostrare esattamente cio' che il testo insegna: il pulsante
+## abilita' reale (non una griglia di icone), i pickup e la carta di scelta
+## reali (non le icone upgrade) e piu' forme di telegraph (non un unico
+## avvertimento universale). PS-049 ha sostituito i segnaposto `fake_*.png`
+## con l'arte definitiva: questo file verifica sui dati (`.tres`), non sul
+## rendering, che nessuna pagina punti piu' a un segnaposto. Il controllo
+## percettivo resta un gate manuale.
 
 const OBJECTIVE := preload("res://data/tutorial/objective.tres")
 const MOVEMENT := preload("res://data/tutorial/movement.tres")
@@ -20,9 +21,9 @@ const ALL_PAGES: Array[TutorialPageDefinition] = [
 ]
 
 const PLACEHOLDER_PREFIX := "fake_"
-const ABILITY_ARTWORK_PATH := "res://assets/art/ui/tutorial/generated/fake_tutorial_ability_button.png"
-const PROGRESSION_ARTWORK_PATH := "res://assets/art/ui/tutorial/generated/fake_tutorial_pickups.png"
-const BOSS_ARTWORK_PATH := "res://assets/art/ui/tutorial/generated/fake_tutorial_telegraphs.png"
+const ABILITY_ARTWORK_PATH := "res://assets/art/ui/tutorial/generated/tutorial_ability_button.png"
+const PROGRESSION_ARTWORK_PATH := "res://assets/art/ui/tutorial/generated/tutorial_pickups.png"
+const BOSS_ARTWORK_PATH := "res://assets/art/ui/tutorial/generated/tutorial_telegraphs.png"
 
 ## Frasi che dichiarerebbero un'unica forma di telegraph: se il testo Boss ne
 ## contiene una, la card non ha rimosso la promessa di forma unica.
@@ -48,7 +49,7 @@ func test_ability_page_shows_the_real_hud_button_not_a_grid() -> void:
 		return
 	assert_eq(
 		ABILITY.artwork.resource_path, ABILITY_ARTWORK_PATH,
-		"La pagina Abilità deve puntare al segnaposto del pulsante HUD."
+		"La pagina Abilità deve puntare all'illustrazione definitiva del pulsante HUD."
 	)
 	assert_true(
 		ABILITY.showcase_textures.is_empty(),
@@ -62,7 +63,7 @@ func test_progression_page_shows_real_pickups_not_upgrade_icons() -> void:
 		return
 	assert_eq(
 		PROGRESSION.artwork.resource_path, PROGRESSION_ARTWORK_PATH,
-		"La pagina Potenziamenti deve puntare al segnaposto di XP, cura e carta."
+		"La pagina Potenziamenti deve puntare all'illustrazione definitiva di XP, cura e carta."
 	)
 	assert_true(
 		PROGRESSION.showcase_textures.is_empty(),
@@ -76,7 +77,7 @@ func test_boss_page_shows_multiple_telegraph_shapes() -> void:
 		return
 	assert_eq(
 		BOSS.artwork.resource_path, BOSS_ARTWORK_PATH,
-		"La pagina Boss deve puntare al segnaposto con linea, anello e area."
+		"La pagina Boss deve puntare all'illustrazione definitiva con linea, anello e area."
 	)
 
 
@@ -94,16 +95,31 @@ func test_boss_page_text_teaches_the_principle_not_a_single_shape() -> void:
 		)
 
 
-func test_placeholders_are_explicitly_marked_fake() -> void:
-	for path: String in [ABILITY_ARTWORK_PATH, PROGRESSION_ARTWORK_PATH, BOSS_ARTWORK_PATH]:
-		var file_name: String = path.get_file()
-		assert_true(
-			file_name.begins_with(PLACEHOLDER_PREFIX),
-			"%s deve restare riconoscibile come segnaposto non definitivo." % file_name
-		)
+## PS-049: nessuna pagina del tutorial deve piu' puntare a un segnaposto
+## `fake_*.png`, ne' tramite `artwork` ne' tramite `showcase_textures`.
+func test_no_page_references_a_fake_placeholder() -> void:
+	for page in ALL_PAGES:
+		if page == null:
+			continue
+		if page.artwork != null:
+			var artwork_file: String = page.artwork.resource_path.get_file()
+			assert_false(
+				artwork_file.begins_with(PLACEHOLDER_PREFIX),
+				"%s: artwork non deve piu' essere un segnaposto (%s)." % [page.id, artwork_file]
+			)
+		for texture in page.showcase_textures:
+			if texture == null:
+				continue
+			var showcase_file: String = texture.resource_path.get_file()
+			assert_false(
+				showcase_file.begins_with(PLACEHOLDER_PREFIX),
+				"%s: showcase_textures non deve piu' contenere un segnaposto (%s)." % [
+					page.id, showcase_file,
+				]
+			)
 
 
-func test_placeholder_textures_load_and_have_final_composition_size() -> void:
+func test_final_artwork_textures_load_and_have_final_composition_size() -> void:
 	for path: String in [ABILITY_ARTWORK_PATH, PROGRESSION_ARTWORK_PATH, BOSS_ARTWORK_PATH]:
 		var texture := load(path) as Texture2D
 		assert_true(texture != null, "%s deve esistere e caricarsi come texture." % path)
