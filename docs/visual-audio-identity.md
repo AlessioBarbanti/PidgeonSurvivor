@@ -53,7 +53,7 @@ del documento architetturale, non una lacuna di questo file.
 | `icons/enemies` | 8 | [ASSET-MANIFEST.md](../assets/art/icons/enemies/ASSET-MANIFEST.md) | B49: **non ancora assegnate al runtime** |
 | `arena` (`hd/`, `generated/`) | 15 | [ASSET-MANIFEST.md](../assets/art/arena/ASSET-MANIFEST.md) | Sfondo pavimento arena |
 | `vfx/projectiles` | 4 | in `vfx/ASSET-MANIFEST.md` | |
-| `ui/tutorial` | 4 | [ASSET-MANIFEST.md](../assets/art/ui/tutorial/ASSET-MANIFEST.md) | |
+| `ui/tutorial` | 10 | [ASSET-MANIFEST.md](../assets/art/ui/tutorial/ASSET-MANIFEST.md) | PS-049: ability/pickups/telegraphs, sfondo ImageGen + composizione deterministica di elementi runtime reali |
 | `ui/welcome` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/welcome/ASSET-MANIFEST.md) | Fondale welcome B18O |
 | `ui/barb_reward` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/barb_reward/ASSET-MANIFEST.md) | Caricatura Barb (PS-036), da foto personale non conservata nel repo |
 | `ui/pause` | 2 | [ASSET-MANIFEST.md](../assets/art/ui/pause/ASSET-MANIFEST.md) | Cornice riusata da pausa, cambio personaggio, tutorial, terminale, intro Boss |
@@ -63,22 +63,34 @@ del documento architetturale, non una lacuna di questo file.
 | `third_party/eldiran_rpg_characters` | 2 | `LICENSE.md` | Sprite RPG 32×32 CC0, vedi nota sotto |
 | `third_party/pinhead_inline_skate` | 1 | `LICENSE.md` | Provenienza storica, sostituito da `icons/abilities/generated/powerslide.png` |
 
-### Discrepanza osservata: ritratto Boss ancora sul placeholder generico
+### Stato dei ritratti Evil nella Boss Intro (PS-051)
 
-Tutti gli otto `data/friends/*.tres` impostano `portrait`/`evil_portrait`
-come ritaglio dello stesso foglio generico CC0 di terze parti
-(`assets/art/third_party/eldiran_rpg_characters/…png`), identico al
-`portrait_placeholder`/`evil_portrait_placeholder`, nonostante
-`portraits_approved = true`. `FriendDefinition.get_public_portrait()` e
-`get_public_evil_portrait()`
-([scripts/content/friend_definition.gd:241-258](../scripts/content/friend_definition.gd))
-restituiscono comunque questo valore quando "approvato", ed è quello che
-`BossDefinition.get_safe_portrait()` usa per il ritratto `Evil <Nome>`
-mostrato in run. Sprite di gioco, ritratto di selezione personaggio e icona
-passiva usano invece asset bespoke — è **solo il ritratto Boss** a restare
-sul placeholder generico. Segnalato qui come stato osservato; non è
-un'azione di questa card (solo documentazione, nessuna modifica ad asset o
-codice).
+PS-051 ha dato identità individuale alla Boss Intro degli Evil: ogni
+`data/friends/*.tres` valorizza `evil_portrait` con un segnaposto procedurale
+dedicato (`assets/art/characters/<id>/generated/fake_evil_portrait.png`,
+busto stilizzato tinto con l'`accent_color` della Signature del profilo),
+distinto dal precedente ritaglio condiviso del foglio CC0 di terze parti
+(`assets/art/third_party/eldiran_rpg_characters/…png`), che resta solo come
+`evil_portrait_placeholder` di fallback. Ogni `data/bosses/signatures/*.tres`
+espone inoltre un'icona dedicata
+(`assets/art/icons/signatures/generated/fake_signature_<signature_id>.png`)
+tramite il nuovo campo `BossSignatureDefinition.icon`.
+
+`BossUI` ([scripts/ui/boss_ui.gd](../scripts/ui/boss_ui.gd)) mostra ritratto e
+icona quando il Boss è un Evil, e tinge nome e cornice con l'`accent_color`
+della Signature (mescolato a bianco per restare leggibile); il Piccione
+Malvagio (`data/bosses/first_boss.tres`) non ha Signature e resta sul
+trattamento neutro, senza slot icona.
+
+Questi sedici `fake_*.png` sono segnaposto dichiaratamente temporanei, non
+registrati come asset finali: producono soltanto ingombro e identità
+cromatica corrette per validare UI e fallback. Otto ritratti e otto icone
+**definitivi** sono già stati prodotti in anticipo dal Pidgeon Survivor Art
+Director (master in `hd/`, derivati in `generated/evil_portrait.png` e
+`generated/evil_<signature_id>.png`) ma restano non integrati: la loro
+sostituzione dei sedici `fake_*.png`, l'aggiornamento dei manifest e
+l'accettazione percettiva del proprietario restano responsabilità di
+[PS-052](../docs/cards/2_to_do/PS-052-genera-ritratti-evil-e-icone-signature.md).
 
 ## Audio
 

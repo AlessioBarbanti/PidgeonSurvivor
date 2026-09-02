@@ -26,7 +26,8 @@
         "tests/unit/test_ps003_zat_delayed_healing.gd",
         "tests/unit/test_ps004_zat_thunder_charge.gd",
         "tests/unit/test_ps006_evil_signature_abilities.gd",
-        "tests/unit/test_ps041_magno_trail_reset_redraw.gd"
+        "tests/unit/test_ps041_magno_trail_reset_redraw.gd",
+        "tests/unit/test_ps051_boss_intro_identity.gd"
       ]
     },
     {
@@ -43,7 +44,8 @@
         "tests/unit/test_b33_recurring_boss.gd",
         "tests/unit/test_b38_arena_world.gd",
         "tests/unit/test_ps006_evil_signature_abilities.gd",
-        "tests/unit/test_ps026_boss_baseline_display_name.gd"
+        "tests/unit/test_ps026_boss_baseline_display_name.gd",
+        "tests/unit/test_ps051_boss_intro_identity.gd"
       ]
     },
     {
@@ -292,7 +294,8 @@
         "tests/unit/test_ps036_barb_reward_visual_identity.gd",
         "tests/unit/test_ps046_level_up_modal_isolation.gd",
         "tests/unit/test_ps047_upgrade_card_hierarchy.gd",
-        "tests/unit/test_ps059_upgrade_modal_contrast.gd"
+        "tests/unit/test_ps059_upgrade_modal_contrast.gd",
+        "tests/unit/test_ps051_boss_intro_identity.gd"
       ]
     },
     {
@@ -374,11 +377,13 @@
     {
       "patterns": [
         "scenes/actors/boss_decoy.tscn",
-        "data/bosses/signatures/*"
+        "data/bosses/signatures/*",
+        "assets/art/icons/signatures/*"
       ],
       "smokes": [
         "tests/unit/test_ps006_evil_signature_abilities.gd",
-        "tests/unit/test_b22_evil_boss_variants.gd"
+        "tests/unit/test_b22_evil_boss_variants.gd",
+        "tests/unit/test_ps051_boss_intro_identity.gd"
       ]
     },
     {

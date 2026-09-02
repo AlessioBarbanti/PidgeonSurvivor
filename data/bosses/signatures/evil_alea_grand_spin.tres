@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="BossSignatureDefinition" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="BossSignatureDefinition" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/bosses/boss_signature_definition.gd" id="1_signature"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/signatures/generated/fake_signature_evil_alea_grand_spin.png" id="2_icon"]
 
 [resource]
 script = ExtResource("1_signature")
@@ -15,3 +16,4 @@ area_radius = 120.0
 damage = 9.0
 effect_parameters = {"hits_per_second": 2.0, "chase_speed": 128.0, "turn_rate": 1.15}
 accent_color = Color(1, 0.34, 0.72, 0.8)
+icon = ExtResource("2_icon")

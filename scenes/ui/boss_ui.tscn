@@ -86,6 +86,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="IntroPanel" type="PanelContainer" parent="IntroLayer/Center"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(620, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_intro_panel")
@@ -93,6 +94,39 @@ theme_override_styles/panel = SubResource("StyleBoxTexture_intro_panel")
 [node name="VBox" type="VBoxContainer" parent="IntroLayer/Center/IntroPanel"]
 layout_mode = 2
 theme_override_constants/separation = 18
+
+[node name="PortraitFrame" type="Control" parent="IntroLayer/Center/IntroPanel/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(112, 112)
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="PortraitTexture" type="TextureRect" parent="IntroLayer/Center/IntroPanel/VBox/PortraitFrame"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SignatureIcon" type="TextureRect" parent="IntroLayer/Center/IntroPanel/VBox/PortraitFrame"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -36.0
+offset_top = -36.0
+grow_horizontal = 0
+grow_vertical = 0
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Caption" type="Label" parent="IntroLayer/Center/IntroPanel/VBox"]
 layout_mode = 2

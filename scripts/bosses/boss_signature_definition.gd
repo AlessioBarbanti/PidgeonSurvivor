@@ -53,6 +53,9 @@ const MINIMUM_POSITIVE_VALUE := 0.001
 ## Tinta del telegraph e dell'area: distingue la Signature dai pattern Boss
 ## comuni, che usano `BossDefinition.telegraph_color`.
 @export var accent_color := Color(1.0, 0.42, 0.16, 0.78)
+## Icona mostrata nella Boss Intro Evil (PS-051). Puo' restare `null`: la UI
+## nasconde semplicemente lo slot invece di mostrare una texture nulla.
+@export var icon: Texture2D
 
 
 func get_effect_float(

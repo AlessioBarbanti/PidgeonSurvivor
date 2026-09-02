@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="FriendDefinition" load_steps=11 format=3]
+[gd_resource type="Resource" script_class="FriendDefinition" load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/content/friend_definition.gd" id="1_definition"]
 [ext_resource type="Texture2D" path="res://assets/art/third_party/eldiran_rpg_characters/RPGCharacterSprites32x32-transparent.png" id="2_sheet"]
 [ext_resource type="Texture2D" path="res://assets/art/characters/zat/generated/sprite.png" id="3_gameplay"]
 [ext_resource type="Texture2D" path="res://assets/art/characters/zat/generated/carousel.png" id="4_selection"]
 [ext_resource type="Texture2D" path="res://assets/art/icons/passives/generated/zat_delayed_healing.png" id="5_passive"]
+[ext_resource type="Texture2D" path="res://assets/art/characters/zat/generated/fake_evil_portrait.png" id="6_evil_fake"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_portrait"]
 atlas = ExtResource("2_sheet")
@@ -53,7 +54,7 @@ base_move_speed_multiplier = 0.95
 base_fire_rate_multiplier = 1.0
 evil_display_name = "Evil Zat"
 portrait = SubResource("AtlasTexture_portrait")
-evil_portrait = SubResource("AtlasTexture_evil")
+evil_portrait = ExtResource("6_evil_fake")
 portrait_placeholder = SubResource("AtlasTexture_portrait")
 evil_portrait_placeholder = SubResource("AtlasTexture_evil")
 portrait_source = "Eldiran, 32x32 RPG Character Sprites, CC0 1.0"

@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="BossSignatureDefinition" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="BossSignatureDefinition" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/bosses/boss_signature_definition.gd" id="1_signature"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/signatures/generated/fake_signature_evil_magno_telluric_shockwave.png" id="2_icon"]
 
 [resource]
 script = ExtResource("1_signature")
@@ -15,3 +16,4 @@ area_radius = 420.0
 damage = 22.0
 effect_parameters = {"expansion_speed": 260.0, "front_thickness": 54.0, "knockback_force": 420.0, "knockback_seconds": 0.22}
 accent_color = Color(1, 0.62, 0.16, 0.82)
+icon = ExtResource("2_icon")

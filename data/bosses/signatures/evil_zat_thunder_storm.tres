@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="BossSignatureDefinition" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="BossSignatureDefinition" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/bosses/boss_signature_definition.gd" id="1_signature"]
+[ext_resource type="Texture2D" path="res://assets/art/icons/signatures/generated/fake_signature_evil_zat_thunder_storm.png" id="2_icon"]
 
 [resource]
 script = ExtResource("1_signature")
@@ -15,3 +16,4 @@ area_radius = 300.0
 damage = 16.0
 effect_parameters = {"medium_tier_threshold": 0.2, "high_tier_threshold": 0.5, "medium_tier_multiplier": 2.0, "high_tier_multiplier": 3.0, "aura_rotation_speed": 1.4}
 accent_color = Color(0.62, 0.86, 1, 0.85)
+icon = ExtResource("2_icon")

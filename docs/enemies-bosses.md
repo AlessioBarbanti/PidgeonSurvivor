@@ -114,6 +114,29 @@ Profili confermati (uno-a-uno con `data/bosses/signatures/*.tres`): Alea,
 Aleo, Bea, Lollo, Magno, Marghe, Migi, Zat — vedi
 [characters.md](./characters.md) per identità e ruolo di ciascuno.
 
+### Boss Intro: identità individuale (PS-051)
+
+`BossUI.show_intro()` ([scripts/ui/boss_ui.gd](../scripts/ui/boss_ui.gd))
+distingue le due varianti invece di mostrare soltanto titolo, citazione e CTA:
+
+- **Piccione Malvagio**: mostra il proprio `portrait`
+  (`BossDefinition.get_safe_portrait()`), nessuna icona Signature (non ha
+  Signature) e nessun trattamento cromatico personale — titolo e cornice
+  restano sul colore neutro.
+- **`Evil <Nome>`**: mostra il ritratto risolto dal `FriendDefinition`
+  (`friend_profile.get_public_evil_portrait()`), l'icona della Signature
+  attiva (`BossSignatureDefinition.icon`) e tinge nome e cornice con
+  l'`accent_color` della Signature, mescolato a bianco per restare leggibile.
+
+Ritratto, icona o Signature mancanti fanno ricomporre la intro sugli elementi
+restanti (slot nascosto, mai una texture nulla visibile o uno spazio vuoto
+dedicato). La CTA "AFFRONTA" non cambia mai stile o colore in base al Boss. I
+sedici asset coinvolti (otto `evil_portrait`, otto icone Signature) sono
+segnaposto procedurali temporanei — stato dettagliato in
+[visual-audio-identity.md](./visual-audio-identity.md); la sostituzione
+definitiva è compito di
+[PS-052](./cards/2_to_do/PS-052-genera-ritratti-evil-e-icone-signature.md).
+
 ### Signature Ability per profilo
 
 Una sola Signature per profilo Evil, associata via `friend_id`
