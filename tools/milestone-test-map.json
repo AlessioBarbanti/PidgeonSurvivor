@@ -6,7 +6,6 @@
         "project.godot",
         "export_presets.cfg"
       ],
-      "run_all": true,
       "smokes": []
     },
     {

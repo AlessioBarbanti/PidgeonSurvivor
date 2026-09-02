@@ -44,14 +44,14 @@ simulare o restringere il checkpoint si possono passare più percorsi:
 
 Le associazioni vivono in `tools/milestone-test-map.json` (ogni riga `smokes`
 elenca path `tests/unit/test_*.gd`). File solo documentali e master in
-cartelle `hd` non avviano regressioni runtime; una modifica runtime
-sconosciuta fa invece scattare l'intera suite, in modo conservativo.
+cartelle `hd` non avviano regressioni runtime. Un path runtime senza regola
+nel manifest **non** fa più scattare l'intera suite: `Relevant` resta un
+checkpoint delimitato, il path viene solo segnalato a schermo come privo di
+regressioni automatiche. Copertura completa per quel path si ottiene con
+`-RegressionSmoke` esplicito o con un profilo `Full`/`Release`.
 
 «Solo documentali» include i `.md` e i `.txt` **ovunque**, anche dentro
-`assets/`: un `ASSET-MANIFEST.md` descrive gli asset, non è un asset. Prima
-finiva fra le path runtime non mappate e faceva scattare il fallback
-`run_all`, cioè ogni card che aggiornava la propria documentazione pagava un
-`Full` invece di un checkpoint.
+`assets/`: un `ASSET-MANIFEST.md` descrive gli asset, non è un asset.
 
 `Focused` seleziona per contenuto: grep sul testo del file cercando
 `\b<MILESTONE>\b` (case-sensitive). La maggior parte dei test cita la propria

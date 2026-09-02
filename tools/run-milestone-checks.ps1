@@ -263,9 +263,9 @@ function Test-IsRuntimePath {
     }
     # Un manifest, un README o un .gdignore dentro assets/ descrivono gli
     # asset, non sono asset: senza questa esclusione una card che aggiorna la
-    # propria documentazione finisce fra le path runtime non mappate e fa
-    # scattare il fallback run_all, cioe' un Relevant costa quanto un Full
-    # (PS-023).
+    # propria documentazione finisce fra le path runtime non mappate e viene
+    # segnalata come priva di regola, anche se non ha alcuna regressione da
+    # coprire (PS-023).
     if (
         $normalized -match '\.(md|txt)$' -or
         $normalized -match '(^|/)\.gdignore$'
@@ -288,7 +288,6 @@ function Find-RelevantSmokes {
     $map = Get-Content -LiteralPath $resolvedMap -Raw -Encoding UTF8 | ConvertFrom-Json
     $selected = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
     $unmatchedRuntime = [Collections.Generic.List[string]]::new()
-    $runAll = $false
 
     foreach ($changed in $Paths) {
         $normalized = $changed.Replace('\', '/')
@@ -319,12 +318,6 @@ function Find-RelevantSmokes {
                 continue
             }
             $matched = $true
-            if (
-                $rule.PSObject.Properties.Name -contains 'run_all' -and
-                [bool]$rule.run_all
-            ) {
-                $runAll = $true
-            }
             foreach ($smoke in @($rule.smokes)) {
                 $selected.Add([string]$smoke) | Out-Null
             }
@@ -334,10 +327,20 @@ function Find-RelevantSmokes {
         }
     }
 
-    if ($runAll -or $unmatchedRuntime.Count -gt 0) {
-        foreach ($test in Get-AllGutTests) {
-            $selected.Add($test) | Out-Null
+    # Relevant resta un checkpoint delimitato: un path runtime senza regola
+    # in $MapPath non fa piu' scattare l'intera suite (troppo lento per un
+    # checkpoint frequente). Viene solo segnalato, cosi' chi lancia il runner
+    # sa che quel path non ha regressioni automatiche e puo' aggiungerle a
+    # mano con -RegressionSmoke o coprirle con un profilo Full.
+    if ($unmatchedRuntime.Count -gt 0) {
+        $preview = ($unmatchedRuntime | Select-Object -First 8) -join ', '
+        if ($unmatchedRuntime.Count -gt 8) {
+            $preview += ", ... (+$($unmatchedRuntime.Count - 8) altri)"
         }
+        Write-Host (
+            "... relevant: $($unmatchedRuntime.Count) path runtime senza regola in $MapPath, " +
+            "nessuna regressione automatica per questi path. Path: $preview"
+        )
     }
     return @($selected | Sort-Object)
 }
@@ -886,6 +889,38 @@ function Get-StepDisplayStatus {
     return $Step.status
 }
 
+# Diagnostica di avanzamento: Write-Host, non Write-Output, per non
+# inquinare lo stdout letto da -AsJson (stesso pattern del batch GUT sotto).
+function Write-StepStart {
+    param([Parameter(Mandatory)][string]$Message)
+
+    Write-Host "==> $Message"
+}
+
+function Write-StepDone {
+    param(
+        [Parameter(Mandatory)][string]$Message,
+        [Parameter(Mandatory)][object]$Step
+    )
+
+    Write-Host (
+        '<== {0}: {1} ({2} ms)' -f $Message, (Get-StepDisplayStatus -Step $Step), $Step.duration_ms
+    )
+}
+
+# Heartbeat generico per gli step non-GUT (refresh editor, toolchain, export,
+# ispezione): senza, uno step lungo che non stampa nulla per conto suo e'
+# indistinguibile da un blocco.
+function New-GenericProgressAction {
+    param([Parameter(Mandatory)][string]$Label)
+
+    return {
+        param([TimeSpan]$Elapsed, [object]$Lines)
+        $lastLine = if ($Lines.Count -gt 0) { $Lines[-1] } else { '(nessun output ancora)' }
+        Write-Host ('... {0} vivo da {1:hh\:mm\:ss}: {2}' -f $Label, $Elapsed, $lastLine)
+    }.GetNewClosure()
+}
+
 function Write-RunnerOutput {
     param(
         [Parameter(Mandatory)]
@@ -1020,6 +1055,13 @@ $plan = [ordered]@{
     cache_enabled = $cacheEnabled
 }
 
+Write-Host (
+    "==> piano $Milestone/${Profile}: focused=$($FocusedSmoke.Count) regression=$($RegressionSmoke.Count) " +
+    "refresh_editor=$($plan.refresh_editor) toolchain=$($plan.run_toolchain) " +
+    "project_smoke=$($plan.run_project_smoke) export_windows=$($plan.export_windows) " +
+    "export_android=$($plan.export_android) cache=$($plan.cache_enabled)"
+)
+
 if ($PlanOnly) {
     if ($AsJson) {
         $plan | ConvertTo-Json -Depth 8 -Compress
@@ -1051,23 +1093,31 @@ try {
     $runtimeHash = Get-CombinedRepositoryHash -Paths @(Get-RepositoryRuntimeFiles)
 
     if ($RefreshEditor) {
+        Write-StepStart 'refresh-editor'
         $refreshResult = Invoke-CapturedProcess -FilePath $godot -Arguments @(
             '--headless', '--editor', '--path', $repoRoot, '--quit'
-        ) -WorkingDirectory $repoRoot
-        Add-ProcessStep -Name 'refresh-editor' -Category 'bootstrap' -ProcessResult $refreshResult | Out-Null
+        ) -WorkingDirectory $repoRoot -ProgressIntervalSeconds 30 `
+            -ProgressAction (New-GenericProgressAction -Label 'refresh-editor')
+        $refreshStep = Add-ProcessStep -Name 'refresh-editor' -Category 'bootstrap' -ProcessResult $refreshResult
+        Write-StepDone -Message 'refresh-editor' -Step $refreshStep
     }
 
     if (-not $halted) {
+        Write-StepStart "focused: $($FocusedSmoke.Count) test GUT"
         Invoke-GutBatch -Category 'focused' -TestPaths $FocusedSmoke -GodotPath $godot `
             -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion | Out-Null
+        Write-Host "<== focused: $(Get-CategorySummary -Category 'focused')"
     }
 
     if (-not $halted) {
+        Write-StepStart "regression: $($RegressionSmoke.Count) test GUT"
         Invoke-GutBatch -Category 'regression' -TestPaths $RegressionSmoke -GodotPath $godot `
             -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion | Out-Null
+        Write-Host "<== regression: $(Get-CategorySummary -Category 'regression')"
     }
 
     if ($RunToolchain -and -not $halted) {
+        Write-StepStart 'toolchain: verify-toolchain.ps1'
         $shellPath = (Get-Process -Id $PID).Path
         $toolchainArguments = @(
             '-NoProfile',
@@ -1078,8 +1128,10 @@ try {
             $toolchainArguments += '-RunProjectSmoke'
         }
         $toolchainResult = Invoke-CapturedProcess -FilePath $shellPath `
-            -Arguments $toolchainArguments -WorkingDirectory $repoRoot
-        Add-ProcessStep -Name 'toolchain' -Category 'toolchain' -ProcessResult $toolchainResult | Out-Null
+            -Arguments $toolchainArguments -WorkingDirectory $repoRoot `
+            -ProgressIntervalSeconds 30 -ProgressAction (New-GenericProgressAction -Label 'toolchain')
+        $toolchainStep = Add-ProcessStep -Name 'toolchain' -Category 'toolchain' -ProcessResult $toolchainResult
+        Write-StepDone -Message 'toolchain' -Step $toolchainStep
     }
 
     if ($ExportWindows -and -not $halted) {
@@ -1096,22 +1148,28 @@ try {
                 -Category 'windows' -CacheEntry $cachedWindows
         }
         else {
+            Write-StepStart 'windows-export'
             $windowsExportResult = Invoke-CapturedProcess -FilePath $godot -Arguments @(
                 '--headless', '--path', $repoRoot,
                 '--export-debug', 'Windows Desktop', $windowsPath
-            ) -WorkingDirectory $repoRoot -TimeoutSeconds $ExportTimeoutSeconds
+            ) -WorkingDirectory $repoRoot -TimeoutSeconds $ExportTimeoutSeconds `
+                -ProgressIntervalSeconds 30 -ProgressAction (New-GenericProgressAction -Label 'windows-export')
             $windowsExportStep = Add-ProcessStep -Name 'windows-export' -Category 'windows' `
                 -ProcessResult $windowsExportResult
+            Write-StepDone -Message 'windows-export' -Step $windowsExportStep
             Save-CachedStep -Key $windowsCacheKey -InputHash $windowsInputHash `
                 -Step $windowsExportStep -ArtifactPath $windowsPath
         }
 
         if ($windowsExportStep.status -ne 'FAIL' -and -not $halted) {
+            Write-StepStart 'windows-runtime'
             $windowsRuntimeResult = Invoke-CapturedProcess -FilePath $windowsPath -Arguments @(
                 '--resolution', '1280x720', '--', '--smoke-test', '--run-seed=1'
-            ) -WorkingDirectory $repoRoot -TimeoutSeconds $RuntimeTimeoutSeconds
-            Add-ProcessStep -Name 'windows-runtime' -Category 'windows' `
-                -ProcessResult $windowsRuntimeResult -RequireSmokeMarker | Out-Null
+            ) -WorkingDirectory $repoRoot -TimeoutSeconds $RuntimeTimeoutSeconds `
+                -ProgressIntervalSeconds 30 -ProgressAction (New-GenericProgressAction -Label 'windows-runtime')
+            $windowsRuntimeStep = Add-ProcessStep -Name 'windows-runtime' -Category 'windows' `
+                -ProcessResult $windowsRuntimeResult -RequireSmokeMarker
+            Write-StepDone -Message 'windows-runtime' -Step $windowsRuntimeStep
         }
     }
 
@@ -1148,14 +1206,17 @@ try {
                 -Category 'android' -CacheEntry $cachedAndroid
         }
         else {
+            Write-StepStart 'android-export'
             $androidExportResult = Invoke-CapturedProcess -FilePath $godot `
                 -Arguments $androidExportArguments.ToArray() `
                 -WorkingDirectory $repoRoot -TimeoutSeconds $ExportTimeoutSeconds `
                 -StableArtifactPath $androidPath `
                 -StableArtifactSeconds $AndroidArtifactStableSeconds `
-                -CompletionPattern $androidExportCompletionPattern
+                -CompletionPattern $androidExportCompletionPattern `
+                -ProgressIntervalSeconds 30 -ProgressAction (New-GenericProgressAction -Label 'android-export')
             $androidExportStep = Add-ProcessStep -Name 'android-export' -Category 'android' `
                 -ProcessResult $androidExportResult -DoNotHalt
+            Write-StepDone -Message 'android-export' -Step $androidExportStep
         }
 
         # Runs after the export, once gradle.properties is guaranteed to
@@ -1183,6 +1244,7 @@ try {
     }
 
     if ($InspectAndroid -and (-not $halted -or $null -ne $androidExportStep)) {
+        Write-StepStart 'android-static'
         $shellPath = (Get-Process -Id $PID).Path
         $inspectResult = Invoke-CapturedProcess -FilePath $shellPath -Arguments @(
             '-NoProfile',
@@ -1190,9 +1252,11 @@ try {
             '-File', (Join-Path $repoRoot 'tools\inspect-android-artifact.ps1'),
             '-ApkPath', $androidPath,
             '-AsJson'
-        ) -WorkingDirectory $repoRoot
+        ) -WorkingDirectory $repoRoot `
+            -ProgressIntervalSeconds 30 -ProgressAction (New-GenericProgressAction -Label 'android-static')
         $inspectStep = Add-ProcessStep -Name 'android-static' -Category 'android' `
             -ProcessResult $inspectResult -DoNotHalt
+        Write-StepDone -Message 'android-static' -Step $inspectStep
         try {
             $androidInspection = $inspectResult.Output | ConvertFrom-Json
         }

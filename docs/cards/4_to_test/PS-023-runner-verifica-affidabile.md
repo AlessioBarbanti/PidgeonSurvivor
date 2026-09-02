@@ -8,7 +8,7 @@ priorita: alta
 dipende_da: []
 origine:
 creato: 2026-08-30
-aggiornato: 2026-08-30
+aggiornato: 2026-09-02
 ---
 
 # PS-023 — Rendi leggibile e non bloccante il runner di verifica
@@ -69,11 +69,24 @@ bloccare la sessione. `Relevant` esegue le regressioni pertinenti, non tutte.
 - [x] Una modifica a soli file documentali (`*.md`, manifest degli asset) non
       fa scattare `run_all`; `Relevant` su una card che tocca un solo script
       esegue le regressioni mappate, non l'intera suite.
+- [x] Il fallback `run_all` è rimosso anche per i path runtime effettivi senza
+      regola nella mappa: `Relevant` non degenera più in suite completa in
+      quel caso, il path viene solo segnalato a schermo come privo di
+      regressioni automatiche mappate. Copertura completa resta disponibile
+      con `-RegressionSmoke` esplicito o un profilo `Full`/`Release`.
+- [x] Gli step non-GUT (refresh editor, toolchain, export Windows/Android,
+      ispezione statica APK) emettono anch'essi inizio/fine con esito e
+      durata, e una riga di avanzamento periodica mentre sono in corso, non
+      solo il batch GUT.
 - [x] `tests/tooling/_milestone_runner_contract.ps1` copre ognuno dei punti
       sopra e passa.
       *Con una precisazione onesta: il contratto copre senza Godot la
       distinzione test rosso / batch fallito, l'esistenza e il minimo del
-      timeout, e le due regole di selezione. La riga di avanzamento è coperta
+      timeout, e la sola regola documentale di selezione (riga 68). La
+      rimozione del fallback `run_all` per i path runtime non mappati e
+      l'avanzamento sugli step non-GUT non sono coperti dal contratto
+      automatico: sono verificati solo dalla prova end-to-end qui sotto. La
+      riga di avanzamento del batch GUT è coperta
       da `_process_capture_contract.ps1`. Il rendering dell'output e
       l'`exit_code` reale sono provati end-to-end nelle evidenze qui sotto,
       non da un'asserzione automatica.*
@@ -117,6 +130,22 @@ Non modificare:
   tutto nello strato di orchestrazione, e i cinque punti sono localizzati.
   Riscrivere significherebbe rifare profili, mappa, cache e cattura processi,
   sostituendo bug noti e riproducibili con bug nuovi.
+- **2026-09-02 — Il fallback `run_all` va tolto del tutto, non solo per i
+  `.md`.** La correzione originale escludeva solo i file documentali dal
+  fallback, ma qualunque path runtime *legittimo* senza regola nella mappa
+  (uno script nuovo, un asset in una cartella non ancora mappata) faceva
+  ancora scattare la suite completa: lo stesso costo che la card doveva
+  eliminare, spostato da «ogni card che tocca la doc» a «ogni card che tocca
+  un file non ancora mappato», comunque frequente. `Relevant` resta un
+  checkpoint delimitato solo se non degenera mai; il prezzo è che un path
+  davvero privo di copertura passa silenzioso a meno di leggere la
+  segnalazione a schermo — accettabile perché resta disponibile
+  `-RegressionSmoke` esplicito o un profilo `Full` per chi vuole essere
+  sicuro. Nello stesso intervento, gli step non-GUT (refresh editor,
+  toolchain, export, ispezione) sono stati resi silenziosi solo quanto lo era
+  il batch GUT prima della card: aggiunta la stessa disciplina inizio/fine +
+  avanzamento periodico, altrimenti un `export_android` appeso resta
+  indistinguibile da un blocco esattamente come lo era il batch GUT.
 
 ## Documenti sincronizzati
 
@@ -197,6 +226,28 @@ Sedici righe di avanzamento, una al minuto, dall'apertura alla chiusura:
 .\tests\tooling\_process_capture_contract.ps1   # PROCESS_CAPTURE_CONTRACT_OK
 .\tests\tooling\_milestone_runner_contract.ps1  # MILESTONE_RUNNER_CONTRACT_OK
 ```
+
+### Prove raccolte il 2026-09-02
+
+**Un path runtime senza regola non fa più scattare `run_all`.** Aggiunto un
+file temporaneo `scripts/_ps023_temp_probe.gd` (nessuna regola nella mappa),
+poi cancellato:
+
+```
+... relevant: 1 path runtime senza regola in tools\milestone-test-map.json, nessuna regressione automatica per questi path. Path: scripts/_ps023_temp_probe.gd
+==> piano PS-023/Relevant: focused=1 regression=19 refresh_editor=False toolchain=False project_smoke=False export_windows=False export_android=False cache=True
+IL_GIOCO_VERIFICATION_PLAN milestone=PS-023 profile=Relevant focused=1 regression=19 changed=34 cache=True
+```
+
+`regression=19`, non l'intera suite: prima di questo intervento lo stesso
+scenario avrebbe fatto scattare `run_all` su tutti i 69 test. Verifica solo
+`-PlanOnly` (nessun Godot lanciato): non prova end-to-end l'avanzamento sugli
+step non-GUT, che resta verificato per lettura del codice
+(`New-GenericProgressAction`, `Write-StepStart`/`Write-StepDone` applicati a
+`refresh-editor`, `toolchain`, `windows-export`, `windows-runtime`,
+`android-export`, `android-static`) più le stesse garanzie già provate per
+`Invoke-CapturedProcess` da `_process_capture_contract.ps1`, non da una nuova
+prova end-to-end dedicata.
 
 ### Non risolto qui
 
