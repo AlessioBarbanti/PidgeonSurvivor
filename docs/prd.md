@@ -632,7 +632,9 @@ interattivi restano nella safe area; il pannello tutorial e tutti i suoi
 controlli restano safe-area su 16:9, 20:9 e 4:3.
 
 **Hardening B18V:** `PerformanceProfile` è scene-local e fisso a 60 FPS, con
-stress da 150 nemici, 200 proiettili e 200 pickup sia su Windows sia su mobile.
+stress da 250 nemici (alzato da 150 dopo prova diretta del proprietario su
+device Windows e Android, PS-076), 200 proiettili e 200 pickup sia su Windows
+sia su mobile.
 L'overlay diagnostico debug è invisibile di default e si abilita soltanto con
 `--performance-overlay`: mostra FPS/frame time, memoria, nodi, entità, VFX,
 voci audio e profilo. `--b18v-stress` emette `B18V_PERF_SAMPLE` e marker finali
@@ -641,13 +643,20 @@ B18V. I soli fallback consentiti, nell'ordine, sono FIFO dei feedback transitori
 verifica percettiva; non sono ammessi qualità dinamica né cambi a durate, raggi,
 cooldown, danni, spawn o pool audio da 12 voci.
 
-**Densità B28:** il profilo ordinario usa cap `140`, intervallo `0,60 → 0,12 s`,
-accelerazione `0,003`, delay iniziale `0,50 s` e nemici base da `24 HP`. Il
+**Densità B28/PS-076:** il profilo ordinario usa cap `250` (limite condiviso con
+lo stress B18V, alzato da 150 dopo prova diretta del proprietario su device),
+intervallo `0,35 → 0,07 s`, accelerazione `0,00175`, delay
+iniziale `0,50 s` e nemici base da `10 HP` con `12` danni da contatto. Il
 budget XP non segue ciecamente il numero di kill: allo spawn ogni nemico base
 riceve `1,50 × intervallo_corrente / intervallo_riferimento_pre_B28`; il dropper
-accumula il credito frazionario e consegna solo XP intero. Boss, ricompensa Boss,
-pattern e telegraph restano fuori da questa scala. Pooling o altre ottimizzazioni
-sono ammessi soltanto dopo evidenza profiler Windows e Pixel 9.
+accumula il credito frazionario e consegna solo XP intero. **PS-076** ha
+infittito il ritmo di spawn ordinario di un fattore `12/7 ≈ 1,71×` rispetto al
+profilo B28/B37 (`0,60 → 0,12 s`, HP base `18`), riducendo HP e danno da
+contatto del piccione base in proporzione inversa (stesso principio già in uso
+per l'XP: il budget resta invariato perché il riferimento XP non dipende
+dall'intervallo ordinario). Boss, ricompensa Boss, pattern e telegraph restano
+fuori da questa scala. Pooling o altre ottimizzazioni sono ammessi soltanto
+dopo evidenza profiler Windows e Pixel 9.
 
 **Pressione late-run PS-007:** dopo l'ingresso di tutti gli archetipi, il
 profilo ordinario evolve in modo continuo fra `01:00` e `05:00`: il peso

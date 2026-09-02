@@ -8,9 +8,11 @@ func test_enemy_base_hp_is_reduced() -> void:
 	# Il nemico non e' ancora entrato nel tree: le @onready var non sono
 	# popolate, quindi la HealthComponent va letta via get_node diretto.
 	var health := enemy.get_node("HealthComponent") as HealthComponent
+	# B37 aveva portato la vita base a 18 (-25% da 24); PS-076 la riduce
+	# ulteriormente a 10 in proporzione al ritmo di spawn piu fitto.
 	assert_true(
-		health != null and is_equal_approx(health.health_max, 18.0),
-		"B37 deve ridurre la vita base del nemico comune a 18 (-25% da 24)."
+		health != null and is_equal_approx(health.health_max, 10.0),
+		"PS-076 deve ridurre la vita base del nemico comune a 10."
 	)
 	enemy.free()
 

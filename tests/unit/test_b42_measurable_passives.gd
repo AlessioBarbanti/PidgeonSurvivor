@@ -9,7 +9,7 @@ extends GutGameplayTest
 ## deterministica per seed.
 
 const ENEMY_SCENE := preload("res://scenes/actors/base_enemy.tscn")
-const BASE_ENEMY_HEALTH := 18.0
+const BASE_ENEMY_HEALTH := 10.0
 
 
 ## L'API di amplificazione e' speculare a quella di velocita': una sorgente per
@@ -135,9 +135,11 @@ func test_marghe_aura() -> void:
 	assert_eq(passive.get_marked_target_count(), 0, "Nessun bersaglio deve restare marcato fuori dal raggio.")
 
 	# Osservabilita' richiesta da R4.1.3: esiste una configurazione documentata
-	# in cui l'aura cambia il numero di colpi necessari a uccidere.
-	var shots_without := ceilf(BASE_ENEMY_HEALTH / 15.2)
-	var shots_with := ceilf(BASE_ENEMY_HEALTH / (15.2 * amplification))
+	# in cui l'aura cambia il numero di colpi necessari a uccidere. A 8 danni
+	# per colpo il nemico base (10 HP, PS-076) richiede due colpi senza aura e
+	# uno solo amplificato dal 1,3x di Marghe.
+	var shots_without := ceilf(BASE_ENEMY_HEALTH / 8.0)
+	var shots_with := ceilf(BASE_ENEMY_HEALTH / (8.0 * amplification))
 	assert_true(
 		shots_with < shots_without, "A danno 15,2 l'aura deve togliere un colpo: %d contro %d." % [shots_with, shots_without]
 	)

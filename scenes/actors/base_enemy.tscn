@@ -94,7 +94,7 @@ animation = &"base"
 [node name="HealthComponent" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("2_health")
-health_max = 18.0
+health_max = 10.0
 
 [node name="Hurtbox" type="Area2D" parent="."]
 unique_name_in_owner = true
@@ -113,7 +113,7 @@ collision_layer = 0
 collision_mask = 1
 monitorable = false
 script = ExtResource("4_contact")
-damage = 20.0
+damage = 12.0
 
 [node name="ContactCollisionShape" type="CollisionShape2D" parent="ContactDamage"]
 unique_name_in_owner = true

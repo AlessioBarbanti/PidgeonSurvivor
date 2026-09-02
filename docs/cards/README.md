@@ -119,7 +119,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-073](./2_to_do/PS-073-musica-boss-dedicata.md) | Introduci una musica Boss dedicata | feat | audio | PRONTO | media | — |
 | [PS-074](./2_to_do/PS-074-suono-click-generico-bottoni-ui.md) | Aggiungi un suono di click ai bottoni UI oggi silenziosi | ux | audio | PRONTO | bassa | — |
 | [PS-075](./2_to_do/PS-075-sfx-morte-nemico.md) | Aggiungi un SFX alla morte dei nemici | feat | audio | PRONTO | media | — |
-| [PS-076](./2_to_do/PS-076-aumenta-densita-nemica-a-schermo.md) | Aumenta la densità nemica a schermo a parità di rischio e progressione | chore | gameplay | PRONTO | alta | — |
+| [PS-076](./4_to_test/PS-076-aumenta-densita-nemica-a-schermo.md) | Aumenta la densità nemica a schermo a parità di rischio e progressione | chore | gameplay | IN VERIFICA | alta | — |
 | [PS-077](./2_to_do/PS-077-espandi-pool-specialita-barb.md) | Espandi il pool delle Specialità di Barb con le carte signature rimaste | feat | gameplay | PRONTO | media | PS-012 |
 | [PS-078](./2_to_do/PS-078-tematizza-catalogo-specialita-barb.md) | Tematizza il catalogo delle Specialità di Barb come piatti speciali del grigliatore | art | arte | BLOCCATO | media | PS-077 |
 | [PS-079](./2_to_do/PS-079-particellare-tell-stato-personaggi.md) | Sostituisci il contorno bocciato con un particellare non aderente | ux | arte | PRONTO | alta | — |

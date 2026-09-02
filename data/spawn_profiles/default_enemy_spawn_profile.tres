@@ -4,11 +4,11 @@
 
 [resource]
 script = ExtResource("1_spawn_profile")
-base_spawn_interval = 0.6
-min_spawn_interval = 0.12
-spawn_acceleration = 0.003
+base_spawn_interval = 0.35
+min_spawn_interval = 0.07
+spawn_acceleration = 0.00175
 initial_spawn_delay = 0.5
-max_alive_enemies = 140
+max_alive_enemies = 250
 progression_reference_base_spawn_interval = 1.0
 progression_reference_min_spawn_interval = 0.25
 progression_reference_spawn_acceleration = 0.0025

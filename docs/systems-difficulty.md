@@ -66,8 +66,8 @@ archetipo, pressione late-run) vive in `EnemySpawnProfile`
 ([scripts/game/enemy_spawn_profile.gd](../scripts/game/enemy_spawn_profile.gd),
 dati in `data/spawn_profiles/default_enemy_spawn_profile.tres`) ed è
 applicata da `EnemySpawner`. Il contratto numerico completo è già scritto in
-`prd.md`, sezioni **Densità B28** ([prd.md:640-646](./prd.md)) e
-**Pressione late-run PS-007** ([prd.md:648-659](./prd.md)): cap nemici vivi,
+`prd.md`, sezioni **Densità B28/PS-076** ([prd.md:644-656](./prd.md)) e
+**Pressione late-run PS-007** ([prd.md:658-669](./prd.md)): cap nemici vivi,
 intervallo di spawn, accelerazione, scala del budget XP, evoluzione dei pesi
 per archetipo fra `01:00` e `05:00` e garanzia tiratore da `03:00`. Non
 duplicato qui.

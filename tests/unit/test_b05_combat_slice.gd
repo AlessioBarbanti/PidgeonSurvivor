@@ -134,7 +134,7 @@ func test_health_and_targeting() -> void:
 	await wait_process_frames(1)
 	default_enemy.set_physics_process(false)
 	assert_almost_eq(
-		default_enemy.get_health_component().health_max, 18.0, FLOAT_TOLERANCE, "La scena BaseEnemy deve fissare la baseline B37 di 18 HP."
+		default_enemy.get_health_component().health_max, 10.0, FLOAT_TOLERANCE, "La scena BaseEnemy deve fissare la baseline PS-076 di 10 HP."
 	)
 	default_enemy.queue_free()
 

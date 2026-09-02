@@ -73,11 +73,11 @@ func test_contact_damage() -> void:
 		return
 
 	assert_almost_eq(health.health_max, 100.0, FLOAT_TOLERANCE, "La baseline Player deve essere 100 HP.")
-	assert_almost_eq(contact.damage, 20.0, FLOAT_TOLERANCE, "La baseline del contatto deve essere 20 danni.")
+	assert_almost_eq(contact.damage, 12.0, FLOAT_TOLERANCE, "PS-076: la baseline del contatto deve essere 12 danni.")
 	assert_true(not contact.try_damage(player), "Il contatto in BOOT non deve applicare danno.")
 	assert_true(controller.start_run(6001), "La fixture contatto deve avviare la run.")
 	assert_true(contact.try_damage(player), "Il contatto in RUNNING deve applicare danno.")
-	assert_almost_eq(health.health_current, 80.0, FLOAT_TOLERANCE, "Il contatto deve sottrarre il danno configurato.")
+	assert_almost_eq(health.health_current, 88.0, FLOAT_TOLERANCE, "Il contatto deve sottrarre il danno configurato.")
 	assert_eq(_player_damage_count, 1, "Il Player deve inoltrare un solo segnale di danno effettivo.")
 	assert_true(not contact.try_damage(player), "Il contatto persistente deve rispettare l'invulnerabilita.")
 	assert_true(player.is_damage_blink_active(), "L'invulnerabilita deve attivare il lampeggio Player.")
@@ -97,7 +97,7 @@ func test_contact_damage() -> void:
 	assert_true(not contact.try_damage(player), "La finestra deve restare attiva prima della scadenza.")
 	player._physics_process(0.25)
 	assert_true(contact.try_damage(player), "Il contatto deve poter colpire di nuovo a finestra scaduta.")
-	assert_almost_eq(health.health_current, 60.0, FLOAT_TOLERANCE, "La seconda hit valida deve sottrarre altri 20 HP.")
+	assert_almost_eq(health.health_current, 76.0, FLOAT_TOLERANCE, "La seconda hit valida deve sottrarre altri 12 HP.")
 
 	health.clear_invulnerability()
 	health.set_health_max(contact.damage)

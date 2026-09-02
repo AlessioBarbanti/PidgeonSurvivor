@@ -331,7 +331,7 @@ func _assert_ability(
 			assert_almost_eq(enemy.get_speed_multiplier(), 0.4, ROSTER_FLOAT_TOLERANCE, "L'aura Zen deve rallentare del 60%.")
 		&"marghe":
 			assert_almost_eq(
-				initial_health, 18.0, ROSTER_FLOAT_TOLERANCE, "B42: Marghe non altera piu' la salute base del nemico."
+				initial_health, 10.0, ROSTER_FLOAT_TOLERANCE, "B42: Marghe non altera piu' la salute base del nemico."
 			)
 			assert_true(effect is IllusionDecoy, "Marghe deve creare un'illusione.")
 			assert_true(enemy.get_target() == effect, "L'illusione deve deviare l'aggro.")

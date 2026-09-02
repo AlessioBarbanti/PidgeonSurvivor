@@ -24,13 +24,13 @@ func test_baseline_density_and_xp_budget_declarations() -> void:
 		base_enemy.free()
 		return
 
-	assert_eq(profile.max_alive_enemies, 140, "B28 deve alzare il cap vivo a 140 unita.")
-	assert_almost_eq(profile.base_spawn_interval, 0.6, HORDE_FLOAT_TOLERANCE, "B28 deve partire da una cadenza piu fitta.")
-	assert_almost_eq(profile.min_spawn_interval, 0.12, HORDE_FLOAT_TOLERANCE, "B28 deve raggiungere la cadenza bullet-hell.")
+	assert_eq(profile.max_alive_enemies, 250, "PS-076 deve alzare il cap vivo a 250 unita (nuovo limite B18V).")
+	assert_almost_eq(profile.base_spawn_interval, 0.35, HORDE_FLOAT_TOLERANCE, "PS-076 deve infittire la cadenza ordinaria.")
+	assert_almost_eq(profile.min_spawn_interval, 0.07, HORDE_FLOAT_TOLERANCE, "PS-076 deve infittire la cadenza bullet-hell.")
 	assert_almost_eq(
 		profile.progression_experience_multiplier, 1.5, HORDE_FLOAT_TOLERANCE, "B28 deve aumentare il budget XP del 50%."
 	)
-	assert_almost_eq(base_health.health_max, 18.0, HORDE_FLOAT_TOLERANCE, "B37 deve ridurre la vita base da 24 a 18.")
+	assert_almost_eq(base_health.health_max, 10.0, HORDE_FLOAT_TOLERANCE, "PS-076 deve ridurre la vita base da 18 a 10.")
 	assert_true(
 		boss.health_max >= base_health.health_max * 50.0
 		and boss.radial_projectile_count > 0
@@ -97,6 +97,10 @@ func test_fractional_xp_budget_compensates_across_kills() -> void:
 	assert_eq(
 		granted_xp, expected_xp, "Cinque kill base devono produrre %d XP compensati, ottenuti %d." % [expected_xp, granted_xp]
 	)
-	assert_true(granted_xp >= 4, "Cinque kill base iniziali devono ora produrre almeno 4 XP.")
+	# PS-076 infittisce la cadenza ordinaria (0,60 -> 0,35s): a parita' di
+	# kill contate (non di tempo), il credito frazionario per kill scende in
+	# proporzione, quindi la soglia minima scende da 4 a 2 (il budget XP/sec
+	# resta invece invariato, verificato sopra).
+	assert_true(granted_xp >= 2, "Cinque kill base iniziali devono ora produrre almeno 2 XP.")
 
 	controller.prepare_restart()

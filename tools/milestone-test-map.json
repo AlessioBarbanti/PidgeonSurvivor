@@ -76,12 +76,14 @@
       "smokes": [
         "tests/unit/test_b04_enemy_spawner.gd",
         "tests/unit/test_b05_combat_slice.gd",
+        "tests/unit/test_b06_player_survival.gd",
         "tests/unit/test_b18h_pigeon_enemies.gd",
         "tests/unit/test_b28_horde_density.gd",
         "tests/unit/test_b37_density_direction.gd",
         "tests/unit/test_b38_arena_world.gd",
         "tests/unit/test_ps007_late_run_pressure.gd",
-        "tests/unit/test_ps008_wave_events.gd"
+        "tests/unit/test_ps008_wave_events.gd",
+        "tests/unit/test_ps076_enemy_density_rebalance.gd"
       ]
     },
     {

@@ -120,11 +120,11 @@ func _assert_gameplay_contract(enemy: BaseEnemy) -> void:
 	assert_eq(enemy.get_experience_amount(), 1, "B18H non deve cambiare il drop XP.")
 	var health := enemy.get_health_component()
 	assert_true(
-		health != null and is_equal_approx(health.health_max, 18.0),
-		"B18H deve conservare la baseline HP B37 del nemico base."
+		health != null and is_equal_approx(health.health_max, 10.0),
+		"B18H deve conservare la baseline HP PS-076 del nemico base."
 	)
 	var contact := enemy.get_contact_damage()
 	assert_true(
-		contact != null and is_equal_approx(contact.damage, 20.0),
-		"B18H non deve cambiare il danno da contatto."
+		contact != null and is_equal_approx(contact.damage, 12.0),
+		"B18H deve conservare il danno da contatto PS-076 del nemico base."
 	)

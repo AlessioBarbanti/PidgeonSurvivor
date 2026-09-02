@@ -19,7 +19,7 @@ curva in `EnemySpawnProfile` (dettagli in
 
 | Archetipo | HP | Velocità | Danno contatto | XP | Ruolo |
 |---|---|---|---|---|---|
-| Piccione base | 18.0 | 140.0 | 20.0 | — | Riempimento, peso dominante nei primi minuti |
+| Piccione base | 10.0 | 140.0 | 12.0 | — | Riempimento, peso dominante nei primi minuti |
 | `swarmer` | 9.0 | 210.0 | 12.0 | 1 | Sciamatore, spawna in gruppi di 3 |
 | `ranged` | 16.0 | 110.0 | 12.0 | 2 | Tiratore a distanza, telegrafa e spara |
 | `armored` | 54.0 | 70.0 | 26.0 | 3 | Corazzato, lento e con HP alto |
