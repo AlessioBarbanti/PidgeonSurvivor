@@ -6,10 +6,7 @@
 [ext_resource type="Texture2D" path="res://assets/art/characters/bea/generated/carousel.png" id="4_selection"]
 [ext_resource type="Texture2D" path="res://assets/art/icons/passives/generated/bea_sixth_sense.png" id="5_passive"]
 [ext_resource type="Texture2D" path="res://assets/art/characters/bea/generated/evil_portrait.png" id="6_evil_portrait"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_portrait"]
-atlas = ExtResource("2_sheet")
-region = Rect2(32, 128, 32, 32)
+[ext_resource type="Texture2D" path="res://assets/art/characters/bea/generated/portrait.png" id="7_portrait"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_evil"]
 atlas = ExtResource("2_sheet")
@@ -48,12 +45,12 @@ base_health_multiplier = 0.9
 base_move_speed_multiplier = 1.1
 base_fire_rate_multiplier = 1.0
 evil_display_name = "Evil Bea"
-portrait = SubResource("AtlasTexture_portrait")
+portrait = ExtResource("7_portrait")
 evil_portrait = ExtResource("6_evil_portrait")
-portrait_placeholder = SubResource("AtlasTexture_portrait")
+portrait_placeholder = ExtResource("7_portrait")
 evil_portrait_placeholder = SubResource("AtlasTexture_evil")
-portrait_source = "Eldiran, 32x32 RPG Character Sprites, CC0 1.0"
-portraits_are_placeholders = true
+portrait_source = "PS-068, OpenAI ImageGen built-in, Licenza del progetto"
+portraits_are_placeholders = false
 selection_portrait = ExtResource("4_selection")
 passive_icon = ExtResource("5_passive")
 gameplay_idle_right = SubResource("AtlasTexture_gameplay_idle")

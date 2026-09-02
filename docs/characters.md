@@ -113,10 +113,11 @@ Boss: Evil Marghe — Signature *Reggaeton time!*: genera un clone ballerino dis
 Questi archetipi originali sono la direzione presentazionale approvata per il
 fondale della welcome B18O. Traducono passive e abilità in silhouette
 immediatamente riconoscibili e non modificano i contratti gameplay dei profili.
-Con l'eccezione di Aleo, non rappresentano persone reali: dal rework del 28
-agosto 2026 la sua direzione visuale è ispirata ai tratti di una persona reale,
-con consenso esplicito dichiarato dal proprietario del progetto, e resta una
-caricatura pixel-art e non una somiglianza fotografica.
+Le fotografie personali autorizzate in `docs/characters/references/<id>/`
+forniscono soltanto citazioni fisionomiche semplificate: i profili non sono
+ritratti realistici né copie delle persone fotografate. Aleo conserva inoltre
+il consenso esplicito già registrato per il rework del 28 agosto 2026; anche la
+sua resa resta una caricatura pixel-art.
 
 Il 28 agosto 2026 tutte e otto le strisce sprite sono state rigenerate dal
 proprietario in un passaggio di identità, insieme alle due icone di Aleo. La
@@ -134,6 +135,13 @@ nel runtime, con versioni promosse e hash, è in
 | Lollo | Cosplayer iperattivo dai capelli scuri, con un costume originale da sopravvissuto retrofuturista post-apocalittico: tuta blu, dettagli gialli e accessori da wasteland senza marchi. |
 | Migi | Donna con occhiali e capelli neri, calma e concentrata dentro uno scudo ciano a guscio di tartaruga e onde rallentanti; non è vincolata a un archetipo monastico. |
 | Marghe | Ballerina reggaeton dalla corporatura morbida, con capelli neri molto lunghi, accenti magenta-oro e un clone d'ombra che replica la posa come VFX. |
+
+Dal 3 settembre 2026 PS-068 integra per tutti gli otto profili un busto Player
+dedicato `assets/art/characters/<id>/generated/portrait.png`, 256×256 con alfa
+reale. `portrait` e `portrait_placeholder` usano questo derivato approvato e
+`portraits_are_placeholders` è `false`; il precedente `AtlasTexture` CC0 non è
+più usato per i ritratti Player. Gli otto busti condividono taglio dalla vita,
+proporzioni coerenti con `poses.png` e pixel-art arcade non fotorealistica.
 
 ---
 

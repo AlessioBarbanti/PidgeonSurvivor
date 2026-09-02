@@ -44,9 +44,9 @@ Player.
 
 ## Reference fotografica
 
-- `docs/characters/references/migi/source-01.png` — 1 file, ruolo `subject
-  reference`, non editing target, mai output fotorealistico; autorizzata dal
-  proprietario, archiviata il 2 settembre 2026.
+- `docs/characters/references/migi/source-01.png`, `source-02.png` — 2 file,
+  ruolo `subject reference`, non editing target, mai output fotorealistico;
+  autorizzate dal proprietario, archiviate il 2 settembre 2026.
 
 ## Master e derivati correnti
 
@@ -54,10 +54,12 @@ Player.
 |---|---|
 | `assets/art/characters/migi/hd/poses.png` | master HD Player, 3 pose (escluso da import/export) |
 | `assets/art/characters/migi/hd/evil_portrait.png` | master HD Evil, ritratto busto (escluso da import/export) |
+| `assets/art/characters/migi/hd/portrait.png` | master HD Player, busto approvato PS-068 (escluso da import/export) |
 | `assets/art/characters/migi/generated/sprite.png` | striscia runtime 96×32 |
 | `assets/art/characters/migi/generated/carousel.png` | ritratto carosello selezione 256×256 |
+| `assets/art/characters/migi/generated/portrait.png` | ritratto Player runtime 256×256 approvato PS-068 |
 | `assets/art/characters/migi/generated/evil_portrait.png` | ritratto Evil runtime 256×256 |
 
-Busto Player dedicato (`portrait.png`, analogo a `evil_portrait.png`): non
-ancora prodotto — [PS-068](../cards/3_in_sprint/PS-068-genera-ritratti-busto-cast-giocabile.md)
-è in corso.
+Busto Player dedicato approvato dal proprietario e integrato da PS-068 il 3
+settembre 2026; il `FriendDefinition` non usa più il ritaglio CC0 come
+`portrait` o `portrait_placeholder`.

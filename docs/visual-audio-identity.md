@@ -43,12 +43,12 @@ del documento architetturale, non una lacuna di questo file.
 `assets/art/` è organizzato per categoria, ciascuna con il proprio
 `ASSET-MANIFEST.md` (riga richiesta per ogni nuovo asset, per contratto
 `CLAUDE.md`). Conteggio file PNG per cartella principale (istantanea al
-31/08/2026):
+03/09/2026):
 
 | Cartella | PNG | Manifest | Note |
 |---|---|---|---|
 | `icons/upgrades` | 41 | [ASSET-MANIFEST.md](../assets/art/icons/upgrades/ASSET-MANIFEST.md) | Icone potenziamenti |
-| `characters/<id>` (`hd/`, `generated/`) | 40 | [ASSET-MANIFEST.md](../assets/art/characters/ASSET-MANIFEST.md) | 8 personaggi, Player + Evil, identity pass 28/08/2026 |
+| `characters/<id>` (`hd/`, `generated/`) | 56 | [ASSET-MANIFEST.md](../assets/art/characters/ASSET-MANIFEST.md) | 8 personaggi, sprite/carousel e busti Player + Evil |
 | `vfx/abilities` | 18 | [ASSET-MANIFEST.md](../assets/art/vfx/ASSET-MANIFEST.md) | Copre anche `vfx/projectiles` e `icons/abilities` |
 | `icons/passives` | 16 | [ASSET-MANIFEST.md](../assets/art/icons/passives/ASSET-MANIFEST.md) | Dichiara approvazione percettiva finale ancora aperta |
 | `enemies/pigeons` (+ `hd/`) | 16 | [ASSET-MANIFEST.md](../assets/art/enemies/pigeons/ASSET-MANIFEST.md) | Sprite piccioni per archetipo |
@@ -66,6 +66,23 @@ del documento architetturale, non una lacuna di questo file.
 | `branding` | 3 | [ASSET-MANIFEST.md](../assets/art/branding/ASSET-MANIFEST.md) | Icona app e adaptive icon Android |
 | `third_party/eldiran_rpg_characters` | 2 | `LICENSE.md` | Sprite RPG 32×32 CC0, vedi nota sotto |
 | `third_party/pinhead_inline_skate` | 1 | `LICENSE.md` | Provenienza storica, sostituito da `icons/abilities/generated/powerslide.png` |
+
+### Ritratti busto Player (PS-068)
+
+Dal 3 settembre 2026 ogni `data/friends/*.tres` usa come `portrait` e
+`portrait_placeholder` il derivato dedicato
+`assets/art/characters/<id>/generated/portrait.png` (256×256, sfondo
+trasparente). Gli otto `portraits_are_placeholders` sono `false`: il foglio
+CC0 Eldiran non è più il fallback dei busti Player. I master restano in
+`<id>/hd/portrait.png`, esclusi da import ed export.
+
+La grammatica condivisa è pixel-art arcade a cluster visibili, outline scuro,
+ombre a fasce e inquadratura coerente dalla vita verso l'alto. `poses.png`
+domina design, costume e proporzioni; le fotografie personali autorizzate
+forniscono solo citazioni fisionomiche semplificate, mai una copia
+fotorealistica. L'accettazione percettiva del proprietario copre tutti gli otto
+busti; Marghe è stata accettata dopo la correzione dei capelli da castani a
+neri.
 
 ### Stato dei ritratti Evil nella Boss Intro (PS-051, integrato da PS-052)
 

@@ -71,14 +71,17 @@ func test_catalog_and_approvals() -> void:
 		)
 		assert_true(
 			definition.get_public_portrait() != null
-			and definition.get_public_evil_portrait() != null
-			and definition.get_public_portrait().get_size() == Vector2(32.0, 32.0)
-			and definition.get_public_evil_portrait().get_size() == Vector2(32.0, 32.0),
-			"I due ritratti placeholder di %s devono essere ritagli 32x32." % friend_id
+			and definition.get_public_evil_portrait() != null,
+			"I due ritratti pubblici di %s devono risolversi." % friend_id
+		)
+		assert_eq(
+			definition.get_public_portrait().get_size(),
+			Vector2(256.0, 256.0),
+			"Il ritratto Player definitivo di %s deve usare il derivato PS-068 256x256." % friend_id
 		)
 		assert_true(
-			definition.portraits_are_placeholders and "CC0" in definition.portrait_source,
-			"L'origine placeholder deve restare esplicita per %s." % friend_id
+			not definition.portraits_are_placeholders and "PS-068" in definition.portrait_source,
+			"L'origine del ritratto Player definitivo deve restare esplicita per %s." % friend_id
 		)
 		assert_false(
 			seen_ability_ids.has(definition.active_ability_id), "Ogni amico deve dichiarare un Ability ID distinto."

@@ -3,12 +3,12 @@ id: PS-068
 titolo: Generare i ritratti busto definitivi del cast giocabile
 tipo: art
 area: arte
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-09-02
-aggiornato: 2026-09-02
+aggiornato: 2026-09-03
 ---
 
 # PS-068 — Generare i ritratti busto definitivi del cast giocabile
@@ -35,31 +35,31 @@ già approvate.
 
 ## Criteri di accettazione
 
-- [ ] Sono presenti otto ritratti busto: Alea, Aleo, Bea, Lollo, Magno, Marghe,
+- [x] Sono presenti otto ritratti busto: Alea, Aleo, Bea, Lollo, Magno, Marghe,
       Migi, Zat.
-- [ ] Ogni busto conserva silhouette, acconciatura, corporatura, costume e
+- [x] Ogni busto conserva silhouette, acconciatura, corporatura, costume e
       accessori distintivi già approvati nelle pose HD B18U e nel carosello
       selezione, senza reinventare l'identità del personaggio.
-- [ ] Gli otto ritratti condividono una sola grammatica di produzione (taglio,
+- [x] Gli otto ritratti condividono una sola grammatica di produzione (taglio,
       inquadratura, outline, palette, trattamento pixel-art), analoga a quella
       usata per i ritratti Evil, mantenendo comunque leggibile la differenza
       Player/Evil se i due busti compaiono nello stesso contesto.
-- [ ] Ogni ritratto è leggibile alla dimensione minima prevista dal suo utilizzo
+- [x] Ogni ritratto è leggibile alla dimensione minima prevista dal suo utilizzo
       runtime (almeno quella del busto Evil in Boss intro).
-- [ ] Nessun ritratto definitivo riusa lo spritesheet CC0 di terze parti
+- [x] Nessun ritratto definitivo riusa lo spritesheet CC0 di terze parti
       (`RPGCharacterSprites32x32-transparent.png`).
-- [ ] `portrait` e `portrait_placeholder` di ciascun `data/friends/<id>.tres`
+- [x] `portrait` e `portrait_placeholder` di ciascun `data/friends/<id>.tres`
       puntano al nuovo busto definitivo; nessuno dei due campi resta legato
       all'`AtlasTexture` CC0.
-- [ ] `portraits_are_placeholders` viene aggiornato a `false` solo dopo
+- [x] `portraits_are_placeholders` viene aggiornato a `false` solo dopo
       l'accettazione percettiva del proprietario sugli otto busti.
-- [ ] `tests/unit/test_b17_friend_content.gd` non assume più che `portrait`
+- [x] `tests/unit/test_b17_friend_content.gd` non assume più che `portrait`
       sia un ritaglio `32x32`: l'asserzione va aggiornata insieme al nuovo
       asset, seguendo lo stesso trattamento già applicato al lato
-      `evil_portrait` da [PS-070](./PS-070-aggiorna-aspettativa-32x32-evil-portrait-b17.md).
-- [ ] Ogni nuovo file possiede master HD e derivato runtime separati, secondo
+      `evil_portrait` da [PS-070](../2_to_do/PS-070-aggiorna-aspettativa-32x32-evil-portrait-b17.md).
+- [x] Ogni nuovo file possiede master HD e derivato runtime separati, secondo
       la struttura `hd/` / `generated/` già in uso per il cast.
-- [ ] Il manifest registra percorso, prompt/origine, autore, licenza,
+- [x] Il manifest registra percorso, prompt/origine, autore, licenza,
       trasformazioni e SHA-256 per ciascun nuovo file; i master HD restano
       esclusi dai preset export.
 
@@ -80,7 +80,7 @@ Non toccare:
   aggiuntivo, non la sostituisce.
 - `evil_portrait`, gli asset e i dati Evil (PS-051/PS-052).
 - `scripts/ui/character_select_overlay.gd` e qualunque scena UI: l'eventuale
-  esposizione del nuovo busto nel selettore è oggetto di [PS-069](./PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md).
+  esposizione del nuovo busto nel selettore è oggetto di [PS-069](../2_to_do/PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md).
 - valori di gameplay, passive, abilità attive dei Friend.
 
 ## Verifica
@@ -101,7 +101,7 @@ Non toccare:
 - [ ] Validazione statica APK — master HD esclusi dai tre preset
 - [ ] Runtime fisico Pixel 9: non richiesto da questa card in isolamento,
       salvo che il busto sia già esposto in una UI esistente
-- [ ] Controllo percettivo richiesto: sì — accettazione del proprietario sugli
+- [x] Controllo percettivo richiesto: sì — accettazione del proprietario sugli
       otto busti e confronto con pose HD, carosello e ritratti Evil
 
 ## Decisioni
@@ -119,15 +119,48 @@ Non toccare:
   anticipare il lato `portrait` finché l'asset placeholder non viene
   sostituito. Quel momento è questa card: chi la risolve deve toccare quella
   riga di test, non limitarsi al nuovo asset.
+- **2026-09-02 — Alea e Aleo approvati come campione della famiglia.** Il
+  proprietario ha approvato esplicitamente i candidati ImageGen
+  `exec-42e07cf9-a7ca-434a-abb7-c0d1c273572e.png` (Alea) e
+  `exec-bb092209-0081-4a9d-921d-a81674bd766d.png` (Aleo). `poses.png` resta
+  dominante per stile, costume e proporzioni; le fotografie personali
+  autorizzate forniscono soltanto citazioni fisionomiche semplificate, non una
+  copia fotorealistica. Dopo il solo passaggio `background-extraction`, i
+  master trasparenti sono stati promossi come `<id>/hd/portrait.png` e
+  derivati a `256x256` come `<id>/generated/portrait.png`.
+- **2026-09-02 — Nessuna integrazione parziale dei dati.** I due asset
+  approvati restano preparati ma non ancora collegati ai `FriendDefinition`:
+  `portrait`, `portrait_placeholder` e `portraits_are_placeholders` saranno
+  aggiornati insieme per tutti e otto i personaggi dopo l'accettazione
+  percettiva dell'intera famiglia, evitando uno stato runtime misto.
+- **2026-09-03 — Famiglia approvata e integrata atomicamente.** Il proprietario
+  ha approvato Bea, Lollo, Magno, Migi e Zat insieme ai campioni Alea/Aleo. Per
+  Marghe ha richiesto soltanto capelli neri: un edit mirato ha cambiato il
+  colore da castano a nero con riflessi freddi, preservando posa, volto,
+  costume e inquadratura. Dopo l'estrazione degli sfondi, tutti gli otto
+  `FriendDefinition` usano il derivato `generated/portrait.png` sia come
+  `portrait` sia come fallback approvato; nessun `portrait` resta legato al
+  foglio CC0.
+- **2026-09-03 — Verifiche automatiche saltate su richiesta.** Il refresh
+  headless ha raggiunto il marker `[ DONE ] reimport` per tutti gli otto PNG,
+  ma il proprietario ha chiesto di non eseguire i test e di committare
+  direttamente. `Focused`, `Relevant`, Windows runtime e validazione APK
+  restano quindi aperti e impediscono il passaggio a `COMPLETATO`.
 
 ## Documenti sincronizzati
 
-- [ ] `assets/art/characters/ASSET-MANIFEST.md`.
-- [ ] `docs/visual-audio-identity.md`: ritratti busto Player definitivi.
-- [ ] `docs/characters.md`, se cambia lo stato di approvazione dei ritratti.
+- [x] `assets/art/characters/ASSET-MANIFEST.md`.
+- [x] `docs/visual-audio-identity.md`: ritratti busto Player definitivi.
+- [x] `docs/characters.md`: stato runtime dei ritratti Player.
 
 ## Note
 
 Riusa la stessa pipeline di produzione (master HD trasparente,
 trasformazione deterministica verso il derivato runtime, manifest con hash)
 già rodata per i ritratti Evil in PS-052.
+
+Gli otto master e derivati sono approvati e integrati. L'art review dei
+derivati `256x256` ha confermato leggibilità, alfa reale e coerenza della
+famiglia; resta da verificare il caricamento tramite i profili automatici e la
+resa nel runtime Windows. La validazione percettiva del proprietario è già
+chiusa; il Pixel 9 non è richiesto da questa card in isolamento.

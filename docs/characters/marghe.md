@@ -54,10 +54,13 @@ Player.
 |---|---|
 | `assets/art/characters/marghe/hd/poses.png` | master HD Player, 3 pose (escluso da import/export) |
 | `assets/art/characters/marghe/hd/evil_portrait.png` | master HD Evil, ritratto busto (escluso da import/export) |
+| `assets/art/characters/marghe/hd/portrait.png` | master HD Player, busto approvato PS-068 con capelli neri (escluso da import/export) |
 | `assets/art/characters/marghe/generated/sprite.png` | striscia runtime 96×32 |
 | `assets/art/characters/marghe/generated/carousel.png` | ritratto carosello selezione 256×256 |
+| `assets/art/characters/marghe/generated/portrait.png` | ritratto Player runtime 256×256 approvato PS-068 |
 | `assets/art/characters/marghe/generated/evil_portrait.png` | ritratto Evil runtime 256×256 |
 
-Busto Player dedicato (`portrait.png`, analogo a `evil_portrait.png`): non
-ancora prodotto — [PS-068](../cards/3_in_sprint/PS-068-genera-ritratti-busto-cast-giocabile.md)
-è in corso.
+Busto Player dedicato approvato dal proprietario e integrato da PS-068 il 3
+settembre 2026. Prima della promozione il colore dei capelli è stato corretto
+da castano a nero, senza cambiare posa, volto, costume o inquadratura; il
+`FriendDefinition` non usa più il ritaglio CC0.

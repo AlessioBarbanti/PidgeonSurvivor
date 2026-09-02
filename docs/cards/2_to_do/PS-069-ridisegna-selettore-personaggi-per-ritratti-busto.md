@@ -3,19 +3,19 @@ id: PS-069
 titolo: Ridisegnare il selettore personaggi per ospitare i ritratti busto
 tipo: ux
 area: ui
-stato: BLOCCATO
+stato: PRONTO
 priorita: media
 dipende_da: [PS-068]
 origine:
 creato: 2026-09-02
-aggiornato: 2026-09-02
+aggiornato: 2026-09-03
 ---
 
 # PS-069 — Ridisegnare il selettore personaggi per ospitare i ritratti busto
 
 ## Contesto
 
-[PS-068](./PS-068-genera-ritratti-busto-cast-giocabile.md) produce un ritratto
+[PS-068](../4_to_test/PS-068-genera-ritratti-busto-cast-giocabile.md) produce un ritratto
 busto definitivo per ciascuno degli otto Friend, analogo ai ritratti Evil già
 usati nella Boss intro. Il selettore personaggi attuale
 (`scenes/ui/character_select_overlay.tscn`,

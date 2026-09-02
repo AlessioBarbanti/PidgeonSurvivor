@@ -270,6 +270,91 @@ destinato al runtime futuro.
 | Migi | `migi/hd/evil_portrait.png` (`1254x1254`) | `1C4605A9C582DF2582BFA5241FE96ABC89B83F944F64B816BE439000BA7D3904` | `migi/generated/evil_portrait.png` (`256x256`) | `9818F360B1A24562DB3E4CE0FEFC4173EDC34F9F16A802F073D0AA19C1A25573` |
 | Zat | `zat/hd/evil_portrait.png` (`1254x1254`) | `334B650872FB8201E1B4B8E4D1FE9174998155658A2D91DCCCD0A6C7C74D15B4` | `zat/generated/evil_portrait.png` (`256x256`) | `AAD26DFA34729C379CE24F735F2DF569C315D6F9A2CAF2371D6CA64EA2257F00` |
 
+## Parte 3 — Ritratti Player (PS-068)
+
+### Produzione approvata il 3 settembre 2026
+
+- Origine: OpenAI ImageGen built-in, generazione guidata dai master Player
+  `poses.png` e da fotografie personali autorizzate del cast.
+- Autore: progetto IL GIOCO con assistenza OpenAI ImageGen.
+- Licenza: Licenza del progetto.
+- Approvazione: il proprietario ha approvato esplicitamente gli otto busti.
+  Per Marghe ha richiesto un'unica correzione: capelli neri; il resto del
+  candidato è rimasto invariato.
+- Ruolo dei riferimenti: `poses.png` è dominante per design, costume,
+  proporzioni e grammatica pixel-art; le fotografie in
+  `docs/characters/references/<id>/` sono `subject reference` usate soltanto
+  per citazioni fisionomiche semplificate, mai come edit target o copie
+  fotorealistiche.
+
+Prompt finale condiviso normalizzato:
+
+```text
+Creare il ritratto busto Player nella stessa famiglia pixel-art arcade dei
+master poses.png: cluster visibili, bordi a gradini, palette limitata, due o tre
+fasce d'ombra, lineamenti semplificati e outline prugna scuro. Conservare design,
+costume e proporzioni del personaggio di gioco; trasferire dalle fotografie solo
+pochi tratti-citazione riconoscibili, senza riprodurre geometria facciale,
+texture o illuminazione fotografica. Inquadratura quadrata coerente, dal punto
+vita verso l'alto, sfondo trasparente; niente fotorealismo, 3D, stile chibi,
+effetti Evil, testo, logo o watermark.
+```
+
+Specifiche applicate:
+
+| ID | Input ImageGen effettivi e citazioni |
+|---|---|
+| `alea` | `alea/hd/poses.png` dominante; `alea/hd/evil_portrait.png` solo per taglio/densità; `references/alea/source-02.png` e `source-04.png` per volto ovale, naso, occhi, sorriso e piccolo septum. |
+| `aleo` | `aleo/hd/poses.png` dominante; `aleo/hd/evil_portrait.png` solo per taglio/densità; `references/aleo/source-01.png` e `source-02.png` per capelli laterali, occhiali, barba, mandibola morbida e mezzo sorriso. |
+| `bea` | `bea/hd/poses.png` dominante; `references/bea/source-01.png`, `source-02.png` e `source-03.png` solo per citazioni fisionomiche semplificate. |
+| `lollo` | `lollo/hd/poses.png` dominante; `references/lollo/source-01.png` e `source-02.png` solo per citazioni fisionomiche semplificate. |
+| `magno` | `magno/hd/poses.png` dominante; `references/magno/source-01.png` solo per citazioni fisionomiche semplificate. |
+| `marghe` | `marghe/hd/poses.png` dominante; `references/marghe/source-01.png` e `source-02.png` solo per citazioni fisionomiche semplificate; editing finale limitato al colore nero dei capelli. |
+| `migi` | `migi/hd/poses.png` dominante; `references/migi/source-01.png` e `source-02.png` solo per citazioni fisionomiche semplificate. |
+| `zat` | `zat/hd/poses.png` dominante; `references/zat/source-01.png`–`source-04.png` solo per citazioni fisionomiche semplificate. |
+
+Traccia degli output ImageGen selezionati (`candidato → master trasparente`):
+
+| ID | Output selezionati |
+|---|---|
+| `alea` | `exec-42e07cf9-a7ca-434a-abb7-c0d1c273572e.png` → `exec-9285eca1-0885-44bf-8f78-e5e980051618.png` |
+| `aleo` | `exec-bb092209-0081-4a9d-921d-a81674bd766d.png` → `exec-0c08033e-ebdd-490b-8755-3fe733455089.png` |
+| `bea` | `exec-6c7e6ba5-349d-4a10-8f3a-347801917add.png` → `exec-9816634f-8021-4962-8cd8-6855be009f98.png` |
+| `lollo` | `exec-739f7142-b9b1-4395-a0a2-2a216a8d986c.png` → `exec-b4ae8ef0-0283-4d6e-b041-51beee2c01ba.png` |
+| `magno` | `exec-ea64aec9-473c-40a6-b213-a94b6fd55fd2.png` → `exec-b2728d46-2194-48f7-85df-45e9de6b765e.png` |
+| `marghe` | `exec-c26e515e-bdac-49dc-9273-796d3925308a.png` → edit capelli `exec-beeb4b07-7dbf-4900-a80b-df1243b1042a.png` → `exec-d18b1a72-c4b4-4881-98ab-2fca62bbd10f.png` |
+| `migi` | `exec-025ea481-3cc0-4bb7-94d0-ecd8db15d716.png` → `exec-575e26cf-c4b9-4fd2-ae24-177dcd82c8db.png` |
+| `zat` | `exec-b8c83322-35bf-4e42-b649-c881c958f72e.png` → `exec-26bcc2af-12f1-40b5-9f51-9d56bab4557e.png` |
+
+I candidati approvati incorporavano checkerboard chiaro o fondale bianco. Un
+passaggio ImageGen `background-extraction` per ciascun file ha rimosso solo lo
+sfondo e prodotto alfa reale; l'art review ha confermato la conservazione di
+soggetto, proporzioni, posa, costume, palette e inquadratura. Su Marghe un edit
+`precise-object-edit` precedente all'estrazione ha sostituito esclusivamente il
+castano dei capelli con nero e riflessi freddi. I derivati runtime sono stati
+prodotti con:
+
+```powershell
+.\tools\process-upgrade-icon.ps1 -InputPath <id>/hd/portrait.png `
+  -OutputPath <id>/generated/portrait.png -Size 256 -Padding 12 `
+  -VisibleAlphaThreshold 8
+```
+
+| Personaggio | Master HD escluso | SHA-256 master | Derivato runtime | SHA-256 runtime |
+|---|---|---|---|---|
+| Alea | `alea/hd/portrait.png` (`1207x1303`) | `C1F2973CBB3AF3AC17F950DB822A8F9BB63220B2980DB9432D64295F4A3982AF` | `alea/generated/portrait.png` (`256x256`) | `1689DCCD66CC477CE0B9A5C710B1C96B1D544C1C9125094B097248122A1C057B` |
+| Aleo | `aleo/hd/portrait.png` (`1230x1278`) | `3301280D83AC90B3E5C341D4C0A59228B64A6C984A8ADFBECFA6FEE5E9CAF857` | `aleo/generated/portrait.png` (`256x256`) | `6BA17270293119E39F21BCE94F9A4AFB385593965B76B6B9985F072C89CB0627` |
+| Bea | `bea/hd/portrait.png` (`1240x1268`) | `5EAA423221801A7E1EB3A4988FE93338098C40EC72E4A30AB3C989CB0C23EE1A` | `bea/generated/portrait.png` (`256x256`) | `37D13C4526E639708B98E2F7FC6DA18AB5A2FA3BACC167ABC3F25AD449A28563` |
+| Lollo | `lollo/hd/portrait.png` (`1230x1278`) | `6DF4F01914CB3AC695A2CC28CEF090E2B547938EDD2866F0767B601941CEDA73` | `lollo/generated/portrait.png` (`256x256`) | `D653A0A741AB2027FEA76F363BE995703D9F207424C50D85D4D8DE886DEC9A3E` |
+| Magno | `magno/hd/portrait.png` (`1230x1278`) | `91378520997E3422715D1672421993D9ADBA54C82AAFA68789F3C2D6968D268E` | `magno/generated/portrait.png` (`256x256`) | `AA9B1316EE1C0726205E5772581E2A7E0C6051374C42B97C16B534AAAE5AC56B` |
+| Marghe | `marghe/hd/portrait.png` (`1205x1305`) | `FF073246590A852748D0CEAFD98B8959C0C9D836A181A40A3058706C0DFF0CD4` | `marghe/generated/portrait.png` (`256x256`) | `D7D599D3E91DBE1949373CEAF3B062AE377A46ACA9302F7CFA54DEEB7D9D1D43` |
+| Migi | `migi/hd/portrait.png` (`1230x1278`) | `06E933AEBFF53F671387BB9E4A8F56F7D8A3FD97EA851C4A896FA98FC2CFB0EF` | `migi/generated/portrait.png` (`256x256`) | `6663F00E7C0A368D26E8A847692BFDA95EE6A7E8ED92DFB514D3528AD4619553` |
+| Zat | `zat/hd/portrait.png` (`1214x1295`) | `347512EC3E60EBB2DA4F48ADBF9B627215A9966BBD1DE9BFD43286C358A58477` | `zat/generated/portrait.png` (`256x256`) | `F679DAF73198AA67407FDEE483210A91ABC31D8DFA7E6C85CDEC1F4F533485BA` |
+
+I master HD restano esclusi da import ed export tramite i `.gdignore` già
+presenti e gli exclude filter dei tre preset. Il runtime usa esclusivamente i
+derivati `generated/portrait.png`.
+
 ## Riorganizzazione del 2 settembre 2026
 
 Gli asset erano originariamente divisi in due alberi paralleli,
