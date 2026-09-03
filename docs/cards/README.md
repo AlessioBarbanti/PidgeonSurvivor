@@ -111,7 +111,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-066](./4_to_test/PS-066-rimuovi-numero-scorciatoia-carte.md) | Rimuovere il numero di scorciatoia visibile dalle carte upgrade | fix | ui | IN VERIFICA | bassa | PS-047 |
 | [PS-067](./4_to_test/PS-067-carte-upgrade-e-barb-escono-di-6px-dalla-safe-area.md) | Le carte upgrade e Barb escono di 6px dalla safe area | fix | ui | IN VERIFICA | alta | — |
 | [PS-068](./4_to_test/PS-068-genera-ritratti-busto-cast-giocabile.md) | Generare i ritratti busto definitivi del cast giocabile | art | arte | IN VERIFICA | media | — |
-| [PS-069](./3_in_sprint/PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md) | Ridisegnare il selettore personaggi attorno ai ritratti busto | ux | ui | IN CORSO | media | PS-068 |
+| [PS-069](./4_to_test/PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md) | Ridisegnare il selettore personaggi attorno ai ritratti busto | ux | ui | IN VERIFICA | media | PS-068 |
 | [PS-070](./2_to_do/PS-070-aggiorna-aspettativa-32x32-evil-portrait-b17.md) | Aggiorna l'aspettativa 32x32 su evil_portrait in test_b17_friend_content | fix | tooling | PRONTO | bassa | — |
 | [PS-071](./4_to_test/PS-071-pannello-boss-intro-esce-dalla-safe-area.md) | Il pannello della Boss Intro esce dalla safe area | fix | ui | IN VERIFICA | media | — |
 | [PS-072](./2_to_do/PS-072-audio-schivata-sesto-senso-equino-bea.md) | Dai un audio alla schivata Sesto Senso Equino di Bea | feat | audio | PRONTO | media | — |

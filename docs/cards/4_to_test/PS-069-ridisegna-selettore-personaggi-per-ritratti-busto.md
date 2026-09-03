@@ -3,7 +3,7 @@ id: PS-069
 titolo: Ridisegnare il selettore personaggi attorno ai ritratti busto
 tipo: ux
 area: ui
-stato: IN CORSO
+stato: IN VERIFICA
 priorita: media
 dipende_da: [PS-068]
 origine:
