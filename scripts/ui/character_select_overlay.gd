@@ -10,8 +10,49 @@ const DRAG_CANCEL_DISTANCE := 18.0
 const EMULATED_MOUSE_SUPPRESSION_MSEC := 600
 const SELECTED_CARD_FRAME := preload("res://assets/art/ui/pause/pause_panel_frame.png")
 
+## Il pannello non e' piu' una scatola fissa: cresce con la viewport fra questi
+## due limiti, cosi' il 20:9 usa larghezza reale invece di restare una colonna
+## centrata (PS-069 assorbe PS-054).
+const PANEL_MIN_SIZE := Vector2(910.0, 490.0)
+const PANEL_MAX_SIZE := Vector2(1400.0, 760.0)
+## Margini asimmetrici: in landscape il ritaglio fotocamera del Pixel 9 sta a
+## sinistra, quindi quel lato conserva piu' guardia degli altri anche dopo aver
+## recuperato spazio verticale per il busto.
+const PANEL_MARGIN_LEFT := 32.0
+const PANEL_MARGIN_RIGHT := 20.0
+const PANEL_MARGIN_VERTICAL := 14.0
+
+## Quanto il busto puo' scendere oltre la propria riga: la fascia roster viene
+## disegnata dopo e gli passa sopra, quindi il personaggio guadagna presenza
+## senza coprire nulla di essenziale.
+const PORTRAIT_ROSTER_OVERLAP := 80.0
+const IDENTITY_MIN_WIDTH := 156.0
+const IDENTITY_MIN_HEIGHT := 96.0
+const IDENTITY_GAP := 12.0
+
+## Slot mostrati contemporaneamente dalla fascia: il selezionato resta al
+## centro e gli altri scorrono attorno a lui, quindi il numero e' dispari e il
+## Friend diametralmente opposto resta fuori finche' non ruota dentro.
+const ROSTER_VISIBLE_SLOTS := 7
+const ROSTER_CARD_GAP := 6.0
+const ROSTER_PREVIEW_INSET := Vector2(10.0, 14.0)
+## Tinta piena, non trasparenza: il busto sconfina dietro la fascia e con un
+## alpha < 1 traspariva attraverso le miniature.
+const ROSTER_PREVIEW_MODULATE := Color(0.66, 0.7, 0.74, 1.0)
+const ROSTER_SELECTED_ICON_PADDING := 16.0
+const ROSTER_PREVIEW_ICON_PADDING := 22.0
+const ROSTER_MIN_ICON_WIDTH := 24
+## Ritaglio headshot della fascia roster: una sola regione per tutti e otto i
+## busti, senza adattamenti per-personaggio (vincolo PS-069). A ~70px di lato
+## un volto resta riconoscibile dove un busto intero non lo sarebbe.
+const ROSTER_HEADSHOT_REGION := Rect2(56.0, 6.0, 144.0, 144.0)
+
 @onready var _selection_panel: Control = %SelectionPanel
 @onready var _backdrop: TextureRect = $Backdrop
+@onready var _portrait_stage: Control = %PortraitStage
+@onready var _bust_portrait: TextureRect = %BustPortrait
+@onready var _identity_block: Control = %IdentityBlock
+@onready var _roster_row: Control = %RosterRow
 @onready var _carousel_viewport: Control = %CarouselViewport
 @onready var _previous_button: Button = %PreviousButton
 @onready var _next_button: Button = %NextButton
@@ -55,8 +96,11 @@ func _ready() -> void:
 	_previous_button.pressed.connect(navigate_previous)
 	_next_button.pressed.connect(navigate_next)
 	_carousel_viewport.resized.connect(_on_carousel_resized)
+	_portrait_stage.resized.connect(_on_portrait_stage_resized)
+	resized.connect(_on_overlay_resized)
 	_confirm_button.pressed.connect(_on_confirm_pressed)
 	_back_button.pressed.connect(_on_back_pressed)
+	_on_overlay_resized()
 	hide_selection()
 
 
@@ -103,6 +147,7 @@ func show_selection(default_friend_id: StringName = &"magno") -> void:
 	_suppress_card_press = false
 	_suppress_card_press_until_msec = 0
 	_navigation_lock_until_msec = 0
+	_on_overlay_resized()
 	var definition := _registry.resolve_definition(default_friend_id)
 	if definition == null:
 		definition = _definitions[0]
@@ -170,6 +215,10 @@ func get_carousel_rect() -> Rect2:
 	return _global_rect(_carousel_viewport)
 
 
+func get_roster_rect() -> Rect2:
+	return _global_rect(_roster_row)
+
+
 func has_active_transition() -> bool:
 	return is_instance_valid(_transition_tween) and _transition_tween.is_running()
 
@@ -208,6 +257,34 @@ func get_ability_icon_rect() -> Rect2:
 
 func get_passive_icon() -> Texture2D:
 	return _passive_icon.texture if is_instance_valid(_passive_icon) else null
+
+
+## Il busto PS-068 e' la rappresentazione primaria del Friend selezionato:
+## questi accessor lo espongono ai test senza far conoscere loro l'albero.
+func get_bust_portrait_texture() -> Texture2D:
+	return _bust_portrait.texture if is_instance_valid(_bust_portrait) else null
+
+
+func get_bust_portrait_rect() -> Rect2:
+	return _global_rect(_bust_portrait)
+
+
+## Sorgente della miniatura di roster: i test verificano che ogni slot ritagli
+## il busto del proprio Friend, non un asset diverso.
+func get_roster_icon_source(friend_id: StringName) -> Texture2D:
+	var button := get_button(friend_id)
+	if button == null:
+		return null
+	var headshot := button.icon as AtlasTexture
+	return headshot.atlas if headshot != null else null
+
+
+func get_portrait_stage_rect() -> Rect2:
+	return _global_rect(_portrait_stage)
+
+
+func get_identity_block_rect() -> Rect2:
+	return _global_rect(_identity_block)
 
 
 func get_title_rect() -> Rect2:
@@ -269,7 +346,9 @@ func _rebuild_buttons() -> void:
 		var button := Button.new()
 		button.name = "Friend_%s" % definition.id
 		button.text = ""
-		button.icon = definition.get_public_selection_portrait()
+		# Il roster mostra i busti PS-068 ritagliati sul volto: a questa scala una
+		# figura intera non sarebbe riconoscibile.
+		button.icon = _make_roster_headshot(definition.get_public_portrait())
 		button.expand_icon = true
 		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -278,6 +357,16 @@ func _rebuild_buttons() -> void:
 		button.pressed.connect(_on_card_pressed.bind(definition))
 		_carousel_viewport.add_child(button)
 		_buttons_by_id[definition.id] = button
+
+
+func _make_roster_headshot(portrait: Texture2D) -> AtlasTexture:
+	if portrait == null:
+		return null
+	var headshot := AtlasTexture.new()
+	headshot.atlas = portrait
+	headshot.region = ROSTER_HEADSHOT_REGION
+	headshot.filter_clip = true
+	return headshot
 
 
 func _select_definition(definition: FriendDefinition, animate := true) -> void:
@@ -295,6 +384,8 @@ func _select_index(index: int, animate: bool) -> void:
 	_selected_index = posmod(index, _definitions.size())
 	var definition := _definitions[_selected_index]
 	_selected_definition = definition
+	_bust_portrait.texture = definition.get_public_portrait()
+	_bust_portrait.visible = _bust_portrait.texture != null
 	_name_label.text = definition.get_public_display_name().to_upper()
 	_role_label.text = definition.get_public_role()
 	_passive_icon.texture = definition.get_public_passive_icon()
@@ -310,6 +401,7 @@ func _select_index(index: int, animate: bool) -> void:
 	_ability_icon.visible = _ability_icon.texture != null
 	_confirm_button.text = "GIOCA CON %s" % definition.get_public_display_name().to_upper()
 	_confirm_button.disabled = false
+	_layout_portrait_stage()
 	_layout_cards(animate)
 	call_deferred("_focus_selected_card")
 
@@ -325,6 +417,70 @@ func _navigate(direction: int) -> void:
 	_select_index(_selected_index + signi(direction), true)
 
 
+## Il pannello segue la viewport invece di restare una scatola fissa, ma non
+## supera mai lo spazio disponibile: il margine sinistro piu' generoso tiene la
+## composizione fuori dal ritaglio fotocamera in landscape.
+func _on_overlay_resized() -> void:
+	if not is_instance_valid(_selection_panel):
+		return
+	var available := Vector2(
+		maxf(size.x - PANEL_MARGIN_LEFT - PANEL_MARGIN_RIGHT, 0.0),
+		maxf(size.y - PANEL_MARGIN_VERTICAL * 2.0, 0.0)
+	)
+	if available.x <= 0.0 or available.y <= 0.0:
+		return
+	_selection_panel.custom_minimum_size = Vector2(
+		minf(clampf(available.x, PANEL_MIN_SIZE.x, PANEL_MAX_SIZE.x), available.x),
+		minf(clampf(available.y, PANEL_MIN_SIZE.y, PANEL_MAX_SIZE.y), available.y)
+	)
+
+
+func _on_portrait_stage_resized() -> void:
+	_layout_portrait_stage()
+
+
+## Due composizioni possibili per l'area Friend: identita' accanto al busto sui
+## formati larghi, sotto al busto su quelli stretti. Vince quella che lascia il
+## busto piu' grande, cosi' il personaggio resta il punto focale anche a 4:3.
+## L'affiancamento e' l'unico caso in cui il busto sconfina sulla fascia roster.
+func _layout_portrait_stage() -> void:
+	if (
+		not is_instance_valid(_portrait_stage)
+		or not is_instance_valid(_bust_portrait)
+		or not is_instance_valid(_identity_block)
+	):
+		return
+	var stage := _portrait_stage.size
+	if stage.x <= 0.0 or stage.y <= 0.0:
+		return
+	var identity_height := maxf(
+		_identity_block.get_combined_minimum_size().y,
+		IDENTITY_MIN_HEIGHT
+	)
+	var side_bust := minf(
+		stage.y + PORTRAIT_ROSTER_OVERLAP,
+		stage.x - IDENTITY_MIN_WIDTH - IDENTITY_GAP
+	)
+	var stacked_bust := minf(stage.x, stage.y - identity_height - IDENTITY_GAP)
+	var bust_side := maxf(maxf(side_bust, stacked_bust), 0.0)
+	if side_bust >= stacked_bust:
+		_bust_portrait.position = Vector2(stage.x - bust_side, 0.0)
+		_identity_block.position = Vector2(0.0, (stage.y - identity_height) * 0.5)
+		_identity_block.size = Vector2(
+			maxf(stage.x - bust_side - IDENTITY_GAP, 0.0),
+			identity_height
+		)
+	else:
+		_bust_portrait.position = Vector2((stage.x - bust_side) * 0.5, 0.0)
+		_identity_block.position = Vector2(0.0, stage.y - identity_height)
+		_identity_block.size = Vector2(stage.x, identity_height)
+	_bust_portrait.size = Vector2(bust_side, bust_side)
+
+
+## La fascia scorre attorno al Friend selezionato, che resta sempre al centro:
+## navigando, le miniature slittano di uno slot invece di limitarsi a spostare
+## l'evidenza. Il Friend diametralmente opposto resta fuori dalla fascia e
+## rientra ruotando. Wrap e indice restano quelli di `_navigate`.
 func _layout_cards(animate: bool) -> void:
 	if not is_instance_valid(_carousel_viewport) or _selected_index < 0:
 		return
@@ -332,57 +488,61 @@ func _layout_cards(animate: bool) -> void:
 	var viewport_size := _carousel_viewport.size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		return
-	var current_card_size := Vector2(
-		clampf(viewport_size.x * 0.58, 200.0, 350.0),
-		minf(viewport_size.y - 8.0, 304.0)
+	var count := _definitions.size()
+	if count <= 0:
+		return
+	var slots := mini(ROSTER_VISIBLE_SLOTS, count)
+	var half_span := float(slots - 1) * 0.5
+	var slot_width := (
+		(viewport_size.x - ROSTER_CARD_GAP * float(slots - 1)) / float(slots)
 	)
-	var preview_width := clampf(
-		(viewport_size.x - current_card_size.x) * 0.5 - 10.0,
-		44.0,
-		154.0
-	)
+	if slot_width <= 0.0:
+		return
+	var current_card_size := Vector2(slot_width, maxf(viewport_size.y - 4.0, 1.0))
 	var preview_card_size := Vector2(
-		preview_width,
-		minf(viewport_size.y - 46.0, 238.0)
+		maxf(slot_width - ROSTER_PREVIEW_INSET.x, 1.0),
+		maxf(viewport_size.y - 4.0 - ROSTER_PREVIEW_INSET.y, 1.0)
 	)
-	var card_gap := 8.0
 	var tween: Tween
 	if animate:
 		tween = create_tween()
 		tween.set_parallel(true)
 		tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 		_transition_tween = tween
-	var count := _definitions.size()
 	for index in count:
 		var definition := _definitions[index]
 		var button := get_button(definition.id)
+		if button == null:
+			continue
 		var relative := index - _selected_index
 		if relative > count / 2:
 			relative -= count
 		elif relative < -count / 2:
 			relative += count
-		if absi(relative) > 1:
+		if absi(relative) > int(half_span):
 			button.visible = false
 			button.focus_mode = Control.FOCUS_NONE
 			continue
 		var is_current := relative == 0
 		var target_size := current_card_size if is_current else preview_card_size
+		var slot_center := (
+			viewport_size.x * 0.5 + float(relative) * (slot_width + ROSTER_CARD_GAP)
+		)
 		var target_position := Vector2(
-			(viewport_size.x - target_size.x) * 0.5,
+			slot_center - target_size.x * 0.5,
 			(viewport_size.y - target_size.y) * 0.5
 		)
-		if relative < 0:
-			target_position.x = (viewport_size.x - current_card_size.x) * 0.5 - card_gap - target_size.x
-		elif relative > 0:
-			target_position.x = (viewport_size.x + current_card_size.x) * 0.5 + card_gap
-		var target_modulate := Color.WHITE if is_current else Color(0.7, 0.74, 0.78, 0.72)
+		var target_modulate := Color.WHITE if is_current else ROSTER_PREVIEW_MODULATE
 		var was_visible := button.visible
 		button.visible = true
 		button.z_index = 2 if is_current else 1
 		button.focus_mode = Control.FOCUS_ALL if is_current else Control.FOCUS_NONE
+		var icon_padding := (
+			ROSTER_SELECTED_ICON_PADDING if is_current else ROSTER_PREVIEW_ICON_PADDING
+		)
 		button.add_theme_constant_override(
 			"icon_max_width",
-			mini(int(target_size.x - 24.0), 264) if is_current else mini(int(target_size.x - 12.0), 132)
+			maxi(int(target_size.x - icon_padding), ROSTER_MIN_ICON_WIDTH)
 		)
 		_apply_card_role(button, is_current)
 		if animate:
@@ -410,21 +570,23 @@ func _apply_card_role(button: Button, is_current: bool) -> void:
 func _build_card_styles() -> void:
 	_center_style = _make_selected_card_style(Color.WHITE)
 	_center_focus_style = _make_selected_card_style(Color(1.0, 0.96, 0.78, 1.0))
-	_preview_style = _make_card_style(Color(0.01, 0.022, 0.034, 0.9), Color(0.2, 0.24, 0.28, 1.0), 3)
-	_preview_focus_style = _make_card_style(Color(0.035, 0.04, 0.045, 0.96), Color(0.78, 0.58, 0.27, 1.0), 3)
+	_preview_style = _make_card_style(Color(0.02, 0.032, 0.046, 1.0), Color(0.2, 0.24, 0.28, 1.0), 3)
+	_preview_focus_style = _make_card_style(Color(0.045, 0.05, 0.058, 1.0), Color(0.78, 0.58, 0.27, 1.0), 3)
 
 
+## Stessa cornice della pausa, ma il 9-slice va ritarato: nella fascia roster la
+## card selezionata e' larga ~90-130px, non ~350px come nel vecchio carosello.
 func _make_selected_card_style(tint: Color) -> StyleBoxTexture:
 	var style := StyleBoxTexture.new()
 	style.texture = SELECTED_CARD_FRAME
-	style.texture_margin_left = 42.0
-	style.texture_margin_top = 42.0
-	style.texture_margin_right = 42.0
-	style.texture_margin_bottom = 42.0
-	style.content_margin_left = 16.0
-	style.content_margin_top = 16.0
-	style.content_margin_right = 16.0
-	style.content_margin_bottom = 16.0
+	style.texture_margin_left = 22.0
+	style.texture_margin_top = 22.0
+	style.texture_margin_right = 22.0
+	style.texture_margin_bottom = 22.0
+	style.content_margin_left = 6.0
+	style.content_margin_top = 6.0
+	style.content_margin_right = 6.0
+	style.content_margin_bottom = 6.0
 	style.modulate_color = tint
 	return style
 
@@ -439,10 +601,10 @@ func _make_card_style(background: Color, border: Color, width: int) -> StyleBoxF
 	style.shadow_color = Color(0.0, 0.0, 0.0, 0.78)
 	style.shadow_size = 5
 	style.shadow_offset = Vector2(0.0, 3.0)
-	style.content_margin_left = 8.0
-	style.content_margin_top = 8.0
-	style.content_margin_right = 8.0
-	style.content_margin_bottom = 8.0
+	style.content_margin_left = 6.0
+	style.content_margin_top = 6.0
+	style.content_margin_right = 6.0
+	style.content_margin_bottom = 6.0
 	return style
 
 

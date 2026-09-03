@@ -294,6 +294,7 @@
         "tests/unit/test_b11_upgrade_overlay.gd",
         "tests/unit/test_b18t_character_carousel.gd",
         "tests/unit/test_b18w_character_select_refinement.gd",
+        "tests/unit/test_ps069_character_select_bust_portrait.gd",
         "tests/unit/test_b18o_welcome_flow.gd",
         "tests/unit/test_b54_tutorial_flow.gd",
         "tests/unit/test_ps048_tutorial_runtime_fidelity.gd",

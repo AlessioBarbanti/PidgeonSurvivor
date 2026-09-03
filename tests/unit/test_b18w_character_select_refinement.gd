@@ -161,6 +161,7 @@ func _assert_hierarchy(selector: CharacterSelectOverlay) -> void:
 	var title_rect := selector.get_title_rect()
 	var carousel_rect := selector.get_carousel_rect()
 	var center_rect := selector.get_center_card_rect()
+	var portrait_stage_rect := selector.get_portrait_stage_rect()
 	var ability_rect := selector.get_ability_panel_rect()
 	var ability_icon_rect := selector.get_ability_icon_rect()
 	var passive_card := selector.get_node_or_null(
@@ -230,10 +231,20 @@ func _assert_hierarchy(selector: CharacterSelectOverlay) -> void:
 		and carousel_rect.encloses(selector.get_preview_card_rect(1)),
 		"Le anteprime devono essere mini-card complete, non tagliate."
 	)
-	assert_true(ability_rect.position.x > carousel_rect.end.x, "Le card abilita devono essere laterali al carosello.")
+	# PS-069: il carosello e' diventato una fascia roster a tutta larghezza sotto
+	# la composizione. Il pannello kit non e' piu' laterale al carosello ma
+	# all'area del busto, e resta sopra la fascia.
 	assert_true(
-		ability_rect.position.x - carousel_rect.end.x <= 70.0,
+		ability_rect.position.x >= portrait_stage_rect.end.x,
+		"Le card abilita devono essere laterali all'area del personaggio."
+	)
+	assert_true(
+		ability_rect.position.x - portrait_stage_rect.end.x <= 70.0,
 		"Personaggio e kit devono dialogare senza una frattura eccessiva."
+	)
+	assert_true(
+		ability_rect.position.y < carousel_rect.position.y,
+		"Il kit deve stare sopra la fascia roster, non accanto."
 	)
 	assert_true(
 		ability_rect.size.x >= 400.0 and ability_rect.size.x <= 420.0,
@@ -300,9 +311,11 @@ func _assert_hierarchy(selector: CharacterSelectOverlay) -> void:
 		role_rect.position.y - name_rect.end.y >= 0.0 and role_rect.position.y - name_rect.end.y <= 12.0,
 		"Nome e ruolo devono formare un unico blocco compatto."
 	)
+	# PS-069: fra il blocco identità e il CTA ora c'è la fascia roster, quindi
+	# la continuità verticale si misura da lì.
 	assert_true(
-		confirm_rect.position.y - role_rect.end.y <= 34.0,
-		"Il CTA deve seguire il blocco identità senza una terra di nessuno."
+		confirm_rect.position.y - carousel_rect.end.y <= 34.0,
+		"Il CTA deve seguire la fascia roster senza una terra di nessuno."
 	)
 	assert_true(confirm_rect.position.y >= ability_rect.end.y, "Il CTA deve chiudere la gerarchia in basso.")
 	assert_true(

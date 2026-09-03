@@ -53,7 +53,8 @@ func test_character_carousel_contract() -> void:
 	)
 	assert_eq(selector.get_roster_size(), 8, "Il carosello deve costruire otto card dati.")
 	assert_eq(
-		selector.get_visible_card_ids().size(), 3, "Solo centro e due anteprime devono essere visibili."
+		selector.get_visible_card_ids().size(), 7,
+		"PS-069: la fascia roster scorrevole deve mostrare sette Friend attorno al selezionato."
 	)
 	_assert_hd_portraits(registry, selector)
 
@@ -115,7 +116,7 @@ func test_character_carousel_contract() -> void:
 			selector.get_selected_index(), expected_index, "L'indice centrale deve avanzare deterministicamente."
 		)
 		assert_eq(
-			selector.get_visible_card_ids().size(), 3, "Ogni profilo deve conservare due anteprime."
+			selector.get_visible_card_ids().size(), 7, "Ogni profilo deve conservare la stessa finestra di roster."
 		)
 		var copy := selector.get_displayed_copy()
 		assert_eq(
@@ -205,9 +206,13 @@ func _assert_hd_portraits(registry: FriendRegistry, selector: CharacterSelectOve
 				definition.get_public_selection_portrait().get_size(), Vector2(256.0, 256.0),
 				"%s deve usare un derivato UI 256x256." % friend_id
 			)
+		# PS-069: la miniatura del roster mostra il busto, non piu' la figura
+		# intera. `selection_portrait` resta un derivato valido nei dati e
+		# continua a essere richiesto dall'auto-check di movement_slice, ma non
+		# e' piu' l'icona del bottone.
 		assert_eq(
-			selector.get_button(friend_id).icon, definition.get_public_selection_portrait(),
-			"%s deve mostrare il ritratto dati nella card." % friend_id
+			selector.get_roster_icon_source(friend_id), definition.get_public_portrait(),
+			"%s deve mostrare il busto PS-068 nella miniatura del roster." % friend_id
 		)
 
 
@@ -348,7 +353,7 @@ func _assert_rebuilt_selector(
 		"%s deve ricostruire il profilo centrale corrente." % source
 	)
 	assert_eq(
-		selector.get_visible_card_ids().size(), 3, "%s deve ricostruire centro e anteprime." % source
+		selector.get_visible_card_ids().size(), 7, "%s deve ricostruire la fascia roster." % source
 	)
 	assert_false(selector.has_active_transition(), "%s non deve lasciare Tween residui." % source)
 

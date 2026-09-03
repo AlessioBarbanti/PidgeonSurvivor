@@ -6,10 +6,10 @@
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0, 0, 0, 0)
-content_margin_left = 42.0
-content_margin_top = 28.0
-content_margin_right = 42.0
-content_margin_bottom = 44.0
+content_margin_left = 36.0
+content_margin_top = 8.0
+content_margin_right = 36.0
+content_margin_bottom = 32.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_info_panel"]
 bg_color = Color(0.009, 0.022, 0.037, 0.97)
@@ -26,9 +26,9 @@ shadow_color = Color(0, 0, 0, 0.78)
 shadow_size = 6
 shadow_offset = Vector2(0, 4)
 content_margin_left = 12.0
-content_margin_top = 8.0
+content_margin_top = 6.0
 content_margin_right = 12.0
-content_margin_bottom = 8.0
+content_margin_bottom = 6.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_normal"]
 bg_color = Color(0.055, 0.06, 0.075, 0.98)
@@ -181,6 +181,8 @@ expand_margin_left = 8.0
 expand_margin_top = 8.0
 expand_margin_right = 8.0
 expand_margin_bottom = 8.0
+content_margin_top = 16.0
+content_margin_bottom = 16.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cta_hover"]
 texture = SubResource("AtlasTexture_cta")
@@ -193,6 +195,8 @@ expand_margin_top = 10.0
 expand_margin_right = 10.0
 expand_margin_bottom = 10.0
 modulate_color = Color(1, 1, 0.86, 1)
+content_margin_top = 16.0
+content_margin_bottom = 16.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_cta_pressed"]
 texture = SubResource("AtlasTexture_cta")
@@ -205,6 +209,8 @@ expand_margin_top = 5.0
 expand_margin_right = 6.0
 expand_margin_bottom = 7.0
 modulate_color = Color(0.72, 0.72, 0.72, 1)
+content_margin_top = 16.0
+content_margin_bottom = 16.0
 
 [node name="CharacterSelectOverlay" type="Control"]
 process_mode = 3
@@ -249,10 +255,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = 20.0
+offset_left = 32.0
+offset_top = 14.0
 offset_right = -20.0
-offset_bottom = -20.0
+offset_bottom = -14.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -290,8 +296,8 @@ text = "INDIETRO"
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
-theme_override_colors/font_color = Color(0.48, 0.88, 1, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_colors/font_color = Color(0.96, 0.92, 0.83, 1)
+theme_override_colors/font_shadow_color = Color(0.09, 0.04, 0.01, 0.92)
 theme_override_constants/shadow_offset_x = 3
 theme_override_constants/shadow_offset_y = 3
 theme_type_variation = &"TitleL"
@@ -303,84 +309,34 @@ custom_minimum_size = Vector2(138, 0)
 layout_mode = 2
 
 [node name="MainRow" type="HBoxContainer" parent="Center/SelectionPanel/Content"]
-custom_minimum_size = Vector2(0, 392)
+custom_minimum_size = Vector2(0, 320)
 layout_mode = 2
-size_flags_vertical = 1
+size_flags_vertical = 3
 theme_override_constants/separation = 6
 
-[node name="CharacterColumn" type="VBoxContainer" parent="Center/SelectionPanel/Content/MainRow"]
-custom_minimum_size = Vector2(410, 0)
+[node name="PortraitStage" type="Control" parent="Center/SelectionPanel/Content/MainRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 4
+mouse_filter = 2
 
-[node name="CarouselFrame" type="Control" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn"]
-custom_minimum_size = Vector2(0, 324)
-layout_mode = 2
-
-[node name="PreviousButton" type="Button" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn/CarouselFrame"]
+[node name="BustPortrait" type="TextureRect" parent="Center/SelectionPanel/Content/MainRow/PortraitStage"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 48)
+z_index = -1
+texture_filter = 1
 layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_left = 0.0
-offset_top = -24.0
-offset_right = 48.0
-offset_bottom = 24.0
-grow_vertical = 2
-focus_mode = 0
-theme_override_colors/font_color = Color(1, 0.78, 0.35, 1)
-theme_override_colors/font_hover_color = Color(1, 0.92, 0.62, 1)
-theme_type_variation = &"GlyphButtonS"
-theme_override_styles/normal = SubResource("StyleBoxFlat_arrow_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_arrow_hover")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow_normal")
-text = "◀"
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
 
-[node name="NextButton" type="Button" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn/CarouselFrame"]
+[node name="IdentityBlock" type="VBoxContainer" parent="Center/SelectionPanel/Content/MainRow/PortraitStage"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(48, 48)
 layout_mode = 1
-anchors_preset = 6
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -48.0
-offset_top = -24.0
-offset_right = 0.0
-offset_bottom = 24.0
-grow_horizontal = 0
-grow_vertical = 2
-focus_mode = 0
-theme_override_colors/font_color = Color(1, 0.78, 0.35, 1)
-theme_override_colors/font_hover_color = Color(1, 0.92, 0.62, 1)
-theme_type_variation = &"GlyphButtonS"
-theme_override_styles/normal = SubResource("StyleBoxFlat_arrow_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_arrow_hover")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow_normal")
-text = "▶"
-
-[node name="CarouselViewport" type="Control" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn/CarouselFrame"]
-unique_name_in_owner = true
-clip_contents = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 48.0
-offset_right = -48.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 1
-
-[node name="IdentityBlock" type="VBoxContainer" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn"]
-layout_mode = 2
+mouse_filter = 2
 theme_override_constants/separation = 2
 
-[node name="NameLabel" type="Label" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn/IdentityBlock"]
+[node name="NameLabel" type="Label" parent="Center/SelectionPanel/Content/MainRow/PortraitStage/IdentityBlock"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.84, 0.3, 1)
@@ -391,11 +347,43 @@ theme_type_variation = &"TitleL"
 text = "Magno"
 horizontal_alignment = 1
 
-[node name="RoleLabel" type="Label" parent="Center/SelectionPanel/Content/MainRow/CharacterColumn/IdentityBlock"]
+[node name="IdentityRule" type="HBoxContainer" parent="Center/SelectionPanel/Content/MainRow/PortraitStage/IdentityBlock"]
+custom_minimum_size = Vector2(0, 6)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="RuleLeft" type="ColorRect" parent="Center/SelectionPanel/Content/MainRow/PortraitStage/IdentityBlock/IdentityRule"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(0.66, 0.5, 0.22, 0.85)
+
+[node name="RuleDiamond" type="ColorRect" parent="Center/SelectionPanel/Content/MainRow/PortraitStage/IdentityBlock/IdentityRule"]
+custom_minimum_size = Vector2(5, 5)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+pivot_offset = Vector2(2.5, 2.5)
+rotation = 0.785398
+mouse_filter = 2
+color = Color(1, 0.78, 0.32, 1)
+
+[node name="RuleRight" type="ColorRect" parent="Center/SelectionPanel/Content/MainRow/PortraitStage/IdentityBlock/IdentityRule"]
+custom_minimum_size = Vector2(0, 2)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+mouse_filter = 2
+color = Color(0.66, 0.5, 0.22, 0.85)
+
+[node name="RoleLabel" type="Label" parent="Center/SelectionPanel/Content/MainRow/PortraitStage/IdentityBlock"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.74, 0.88, 0.96, 1)
+theme_override_colors/font_color = Color(0.9, 0.87, 0.8, 1)
 theme_type_variation = &"BodyM"
 text = "Ruolo"
 horizontal_alignment = 1
@@ -403,15 +391,15 @@ autowrap_mode = 2
 
 [node name="AbilityCards" type="VBoxContainer" parent="Center/SelectionPanel/Content/MainRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(410, 392)
+custom_minimum_size = Vector2(410, 320)
 layout_mode = 2
 size_flags_horizontal = 1
 size_flags_vertical = 4
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="PassiveCard" type="PanelContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityCards"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(410, 192)
+custom_minimum_size = Vector2(410, 156)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_info_panel")
@@ -464,7 +452,7 @@ autowrap_mode = 2
 
 [node name="AbilityCard" type="PanelContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityCards"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(410, 192)
+custom_minimum_size = Vector2(410, 156)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_info_panel")
@@ -493,9 +481,9 @@ theme_override_constants/separation = 2
 
 [node name="AbilityEyebrow" type="Label" parent="Center/SelectionPanel/Content/MainRow/AbilityCards/AbilityCard/AbilityContent/AbilityText"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.62, 0.2, 1)
+theme_override_colors/font_color = Color(0.48, 0.88, 1, 1)
 theme_type_variation = &"Eyebrow"
-text = "ABILITÀ"
+text = "ABILITÀ ATTIVA"
 
 [node name="AbilityTitleLabel" type="Label" parent="Center/SelectionPanel/Content/MainRow/AbilityCards/AbilityCard/AbilityContent/AbilityText"]
 unique_name_in_owner = true
@@ -515,12 +503,54 @@ theme_type_variation = &"BodyS"
 text = "Descrizione abilità"
 autowrap_mode = 2
 
+[node name="RosterRow" type="HBoxContainer" parent="Center/SelectionPanel/Content"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PreviousButton" type="Button" parent="Center/SelectionPanel/Content/RosterRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.78, 0.35, 1)
+theme_override_colors/font_hover_color = Color(1, 0.92, 0.62, 1)
+theme_type_variation = &"GlyphButtonS"
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_arrow_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow_normal")
+text = "◀"
+
+[node name="CarouselViewport" type="Control" parent="Center/SelectionPanel/Content/RosterRow"]
+unique_name_in_owner = true
+clip_contents = true
+custom_minimum_size = Vector2(0, 88)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 1
+
+[node name="NextButton" type="Button" parent="Center/SelectionPanel/Content/RosterRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+theme_override_colors/font_color = Color(1, 0.78, 0.35, 1)
+theme_override_colors/font_hover_color = Color(1, 0.92, 0.62, 1)
+theme_type_variation = &"GlyphButtonS"
+theme_override_styles/normal = SubResource("StyleBoxFlat_arrow_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_arrow_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_arrow_normal")
+text = "▶"
+
 [node name="CtaRow" type="CenterContainer" parent="Center/SelectionPanel/Content"]
 layout_mode = 2
 
 [node name="ConfirmButton" type="Button" parent="Center/SelectionPanel/Content/CtaRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(500, 72)
+custom_minimum_size = Vector2(460, 72)
 layout_mode = 2
 texture_filter = 1
 theme_type_variation = &"ButtonPrimary"

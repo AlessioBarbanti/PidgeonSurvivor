@@ -62,6 +62,52 @@ L'esclusività dei modali è garantita a monte dall'enum di stato di
 `RunController`: essendo `_state` un singolo valore, `LEVEL_UP`,
 `BOSS_INTRO`, `BARB_REWARD` e `MANUAL_PAUSE` non possono mai coesistere.
 
+### Composizione del selettore personaggi
+
+Il selettore ([scenes/ui/character_select_overlay.tscn](../scenes/ui/character_select_overlay.tscn))
+è organizzato attorno a due domande distinte: **chi sto scegliendo** a
+sinistra, **come gioca** a destra.
+
+- **Busto del Friend** (`%BustPortrait`) — è la rappresentazione primaria del
+  personaggio selezionato e risolve `FriendDefinition.get_public_portrait()`,
+  cioè i ritratti busto prodotti da PS-068
+  (`assets/art/characters/<id>/generated/portrait.png`, `256×256`). Non è
+  chiuso in un pannello: la silhouette trasparente partecipa alla
+  composizione e sconfina fino a `PORTRAIT_ROSTER_OVERLAP` (80px) sotto la
+  propria riga, dove la fascia roster — fratello successivo nell'albero — gli
+  viene disegnata sopra. L'arte a figura intera `selection_portrait`
+  (`carousel.png`) non compare più in questa schermata: resta nei dati come
+  rappresentazione di gameplay.
+- **Blocco identità** (`%IdentityBlock`) — nome in oro, filo ornamentale e
+  ruolo, appartiene visivamente allo stesso blocco del busto.
+  `_layout_portrait_stage()` sceglie fra due composizioni e adotta quella che
+  lascia il busto più grande: identità **accanto** al busto sui formati larghi
+  (16:9 e 20:9, busto ≈ 468px), **sotto** il busto sui formati stretti (4:3),
+  dove affiancare comprimerebbe troppo entrambi.
+- **Pannelli Passiva / Abilità attiva** — struttura invariata, occhielli ciano
+  come colore di sistema, titoli in oro, icona `136×136`.
+- **Fascia roster** (`%RosterRow`) — una strip che **scorre** attorno al Friend
+  selezionato, il quale resta sempre al centro: mostra
+  `ROSTER_VISIBLE_SLOTS` (7) miniature, tre per lato, e con otto Friend il
+  diametralmente opposto resta fuori e rientra ruotando. Le miniature
+  ritagliano il busto sul volto con un'unica regione condivisa
+  (`ROSTER_HEADSHOT_REGION`), uguale per tutti, senza adattamenti
+  per-personaggio. Il selezionato porta la cornice `pause_panel_frame.png`,
+  gli altri restano rientrati e attenuati **a tinta piena**: con un alpha < 1
+  il busto sconfinante traspariva attraverso le card. Indice, wrap circolare,
+  frecce, swipe e tap restano quelli di `_navigate`: cambia dove vengono
+  disegnate le card, non la logica di selezione.
+- **Gerarchia cromatica** — oro/arancio per personaggio, nomi e CTA;
+  ciano/teal per etichette e segnali di sistema; avorio caldo per il titolo
+  `SCEGLI IL PERSONAGGIO`, che non compete più come terzo punto focale.
+
+Il pannello non è più una scatola fissa `910×490`: `_on_overlay_resized()` lo
+fa crescere con la viewport fra `PANEL_MIN_SIZE` e `PANEL_MAX_SIZE`
+(`1400×760`), così il 20:9 usa larghezza reale. I margini sono asimmetrici
+(`PANEL_MARGIN_LEFT` 32 contro 20 a destra e 14 in verticale): in landscape il
+ritaglio fotocamera del Pixel 9 sta a sinistra, quindi quel lato conserva più
+guardia oltre alla safe area di sistema già applicata da `SafeAreaRoot`.
+
 ## HUD e modali di run
 
 - **HUD** (`scripts/ui/hud.gd`) — sempre visibile durante `RUNNING`: barre
