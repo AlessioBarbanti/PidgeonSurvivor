@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dmwcrq3jidahv"
-path="res://.godot/imported/PS-069-layout-idea.png-50165732f9802866c89cfd80f94bce55.ctex"
+path="res://.godot/imported/PS-069-layout-idea.png-e5d0fe8e3ff23a513398839e292b6ae9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://docs/cards/3_in_sprint/PS-069-layout-idea.png"
-dest_files=["res://.godot/imported/PS-069-layout-idea.png-50165732f9802866c89cfd80f94bce55.ctex"]
+source_file="res://docs/cards/4_to_test/PS-069-layout-idea.png"
+dest_files=["res://.godot/imported/PS-069-layout-idea.png-e5d0fe8e3ff23a513398839e292b6ae9.ctex"]
 
 [params]
 
