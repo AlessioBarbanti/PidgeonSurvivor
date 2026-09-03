@@ -355,7 +355,13 @@ Profilo minimo prima della chiusura:
 
 - [ ] Runtime Windows.
 
-- [ ] Validazione statica APK.
+- [x] Validazione statica APK. CI (workflow `android-debug-release.yml`, PS-060),
+      run [33781099162](https://github.com/AlessioBarbanti/PidgeonSurvivor/actions/runs/33781099162),
+      commit `ef25524`, 2026-09-03: `aapt2 dump badging` verde su package
+      `com.ilgioco.pidgeonsurvivor`, `minSdk 31`, `targetSdk 36`, solo
+      `arm64-v8a`; `apksigner verify` verde. APK pubblicato come asset della
+      release `android-debug-latest`. Questo sandbox non ha SDK Android
+      locale: la build/validazione è girata in CI, non qui.
 
 - [ ] Runtime fisico Pixel 9.
 
