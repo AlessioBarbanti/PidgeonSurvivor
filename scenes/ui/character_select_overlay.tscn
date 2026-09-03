@@ -321,10 +321,11 @@ custom_minimum_size = Vector2(138, 0)
 layout_mode = 2
 
 [node name="MainRow" type="HBoxContainer" parent="Center/SelectionPanel/Content"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 320)
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 6
+theme_override_constants/separation = 24
 
 [node name="PortraitStage" type="Control" parent="Center/SelectionPanel/Content/MainRow"]
 unique_name_in_owner = true
@@ -368,6 +369,7 @@ text = "Magno"
 horizontal_alignment = 1
 
 [node name="IdentityRule" type="HBoxContainer" parent="Center/SelectionPanel/Content/MainRow/PortraitStage/IdentityBlock"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 6)
 layout_mode = 2
 mouse_filter = 2
@@ -411,11 +413,11 @@ autowrap_mode = 2
 
 [node name="AbilityCards" type="VBoxContainer" parent="Center/SelectionPanel/Content/MainRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(440, 320)
+custom_minimum_size = Vector2(440, 0)
 layout_mode = 2
 size_flags_horizontal = 1
-size_flags_vertical = 4
-theme_override_constants/separation = 2
+size_flags_vertical = 0
+theme_override_constants/separation = 8
 
 [node name="PassiveCard" type="PanelContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityCards"]
 unique_name_in_owner = true

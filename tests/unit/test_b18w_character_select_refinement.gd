@@ -246,9 +246,27 @@ func _assert_hierarchy(selector: CharacterSelectOverlay) -> void:
 		ability_rect.position.y < carousel_rect.position.y,
 		"Il kit deve stare sopra la fascia roster, non accanto."
 	)
+	# PS-069: la colonna non e' piu' larga 440 fissi ma cresce col pannello.
+	# La finestra secca lascia il posto ai due vincoli che quella misura
+	# serviva a garantire: colonna di testo sufficiente da un lato, colonna
+	# Friend ancora dominante dall'altro.
 	assert_true(
-		ability_rect.size.x >= 430.0 and ability_rect.size.x <= 450.0,
-		"Le card abilita devono bilanciare il peso del carosello."
+		ability_rect.size.x >= 440.0,
+		(
+			"Le card abilita devono restare larghe almeno 440 (colonna di testo"
+			+ " leggibile), non %.0f."
+		) % ability_rect.size.x
+	)
+	assert_true(
+		ability_rect.size.x <= panel_rect.size.x * 0.45,
+		(
+			"Le card abilita non devono superare il 45%% del pannello (%.0f su"
+			+ " %.0f): il Friend resta il punto focale."
+		) % [ability_rect.size.x, panel_rect.size.x]
+	)
+	assert_true(
+		ability_rect.size.x < portrait_stage_rect.size.x,
+		"La colonna Friend deve restare piu' larga delle card Passiva/Abilita."
 	)
 	assert_true(ability_rect.size.y <= 440.0, "Le due card abilita devono restare compatte.")
 	assert_true(passive_card != null and ability_card != null, "Passiva e abilita devono usare due riquadri separati.")

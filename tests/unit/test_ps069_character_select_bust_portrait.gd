@@ -72,6 +72,7 @@ func test_character_select_bust_portrait_contract() -> void:
 	await _assert_bust_synchronises(selector, friends, abilities)
 	_assert_bust_dominates(selector)
 	_assert_circular_navigation_unchanged(selector)
+	await _assert_ability_cards_are_stable(selector)
 	await _assert_layout_profiles(selector, arena_layout)
 
 	assert_true(
@@ -259,6 +260,32 @@ func _assert_circular_navigation_unchanged(selector: CharacterSelectOverlay) -> 
 	)
 
 
+## PS-069: passiva e abilita' hanno testi di lunghezza diversa per Friend.
+## L'altezza della colonna e' derivata dal layout, non dal testo del Friend
+## corrente: sfogliare il roster non deve far ballare le due card.
+func _assert_ability_cards_are_stable(selector: CharacterSelectOverlay) -> void:
+	var reference := Rect2()
+	for friend_id in EXPECTED_IDS:
+		var button := selector.get_button(friend_id)
+		if button == null:
+			continue
+		button.pressed.emit()
+		await wait_seconds(TRANSITION_SETTLE_SECONDS)
+		var ability_rect := selector.get_ability_panel_rect()
+		if reference == Rect2():
+			reference = ability_rect
+			continue
+		assert_almost_eq(
+			ability_rect.size, reference.size, Vector2.ONE,
+			"%s: la colonna Passiva/Abilita' deve conservare la stessa misura (%s vs %s)."
+			% [friend_id, ability_rect.size, reference.size]
+		)
+		assert_almost_eq(
+			ability_rect.position, reference.position, Vector2.ONE,
+			"%s: la colonna Passiva/Abilita' non deve spostarsi cambiando Friend." % friend_id
+		)
+
+
 func _assert_layout_profiles(
 	selector: CharacterSelectOverlay, arena_layout: ArenaLayout
 ) -> void:
@@ -298,6 +325,22 @@ func _assert_layout_profiles(
 		assert_false(
 			ability_rect.intersects(carousel_rect),
 			"%s: le card Passiva/Abilita' non devono sovrapporsi alla fascia roster." % profile
+		)
+		# PS-069: la riga dorata dell'identita' attraversa la schermata come
+		# separatore; la colonna informativa deve fermarsi sopra, non tagliarla.
+		var rule_rect := selector.get_identity_rule_rect()
+		assert_true(
+			ability_rect.end.y <= rule_rect.position.y + 0.5,
+			"%s: le card Passiva/Abilita' (fino a %.0f) devono restare sopra la riga dorata (%.0f)."
+			% [profile, ability_rect.end.y, rule_rect.position.y]
+		)
+		assert_true(
+			ability_rect.position.y <= bust_rect.position.y + 0.5,
+			"%s: le card devono partire dal bordo superiore del busto, non a meta' altezza." % profile
+		)
+		assert_false(
+			ability_rect.intersects(rule_rect),
+			"%s: le card Passiva/Abilita' non devono toccare la riga dorata." % profile
 		)
 		assert_false(
 			bust_rect.intersects(confirm_rect), "%s: il busto non deve coprire il CTA." % profile

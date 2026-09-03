@@ -22,17 +22,35 @@ const PANEL_MARGIN_LEFT := 32.0
 const PANEL_MARGIN_RIGHT := 20.0
 const PANEL_MARGIN_VERTICAL := 14.0
 
-## Larghezza fissa delle card Passiva/Abilita'. A 410 la colonna di testo
-## interna (dopo icona 136px, separazione e margini della card) scende a soli
-## 240px: "TERMOSTATO INTERNO" da solo ne occupa 215, un margine di appena
-## 25px in cui basta una metrica del font leggermente diversa (es. resa
-## Android vs desktop) per far uscire il testo dal bordo della card. 440
-## riporta la colonna interna a 270px, un margine reale. Tenuta sotto il 35%
-## circa della larghezza pannello anche al PANEL_MAX_SIZE, cosi' il busto
-## resta l'elemento dominante della schermata.
-const ABILITY_CARDS_WIDTH := 440.0
+## Le card Passiva/Abilita' crescono con il pannello invece di restare una
+## colonna fissa: a larghezza fissa il 20:9 lasciava una fascia vuota fra
+## busto e card, mentre a 4:3 la stessa misura era gia' al limite. La quota
+## non tocca il busto, che e' limitato dall'altezza della riga e non dalla
+## larghezza della colonna Friend: allargare le card sottrae spazio vuoto,
+## non presenza al personaggio.
+##
+## Il pavimento assoluto di leggibilita' e' 440: sotto quella misura la
+## colonna di testo interna (dopo icona 136px, separazione e margini) scende
+## a 240px, e "TERMOSTATO INTERNO" da solo ne occupa 215 — margine troppo
+## sottile perche' una metrica del font leggermente diversa (resa Android vs
+## desktop) non faccia uscire il testo dal bordo. Il minimo qui e' pero' 520,
+## piu' alto: sotto quella soglia le descrizioni piu' lunghe del roster vanno
+## a capo di una riga in piu' e le due card non stanno piu' nel budget fra
+## cima della riga e filo dorato dell'identita'.
+const ABILITY_CARDS_WIDTH_RATIO := 0.42
+const ABILITY_CARDS_MIN_WIDTH := 520.0
+const ABILITY_CARDS_MAX_WIDTH := 580.0
+## Le card si fermano sopra la riga dorata dell'identita': quella riga
+## attraversa la schermata come separatore e non deve essere tagliata dalla
+## colonna informativa. Lo stacco e' misurato dal bordo superiore della riga.
+const ABILITY_CARDS_RULE_GAP := 18.0
 
 const IDENTITY_MIN_HEIGHT := 96.0
+## Nome e ruolo restano agganciati al busto invece di allargarsi a tutta la
+## colonna Friend: una riga dorata larga il doppio del personaggio smette di
+## leggersi come il suo basamento e diventa un separatore di schermata, per
+## giunta a filo delle card Passiva/Abilita'.
+const IDENTITY_BUST_WIDTH_RATIO := 1.5
 ## Il fondo sfumato dietro nome e ruolo copre solo una fascia centrale, non
 ## l'intera colonna: si legge come un alone dietro il testo, non come una
 ## seconda card sotto il busto.
@@ -65,12 +83,14 @@ const ROSTER_HEADSHOT_REGION := Rect2(56.0, 6.0, 144.0, 144.0)
 @onready var _bust_portrait: TextureRect = %BustPortrait
 @onready var _identity_backdrop: Control = %IdentityBackdrop
 @onready var _identity_block: Control = %IdentityBlock
+@onready var _identity_rule: Control = %IdentityRule
 @onready var _roster_row: Control = %RosterRow
 @onready var _carousel_viewport: Control = %CarouselViewport
 @onready var _previous_button: Button = %PreviousButton
 @onready var _next_button: Button = %NextButton
 @onready var _name_label: Label = %NameLabel
 @onready var _role_label: Label = %RoleLabel
+@onready var _main_row: Control = %MainRow
 @onready var _ability_cards: Control = %AbilityCards
 @onready var _passive_card: PanelContainer = %PassiveCard
 @onready var _passive_icon: TextureRect = %PassiveIcon
@@ -306,6 +326,12 @@ func get_portrait_stage_rect() -> Rect2:
 	return _global_rect(_portrait_stage)
 
 
+## La riga dorata sotto il nome e' il riferimento verticale della meta'
+## destra: le card Passiva/Abilita' si fermano sopra di essa.
+func get_identity_rule_rect() -> Rect2:
+	return _global_rect(_identity_rule)
+
+
 func get_identity_block_rect() -> Rect2:
 	return _global_rect(_identity_block)
 
@@ -437,17 +463,45 @@ func _select_index(index: int, animate: bool) -> void:
 ## di una Label con autowrap e' affidabile solo dopo che il layout ha
 ## assegnato la sua larghezza corrente.
 ##
-## L'altezza condivisa e' il massimo fra i due Friend visti finora nella
-## sessione (mai ridotta): resta quindi stabile invece di restringersi ogni
-## volta che si torna a un Friend con testi piu' corti.
+## Le due card condividono l'altezza e insieme riempiono la colonna fino alla
+## riga dorata dell'identita', partendo dal bordo superiore del busto: la
+## meta' destra si legge come un blocco allineato al personaggio invece che
+## come due pannelli sospesi a meta' altezza. Se il testo di un Friend non ci
+## sta, vince il testo: la card cresce oltre la riga invece di troncare.
 func _sync_ability_card_heights() -> void:
-	if not is_instance_valid(_passive_card) or not is_instance_valid(_ability_card):
+	if (
+		not is_instance_valid(_ability_cards)
+		or not is_instance_valid(_passive_card)
+		or not is_instance_valid(_ability_card)
+	):
 		return
-	var target_height := maxf(
+	_passive_card.custom_minimum_size.y = 0.0
+	_ability_card.custom_minimum_size.y = 0.0
+	var natural_height := maxf(
 		_passive_card.get_combined_minimum_size().y, _ability_card.get_combined_minimum_size().y
 	)
+	var separation := float(_ability_cards.get_theme_constant(&"separation"))
+	var budget := maxf(_ability_cards_height_budget() - separation, 0.0) * 0.5
+	var target_height := maxf(natural_height, budget)
 	_passive_card.custom_minimum_size.y = target_height
 	_ability_card.custom_minimum_size.y = target_height
+	_ability_cards.custom_minimum_size.y = target_height * 2.0 + separation
+
+
+## Altezza disponibile per la colonna informativa: dal bordo superiore della
+## riga (dove comincia anche il busto) al bordo superiore della riga dorata,
+## meno lo stacco. La riga dorata sta dentro `IdentityBlock`, sotto il nome.
+func _ability_cards_height_budget() -> float:
+	if not is_instance_valid(_identity_block) or not is_instance_valid(_name_label):
+		return 0.0
+	var rule_offset := (
+		_name_label.get_combined_minimum_size().y
+		+ float(_identity_block.get_theme_constant(&"separation"))
+	)
+	return maxf(
+		_identity_block.position.y + rule_offset - ABILITY_CARDS_RULE_GAP,
+		0.0
+	)
 
 
 func _navigate(direction: int) -> void:
@@ -479,11 +533,40 @@ func _on_overlay_resized() -> void:
 		minf(clampf(available.y, PANEL_MIN_SIZE.y, PANEL_MAX_SIZE.y), available.y)
 	)
 	if is_instance_valid(_ability_cards):
-		_ability_cards.custom_minimum_size.x = ABILITY_CARDS_WIDTH
+		var content_width := panel_width - _selection_panel_content_inset()
+		# La colonna Friend ha una larghezza minima propria: senza questo tetto
+		# le card la spingerebbero fuori e il pannello crescerebbe oltre la
+		# safe area sui formati stretti.
+		var room_for_cards := (
+			content_width
+			- _portrait_stage.custom_minimum_size.x
+			- float(_main_row.get_theme_constant(&"separation"))
+		)
+		_ability_cards.custom_minimum_size.x = minf(
+			clampf(
+				content_width * ABILITY_CARDS_WIDTH_RATIO,
+				ABILITY_CARDS_MIN_WIDTH,
+				ABILITY_CARDS_MAX_WIDTH
+			),
+			maxf(room_for_cards, 0.0)
+		)
+
+
+## Lo spazio orizzontale che il pannello toglie al contenuto vive nello
+## stylebox, non in una costante: leggerlo li' evita che la larghezza delle
+## card scivoli via appena qualcuno ritocca i margini della cornice.
+func _selection_panel_content_inset() -> float:
+	if not is_instance_valid(_selection_panel):
+		return 0.0
+	var panel_style := _selection_panel.get_theme_stylebox(&"panel")
+	if panel_style == null:
+		return 0.0
+	return panel_style.content_margin_left + panel_style.content_margin_right
 
 
 func _on_portrait_stage_resized() -> void:
 	_layout_portrait_stage()
+	call_deferred("_sync_ability_card_heights")
 
 
 ## Il busto occupa l'intera colonna Friend; nome e ruolo non hanno piu' una
@@ -508,15 +591,27 @@ func _layout_portrait_stage() -> void:
 		_identity_block.get_combined_minimum_size().y,
 		IDENTITY_MIN_HEIGHT
 	)
-	_identity_block.position = Vector2(0.0, bust_side - identity_height)
-	_identity_block.size = Vector2(stage.x, identity_height)
+	var identity_width := minf(bust_side * IDENTITY_BUST_WIDTH_RATIO, stage.x)
+	# Il blocco identita' chiude la colonna Friend, non il busto: quando il
+	# busto e' limitato dalla larghezza (formati stretti) resta spazio morto
+	# sotto di lui, e agganciare li' nome e ruolo alzerebbe la riga dorata
+	# togliendo altezza alle card senza guadagnare nulla. Sui formati in cui
+	# il busto riempie la riga le due quote coincidono e la sovrapposizione
+	# voluta sul bordo inferiore del busto resta invariata.
+	var identity_bottom := maxf(bust_side, stage.y)
+	_identity_block.position = Vector2(
+		(stage.x - identity_width) * 0.5, identity_bottom - identity_height
+	)
+	_identity_block.size = Vector2(identity_width, identity_height)
 	if is_instance_valid(_identity_backdrop):
 		var backdrop_width := clampf(
-			stage.x * IDENTITY_BACKDROP_WIDTH_RATIO, IDENTITY_BACKDROP_MIN_WIDTH, stage.x
+			identity_width * IDENTITY_BACKDROP_WIDTH_RATIO,
+			minf(IDENTITY_BACKDROP_MIN_WIDTH, identity_width),
+			identity_width
 		)
 		var backdrop_height := identity_height + IDENTITY_BACKDROP_BLEND_ABOVE
 		_identity_backdrop.position = Vector2(
-			(stage.x - backdrop_width) * 0.5, bust_side - backdrop_height
+			(stage.x - backdrop_width) * 0.5, identity_bottom - backdrop_height
 		)
 		_identity_backdrop.size = Vector2(backdrop_width, backdrop_height)
 

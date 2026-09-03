@@ -81,17 +81,35 @@ sinistra, **come gioca** a destra.
 - **Blocco identità** (`%IdentityBlock`) — nome in oro, filo ornamentale e
   ruolo, **sovrapposto** al bordo inferiore del busto (non più sotto in una
   riga propria, né accanto): busto e identità sono un unico blocco verticale.
-  Per restare leggibile su qualunque costume, un `%IdentityBackdrop`
+  La larghezza non è più quella della colonna ma `IDENTITY_BUST_WIDTH_RATIO`
+  (1,5) volte il lato del busto, centrata su di lui: il filo dorato è il
+  basamento del personaggio, non un separatore di schermata, e non arriva a
+  filo delle card. Il blocco chiude la colonna Friend, non il busto: dove il
+  busto è limitato dalla larghezza resterebbe spazio morto sotto di lui, e
+  agganciare lì nome e ruolo alzerebbe il filo togliendo altezza alle card.
+  Sui formati in cui il busto riempie la riga le due quote coincidono. Per
+  restare leggibile su qualunque costume, un `%IdentityBackdrop`
   (`GradientTexture2D` radiale generato proceduralmente, nessun asset)
-  disegna un alone scuro sfumato dietro al testo, largo il 78% della colonna.
+  disegna un alone scuro sfumato dietro al testo, largo il 78% del blocco.
 - **Pannelli Passiva / Abilità attiva** — occhielli ciano come colore di
-  sistema, titoli in oro, icona `136×136`. La larghezza di `%AbilityCards` è
-  dinamica: `_on_overlay_resized()` la calcola come il 30% della larghezza
-  disponibile nel pannello, clampata fra `ABILITY_CARDS_MIN_WIDTH` (410 — sotto
-  questa soglia il testo va a capo di più righe, la card cresce e il busto la
-  insegue in altezza) e `ABILITY_CARDS_MAX_WIDTH` (440). Il personaggio resta
-  l'elemento dominante: le card sono informazione secondaria, non competono
-  per superficie con il busto.
+  sistema, titoli in oro, icona `136×136`. La colonna `%AbilityCards` è
+  **allineata al bordo superiore del busto** e si ferma
+  `ABILITY_CARDS_RULE_GAP` (18px) **sopra il filo dorato dell'identità**: la
+  fascia che quel filo disegna resta continua invece di essere attraversata
+  dalla colonna informativa. `_sync_ability_card_heights()` divide quel budget
+  fra le due card, che restano quindi identiche fra loro e — a parità di
+  formato — identiche per tutti e otto i Friend: sfogliare il roster non fa
+  ballare la colonna. Se il testo di un Friend non entra nel budget vince il
+  testo: la card cresce oltre il filo invece di troncare.
+  La larghezza è dinamica: `_on_overlay_resized()` la calcola come
+  `ABILITY_CARDS_WIDTH_RATIO` (42%) della larghezza di contenuto del pannello,
+  clampata fra `ABILITY_CARDS_MIN_WIDTH` (520 — sotto questa soglia la colonna
+  di testo interna costringe le descrizioni su una riga in più e le card non
+  stanno più nel budget) e `ABILITY_CARDS_MAX_WIDTH` (580), poi limitata dallo
+  spazio che resta togliendo la larghezza minima della colonna Friend. Il
+  busto non paga questo allargamento: è limitato dall'altezza della riga, non
+  dalla larghezza della colonna, quindi le card recuperano spazio vuoto e non
+  presenza del personaggio.
 - **Fascia roster** (`%RosterRow`) — una strip che **scorre** attorno al Friend
   selezionato, il quale resta sempre al centro: mostra
   `ROSTER_VISIBLE_SLOTS` (7) miniature, tre per lato, e con otto Friend il

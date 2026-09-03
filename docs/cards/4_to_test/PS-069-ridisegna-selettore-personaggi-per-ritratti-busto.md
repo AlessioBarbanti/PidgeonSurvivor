@@ -401,9 +401,54 @@ Sul Pixel 9:
   instabilità del pacchetto, non una regressione del selettore. Le catture del
   selettore sono state prodotte correttamente in tutte le esecuzioni.
 
+## Esito verifica (2026-09-03, giro "card sopra la riga dorata")
+
+Eseguito su sandbox Linux (`tools/setup-remote-sandbox.sh`, Godot 4.7.1
+headless + Xvfb), non con `tools/run-milestone-checks.ps1`: qui non c'è
+PowerShell. I profili del runner non sono quindi stati usati come tali; sono
+stati eseguiti direttamente gli stessi file GUT che la mappa associa a
+`scripts/ui/*` e `scenes/ui/*`.
+
+- Smoke del selettore (`test_ps069_character_select_bust_portrait.gd`,
+  `test_b18t_character_carousel.gd`,
+  `test_b18w_character_select_refinement.gd`): **PASS**, marker
+  `CHARACTER_SELECT_BUST_PORTRAIT_SMOKE_OK`, zero `SCRIPT ERROR`.
+- Insieme completo mappato su `scripts/ui`/`scenes/ui` (29 script, 83 test):
+  **52 verdi, 31 rossi**. Confrontato asserzione per asserzione con la stessa
+  esecuzione sul codice **prima** della modifica (32 rossi): l'insieme dei
+  test rossi è **identico**, nessun rosso nuovo. Gli unici rossi riguardano
+  `test_ps008_wave_events`, `test_ps005_boss_warning`,
+  `test_ps051_boss_intro_identity`, `test_ps053_run_summary`,
+  `test_ps046_level_up_modal_isolation` — aree non toccate da questa card, e
+  probabilmente sensibili all'esecuzione di 29 script in un solo processo
+  fuori dal runner ufficiale. **Restano da riverificare con il runner
+  Windows**: qui non sono stati né indagati né risolti.
+- Geometria misurata su tutti e otto i Friend, tre formati
+  (`2424×1080` Pixel 9, `1280×720`, `960×720`), con la safe area di sistema
+  disattivata per neutralizzare l'offset finestra di Xvfb:
+
+  | profilo | busto | card | fondo card | filo dorato | stacco |
+  |---|---|---|---|---|---|
+  | 20:9 | 378 | 558×322 | 420 | 438 | +18 |
+  | 16:9 | 378 | 520×322 | 420 | 438 | +18 |
+  | 4:3 | 486 | 520×430 | 594 | 612 | +18 |
+
+  Identica per tutti e otto i Friend in ciascun profilo: la colonna non balla
+  più sfogliando il roster. Il busto è lo stesso di prima della modifica.
+- **Nota sullo strumento di cattura**: `tools/_capture_ui_screenshots.gd`
+  imposta `root.content_scale_size = viewport_size`, cioè annulla lo stretch
+  del progetto (`canvas_items`, base `1280×720`, `expand`) e cattura in scala
+  1:1. Le sue immagini **non** riproducono quello che si vede sul device, dove
+  la scala è 1,5 e lo spazio UI è `1616×720`. Le misure qui sopra sono state
+  prese lasciando lo stretch del progetto attivo. Vale la pena aprire una card
+  a parte su quello strumento.
+
 ## Gate percettivi
 
 - [ ] Controllo percettivo richiesto: sì.
+
+- [ ] Il proprietario conferma che le card ora stanno sopra la riga dorata e
+      hanno il peso giusto senza rubare presenza al ritratto.
 
 - [ ] Il proprietario approva la gerarchia della nuova composizione.
 
@@ -787,6 +832,72 @@ riscritto da 3 a 8 nella prima implementazione.
 
 - [x] `docs/ui-ux-flow.md`: aggiornare la composizione del selettore
       personaggi.
+
+### 2026-09-03 — Le card salgono sopra la riga dorata e riprendono lo spazio vuoto
+
+Il proprietario ha segnalato su screenshot da device (Pixel 9 20:9) che le
+card Passiva/Abilità **attraversavano la riga dorata** dell'identità: la
+colonna informativa finiva 26px sotto il filo, spezzando la fascia
+orizzontale che quel filo disegna. Ha chiesto card **un po' più importanti**,
+completamente **sopra la riga**, senza però togliere presenza al ritratto, e
+di dare priorità alla resa su Pixel o telefoni affini.
+
+Tre interventi, tutti misurati:
+
+1. **Le card partono dal bordo superiore del busto e si fermano sopra il
+   filo.** `AbilityCards` passa da `SHRINK_CENTER` a `SHRINK_BEGIN` e
+   `_sync_ability_card_heights()` non prende più semplicemente il massimo fra
+   le due altezze naturali: calcola il budget verticale fra la cima della riga
+   e il bordo superiore del filo dorato (`ABILITY_CARDS_RULE_GAP` = 18px) e lo
+   divide fra le due card. Se il testo di un Friend non ci sta vince il testo:
+   la card cresce oltre il filo invece di troncare.
+2. **La larghezza sale dal 30% al 42% del contenuto**, fra 520 e 580, poi
+   limitata dallo spazio che resta togliendo la larghezza minima della colonna
+   Friend (senza quel tetto il pannello sfonda la safe area a 960×720).
+3. **Il blocco identità si aggancia al busto**, non più all'intera colonna:
+   `IDENTITY_BUST_WIDTH_RATIO` (1,5) volte il lato del busto, centrato. Serve
+   sia a far leggere il filo come basamento del personaggio, sia a evitare che
+   arrivi a filo delle card ora che la colonna informativa è più larga.
+
+**La premessa della decisione del 30% non regge alla misura.** Quella
+decisione diceva che «allargare la colonna Passiva/Abilità toglie
+letteralmente pixel al busto». Non è vero nei formati supportati: il busto è
+`min(stage.x, stage.y)` ed è **limitato dall'altezza della riga**, non dalla
+larghezza della colonna. Misurato: a 440 e a 558 di larghezza card il busto
+resta 378px identico su 20:9 e 16:9, e 486px su 4:3. Le card hanno quindi
+recuperato spazio **vuoto** fra busto e bordo destro, non presenza del
+personaggio. Il tetto che protegge davvero il busto è la larghezza minima
+della colonna Friend, ed è quello che il punto 2 applica.
+
+Conseguenze dichiarate sui test:
+
+- `test_b18w_character_select_refinement.gd` asseriva
+  `ability_rect.size.x >= 430 and <= 450`, una finestra secca attorno ai 440
+  fissi. Sostituita dai due vincoli che quella misura serviva a garantire:
+  larghezza minima 440 (colonna di testo leggibile) e massimo 45% del
+  pannello, più «la colonna Friend resta più larga delle card». Non è una
+  svista: è il contratto che cambia, su richiesta del proprietario.
+- `test_ps069_character_select_bust_portrait.gd` guadagna la regressione
+  corrispondente: nuovo accessor `get_identity_rule_rect()`, asserzione che su
+  ogni profilo le card stiano sopra il filo, partano dalla cima del busto e
+  non lo intersechino, più `_assert_ability_cards_are_stable()` che sfoglia
+  tutti e otto i Friend e pretende colonna identica per posizione e misura.
+
+L'icona `136×136` **non** è stata toccata: un primo tentativo la portava a 120
+per liberare colonna di testo, ma alzando il minimo di larghezza a 520 non
+serve più, e il contratto `136×136` di b18w resta intatto.
+
+### 2026-09-03 — Il blocco identità chiude la colonna, non il busto
+
+Sul profilo stretto `960×720` la riga dorata stava troppo in alto perché il
+busto era limitato dalla larghezza (300px in una riga alta 418): sotto di lui
+restavano 118px di spazio morto e le card non entravano nel budget. Il blocco
+identità si aggancia ora al fondo della **colonna Friend**
+(`maxf(bust_side, stage.y)`) invece che al fondo del busto. Sui formati in cui
+il busto riempie la riga — 20:9, 16:9 e 4:3 reali — le due quote coincidono e
+la sovrapposizione voluta sul bordo inferiore del busto resta invariata:
+verificato che busto, identità e card non cambiano di un pixel su quei tre
+profili.
 
 ## Note
 
