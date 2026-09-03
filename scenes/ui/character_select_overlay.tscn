@@ -445,6 +445,7 @@ autowrap_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.8, 0.86, 1)
+theme_override_constants/line_spacing = -4
 theme_override_font_sizes/font_size = 16
 theme_type_variation = &"BodyS"
 text = "Descrizione passiva"
@@ -498,6 +499,7 @@ autowrap_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.82, 0.86, 1)
+theme_override_constants/line_spacing = -4
 theme_override_font_sizes/font_size = 16
 theme_type_variation = &"BodyS"
 text = "Descrizione abilità"
@@ -550,7 +552,7 @@ layout_mode = 2
 
 [node name="ConfirmButton" type="Button" parent="Center/SelectionPanel/Content/CtaRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(460, 72)
+custom_minimum_size = Vector2(460, 100)
 layout_mode = 2
 texture_filter = 1
 theme_type_variation = &"ButtonPrimary"

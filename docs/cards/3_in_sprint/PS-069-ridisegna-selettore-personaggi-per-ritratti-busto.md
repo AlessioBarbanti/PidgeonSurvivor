@@ -572,42 +572,90 @@ la safe area e recuperare i 61px necessari dai padding: margini del pannello,
 margini di contenuto della placca CTA (che imponeva 116px di altezza minima) e
 fascia roster.
 
-### 2026-09-03 — Riaperta: i diamanti centrali della CTA si schiacciano
+### 2026-09-03 — Riaperta: il CTA renderizza male su device — poi corretta in "bottone troppo basso"
 
-Il proprietario ha segnalato che il bottone `GIOCA CON [nome]` renderizza male
-i diamanti ornamentali sopra/sotto la placca.
+Il proprietario ha segnalato dallo screenshot del selettore che il bottone
+`GIOCA CON [nome]` "renderizza male". Prima ipotesi (mia, da lettura dello
+screenshot): i diamanti ornamentali del 9-slice della texture
+`character_select_cta_base.png` si deformano perché la striscia centrale
+stirata orizzontalmente li comprime, aggravato dalla riduzione di
+`custom_minimum_size` del `ConfirmButton` da `500×72` a `460×72` fatta da
+questa stessa card.
 
-Causa: `character_select_cta_base.png` (754×181) non è un 9-slice pulito — i
-diamanti centrali (sopra e sotto, a metà larghezza) stanno dentro la striscia
-centrale che lo `StyleBoxTexture` stira solo in orizzontale, non dentro gli
-angoli fissi (`texture_margin_left/right = 88`). Con `texture_filter` a
-`NEAREST`, comprimere quella striscia li deforma in modo asimmetrico.
+Tentativo di riproduzione con `tools/setup-remote-sandbox.sh` (Godot 4.7.1 +
+Xvfb + renderer GL reale) e `tools/_capture_ui_screenshots.gd`, sia a 1280×720
+sia alla risoluzione Pixel 9 esatta 2424×1080: il bottone rendeva pulito e
+simmetrico in entrambi i casi, sull'HEAD invariato. Il proprietario ha poi
+confermato che lo screenshot viene da device Android reale (non riproducibile
+in questo sandbox, senza SDK/device Android) — **e a quel punto ha chiarito
+che il problema non erano affatto i diamanti**: l'ipotesi 9-slice sopra era
+una mia lettura sbagliata dello screenshot, non il difetto segnalato.
 
-Questa stessa card aveva ridotto `custom_minimum_size` del `ConfirmButton` da
-`500×72` a `460×72` nel redesign, portando la striscia stirabile da
-`578px` sorgente a `284px` di destinazione (rapporto ≈0,49): un rapporto già
-presente prima (a 500px era ≈0,56) ma peggiorato abbastanza da rendere il
-difetto visibile a schermo intero. Il difetto è quindi dentro l'ambito CTA di
-questa card ("CTA, solo per riposizionamento/composizione"), non una card
-nuova.
+**Difetto reale, confermato dal proprietario**: il testo del CTA (font 28,
+`GIOCA CON [NOME]`) tocca/affolla il bordo interno della placca perché il
+bottone è troppo basso, non perché il font sia troppo grande.
 
-**Tentativo di riproduzione (2026-09-03): difetto non riprodotto.** Con
-`tools/setup-remote-sandbox.sh` (Godot 4.7.1 headless + Xvfb + renderer GL
-reale, non il driver dummy) e `tools/_capture_ui_screenshots.gd` ho catturato
-`03_character_select` e `03b_character_03_zat` sia a 1280×720 (16:9) sia alla
-risoluzione Pixel 9 esatta 2424×1080 (20:9), la stessa dello screenshot del
-proprietario. In entrambe le catture il bottone `GIOCA CON ZAT` rende pulito e
-simmetrico: nessuna compressione o allungamento dei diamanti centrali o dei
-diamanti d'estremità, sull'HEAD corrente (`ba371c1`, invariato). L'ipotesi
-9-slice sopra resta plausibile in astratto ma non è quella confermata da
-questa prova.
+Misurato con uno script Godot dedicato
+(`get_confirm_button().get_global_rect()` + metriche del font): con
+`custom_minimum_size = Vector2(460, 72)` il bottone cresce comunque a
+`80` di altezza reale (il layout box del font `LilitaOne` a size 28 è alto
+`48px`, più `content_margin_top/bottom = 16` ciascuno). I margini ornamentali
+fissi del 9-slice (`texture_margin_top/bottom = 34`, non stirati
+verticalmente) occupano quindi una fetta consistente di quegli 80px,
+lasciando pochissimo respiro fra il testo centrato e il bordo decorato del
+riquadro — visibile a schermo con una cattura ravvicinata pixel-per-pixel.
 
-Il difetto nello screenshot del proprietario resta reale (visibile, asimmetria
-netta fra estremità sinistra ed estremità destra del bottone), ma la sua causa
-non è ancora identificata: non riproducibile con il renderer software di
-questo sandbox. Prima di procedere con una modifica speculativa serve capire
-da dove viene lo screenshot (build Windows, editor, device Android) e se il
-difetto è ripetibile.
+Fix: alzato `custom_minimum_size` del `ConfirmButton` da `Vector2(460, 72)` a
+`Vector2(460, 100)`. La larghezza non cambia (fuori dall'ambito di questo
+giro): a `MARGHE`, il nome più lungo del roster, il testo resta ampiamente
+dentro i margini orizzontali. Verificato con catture dedicate su `ZAT` (il
+caso originale) e `MARGHE` (il caso più stretto): il testo ora ha respiro
+verticale chiaro dal bordo della placca in entrambi.
+
+Contestualmente il proprietario ha chiesto di stringere anche l'interlinea
+delle descrizioni di Passiva/Abilità (`PassiveDescriptionLabel`,
+`AbilityDescriptionLabel`), percepita troppo larga. Aggiunto un
+`theme_override_constants/line_spacing` locale a entrambe (prima ereditavano
+il `-2` del tema globale `BodyS`, che vale per tutte le label "Body" del
+gioco): stesso pattern già usato da `PassiveTitleLabel` e
+`AbilityTitleLabel` in questa stessa scena (`-11` locale), quindi un override
+scoped al selettore, non una modifica del tema condiviso.
+
+Primo tentativo a `-8`: ha fatto regredire
+`test_b18w_character_select_refinement.gd` ("Le due card devono avere la
+stessa dimensione", tolleranza 1px). Causa trovata misurando
+`get_combined_minimum_size()` di `PassiveCard`/`AbilityCard` per Magno: a
+`-2` erano già 185 contro 186 (entro tolleranza per un pelo), perché
+`custom_minimum_size = Vector2(410, 156)` di entrambe le card è già inferiore
+al reale minimo richiesto dal testo — il "pareggio" preesistente era una
+coincidenza fra due lunghezze di testo diverse (passiva più corta
+dell'abilità attiva), non un floor comune che le tiene allineate. Stringere
+di più (`-8`) riduce l'altezza di ciascuna in proporzione al proprio numero
+di righe, che differisce fra le due card, e allarga lo scarto a 5px. Risolto
+scegliendo `-4` (comunque più stretto del `-2` originale): a Magno lo scarto
+resta a 1.0px esatto, dentro tolleranza.
+
+**Verificato**: `Focused` (`test_ps069_character_select_bust_portrait.gd`) in
+isolamento — PASS, marker `CHARACTER_SELECT_BUST_PORTRAIT_SMOKE_OK`, 447
+asserzioni, safe-area e non intersezione del CTA valide anche con il bottone
+più alto. `test_b18w_character_select_refinement.gd` e
+`test_b18t_character_carousel.gd` — PASS. `Relevant` (i 20 script mappati su
+`scripts/ui/*`/`scenes/ui/*` da `tools/milestone-test-map.json`, un solo
+processo Godot): 35/62 test passano; i falliti sono in gran parte
+precedenti e indipendenti da questa card (confermato rieseguendo
+`test_b18w_character_select_refinement.gd` sul commit precedente a
+questa riapertura, dove passava già, il che ha isolato la vera regressione
+sopra). `test_ps069_character_select_bust_portrait.gd` fallisce solo dentro
+il batch da 20 script (un'asserzione di centratura roster su `migi`) ma passa
+sempre in isolamento (447/447 asserzioni, ripetuto due volte): flakiness da
+carico del processo condiviso fra molti script, non una regressione di
+questa card — il carosello/roster non è stato toccato.
+
+Il gate di rendering Android/device resta **aperto**: questo sandbox remoto
+non ha SDK/device Android, quindi la correzione sopra (altezza del bottone,
+interlinea) non è stata verificata fisicamente sul Pixel 9. Non risulta però
+collegata all'artefatto dei diamanti visto nello screenshot originale, che il
+proprietario ha chiarito non essere il difetto reale.
 
 ### 2026-09-03 — Strip che scorre, selezionato sempre al centro
 
