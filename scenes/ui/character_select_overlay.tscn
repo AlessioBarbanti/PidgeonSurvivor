@@ -1,8 +1,20 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/character_select_overlay.gd" id="1_overlay"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/character_select/character_select_backdrop.png" id="2_backdrop"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/character_select/character_select_cta_base.png" id="3_cta"]
+
+[sub_resource type="Gradient" id="Gradient_identity_backdrop"]
+offsets = PackedFloat32Array(0, 0.6, 1)
+colors = PackedColorArray(0, 0.01, 0.02, 0.82, 0, 0.01, 0.02, 0.55, 0, 0.01, 0.02, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_identity_backdrop"]
+gradient = SubResource("Gradient_identity_backdrop")
+width = 256
+height = 128
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0, 0, 0, 0)
@@ -26,9 +38,9 @@ shadow_color = Color(0, 0, 0, 0.78)
 shadow_size = 6
 shadow_offset = Vector2(0, 4)
 content_margin_left = 12.0
-content_margin_top = 6.0
+content_margin_top = 4.0
 content_margin_right = 12.0
-content_margin_bottom = 6.0
+content_margin_bottom = 4.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_back_normal"]
 bg_color = Color(0.055, 0.06, 0.075, 0.98)
@@ -330,6 +342,14 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 5
 
+[node name="IdentityBackdrop" type="TextureRect" parent="Center/SelectionPanel/Content/MainRow/PortraitStage"]
+unique_name_in_owner = true
+layout_mode = 1
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_identity_backdrop")
+expand_mode = 1
+stretch_mode = 0
+
 [node name="IdentityBlock" type="VBoxContainer" parent="Center/SelectionPanel/Content/MainRow/PortraitStage"]
 unique_name_in_owner = true
 layout_mode = 1
@@ -391,15 +411,15 @@ autowrap_mode = 2
 
 [node name="AbilityCards" type="VBoxContainer" parent="Center/SelectionPanel/Content/MainRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(410, 320)
+custom_minimum_size = Vector2(440, 320)
 layout_mode = 2
 size_flags_horizontal = 1
 size_flags_vertical = 4
-theme_override_constants/separation = 6
+theme_override_constants/separation = 2
 
 [node name="PassiveCard" type="PanelContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityCards"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(410, 156)
+custom_minimum_size = Vector2(300, 156)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_info_panel")
@@ -445,6 +465,7 @@ autowrap_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.8, 0.86, 1)
+theme_override_constants/line_spacing = -4
 theme_override_font_sizes/font_size = 16
 theme_type_variation = &"BodyS"
 text = "Descrizione passiva"
@@ -452,7 +473,7 @@ autowrap_mode = 2
 
 [node name="AbilityCard" type="PanelContainer" parent="Center/SelectionPanel/Content/MainRow/AbilityCards"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(410, 156)
+custom_minimum_size = Vector2(300, 156)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_info_panel")
@@ -498,6 +519,7 @@ autowrap_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.82, 0.86, 1)
+theme_override_constants/line_spacing = -4
 theme_override_font_sizes/font_size = 16
 theme_type_variation = &"BodyS"
 text = "Descrizione abilità"
@@ -550,7 +572,7 @@ layout_mode = 2
 
 [node name="ConfirmButton" type="Button" parent="Center/SelectionPanel/Content/CtaRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(460, 72)
+custom_minimum_size = Vector2(460, 90)
 layout_mode = 2
 texture_filter = 1
 theme_type_variation = &"ButtonPrimary"

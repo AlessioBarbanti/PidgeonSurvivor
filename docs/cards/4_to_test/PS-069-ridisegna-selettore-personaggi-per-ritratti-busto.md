@@ -355,7 +355,13 @@ Profilo minimo prima della chiusura:
 
 - [ ] Runtime Windows.
 
-- [ ] Validazione statica APK.
+- [x] Validazione statica APK. CI (workflow `android-debug-release.yml`, PS-060),
+      run [33781099162](https://github.com/AlessioBarbanti/PidgeonSurvivor/actions/runs/33781099162),
+      commit `ef25524`, 2026-09-03: `aapt2 dump badging` verde su package
+      `com.ilgioco.pidgeonsurvivor`, `minSdk 31`, `targetSdk 36`, solo
+      `arm64-v8a`; `apksigner verify` verde. APK pubblicato come asset della
+      release `android-debug-latest`. Questo sandbox non ha SDK Android
+      locale: la build/validazione è girata in CI, non qui.
 
 - [ ] Runtime fisico Pixel 9.
 
@@ -571,6 +577,191 @@ verticale per dare altezza al busto, ma avrebbe richiesto di indebolire
 la safe area e recuperare i 61px necessari dai padding: margini del pannello,
 margini di contenuto della placca CTA (che imponeva 116px di altezza minima) e
 fascia roster.
+
+### 2026-09-03 — Riaperta: il CTA renderizza male su device — poi corretta in "bottone troppo basso"
+
+Il proprietario ha segnalato dallo screenshot del selettore che il bottone
+`GIOCA CON [nome]` "renderizza male". Prima ipotesi (mia, da lettura dello
+screenshot): i diamanti ornamentali del 9-slice della texture
+`character_select_cta_base.png` si deformano perché la striscia centrale
+stirata orizzontalmente li comprime, aggravato dalla riduzione di
+`custom_minimum_size` del `ConfirmButton` da `500×72` a `460×72` fatta da
+questa stessa card.
+
+Tentativo di riproduzione con `tools/setup-remote-sandbox.sh` (Godot 4.7.1 +
+Xvfb + renderer GL reale) e `tools/_capture_ui_screenshots.gd`, sia a 1280×720
+sia alla risoluzione Pixel 9 esatta 2424×1080: il bottone rendeva pulito e
+simmetrico in entrambi i casi, sull'HEAD invariato. Il proprietario ha poi
+confermato che lo screenshot viene da device Android reale (non riproducibile
+in questo sandbox, senza SDK/device Android) — **e a quel punto ha chiarito
+che il problema non erano affatto i diamanti**: l'ipotesi 9-slice sopra era
+una mia lettura sbagliata dello screenshot, non il difetto segnalato.
+
+**Difetto reale, confermato dal proprietario**: il testo del CTA (font 28,
+`GIOCA CON [NOME]`) tocca/affolla il bordo interno della placca perché il
+bottone è troppo basso, non perché il font sia troppo grande.
+
+Misurato con uno script Godot dedicato
+(`get_confirm_button().get_global_rect()` + metriche del font): con
+`custom_minimum_size = Vector2(460, 72)` il bottone cresce comunque a
+`80` di altezza reale (il layout box del font `LilitaOne` a size 28 è alto
+`48px`, più `content_margin_top/bottom = 16` ciascuno). I margini ornamentali
+fissi del 9-slice (`texture_margin_top/bottom = 34`, non stirati
+verticalmente) occupano quindi una fetta consistente di quegli 80px,
+lasciando pochissimo respiro fra il testo centrato e il bordo decorato del
+riquadro — visibile a schermo con una cattura ravvicinata pixel-per-pixel.
+
+Fix: alzato `custom_minimum_size` del `ConfirmButton` da `Vector2(460, 72)` a
+`Vector2(460, 100)`. La larghezza non cambia (fuori dall'ambito di questo
+giro): a `MARGHE`, il nome più lungo del roster, il testo resta ampiamente
+dentro i margini orizzontali. Verificato con catture dedicate su `ZAT` (il
+caso originale) e `MARGHE` (il caso più stretto): il testo ora ha respiro
+verticale chiaro dal bordo della placca in entrambi.
+
+Contestualmente il proprietario ha chiesto di stringere anche l'interlinea
+delle descrizioni di Passiva/Abilità (`PassiveDescriptionLabel`,
+`AbilityDescriptionLabel`), percepita troppo larga. Aggiunto un
+`theme_override_constants/line_spacing` locale a entrambe (prima ereditavano
+il `-2` del tema globale `BodyS`, che vale per tutte le label "Body" del
+gioco): stesso pattern già usato da `PassiveTitleLabel` e
+`AbilityTitleLabel` in questa stessa scena (`-11` locale), quindi un override
+scoped al selettore, non una modifica del tema condiviso.
+
+Primo tentativo a `-8`: ha fatto regredire
+`test_b18w_character_select_refinement.gd` ("Le due card devono avere la
+stessa dimensione", tolleranza 1px). Causa trovata misurando
+`get_combined_minimum_size()` di `PassiveCard`/`AbilityCard` per Magno: a
+`-2` erano già 185 contro 186 (entro tolleranza per un pelo), perché
+`custom_minimum_size = Vector2(410, 156)` di entrambe le card è già inferiore
+al reale minimo richiesto dal testo — il "pareggio" preesistente era una
+coincidenza fra due lunghezze di testo diverse (passiva più corta
+dell'abilità attiva), non un floor comune che le tiene allineate. Stringere
+di più (`-8`) riduce l'altezza di ciascuna in proporzione al proprio numero
+di righe, che differisce fra le due card, e allarga lo scarto a 5px. Risolto
+scegliendo `-4` (comunque più stretto del `-2` originale): a Magno lo scarto
+resta a 1.0px esatto, dentro tolleranza.
+
+**Verificato**: `Focused` (`test_ps069_character_select_bust_portrait.gd`) in
+isolamento — PASS, marker `CHARACTER_SELECT_BUST_PORTRAIT_SMOKE_OK`, 447
+asserzioni, safe-area e non intersezione del CTA valide anche con il bottone
+più alto. `test_b18w_character_select_refinement.gd` e
+`test_b18t_character_carousel.gd` — PASS. `Relevant` (i 20 script mappati su
+`scripts/ui/*`/`scenes/ui/*` da `tools/milestone-test-map.json`, un solo
+processo Godot): 35/62 test passano; i falliti sono in gran parte
+precedenti e indipendenti da questa card (confermato rieseguendo
+`test_b18w_character_select_refinement.gd` sul commit precedente a
+questa riapertura, dove passava già, il che ha isolato la vera regressione
+sopra). `test_ps069_character_select_bust_portrait.gd` fallisce solo dentro
+il batch da 20 script (un'asserzione di centratura roster su `migi`) ma passa
+sempre in isolamento (447/447 asserzioni, ripetuto due volte): flakiness da
+carico del processo condiviso fra molti script, non una regressione di
+questa card — il carosello/roster non è stato toccato.
+
+Il gate di rendering Android/device resta **aperto**: questo sandbox remoto
+non ha SDK/device Android, quindi la correzione sopra (altezza del bottone,
+interlinea) non è stata verificata fisicamente sul Pixel 9. Non risulta però
+collegata all'artefatto dei diamanti visto nello screenshot originale, che il
+proprietario ha chiarito non essere il difetto reale.
+
+### 2026-09-03 — Busto e identità sovrapposti, layout a due colonne vere
+
+Il proprietario ha chiesto di superare la composizione "identità a fianco del
+busto sui formati larghi" (l'unico ramo che faceva sconfinare il busto sulla
+fascia roster) a favore di **nome e ruolo sovrapposti al busto stesso**, su un
+alone sfumato scuro per restare leggibili, così la colonna Friend diventa un
+blocco unico e la schermata si legge davvero a due colonne: personaggio a
+sinistra, kit a destra.
+
+`_layout_portrait_stage()` non sceglie più fra affiancato e impilato: il busto
+occupa sempre l'intera colonna (`bust_side = min(stage.x, stage.y)`), nome e
+ruolo sono ancorati al suo bordo inferiore. Rimossi `PORTRAIT_ROSTER_OVERLAP`
+e `IDENTITY_MIN_WIDTH`, non più referenziati da nessun ramo.
+
+Il fondo sfumato (`IdentityBackdrop`, un `GradientTexture2D` radiale renderizzato
+proceduralmente, nessun nuovo asset) copre una fascia larga il 78% della
+colonna (minimo 220px), dal bordo inferiore del busto fino in fondo alla
+colonna: abbastanza per far risaltare testo su qualunque costume, senza
+leggersi come una seconda card sotto il personaggio.
+
+### 2026-09-03 — Le card Passiva/Abilità restano una minoranza della larghezza
+
+Primo tentativo: allargare le card da 410 a 480px per ridurre il wrap dei
+testi più lunghi (aveva funzionato: il massimo sincronizzato fra le due card
+era sceso da 205 a 176px). Il proprietario ha fermato il tentativo: allargare
+la colonna Passiva/Abilità toglie letteralmente pixel al busto, e qui **la
+star è il personaggio**, non le sue descrizioni. Misurato con
+`get_bust_portrait_rect()`/`get_ability_panel_rect()`: a 480px l'area delle
+card superava quella del busto (rapporto 0,93), a 410px erano già quasi pari
+(~0,98).
+
+Il proprietario ha poi chiarito l'intento: le card devono restare a **circa il
+30% della larghezza disponibile**, lasciando il resto al busto — non una
+larghezza fissa. `_on_overlay_resized()` ora calcola la larghezza di
+`AbilityCards` come `content_width * 0.30` (dove `content_width` è la
+larghezza del pannello meno il chrome orizzontale, letto dal vero
+`content_margin` dello StyleBox invece di duplicarne il valore), clampata fra
+`ABILITY_CARDS_MIN_WIDTH` (410, il minimo già verificato: sotto questa soglia
+il testo più lungo del roster va a capo di più, la card cresce in altezza, il
+busto la insegue perché occupa sempre l'intera riga, e il pannello sfora la
+safe area) e `ABILITY_CARDS_MAX_WIDTH` (440). Con i limiti attuali del
+pannello (`PANEL_MAX_SIZE.x = 1400`) il 30% del contenuto non supera mai 410
+tranne ai bordi estremi: la card resta quindi ancorata al minimo verificato
+per tutti i profili oggi supportati, e il busto guadagna comunque tutta la
+larghezza restante (rapporto busto/card fino a 1,43 sul profilo Pixel 9
+20:9). Se in futuro `PANEL_MAX_SIZE` crescesse, la quota del 30% comincerebbe
+a valere davvero senza bisogno di ritoccare questa card.
+
+`PassiveCard`/`AbilityCard` non hanno più una larghezza propria fissata a
+410: scendono a un pavimento basso (300) e seguono la larghezza reale che
+`AbilityCards` assegna loro, cross-axis, come VBoxContainer.
+
+Aggiunta un'asserzione esplicita (`ability_rect.intersects(carousel_rect)`)
+su tutti i profili di layout: le card Passiva/Abilità non devono mai
+sconfinare sulla fascia roster, come richiesto esplicitamente dal
+proprietario durante questo giro.
+
+### 2026-09-03 — Il testo esce dal bordo delle card su device: 410 non bastava
+
+Il proprietario ha segnalato (screenshot da device reale, Pixel 9 20:9,
+personaggio Aleo) che il testo di "Termostato Interno"/"Shock Termico" esce
+visibilmente dal bordo destro della card, non solo va a capo stretto: parole
+tagliate a metà oltre il confine del pannello.
+
+Non riprodotto con il renderer software di questo sandbox (a 410px "Termostato
+Interno" resta comodamente dentro la colonna con le metriche di *questo*
+motore). Causa più plausibile: a `ABILITY_CARDS_WIDTH = 410`, la colonna di
+testo interna (dopo icona 136px, separazione HBox e margini della card) scende
+a soli 240px, e "TERMOSTATO INTERNO" da sola misura già 215px con le metriche
+desktop — un margine di appena 25px (89,6% occupato) in cui basta una metrica
+del font leggermente diversa su Android per far uscire il testo dal bordo.
+Stessa famiglia di incertezza già incontrata sul CTA in questa card: non posso
+confermare il meccanismo esatto senza un device, ma il margine risicato è
+misurabile e reale.
+
+Il proprietario ha chiesto esplicitamente di allargare le card. Portata
+`ABILITY_CARDS_WIDTH` a 440 (colonna interna 270px, margine di 55px sullo
+stesso titolo). Semplificata la costante da un range dinamico
+(`ABILITY_CARDS_MIN_WIDTH`/`MAX_WIDTH`/`WIDTH_RATIO`) a un valore fisso unico:
+col limite di `PANEL_MAX_SIZE.x` attuale il 30% del contenuto non aveva mai
+superato il minimo comunque, quindi il range non stava facendo nulla — tenerlo
+avrebbe solo confuso chi legge il codice.
+
+Costo dichiarato: il rapporto busto/card peggiora leggermente (da ~0,98 a
+~0,92 sul caso peggiore, Bea), ma resta lontano dallo squilibrio verificato a
+480px (0,93 già allora, e qui il denominatore è diverso). Il proprietario ha
+scelto la leggibilità su questo compromesso.
+
+Aggiunto un test di regressione vero (`_assert_label_words_fit` in
+`test_ps069_character_select_bust_portrait.gd`): verifica che nessuna singola
+parola di nome/ruolo/titolo/descrizione, per tutti gli otto Friend e tutti i
+profili di layout, superi la larghezza della propria Label. Verificato che
+sarebbe stato inutile riprovare lo stesso controllo con una soglia di margine
+arbitraria (85%): un wrap greedy normale produce spesso righe vicine al bordo
+per costruzione, quindi un controllo così avrebbe fallito ovunque, anche dove
+il testo è a posto — non è un segnale utile. Il test attuale cattura solo
+l'overflow di una singola parola con le metriche di questo motore: non può
+provare che il margine basti su un motore di rendering diverso, quello lo
+prova solo il device.
 
 ### 2026-09-03 — Strip che scorre, selezionato sempre al centro
 

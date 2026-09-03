@@ -22,13 +22,25 @@ const PANEL_MARGIN_LEFT := 32.0
 const PANEL_MARGIN_RIGHT := 20.0
 const PANEL_MARGIN_VERTICAL := 14.0
 
-## Quanto il busto puo' scendere oltre la propria riga: la fascia roster viene
-## disegnata dopo e gli passa sopra, quindi il personaggio guadagna presenza
-## senza coprire nulla di essenziale.
-const PORTRAIT_ROSTER_OVERLAP := 80.0
-const IDENTITY_MIN_WIDTH := 156.0
+## Larghezza fissa delle card Passiva/Abilita'. A 410 la colonna di testo
+## interna (dopo icona 136px, separazione e margini della card) scende a soli
+## 240px: "TERMOSTATO INTERNO" da solo ne occupa 215, un margine di appena
+## 25px in cui basta una metrica del font leggermente diversa (es. resa
+## Android vs desktop) per far uscire il testo dal bordo della card. 440
+## riporta la colonna interna a 270px, un margine reale. Tenuta sotto il 35%
+## circa della larghezza pannello anche al PANEL_MAX_SIZE, cosi' il busto
+## resta l'elemento dominante della schermata.
+const ABILITY_CARDS_WIDTH := 440.0
+
 const IDENTITY_MIN_HEIGHT := 96.0
-const IDENTITY_GAP := 12.0
+## Il fondo sfumato dietro nome e ruolo copre solo una fascia centrale, non
+## l'intera colonna: si legge come un alone dietro il testo, non come una
+## seconda card sotto il busto.
+const IDENTITY_BACKDROP_WIDTH_RATIO := 0.78
+const IDENTITY_BACKDROP_MIN_WIDTH := 220.0
+## Quanto l'alone sale sopra il testo, cosi' la sfumatura comincia dentro il
+## busto invece che a filo del blocco identita'.
+const IDENTITY_BACKDROP_BLEND_ABOVE := 36.0
 
 ## Slot mostrati contemporaneamente dalla fascia: il selezionato resta al
 ## centro e gli altri scorrono attorno a lui, quindi il numero e' dispari e il
@@ -51,6 +63,7 @@ const ROSTER_HEADSHOT_REGION := Rect2(56.0, 6.0, 144.0, 144.0)
 @onready var _backdrop: TextureRect = $Backdrop
 @onready var _portrait_stage: Control = %PortraitStage
 @onready var _bust_portrait: TextureRect = %BustPortrait
+@onready var _identity_backdrop: Control = %IdentityBackdrop
 @onready var _identity_block: Control = %IdentityBlock
 @onready var _roster_row: Control = %RosterRow
 @onready var _carousel_viewport: Control = %CarouselViewport
@@ -59,9 +72,11 @@ const ROSTER_HEADSHOT_REGION := Rect2(56.0, 6.0, 144.0, 144.0)
 @onready var _name_label: Label = %NameLabel
 @onready var _role_label: Label = %RoleLabel
 @onready var _ability_cards: Control = %AbilityCards
+@onready var _passive_card: PanelContainer = %PassiveCard
 @onready var _passive_icon: TextureRect = %PassiveIcon
 @onready var _passive_title_label: Label = %PassiveTitleLabel
 @onready var _passive_description_label: Label = %PassiveDescriptionLabel
+@onready var _ability_card: PanelContainer = %AbilityCard
 @onready var _ability_icon: TextureRect = %AbilityIcon
 @onready var _ability_title_label: Label = %AbilityTitleLabel
 @onready var _ability_description_label: Label = %AbilityDescriptionLabel
@@ -247,6 +262,14 @@ func get_ability_panel_rect() -> Rect2:
 	return _global_rect(_ability_cards)
 
 
+func get_passive_card_rect() -> Rect2:
+	return _global_rect(_passive_card)
+
+
+func get_ability_card_rect() -> Rect2:
+	return _global_rect(_ability_card)
+
+
 func get_ability_icon() -> Texture2D:
 	return _ability_icon.texture if is_instance_valid(_ability_icon) else null
 
@@ -403,7 +426,28 @@ func _select_index(index: int, animate: bool) -> void:
 	_confirm_button.disabled = false
 	_layout_portrait_stage()
 	_layout_cards(animate)
+	call_deferred("_sync_ability_card_heights")
 	call_deferred("_focus_selected_card")
+
+
+## Passiva e abilita' hanno testi di lunghezza diversa per Friend: senza
+## questo passaggio le due card prendono ciascuna la propria altezza naturale
+## e non restano affiancate alla stessa quota (fino a una riga intera di
+## scarto per alcuni Friend). Rimandato di un frame perche' l'altezza minima
+## di una Label con autowrap e' affidabile solo dopo che il layout ha
+## assegnato la sua larghezza corrente.
+##
+## L'altezza condivisa e' il massimo fra i due Friend visti finora nella
+## sessione (mai ridotta): resta quindi stabile invece di restringersi ogni
+## volta che si torna a un Friend con testi piu' corti.
+func _sync_ability_card_heights() -> void:
+	if not is_instance_valid(_passive_card) or not is_instance_valid(_ability_card):
+		return
+	var target_height := maxf(
+		_passive_card.get_combined_minimum_size().y, _ability_card.get_combined_minimum_size().y
+	)
+	_passive_card.custom_minimum_size.y = target_height
+	_ability_card.custom_minimum_size.y = target_height
 
 
 func _navigate(direction: int) -> void:
@@ -429,20 +473,24 @@ func _on_overlay_resized() -> void:
 	)
 	if available.x <= 0.0 or available.y <= 0.0:
 		return
+	var panel_width := minf(clampf(available.x, PANEL_MIN_SIZE.x, PANEL_MAX_SIZE.x), available.x)
 	_selection_panel.custom_minimum_size = Vector2(
-		minf(clampf(available.x, PANEL_MIN_SIZE.x, PANEL_MAX_SIZE.x), available.x),
+		panel_width,
 		minf(clampf(available.y, PANEL_MIN_SIZE.y, PANEL_MAX_SIZE.y), available.y)
 	)
+	if is_instance_valid(_ability_cards):
+		_ability_cards.custom_minimum_size.x = ABILITY_CARDS_WIDTH
 
 
 func _on_portrait_stage_resized() -> void:
 	_layout_portrait_stage()
 
 
-## Due composizioni possibili per l'area Friend: identita' accanto al busto sui
-## formati larghi, sotto al busto su quelli stretti. Vince quella che lascia il
-## busto piu' grande, cosi' il personaggio resta il punto focale anche a 4:3.
-## L'affiancamento e' l'unico caso in cui il busto sconfina sulla fascia roster.
+## Il busto occupa l'intera colonna Friend; nome e ruolo non hanno piu' una
+## riga propria ma sono sovrapposti al bordo inferiore del busto, su un alone
+## sfumato per restare leggibili. La riga cosi' liberata non serve piu' a
+## contenere l'identita': la colonna Friend puo' restare stretta e cedere
+## larghezza alle card Passiva/Abilita'.
 func _layout_portrait_stage() -> void:
 	if (
 		not is_instance_valid(_portrait_stage)
@@ -453,28 +501,24 @@ func _layout_portrait_stage() -> void:
 	var stage := _portrait_stage.size
 	if stage.x <= 0.0 or stage.y <= 0.0:
 		return
+	var bust_side := maxf(minf(stage.x, stage.y), 0.0)
+	_bust_portrait.position = Vector2((stage.x - bust_side) * 0.5, 0.0)
+	_bust_portrait.size = Vector2(bust_side, bust_side)
 	var identity_height := maxf(
 		_identity_block.get_combined_minimum_size().y,
 		IDENTITY_MIN_HEIGHT
 	)
-	var side_bust := minf(
-		stage.y + PORTRAIT_ROSTER_OVERLAP,
-		stage.x - IDENTITY_MIN_WIDTH - IDENTITY_GAP
-	)
-	var stacked_bust := minf(stage.x, stage.y - identity_height - IDENTITY_GAP)
-	var bust_side := maxf(maxf(side_bust, stacked_bust), 0.0)
-	if side_bust >= stacked_bust:
-		_bust_portrait.position = Vector2(stage.x - bust_side, 0.0)
-		_identity_block.position = Vector2(0.0, (stage.y - identity_height) * 0.5)
-		_identity_block.size = Vector2(
-			maxf(stage.x - bust_side - IDENTITY_GAP, 0.0),
-			identity_height
+	_identity_block.position = Vector2(0.0, bust_side - identity_height)
+	_identity_block.size = Vector2(stage.x, identity_height)
+	if is_instance_valid(_identity_backdrop):
+		var backdrop_width := clampf(
+			stage.x * IDENTITY_BACKDROP_WIDTH_RATIO, IDENTITY_BACKDROP_MIN_WIDTH, stage.x
 		)
-	else:
-		_bust_portrait.position = Vector2((stage.x - bust_side) * 0.5, 0.0)
-		_identity_block.position = Vector2(0.0, stage.y - identity_height)
-		_identity_block.size = Vector2(stage.x, identity_height)
-	_bust_portrait.size = Vector2(bust_side, bust_side)
+		var backdrop_height := identity_height + IDENTITY_BACKDROP_BLEND_ABOVE
+		_identity_backdrop.position = Vector2(
+			(stage.x - backdrop_width) * 0.5, bust_side - backdrop_height
+		)
+		_identity_backdrop.size = Vector2(backdrop_width, backdrop_height)
 
 
 ## La fascia scorre attorno al Friend selezionato, che resta sempre al centro:

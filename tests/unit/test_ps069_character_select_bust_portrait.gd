@@ -18,13 +18,6 @@ const LAYOUT_PROFILES := [
 	Vector2i(1600, 720),
 	Vector2i(960, 720),
 ]
-## Formati in cui la composizione affiancata e' attiva e il busto sconfina
-## davvero sulla fascia roster. A 4:3 la colonna e' troppo stretta e vince la
-## composizione impilata, senza sconfinamento.
-const OVERLAPPING_PROFILES := [
-	Vector2i(1280, 720),
-	Vector2i(1600, 720),
-]
 ## Guardia sul lato del ritaglio fotocamera del Pixel 9 in landscape: la
 ## composizione non deve mai occupare questa fascia, oltre alla safe area di
 ## sistema gia' applicata da `SafeAreaRoot`.
@@ -180,6 +173,18 @@ func _assert_bust_synchronises(
 			"GIOCA CON %s" % definition.get_public_display_name().to_upper(),
 			"%s deve aggiornare il CTA insieme al busto." % expected_id
 		)
+		assert_true(
+			absf(selector.get_passive_card_rect().size.y - selector.get_ability_card_rect().size.y)
+			<= 1.0,
+			(
+				"%s: le card Passiva e Abilita' devono restare della stessa altezza (%s contro %s)."
+				% [
+					expected_id,
+					selector.get_passive_card_rect().size.y,
+					selector.get_ability_card_rect().size.y,
+				]
+			)
+		)
 		assert_eq(
 			selector.get_visible_card_ids().size(), 7,
 			"%s deve conservare la stessa finestra di sette miniature." % expected_id
@@ -265,6 +270,7 @@ func _assert_layout_profiles(
 		var safe_area := arena_layout.get_safe_area_rect()
 		var panel_rect := selector.get_selection_panel_rect()
 		var bust_rect := selector.get_bust_portrait_rect()
+		var ability_rect := selector.get_ability_panel_rect()
 		var carousel_rect := selector.get_carousel_rect()
 		var confirm_rect := selector.get_confirm_button().get_global_rect()
 		var back_rect := selector.get_back_button().get_global_rect()
@@ -285,6 +291,14 @@ func _assert_layout_profiles(
 			bust_rect.end.y <= carousel_rect.end.y + 0.5,
 			"%s: il busto non deve superare la fascia roster." % profile
 		)
+		assert_true(
+			ability_rect.end.y <= carousel_rect.position.y + 0.5,
+			"%s: le card Passiva/Abilita' non devono sovrapporsi alla fascia roster." % profile
+		)
+		assert_false(
+			ability_rect.intersects(carousel_rect),
+			"%s: le card Passiva/Abilita' non devono sovrapporsi alla fascia roster." % profile
+		)
 		assert_false(
 			bust_rect.intersects(confirm_rect), "%s: il busto non deve coprire il CTA." % profile
 		)
@@ -301,11 +315,6 @@ func _assert_layout_profiles(
 			safe_area.encloses(back_rect) and safe_area.encloses(confirm_rect),
 			"%s: Back e CTA devono restare nella safe area." % profile
 		)
-		if OVERLAPPING_PROFILES.has(profile):
-			assert_true(
-				bust_rect.end.y > carousel_rect.position.y,
-				"%s: il busto deve sconfinare sulla fascia roster." % profile
-			)
 		await _assert_copy_is_not_truncated(selector, profile)
 	get_tree().root.content_scale_size = LAYOUT_PROFILES[0]
 	get_tree().root.size = LAYOUT_PROFILES[0]
@@ -328,5 +337,36 @@ func _assert_copy_is_not_truncated(
 				label.get_visible_line_count() == label.get_line_count(),
 				"%s: %s non deve troncare il testo di %s." % [profile, label_path, expected_id]
 			)
+			_assert_label_words_fit(label, profile, label_path, expected_id)
 	selector.get_button(&"magno").pressed.emit()
 	await wait_process_frames(2)
+
+
+## Il word-wrap di Godot e' greedy: accumula parole su una riga finche'
+## entrano, poi va a capo — quindi molte righe finiscono naturalmente vicine
+## al bordo per costruzione (e' cosi' che un wrap funziona, non un difetto).
+## Una singola parola piu' larga della Label esce sicuramente dal bordo: e'
+## l'unico invariante che si puo' testare senza rifare da zero il motore di
+## wrap di Godot. Non cattura differenze di metrica del font fra motori (il
+## caso reale su device, PS-069, dove "TERMOSTATO INTERNO" — due parole, non
+## una — restava sulla stessa riga a 89,6% della colonna con le metriche
+## desktop, ma usciva dal bordo su device): per quello la mitigazione e' il
+## margine reale di `ABILITY_CARDS_WIDTH`, non questo test.
+func _assert_label_words_fit(
+	label: Label, profile: Vector2i, label_path: String, friend_id: StringName
+) -> void:
+	if label.size.x <= 0.0:
+		return
+	var font := label.get_theme_font(&"font")
+	var font_size := label.get_theme_font_size(&"font_size")
+	if font == null:
+		return
+	for word in label.text.split(" ", false):
+		var word_width := font.get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+		assert_true(
+			word_width <= label.size.x + 0.5,
+			(
+				"%s: '%s' (%.1fpx) esce dal bordo di %s (%.1fpx) per %s."
+				% [profile, word, word_width, label_path, label.size.x, friend_id]
+			)
+		)
