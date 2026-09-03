@@ -73,19 +73,25 @@ sinistra, **come gioca** a destra.
   cioè i ritratti busto prodotti da PS-068
   (`assets/art/characters/<id>/generated/portrait.png`, `256×256`). Non è
   chiuso in un pannello: la silhouette trasparente partecipa alla
-  composizione e sconfina fino a `PORTRAIT_ROSTER_OVERLAP` (80px) sotto la
-  propria riga, dove la fascia roster — fratello successivo nell'albero — gli
-  viene disegnata sopra. L'arte a figura intera `selection_portrait`
-  (`carousel.png`) non compare più in questa schermata: resta nei dati come
-  rappresentazione di gameplay.
+  composizione. `_layout_portrait_stage()` gli assegna sempre l'intera colonna
+  Friend (`bust_side = min(stage.x, stage.y)`), a qualunque aspect ratio: non
+  esiste più un ramo "identità accanto al busto". L'arte a figura intera
+  `selection_portrait` (`carousel.png`) non compare più in questa schermata:
+  resta nei dati come rappresentazione di gameplay.
 - **Blocco identità** (`%IdentityBlock`) — nome in oro, filo ornamentale e
-  ruolo, appartiene visivamente allo stesso blocco del busto.
-  `_layout_portrait_stage()` sceglie fra due composizioni e adotta quella che
-  lascia il busto più grande: identità **accanto** al busto sui formati larghi
-  (16:9 e 20:9, busto ≈ 468px), **sotto** il busto sui formati stretti (4:3),
-  dove affiancare comprimerebbe troppo entrambi.
-- **Pannelli Passiva / Abilità attiva** — struttura invariata, occhielli ciano
-  come colore di sistema, titoli in oro, icona `136×136`.
+  ruolo, **sovrapposto** al bordo inferiore del busto (non più sotto in una
+  riga propria, né accanto): busto e identità sono un unico blocco verticale.
+  Per restare leggibile su qualunque costume, un `%IdentityBackdrop`
+  (`GradientTexture2D` radiale generato proceduralmente, nessun asset)
+  disegna un alone scuro sfumato dietro al testo, largo il 78% della colonna.
+- **Pannelli Passiva / Abilità attiva** — occhielli ciano come colore di
+  sistema, titoli in oro, icona `136×136`. La larghezza di `%AbilityCards` è
+  dinamica: `_on_overlay_resized()` la calcola come il 30% della larghezza
+  disponibile nel pannello, clampata fra `ABILITY_CARDS_MIN_WIDTH` (410 — sotto
+  questa soglia il testo va a capo di più righe, la card cresce e il busto la
+  insegue in altezza) e `ABILITY_CARDS_MAX_WIDTH` (440). Il personaggio resta
+  l'elemento dominante: le card sono informazione secondaria, non competono
+  per superficie con il busto.
 - **Fascia roster** (`%RosterRow`) — una strip che **scorre** attorno al Friend
   selezionato, il quale resta sempre al centro: mostra
   `ROSTER_VISIBLE_SLOTS` (7) miniature, tre per lato, e con otto Friend il

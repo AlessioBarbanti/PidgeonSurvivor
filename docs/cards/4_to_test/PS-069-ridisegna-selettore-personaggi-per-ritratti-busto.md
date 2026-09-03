@@ -657,6 +657,63 @@ interlinea) non è stata verificata fisicamente sul Pixel 9. Non risulta però
 collegata all'artefatto dei diamanti visto nello screenshot originale, che il
 proprietario ha chiarito non essere il difetto reale.
 
+### 2026-09-03 — Busto e identità sovrapposti, layout a due colonne vere
+
+Il proprietario ha chiesto di superare la composizione "identità a fianco del
+busto sui formati larghi" (l'unico ramo che faceva sconfinare il busto sulla
+fascia roster) a favore di **nome e ruolo sovrapposti al busto stesso**, su un
+alone sfumato scuro per restare leggibili, così la colonna Friend diventa un
+blocco unico e la schermata si legge davvero a due colonne: personaggio a
+sinistra, kit a destra.
+
+`_layout_portrait_stage()` non sceglie più fra affiancato e impilato: il busto
+occupa sempre l'intera colonna (`bust_side = min(stage.x, stage.y)`), nome e
+ruolo sono ancorati al suo bordo inferiore. Rimossi `PORTRAIT_ROSTER_OVERLAP`
+e `IDENTITY_MIN_WIDTH`, non più referenziati da nessun ramo.
+
+Il fondo sfumato (`IdentityBackdrop`, un `GradientTexture2D` radiale renderizzato
+proceduralmente, nessun nuovo asset) copre una fascia larga il 78% della
+colonna (minimo 220px), dal bordo inferiore del busto fino in fondo alla
+colonna: abbastanza per far risaltare testo su qualunque costume, senza
+leggersi come una seconda card sotto il personaggio.
+
+### 2026-09-03 — Le card Passiva/Abilità restano una minoranza della larghezza
+
+Primo tentativo: allargare le card da 410 a 480px per ridurre il wrap dei
+testi più lunghi (aveva funzionato: il massimo sincronizzato fra le due card
+era sceso da 205 a 176px). Il proprietario ha fermato il tentativo: allargare
+la colonna Passiva/Abilità toglie letteralmente pixel al busto, e qui **la
+star è il personaggio**, non le sue descrizioni. Misurato con
+`get_bust_portrait_rect()`/`get_ability_panel_rect()`: a 480px l'area delle
+card superava quella del busto (rapporto 0,93), a 410px erano già quasi pari
+(~0,98).
+
+Il proprietario ha poi chiarito l'intento: le card devono restare a **circa il
+30% della larghezza disponibile**, lasciando il resto al busto — non una
+larghezza fissa. `_on_overlay_resized()` ora calcola la larghezza di
+`AbilityCards` come `content_width * 0.30` (dove `content_width` è la
+larghezza del pannello meno il chrome orizzontale, letto dal vero
+`content_margin` dello StyleBox invece di duplicarne il valore), clampata fra
+`ABILITY_CARDS_MIN_WIDTH` (410, il minimo già verificato: sotto questa soglia
+il testo più lungo del roster va a capo di più, la card cresce in altezza, il
+busto la insegue perché occupa sempre l'intera riga, e il pannello sfora la
+safe area) e `ABILITY_CARDS_MAX_WIDTH` (440). Con i limiti attuali del
+pannello (`PANEL_MAX_SIZE.x = 1400`) il 30% del contenuto non supera mai 410
+tranne ai bordi estremi: la card resta quindi ancorata al minimo verificato
+per tutti i profili oggi supportati, e il busto guadagna comunque tutta la
+larghezza restante (rapporto busto/card fino a 1,43 sul profilo Pixel 9
+20:9). Se in futuro `PANEL_MAX_SIZE` crescesse, la quota del 30% comincerebbe
+a valere davvero senza bisogno di ritoccare questa card.
+
+`PassiveCard`/`AbilityCard` non hanno più una larghezza propria fissata a
+410: scendono a un pavimento basso (300) e seguono la larghezza reale che
+`AbilityCards` assegna loro, cross-axis, come VBoxContainer.
+
+Aggiunta un'asserzione esplicita (`ability_rect.intersects(carousel_rect)`)
+su tutti i profili di layout: le card Passiva/Abilità non devono mai
+sconfinare sulla fascia roster, come richiesto esplicitamente dal
+proprietario durante questo giro.
+
 ### 2026-09-03 — Strip che scorre, selezionato sempre al centro
 
 Prima implementazione: otto slot fissi, ogni Friend nella propria posizione e
