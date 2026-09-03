@@ -41,6 +41,8 @@ La card è l'unico contratto operativo: non allargarla e non reinterpretarla.
    non ti chieda esplicitamente di procedere comunque tu.
 4. Se lo stato è `DA DEFINIRE` o `BLOCCATO`, **fermati**: riporta la domanda o la
    dipendenza registrata nella card e non implementare.
+   Se lo stato è `SCARTATA`, **fermati**: la card è stata valutata e respinta
+   dal proprietario; non implementarla senza una sua conferma esplicita.
 5. Se ricevi un vecchio ID B-series, trova la card tramite `origine`; se non
    esiste, creala prima di implementare.
 6. Porta lo stato a `IN CORSO`, sposta la card in `docs/cards/3_in_sprint/`

@@ -6,15 +6,21 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 - Un file per card: `PS-<numero>-<slug>.md`, numerazione progressiva, nella
   cartella corrispondente alla fase corrente.
 - Il vocabolario degli stati è: `DA DEFINIRE`,
-  `BLOCCATO`, `PRONTO`, `IN CORSO`, `IN VERIFICA`, `COMPLETATO`.
-- Le cinque cartelle sono numerate secondo l'ordine di avanzamento e
+  `BLOCCATO`, `PRONTO`, `IN CORSO`, `IN VERIFICA`, `COMPLETATO`, `SCARTATA`.
+- Le sei cartelle sono numerate secondo l'ordine di avanzamento e
   raggruppano gli stati senza sostituirli:
   - `1_idea`: `DA DEFINIRE`;
   - `2_to_do`: `BLOCCATO`, `PRONTO` (non ancora pescata nello sprint corrente);
   - `3_in_sprint`: `PRONTO` (pescata nel blocco su cui si sta lavorando adesso,
     in coda) o `IN CORSO`;
   - `4_to_test`: `IN VERIFICA`;
-  - `5_completed`: `COMPLETATO`.
+  - `5_completed`: `COMPLETATO`;
+  - `6_rejected`: `SCARTATA`.
+- `SCARTATA` è uno stato terminale come `COMPLETATO`: il proprietario ha
+  valutato la card e ha deciso di non perseguirla. Si applica da qualunque
+  stato non `IN CORSO`; la card resta storica in `6_rejected` con il motivo
+  dello scarto in `Decisioni`, non va eliminata né riaperta silenziosamente
+  (un ripensamento apre una nuova card, come per `COMPLETATO`).
 - Quando cambia fase, sposta il file nella cartella corretta e aggiorna il link
   nella board nello stesso cambiamento.
 - Modello: [`_TEMPLATE.md`](./_TEMPLATE.md).
@@ -114,14 +120,14 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-069](./4_to_test/PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md) | Ridisegnare il selettore personaggi attorno ai ritratti busto | ux | ui | IN VERIFICA | media | PS-068 |
 | [PS-070](./2_to_do/PS-070-aggiorna-aspettativa-32x32-evil-portrait-b17.md) | Aggiorna l'aspettativa 32x32 su evil_portrait in test_b17_friend_content | fix | tooling | PRONTO | bassa | — |
 | [PS-071](./4_to_test/PS-071-pannello-boss-intro-esce-dalla-safe-area.md) | Il pannello della Boss Intro esce dalla safe area | fix | ui | IN VERIFICA | media | — |
-| [PS-072](./2_to_do/PS-072-audio-schivata-sesto-senso-equino-bea.md) | Dai un audio alla schivata Sesto Senso Equino di Bea | feat | audio | PRONTO | media | — |
+| [PS-072](./4_to_test/PS-072-audio-schivata-sesto-senso-equino-bea.md) | Dai un audio alla schivata Sesto Senso Equino di Bea | feat | audio | IN VERIFICA | media | — |
 | [PS-073](./2_to_do/PS-073-musica-boss-dedicata.md) | Introduci una musica Boss dedicata | feat | audio | PRONTO | media | — |
 | [PS-074](./2_to_do/PS-074-suono-click-generico-bottoni-ui.md) | Aggiungi un suono di click ai bottoni UI oggi silenziosi | ux | audio | PRONTO | bassa | — |
 | [PS-075](./2_to_do/PS-075-sfx-morte-nemico.md) | Aggiungi un SFX alla morte dei nemici | feat | audio | PRONTO | media | — |
 | [PS-076](./4_to_test/PS-076-aumenta-densita-nemica-a-schermo.md) | Aumenta la densità nemica a schermo a parità di rischio e progressione | chore | gameplay | IN VERIFICA | alta | — |
 | [PS-077](./2_to_do/PS-077-espandi-pool-specialita-barb.md) | Espandi il pool delle Specialità di Barb con le carte signature rimaste | feat | gameplay | PRONTO | media | PS-012 |
 | [PS-078](./2_to_do/PS-078-tematizza-catalogo-specialita-barb.md) | Tematizza il catalogo delle Specialità di Barb come piatti speciali del grigliatore | art | arte | BLOCCATO | media | PS-077 |
-| [PS-079](./2_to_do/PS-079-particellare-tell-stato-personaggi.md) | Sostituisci il contorno bocciato con un particellare non aderente | ux | arte | PRONTO | alta | — |
+| [PS-079](./4_to_test/PS-079-particellare-tell-stato-personaggi.md) | Sostituisci il contorno bocciato con un particellare non aderente | ux | arte | IN VERIFICA | alta | — |
 | [PS-080](./2_to_do/PS-080-musica-vittoria-sconfitta.md) | Aggiungi una musica dedicata a vittoria e sconfitta | feat | audio | PRONTO | media | — |
 | [PS-081](./2_to_do/PS-081-layer-musicale-intensita-late-run.md) | Aggiungi un layer musicale di intensità crescente late-run | feat | audio | PRONTO | media | — |
 | [PS-082](./2_to_do/PS-082-camera-non-centrata-su-restart.md) | Ricentra davvero la camera sul personaggio al restart | fix | gameplay | PRONTO | media | — |

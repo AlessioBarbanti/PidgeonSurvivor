@@ -8,7 +8,7 @@
 [ext_resource type="Script" path="res://scripts/abilities/ability_controller.gd" id="6_ability_controller"]
 [ext_resource type="Resource" path="res://data/abilities/magno_earthquake_shockwave.tres" id="7_ability"]
 [ext_resource type="Resource" path="res://data/friends/magno.tres" id="8_friend"]
-[ext_resource type="Script" path="res://scripts/vfx/passive_state_outline.gd" id="9_passive_outline"]
+[ext_resource type="Script" path="res://scripts/vfx/passive_state_particles.gd" id="9_passive_particles"]
 [ext_resource type="Script" path="res://scripts/vfx/thunder_charge_aura.gd" id="10_thunder_charge_aura"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
@@ -33,10 +33,11 @@ z_index = 1
 texture_filter = 1
 scale = Vector2(1.65, 1.65)
 
-[node name="PassiveStateOutline" type="Node2D" parent="CharacterSprite"]
+[node name="PassiveStateParticles" type="Node2D" parent="."]
 unique_name_in_owner = true
-show_behind_parent = true
-script = ExtResource("9_passive_outline")
+z_index = 2
+visible = false
+script = ExtResource("9_passive_particles")
 
 [node name="ThunderChargeAura" type="Node2D" parent="."]
 unique_name_in_owner = true

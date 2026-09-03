@@ -114,24 +114,33 @@ Gestore unico e scene-local: `GameAudio`
 ([scripts/audio/game_audio.gd](../scripts/audio/game_audio.gd)), istanziato
 in `scenes/game/movement_slice.tscn`, nessun autoload. Bus `SFX` e `Music`,
 pool di 12 `AudioStreamPlayer` per gli SFX, un player dedicato per la
-musica di run e uno per quella di menu, persistenza volume/mute su
-`user://audio_settings.cfg`.
+musica di run, uno per quella di menu e uno per la traccia Boss (PS-073),
+persistenza volume/mute su `user://audio_settings.cfg`.
 
 15 cue dichiarati: `SHOT`, `HIT`, `PLAYER_DAMAGE`, `PICKUP`, `LEVEL_UP`,
 `ABILITY_ACTIVATE`, `ABILITY_READY`, `BOSS_WARNING`, `BOSS_ATTACK`, `DODGE`,
 `UI_CONFIRM`, `PAUSE`, `RESUME`, `VICTORY`, `DEFEAT`.
-`has_complete_cue_set()` ne verifica **14**, escludendo esplicitamente
-`DODGE`: il commento sorgente dichiara che `dodge_stream` (Sesto Senso
-Equino di Bea) resta un no-op silenzioso finché non arriva un asset
-dedicato — mancanza dichiarata direttamente nel codice, non dedotta.
+`has_complete_cue_set()` li verifica tutti e **15** (PS-072 ha chiuso
+`DODGE`, l'ultima mancanza dichiarata direttamente nel codice).
 
 File audio runtime: 14 SFX Kenney CC0
 ([kenney_b18/ASSET-MANIFEST.md](../assets/audio/third_party/kenney_b18/ASSET-MANIFEST.md))
-mappati 1:1 sui cue completi; musica di run `super_wreck_roadway_loop.ogg`
-(Umplix, CC0); musica menu `menu_music_loop.ogg` (wipics, CC0). Un asset
-musicale superato resta in `congusbongus_b29/` (`head_in_the_sand.ogg`),
-dichiarato non referenziato nel proprio manifest. Loop musicale impostato a
-runtime (`AudioStreamOggVorbis.loop = true`), non nel file sorgente.
+mappati 1:1 sui cue di combattimento/interfaccia; `DODGE` usa
+`dodge.ogg`, un take del CC0 Swishes Sound Pack di artisticdude
+([artisticdude_swishes/ASSET-MANIFEST.md](../assets/audio/third_party/artisticdude_swishes/ASSET-MANIFEST.md));
+musica di run `super_wreck_roadway_loop.ogg` (Umplix, CC0); musica menu
+`menu_music_loop.ogg` (wipics, CC0); musica Boss dedicata (PS-073)
+`boss_music_loop.mp3`, "Vilified" di Matthew Pablo, CC-BY 3.0 — l'unico asset
+audio del progetto con attribuzione obbligatoria invece che volontaria
+([matthewpablo_vilified/ASSET-MANIFEST.md](../assets/audio/third_party/matthewpablo_vilified/ASSET-MANIFEST.md)).
+Un asset musicale superato resta in `congusbongus_b29/`
+(`head_in_the_sand.ogg`), dichiarato non referenziato nel proprio manifest.
+Loop musicale impostato a runtime (`AudioStreamOggVorbis.loop`/
+`AudioStreamMP3.loop = true`), non nel file sorgente. Dall'ingresso
+dell'intro Boss (`boss_intro_started`) alla sconfitta (`boss_defeated`) la
+musica di run e quella Boss si scambiano con un crossfade di
+`PresentationTimings.BOSS_MUSIC_CROSSFADE_SECONDS` (1.5s) sul bus `Music`; la
+musica di run riprende dalla posizione lasciata, non da capo.
 `docs/credits.md` riepiloga le attribuzioni.
 
 ## `PerformanceProfile`

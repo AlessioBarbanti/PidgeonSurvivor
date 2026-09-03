@@ -12,7 +12,7 @@ development plan or decision log.
 
 1. Run `git status --short`; preserve unrelated work.
 2. Read `docs/cards/README.md` and the selected card under
-   `docs/cards/{1_idea,2_to_do,3_in_sprint,4_to_test,5_completed}/PS-*.md`.
+   `docs/cards/{1_idea,2_to_do,3_in_sprint,4_to_test,5_completed,6_rejected}/PS-*.md`.
    For "next": check `3_in_sprint/` first and continue there if it still has
    cards; otherwise pick the highest-priority dependency-ready `PRONTO` card
    from `2_to_do/` (a prerequisite counts as closed once it reaches
@@ -21,7 +21,9 @@ development plan or decision log.
 3. For a legacy B-series request, search the card frontmatter field `origine`.
    If no card owns that work, create one before implementation.
 4. Stop on `DA DEFINIRE` or `BLOCCATO` and report the exact question or unmet
-   `dipende_da` card. Do not bypass the board order silently.
+   `dipende_da` card. Do not bypass the board order silently. Stop on
+   `SCARTATA` too: the owner already evaluated and rejected the card; do not
+   implement it without explicit owner confirmation.
 5. Read only relevant durable contracts (`CLAUDE.md`, `docs/prd.md`, domain
    catalogs/approvals), evidence notes, code, and closest tests.
 

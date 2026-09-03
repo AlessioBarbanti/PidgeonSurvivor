@@ -28,7 +28,8 @@
         "tests/unit/test_ps004_zat_thunder_charge.gd",
         "tests/unit/test_ps006_evil_signature_abilities.gd",
         "tests/unit/test_ps041_magno_trail_reset_redraw.gd",
-        "tests/unit/test_ps051_boss_intro_identity.gd"
+        "tests/unit/test_ps051_boss_intro_identity.gd",
+        "tests/unit/test_ps079_state_tell_particles.gd"
       ]
     },
     {
@@ -238,7 +239,9 @@
         "tests/unit/test_ps008_wave_events.gd",
         "tests/unit/test_ps044_ui_capture_states.gd",
         "tests/unit/test_ps045_arena_visual_hierarchy.gd",
-        "tests/unit/test_ps053_run_summary.gd"
+        "tests/unit/test_ps053_run_summary.gd",
+        "tests/unit/test_ps072_bea_dodge_audio.gd",
+        "tests/unit/test_ps073_boss_dedicated_music.gd"
       ]
     },
     {
@@ -353,7 +356,9 @@
       "smokes": [
         "tests/unit/test_b18_audiovisual_feedback.gd",
         "tests/unit/test_b29_background_music.gd",
-        "tests/unit/test_menu_music.gd"
+        "tests/unit/test_menu_music.gd",
+        "tests/unit/test_ps072_bea_dodge_audio.gd",
+        "tests/unit/test_ps073_boss_dedicated_music.gd"
       ]
     },
     {
@@ -376,7 +381,7 @@
     {
       "patterns": [
         "scripts/content/friend_passive_controller.gd",
-        "scripts/vfx/passive_state_outline.gd"
+        "scripts/vfx/passive_state_particles.gd"
       ],
       "smokes": [
         "tests/unit/test_b44_state_tells.gd",
@@ -385,7 +390,9 @@
         "tests/unit/test_b17_friend_content.gd",
         "tests/unit/test_ps003_zat_delayed_healing.gd",
         "tests/unit/test_ps004_zat_thunder_charge.gd",
-        "tests/unit/test_ps029_state_tell_visibility.gd"
+        "tests/unit/test_ps029_state_tell_visibility.gd",
+        "tests/unit/test_ps079_state_tell_particles.gd",
+        "tests/unit/test_ps072_bea_dodge_audio.gd"
       ]
     },
     {

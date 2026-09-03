@@ -9,6 +9,18 @@
   the music of the BOOT screens (welcome, character selection, tutorial).
   Source, license copy and file hash:
   `assets/audio/third_party/menu_music_wipics/ASSET-MANIFEST.md`.
+- **Swishes Sound Pack** — artisticdude, CC0 1.0 Universal, from OpenGameArt.
+  One take (`swish-9`) is used as the `DODGE` cue for Bea's Sesto Senso
+  Equino passive (PS-072). Source, license copy and file hash:
+  `assets/audio/third_party/artisticdude_swishes/ASSET-MANIFEST.md`.
+- **Vilified (2012)** — Matthew Pablo, CC-BY 3.0, from OpenGameArt. Used as
+  the dedicated Boss music (PS-073), replacing the run background music for
+  the duration of the encounter. **Attribution required by the license** —
+  unlike every other audio credit on this page, which is voluntary under
+  CC0. The file's ID3 tags additionally credit Raayl as a participating
+  artist alongside Matthew Pablo; the OpenGameArt license page names only
+  Matthew Pablo. Source, license note and file hash:
+  `assets/audio/third_party/matthewpablo_vilified/ASSET-MANIFEST.md`.
 
 ## Fonts
 

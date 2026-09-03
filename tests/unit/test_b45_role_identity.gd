@@ -92,7 +92,7 @@ func test_migi_shell_charges() -> void:
 	assert_true(charge_max > 0, "Migi deve dichiarare almeno una carica di guscio.")
 	assert_true(passive.get_migi_shell_charges() == charge_max, "Il guscio piccolo deve partire carico a inizio run.")
 	assert_true(
-		player.get_passive_state_outline_color() == FriendPassiveController.OUTLINE_MIGI_SHELL_READY,
+		player.get_passive_state_tell_color() == FriendPassiveController.TELL_MIGI_SHELL_READY,
 		"Il tell del guscio pronto deve essere attivo con cariche disponibili."
 	)
 
@@ -100,7 +100,7 @@ func test_migi_shell_charges() -> void:
 		assert_true(not player.take_contact_damage(5.0), "Ogni carica del guscio deve annullare un colpo intero.")
 	assert_true(passive.get_migi_shell_charges() == 0, "Le cariche devono esaurirsi dopo l'uso.")
 	assert_true(
-		player.get_passive_state_outline_color() != FriendPassiveController.OUTLINE_MIGI_SHELL_READY,
+		player.get_passive_state_tell_color() != FriendPassiveController.TELL_MIGI_SHELL_READY,
 		"Senza cariche il tell del guscio pronto deve spegnersi."
 	)
 	assert_true(player.take_contact_damage(5.0), "Senza cariche disponibili il colpo deve passare.")

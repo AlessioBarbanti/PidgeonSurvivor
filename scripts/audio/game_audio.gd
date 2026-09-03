@@ -12,6 +12,10 @@ const PLAYER_POOL_SIZE := 12
 const MINIMUM_LINEAR_VOLUME := 0.0001
 const BACKGROUND_MUSIC_VOLUME_DB := -7.0
 const MENU_MUSIC_VOLUME_DB := -9.0
+## PS-073: leggermente sopra la musica di run cosi' il crossfade si legge come
+## un'intensificazione, non come un cambio a parita' di energia.
+const BOSS_MUSIC_VOLUME_DB := -5.0
+const MUSIC_CROSSFADE_SILENCE_DB := -80.0
 
 const SHOT := &"shot"
 const HIT := &"hit"
@@ -22,10 +26,7 @@ const ABILITY_ACTIVATE := &"ability_activate"
 const ABILITY_READY := &"ability_ready"
 const BOSS_WARNING := &"boss_warning"
 const BOSS_ATTACK := &"boss_attack"
-## Sesto Senso Equino di Bea (B45). Non e' ancora nella lista di
-## has_complete_cue_set(): resta un no-op silenzioso finche' non arriva un
-## asset dedicato, coerente con la disciplina che richiede uno stream
-## importato per ogni cue prima di dichiararlo "completo".
+## Sesto Senso Equino di Bea (B45, asset integrato in PS-072).
 const DODGE := &"dodge"
 const UI_CONFIRM := &"ui_confirm"
 const PAUSE := &"pause"
@@ -61,6 +62,10 @@ const DEFEAT := &"defeat"
 ## player separato da quello della run cosi' i due non si contendono lo stesso
 ## stato di riproduzione durante le transizioni.
 @export var menu_music_stream: AudioStream
+## Traccia Boss dedicata (PS-073): sostituisce la musica di run dall'intro
+## (`boss_intro_started`) alla sconfitta (`boss_defeated`), con un crossfade
+## fra le due tracce sul bus Music. Si ripete identica a ogni ricorrenza.
+@export var boss_music_stream: AudioStream
 
 @export_group("Diagnostics")
 ## Il driver headless non produce audio udibile e può trattenere playback OGG
@@ -72,6 +77,7 @@ var _muted := false
 var _players: Array[AudioStreamPlayer] = []
 var _background_music_player: AudioStreamPlayer
 var _menu_music_player: AudioStreamPlayer
+var _boss_music_player: AudioStreamPlayer
 var _next_player_index := 0
 var _last_cue_ticks: Dictionary = {}
 var _ability_cooldown_armed := false
@@ -79,6 +85,8 @@ var _configured := false
 var _background_music_active := false
 var _background_music_resume_position := 0.0
 var _menu_music_active := false
+var _boss_music_active := false
+var _music_crossfade_tween: Tween
 
 var _run_controller: RunController
 var _player: Player
@@ -99,6 +107,7 @@ func _ready() -> void:
 	_build_player_pool()
 	_build_background_music_player()
 	_build_menu_music_player()
+	_build_boss_music_player()
 	_load_settings()
 	_apply_settings()
 
@@ -155,6 +164,7 @@ func configure(
 	_connect_once(_experience_system.level_up_started, _on_level_up_started)
 	_connect_once(_boss_encounter.boss_spawned, _on_boss_spawned)
 	_connect_once(_boss_encounter.boss_intro_started, _on_boss_intro_started)
+	_connect_once(_boss_encounter.boss_defeated, _on_boss_defeated)
 	_connect_once(_upgrade_overlay.selection_submitted, _on_upgrade_submitted)
 	_connect_once(_barb_reward_overlay.selection_submitted, _on_upgrade_submitted)
 	_connect_once(_character_select_overlay.friend_confirmed, _on_friend_confirmed)
@@ -205,6 +215,7 @@ func stop_all() -> void:
 		audio_player.stop()
 		audio_player.stream = null
 	stop_background_music()
+	stop_boss_music()
 	stop_menu_music()
 
 
@@ -219,6 +230,7 @@ func has_complete_cue_set() -> bool:
 		ABILITY_READY,
 		BOSS_WARNING,
 		BOSS_ATTACK,
+		DODGE,
 		UI_CONFIRM,
 		PAUSE,
 		RESUME,
@@ -266,6 +278,22 @@ func is_menu_music_looping() -> bool:
 
 func get_menu_music_player() -> AudioStreamPlayer:
 	return _menu_music_player
+
+
+func has_boss_music() -> bool:
+	return boss_music_stream != null
+
+
+func is_boss_music_active() -> bool:
+	return _boss_music_active
+
+
+func is_boss_music_looping() -> bool:
+	return _is_stream_looping(boss_music_stream)
+
+
+func get_boss_music_player() -> AudioStreamPlayer:
+	return _boss_music_player
 
 
 func get_stream_for_cue(cue_id: StringName) -> AudioStream:
@@ -393,6 +421,17 @@ func _build_menu_music_player() -> void:
 	add_child(_menu_music_player)
 
 
+func _build_boss_music_player() -> void:
+	if is_instance_valid(_boss_music_player):
+		return
+	_boss_music_player = AudioStreamPlayer.new()
+	_boss_music_player.name = "BossMusicPlayer"
+	_boss_music_player.bus = MUSIC_BUS_NAME
+	_boss_music_player.volume_db = MUSIC_CROSSFADE_SILENCE_DB
+	_boss_music_player.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(_boss_music_player)
+
+
 func _acquire_player() -> AudioStreamPlayer:
 	for offset in _players.size():
 		var index := (_next_player_index + offset) % _players.size()
@@ -453,7 +492,12 @@ func _connect_once(source_signal: Signal, callable: Callable) -> void:
 
 func _on_run_state_changed(previous_state: RunController.RunState, current_state: RunController.RunState) -> void:
 	if current_state == RunController.RunState.RUNNING:
-		start_background_music()
+		if not _boss_music_active:
+			start_background_music()
+	elif current_state == RunController.RunState.BOSS_INTRO and has_boss_music():
+		# PS-073 possiede in esclusiva questa transizione: il crossfade verso
+		# la traccia Boss parte da _on_boss_intro_started, non da qui.
+		pass
 	elif previous_state == RunController.RunState.RUNNING:
 		pause_background_music()
 	elif current_state == RunController.RunState.BOOT or current_state in [
@@ -461,6 +505,7 @@ func _on_run_state_changed(previous_state: RunController.RunState, current_state
 		RunController.RunState.DEFEAT,
 	]:
 		stop_background_music()
+		stop_boss_music()
 
 	if current_state == RunController.RunState.MANUAL_PAUSE:
 		play_cue(PAUSE, -2.0)
@@ -470,6 +515,7 @@ func _on_run_state_changed(previous_state: RunController.RunState, current_state
 
 func _on_run_ended(final_state: RunController.RunState, _run_time: float) -> void:
 	stop_background_music()
+	stop_boss_music()
 	if final_state == RunController.RunState.VICTORY:
 		play_cue(VICTORY, -1.0)
 	elif final_state == RunController.RunState.DEFEAT:
@@ -478,6 +524,7 @@ func _on_run_ended(final_state: RunController.RunState, _run_time: float) -> voi
 
 func _on_restart_prepared() -> void:
 	stop_background_music()
+	stop_boss_music()
 	_ability_cooldown_armed = false
 	_last_cue_ticks.clear()
 
@@ -505,6 +552,11 @@ func pause_background_music() -> void:
 	if is_instance_valid(_background_music_player) and _background_music_player.playing:
 		_background_music_resume_position = _background_music_player.get_playback_position()
 		_background_music_player.stop()
+	if is_instance_valid(_background_music_player):
+		# Un crossfade PS-073 in corso puo' aver abbassato il volume verso il
+		# silenzio: ripristinalo cosi' la prossima partenza riparte al livello
+		# nominale invece che muta.
+		_background_music_player.volume_db = BACKGROUND_MUSIC_VOLUME_DB
 	_background_music_active = false
 
 
@@ -537,11 +589,160 @@ func stop_menu_music() -> void:
 
 
 func stop_background_music() -> void:
+	_kill_music_crossfade_tween()
 	if is_instance_valid(_background_music_player):
 		_background_music_player.stop()
 		_background_music_player.stream = null
+		_background_music_player.volume_db = BACKGROUND_MUSIC_VOLUME_DB
 	_background_music_active = false
 	_background_music_resume_position = 0.0
+
+
+## PS-073: crossfade dalla musica di run alla traccia Boss dedicata,
+## innescato da `boss_intro_started`. Idempotente: una seconda chiamata
+## mentre la sessione Boss e' gia' attiva non fa nulla.
+func start_boss_music() -> bool:
+	if _boss_music_active:
+		return true
+	if not has_boss_music():
+		return false
+	_boss_music_active = true
+	_enable_stream_loop(boss_music_stream)
+	if signal_only_in_headless and DisplayServer.get_name() == "headless":
+		if _background_music_active:
+			pause_background_music()
+		return true
+	if not is_instance_valid(_boss_music_player):
+		return false
+	_kill_music_crossfade_tween()
+	var background_was_playing := (
+		is_instance_valid(_background_music_player) and _background_music_player.playing
+	)
+	_boss_music_player.stream = boss_music_stream
+	_boss_music_player.volume_db = MUSIC_CROSSFADE_SILENCE_DB
+	_boss_music_player.play()
+	_music_crossfade_tween = create_tween()
+	_music_crossfade_tween.set_parallel(true)
+	_music_crossfade_tween.tween_property(
+		_boss_music_player,
+		"volume_db",
+		BOSS_MUSIC_VOLUME_DB,
+		PresentationTimings.BOSS_MUSIC_CROSSFADE_SECONDS
+	)
+	if background_was_playing:
+		_music_crossfade_tween.tween_property(
+			_background_music_player,
+			"volume_db",
+			MUSIC_CROSSFADE_SILENCE_DB,
+			PresentationTimings.BOSS_MUSIC_CROSSFADE_SECONDS
+		)
+		_music_crossfade_tween.finished.connect(pause_background_music, CONNECT_ONE_SHOT)
+	elif _background_music_active:
+		pause_background_music()
+	return true
+
+
+## PS-073: crossfade dalla traccia Boss alla musica di run, innescato da
+## `boss_defeated`. La musica di run riprende da
+## `_background_music_resume_position`, non da capo — ma solo se lo stato e'
+## ancora RUNNING quando questa funzione gira: `boss_defeated` puo' far
+## scattare sincronamente la ricompensa Barb (BARB_REWARD) prima che questo
+## handler venga eseguito (movement_slice.gd si connette allo stesso segnale
+## prima di GameAudio.configure()). In quel caso la traccia Boss sfuma e basta
+## silenziosamente: la musica di run riparte da sola, senza salto, quando lo
+## stato torna RUNNING alla chiusura del modal (vedi _on_run_state_changed).
+func end_boss_music() -> void:
+	if not _boss_music_active:
+		return
+	_boss_music_active = false
+	var can_resume_run_music := (
+		is_instance_valid(_run_controller)
+		and _run_controller.get_state() == RunController.RunState.RUNNING
+	)
+	if signal_only_in_headless and DisplayServer.get_name() == "headless":
+		if is_instance_valid(_boss_music_player):
+			_boss_music_player.stream = null
+		if can_resume_run_music:
+			start_background_music()
+		return
+	if not can_resume_run_music or background_music_stream == null or not is_instance_valid(_background_music_player):
+		_fade_out_boss_music_only()
+		return
+	_kill_music_crossfade_tween()
+	var boss_was_playing := is_instance_valid(_boss_music_player) and _boss_music_player.playing
+	_enable_stream_loop(background_music_stream)
+	_background_music_player.stream = background_music_stream
+	_background_music_player.volume_db = MUSIC_CROSSFADE_SILENCE_DB
+	_background_music_player.play(_background_music_resume_position)
+	_background_music_active = true
+	_music_crossfade_tween = create_tween()
+	_music_crossfade_tween.set_parallel(true)
+	_music_crossfade_tween.tween_property(
+		_background_music_player,
+		"volume_db",
+		BACKGROUND_MUSIC_VOLUME_DB,
+		PresentationTimings.BOSS_MUSIC_CROSSFADE_SECONDS
+	)
+	if boss_was_playing:
+		_music_crossfade_tween.tween_property(
+			_boss_music_player,
+			"volume_db",
+			MUSIC_CROSSFADE_SILENCE_DB,
+			PresentationTimings.BOSS_MUSIC_CROSSFADE_SECONDS
+		)
+	_music_crossfade_tween.finished.connect(stop_boss_music, CONNECT_ONE_SHOT)
+
+
+## PS-073: interruzione immediata della sola traccia Boss, senza crossfade.
+## Usata da restart e fine run (vittoria/sconfitta), dove nessuna delle due
+## tracce deve restare attiva in sottofondo.
+func stop_boss_music() -> void:
+	_kill_music_crossfade_tween()
+	if is_instance_valid(_boss_music_player):
+		_boss_music_player.stop()
+		_boss_music_player.stream = null
+		_boss_music_player.volume_db = MUSIC_CROSSFADE_SILENCE_DB
+	_boss_music_active = false
+
+
+## PS-073: sfuma solo la traccia Boss senza toccare quella di run, per il caso
+## in cui `boss_defeated` trova la run gia' uscita da RUNNING (es. ricompensa
+## Barb sincrona). La musica di run resta silenziosa fino al normale rientro
+## in RUNNING gestito da _on_run_state_changed.
+func _fade_out_boss_music_only() -> void:
+	_kill_music_crossfade_tween()
+	if not is_instance_valid(_boss_music_player) or not _boss_music_player.playing:
+		stop_boss_music()
+		return
+	_music_crossfade_tween = create_tween()
+	_music_crossfade_tween.tween_property(
+		_boss_music_player,
+		"volume_db",
+		MUSIC_CROSSFADE_SILENCE_DB,
+		PresentationTimings.BOSS_MUSIC_CROSSFADE_SECONDS
+	)
+	_music_crossfade_tween.finished.connect(stop_boss_music, CONNECT_ONE_SHOT)
+
+
+func _kill_music_crossfade_tween() -> void:
+	if is_instance_valid(_music_crossfade_tween):
+		_music_crossfade_tween.kill()
+	_music_crossfade_tween = null
+
+
+func _enable_stream_loop(stream: AudioStream) -> void:
+	if stream is AudioStreamOggVorbis:
+		(stream as AudioStreamOggVorbis).loop = true
+	elif stream is AudioStreamMP3:
+		(stream as AudioStreamMP3).loop = true
+
+
+func _is_stream_looping(stream: AudioStream) -> bool:
+	if stream is AudioStreamOggVorbis:
+		return (stream as AudioStreamOggVorbis).loop
+	if stream is AudioStreamMP3:
+		return (stream as AudioStreamMP3).loop
+	return false
 
 
 func _on_player_damaged(_player_value: Player, _amount: float, _health_current: float) -> void:
@@ -588,6 +789,11 @@ func _on_boss_spawned(boss: FirstBoss, _schedule_index: int) -> void:
 
 func _on_boss_intro_started(_boss: FirstBoss, _schedule_index: int) -> void:
 	play_cue(BOSS_WARNING, -1.0, 250)
+	start_boss_music()
+
+
+func _on_boss_defeated(_boss: FirstBoss) -> void:
+	end_boss_music()
 
 
 func _on_boss_attack_telegraphed(
