@@ -6,15 +6,21 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 - Un file per card: `PS-<numero>-<slug>.md`, numerazione progressiva, nella
   cartella corrispondente alla fase corrente.
 - Il vocabolario degli stati è: `DA DEFINIRE`,
-  `BLOCCATO`, `PRONTO`, `IN CORSO`, `IN VERIFICA`, `COMPLETATO`.
-- Le cinque cartelle sono numerate secondo l'ordine di avanzamento e
+  `BLOCCATO`, `PRONTO`, `IN CORSO`, `IN VERIFICA`, `COMPLETATO`, `SCARTATA`.
+- Le sei cartelle sono numerate secondo l'ordine di avanzamento e
   raggruppano gli stati senza sostituirli:
   - `1_idea`: `DA DEFINIRE`;
   - `2_to_do`: `BLOCCATO`, `PRONTO` (non ancora pescata nello sprint corrente);
   - `3_in_sprint`: `PRONTO` (pescata nel blocco su cui si sta lavorando adesso,
     in coda) o `IN CORSO`;
   - `4_to_test`: `IN VERIFICA`;
-  - `5_completed`: `COMPLETATO`.
+  - `5_completed`: `COMPLETATO`;
+  - `6_rejected`: `SCARTATA`.
+- `SCARTATA` è uno stato terminale come `COMPLETATO`: il proprietario ha
+  valutato la card e ha deciso di non perseguirla. Si applica da qualunque
+  stato non `IN CORSO`; la card resta storica in `6_rejected` con il motivo
+  dello scarto in `Decisioni`, non va eliminata né riaperta silenziosamente
+  (un ripensamento apre una nuova card, come per `COMPLETATO`).
 - Quando cambia fase, sposta il file nella cartella corretta e aggiorna il link
   nella board nello stesso cambiamento.
 - Modello: [`_TEMPLATE.md`](./_TEMPLATE.md).
