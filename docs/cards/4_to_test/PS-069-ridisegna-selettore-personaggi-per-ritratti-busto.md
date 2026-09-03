@@ -720,6 +720,49 @@ su tutti i profili di layout: le card Passiva/Abilità non devono mai
 sconfinare sulla fascia roster, come richiesto esplicitamente dal
 proprietario durante questo giro.
 
+### 2026-09-03 — Il testo esce dal bordo delle card su device: 410 non bastava
+
+Il proprietario ha segnalato (screenshot da device reale, Pixel 9 20:9,
+personaggio Aleo) che il testo di "Termostato Interno"/"Shock Termico" esce
+visibilmente dal bordo destro della card, non solo va a capo stretto: parole
+tagliate a metà oltre il confine del pannello.
+
+Non riprodotto con il renderer software di questo sandbox (a 410px "Termostato
+Interno" resta comodamente dentro la colonna con le metriche di *questo*
+motore). Causa più plausibile: a `ABILITY_CARDS_WIDTH = 410`, la colonna di
+testo interna (dopo icona 136px, separazione HBox e margini della card) scende
+a soli 240px, e "TERMOSTATO INTERNO" da sola misura già 215px con le metriche
+desktop — un margine di appena 25px (89,6% occupato) in cui basta una metrica
+del font leggermente diversa su Android per far uscire il testo dal bordo.
+Stessa famiglia di incertezza già incontrata sul CTA in questa card: non posso
+confermare il meccanismo esatto senza un device, ma il margine risicato è
+misurabile e reale.
+
+Il proprietario ha chiesto esplicitamente di allargare le card. Portata
+`ABILITY_CARDS_WIDTH` a 440 (colonna interna 270px, margine di 55px sullo
+stesso titolo). Semplificata la costante da un range dinamico
+(`ABILITY_CARDS_MIN_WIDTH`/`MAX_WIDTH`/`WIDTH_RATIO`) a un valore fisso unico:
+col limite di `PANEL_MAX_SIZE.x` attuale il 30% del contenuto non aveva mai
+superato il minimo comunque, quindi il range non stava facendo nulla — tenerlo
+avrebbe solo confuso chi legge il codice.
+
+Costo dichiarato: il rapporto busto/card peggiora leggermente (da ~0,98 a
+~0,92 sul caso peggiore, Bea), ma resta lontano dallo squilibrio verificato a
+480px (0,93 già allora, e qui il denominatore è diverso). Il proprietario ha
+scelto la leggibilità su questo compromesso.
+
+Aggiunto un test di regressione vero (`_assert_label_words_fit` in
+`test_ps069_character_select_bust_portrait.gd`): verifica che nessuna singola
+parola di nome/ruolo/titolo/descrizione, per tutti gli otto Friend e tutti i
+profili di layout, superi la larghezza della propria Label. Verificato che
+sarebbe stato inutile riprovare lo stesso controllo con una soglia di margine
+arbitraria (85%): un wrap greedy normale produce spesso righe vicine al bordo
+per costruzione, quindi un controllo così avrebbe fallito ovunque, anche dove
+il testo è a posto — non è un segnale utile. Il test attuale cattura solo
+l'overflow di una singola parola con le metriche di questo motore: non può
+provare che il margine basti su un motore di rendering diverso, quello lo
+prova solo il device.
+
 ### 2026-09-03 — Strip che scorre, selezionato sempre al centro
 
 Prima implementazione: otto slot fissi, ogni Friend nella propria posizione e

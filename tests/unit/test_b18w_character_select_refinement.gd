@@ -247,7 +247,7 @@ func _assert_hierarchy(selector: CharacterSelectOverlay) -> void:
 		"Il kit deve stare sopra la fascia roster, non accanto."
 	)
 	assert_true(
-		ability_rect.size.x >= 400.0 and ability_rect.size.x <= 420.0,
+		ability_rect.size.x >= 430.0 and ability_rect.size.x <= 450.0,
 		"Le card abilita devono bilanciare il peso del carosello."
 	)
 	assert_true(ability_rect.size.y <= 440.0, "Le due card abilita devono restare compatte.")

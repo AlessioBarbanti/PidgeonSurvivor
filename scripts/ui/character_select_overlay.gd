@@ -22,17 +22,15 @@ const PANEL_MARGIN_LEFT := 32.0
 const PANEL_MARGIN_RIGHT := 20.0
 const PANEL_MARGIN_VERTICAL := 14.0
 
-## Le card Passiva/Abilita' occupano una quota della larghezza disponibile,
-## non il busto: cosi' il personaggio resta l'elemento dominante a ogni
-## risoluzione, invece di farsi restringere da testi piu' lunghi che
-## allargano le card. I limiti evitano card troppo strette (testo illeggibile)
-## o troppo larghe (schiacciano il busto) ai formati estremi.
-const ABILITY_CARDS_WIDTH_RATIO := 0.30
-## 410 e' il minimo gia' verificato non far esplodere l'altezza del testo piu'
-## lungo del roster (piu' stretto, il wrap aggiunge righe, la card cresce, il
-## busto la insegue in altezza e il pannello sfora la safe area).
-const ABILITY_CARDS_MIN_WIDTH := 410.0
-const ABILITY_CARDS_MAX_WIDTH := 440.0
+## Larghezza fissa delle card Passiva/Abilita'. A 410 la colonna di testo
+## interna (dopo icona 136px, separazione e margini della card) scende a soli
+## 240px: "TERMOSTATO INTERNO" da solo ne occupa 215, un margine di appena
+## 25px in cui basta una metrica del font leggermente diversa (es. resa
+## Android vs desktop) per far uscire il testo dal bordo della card. 440
+## riporta la colonna interna a 270px, un margine reale. Tenuta sotto il 35%
+## circa della larghezza pannello anche al PANEL_MAX_SIZE, cosi' il busto
+## resta l'elemento dominante della schermata.
+const ABILITY_CARDS_WIDTH := 440.0
 
 const IDENTITY_MIN_HEIGHT := 96.0
 ## Il fondo sfumato dietro nome e ruolo copre solo una fascia centrale, non
@@ -481,16 +479,7 @@ func _on_overlay_resized() -> void:
 		minf(clampf(available.y, PANEL_MIN_SIZE.y, PANEL_MAX_SIZE.y), available.y)
 	)
 	if is_instance_valid(_ability_cards):
-		var panel_style := _selection_panel.get_theme_stylebox("panel") as StyleBoxFlat
-		var horizontal_chrome := (
-			panel_style.content_margin_left + panel_style.content_margin_right
-			if panel_style != null
-			else 0.0
-		)
-		var content_width := maxf(panel_width - horizontal_chrome, 0.0)
-		_ability_cards.custom_minimum_size.x = clampf(
-			content_width * ABILITY_CARDS_WIDTH_RATIO, ABILITY_CARDS_MIN_WIDTH, ABILITY_CARDS_MAX_WIDTH
-		)
+		_ability_cards.custom_minimum_size.x = ABILITY_CARDS_WIDTH
 
 
 func _on_portrait_stage_resized() -> void:

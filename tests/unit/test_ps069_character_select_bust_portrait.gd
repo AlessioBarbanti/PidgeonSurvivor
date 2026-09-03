@@ -337,5 +337,36 @@ func _assert_copy_is_not_truncated(
 				label.get_visible_line_count() == label.get_line_count(),
 				"%s: %s non deve troncare il testo di %s." % [profile, label_path, expected_id]
 			)
+			_assert_label_words_fit(label, profile, label_path, expected_id)
 	selector.get_button(&"magno").pressed.emit()
 	await wait_process_frames(2)
+
+
+## Il word-wrap di Godot e' greedy: accumula parole su una riga finche'
+## entrano, poi va a capo — quindi molte righe finiscono naturalmente vicine
+## al bordo per costruzione (e' cosi' che un wrap funziona, non un difetto).
+## Una singola parola piu' larga della Label esce sicuramente dal bordo: e'
+## l'unico invariante che si puo' testare senza rifare da zero il motore di
+## wrap di Godot. Non cattura differenze di metrica del font fra motori (il
+## caso reale su device, PS-069, dove "TERMOSTATO INTERNO" — due parole, non
+## una — restava sulla stessa riga a 89,6% della colonna con le metriche
+## desktop, ma usciva dal bordo su device): per quello la mitigazione e' il
+## margine reale di `ABILITY_CARDS_WIDTH`, non questo test.
+func _assert_label_words_fit(
+	label: Label, profile: Vector2i, label_path: String, friend_id: StringName
+) -> void:
+	if label.size.x <= 0.0:
+		return
+	var font := label.get_theme_font(&"font")
+	var font_size := label.get_theme_font_size(&"font_size")
+	if font == null:
+		return
+	for word in label.text.split(" ", false):
+		var word_width := font.get_string_size(word, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+		assert_true(
+			word_width <= label.size.x + 0.5,
+			(
+				"%s: '%s' (%.1fpx) esce dal bordo di %s (%.1fpx) per %s."
+				% [profile, word, word_width, label_path, label.size.x, friend_id]
+			)
+		)
