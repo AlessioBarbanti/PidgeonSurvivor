@@ -3,7 +3,7 @@ id: PS-069
 titolo: Ridisegnare il selettore personaggi attorno ai ritratti busto
 tipo: ux
 area: ui
-stato: IN VERIFICA
+stato: IN CORSO
 priorita: media
 dipende_da: [PS-068]
 origine:
@@ -571,6 +571,43 @@ verticale per dare altezza al busto, ma avrebbe richiesto di indebolire
 la safe area e recuperare i 61px necessari dai padding: margini del pannello,
 margini di contenuto della placca CTA (che imponeva 116px di altezza minima) e
 fascia roster.
+
+### 2026-09-03 — Riaperta: i diamanti centrali della CTA si schiacciano
+
+Il proprietario ha segnalato che il bottone `GIOCA CON [nome]` renderizza male
+i diamanti ornamentali sopra/sotto la placca.
+
+Causa: `character_select_cta_base.png` (754×181) non è un 9-slice pulito — i
+diamanti centrali (sopra e sotto, a metà larghezza) stanno dentro la striscia
+centrale che lo `StyleBoxTexture` stira solo in orizzontale, non dentro gli
+angoli fissi (`texture_margin_left/right = 88`). Con `texture_filter` a
+`NEAREST`, comprimere quella striscia li deforma in modo asimmetrico.
+
+Questa stessa card aveva ridotto `custom_minimum_size` del `ConfirmButton` da
+`500×72` a `460×72` nel redesign, portando la striscia stirabile da
+`578px` sorgente a `284px` di destinazione (rapporto ≈0,49): un rapporto già
+presente prima (a 500px era ≈0,56) ma peggiorato abbastanza da rendere il
+difetto visibile a schermo intero. Il difetto è quindi dentro l'ambito CTA di
+questa card ("CTA, solo per riposizionamento/composizione"), non una card
+nuova.
+
+**Tentativo di riproduzione (2026-09-03): difetto non riprodotto.** Con
+`tools/setup-remote-sandbox.sh` (Godot 4.7.1 headless + Xvfb + renderer GL
+reale, non il driver dummy) e `tools/_capture_ui_screenshots.gd` ho catturato
+`03_character_select` e `03b_character_03_zat` sia a 1280×720 (16:9) sia alla
+risoluzione Pixel 9 esatta 2424×1080 (20:9), la stessa dello screenshot del
+proprietario. In entrambe le catture il bottone `GIOCA CON ZAT` rende pulito e
+simmetrico: nessuna compressione o allungamento dei diamanti centrali o dei
+diamanti d'estremità, sull'HEAD corrente (`ba371c1`, invariato). L'ipotesi
+9-slice sopra resta plausibile in astratto ma non è quella confermata da
+questa prova.
+
+Il difetto nello screenshot del proprietario resta reale (visibile, asimmetria
+netta fra estremità sinistra ed estremità destra del bottone), ma la sua causa
+non è ancora identificata: non riproducibile con il renderer software di
+questo sandbox. Prima di procedere con una modifica speculativa serve capire
+da dove viene lo screenshot (build Windows, editor, device Android) e se il
+difetto è ripetibile.
 
 ### 2026-09-03 — Strip che scorre, selezionato sempre al centro
 
