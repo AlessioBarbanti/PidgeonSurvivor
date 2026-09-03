@@ -240,7 +240,8 @@
         "tests/unit/test_ps044_ui_capture_states.gd",
         "tests/unit/test_ps045_arena_visual_hierarchy.gd",
         "tests/unit/test_ps053_run_summary.gd",
-        "tests/unit/test_ps072_bea_dodge_audio.gd"
+        "tests/unit/test_ps072_bea_dodge_audio.gd",
+        "tests/unit/test_ps073_boss_dedicated_music.gd"
       ]
     },
     {
@@ -356,7 +357,8 @@
         "tests/unit/test_b18_audiovisual_feedback.gd",
         "tests/unit/test_b29_background_music.gd",
         "tests/unit/test_menu_music.gd",
-        "tests/unit/test_ps072_bea_dodge_audio.gd"
+        "tests/unit/test_ps072_bea_dodge_audio.gd",
+        "tests/unit/test_ps073_boss_dedicated_music.gd"
       ]
     },
     {

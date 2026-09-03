@@ -25,6 +25,10 @@ const ABILITY_READY_PULSE_SECONDS := 0.60
 ## passa sotto. Breve, cosi' l'icona si toglie di mezzo senza sfarfallare.
 const HUD_ABILITY_FADE_SECONDS := 0.18
 
+## PS-073: durata del crossfade fra la musica di run e la traccia Boss
+## dedicata, in entrambe le direzioni (boss_intro_started/boss_defeated).
+const BOSS_MUSIC_CROSSFADE_SECONDS := 1.5
+
 
 static func is_valid() -> bool:
 	return (
@@ -46,6 +50,8 @@ static func is_valid() -> bool:
 		and ABILITY_READY_PULSE_SECONDS > 0.24
 		and HUD_ABILITY_FADE_SECONDS > 0.0
 		and HUD_ABILITY_FADE_SECONDS < HUD_HEALTH_FEEDBACK_SECONDS
+		and BOSS_MUSIC_CROSSFADE_SECONDS > 0.8
+		and BOSS_MUSIC_CROSSFADE_SECONDS < 4.0
 	)
 
 
