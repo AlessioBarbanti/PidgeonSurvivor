@@ -83,14 +83,14 @@ Boss: Evil Alea — Signature *Gran Piroetta*: entra in rotazione con un'area di
 ## Aleo
 
 Ruolo: Sbalzo termico e gestione del danno.  
-Passiva — Termostato Interno: Sopra metà vita scalda e infligge più danno; sotto metà raffredda, incassa meno e la brina rallenta e logora i nemici vicini. Un'aura ciano o arancio dichiara sempre la modalità corrente.  
+Passiva — Termostato Interno: Sopra metà vita scalda e infligge più danno; sotto metà raffredda, incassa meno e la brina rallenta e logora i nemici vicini. Un piccolo particellare ciano o arancio, sospeso sopra la testa, dichiara sempre la modalità corrente.  
 Attiva — Shock Termico: Congela un'area per un istante, poi la fa esplodere di calore: i nemici ancora brinati subiscono danno raddoppiato.
 Boss: Evil Aleo — Signature *Shock Termico*: un'area ciano rallenta chi vi resta dentro, poi la stessa area detona; il rallentamento lascia comunque il tempo di uscire.
 
 ## Lollo
 
 Ruolo: Velocità, caos e imprevedibilità.  
-Passiva — Iperfocus ADHD: Alterna a intervalli casuali una fase di iperfocus (movimento e cadenza di fuoco molto più rapidi) e una fase distratta (movimento e cadenza sotto la norma); ogni nemico ucciso accorcia la sola distrazione. Un contorno colorato attorno alla sagoma dichiara la fase corrente senza alterare i colori del personaggio.<br>
+Passiva — Iperfocus ADHD: Alterna a intervalli casuali una fase di iperfocus (movimento e cadenza di fuoco molto più rapidi) e una fase distratta (movimento e cadenza sotto la norma); ogni nemico ucciso accorcia la sola distrazione. Un piccolo particellare sospeso sopra la testa dichiara la fase corrente senza alterare i colori del personaggio.<br>
 Attiva — Cosplay Casuale: Estrae in anticipo l'abilità di un altro personaggio e la mostra sul pulsante: la prossima attivazione lancia quella.
 Boss: Evil Lollo — Signature *Cosplay Casuale*: prepara in anticipo la Signature di un altro Evil, la annuncia disegnandone il telegraph e la esegue con i parametri Boss di quella copiata. Non può copiare Cosplay Casuale, quindi non genera ricorsione.
 

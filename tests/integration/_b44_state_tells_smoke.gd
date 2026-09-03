@@ -59,10 +59,10 @@ func _validate_aleo_thermal_state() -> void:
 	passive._process(0.1)
 	_expect(passive.is_thermal_hot(), "Sopra meta' vita Aleo deve essere in riscaldamento.")
 	_expect(
-		player.get_passive_state_outline_color() == FriendPassiveController.OUTLINE_ALEO_HOT,
+		player.get_passive_state_tell_color() == FriendPassiveController.TELL_ALEO_HOT,
 		"Il tell caldo deve essere attivo sopra la soglia."
 	)
-	# PS-001: il tell vive nel contorno, non nello sprite. Se questa asserzione
+	# PS-001/PS-079: il tell vive nel particellare, non nello sprite. Se questa
 	# cade, la tinta piena e' rientrata dalla finestra e il personaggio torna a
 	# essere ridipinto.
 	_expect(
@@ -70,8 +70,8 @@ func _validate_aleo_thermal_state() -> void:
 		"Lo sprite del personaggio non deve essere ridipinto dal tell di stato."
 	)
 	_expect(
-		player.is_passive_state_outline_presented(),
-		"Il contorno deve risultare attivo quando la fase e' dichiarata."
+		player.is_passive_state_tell_presented(),
+		"Il tell deve risultare attivo quando la fase e' dichiarata."
 	)
 
 	var enemy := spawner.try_spawn_enemy()
@@ -97,7 +97,7 @@ func _validate_aleo_thermal_state() -> void:
 	passive._process(0.1)
 	_expect(not passive.is_thermal_hot(), "Sotto meta' vita Aleo deve passare in raffrescamento.")
 	_expect(
-		player.get_passive_state_outline_color() == FriendPassiveController.OUTLINE_ALEO_COLD,
+		player.get_passive_state_tell_color() == FriendPassiveController.TELL_ALEO_COLD,
 		"Il tell freddo deve essere attivo sotto la soglia."
 	)
 	_expect(
@@ -126,12 +126,12 @@ func _validate_aleo_thermal_state() -> void:
 		"L'aura fredda non deve avanzare fuori da RUNNING."
 	)
 	_expect(
-		not player.is_passive_state_outline_presented(),
+		not player.is_passive_state_tell_presented(),
 		"Il tell di stato deve sparire durante la pausa."
 	)
 	_expect(controller.resume_run(), "La ripresa deve riuscire.")
 	_expect(
-		player.is_passive_state_outline_presented(),
+		player.is_passive_state_tell_presented(),
 		"Il tell di stato deve riapparire alla ripresa della run."
 	)
 
@@ -152,14 +152,14 @@ func _validate_aleo_thermal_state() -> void:
 	_expect(controller.prepare_restart(), "Il restart deve tornare in BOOT.")
 	paused = false
 	_expect(
-		not player.is_passive_state_outline_presented(),
+		not player.is_passive_state_tell_presented(),
 		"Il tell di stato deve restare nascosto in BOOT dopo il restart."
 	)
 	_expect(controller.start_run(4712), "La nuova run deve poter partire.")
 	_expect(passive.is_thermal_hot(), "Il restart deve azzerare Aleo alla fase calda iniziale.")
 	_expect(
-		player.is_passive_state_outline_presented()
-		and player.get_passive_state_outline_color() == FriendPassiveController.OUTLINE_ALEO_HOT,
+		player.is_passive_state_tell_presented()
+		and player.get_passive_state_tell_color() == FriendPassiveController.TELL_ALEO_HOT,
 		"La nuova run deve ripresentare il tell della fase iniziale."
 	)
 	controller.prepare_restart()
@@ -194,7 +194,7 @@ func _validate_lollo_distraction() -> void:
 	# In iperfocus il tell e' quello focalizzato e le kill non accorciano nulla.
 	_expect(passive.is_hyperfocused(), "Lollo deve avviare la run in iperfocus.")
 	_expect(
-		player.get_passive_state_outline_color() == FriendPassiveController.OUTLINE_LOLLO_FOCUSED,
+		player.get_passive_state_tell_color() == FriendPassiveController.TELL_LOLLO_FOCUSED,
 		"Il tell di iperfocus deve essere attivo."
 	)
 	var focus_before := passive.get_hyperfocus_remaining()
@@ -213,7 +213,7 @@ func _validate_lollo_distraction() -> void:
 	passive._process(passive.get_hyperfocus_remaining() + 0.01)
 	_expect(not passive.is_hyperfocused(), "Alla scadenza Lollo deve passare in distrazione.")
 	_expect(
-		player.get_passive_state_outline_color() == FriendPassiveController.OUTLINE_LOLLO_DISTRACTED,
+		player.get_passive_state_tell_color() == FriendPassiveController.TELL_LOLLO_DISTRACTED,
 		"Il tell di distrazione deve essere attivo."
 	)
 

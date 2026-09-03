@@ -121,7 +121,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-076](./4_to_test/PS-076-aumenta-densita-nemica-a-schermo.md) | Aumenta la densità nemica a schermo a parità di rischio e progressione | chore | gameplay | IN VERIFICA | alta | — |
 | [PS-077](./2_to_do/PS-077-espandi-pool-specialita-barb.md) | Espandi il pool delle Specialità di Barb con le carte signature rimaste | feat | gameplay | PRONTO | media | PS-012 |
 | [PS-078](./2_to_do/PS-078-tematizza-catalogo-specialita-barb.md) | Tematizza il catalogo delle Specialità di Barb come piatti speciali del grigliatore | art | arte | BLOCCATO | media | PS-077 |
-| [PS-079](./2_to_do/PS-079-particellare-tell-stato-personaggi.md) | Sostituisci il contorno bocciato con un particellare non aderente | ux | arte | PRONTO | alta | — |
+| [PS-079](./4_to_test/PS-079-particellare-tell-stato-personaggi.md) | Sostituisci il contorno bocciato con un particellare non aderente | ux | arte | IN VERIFICA | alta | — |
 | [PS-080](./2_to_do/PS-080-musica-vittoria-sconfitta.md) | Aggiungi una musica dedicata a vittoria e sconfitta | feat | audio | PRONTO | media | — |
 | [PS-081](./2_to_do/PS-081-layer-musicale-intensita-late-run.md) | Aggiungi un layer musicale di intensità crescente late-run | feat | audio | PRONTO | media | — |
 | [PS-082](./2_to_do/PS-082-camera-non-centrata-su-restart.md) | Ricentra davvero la camera sul personaggio al restart | fix | gameplay | PRONTO | media | — |

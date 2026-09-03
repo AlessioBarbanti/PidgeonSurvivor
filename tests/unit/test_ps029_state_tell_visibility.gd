@@ -3,39 +3,30 @@ extends GutGameplayTest
 ## PS-029 — Rendi piu' visibili i tell di stato dei personaggi.
 ##
 ## Copre cio' che e' verificabile in modo deterministico dal contratto della
-## card: il contorno di PS-001 e' stato reso piu' spesso e con un bordo di
-## separazione scuro, le coppie di colori delle fasi restano a una distanza
-## cromatica minima (non piu' affidata alla sola sfumatura), e i tell di Alea
-## e Migi — non coperti da `test_b44_state_tells.gd` — seguono la finestra
-## attiva dichiarata senza toccare durata o logica dello stato.
+## card: le coppie di colori delle fasi restano a una distanza cromatica
+## minima (non piu' affidata alla sola sfumatura), e i tell di Alea e Migi —
+## non coperti da `test_b44_state_tells.gd` — seguono la finestra attiva
+## dichiarata senza toccare durata o logica dello stato.
+##
+## PS-079 ha sostituito il contorno del tell con un particellare non
+## aderente: la verifica di spessore/bordo di separazione, specifica del
+## contorno, non si applica piu' e vive ora in
+## `test_ps079_state_tell_particles.gd` con il contratto del nuovo sistema.
 ##
 ## La leggibilita' percettiva reale (densita' nemici, VFX, schermo Android)
 ## resta un gate manuale separato: qui si verificano solo le precondizioni
-## strutturali (spessore, distanza cromatica, presentazione/pulizia).
+## strutturali (distanza cromatica, presentazione/pulizia).
 
 const MINIMUM_STATE_COLOR_DISTANCE := 0.4
 const RUN_SEED := 4711
 
 
-func test_ps029_outline_thickness_and_separator_increased() -> void:
-	var outline := PassiveStateOutline.new()
-	assert_true(
-		outline.thickness >= 3.5,
-		"PS-029: lo spessore base deve restare marcatamente sopra i 2.0 unita' di PS-001."
-	)
-	assert_true(
-		outline.separator_thickness > 0.0,
-		"PS-029: deve esistere un bordo di separazione scuro per il contrasto contro qualunque sfondo."
-	)
-	outline.free()
-
-
 func test_ps029_state_color_pairs_meet_minimum_contrast() -> void:
 	var pairs := [
-		["Aleo", FriendPassiveController.OUTLINE_ALEO_HOT, FriendPassiveController.OUTLINE_ALEO_COLD],
-		["Lollo", FriendPassiveController.OUTLINE_LOLLO_FOCUSED, FriendPassiveController.OUTLINE_LOLLO_DISTRACTED],
-		["Alea", FriendPassiveController.OUTLINE_ALEA_POSITIVE, FriendPassiveController.OUTLINE_ALEA_NEGATIVE],
-		["Migi", FriendPassiveController.OUTLINE_MIGI_SHELL_READY, FriendPassiveController.OUTLINE_MIGI_SHIELD],
+		["Aleo", FriendPassiveController.TELL_ALEO_HOT, FriendPassiveController.TELL_ALEO_COLD],
+		["Lollo", FriendPassiveController.TELL_LOLLO_FOCUSED, FriendPassiveController.TELL_LOLLO_DISTRACTED],
+		["Alea", FriendPassiveController.TELL_ALEA_POSITIVE, FriendPassiveController.TELL_ALEA_NEGATIVE],
+		["Migi", FriendPassiveController.TELL_MIGI_SHELL_READY, FriendPassiveController.TELL_MIGI_SHIELD],
 	]
 	for pair in pairs:
 		var character_name: String = pair[0]
@@ -66,19 +57,19 @@ func test_ps029_alea_tell_active_only_during_window() -> void:
 	assert_true(passive.equip_definition(alea), "La passiva deve accettare Alea.")
 
 	assert_true(
-		not player.has_passive_state_outline(),
+		not player.has_passive_state_tell(),
 		"PS-029: fuori dalla finestra attiva Alea non deve mostrare alcun tell."
 	)
 
 	passive._activate_alea_effect()
-	assert_true(player.has_passive_state_outline(), "PS-029: nella finestra attiva il tell deve comparire.")
+	assert_true(player.has_passive_state_tell(), "PS-029: nella finestra attiva il tell deve comparire.")
 	var positive: bool = passive._alea_move_multiplier > 1.0 or passive._alea_fire_multiplier > 1.0
 	var expected := (
-		FriendPassiveController.OUTLINE_ALEA_POSITIVE if positive
-		else FriendPassiveController.OUTLINE_ALEA_NEGATIVE
+		FriendPassiveController.TELL_ALEA_POSITIVE if positive
+		else FriendPassiveController.TELL_ALEA_NEGATIVE
 	)
 	assert_true(
-		player.get_passive_state_outline_color() == expected,
+		player.get_passive_state_tell_color() == expected,
 		"PS-029: il colore del tell deve corrispondere alla polarita' estratta."
 	)
 
@@ -87,7 +78,7 @@ func test_ps029_alea_tell_active_only_during_window() -> void:
 	)
 	passive._process(effect_duration + 0.01)
 	assert_true(
-		not player.has_passive_state_outline(),
+		not player.has_passive_state_tell(),
 		"PS-029: allo scadere della finestra il tell deve tornare neutro."
 	)
 
@@ -112,13 +103,13 @@ func test_ps029_migi_shell_and_shield_tells_are_distinct() -> void:
 
 	assert_true(passive.get_migi_shell_charges() > 0, "Migi deve avere cariche del guscio subito dopo l'equip.")
 	assert_true(
-		player.get_passive_state_outline_color() == FriendPassiveController.OUTLINE_MIGI_SHELL_READY,
+		player.get_passive_state_tell_color() == FriendPassiveController.TELL_MIGI_SHELL_READY,
 		"PS-029: con cariche disponibili il tell deve essere quello del guscio piccolo."
 	)
 
 	passive._activate_migi_shield()
 	assert_true(
-		player.get_passive_state_outline_color() == FriendPassiveController.OUTLINE_MIGI_SHIELD,
+		player.get_passive_state_tell_color() == FriendPassiveController.TELL_MIGI_SHIELD,
 		"PS-029: con lo scudo d'emergenza attivo il tell deve passare a quello dedicato."
 	)
 
@@ -127,7 +118,7 @@ func test_ps029_migi_shell_and_shield_tells_are_distinct() -> void:
 	)
 	passive._process(shield_duration + 0.01)
 	assert_true(
-		player.get_passive_state_outline_color() == FriendPassiveController.OUTLINE_MIGI_SHELL_READY,
+		player.get_passive_state_tell_color() == FriendPassiveController.TELL_MIGI_SHELL_READY,
 		"PS-029: allo scadere dello scudo il tell deve tornare al guscio piccolo se restano cariche."
 	)
 

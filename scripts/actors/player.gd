@@ -104,7 +104,7 @@ var _external_impulse_remaining := 0.0
 @onready var _weapon_controller: WeaponController = %WeaponController
 @onready var _ability_controller: AbilityController = %AbilityController
 @onready var _character_sprite: Sprite2D = %CharacterSprite
-@onready var _passive_state_outline: PassiveStateOutline = %PassiveStateOutline
+@onready var _passive_state_particles: PassiveStateParticles = %PassiveStateParticles
 @onready var _thunder_charge_aura: ThunderChargeAura = %ThunderChargeAura
 
 
@@ -338,7 +338,7 @@ func set_run_controller(value: RunController) -> void:
 	_disconnect_run_controller()
 	_run_controller = value
 	_connect_run_controller()
-	_sync_passive_state_outline_visibility()
+	_sync_passive_state_tell_visibility()
 	_sync_thunder_charge_aura_visibility()
 
 
@@ -410,66 +410,82 @@ func set_character_stat_multipliers(
 	return true
 
 
-## Tell di stato della passiva equipaggiata (B42/B44, ridisegnato da PS-001):
-## rende leggibile in quale fase si trova il profilo senza toccare collisioni,
-## statistiche o timing di gameplay.
+## Tell di stato della passiva equipaggiata (B42/B44, ridisegnato da PS-001,
+## riportato al particellare da PS-079): rende leggibile in quale fase si
+## trova il profilo senza toccare collisioni, statistiche o timing di
+## gameplay.
 ##
 ## Fino a PS-001 era una tinta piena applicata con `self_modulate` sull'intero
 ## sprite: moltiplicando ogni pixel ridipingeva il personaggio e ne cancellava
-## l'identita' cromatica. Ora il colore vive in un contorno attorno alla
-## sagoma, cosi' lo sprite approvato del cast resta intatto.
-func set_passive_state_outline(value: Color) -> bool:
-	if not is_instance_valid(_passive_state_outline):
+## l'identita' cromatica. PS-001 lo aveva spostato in un contorno attorno alla
+## sagoma, bocciato a sua volta perche' rompeva la silhouette pixel-art
+## (PS-079): il colore vive ora in un piccolo particellare che si solleva
+## sopra la testa, staccato dal corpo per costruzione.
+func set_passive_state_tell(value: Color) -> bool:
+	if not is_instance_valid(_passive_state_particles):
 		return false
-	var accepted := _passive_state_outline.set_state_color(value)
-	_sync_passive_state_outline_visibility()
+	var accepted := _passive_state_particles.set_state_color(value)
+	_sync_passive_state_tell_visibility()
 	return accepted
 
 
-func clear_passive_state_outline() -> void:
-	if not is_instance_valid(_passive_state_outline):
+func clear_passive_state_tell() -> void:
+	if not is_instance_valid(_passive_state_particles):
 		return
-	_passive_state_outline.clear_state_color()
+	_passive_state_particles.clear_state_color()
 
 
-func get_passive_state_outline_color() -> Color:
-	if not is_instance_valid(_passive_state_outline):
+func get_passive_state_tell_color() -> Color:
+	if not is_instance_valid(_passive_state_particles):
 		return Color(0.0, 0.0, 0.0, 0.0)
-	return _passive_state_outline.get_state_color()
+	return _passive_state_particles.get_state_color()
 
 
-func has_passive_state_outline() -> bool:
+func has_passive_state_tell() -> bool:
 	return (
-		is_instance_valid(_passive_state_outline)
-		and _passive_state_outline.has_state_color()
+		is_instance_valid(_passive_state_particles)
+		and _passive_state_particles.has_state_color()
 	)
 
 
-## Osservabilita' per lo smoke PS-029: spessore del colore di stato e del
-## bordo di separazione scuro, senza esporre l'intero nodo di disegno.
-func get_passive_state_outline_thickness() -> float:
-	if not is_instance_valid(_passive_state_outline):
-		return 0.0
-	return _passive_state_outline.thickness
-
-
-func get_passive_state_outline_separator_thickness() -> float:
-	if not is_instance_valid(_passive_state_outline):
-		return 0.0
-	return _passive_state_outline.separator_thickness
-
-
-func is_passive_state_outline_presented() -> bool:
+func is_passive_state_tell_presented() -> bool:
 	return (
-		is_instance_valid(_passive_state_outline)
-		and _passive_state_outline.is_state_presented()
+		is_instance_valid(_passive_state_particles)
+		and _passive_state_particles.is_state_presented()
 	)
 
 
-func _sync_passive_state_outline_visibility() -> void:
-	if not is_instance_valid(_passive_state_outline):
+## Osservabilita' per lo smoke PS-079: tiene conto anche del lampeggio da
+## invulnerabilita', per verificare che il flash da danno mantenga la
+## precedenza sul tell (PS-001) senza dover leggere pixel.
+func is_passive_state_tell_effectively_visible() -> bool:
+	return (
+		is_instance_valid(_passive_state_particles)
+		and _passive_state_particles.is_effectively_visible()
+	)
+
+
+## La rotazione/sollevamento delle particelle avanza solo mentre la run e'
+## RUNNING (stesso principio di `advance_thunder_charge_aura`): il nodo
+## stesso non conosce il RunController.
+func advance_passive_state_particles(delta: float) -> void:
+	if is_instance_valid(_passive_state_particles):
+		_passive_state_particles.advance(delta)
+
+
+## Osservabilita' per lo smoke PS-079.
+func get_passive_state_particles_orbit_angle() -> float:
+	return (
+		_passive_state_particles.get_orbit_angle()
+		if is_instance_valid(_passive_state_particles)
+		else 0.0
+	)
+
+
+func _sync_passive_state_tell_visibility() -> void:
+	if not is_instance_valid(_passive_state_particles):
 		return
-	_passive_state_outline.set_state_presented(
+	_passive_state_particles.set_state_presented(
 		is_instance_valid(_run_controller) and _run_controller.is_running()
 	)
 
@@ -994,7 +1010,7 @@ func _on_run_state_changed(
 	_previous_state: RunController.RunState,
 	_current_state: RunController.RunState
 ) -> void:
-	_sync_passive_state_outline_visibility()
+	_sync_passive_state_tell_visibility()
 	_sync_thunder_charge_aura_visibility()
 
 
