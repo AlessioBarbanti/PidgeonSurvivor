@@ -9,6 +9,10 @@
   the music of the BOOT screens (welcome, character selection, tutorial).
   Source, license copy and file hash:
   `assets/audio/third_party/menu_music_wipics/ASSET-MANIFEST.md`.
+- **Swishes Sound Pack** — artisticdude, CC0 1.0 Universal, from OpenGameArt.
+  One take (`swish-9`) is used as the `DODGE` cue for Bea's Sesto Senso
+  Equino passive (PS-072). Source, license copy and file hash:
+  `assets/audio/third_party/artisticdude_swishes/ASSET-MANIFEST.md`.
 
 ## Fonts
 

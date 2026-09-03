@@ -1,4 +1,4 @@
-[gd_scene load_steps=115 format=3]
+[gd_scene load_steps=116 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -75,6 +75,7 @@
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/resume.ogg" id="73_resume"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/victory.ogg" id="74_victory"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/defeat.ogg" id="75_defeat"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/artisticdude_swishes/dodge.ogg" id="124_dodge"]
 [ext_resource type="Script" path="res://scripts/vfx/combat_feedback.gd" id="76_feedback"]
 [ext_resource type="Script" path="res://scripts/app/visual_accessibility_settings.gd" id="77_accessibility"]
 [ext_resource type="Script" path="res://scripts/app/touch_control_settings.gd" id="88_touch_settings"]
@@ -259,6 +260,7 @@ pause_stream = ExtResource("72_pause")
 resume_stream = ExtResource("73_resume")
 victory_stream = ExtResource("74_victory")
 defeat_stream = ExtResource("75_defeat")
+dodge_stream = ExtResource("124_dodge")
 background_music_stream = ExtResource("95_background_music")
 menu_music_stream = ExtResource("119_menu_music")
 

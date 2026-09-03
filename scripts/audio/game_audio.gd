@@ -22,10 +22,7 @@ const ABILITY_ACTIVATE := &"ability_activate"
 const ABILITY_READY := &"ability_ready"
 const BOSS_WARNING := &"boss_warning"
 const BOSS_ATTACK := &"boss_attack"
-## Sesto Senso Equino di Bea (B45). Non e' ancora nella lista di
-## has_complete_cue_set(): resta un no-op silenzioso finche' non arriva un
-## asset dedicato, coerente con la disciplina che richiede uno stream
-## importato per ogni cue prima di dichiararlo "completo".
+## Sesto Senso Equino di Bea (B45, asset integrato in PS-072).
 const DODGE := &"dodge"
 const UI_CONFIRM := &"ui_confirm"
 const PAUSE := &"pause"
@@ -219,6 +216,7 @@ func has_complete_cue_set() -> bool:
 		ABILITY_READY,
 		BOSS_WARNING,
 		BOSS_ATTACK,
+		DODGE,
 		UI_CONFIRM,
 		PAUSE,
 		RESUME,

@@ -239,7 +239,8 @@
         "tests/unit/test_ps008_wave_events.gd",
         "tests/unit/test_ps044_ui_capture_states.gd",
         "tests/unit/test_ps045_arena_visual_hierarchy.gd",
-        "tests/unit/test_ps053_run_summary.gd"
+        "tests/unit/test_ps053_run_summary.gd",
+        "tests/unit/test_ps072_bea_dodge_audio.gd"
       ]
     },
     {
@@ -354,7 +355,8 @@
       "smokes": [
         "tests/unit/test_b18_audiovisual_feedback.gd",
         "tests/unit/test_b29_background_music.gd",
-        "tests/unit/test_menu_music.gd"
+        "tests/unit/test_menu_music.gd",
+        "tests/unit/test_ps072_bea_dodge_audio.gd"
       ]
     },
     {
@@ -387,7 +389,8 @@
         "tests/unit/test_ps003_zat_delayed_healing.gd",
         "tests/unit/test_ps004_zat_thunder_charge.gd",
         "tests/unit/test_ps029_state_tell_visibility.gd",
-        "tests/unit/test_ps079_state_tell_particles.gd"
+        "tests/unit/test_ps079_state_tell_particles.gd",
+        "tests/unit/test_ps072_bea_dodge_audio.gd"
       ]
     },
     {
