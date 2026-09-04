@@ -26,6 +26,26 @@ func instantiate_movement_slice(viewport_size: Vector2i = INITIAL_VIEWPORT_SIZE)
 	return slice
 
 
+## Attende che le transizioni in corso (Tween) siano concluse.
+##
+## Misurare un layout a meta' animazione lo lega alla velocita' della macchina
+## invece che al contratto: finche' la cattura dell'output rallentava Godot di
+## 15x, un solo frame copriva l'intera transizione e la differenza non si
+## vedeva. Il limite di frame evita che un tween infinito appenda il test.
+func wait_for_transitions(max_frames: int = 600) -> void:
+	var waited := 0
+	while waited < max_frames:
+		var running := false
+		for tween in get_tree().get_processed_tweens():
+			if tween.is_valid() and tween.is_running():
+				running = true
+				break
+		if not running:
+			return
+		await wait_process_frames(1)
+		waited += 1
+
+
 func assert_vector_near(
 	actual: Vector2,
 	expected: Vector2,

@@ -21,6 +21,13 @@ const LAYOUT_PROFILES := [
 
 
 func test_refined_selector_contract() -> void:
+	# La viewport va fissata prima di comporre la scena: senza, il test eredita
+	# quella lasciata dal file eseguito prima nello stesso processo e la
+	# gerarchia viene misurata a una larghezza che non e' quella dichiarata.
+	get_tree().root.content_scale_size = LAYOUT_PROFILES[0]
+	get_tree().root.size = LAYOUT_PROFILES[0]
+	await wait_process_frames(2)
+
 	ProjectSettings.set_setting("application/run/b18o_force_welcome_for_test", true)
 	var movement_slice := MOVEMENT_SLICE_SCENE.instantiate() as Control
 	add_child_autofree(movement_slice)
@@ -45,6 +52,10 @@ func test_refined_selector_contract() -> void:
 	assert_true(
 		selector.visible and controller.get_state() == RunController.RunState.BOOT, "B18W deve aprirsi in BOOT."
 	)
+	# Le card entrano con un tween sulle dimensioni: la gerarchia va misurata a
+	# transizione conclusa, altrimenti l'esito dipende da quanto e' veloce la
+	# macchina invece che dal contratto di layout.
+	await wait_for_transitions()
 	_assert_hierarchy(selector)
 	_assert_focus_contract(selector)
 
