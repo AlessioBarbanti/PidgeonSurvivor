@@ -51,56 +51,78 @@ function Stop-TrackedProcessTree {
     }
 }
 
-function Update-StreamCapture {
+# La cattura passa da file, non da pipe. Drenare stdout dal processo padre in
+# PowerShell strozzava il figlio: lo stesso file GUT misurava 3,7 s con output
+# rediretto su file e 55,9 s letto riga per riga dalla pipe, perche' Godot
+# resta bloccato in scrittura fra un giro di lettura e l'altro. Il tempo dei
+# test non dipende piu' da come li si guarda.
+function Update-FileTailCapture {
     param(
         [Parameter(Mandatory)]
         [hashtable]$State,
 
         [string]$CompletionPattern,
 
-        [ValidateRange(0, 60000)]
-        [int]$DrainMs = 0
+        [switch]$Final
     )
 
+    if (-not (Test-Path -LiteralPath $State.Path -PathType Leaf)) {
+        return
+    }
+
+    $text = ''
+    $stream = $null
+    try {
+        # FileShare::ReadWrite: il figlio tiene il file aperto in scrittura
+        # mentre lo si legge.
+        $stream = [IO.File]::Open(
+            $State.Path,
+            [IO.FileMode]::Open,
+            [IO.FileAccess]::Read,
+            [IO.FileShare]::ReadWrite
+        )
+        if ($stream.Length -gt $State.Offset) {
+            $count = [int]($stream.Length - $State.Offset)
+            $null = $stream.Seek($State.Offset, [IO.SeekOrigin]::Begin)
+            $buffer = New-Object byte[] $count
+            $read = $stream.Read($buffer, 0, $count)
+            $State.Offset += $read
+            $text = [Text.Encoding]::UTF8.GetString($buffer, 0, $read)
+        }
+    }
+    catch {
+        # Il file puo' essere momentaneamente inaccessibile mentre l'albero di
+        # processi viene terminato: il gia' letto resta valido.
+        return
+    }
+    finally {
+        if ($null -ne $stream) {
+            $stream.Dispose()
+        }
+    }
+
+    if ($text.Length -eq 0 -and -not $Final) {
+        return
+    }
+
+    $pending = $State.Partial + $text
+    $parts = $pending -split "`n"
+    if ($Final) {
+        $State.Partial = ''
+    }
+    else {
+        # L'ultimo segmento e' una riga ancora incompleta finche' non arriva
+        # il newline successivo.
+        $State.Partial = $parts[-1]
+        $parts = @($parts[0..($parts.Count - 2)])
+    }
+
     $ansiPattern = "$([char]27)\[[0-9;]*m"
-    $drainWatch = [Diagnostics.Stopwatch]::StartNew()
-    while (-not $State.Complete) {
-        $line = $null
-        try {
-            if ($null -eq $State.Pending) {
-                $State.Pending = $State.Reader.ReadLineAsync()
-            }
-
-            $ready = $false
-            if ($DrainMs -gt 0) {
-                $remaining = $DrainMs - [int]$drainWatch.ElapsedMilliseconds
-                if ($remaining -lt 0) {
-                    $remaining = 0
-                }
-                $ready = $State.Pending.Wait($remaining)
-            }
-            else {
-                $ready = $State.Pending.IsCompleted
-            }
-            if (-not $ready) {
-                break
-            }
-
-            $line = $State.Pending.Result
-            $State.Pending = $null
+    foreach ($part in $parts) {
+        $line = $part -replace "`r$", ''
+        if ($Final -and $line.Length -eq 0 -and $parts.Count -eq 1) {
+            continue
         }
-        catch {
-            # Lo stream puo' chiudersi bruscamente quando l'albero di processi
-            # viene terminato: la cattura si ferma, il gia' letto resta valido.
-            $State.Complete = $true
-            break
-        }
-
-        if ($null -eq $line) {
-            $State.Complete = $true
-            break
-        }
-
         $State.Lines.Add($line) | Out-Null
         if (
             -not [string]::IsNullOrEmpty($CompletionPattern) -and
@@ -112,27 +134,185 @@ function Update-StreamCapture {
                 $State.MarkerSeen = $true
             }
         }
-
-        if ($DrainMs -gt 0 -and $drainWatch.ElapsedMilliseconds -ge $DrainMs) {
-            break
-        }
     }
 }
 
 
-function New-StreamCaptureState {
+function New-FileTailCaptureState {
     param(
         [Parameter(Mandatory)]
-        [IO.StreamReader]$Reader
+        [string]$Path
     )
 
     return @{
-        Reader = $Reader
-        Pending = $null
+        Path = $Path
+        Offset = 0L
+        Partial = ''
         Lines = [Collections.Generic.List[string]]::new()
-        Complete = $false
         MarkerSeen = $false
     }
+}
+
+
+# Esegue piu' processi in parallelo con un solo ciclo di sorveglianza.
+#
+# Nasce per il batch GUT a shard: creare un job PowerShell per shard costava
+# ~1,5 s ciascuno, pagati in sequenza prima ancora che partisse un test (~9 s
+# su 6 shard). I job servivano solo a riusare Invoke-CapturedProcess, che
+# blocca; ora che la cattura passa da file, i processi si avviano diretti e si
+# sorvegliano insieme.
+#
+# Ogni voce di -Specs e' una hashtable: Label, Arguments, StdoutPath,
+# StderrPath e, opzionale, Environment (hashtable di variabili applicate solo
+# a quel figlio).
+function Invoke-CapturedProcessGroup {
+    param(
+        [Parameter(Mandatory)]
+        [hashtable[]]$Specs,
+
+        [Parameter(Mandatory)]
+        [string]$FilePath,
+
+        [Parameter(Mandatory)]
+        [string]$WorkingDirectory,
+
+        [ValidateRange(0, 3600)]
+        [int]$TimeoutSeconds = 0,
+
+        [ValidateRange(0, 600)]
+        [int]$ProgressIntervalSeconds = 0,
+
+        [scriptblock]$ProgressAction
+    )
+
+    $stopwatch = [Diagnostics.Stopwatch]::StartNew()
+    $running = [Collections.Generic.List[object]]::new()
+
+    foreach ($spec in $Specs) {
+        New-Item -ItemType File -Path $spec.StdoutPath -Force | Out-Null
+        New-Item -ItemType File -Path $spec.StderrPath -Force | Out-Null
+
+        # Il figlio eredita l'ambiente del padre al momento dell'avvio: si
+        # imposta la variabile, si avvia, si ripristina. I processi partono in
+        # sequenza, quindi non si sovrappongono.
+        $saved = @{}
+        if ($spec.ContainsKey('Environment') -and $null -ne $spec.Environment) {
+            foreach ($key in $spec.Environment.Keys) {
+                $saved[$key] = [Environment]::GetEnvironmentVariable($key)
+                Set-Item -Path "Env:$key" -Value $spec.Environment[$key]
+            }
+        }
+
+        $argumentLine = (($spec.Arguments | ForEach-Object {
+            ConvertTo-CommandLineArgument -Value $_
+        }) -join ' ')
+        try {
+            $process = Start-Process -FilePath $FilePath -ArgumentList $argumentLine `
+                -WorkingDirectory $WorkingDirectory `
+                -RedirectStandardOutput $spec.StdoutPath `
+                -RedirectStandardError $spec.StderrPath `
+                -NoNewWindow -PassThru
+        }
+        finally {
+            foreach ($key in $saved.Keys) {
+                if ($null -eq $saved[$key]) {
+                    Remove-Item -Path "Env:$key" -ErrorAction SilentlyContinue
+                }
+                else {
+                    Set-Item -Path "Env:$key" -Value $saved[$key]
+                }
+            }
+        }
+        if ($null -eq $process) {
+            throw "Impossibile avviare: $FilePath"
+        }
+        $null = $process.Handle
+
+        $running.Add([pscustomobject]@{
+            Label = $spec.Label
+            Process = $process
+            ProcessId = $process.Id
+            StdoutState = New-FileTailCaptureState -Path $spec.StdoutPath
+            StderrState = New-FileTailCaptureState -Path $spec.StderrPath
+            StdoutPath = $spec.StdoutPath
+            StderrPath = $spec.StderrPath
+            TimedOut = $false
+            DurationMs = 0L
+        })
+    }
+
+    $lastProgressMs = 0L
+    while ($true) {
+        $alive = @($running | Where-Object { -not $_.Process.HasExited })
+        foreach ($entry in $running) {
+            Update-FileTailCapture -State $entry.StdoutState
+            Update-FileTailCapture -State $entry.StderrState
+            if ($entry.Process.HasExited -and $entry.DurationMs -eq 0) {
+                $entry.DurationMs = $stopwatch.ElapsedMilliseconds
+            }
+        }
+        if ($alive.Count -eq 0) {
+            break
+        }
+
+        if (
+            $ProgressIntervalSeconds -gt 0 -and
+            $null -ne $ProgressAction -and
+            ($stopwatch.ElapsedMilliseconds - $lastProgressMs) -ge ($ProgressIntervalSeconds * 1000)
+        ) {
+            $lastProgressMs = $stopwatch.ElapsedMilliseconds
+            & $ProgressAction $stopwatch.Elapsed $alive.Count $running.Count
+        }
+
+        if (
+            $TimeoutSeconds -gt 0 -and
+            $stopwatch.Elapsed.TotalSeconds -ge $TimeoutSeconds
+        ) {
+            foreach ($entry in $alive) {
+                $entry.TimedOut = $true
+                $entry.DurationMs = $stopwatch.ElapsedMilliseconds
+                Stop-TrackedProcessTree -RootProcessId $entry.ProcessId
+            }
+            break
+        }
+
+        Start-Sleep -Milliseconds 250
+    }
+    $stopwatch.Stop()
+
+    # Coda dell'output: il figlio puo' tenere il file aperto un istante ancora
+    # dopo l'uscita o la terminazione dell'albero.
+    for ($attempt = 0; $attempt -lt 5; $attempt++) {
+        foreach ($entry in $running) {
+            Update-FileTailCapture -State $entry.StdoutState
+            Update-FileTailCapture -State $entry.StderrState
+        }
+        Start-Sleep -Milliseconds 40
+    }
+
+    $results = [Collections.Generic.List[object]]::new()
+    foreach ($entry in $running) {
+        Update-FileTailCapture -State $entry.StdoutState -Final
+        Update-FileTailCapture -State $entry.StderrState -Final
+
+        $stdout = ($entry.StdoutState.Lines -join [Environment]::NewLine)
+        $stderr = ($entry.StderrState.Lines -join [Environment]::NewLine)
+        $output = @($stdout.TrimEnd(), $stderr.TrimEnd()) |
+            Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+        $exitCode = if ($entry.TimedOut) { 124 } else { $entry.Process.ExitCode }
+        $duration = if ($entry.DurationMs -gt 0) { $entry.DurationMs } else { $stopwatch.ElapsedMilliseconds }
+        $entry.Process.Dispose()
+        Remove-Item -LiteralPath $entry.StdoutPath, $entry.StderrPath -Force -ErrorAction SilentlyContinue
+
+        $results.Add([pscustomobject]@{
+            Label = $entry.Label
+            ExitCode = $exitCode
+            TimedOut = $entry.TimedOut
+            DurationMs = $duration
+            Output = ($output -join [Environment]::NewLine)
+        })
+    }
+    return @($results)
 }
 
 
@@ -180,30 +360,45 @@ function Invoke-CapturedProcess {
         $artifactBefore = Get-Item -LiteralPath $StableArtifactPath
     }
 
-    $startInfo = [Diagnostics.ProcessStartInfo]::new()
-    $startInfo.FileName = $FilePath
-    $startInfo.Arguments = (($Arguments | ForEach-Object {
+    $argumentLine = (($Arguments | ForEach-Object {
         ConvertTo-CommandLineArgument -Value $_
     }) -join ' ')
-    $startInfo.WorkingDirectory = $WorkingDirectory
-    $startInfo.UseShellExecute = $false
-    $startInfo.CreateNoWindow = $true
-    $startInfo.RedirectStandardOutput = $true
-    $startInfo.RedirectStandardError = $true
 
-    $process = [Diagnostics.Process]::new()
-    $process.StartInfo = $startInfo
+    # File temporanei come destinazione diretta del figlio: la pipe non esiste
+    # piu', quindi non puo' riempirsi ne' bloccare chi scrive.
+    $captureId = [Guid]::NewGuid().ToString('N')
+    $tempRoot = [IO.Path]::GetTempPath()
+    $stdoutPath = Join-Path $tempRoot "capture-$captureId.out"
+    $stderrPath = Join-Path $tempRoot "capture-$captureId.err"
+    New-Item -ItemType File -Path $stdoutPath -Force | Out-Null
+    New-Item -ItemType File -Path $stderrPath -Force | Out-Null
+
     $stopwatch = [Diagnostics.Stopwatch]::StartNew()
-    if (-not $process.Start()) {
+    $startArguments = @{
+        FilePath = $FilePath
+        WorkingDirectory = $WorkingDirectory
+        RedirectStandardOutput = $stdoutPath
+        RedirectStandardError = $stderrPath
+        NoNewWindow = $true
+        PassThru = $true
+    }
+    if (-not [string]::IsNullOrWhiteSpace($argumentLine)) {
+        $startArguments['ArgumentList'] = $argumentLine
+    }
+    $process = Start-Process @startArguments
+    if ($null -eq $process) {
         throw "Impossibile avviare: $FilePath"
     }
+    # Toccare Handle subito fa memorizzare l'handle nativo: senza, l'oggetto
+    # restituito da Start-Process -PassThru espone un ExitCode vuoto una volta
+    # che il processo e' finito.
+    $null = $process.Handle
 
     $processId = $process.Id
-    # Lettura incrementale invece di ReadToEndAsync: servono le righe mentre
-    # arrivano, non solo all'EOF della pipe. Quell'EOF puo' non arrivare mai
-    # se un processo nipote detached eredita l'handle su Windows.
-    $stdoutState = New-StreamCaptureState -Reader $process.StandardOutput
-    $stderrState = New-StreamCaptureState -Reader $process.StandardError
+    # Lettura incrementale del file mentre cresce: servono le righe mentre
+    # arrivano (marker, avanzamento), non solo alla fine.
+    $stdoutState = New-FileTailCaptureState -Path $stdoutPath
+    $stderrState = New-FileTailCaptureState -Path $stderrPath
     $timedOut = $false
     $terminatedAfterArtifact = $false
     $terminatedAfterMarker = $false
@@ -214,8 +409,8 @@ function Invoke-CapturedProcess {
     $lastProgressMs = 0L
 
     while (-not $process.WaitForExit(250)) {
-        Update-StreamCapture -State $stdoutState -CompletionPattern $CompletionPattern
-        Update-StreamCapture -State $stderrState -CompletionPattern $CompletionPattern
+        Update-FileTailCapture -State $stdoutState -CompletionPattern $CompletionPattern
+        Update-FileTailCapture -State $stderrState -CompletionPattern $CompletionPattern
 
         if (
             $ProgressIntervalSeconds -gt 0 -and
@@ -287,10 +482,16 @@ function Invoke-CapturedProcess {
     }
     $stopwatch.Stop()
 
-    # Drena il residuo con una scadenza: attendere l'EOF senza limite e'
-    # esattamente il blocco che questa funzione deve evitare.
-    Update-StreamCapture -State $stdoutState -CompletionPattern $CompletionPattern -DrainMs 2000
-    Update-StreamCapture -State $stderrState -CompletionPattern $CompletionPattern -DrainMs 2000
+    # Il figlio puo' avere ancora il file aperto per un istante dopo la
+    # terminazione dell'albero: qualche tentativo breve basta a raccogliere la
+    # coda senza attendere un EOF che potrebbe non arrivare mai.
+    for ($attempt = 0; $attempt -lt 5; $attempt++) {
+        Update-FileTailCapture -State $stdoutState -CompletionPattern $CompletionPattern
+        Update-FileTailCapture -State $stderrState -CompletionPattern $CompletionPattern
+        Start-Sleep -Milliseconds 40
+    }
+    Update-FileTailCapture -State $stdoutState -CompletionPattern $CompletionPattern -Final
+    Update-FileTailCapture -State $stderrState -CompletionPattern $CompletionPattern -Final
 
     if (
         -not $artifactChanged -and
@@ -308,12 +509,6 @@ function Invoke-CapturedProcess {
 
     $stdout = ($stdoutState.Lines -join [Environment]::NewLine)
     $stderr = ($stderrState.Lines -join [Environment]::NewLine)
-    if (-not $stdoutState.Complete) {
-        if (-not [string]::IsNullOrWhiteSpace($stdout)) {
-            $stdout = $stdout + [Environment]::NewLine
-        }
-        $stdout = $stdout + '[stdout ancora aperto; cattura chiusa alla scadenza]'
-    }
     $output = @($stdout.TrimEnd(), $stderr.TrimEnd()) |
         Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
     $exitCode = if ($timedOut) {
@@ -329,6 +524,7 @@ function Invoke-CapturedProcess {
         $process.ExitCode
     }
     $process.Dispose()
+    Remove-Item -LiteralPath $stdoutPath, $stderrPath -Force -ErrorAction SilentlyContinue
 
     return [pscustomobject]@{
         ExitCode = $exitCode
