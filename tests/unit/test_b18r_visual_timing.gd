@@ -2,6 +2,10 @@ extends GutGameplayTest
 
 const TIMING_FLOAT_TOLERANCE := 0.002
 
+## Vita del nemico della fixture, slegata dai dati di bilanciamento: la
+## sequenza richiede un colpo non letale seguito da uno letale.
+const TIMING_FIXTURE_HEALTH := 200.0
+
 
 func test_central_contract() -> void:
 	assert_true(PresentationTimings.is_valid(), "I timing centralizzati B18R devono essere validi.")
@@ -73,6 +77,13 @@ func _assert_actor_and_feedback_timings(
 	if enemy != null:
 		enemy.set_physics_process(false)
 		enemy.set_process(false)
+		# Il colpo di prova deve restare non letale (la sequenza misura la
+		# reazione e poi uccide): con gli HP dell'archetipo i 10 danni erano
+		# gia' letali e il colpo successivo veniva rifiutato.
+		var enemy_health := enemy.get_health_component()
+		if enemy_health != null:
+			enemy_health.set_health_max(TIMING_FIXTURE_HEALTH)
+			enemy_health.heal(TIMING_FIXTURE_HEALTH)
 		assert_almost_eq(
 			enemy.hit_reaction_duration, PresentationTimings.ENEMY_HIT_REACTION_SECONDS, TIMING_FLOAT_TOLERANCE,
 			"La reazione nemico deve usare il timing centrale."

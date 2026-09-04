@@ -2,6 +2,10 @@ extends GutGameplayTest
 
 const IDENTITY_FLOAT_TOLERANCE := 0.01
 
+## Vita del nemico usato per osservare il feedback di combattimento, slegata
+## dai dati di bilanciamento: serve un colpo non letale seguito da uno letale.
+const FEEDBACK_FIXTURE_HEALTH := 200.0
+
 
 func test_visual_identity_contract() -> void:
 	var movement_slice := await instantiate_movement_slice()
@@ -141,6 +145,13 @@ func _assert_combat_feedback(
 	if enemy == null:
 		return
 	enemy.set_physics_process(false)
+	# Il colpo di prova deve essere non letale per poter osservare flash e
+	# squash, e quello dopo deve uccidere: con gli HP dell'archetipo (uno
+	# swarmer ne ha 9) i 10 danni erano gia' letali e la sequenza saltava.
+	var enemy_health := enemy.get_health_component()
+	if enemy_health != null:
+		enemy_health.set_health_max(FEEDBACK_FIXTURE_HEALTH)
+		enemy_health.heal(FEEDBACK_FIXTURE_HEALTH)
 	var hit_count_before := feedback.get_spawn_count(CombatFeedback.HIT_SPARK)
 	assert_true(enemy.take_damage(10.0), "Il colpo B18B deve applicare danno.")
 	assert_true(

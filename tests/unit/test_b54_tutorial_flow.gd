@@ -25,9 +25,11 @@ const TUTORIAL_ARTWORK_PATHS: Array[String] = [
 ## PS-048: ability, progression e boss sono passate da vetrina a icone a un
 ## singolo artwork fedele al runtime; i tre file sono segnaposto "fake_"
 ## in attesa dell'arte definitiva di PS-049.
-const ABILITY_ARTWORK_PATH := "res://assets/art/ui/tutorial/generated/fake_tutorial_ability_button.png"
-const PROGRESSION_ARTWORK_PATH := "res://assets/art/ui/tutorial/generated/fake_tutorial_pickups.png"
-const BOSS_ARTWORK_PATH := "res://assets/art/ui/tutorial/generated/fake_tutorial_telegraphs.png"
+# PS-049 ha sostituito i placeholder `fake_*` con le illustrazioni definitive;
+# questo file era fermo a PS-048 e cercava ancora i percorsi vecchi.
+const ABILITY_ARTWORK_PATH := "res://assets/art/ui/tutorial/generated/tutorial_ability_button.png"
+const PROGRESSION_ARTWORK_PATH := "res://assets/art/ui/tutorial/generated/tutorial_pickups.png"
+const BOSS_ARTWORK_PATH := "res://assets/art/ui/tutorial/generated/tutorial_telegraphs.png"
 const LAYOUT_PROFILES: Array[Vector2i] = [
 	Vector2i(1280, 720),
 	Vector2i(1600, 720),

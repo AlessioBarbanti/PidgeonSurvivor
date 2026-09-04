@@ -33,7 +33,17 @@ const DEFINITIONS: Array[UpgradeDefinition] = [
 ]
 
 
+## La dimensione a schermo dell'icona e' decisa dal layout della carta
+## (`scenes/ui/upgrade_card.tscn`) e cambia quando il layout cambia: PS-047 ha
+## compattato le carte e il vecchio target fisso 192x192 e' rimasto indietro
+## di un design. Cio' che B27 deve proteggere non e' il numero, ma che
+## l'icona resti quadrata e **identica su ogni viewport**: e' l'invariante che
+## si romperebbe davvero se una schermata la stirasse o la schiacciasse.
+var _icon_size_reference := Vector2.ZERO
+
+
 func test_upgrade_card_icons_stay_centered_and_scaled_across_viewports() -> void:
+	_icon_size_reference = Vector2.ZERO
 	for viewport_size: Vector2i in VIEWPORTS:
 		await _assert_viewport(viewport_size)
 
@@ -77,11 +87,19 @@ func _assert_viewport(viewport_size: Vector2i) -> void:
 		if icon == null:
 			continue
 		var icon_rect := icon.get_global_rect()
-		assert_eq(
-			icon_rect.size,
-			Vector2(192.0, 192.0),
-			"B27 deve mantenere il target icona 192x192 a %s (ottenuto=%s)." % [viewport_size, icon_rect.size]
+		assert_true(
+			icon_rect.size.x > 0.0 and is_equal_approx(icon_rect.size.x, icon_rect.size.y),
+			"B27 deve mantenere l'icona quadrata a %s (ottenuto=%s)." % [viewport_size, icon_rect.size]
 		)
+		if _icon_size_reference == Vector2.ZERO:
+			_icon_size_reference = icon_rect.size
+		else:
+			assert_eq(
+				icon_rect.size,
+				_icon_size_reference,
+				"B27 deve mantenere la stessa icona su ogni viewport a %s (atteso=%s, ottenuto=%s)."
+					% [viewport_size, _icon_size_reference, icon_rect.size]
+			)
 		assert_true(icon.get_parent() is CenterContainer, "B27 deve centrare ogni icona a %s." % viewport_size)
 
 	overlay.queue_free()

@@ -12,6 +12,15 @@ const MEAT_FORK_DAMAGE := preload("res://data/upgrades/meat_fork_damage.tres")
 
 const SLOW_MODIFIER := &"upgrade_chronic_delay"
 
+## Vita dei nemici della fixture, slegata dai dati di bilanciamento.
+##
+## Questo file misura quanto danno arriva a bersaglio (pieno al primo, con
+## falloff al secondo) e chi viene respinto: entrambe le cose sono osservabili
+## solo su un nemico che sopravvive al colpo. Con gli HP dell'archetipo il
+## confronto misurava l'azzeramento della vita invece del danno, e un nemico
+## gia' morto non riceve knockback.
+const FIXTURE_ENEMY_HEALTH := 500.0
+
 var _applied_ids: Array[StringName] = []
 var _shockwave_affected_counts: Array[int] = []
 
@@ -303,6 +312,10 @@ func _spawn_enemy(spawner: EnemySpawner, position: Vector2) -> BaseEnemy:
 		return null
 	enemy.global_position = position
 	enemy.set_physics_process(false)
+	var health := enemy.get_health_component()
+	if health != null:
+		health.set_health_max(FIXTURE_ENEMY_HEALTH)
+		health.heal(FIXTURE_ENEMY_HEALTH)
 	return enemy
 
 
