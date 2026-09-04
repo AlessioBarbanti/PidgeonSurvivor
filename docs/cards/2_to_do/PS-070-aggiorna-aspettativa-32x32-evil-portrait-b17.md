@@ -42,13 +42,11 @@ resta un ritaglio placeholder `32x32` dallo spritesheet CC0 (finché
 arte dedicata per personaggio e non deve più essere vincolata a `32x32`.
 
 **Nota di scadenza esplicita.** Questa correzione vale solo finché `portrait`
-resta un placeholder. [PS-068](../4_to_test/PS-068-genera-ritratti-busto-cast-giocabile.md)
-sostituirà `portrait`/`portrait_placeholder` con un busto definitivo non
-`32x32`: quando accadrà, la stessa asserzione tornerà a fallire dal lato
-`portrait`, con lo stesso pattern di errore risolto qui per `evil_portrait`.
-PS-068 possiede esplicitamente l'aggiornamento di questa riga di test per il
-lato `portrait` (vedi la sua sezione Verifica); questa card non deve
-anticiparlo né renderlo incondizionato.
+resta un placeholder. [PS-068](../5_completed/PS-068-genera-ritratti-busto-cast-giocabile.md)
+(`COMPLETATO`) ha già sostituito `portrait`/`portrait_placeholder` con un
+busto definitivo non `32x32` e ha aggiornato il lato `portrait` di questa
+stessa asserzione: verificare che questa card non stia già duplicando quel
+lavoro prima di procedere.
 
 ## Criteri di accettazione
 

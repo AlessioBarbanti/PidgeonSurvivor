@@ -15,12 +15,12 @@ aggiornato: 2026-09-04
 
 ## Contesto
 
-[PS-001](../4_to_test/PS-001-tell-di-stato-senza-snaturare-lo-sprite.md) ha
+[PS-001](../6_rejected/PS-001-tell-di-stato-senza-snaturare-lo-sprite.md) ha
 sostituito la tinta piena di B44 con un contorno colorato a 8 direzioni
 (`PassiveStateOutline`, `scripts/vfx/passive_state_outline.gd`) per comunicare
 la fase attiva della passiva di Aleo (caldo/freddo), Lollo
 (iperfocus/distratto), Alea (positivo/negativo) e Migi (guscio/scudo).
-[PS-029](../4_to_test/PS-029-rendi-tell-stato-personaggi-piu-visibili.md) ha
+[PS-029](../6_rejected/PS-029-rendi-tell-stato-personaggi-piu-visibili.md) ha
 poi rinforzato lo stesso meccanismo per la leggibilità in combattimento.
 
 Il proprietario, giocando la run, ha bocciato il meccanismo stesso per tutti

@@ -3,12 +3,12 @@ id: PS-029
 titolo: Rendi più visibili i tell di stato dei personaggi
 tipo: ux
 area: gameplay
-stato: IN VERIFICA
+stato: SCARTATA
 priorita: alta
 dipende_da: []
 origine: B44
 creato: 2026-08-30
-aggiornato: 2026-09-02
+aggiornato: 2026-09-04
 ---
 
 # PS-029 — Rendi più visibili i tell di stato dei personaggi
@@ -112,7 +112,7 @@ Non modificare:
 - **2026-09-01 — Verificato lo storico prima di implementare: la card non è
   obsoleta, è il seguito diretto di PS-001.** Su richiesta esplicita del
   proprietario di controllare i pregressi, riletti `git log` e
-  [PS-001](../4_to_test/PS-001-tell-di-stato-senza-snaturare-lo-sprite.md):
+  [PS-001](../6_rejected/PS-001-tell-di-stato-senza-snaturare-lo-sprite.md):
   PS-001 ha introdotto il meccanismo di contorno (`PassiveStateOutline`,
   8 direzioni, sostituendo la tinta piena B44) ma i suoi stessi criteri
   percettivi ("resta leggibile a densità massima") sono rimasti aperti. Questa
@@ -148,7 +148,7 @@ Non modificare:
   dalla card.** Vedi sezione Verifica: il percorso originale non esiste più
   nel repository dopo il cutover GUT.
 - **2026-09-01 — Coordinare il gate percettivo di Alea con PS-028.** La
-  [Gran Piroetta aggiornata](./PS-028-rendi-piroetta-alea-circolare.md) usa ora
+  [Gran Piroetta aggiornata](../5_completed/PS-028-rendi-piroetta-alea-circolare.md) usa ora
   una corona più circolare e priva di stelle grandi. Quando i gate verranno
   ripresi, il tell attivo di Alea va osservato anche durante questo VFX per
   verificare che resti leggibile; nessun gate è stato eseguito in questa
@@ -165,6 +165,9 @@ Non modificare:
   [PS-079](../5_completed/PS-079-particellare-tell-stato-personaggi.md); questa
   card resta storica come evidenza che il problema non era la scelta dei
   colori.
+- **2026-09-04 — `SCARTATA`.** Eredita lo scarto definitivo di PS-001: il
+  meccanismo a contorno che questa card rinforzava non verrà rilavorato.
+  PS-079 (particellare non aderente) l'ha sostituito ed è `COMPLETATO`.
 
 ## Documenti sincronizzati
 

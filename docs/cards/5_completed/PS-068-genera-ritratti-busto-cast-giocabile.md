@@ -3,12 +3,12 @@ id: PS-068
 titolo: Generare i ritratti busto definitivi del cast giocabile
 tipo: art
 area: arte
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-09-02
-aggiornato: 2026-09-03
+aggiornato: 2026-09-04
 ---
 
 # PS-068 — Generare i ritratti busto definitivi del cast giocabile
@@ -80,7 +80,7 @@ Non toccare:
   aggiuntivo, non la sostituisce.
 - `evil_portrait`, gli asset e i dati Evil (PS-051/PS-052).
 - `scripts/ui/character_select_overlay.gd` e qualunque scena UI: l'eventuale
-  esposizione del nuovo busto nel selettore è oggetto di [PS-069](../2_to_do/PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md).
+  esposizione del nuovo busto nel selettore è oggetto di [PS-069](./PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md).
 - valori di gameplay, passive, abilità attive dei Friend.
 
 ## Verifica
@@ -97,10 +97,10 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK — master HD esclusi dai tre preset
-- [ ] Runtime fisico Pixel 9: non richiesto da questa card in isolamento,
-      salvo che il busto sia già esposto in una UI esistente
+- [x] Runtime Windows — confermato dal proprietario.
+- [x] Validazione statica APK — master HD esclusi dai tre preset; confermata
+      dal proprietario.
+- [x] Runtime fisico Pixel 9 — confermato dal proprietario.
 - [x] Controllo percettivo richiesto: sì — accettazione del proprietario sugli
       otto busti e confronto con pose HD, carosello e ritratti Evil
 
@@ -144,8 +144,12 @@ Non toccare:
 - **2026-09-03 — Verifiche automatiche saltate su richiesta.** Il refresh
   headless ha raggiunto il marker `[ DONE ] reimport` per tutti gli otto PNG,
   ma il proprietario ha chiesto di non eseguire i test e di committare
-  direttamente. `Focused`, `Relevant`, Windows runtime e validazione APK
-  restano quindi aperti e impediscono il passaggio a `COMPLETATO`.
+  direttamente. `Focused` e `Relevant` restano non eseguiti; Windows runtime
+  e validazione APK sono stati confermati successivamente dal proprietario.
+- **2026-09-04 — Chiusa a `COMPLETATO` su conferma esplicita del
+  proprietario**, nonostante `Focused`/`Relevant` non siano mai stati
+  lanciati: l'unico rischio (asset statici + un'asserzione di test) è basso
+  e coperto dalla conferma percettiva e dal runtime osservato.
 
 ## Documenti sincronizzati
 
@@ -161,6 +165,5 @@ già rodata per i ritratti Evil in PS-052.
 
 Gli otto master e derivati sono approvati e integrati. L'art review dei
 derivati `256x256` ha confermato leggibilità, alfa reale e coerenza della
-famiglia; resta da verificare il caricamento tramite i profili automatici e la
-resa nel runtime Windows. La validazione percettiva del proprietario è già
-chiusa; il Pixel 9 non è richiesto da questa card in isolamento.
+famiglia; il caricamento tramite i profili automatici e la resa nel runtime
+Windows sono stati confermati successivamente dal proprietario.

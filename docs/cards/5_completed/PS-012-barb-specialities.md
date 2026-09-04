@@ -3,13 +3,13 @@ id: PS-012
 titolo: Introduci le Specialità di Barb
 tipo: feat
 area: gameplay
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine:
 milestone:
 creato: 2026-08-30
-aggiornato: 2026-08-30
+aggiornato: 2026-09-04
 ---
 
 # PS-012 — Introduci le Specialità di Barb
@@ -148,11 +148,10 @@ La cartella identifica una categoria di gameplay, non un nuovo formato di `Resou
 * [x] Con meno di tre Specialità bloccate l'offerta mostra soltanto quelle disponibili.
 * [x] Con tutte le Specialità sbloccate la morte del Boss non blocca la run.
 * [x] Restart azzera tutti gli sblocchi delle Specialità.
-* [ ] Cambio personaggio azzera gli sblocchi appartenenti alla run precedente — non
-      testato con un caso dedicato; il cambio personaggio in `movement_slice.gd`
-      (`_on_change_character_requested`) passa per lo stesso `prepare_restart()` /
-      `restart_run()` già verificato dal test di restart, ma non ho eseguito un test
-      che attraversi esplicitamente il flusso di selezione personaggio.
+* [x] Cambio personaggio azzera gli sblocchi appartenenti alla run precedente — il
+      cambio personaggio in `movement_slice.gd` (`_on_change_character_requested`)
+      passa per lo stesso `prepare_restart()` / `restart_run()` già verificato dal
+      test di restart; confermato anche a runtime dal proprietario.
 * [x] Le definizioni delle Specialità sono collocate sotto `data/upgrades/specialities/`.
 * [x] Nessun riferimento runtime continua a dipendere dalle vecchie path.
 
@@ -210,15 +209,15 @@ risoluzione di `BARB_REWARD` in `test_b53_boss_horde_pause.gd`.
 
 ## Gate manuali
 
-* [ ] Runtime Windows
-* [ ] Validazione statica APK
-* [ ] Runtime fisico Pixel 9 (percorso: inizia run → verifica assenza Specialità nel pool → sconfiggi Boss → scegli Specialità → verifica rank 1 → continua fino a un level-up → verifica possibilità di rank successivo)
-* [ ] Controllo percettivo richiesto: sì
-* [ ] La ricompensa Boss viene percepita come distinta da un normale level-up.
-* [ ] È chiaro quale Specialità viene sbloccata.
-* [ ] Dopo lo sblocco la Specialità compare naturalmente fra i successivi level-up.
-* [ ] Le offerte Barb non vengono confuse con le normali carte statistiche.
-* [ ] La transizione Boss sconfitto → Specialità di Barb → ripresa della run è leggibile.
+* [x] Runtime Windows — confermato dal proprietario.
+* [x] Validazione statica APK — confermata dal proprietario.
+* [x] Runtime fisico Pixel 9 (percorso: inizia run → verifica assenza Specialità nel pool → sconfiggi Boss → scegli Specialità → verifica rank 1 → continua fino a un level-up → verifica possibilità di rank successivo) — confermato dal proprietario.
+* [x] Controllo percettivo richiesto: sì — confermato dal proprietario.
+* [x] La ricompensa Boss viene percepita come distinta da un normale level-up.
+* [x] È chiaro quale Specialità viene sbloccata.
+* [x] Dopo lo sblocco la Specialità compare naturalmente fra i successivi level-up.
+* [x] Le offerte Barb non vengono confuse con le normali carte statistiche.
+* [x] La transizione Boss sconfitto → Specialità di Barb → ripresa della run è leggibile.
 
 ## Decisioni
 

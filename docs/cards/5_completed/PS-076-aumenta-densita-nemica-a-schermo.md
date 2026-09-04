@@ -3,12 +3,12 @@ id: PS-076
 titolo: Aumenta la densità nemica a schermo a parità di rischio e progressione
 tipo: chore
 area: gameplay
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine:
 creato: 2026-09-02
-aggiornato: 2026-09-03
+aggiornato: 2026-09-04
 ---
 
 # PS-076 — Aumenta la densità nemica a schermo a parità di rischio e progressione
@@ -69,12 +69,11 @@ più bersagli, non più difficoltà.
       proprietario ha riportato prova diretta su device che sia Windows sia
       Android reggono 250 nemici a 60 FPS, quindi lo stress B18V stesso è
       stato alzato di conseguenza (vedi Decisioni).
-- [ ] Il numero medio di nemici vivi entro un raggio di ingaggio ravvicinato
+- [x] Il numero medio di nemici vivi entro un raggio di ingaggio ravvicinato
       al Player aumenta misurabilmente rispetto al profilo attuale, a parità
       di seed e di tempo di run. Il ritmo di arrivo piu' alto e' verificato
-      automaticamente (smoke), ma l'accumulo vicino al Player e' un effetto
-      emergente del combattimento reale (armi, raggio, cooldown): resta il
-      controllo percettivo del proprietario nei Gate manuali.
+      automaticamente (smoke); l'accumulo vicino al Player e' stato
+      confermato a percezione dal proprietario nei Gate manuali.
 - [x] Nessuna variazione ai pesi per archetipo, alla curva late-run
       ([PS-007](../5_completed/PS-007-impedire-run-AFK-lategame.md)), agli eventi
       d'ondata ([PS-008](../5_completed/PS-008-eventi-di-ondata.md)) o al sistema Boss,
@@ -135,28 +134,22 @@ Non toccare:
 - **Risultati 2026-09-03 (dopo il cap 250):** `Focused` (1/1) e `Relevant`
   (12/12 + 1 focused) rilanciati da zero e verdi — soddisfano il profilo
   minimo dichiarato in Verifica. `Full` è stato avviato a scopo
-  precauzionale ma interrotto su richiesta del proprietario (non c'era
-  tempo per attenderlo in questa sessione); il proprietario ha detto di
-  farlo girare più avanti lui stesso. **`Full` non è quindi stato
-  completato in questa sessione**: non dichiarare questo profilo verde
-  finché non viene rieseguito.
+  precauzionale ma interrotto su richiesta del proprietario in questa
+  sessione (non c'era tempo per attenderlo); rieseguito successivamente dal
+  proprietario, verde.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
+- [x] Runtime Windows — confermato dal proprietario.
+- [x] Validazione statica APK — confermata dal proprietario.
 - [x] Runtime fisico Pixel 9 — cap B18V: il proprietario ha verificato di
       persona (2026-09-03) che sia Windows sia Android reggono 250 nemici
       vivi a 60 FPS, base per l'aumento `stress_enemy_count 150→250`.
-      Resta aperto il playtest di almeno 5 minuti coprendo early/mid/late
-      run richiesto dal punto sotto (il check qui riguarda solo il numero
-      di nemici sostenibile, non il playtest completo).
-- [ ] Runtime fisico Pixel 9: playtest di almeno 5 minuti coprendo
-      early/mid/late run
-- [ ] Controllo percettivo richiesto: sì — è il punto della card. Il
-      proprietario deve giocarla e confermare "più frenetico, stessa
-      difficoltà"; senza questa conferma la card non può chiudere a
-      `COMPLETATO`
+- [x] Runtime fisico Pixel 9: playtest di almeno 5 minuti coprendo
+      early/mid/late run — confermato dal proprietario.
+- [x] Controllo percettivo richiesto: sì — è il punto della card. Il
+      proprietario ha giocato la run e confermato "più frenetico, stessa
+      difficoltà".
 
 ## Decisioni
 

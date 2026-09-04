@@ -27,7 +27,7 @@ icone restano un linguaggio generico da upgrade d'arma/abilità, scollegato
 dall'identità di Barb come grigliatore che premia il Player con un "pezzo
 speciale" dopo ogni Boss: `Gossip`, `Colpo Perforante`, `Raffica Doppia`,
 `Esplosione Finale`, e — dopo
-[PS-077](../4_to_test/PS-077-espandi-pool-specialita-barb.md) — anche `L'Ansia`,
+[PS-077](../5_completed/PS-077-espandi-pool-specialita-barb.md) — anche `L'Ansia`,
 `Birre di classe di Lollo`, `Ritardo Cronico`, `Non Ho Tempo Per Questo`.
 Le icone attuali di queste ultime quattro (`anxiety.png`, `beer.png`,
 `chronic_delay.png`, `no_time.png`) non appartengono al linguaggio visivo

@@ -62,7 +62,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 
 | ID | Titolo | Tipo | Area | Stato | Priorità | Dipende da |
 |---|---|---|---|---|---|---|
-| [PS-001](./4_to_test/PS-001-tell-di-stato-senza-snaturare-lo-sprite.md) | Comunicare la fase della passiva senza ridipingere lo sprite | ux | arte | IN VERIFICA | alta | — |
+| [PS-001](./6_rejected/PS-001-tell-di-stato-senza-snaturare-lo-sprite.md) | Comunicare la fase della passiva senza ridipingere lo sprite | ux | arte | SCARTATA | alta | — |
 | [PS-002](./5_completed/PS-002-restyle-proiettili-giocatore-e-nemici.md) | Sostituire i proiettili "debug" con sprite ImageGen leggibili | art | arte | COMPLETATO | media | — |
 | [PS-003](./5_completed/PS-003-conferma-abilita-passiva-zat.md) | Conferma il funzionamento di Guarigione Ritardata | chore | gameplay | COMPLETATO | alta | — |
 | [PS-004](./5_completed/PS-004-lega-Tempesta-di-Tuoni-al-danno-recuperabile.md) | Lega Tempesta di Tuoni al danno recuperabile | feat | gameplay | COMPLETATO | alta | PS-003 |
@@ -71,7 +71,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-007](./5_completed/PS-007-impedire-run-AFK-lategame.md) | Impedisci che la late run diventi AFK | feat | gameplay | COMPLETATO | alta | — |
 | [PS-008](./5_completed/PS-008-eventi-di-ondata.md) | Introduci eventi d'ondata | feat | gameplay | COMPLETATO | alta | — |
 | [PS-009](./5_completed/PS-009-trasparenza-dialog-boss.md) | Rendi trasparente la Boss UI sotto il Player | ux | ui | COMPLETATO | media | — |
-| [PS-012](./4_to_test/PS-012-barb-specialities.md) | Introduci le Specialità di Barb | feat | gameplay | IN VERIFICA | alta | — |
+| [PS-012](./5_completed/PS-012-barb-specialities.md) | Introduci le Specialità di Barb | feat | gameplay | COMPLETATO | alta | — |
 | [PS-013](./5_completed/PS-013-crash-typedarray-seconda-offerta-upgrade.md) | Correggi il crash TypedArray alla seconda offerta upgrade | fix | ui | COMPLETATO | alta | — |
 | [PS-014](./5_completed/PS-014-logo-welcome-fuori-viewport.md) | Riporta il logo della welcome dentro il viewport | fix | ui | COMPLETATO | media | — |
 | [PS-015](./5_completed/PS-015-bordo-pixelato-card-selettore.md) | Adegua il test della card centrale del selettore all'artwork di selezione | fix | ui | COMPLETATO | bassa | — |
@@ -87,8 +87,8 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-025](./5_completed/PS-025-aumenta-dimensioni-avvertimento-boss.md) | Aumenta le dimensioni dell'avvertimento Boss | ux | ui | COMPLETATO | media | — |
 | [PS-026](./5_completed/PS-026-rinomina-piccione-speciale-piccione-malvagio.md) | Rinomina Piccione Speciale in Piccione Malvagio | chore | gameplay | COMPLETATO | media | — |
 | [PS-027](./5_completed/PS-027-rimuovi-artefatto-powerslide-bea.md) | Rimuovi l'artefatto residuo dalla Powerslide di Bea | fix | arte | COMPLETATO | media | — |
-| [PS-028](./4_to_test/PS-028-rendi-piroetta-alea-circolare.md) | Rendi circolare la rotazione della Gran Piroetta | art | arte | IN VERIFICA | media | — |
-| [PS-029](./4_to_test/PS-029-rendi-tell-stato-personaggi-piu-visibili.md) | Rendi più visibili i tell di stato dei personaggi | ux | gameplay | IN VERIFICA | alta | — |
+| [PS-028](./5_completed/PS-028-rendi-piroetta-alea-circolare.md) | Rendi circolare la rotazione della Gran Piroetta | art | arte | COMPLETATO | media | — |
+| [PS-029](./6_rejected/PS-029-rendi-tell-stato-personaggi-piu-visibili.md) | Rendi più visibili i tell di stato dei personaggi | ux | gameplay | SCARTATA | alta | — |
 | [PS-030](./5_completed/PS-030-runner-crash-su-test-eliminato.md) | Correggi il crash del runner quando un test viene eliminato | fix | tooling | COMPLETATO | media | — |
 | [PS-031](./5_completed/PS-031-runner-crasha-su-warning-stderr-di-git.md) | Il runner crasha su un warning stderr di git invece di continuare | fix | tooling | COMPLETATO | media | — |
 | [PS-032](./5_completed/PS-032-seed-run-non-deterministico-nei-test-gut.md) | Il seed di run non deterministico nei test GUT causa flakiness sparsa | fix | tooling | COMPLETATO | alta | — |
@@ -125,16 +125,16 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-065](./5_completed/PS-065-barb-reward-header-non-entra-in-safe-area.md) | L'header del premio Barb non entra nel rettangolo sicuro a risoluzioni compatte | fix | ui | COMPLETATO | media | PS-064 |
 | [PS-066](./5_completed/PS-066-rimuovi-numero-scorciatoia-carte.md) | Rimuovere il numero di scorciatoia visibile dalle carte upgrade | fix | ui | COMPLETATO | bassa | PS-047 |
 | [PS-067](./5_completed/PS-067-carte-upgrade-e-barb-escono-di-6px-dalla-safe-area.md) | Le carte upgrade e Barb escono di 6px dalla safe area | fix | ui | COMPLETATO | alta | — |
-| [PS-068](./4_to_test/PS-068-genera-ritratti-busto-cast-giocabile.md) | Generare i ritratti busto definitivi del cast giocabile | art | arte | IN VERIFICA | media | — |
-| [PS-069](./4_to_test/PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md) | Ridisegnare il selettore personaggi attorno ai ritratti busto | ux | ui | IN VERIFICA | media | PS-068 |
+| [PS-068](./5_completed/PS-068-genera-ritratti-busto-cast-giocabile.md) | Generare i ritratti busto definitivi del cast giocabile | art | arte | COMPLETATO | media | — |
+| [PS-069](./5_completed/PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md) | Ridisegnare il selettore personaggi attorno ai ritratti busto | ux | ui | COMPLETATO | media | PS-068 |
 | [PS-070](./2_to_do/PS-070-aggiorna-aspettativa-32x32-evil-portrait-b17.md) | Aggiorna l'aspettativa 32x32 su evil_portrait in test_b17_friend_content | fix | tooling | PRONTO | bassa | — |
 | [PS-071](./5_completed/PS-071-pannello-boss-intro-esce-dalla-safe-area.md) | Il pannello della Boss Intro esce dalla safe area | fix | ui | COMPLETATO | media | — |
 | [PS-072](./5_completed/PS-072-audio-schivata-sesto-senso-equino-bea.md) | Dai un audio alla schivata Sesto Senso Equino di Bea | feat | audio | COMPLETATO | media | — |
 | [PS-073](./5_completed/PS-073-musica-boss-dedicata.md) | Introduci una musica Boss dedicata | feat | audio | COMPLETATO | media | — |
 | [PS-074](./2_to_do/PS-074-suono-click-generico-bottoni-ui.md) | Aggiungi un suono di click ai bottoni UI oggi silenziosi | ux | audio | PRONTO | bassa | — |
 | [PS-075](./2_to_do/PS-075-sfx-morte-nemico.md) | Aggiungi un SFX alla morte dei nemici | feat | audio | PRONTO | media | — |
-| [PS-076](./4_to_test/PS-076-aumenta-densita-nemica-a-schermo.md) | Aumenta la densità nemica a schermo a parità di rischio e progressione | chore | gameplay | IN VERIFICA | alta | — |
-| [PS-077](./4_to_test/PS-077-espandi-pool-specialita-barb.md) | Espandi il pool delle Specialità di Barb con le carte signature rimaste | feat | gameplay | IN VERIFICA | media | PS-012 |
+| [PS-076](./5_completed/PS-076-aumenta-densita-nemica-a-schermo.md) | Aumenta la densità nemica a schermo a parità di rischio e progressione | chore | gameplay | COMPLETATO | alta | — |
+| [PS-077](./5_completed/PS-077-espandi-pool-specialita-barb.md) | Espandi il pool delle Specialità di Barb con le carte signature rimaste | feat | gameplay | COMPLETATO | media | PS-012 |
 | [PS-078](./3_in_sprint/PS-078-tematizza-catalogo-specialita-barb.md) | Tematizza le Specialità di Barb come pezzi di carne alla griglia | art | arte | PRONTO | media | PS-077 |
 | [PS-079](./5_completed/PS-079-particellare-tell-stato-personaggi.md) | Sostituisci il contorno bocciato con un particellare non aderente | ux | arte | COMPLETATO | alta | — |
 | [PS-080](./2_to_do/PS-080-musica-vittoria-sconfitta.md) | Aggiungi una musica dedicata a vittoria e sconfitta | feat | audio | PRONTO | media | — |
@@ -152,3 +152,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-092](./2_to_do/PS-092-nuova-icona-ravviva-la-brace.md) | Genera una nuova icona per Ravviva la Brace! (ex Bis di Salsiccia) | art | arte | PRONTO | bassa | — |
 | [PS-093](./2_to_do/PS-093-nuovi-assi-scarto-base-personaggi.md) | Introduci cinque nuovi assi di scarto base per personaggio | feat | gameplay | PRONTO | media | PS-087 |
 | [PS-094](./2_to_do/PS-094-specialita-cariche-abilita-attiva.md) | Introduci una Specialità di Barb per cariche multiple dell'abilità attiva | feat | gameplay | PRONTO | media | — |
+| [PS-095](./2_to_do/PS-095-audita-spawn-nemici-sempre-fuori-vista.md) | Audita e correggi lo spawn nemici che compare dentro l'area visibile | fix | gameplay | PRONTO | media | — |

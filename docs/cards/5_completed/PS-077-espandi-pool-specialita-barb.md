@@ -3,7 +3,7 @@ id: PS-077
 titolo: Espandi il pool delle Specialità di Barb con le carte signature rimaste
 tipo: feat
 area: gameplay
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: [PS-012]
 origine: B13
@@ -92,7 +92,7 @@ Non toccare:
   Doppia, Esplosione Finale);
 - `BarbRewardOverlay` e il suo trattamento visivo (PS-036) — nome,
   descrizione e icona di queste quattro carte restano quelle attuali: la
-  tematizzazione è demandata a [PS-078](../2_to_do/PS-078-tematizza-catalogo-specialita-barb.md);
+  tematizzazione è demandata a [PS-078](../3_in_sprint/PS-078-tematizza-catalogo-specialita-barb.md);
 - il pool statistico ordinario e le altre carte taggate `stat`.
 
 ## Verifica
@@ -108,15 +108,15 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: sconfiggi almeno due Boss, verifica che le
+- [x] Runtime Windows — confermato dal proprietario.
+- [x] Validazione statica APK — confermata dal proprietario.
+- [x] Runtime fisico Pixel 9: sconfiggi almeno due Boss, verifica che le
       nuove Specialità compaiano nell'offerta di Barb e non nel pool normale
-      prima dello sblocco
-- [ ] Controllo percettivo richiesto: sì — le quattro carte come scelta
+      prima dello sblocco — confermato dal proprietario.
+- [x] Controllo percettivo richiesto: sì — le quattro carte come scelta
       random early-game funzionavano diversamente da come funzioneranno come
-      sblocco post-Boss; verificare che il ritmo delle prime run non ne
-      risenta negativamente (build meno "estreme" disponibili da subito)
+      sblocco post-Boss; il proprietario ha confermato che il ritmo delle
+      prime run non ne risente negativamente.
 
 ## Decisioni
 
@@ -179,7 +179,6 @@ Evidenze automatiche (2026-09-04):
   22385 assert.
 - Nessun `SCRIPT ERROR` né `FATAL EXCEPTION` nei log dei tre profili.
 
-Gate ancora aperti: runtime Windows interattivo, validazione statica dell'APK,
-runtime fisico su Pixel 9 e controllo percettivo sul ritmo delle prime run.
-Sono tre risultati distinti e nessuno è stato esercitato: la verifica sopra è
-soltanto automatica.
+Runtime Windows interattivo, validazione statica dell'APK, runtime fisico su
+Pixel 9 e controllo percettivo sul ritmo delle prime run sono stati
+confermati successivamente dal proprietario.

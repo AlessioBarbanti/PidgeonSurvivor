@@ -3,12 +3,12 @@ id: PS-001
 titolo: Comunicare la fase della passiva senza ridipingere lo sprite
 tipo: ux
 area: arte
-stato: IN VERIFICA
+stato: SCARTATA
 priorita: alta
 dipende_da: []
 origine: B44
 creato: 2026-08-29
-aggiornato: 2026-09-02
+aggiornato: 2026-09-04
 ---
 
 # PS-001 — Comunicare la fase della passiva senza ridipingere lo sprite
@@ -69,6 +69,9 @@ senza rimpiazzarlo riapre quel problema invece di chiudere questo.
   questa card resta storica come primo tentativo (contorno invece di tinta
   piena) e come diagnosi valida del problema originale di B44, non come
   contratto ancora da chiudere con l'implementazione attuale.
+- **2026-09-04 — `SCARTATA`.** L'esito percettivo negativo del 2026-09-02 è
+  definitivo: il contorno non verrà rilavorato. PS-079 (particellare non
+  aderente) è la soluzione che ha preso il suo posto ed è `COMPLETATO`.
 
 ## Criteri di accettazione
 

@@ -3,12 +3,12 @@ id: PS-028
 titolo: Rendi circolare la rotazione della Gran Piroetta
 tipo: art
 area: arte
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-30
-aggiornato: 2026-09-01
+aggiornato: 2026-09-04
 ---
 
 # PS-028 — Rendi circolare la rotazione della Gran Piroetta
@@ -29,16 +29,16 @@ La modifica è presentazionale: area gameplay, raggio dei colpi, durata, frequen
 
 ## Criteri di accettazione
 
-- [ ] La forma della Gran Piroetta appare sostanzialmente circolare durante l'intera animazione.
-      *Il raster statico è circolare; non confermato in animazione perché i gate non sono stati eseguiti su richiesta del proprietario.*
-- [ ] Non è percepibile un allungamento ovale dominante sull'asse orizzontale.
-      *Il raster statico non mostra un asse dominante; resta aperto il controllo percettivo in rotazione.*
-- [ ] Non è percepibile un allungamento ovale dominante sull'asse verticale.
-      *Il raster statico non mostra un asse dominante; resta aperto il controllo percettivo in rotazione.*
-- [ ] Il movimento comunica una rotazione continua attorno ad Alea.
-      *Richiede runtime.*
-- [ ] Il peso visivo resta distribuito in modo uniforme durante il ciclo.
-      *Il master distribuisce la corona sui quattro quadranti; il ciclo non è stato osservato in runtime.*
+- [x] La forma della Gran Piroetta appare sostanzialmente circolare durante l'intera animazione.
+      *Confermato dal proprietario in gioco.*
+- [x] Non è percepibile un allungamento ovale dominante sull'asse orizzontale.
+      *Confermato dal proprietario.*
+- [x] Non è percepibile un allungamento ovale dominante sull'asse verticale.
+      *Confermato dal proprietario.*
+- [x] Il movimento comunica una rotazione continua attorno ad Alea.
+      *Confermato dal proprietario.*
+- [x] Il peso visivo resta distribuito in modo uniforme durante il ciclo.
+      *Confermato dal proprietario.*
 - [x] Il centro visuale della Piroetta resta allineato ad Alea.
       *Master e runtime hanno canvas quadrato, centro alpha aperto in `(627, 627)` e `(256, 256)` e il consumer centrato non è stato modificato.*
 - [x] Il raggio gameplay dell'abilità resta invariato.
@@ -47,8 +47,8 @@ La modifica è presentazionale: area gameplay, raggio dei colpi, durata, frequen
       *Nessun file di codice o dati gameplay modificato.*
 - [x] La modifica non altera collisioni o posizione del Player.
       *Il cambiamento è limitato ai due PNG e alla documentazione.*
-- [ ] Il VFX resta leggibile durante orde dense.
-      *Gate percettivo non eseguito.*
+- [x] Il VFX resta leggibile durante orde dense.
+      *Confermato dal proprietario.*
 
 ## Ambito
 
@@ -75,10 +75,10 @@ Non modificare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: Alea → attiva Gran Piroetta ferma e in movimento → osserva l'intero ciclo)
-- [ ] Controllo percettivo richiesto: sì
+- [x] Runtime Windows — confermato dal proprietario.
+- [x] Validazione statica APK — confermata dal proprietario.
+- [x] Runtime fisico Pixel 9 (percorso: Alea → attiva Gran Piroetta ferma e in movimento → osserva l'intero ciclo) — confermato dal proprietario.
+- [x] Controllo percettivo richiesto: sì — confermato dal proprietario.
 
 ## Decisioni
 
@@ -98,13 +98,15 @@ Non modificare:
 - [x] `prd.md` o `CLAUDE.md`: non richiesto; il contratto gameplay resta invariato.
 - [x] `characters.md` o `content-approvals.md`: non richiesto; identità e descrizione pubblica della Gran Piroetta restano invariate.
 - [x] `assets/art/vfx/ASSET-MANIFEST.md`: aggiornati prompt specifico, trasformazione e SHA-256 di master e runtime.
-- [ ] Nota `*-verification.md`, se sono state prodotte nuove evidenze.
+- [x] Nota `*-verification.md` — non applicabile, nessuna nuova evidenza
+      Windows/Android da storicizzare oltre alla conferma del proprietario
+      già registrata sopra.
 
 ## Note
 
 ### Card collegata
 
-- [PS-029 — Rendi più visibili i tell di stato dei personaggi](./PS-029-rendi-tell-stato-personaggi-piu-visibili.md): durante il futuro controllo percettivo verificare che il tell attivo di Alea resti leggibile sotto la nuova corona della Gran Piroetta.
+- [PS-029 — Rendi più visibili i tell di stato dei personaggi](../6_rejected/PS-029-rendi-tell-stato-personaggi-piu-visibili.md) (`SCARTATA`): il collegamento riguardava il controllo percettivo del tell di Alea sotto la nuova corona, non più rilevante dopo lo scarto del meccanismo a contorno.
 
 ### Asset sostituiti
 
@@ -118,8 +120,10 @@ Non modificare:
 - SHA-256 master: `d6c32c1844bdd5273616f5728ea411ee5befa77be61449df41b530acec2923bf`.
 - SHA-256 runtime: `cb9db79e4c11a50f8dee24730e63f6fc41824625b2badf0fc8d9948b5084d918`.
 
-### Verifica non eseguita
+### Verifica
 
-Su richiesta esplicita del proprietario non sono stati eseguiti smoke, profilo
-`Relevant`, runtime Windows, validazione APK, runtime Pixel 9 o controllo
-percettivo. Tutti questi gate restano aperti e la card resta `IN VERIFICA`.
+Su richiesta esplicita del proprietario non sono stati eseguiti smoke né il
+profilo `Relevant` in sessione: la modifica è limitata ai due PNG e alla
+documentazione, senza codice o dati gameplay toccati. I gate manuali
+(Windows, APK, Pixel 9, controllo percettivo) sono stati confermati
+successivamente dal proprietario in gioco.

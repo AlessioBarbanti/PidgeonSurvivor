@@ -3,19 +3,19 @@ id: PS-069
 titolo: Ridisegnare il selettore personaggi attorno ai ritratti busto
 tipo: ux
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: [PS-068]
 origine:
 creato: 2026-09-02
-aggiornato: 2026-09-03
+aggiornato: 2026-09-04
 ---
 
 # PS-069 — Ridisegnare il selettore personaggi attorno ai ritratti busto
 
 ## Contesto
 
-[PS-068](../4_to_test/PS-068-genera-ritratti-busto-cast-giocabile.md) produce un
+[PS-068](./PS-068-genera-ritratti-busto-cast-giocabile.md) produce un
 ritratto busto definitivo per ciascuno degli otto Friend, analogo per qualità
 e famiglia visiva ai ritratti Evil già usati nella Boss intro.
 
@@ -72,15 +72,11 @@ sembrare una semplice sostituzione dell'immagine dentro la vecchia cornice.
 
 ### Riferimento di layout
 
-Uno schizzo di riferimento per la composizione è disponibile in
-[PS-069-layout-idea.png](./PS-069-layout-idea.png). È un'indicazione di
-direzione, non uno specifico vincolante: la composizione finale può
-discostarsene purché rispetti i criteri di accettazione sotto.
-
-**Una volta risolta questa card, eliminare il file
-`docs/cards/4_to_test/PS-069-layout-idea.png`** (o il suo nuovo percorso se la
-card è stata spostata): è un riferimento di lavoro, non un asset del
-repository.
+Uno schizzo di riferimento per la composizione era disponibile come
+`PS-069-layout-idea.png`. Era un'indicazione di direzione, non uno specifico
+vincolante: la composizione finale se ne è discostata dove necessario per
+rispettare i criteri di accettazione sotto. Il file, riferimento di lavoro e
+non asset del repository, è stato eliminato alla chiusura della card.
 
 ### Ritratto principale
 
@@ -271,32 +267,35 @@ Il layout deve mantenere una gerarchia leggibile:
 
 ### Gerarchia e art direction
 
-- [ ] Il Friend selezionato costituisce il principale punto focale della
-      schermata.
+- [x] Il Friend selezionato costituisce il principale punto focale della
+      schermata. *Confermato dal proprietario.*
 
-- [ ] Busto, nome e descrizione del ruolo vengono percepiti come un unico
-      blocco di identità del personaggio.
+- [x] Busto, nome e descrizione del ruolo vengono percepiti come un unico
+      blocco di identità del personaggio. *Confermato dal proprietario.*
 
-- [ ] Passiva e abilità restano chiaramente leggibili ma non competono con il
-      ritratto come elemento dominante.
+- [x] Passiva e abilità restano chiaramente leggibili ma non competono con il
+      ritratto come elemento dominante. *Confermato dal proprietario.*
 
-- [ ] Se busto e arte full-body convivono, svolgono funzioni visive
+- [x] Se busto e arte full-body convivono, svolgono funzioni visive
       chiaramente differenti e non competono per scala o attenzione.
+      *Confermato dal proprietario.*
 
-- [ ] Le preview degli altri Friend comunicano l'esistenza del roster senza
-      avere lo stesso peso del personaggio selezionato.
+- [x] Le preview degli altri Friend comunicano l'esistenza del roster senza
+      avere lo stesso peso del personaggio selezionato. *Confermato dal
+      proprietario.*
 
-- [ ] Il trattamento dei busti appartiene alla stessa famiglia visiva dei
+- [x] Il trattamento dei busti appartiene alla stessa famiglia visiva dei
       ritratti Evil della Boss intro, senza trasformare il character select
-      in una copia della Boss intro.
+      in una copia della Boss intro. *Confermato dal proprietario.*
 
-- [ ] La schermata mantiene il linguaggio visivo già riconoscibile del gioco:
+- [x] La schermata mantiene il linguaggio visivo già riconoscibile del gioco:
       dungeon, ornamentazione, palette e CTA risultano parte dello stesso
-      sistema UI.
+      sistema UI. *Confermato dal proprietario.*
 
-- [ ] Il titolo `SCEGLI IL PERSONAGGIO` introduce chiaramente la schermata
+- [x] Il titolo `SCEGLI IL PERSONAGGIO` introduce chiaramente la schermata
       senza competere visivamente con il Friend selezionato; il colore del
-      titolo non è vincolato al ciano della versione precedente.
+      titolo non è vincolato al ciano della versione precedente. *Confermato
+      dal proprietario.*
 
 ## Ambito
 
@@ -353,7 +352,7 @@ Profilo minimo prima della chiusura:
 
 ### Manuale
 
-- [ ] Runtime Windows.
+- [x] Runtime Windows — confermato dal proprietario.
 
 - [x] Validazione statica APK. CI (workflow `android-debug-release.yml`, PS-060),
       run [33781099162](https://github.com/AlessioBarbanti/PidgeonSurvivor/actions/runs/33781099162),
@@ -363,7 +362,7 @@ Profilo minimo prima della chiusura:
       release `android-debug-latest`. Questo sandbox non ha SDK Android
       locale: la build/validazione è girata in CI, non qui.
 
-- [ ] Runtime fisico Pixel 9.
+- [x] Runtime fisico Pixel 9 — confermato dal proprietario.
 
 Sul Pixel 9:
 
@@ -421,8 +420,8 @@ stati eseguiti direttamente gli stessi file GUT che la mappa associa a
   `test_ps051_boss_intro_identity`, `test_ps053_run_summary`,
   `test_ps046_level_up_modal_isolation` — aree non toccate da questa card, e
   probabilmente sensibili all'esecuzione di 29 script in un solo processo
-  fuori dal runner ufficiale. **Restano da riverificare con il runner
-  Windows**: qui non sono stati né indagati né risolti.
+  fuori dal runner ufficiale. Riverificate con il runner Windows dal
+  proprietario, nessuna regressione imputabile a questa card.
 - Geometria misurata su tutti e otto i Friend, tre formati
   (`2424×1080` Pixel 9, `1280×720`, `960×720`), con la safe area di sistema
   disattivata per neutralizzare l'offset finestra di Xvfb:
@@ -445,19 +444,19 @@ stati eseguiti direttamente gli stessi file GUT che la mappa associa a
 
 ## Gate percettivi
 
-- [ ] Controllo percettivo richiesto: sì.
+- [x] Controllo percettivo richiesto: sì. Confermato dal proprietario.
 
-- [ ] Il proprietario conferma che le card ora stanno sopra la riga dorata e
+- [x] Il proprietario conferma che le card ora stanno sopra la riga dorata e
       hanno il peso giusto senza rubare presenza al ritratto.
 
-- [ ] Il proprietario approva la gerarchia della nuova composizione.
+- [x] Il proprietario approva la gerarchia della nuova composizione.
 
-- [ ] Il proprietario approva il trattamento del roster.
+- [x] Il proprietario approva il trattamento del roster.
 
-- [ ] Il proprietario conferma che il Friend selezionato ha sufficiente
+- [x] Il proprietario conferma che il Friend selezionato ha sufficiente
       presenza visiva rispetto ai pannelli Passiva/Abilità.
 
-- [ ] Il proprietario conferma che il selettore mantiene il DNA della UI
+- [x] Il proprietario conferma che il selettore mantiene il DNA della UI
       attuale pur risultando sensibilmente più centrato sul personaggio.
 
 A fine sviluppo, prima della chiusura, chiedere esplicitamente al
@@ -702,11 +701,11 @@ sempre in isolamento (447/447 asserzioni, ripetuto due volte): flakiness da
 carico del processo condiviso fra molti script, non una regressione di
 questa card — il carosello/roster non è stato toccato.
 
-Il gate di rendering Android/device resta **aperto**: questo sandbox remoto
-non ha SDK/device Android, quindi la correzione sopra (altezza del bottone,
-interlinea) non è stata verificata fisicamente sul Pixel 9. Non risulta però
-collegata all'artefatto dei diamanti visto nello screenshot originale, che il
-proprietario ha chiarito non essere il difetto reale.
+Il gate di rendering Android/device è stato confermato successivamente dal
+proprietario sul Pixel 9 (correzione dell'altezza del bottone e
+dell'interlinea). Non risulta collegato all'artefatto dei diamanti visto
+nello screenshot originale, che il proprietario ha chiarito non essere il
+difetto reale.
 
 ### 2026-09-03 — Busto e identità sovrapposti, layout a due colonne vere
 
@@ -915,6 +914,5 @@ Come principio di art direction:
 
 **sprite/full-body = personaggio come unità di gameplay**
 
-Ricorda di eliminare `docs/cards/4_to_test/PS-069-layout-idea.png` una volta
-completata la card: è uno schizzo di riferimento di lavoro, non un asset
-definitivo del repository.
+`PS-069-layout-idea.png`, schizzo di riferimento di lavoro e non un asset
+definitivo del repository, è stato eliminato alla chiusura della card.
