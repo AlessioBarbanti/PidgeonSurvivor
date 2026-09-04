@@ -101,6 +101,80 @@ script completati e ultimo script avviato:
 Va su `Write-Host`, quindi non inquina lo stdout letto da `-AsJson`. Quando un
 batch si pianta, quella riga nomina lo script su cui si è piantato.
 
+## Perché la cattura dell'output passa da file
+
+`Invoke-CapturedProcess` redirige stdout/stderr del figlio su file temporanei
+e li legge incrementalmente. Non è un dettaglio implementativo: drenare le
+pipe riga per riga dal processo padre in PowerShell **bloccava Godot in
+scrittura**. Misurato sullo stesso file GUT, stessa macchina: 3,7 s con
+output rediretto su file, 55,9 s letto dalla pipe. Il costo si sommava su
+tutta la suite (`Full` andava in timeout a 30 minuti senza finire); dopo la
+correzione la stessa suite gira in poco più di un minuto in un solo processo.
+
+Chi tocca quel layer tenga il principio: il tempo di un test non deve
+dipendere da come lo si guarda. Il contratto (marker di completamento,
+timeout, terminazione dell'albero, riga di avanzamento) è coperto da
+`tests/tooling/_process_capture_contract.ps1`.
+
+## Esecuzione parallela
+
+`-ParallelJobs <N>` (default `1`, comportamento invariato) divide i file GUT
+di un batch fra N processi Godot concorrenti invece di uno sequenziale. Ogni
+test paga comunque l'avvio dell'engine e l'istanza della scena di run
+completa: quel costo per singolo file non cambia, ma N file lo pagano insieme
+invece che in coda uno dietro l'altro. Misurato sulla suite `Full` (99 file)
+dopo la correzione della cattura, su 6 core fisici:
+
+| `-ParallelJobs` | Tempo |
+|---|---:|
+| 1 (default) | 68,7 s |
+| 4 | 36,0 s |
+| **6** | **28,1 s** |
+| 8 | 33,6 s |
+| 10 | 28,7 s |
+| 12 | 29,3 s |
+
+Tutte le corse danno lo stesso esito. Il guadagno si esaurisce ai core
+fisici: **6 è il valore consigliato**, oltre è piatto dentro il rumore.
+Con la suite interamente verde i tempi misurati sono 70,5 s a un processo e
+27,0 s con `-ParallelJobs 6`. Il residuo non è più comprimibile spingendo sul
+parallelismo — a 6 job restano ~10 s di step toolchain/project smoke (che non
+sono test) e ~14 s dello shard più lento.
+
+Gli shard sono processi Godot avviati direttamente e sorvegliati in un solo
+ciclo (`Invoke-CapturedProcessGroup`), non job PowerShell: un job costava
+~1,5 s di avvio ciascuno, pagati in fila prima che partisse un test, e i suoi
+host competevano per la CPU al punto da far fallire
+`test_b18v_hardening_performance` (soglie di prestazione) ad alto
+parallelismo. Senza job quel sintomo è sparito.
+
+```powershell
+.\tools\run-milestone-checks.ps1 -Milestone PS-010 -Profile Full -ParallelJobs 6
+```
+
+Ogni processo isola `user://` impostando `APPDATA` prima di avviare Godot
+(questa build non ha un flag `--user-data-dir`, verificato con una sonda
+`--script`): senza isolamento, N istanze concorrenti condividerebbero le
+stesse impostazioni audio/touch/accessibilità che `game_audio.gd` e affini
+leggono da `user://` a ogni avvio di `instantiate_movement_slice()`, con un
+rischio di corsa reale, non teorico. La cache resta per categoria intera
+(`focused`/`regression`), non per shard: uno shard mancante o scaduto non
+scrive nulla in cache, esattamente come un crash del processo unico nel
+percorso sequenziale.
+
+Il numero giusto di job dipende dai core disponibili e dalla RAM (ogni
+processo carica l'intera scena di gioco): partire dai core fisici e scendere
+se la macchina rallenta durante la run.
+
+Cambiare il numero di shard cambia anche **l'ordine** in cui i file girano
+nello stesso processo. Due test di layout del selettore personaggi
+(`test_b18w_character_select_refinement`, `test_ps069_character_select_bust_portrait`)
+passavano o fallivano a seconda di quell'ordine, perché ereditavano la
+viewport lasciata dal file precedente invece di fissarla: un test che compone
+la scena da `MOVEMENT_SLICE_SCENE.instantiate()` deve impostare
+`get_tree().root.content_scale_size`/`size` da sé, come fa già
+`instantiate_movement_slice()`.
+
 ## Cache e diagnostica
 
 Sono riutilizzati soltanto risultati `PASS`. La chiave del batch GUT include
