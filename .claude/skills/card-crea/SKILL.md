@@ -46,6 +46,13 @@ verificabile e risolvibile da sola in un'altra sessione.
 - In `Decisioni` registra le scelte già confermate, quelle aperte e ciò che la
   card sostituisce. In `Documenti sincronizzati` elenca i contratti durevoli che
   dovranno ricevere il solo risultato finale.
+- Quando la richiesta implica sia produrre nuova arte sia usarla in gioco
+  (wiring in un `.tres`, una scena o un registry), il default è **due card
+  collegate** (PS-090): una `tipo: art` che si ferma a master, derivato,
+  manifest e art review, e una `feat`/`fix`/`ux`/`chore` di integrazione che
+  la referenzia via `dipende_da`. Scrivi una sola card mista solo se
+  l'integrazione è banale a sufficienza da restare un singolo criterio di
+  accettazione esplicitamente marcato come tale — non come scelta di default.
 
 ## 3. Registra e riporta
 

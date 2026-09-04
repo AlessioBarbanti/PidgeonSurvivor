@@ -141,8 +141,9 @@ func test_runtime_composition_with_passive_and_reset() -> void:
 		"La velocita' base effettiva deve riflettere la composizione."
 	)
 
-	# Alea e' il profilo neutro: cambiando personaggio gli scarti si azzerano
-	# e restano soltanto i contributi della passiva.
+	# Cambiando personaggio gli scarti del profilo precedente si azzerano e
+	# restano soltanto i contributi del nuovo profilo (PS-087: Alea non e'
+	# piu' il profilo neutro, ma la composizione resta dinamica sui getter).
 	var alea := registry.resolve_definition(&"alea")
 	_equip(player, passive, alea)
 	assert_almost_eq(

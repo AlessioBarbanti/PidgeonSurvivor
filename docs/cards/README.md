@@ -46,6 +46,15 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
   (`.codex/agents/game-art-designer.toml`); la skill `card-risolvi` su Claude
   non le seleziona automaticamente come "prossima card" e le implementa solo
   delegandole a quell'agente.
+- Una card `tipo: art` che richiede nuovi asset **non include mai** la
+  propria integrazione nei criteri di accettazione (PS-090): si ferma a
+  master, derivato, manifest e art review. Collegare l'asset finito al dato,
+  alla scena o al registry che lo consuma è compito di una card separata,
+  dello stesso `tipo` che avrebbe avuto senza la componente grafica
+  (`feat`/`fix`/`ux`/`chore`), collegata tramite `dipende_da` o aperta
+  esplicitamente in autoria/handoff — mai bundlata dentro la card `art`.
+  Le card `art` chiuse prima di PS-090 restano storiche sotto il contratto
+  con cui sono state lavorate.
 - Decisioni e motivazioni restano nella card. Il contratto risultante viene
   sincronizzato in PRD, `CLAUDE.md`, cataloghi o approvazioni pertinenti.
 - Una card completata resta storica; un cambiamento successivo apre una nuova
@@ -56,87 +65,90 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-001](./4_to_test/PS-001-tell-di-stato-senza-snaturare-lo-sprite.md) | Comunicare la fase della passiva senza ridipingere lo sprite | ux | arte | IN VERIFICA | alta | — |
 | [PS-002](./5_completed/PS-002-restyle-proiettili-giocatore-e-nemici.md) | Sostituire i proiettili "debug" con sprite ImageGen leggibili | art | arte | COMPLETATO | media | — |
 | [PS-003](./5_completed/PS-003-conferma-abilita-passiva-zat.md) | Conferma il funzionamento di Guarigione Ritardata | chore | gameplay | COMPLETATO | alta | — |
-| [PS-004](./4_to_test/PS-004-lega-Tempesta-di-Tuoni-al-danno-recuperabile.md) | Lega Tempesta di Tuoni al danno recuperabile | feat | gameplay | IN VERIFICA | alta | PS-003 |
-| [PS-005](./4_to_test/PS-005-Boss-timer.md) | Annuncia l'arrivo del Boss | ux | gameplay | IN VERIFICA | alta | — |
-| [PS-006](./4_to_test/PS-006-bosses-new-abilities.md) | Dai agli Evil una Signature Ability | feat | gameplay | IN VERIFICA | alta | PS-004 |
-| [PS-007](./4_to_test/PS-007-impedire-run-AFK-lategame.md) | Impedisci che la late run diventi AFK | feat | gameplay | IN VERIFICA | alta | — |
-| [PS-008](./4_to_test/PS-008-eventi-di-ondata.md) | Introduci eventi d'ondata | feat | gameplay | IN VERIFICA | alta | — |
+| [PS-004](./5_completed/PS-004-lega-Tempesta-di-Tuoni-al-danno-recuperabile.md) | Lega Tempesta di Tuoni al danno recuperabile | feat | gameplay | COMPLETATO | alta | PS-003 |
+| [PS-005](./5_completed/PS-005-Boss-timer.md) | Annuncia l'arrivo del Boss | ux | gameplay | COMPLETATO | alta | — |
+| [PS-006](./5_completed/PS-006-bosses-new-abilities.md) | Dai agli Evil una Signature Ability | feat | gameplay | COMPLETATO | alta | PS-004 |
+| [PS-007](./5_completed/PS-007-impedire-run-AFK-lategame.md) | Impedisci che la late run diventi AFK | feat | gameplay | COMPLETATO | alta | — |
+| [PS-008](./5_completed/PS-008-eventi-di-ondata.md) | Introduci eventi d'ondata | feat | gameplay | COMPLETATO | alta | — |
 | [PS-009](./5_completed/PS-009-trasparenza-dialog-boss.md) | Rendi trasparente la Boss UI sotto il Player | ux | ui | COMPLETATO | media | — |
 | [PS-012](./4_to_test/PS-012-barb-specialities.md) | Introduci le Specialità di Barb | feat | gameplay | IN VERIFICA | alta | — |
-| [PS-013](./4_to_test/PS-013-crash-typedarray-seconda-offerta-upgrade.md) | Correggi il crash TypedArray alla seconda offerta upgrade | fix | ui | IN VERIFICA | alta | — |
-| [PS-014](./4_to_test/PS-014-logo-welcome-fuori-viewport.md) | Riporta il logo della welcome dentro il viewport | fix | ui | IN VERIFICA | media | — |
+| [PS-013](./5_completed/PS-013-crash-typedarray-seconda-offerta-upgrade.md) | Correggi il crash TypedArray alla seconda offerta upgrade | fix | ui | COMPLETATO | alta | — |
+| [PS-014](./5_completed/PS-014-logo-welcome-fuori-viewport.md) | Riporta il logo della welcome dentro il viewport | fix | ui | COMPLETATO | media | — |
 | [PS-015](./5_completed/PS-015-bordo-pixelato-card-selettore.md) | Adegua il test della card centrale del selettore all'artwork di selezione | fix | ui | COMPLETATO | bassa | — |
-| [PS-016](./4_to_test/PS-016-tutorial-fuori-safe-area.md) | Riporta il tutorial dentro la safe area su tutti i profili | fix | ui | IN VERIFICA | media | — |
+| [PS-016](./5_completed/PS-016-tutorial-fuori-safe-area.md) | Riporta il tutorial dentro la safe area su tutti i profili | fix | ui | COMPLETATO | media | — |
 | [PS-017](./5_completed/PS-017-font-size-locale-selettore-personaggi.md) | Rimuovi il font-size locale reintrodotto nel selettore personaggi | fix | ui | COMPLETATO | bassa | — |
 | [PS-018](./5_completed/PS-018-hud-composta-danno-restart-vita.md) | Correggi danno e restart della vita nella scena HUD composta | fix | gameplay | COMPLETATO | alta | — |
 | [PS-019](./5_completed/PS-019-manifest-vfx-hash-non-aggiornato.md) | Riallinea l'hash del manifest VFX per instinctive_dodge_accent | chore | arte | COMPLETATO | bassa | — |
 | [PS-020](./5_completed/PS-020-diagnostica-flakiness-backdrop-selettore.md) | Diagnostica il fallimento intermittente sul backdrop del selettore | chore | tooling | COMPLETATO | bassa | — |
 | [PS-021](./5_completed/PS-021-import-orfano-backdrop-bronze.md) | Rimuovi l'import orfano del backdrop bronze del selettore | chore | arte | COMPLETATO | bassa | — |
 | [PS-022](./5_completed/PS-022-b15-target-registrati-in-piu-suite-completa.md) | Diagnostica i due target registrati in più di test_b15_boss_encounter | chore | tooling | COMPLETATO | media | — |
-| [PS-023](./4_to_test/PS-023-runner-verifica-affidabile.md) | Rendi leggibile e non bloccante il runner di verifica | chore | tooling | IN VERIFICA | alta | — |
-| [PS-024](./4_to_test/PS-024-riduci-danno-onda-urto-magno.md) | Riduci il danno dell'Onda d'Urto di Magno | fix | gameplay | IN VERIFICA | alta | — |
-| [PS-025](./4_to_test/PS-025-aumenta-dimensioni-avvertimento-boss.md) | Aumenta le dimensioni dell'avvertimento Boss | ux | ui | IN VERIFICA | media | — |
-| [PS-026](./4_to_test/PS-026-rinomina-piccione-speciale-piccione-malvagio.md) | Rinomina Piccione Speciale in Piccione Malvagio | chore | gameplay | IN VERIFICA | media | — |
-| [PS-027](./4_to_test/PS-027-rimuovi-artefatto-powerslide-bea.md) | Rimuovi l'artefatto residuo dalla Powerslide di Bea | fix | arte | IN VERIFICA | media | — |
+| [PS-023](./5_completed/PS-023-runner-verifica-affidabile.md) | Rendi leggibile e non bloccante il runner di verifica | chore | tooling | COMPLETATO | alta | — |
+| [PS-024](./5_completed/PS-024-riduci-danno-onda-urto-magno.md) | Riduci il danno dell'Onda d'Urto di Magno | fix | gameplay | COMPLETATO | alta | — |
+| [PS-025](./5_completed/PS-025-aumenta-dimensioni-avvertimento-boss.md) | Aumenta le dimensioni dell'avvertimento Boss | ux | ui | COMPLETATO | media | — |
+| [PS-026](./5_completed/PS-026-rinomina-piccione-speciale-piccione-malvagio.md) | Rinomina Piccione Speciale in Piccione Malvagio | chore | gameplay | COMPLETATO | media | — |
+| [PS-027](./5_completed/PS-027-rimuovi-artefatto-powerslide-bea.md) | Rimuovi l'artefatto residuo dalla Powerslide di Bea | fix | arte | COMPLETATO | media | — |
 | [PS-028](./4_to_test/PS-028-rendi-piroetta-alea-circolare.md) | Rendi circolare la rotazione della Gran Piroetta | art | arte | IN VERIFICA | media | — |
 | [PS-029](./4_to_test/PS-029-rendi-tell-stato-personaggi-piu-visibili.md) | Rendi più visibili i tell di stato dei personaggi | ux | gameplay | IN VERIFICA | alta | — |
 | [PS-030](./5_completed/PS-030-runner-crash-su-test-eliminato.md) | Correggi il crash del runner quando un test viene eliminato | fix | tooling | COMPLETATO | media | — |
 | [PS-031](./5_completed/PS-031-runner-crasha-su-warning-stderr-di-git.md) | Il runner crasha su un warning stderr di git invece di continuare | fix | tooling | COMPLETATO | media | — |
 | [PS-032](./5_completed/PS-032-seed-run-non-deterministico-nei-test-gut.md) | Il seed di run non deterministico nei test GUT causa flakiness sparsa | fix | tooling | COMPLETATO | alta | — |
-| [PS-033](./4_to_test/PS-033-riquadro-vita-boss-minimale-floating.md) | Elimina l'HUD dedicata del Boss, la vita resta solo overhead | ux | ui | IN VERIFICA | media | — |
-| [PS-034](./4_to_test/PS-034-rimuovi-xp-fissa-ricompensa-boss.md) | Rimuovi la ricompensa XP fissa dalla sconfitta del Boss | fix | gameplay | IN VERIFICA | alta | — |
-| [PS-036](./4_to_test/PS-036-Barb-specialities-ux-enhance.md) | Rendi distinta la schermata delle Specialità di Barb | ux | ui | IN VERIFICA | media | — |
-| [PS-037](./4_to_test/PS-037-alza-probabilita-evil-boss-50.md) | Alza la probabilità Evil Boss dal 25% al 50% | chore | gameplay | IN VERIFICA | media | — |
+| [PS-033](./5_completed/PS-033-riquadro-vita-boss-minimale-floating.md) | Elimina l'HUD dedicata del Boss, la vita resta solo overhead | ux | ui | COMPLETATO | media | — |
+| [PS-034](./5_completed/PS-034-rimuovi-xp-fissa-ricompensa-boss.md) | Rimuovi la ricompensa XP fissa dalla sconfitta del Boss | fix | gameplay | COMPLETATO | alta | — |
+| [PS-036](./5_completed/PS-036-Barb-specialities-ux-enhance.md) | Rendi distinta la schermata delle Specialità di Barb | ux | ui | COMPLETATO | media | — |
+| [PS-037](./5_completed/PS-037-alza-probabilita-evil-boss-50.md) | Alza la probabilità Evil Boss dal 25% al 50% | chore | gameplay | COMPLETATO | media | — |
 | [PS-038](./5_completed/PS-038-documentazione-game-design-review-interna.md) | Documentazione di game design per review interna | chore | docs | COMPLETATO | media | — |
 | [PS-039](./5_completed/PS-039-api-mancante-vittoria-ricompensa-boss.md) | Regressione sulla ricompensa XP del Boss dopo PS-006 | fix | gameplay | COMPLETATO | alta | — |
-| [PS-040](./4_to_test/PS-040-iframe-atterraggio-powerslide-bea.md) | Aggiungi i-frame all'atterraggio della Powerslide di Bea | feat | gameplay | IN VERIFICA | media | — |
-| [PS-041](./4_to_test/PS-041-scia-slancio-magno-non-si-resetta.md) | La scia di slancio di Magno non si azzera all'avvio di una nuova partita | fix | gameplay | IN VERIFICA | media | — |
-| [PS-042](./4_to_test/PS-042-subordina-scintille-powerslide-bea.md) | Subordina le scintille della Powerslide al nastro di fuoco | fix | arte | IN VERIFICA | media | — |
+| [PS-040](./5_completed/PS-040-iframe-atterraggio-powerslide-bea.md) | Aggiungi i-frame all'atterraggio della Powerslide di Bea | feat | gameplay | COMPLETATO | media | — |
+| [PS-041](./5_completed/PS-041-scia-slancio-magno-non-si-resetta.md) | La scia di slancio di Magno non si azzera all'avvio di una nuova partita | fix | gameplay | COMPLETATO | media | — |
+| [PS-042](./5_completed/PS-042-subordina-scintille-powerslide-bea.md) | Subordina le scintille della Powerslide al nastro di fuoco | fix | arte | COMPLETATO | media | — |
 | [PS-043](./5_completed/PS-043-riallinea-board-con-i-file-card.md) | Riallineare la board ai file-card realmente presenti | chore | docs | COMPLETATO | alta | — |
-| [PS-044](./4_to_test/PS-044-catture-ui-oneste-e-rappresentative.md) | Rendere il pacchetto di catture UI onesto e rappresentativo | chore | tooling | IN VERIFICA | alta | — |
-| [PS-045](./4_to_test/PS-045-gerarchia-visiva-arena-di-run.md) | Riequilibrare composizione e leggibilità dell'arena 20:9 | ux | arte | IN VERIFICA | alta | — |
-| [PS-046](./4_to_test/PS-046-isola-il-modal-di-level-up.md) | Isolare il modal di level-up da HUD e cronometro | ux | ui | IN VERIFICA | alta | — |
-| [PS-047](./4_to_test/PS-047-gerarchia-carte-upgrade.md) | Compattare e gerarchizzare le carte upgrade | ux | ui | IN VERIFICA | alta | PS-046 |
-| [PS-048](./4_to_test/PS-048-fedelta-al-runtime-di-tre-pagine-tutorial.md) | Allineare tre pagine del tutorial a ciò che il gioco mostra davvero | ux | ui | IN VERIFICA | media | — |
-| [PS-049](./4_to_test/PS-049-genera-illustrazioni-tutorial.md) | Generare le tre illustrazioni definitive del tutorial | art | arte | IN VERIFICA | media | PS-048 |
-| [PS-050](./4_to_test/PS-050-uniforma-impostazioni-welcome-alla-pausa.md) | Uniformare le impostazioni della welcome al sistema della pausa | ux | ui | IN VERIFICA | media | — |
-| [PS-051](./4_to_test/PS-051-identita-individuale-degli-evil.md) | Dare identità individuale agli Evil nella Boss intro | ux | ui | IN VERIFICA | media | — |
-| [PS-052](./4_to_test/PS-052-genera-ritratti-evil-e-icone-signature.md) | Generare i ritratti Evil e le icone Signature definitivi | art | arte | IN VERIFICA | media | PS-051 |
-| [PS-053](./4_to_test/PS-053-riepilogo-finale-della-run.md) | Trasformare la schermata finale in un riepilogo della run | feat | ui | IN VERIFICA | media | — |
+| [PS-044](./5_completed/PS-044-catture-ui-oneste-e-rappresentative.md) | Rendere il pacchetto di catture UI onesto e rappresentativo | chore | tooling | COMPLETATO | alta | — |
+| [PS-045](./5_completed/PS-045-gerarchia-visiva-arena-di-run.md) | Riequilibrare composizione e leggibilità dell'arena 20:9 | ux | arte | COMPLETATO | alta | — |
+| [PS-046](./5_completed/PS-046-isola-il-modal-di-level-up.md) | Isolare il modal di level-up da HUD e cronometro | ux | ui | COMPLETATO | alta | — |
+| [PS-047](./5_completed/PS-047-gerarchia-carte-upgrade.md) | Compattare e gerarchizzare le carte upgrade | ux | ui | COMPLETATO | alta | PS-046 |
+| [PS-048](./5_completed/PS-048-fedelta-al-runtime-di-tre-pagine-tutorial.md) | Allineare tre pagine del tutorial a ciò che il gioco mostra davvero | ux | ui | COMPLETATO | media | — |
+| [PS-049](./5_completed/PS-049-genera-illustrazioni-tutorial.md) | Generare le tre illustrazioni definitive del tutorial | art | arte | COMPLETATO | media | PS-048 |
+| [PS-050](./5_completed/PS-050-uniforma-impostazioni-welcome-alla-pausa.md) | Uniformare le impostazioni della welcome al sistema della pausa | ux | ui | COMPLETATO | media | — |
+| [PS-051](./5_completed/PS-051-identita-individuale-degli-evil.md) | Dare identità individuale agli Evil nella Boss intro | ux | ui | COMPLETATO | media | — |
+| [PS-052](./5_completed/PS-052-genera-ritratti-evil-e-icone-signature.md) | Generare i ritratti Evil e le icone Signature definitivi | art | arte | COMPLETATO | media | PS-051 |
+| [PS-053](./5_completed/PS-053-riepilogo-finale-della-run.md) | Trasformare la schermata finale in un riepilogo della run | feat | ui | COMPLETATO | media | — |
 | [PS-055](./1_idea/PS-055-filosofia-della-vittoria.md) | Decidere la filosofia della vittoria fra Survival e Difesa Grigliata | chore | gameplay | DA DEFINIRE | media | — |
 | [PS-056](./2_to_do/PS-056-ducking-e-stinger-nei-momenti-chiave.md) | Aggiungere ducking e stinger su avvertimento Boss, level-up e ricompensa Barb | feat | audio | PRONTO | bassa | — |
-| [PS-057](./4_to_test/PS-057-errori-fisica-su-split-del-piccione-viola.md) | Eliminare gli errori di fisica quando il piccione viola si sdoppia | fix | gameplay | IN VERIFICA | media | — |
-| [PS-058](./4_to_test/PS-058-genera-arte-nuovi-prop-arena.md) | Generare l'arte definitiva dei nuovi prop dell'arena | art | arte | IN VERIFICA | media | PS-045 |
+| [PS-057](./5_completed/PS-057-errori-fisica-su-split-del-piccione-viola.md) | Eliminare gli errori di fisica quando il piccione viola si sdoppia | fix | gameplay | COMPLETATO | media | — |
+| [PS-058](./5_completed/PS-058-genera-arte-nuovi-prop-arena.md) | Generare l'arte definitiva dei nuovi prop dell'arena | art | arte | COMPLETATO | media | PS-045 |
 | [PS-059](./5_completed/PS-059-schiarisci-contrasto-modal-level-up.md) | Schiarire il contrasto fra velo e carte nei modal di scelta | fix | ui | COMPLETATO | alta | PS-046, PS-047 |
 | [PS-060](./5_completed/PS-060-ci-build-apk-github-release.md) | Compilare l'APK Android in CI e pubblicarlo come GitHub Release | chore | tooling | COMPLETATO | media | — |
 | [PS-061](./5_completed/PS-061-catture-ui-in-ci-per-validazione-remota.md) | Eseguire il pacchetto di catture UI in CI per la validazione visiva remota | chore | tooling | COMPLETATO | media | PS-044, PS-060 |
 | [PS-062](./5_completed/PS-062-setup-sandbox-remoto-validazione-locale.md) | Script di setup Godot nel sandbox remoto per validare prima di commit/push | chore | tooling | COMPLETATO | media | — |
-| [PS-063](./4_to_test/PS-063-metapanel-trabocca-carte-upgrade.md) | Il MetaPanel delle carte upgrade esce dal bordo della carta | fix | ui | IN VERIFICA | alta | PS-047 |
-| [PS-064](./4_to_test/PS-064-top-level-ignora-offset-safe-area.md) | I nodi top_level dei modal ignorano l'offset del safe-rect del display | fix | ui | IN VERIFICA | alta | PS-059 |
-| [PS-065](./4_to_test/PS-065-barb-reward-header-non-entra-in-safe-area.md) | L'header del premio Barb non entra nel rettangolo sicuro a risoluzioni compatte | fix | ui | IN VERIFICA | media | PS-064 |
-| [PS-066](./4_to_test/PS-066-rimuovi-numero-scorciatoia-carte.md) | Rimuovere il numero di scorciatoia visibile dalle carte upgrade | fix | ui | IN VERIFICA | bassa | PS-047 |
-| [PS-067](./4_to_test/PS-067-carte-upgrade-e-barb-escono-di-6px-dalla-safe-area.md) | Le carte upgrade e Barb escono di 6px dalla safe area | fix | ui | IN VERIFICA | alta | — |
+| [PS-063](./5_completed/PS-063-metapanel-trabocca-carte-upgrade.md) | Il MetaPanel delle carte upgrade esce dal bordo della carta | fix | ui | COMPLETATO | alta | PS-047 |
+| [PS-064](./5_completed/PS-064-top-level-ignora-offset-safe-area.md) | I nodi top_level dei modal ignorano l'offset del safe-rect del display | fix | ui | COMPLETATO | alta | PS-059 |
+| [PS-065](./5_completed/PS-065-barb-reward-header-non-entra-in-safe-area.md) | L'header del premio Barb non entra nel rettangolo sicuro a risoluzioni compatte | fix | ui | COMPLETATO | media | PS-064 |
+| [PS-066](./5_completed/PS-066-rimuovi-numero-scorciatoia-carte.md) | Rimuovere il numero di scorciatoia visibile dalle carte upgrade | fix | ui | COMPLETATO | bassa | PS-047 |
+| [PS-067](./5_completed/PS-067-carte-upgrade-e-barb-escono-di-6px-dalla-safe-area.md) | Le carte upgrade e Barb escono di 6px dalla safe area | fix | ui | COMPLETATO | alta | — |
 | [PS-068](./4_to_test/PS-068-genera-ritratti-busto-cast-giocabile.md) | Generare i ritratti busto definitivi del cast giocabile | art | arte | IN VERIFICA | media | — |
 | [PS-069](./4_to_test/PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md) | Ridisegnare il selettore personaggi attorno ai ritratti busto | ux | ui | IN VERIFICA | media | PS-068 |
 | [PS-070](./2_to_do/PS-070-aggiorna-aspettativa-32x32-evil-portrait-b17.md) | Aggiorna l'aspettativa 32x32 su evil_portrait in test_b17_friend_content | fix | tooling | PRONTO | bassa | — |
-| [PS-071](./4_to_test/PS-071-pannello-boss-intro-esce-dalla-safe-area.md) | Il pannello della Boss Intro esce dalla safe area | fix | ui | IN VERIFICA | media | — |
-| [PS-072](./4_to_test/PS-072-audio-schivata-sesto-senso-equino-bea.md) | Dai un audio alla schivata Sesto Senso Equino di Bea | feat | audio | IN VERIFICA | media | — |
-| [PS-073](./2_to_do/PS-073-musica-boss-dedicata.md) | Introduci una musica Boss dedicata | feat | audio | PRONTO | media | — |
+| [PS-071](./5_completed/PS-071-pannello-boss-intro-esce-dalla-safe-area.md) | Il pannello della Boss Intro esce dalla safe area | fix | ui | COMPLETATO | media | — |
+| [PS-072](./5_completed/PS-072-audio-schivata-sesto-senso-equino-bea.md) | Dai un audio alla schivata Sesto Senso Equino di Bea | feat | audio | COMPLETATO | media | — |
+| [PS-073](./5_completed/PS-073-musica-boss-dedicata.md) | Introduci una musica Boss dedicata | feat | audio | COMPLETATO | media | — |
 | [PS-074](./2_to_do/PS-074-suono-click-generico-bottoni-ui.md) | Aggiungi un suono di click ai bottoni UI oggi silenziosi | ux | audio | PRONTO | bassa | — |
 | [PS-075](./2_to_do/PS-075-sfx-morte-nemico.md) | Aggiungi un SFX alla morte dei nemici | feat | audio | PRONTO | media | — |
 | [PS-076](./4_to_test/PS-076-aumenta-densita-nemica-a-schermo.md) | Aumenta la densità nemica a schermo a parità di rischio e progressione | chore | gameplay | IN VERIFICA | alta | — |
 | [PS-077](./4_to_test/PS-077-espandi-pool-specialita-barb.md) | Espandi il pool delle Specialità di Barb con le carte signature rimaste | feat | gameplay | IN VERIFICA | media | PS-012 |
 | [PS-078](./3_in_sprint/PS-078-tematizza-catalogo-specialita-barb.md) | Tematizza le Specialità di Barb come pezzi di carne alla griglia | art | arte | PRONTO | media | PS-077 |
-| [PS-079](./4_to_test/PS-079-particellare-tell-stato-personaggi.md) | Sostituisci il contorno bocciato con un particellare non aderente | ux | arte | IN VERIFICA | alta | — |
+| [PS-079](./5_completed/PS-079-particellare-tell-stato-personaggi.md) | Sostituisci il contorno bocciato con un particellare non aderente | ux | arte | COMPLETATO | alta | — |
 | [PS-080](./2_to_do/PS-080-musica-vittoria-sconfitta.md) | Aggiungi una musica dedicata a vittoria e sconfitta | feat | audio | PRONTO | media | — |
 | [PS-081](./2_to_do/PS-081-layer-musicale-intensita-late-run.md) | Aggiungi un layer musicale di intensità crescente late-run | feat | audio | PRONTO | media | — |
 | [PS-082](./2_to_do/PS-082-camera-non-centrata-su-restart.md) | Ricentra davvero la camera sul personaggio al restart | fix | gameplay | PRONTO | media | — |
-| [PS-083](./4_to_test/PS-083-storicizza-prompt-e-reference-generazione.md) | Storicizzare prompt e reference di generazione | chore | arte | IN VERIFICA | bassa | — |
-| [PS-084](./4_to_test/PS-084-direzione-visuale-per-personaggio-e-reference-cast.md) | Documentare la direzione visuale per personaggio e collegarla agli agenti art | chore | arte | IN VERIFICA | media | — |
+| [PS-083](./5_completed/PS-083-storicizza-prompt-e-reference-generazione.md) | Storicizzare prompt e reference di generazione | chore | arte | COMPLETATO | bassa | — |
+| [PS-084](./5_completed/PS-084-direzione-visuale-per-personaggio-e-reference-cast.md) | Documentare la direzione visuale per personaggio e collegarla agli agenti art | chore | arte | COMPLETATO | media | — |
 | [PS-085](./2_to_do/PS-085-introduci-sparo-manuale-con-secondo-joystick.md) | Introduci lo sparo manuale come modalità alternativa allo sparo automatico | feat | gameplay | PRONTO | media | — |
-| [PS-086](./4_to_test/PS-086-cattura-output-runner-strozza-i-test.md) | La cattura dell'output del runner strozza l'esecuzione dei test | fix | tooling | IN VERIFICA | alta | — |
-| [PS-087](./3_in_sprint/PS-087-definisci-statistiche-base-personaggi.md) | Definisci gli scarti di statistiche base per personaggio | chore | gameplay | PRONTO | alta | — |
-| [PS-088](./3_in_sprint/PS-088-verifica-differenziazione-statistiche-personaggi.md) | Verifica automaticamente la differenziazione statistica dei personaggi | chore | tooling | BLOCCATO | alta | PS-087 |
-| [PS-089](./3_in_sprint/PS-089-elimina-sovrapposizioni-tema-carne-powerup.md) | Elimina le sovrapposizioni fra il tema carne delle Specialità e il catalogo powerup ordinario | chore | arte | PRONTO | media | — |
-| [PS-090](./3_in_sprint/PS-090-separa-generazione-integrazione-card-art.md) | Separa generazione asset e integrazione nel workflow delle card tipo art | chore | tooling | PRONTO | media | — |
-| [PS-091](./3_in_sprint/PS-091-genera-placeholder-powerup-nuove-statistiche.md) | Genera i placeholder icona per i powerup di eventuali nuove statistiche | art | arte | BLOCCATO | bassa | PS-087, PS-090 |
+| [PS-086](./5_completed/PS-086-cattura-output-runner-strozza-i-test.md) | La cattura dell'output del runner strozza l'esecuzione dei test | fix | tooling | COMPLETATO | alta | — |
+| [PS-087](./5_completed/PS-087-definisci-statistiche-base-personaggi.md) | Definisci gli scarti di statistiche base per personaggio | chore | gameplay | COMPLETATO | alta | — |
+| [PS-088](./5_completed/PS-088-verifica-differenziazione-statistiche-personaggi.md) | Verifica automaticamente la differenziazione statistica dei personaggi | chore | tooling | COMPLETATO | alta | PS-087 |
+| [PS-089](./5_completed/PS-089-elimina-sovrapposizioni-tema-carne-powerup.md) | Elimina le sovrapposizioni fra il tema carne delle Specialità e il catalogo powerup ordinario | chore | arte | COMPLETATO | media | — |
+| [PS-090](./5_completed/PS-090-separa-generazione-integrazione-card-art.md) | Separa generazione asset e integrazione nel workflow delle card tipo art | chore | tooling | COMPLETATO | media | — |
+| [PS-091](./6_rejected/PS-091-genera-placeholder-powerup-nuove-statistiche.md) | Genera i placeholder icona per i powerup di eventuali nuove statistiche | art | arte | SCARTATA | bassa | PS-087, PS-090 |
+| [PS-092](./2_to_do/PS-092-nuova-icona-ravviva-la-brace.md) | Genera una nuova icona per Ravviva la Brace! (ex Bis di Salsiccia) | art | arte | PRONTO | bassa | — |
+| [PS-093](./2_to_do/PS-093-nuovi-assi-scarto-base-personaggi.md) | Introduci cinque nuovi assi di scarto base per personaggio | feat | gameplay | PRONTO | media | PS-087 |
+| [PS-094](./2_to_do/PS-094-specialita-cariche-abilita-attiva.md) | Introduci una Specialità di Barb per cariche multiple dell'abilità attiva | feat | gameplay | PRONTO | media | — |

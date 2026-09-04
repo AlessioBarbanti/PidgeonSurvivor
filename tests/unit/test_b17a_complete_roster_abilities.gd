@@ -170,17 +170,24 @@ func _assert_passive(player: Player, passive: FriendPassiveController, weapon: W
 			assert_true(health.health_current > damaged_health, "Zat deve recuperare la quota differita.")
 		&"alea":
 			var definition := passive.get_definition()
+			# PS-087: Alea non e' piu' un profilo neutro, quindi il "riposo" a cui
+			# l'effetto temporaneo deve tornare e' il proprio scarto base, non 1.0.
+			var base_move_speed := definition.get_base_move_speed_multiplier()
+			var base_fire_rate := definition.get_base_fire_rate_multiplier()
 			passive._process(definition.get_passive_float(&"trigger_interval"))
 			assert_true(
-				player.get_character_move_speed_multiplier() != 1.0 or weapon.get_character_fire_rate_multiplier() != 1.0,
+				(
+					not is_equal_approx(player.get_character_move_speed_multiplier(), base_move_speed)
+					or not is_equal_approx(weapon.get_character_fire_rate_multiplier(), base_fire_rate)
+				),
 				"Alea deve ottenere un modificatore temporaneo deterministico."
 			)
 			passive._process(definition.get_passive_float(&"effect_duration"))
 			assert_almost_eq(
-				player.get_character_move_speed_multiplier(), 1.0, ROSTER_FLOAT_TOLERANCE, "L'effetto Alea deve terminare."
+				player.get_character_move_speed_multiplier(), base_move_speed, ROSTER_FLOAT_TOLERANCE, "L'effetto Alea deve terminare."
 			)
 			assert_almost_eq(
-				weapon.get_character_fire_rate_multiplier(), 1.0, ROSTER_FLOAT_TOLERANCE, "L'effetto arma Alea deve terminare."
+				weapon.get_character_fire_rate_multiplier(), base_fire_rate, ROSTER_FLOAT_TOLERANCE, "L'effetto arma Alea deve terminare."
 			)
 		&"aleo":
 			assert_almost_eq(

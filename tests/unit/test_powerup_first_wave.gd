@@ -156,7 +156,7 @@ func _assert_ability_cooldown(
 	var active_snapshot := ability.get_cooldown_total()
 	assert_true(
 		await _select_fixture_upgrade(catalog, service, effects, experience, ABILITY_COOLDOWN),
-		"Bis di Salsiccia deve essere selezionabile."
+		"Ravviva la Brace! deve essere selezionabile."
 	)
 	assert_almost_eq(
 		ability.get_cooldown_total(), active_snapshot, FLOAT_TOLERANCE, "Un cooldown gia avviato deve conservare il proprio snapshot."

@@ -83,11 +83,17 @@ comunicare rapidità senza introdurre razzi, motori o tecnologia fuori tema.
 
 ---
 
-### Bis di Salsiccia
+### Ravviva la Brace!
 
 **ID proposto:** `ability_cooldown`  
 
-L'icona di questa abilità è nel file `upgrade_bis_di_salsiccia.png`.
+Rinominata da `Bis di Salsiccia` il 4 settembre 2026 (PS-089, poi corretta
+in `Ravviva la Brace!` lo stesso giorno su richiesta del proprietario): un
+pezzo di carne è ora un soggetto riservato alle Specialità di Barb. L'icona
+runtime attuale (`bis_di_salsiccia.png`) ritrae ancora letteralmente una
+salsiccia e resta fuori dall'ambito di questa rinomina testuale; una nuova
+icona è materia di una card `tipo: art` dedicata (vedi Decisioni di PS-089,
+card PS-092).
 
 **Effetto proposto:** `active_ability_cooldown_multiplier`  
 **Ruolo:** frequenza d'uso dell'abilità attiva
@@ -102,10 +108,11 @@ L'icona di questa abilità è nel file `upgrade_bis_di_salsiccia.png`.
 
 **Descrizione carta:** “Riduce dell'8% il tempo di ricarica dell'abilità per rango.”
 
-**Identità visiva:** due salsicce grigliate affiancate, oppure una seconda
-salsiccia appena aggiunta accanto alla prima, con un piccolo accento di
-movimento o brace. Deve comunicare immediatamente il concetto di **bis** e di
-nuovo utilizzo, evitando orologi, timer o simboli tecnici.
+**Identità visiva:** un cumulo di braci che si riaccende — scintille e un
+bagliore che torna vivo, come dopo un colpo di mantice o un ventaglio.
+Deve comunicare immediatamente il concetto di **ricarica pronta di nuovo**,
+mai carne (riservata alle Specialità di Barb, PS-078/PS-089), evitando
+orologi, timer o simboli tecnici. Vedi anche [PS-092](./cards/2_to_do/PS-092-nuova-icona-ravviva-la-brace.md).
 
 ---
 
@@ -270,7 +277,8 @@ elementi legati ai piccioni.
 #### Stato prima ondata — completata
 
 Il 27 agosto 2026 sono entrati nel catalogo runtime `Via dalla Griglia!`,
-`Pirofila Rinforzata`, `Il condimento di Barb` e `Bis di Salsiccia`. I quattro
+`Pirofila Rinforzata`, `Il condimento di Barb` e `Ravviva la Brace!`
+(rinominata da `Bis di Salsiccia` il 4 settembre 2026, PS-089). I quattro
 effetti sono moltiplicatori configurabili, ricostruiti dai rank e azzerati a
 restart o cambio personaggio; velocità proiettile e cooldown sono snapshot
 dell'azione successiva, mentre difesa e XP agiscono sugli eventi successivi.
@@ -285,8 +293,8 @@ Prima ondata:
 2. **Pirofila Rinforzata** — introduce una scelta difensiva diretta;
 3. **Il condimento di Barb** — aggiunge una scelta di progressione XP distinta
    dal pickup range;
-4. **Bis di Salsiccia** — introduce il cooldown come nuova statistica universale
-   delle abilità attive.
+4. **Ravviva la Brace!** — introduce il cooldown come nuova statistica
+   universale delle abilità attive.
 
 Seconda ondata:
 

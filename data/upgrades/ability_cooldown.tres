@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource("1_definition")
 id = &"ability_cooldown"
-title = "Bis di Salsiccia"
+title = "Ravviva la Brace!"
 description = "Riduce il tempo di ricarica dell'abilità attiva."
 effect_summary = "-8% RICARICA ABILITÀ"
 icon = ExtResource("2_icon")

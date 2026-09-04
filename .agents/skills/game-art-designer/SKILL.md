@@ -174,40 +174,50 @@ brief o i candidati scartati), così resta uno specchio fedele dei master
 correnti invece di incoraggiare a rincorrere una lettura pregressa. Mantieni
 identità individuale e grammatica condivisa in equilibrio.
 
-## Integra e verifica
+## Registra il manifest e prepara l'handoff
 
-1. Inserisci il derivato nel componente autorizzato con posizione, scala,
-   crop, ancoraggio, layering e margini coerenti con il brief. Se la card chiede
-   solo una proposta d'integrazione, documenta questi valori senza modificare
-   il runtime.
-2. Aggiorna il manifest locale con percorso, origine o prompt, generatore,
+1. Aggiorna il manifest locale con percorso, origine o prompt, generatore,
    autore, licenza, trasformazioni, dimensioni e SHA-256 di master e derivato.
-3. Aggiorna riferimenti e test deterministici previsti dalla card; rinfresca
-   l'import Godot per i nuovi asset.
-4. Esegui almeno i profili richiesti dalla card tramite il runner unico e
-   controlla i log, non solo l'exit code.
-5. Valuta il risultato in Windows e sul Pixel 9 nei percorsi richiesti. Tieni
-   distinti test automatici, export/APK statico, runtime fisico e accettazione
-   percettiva: nessuno sostituisce gli altri.
+2. Rileggi il derivato a dimensione reale isolato (fuori da qualunque
+   componente runtime) come parte dell'art review: leggibilità, coerenza di
+   famiglia e composizione devono reggere anche senza vederlo ancora nel suo
+   punto d'uso finale.
 
-Un asset valido da solo ma sbagliato nel layout non risolve la card. Se un gate
-manuale non è disponibile, completa l'implementazione ma lascia la card in
-stato `IN VERIFICA` e dichiara esattamente quale prova manca.
+**Fuori ambito per una card `art` (PS-090):** inserire il derivato in un
+componente runtime (`.tres`, scene, registry), rinfrescare l'import Godot,
+aggiornare riferimenti o test deterministici, eseguire i profili di verifica
+di gameplay del runner ed eseguire i gate manuali Windows/Pixel 9 (che
+richiedono l'asset già integrato per essere significativi). Questo lavoro
+appartiene a una card di integrazione dello stesso `tipo` che la richiesta
+avrebbe avuto senza la componente grafica (`feat`/`fix`/`ux`/`chore`), aperta
+esplicitamente in fase di autoria o all'handoff di questa card — mai
+implementato dentro la card `art` stessa, anche se sembra un cambio piccolo.
+Se la card `art` che stai risolvendo elenca ancora questi passi nei propri
+criteri di accettazione perché scritta prima di PS-090, segnalalo invece di
+eseguirli in silenzio: la card va aggiornata o affiancata da una card di
+integrazione, non eseguita alla lettera contro un contratto superato.
+
+Un asset leggibile e coerente ma mai valutato in isolamento a dimensione reale
+non risolve comunque la card.
 
 ## Criterio di completamento
 
 La card art è risolta solo quando:
 
-- asset e funzione sono identificati nel contesto reale;
+- asset e funzione sono identificati nel contesto reale (anche se il runtime
+  non viene toccato da questa card);
 - fratelli visivi e contratti tecnici sono stati ispezionati;
 - mini art direction e convenzioni materiali sono chiare;
 - master e derivato runtime necessari sono stati prodotti;
-- art review critica e correzioni evidenti sono concluse;
-- integrazione e manifest sono completi;
+- art review critica e correzioni evidenti sono concluse, sul derivato isolato
+  a dimensione reale;
+- il manifest locale è completo (percorso, origine, autore/licenza,
+  trasformazioni, hash);
 - varianti realmente necessarie sono presenti;
-- verifiche automatiche, di piattaforma e percettive sono riportate con
-  onestà, e lo stato della card riflette i gate ancora aperti.
+- l'integrazione non è stata eseguita dentro questa card: è dichiarata
+  esplicitamente fuori ambito, con la card di integrazione nominata o aperta.
 
-Nel riepilogo finale indica asset prodotti, punto d'integrazione, regola di
-famiglia applicata, correzioni emerse dall'art review, prove eseguite e gate
-aperti. Le evidenze durevoli restano nella card, non nel solo messaggio finale.
+Nel riepilogo finale indica asset prodotti, percorsi, regola di famiglia
+applicata, correzioni emerse dall'art review, e quale card (esistente o
+aperta ora) possiede l'integrazione. Le evidenze durevoli restano nella card,
+non nel solo messaggio finale.

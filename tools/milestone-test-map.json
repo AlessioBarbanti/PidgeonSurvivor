@@ -29,7 +29,9 @@
         "tests/unit/test_ps006_evil_signature_abilities.gd",
         "tests/unit/test_ps041_magno_trail_reset_redraw.gd",
         "tests/unit/test_ps051_boss_intro_identity.gd",
-        "tests/unit/test_ps079_state_tell_particles.gd"
+        "tests/unit/test_ps079_state_tell_particles.gd",
+        "tests/unit/test_ps087_base_stat_identity.gd",
+        "tests/unit/test_ps088_base_stat_differentiation.gd"
       ]
     },
     {
@@ -161,7 +163,8 @@
         "tests/unit/test_b41_weapon_shapes.gd",
         "tests/unit/test_ps012_barb_specialities.gd",
         "tests/unit/test_ps077_barb_speciality_pool_expansion.gd",
-        "tests/unit/test_ps047_upgrade_card_hierarchy.gd"
+        "tests/unit/test_ps047_upgrade_card_hierarchy.gd",
+        "tests/unit/test_ps089_ordinary_catalog_meat_audit.gd"
       ]
     },
     {

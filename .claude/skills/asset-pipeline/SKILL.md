@@ -8,6 +8,16 @@ description: Integra nel repository un asset grafico o audio di Pidgeon Survivor
 Regola d'oro: **il runtime referenzia solo i derivati**, i master restano nel
 repository come sorgente ma fuori da import, EXE, APK e AAB.
 
+Questa skill copre l'intera pipeline, ma non tutte le sue fasi appartengono
+alla stessa card (PS-090). I passi **1–3** (deriva, tieni i master fuori
+dagli export, aggiorna il manifest) sono lavoro di produzione: li esegue
+sempre chi genera l'asset, tipicamente una card `tipo: art` delegata a
+`game-art-designer`. Il passo **4** (verifica: wiring, refresh import, smoke,
+`Relevant`, gate percettivo) presuppone l'asset già collegato al componente
+che lo consuma: appartiene alla card di integrazione che referenzia il nuovo
+derivato in un `.tres`/scena/registry, non alla card che ha solo generato
+l'asset.
+
 ## 1. Deriva
 
 Un master consegnato non entra mai direttamente in gioco. Usa lo script
@@ -61,7 +71,7 @@ scrivi esattamente questo: asset del progetto fornito dal proprietario.
 Per contenuti che ritraggono persone reali del cast, l'approvazione va
 registrata nella card pertinente.
 
-## 4. Verifica
+## 4. Verifica (card di integrazione, non la card `art`)
 
 1. Rinfresca la cache di import dell'editor prima degli smoke: un asset nuovo
    non importato fa fallire i test per risoluzione risorsa, non per contratto.

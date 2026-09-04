@@ -428,6 +428,21 @@ e compongono moltiplicativamente con passive e upgrade senza mutare i dati
 base condivisi di Player e arma. Gli scarti si azzerano a restart e cambio
 personaggio come ogni altro contributo di profilo.
 
+Valori correnti, motivati per ruolo in `docs/characters.md` (PS-087): nessun
+profilo resta neutro su tutti e tre gli assi e nessuna coppia condivide la
+stessa tripla entro `0,03` per asse.
+
+| Profilo | Salute | Velocità | Cadenza |
+|---|---|---|---|
+| Magno | `×1,15` | `×0,95` | `×1,00` |
+| Bea | `×0,90` | `×1,10` | `×1,00` |
+| Zat | `×1,10` | `×0,95` | `×1,00` |
+| Alea | `×0,85` | `×1,00` | `×1,15` |
+| Aleo | `×1,00` | `×0,95` | `×1,10` |
+| Lollo | `×0,90` | `×1,05` | `×1,05` |
+| Marghe | `×0,95` | `×1,00` | `×1,10` |
+| Migi | `×1,15` | `×0,90` | `×0,95` |
+
 Baseline iniziali delle passive, tutte configurabili nei `.tres`:
 
 | Profilo | Parametri runtime B17A |

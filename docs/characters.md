@@ -13,6 +13,8 @@ Passiva — Flusso Aerodinamico Bovino: Muovendosi dritto accumula slancio: più
 Attiva — Onda d'Urto Tellurica: Genera un'onda d'urto che danneggia e respinge i nemici vicini, più forte quanto più slancio Magno ha accumulato.
 Boss: Evil Magno — Signature *Onda d'Urto Tellurica*: dopo un forte impatto a terra telegrafato, un fronte anulare parte dal Boss e si espande verso l'esterno, danneggiando e respingendo una sola volta chi attraversa. La versione Boss non usa lo slancio del Player.
 
+Scarti base (B47, PS-087): salute `×1,15`, velocità `×0,95`, cadenza `×1,00` — pesante e resistente come un energumeno tellurico; la mobilità del ruolo viene dallo slancio della passiva, non dalla velocità base, che resta sotto la norma.
+
 ## Bea
 
 Ruolo: Evasione e riposizionamento.  
@@ -20,12 +22,16 @@ Passiva — Sesto Senso Equino: Ogni 9 secondi annulla il colpo che la colpirebb
 Attiva — Powerslide: Scatto istantaneo nell'ultima direzione di movimento, invulnerabile all'atterraggio, che lascia dietro di sé una scia di fuoco.
 Boss: Evil Bea — Signature *Powerslide*: una linea di preavviso mostra direzione e traiettoria, poi Bea scatta lungo quella linea e lascia una scia di fuoco che infligge danno nel tempo e restringe temporaneamente lo spazio sicuro.
 
+Scarti base (B47, PS-087): salute `×0,90`, velocità `×1,10`, cadenza `×1,00` — l'agilità da pattinatrice si traduce in velocità alta e salute bassa: l'evasione è di movimento, non di resistenza.
+
 ## Zat
 
 Ruolo: Gestione del danno e sopravvivenza.  
 Passiva — Guarigione Ritardata: Parte del danno subito resta recuperabile: se Zat evita altri colpi per qualche secondo, quella quota torna indietro.  
 Attiva — Tempesta di Tuoni: Fotografa tutti i nemici vivi presenti in quel momento e li colpisce con un'unica scarica ciascuno; il danno per bersaglio scala con la quota di HP recuperabili accumulata da Guarigione Ritardata (PS-004).
 Boss: Evil Zat — Signature *Tempesta di Tuoni*: l'aura orbitante di PS-004 dichiara la fascia di carica, che qui sale con il danno già subito dal Boss; dopo il telegraph il Tuono colpisce soltanto dentro il raggio annunciato, quindi resta evitabile.
+
+Scarti base (B47, PS-087): salute `×1,10`, velocità `×0,95`, cadenza `×1,00` — più salute per dare margine alla quota recuperabile di Guarigione Ritardata; la sopravvivenza del ruolo è di posizionamento e cuscinetto, non di rapidità.
 
 Contratto runtime di Guarigione Ritardata (confermato da PS-003; i valori vivono
 in `data/friends/zat.tres`, la logica in `FriendPassiveController`):
@@ -80,12 +86,16 @@ Passiva — L’Aquila Non Sbaglia Mai: Ogni 10 secondi tira un effetto a caso: 
 Attiva — Gran Piroetta: Una rotazione rapida che colpisce ripetutamente tutti i nemici vicini.
 Boss: Evil Alea — Signature *Gran Piroetta*: entra in rotazione con un'area di contatto sempre visibile e insegue a velocità ridotta senza poter cambiare direzione all'istante.
 
+Scarti base (B47, PS-087): salute `×0,85`, velocità `×1,00`, cadenza `×1,15` — il profilo più fragile del cast, compensato dalla cadenza più alta della mischia ravvicinata: il rischio del ruolo è letterale, non solo tematico. Sostituisce la tripla interamente neutra assegnata durante B47 (vedi Decisioni di PS-087): un ruolo di "rischio e fortuna" non può restare senza identità statistica.
+
 ## Aleo
 
 Ruolo: Sbalzo termico e gestione del danno.  
 Passiva — Termostato Interno: Sopra metà vita scalda e infligge più danno; sotto metà raffredda, incassa meno e la brina rallenta e logora i nemici vicini. Un piccolo particellare ciano o arancio, sospeso sopra la testa, dichiara sempre la modalità corrente.  
 Attiva — Shock Termico: Congela un'area per un istante, poi la fa esplodere di calore: i nemici ancora brinati subiscono danno raddoppiato.
 Boss: Evil Aleo — Signature *Shock Termico*: un'area ciano rallenta chi vi resta dentro, poi la stessa area detona; il rallentamento lascia comunque il tempo di uscire.
+
+Scarti base (B47, PS-087): salute `×1,00`, velocità `×0,95`, cadenza `×1,10` — tecnico metodico, leggermente sotto la norma in mobilità e sopra in cadenza per i getti di caldo/freddo frequenti; differenziato da Zat, con cui condivideva due scarti su tre prima di questa card (vedi Decisioni di PS-087): la sopravvivenza di Zat resta la più tenace del cast, lo sbalzo termico di Aleo si esprime in cadenza invece che in salute.
 
 ## Lollo
 
@@ -94,6 +104,8 @@ Passiva — Iperfocus ADHD: Alterna a intervalli casuali una fase di iperfocus (
 Attiva — Cosplay Casuale: Estrae in anticipo l'abilità di un altro personaggio e la mostra sul pulsante: la prossima attivazione lancia quella.
 Boss: Evil Lollo — Signature *Cosplay Casuale*: prepara in anticipo la Signature di un altro Evil, la annuncia disegnandone il telegraph e la esegue con i parametri Boss di quella copiata. Non può copiare Cosplay Casuale, quindi non genera ricorsione.
 
+Scarti base (B47, PS-087): salute `×0,90`, velocità `×1,05`, cadenza `×1,05` — fragile e rapido su entrambi gli assi offensivo e di movimento, coerente con l'imprevedibilità e il caos del ruolo.
+
 ## Migi
 
 Ruolo: Difesa e controllo delle orde.  
@@ -101,12 +113,16 @@ Passiva — Guscio Tartarughina: Le placche del guscio annullano i primi colpi e
 Attiva — Rallentamento Zen: Crea una zona che rallenta fortemente i nemici vicini e assorbe i proiettili che vi entrano.
 Boss: Evil Migi — Signature *Rallentamento Zen*: una zona attorno al Boss rallenta il Player e assorbe i proiettili alleati che vi entrano, senza infliggere danno diretto.
 
+Scarti base (B47, PS-087): salute `×1,15`, velocità `×0,90`, cadenza `×0,95` — il profilo più lento e resistente del cast, coerente con "difesa": il guscio assorbe, non insegue.
+
 ## Marghe
 
 Ruolo: Indebolimento e distrazione dei nemici.  
 Passiva — Sorriso Contagioso: I nemici vicini subiscono più danno da ogni fonte, arma e abilità comprese (i Boss non ne risentono), e sono marcati da una tinta magenta riconoscibile.  
 Attiva — Reggaeton time!: Genera un clone che balla reggaeton e diventa il bersaglio dei nemici vicini.
 Boss: Evil Marghe — Signature *Reggaeton time!*: genera un clone ballerino distinguibile dal Boss reale, che l'auto-targeting del Player può preferire mentre Marghe continua a usare i propri pattern.
+
+Scarti base (B47, PS-087): salute `×0,95`, velocità `×1,00`, cadenza `×1,10` — la cadenza sopra la norma rinforza "indebolimento e distrazione": più colpi distribuiti nel tempo per marcare bersagli.
 
 ## Direzione visuale del cast
 
