@@ -26,6 +26,8 @@ param(
     [int]$RuntimeTimeoutSeconds = 120,
     [ValidateRange(60, 3600)]
     [int]$GutTimeoutSeconds = 1800,
+    [ValidateRange(1, 32)]
+    [int]$ParallelJobs = 1,
     [ValidateSet('Compact', 'Detailed')]
     [string]$OutputMode = 'Compact',
     [switch]$NoCache,
@@ -689,9 +691,11 @@ function Add-GutStepsFromScripts {
     return @($added)
 }
 
-# Un solo processo Godot esegue tutti i file selezionati per il batch: la
-# selettivita' per profilo (Focused/Relevant/Full/Release) sceglie quali
-# path passare, non quanti processi lanciare.
+# Un solo processo Godot esegue tutti i file selezionati per il batch quando
+# -ParallelJobs e' 1 (default, comportamento invariato). Con -ParallelJobs > 1
+# i file del batch sono divisi in altrettanti processi Godot concorrenti
+# (Start-Job): ogni test paga comunque l'avvio dell'engine, ma paga solo il
+# proprio, non quello di tutti gli altri file in coda dietro di lui.
 function Invoke-GutBatch {
     param(
         [Parameter(Mandatory)]
@@ -711,7 +715,10 @@ function Invoke-GutBatch {
         [string]$RunnerHash,
 
         [Parameter(Mandatory)]
-        [string]$GodotVersion
+        [string]$GodotVersion,
+
+        [ValidateRange(1, 32)]
+        [int]$ParallelJobs = 1
     )
 
     if ($TestPaths.Count -eq 0) {
@@ -744,6 +751,14 @@ function Invoke-GutBatch {
 
     $junitPath = Join-Path $logRoot ($safeName + '.junit.xml')
     $resPaths = @($relativePaths | ForEach-Object { "res://$_" })
+
+    if ($ParallelJobs -gt 1 -and $resolvedPaths.Count -gt 1) {
+        return Invoke-GutBatchParallel -Category $Category -ResPaths $resPaths `
+            -GodotPath $GodotPath -SafeName $safeName -LogRoot $logRoot `
+            -LogPath $logPath -CacheKey $cacheKey -InputHash $inputHash `
+            -ShardCount ([Math]::Min($ParallelJobs, $resolvedPaths.Count))
+    }
+
     # Silenzio e blocco si somigliano: una riga al minuto dice che il batch e'
     # vivo e a che punto e'. Write-Host, non Write-Output, per non inquinare lo
     # stdout letto da -AsJson (PS-023).
@@ -861,6 +876,249 @@ function Invoke-GutBatch {
     }
     Save-GutCachedBatch -Key $cacheKey -InputHash $inputHash -Scripts $scripts -Status $overallStatus
     return $addedSteps
+}
+
+# Ogni shard e' un Invoke-CapturedProcess indipendente in un job PowerShell
+# separato (niente thread: PowerShell 5.1 non ha ForEach-Object -Parallel).
+# Il job non condivide stato con lo script padre, quindi il padre rifa' qui,
+# per shard, esattamente cio' che Invoke-GutBatch fa per l'intero batch
+# sequenziale: parsing JUnit, Add-GutStepsFromScripts (che gia' popola $steps
+# e $script:halted da solo), Get-GutBatchFailureReasons. Il risultato finale
+# -- $steps popolato, cache scritta una sola volta con TUTTI gli script -- e'
+# indistinguibile da quello del percorso sequenziale, solo piu' veloce.
+function Invoke-GutBatchParallel {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Category,
+
+        [Parameter(Mandatory)]
+        [string[]]$ResPaths,
+
+        [Parameter(Mandatory)]
+        [string]$GodotPath,
+
+        [Parameter(Mandatory)]
+        [string]$SafeName,
+
+        [Parameter(Mandatory)]
+        [string]$LogRoot,
+
+        [Parameter(Mandatory)]
+        [string]$LogPath,
+
+        [Parameter(Mandatory)]
+        [string]$CacheKey,
+
+        [Parameter(Mandatory)]
+        [string]$InputHash,
+
+        [Parameter(Mandatory)]
+        [int]$ShardCount
+    )
+
+    # New-Object 'object[]', non @(for ... { List[string]::new() }): un
+    # costrutto new() come unica istruzione nel corpo di un for non viene
+    # catturato in output da @(), l'array risulterebbe vuoto (gotcha PS 5.1).
+    $shardBuckets = New-Object 'object[]' $ShardCount
+    for ($i = 0; $i -lt $ShardCount; $i++) {
+        $shardBuckets[$i] = [Collections.Generic.List[string]]::new()
+    }
+    for ($i = 0; $i -lt $ResPaths.Count; $i++) {
+        $shardBuckets[$i % $ShardCount].Add($ResPaths[$i])
+    }
+
+    # APPDATA isolato per shard isola user:// per processo: senza, N istanze
+    # Godot concorrenti condividerebbero la stessa cartella (flag di verifica
+    # B22, impostazioni audio/touch/accessibilita' che game_audio.gd e affini
+    # leggono da user:// all'avvio di ogni run). Godot 4.7 non ha un flag
+    # --user-data-dir: risolve user:// da APPDATA, verificato con una sonda.
+    $userDataRoot = Join-Path $LogRoot ($SafeName + '-userdata')
+    $specs = [Collections.Generic.List[hashtable]]::new()
+    $shardMeta = [Collections.Generic.List[object]]::new()
+    for ($s = 0; $s -lt $ShardCount; $s++) {
+        $shardPaths = @($shardBuckets[$s])
+        if ($shardPaths.Count -eq 0) {
+            continue
+        }
+        $shardLabel = "$SafeName-shard$s"
+        $shardJunit = Join-Path $LogRoot ($SafeName + "-shard$s.junit.xml")
+        $shardLog = Join-Path $LogRoot ($SafeName + "-shard$s.log")
+        $shardUserData = Join-Path $userDataRoot "shard$s"
+        New-Item -ItemType Directory -Force -Path $shardUserData | Out-Null
+
+        $specs.Add(@{
+            Label = $shardLabel
+            Arguments = @(
+                '--headless',
+                '--path', $repoRoot,
+                '--resolution', '1280x720',
+                '-s', 'addons/gut/gut_cmdln.gd',
+                ('-gtest=' + ($shardPaths -join ',')),
+                '-gexit',
+                ('-gjunit_xml_file=' + $shardJunit)
+            )
+            StdoutPath = Join-Path $LogRoot ($shardLabel + '.out.tmp')
+            StderrPath = Join-Path $LogRoot ($shardLabel + '.err.tmp')
+            Environment = @{ APPDATA = $shardUserData }
+        })
+        $shardMeta.Add([pscustomobject]@{
+            Label = $shardLabel
+            JunitPath = $shardJunit
+            LogPath = $shardLog
+        })
+    }
+
+    # Il battito ogni minuto rispecchia quello del percorso sequenziale
+    # (PS-023): qui la granularita' e' per shard, non per singolo script.
+    $shardProgress = {
+        param([TimeSpan]$Elapsed, [int]$Alive, [int]$Total)
+
+        Write-Host (
+            '... gut-{0} vivo da {1:hh\:mm\:ss}: {2}/{3} shard ancora in corso' -f
+                $Category, $Elapsed, $Alive, $Total
+        )
+    }.GetNewClosure()
+
+    $groupResults = @(Invoke-CapturedProcessGroup -Specs $specs.ToArray() -FilePath $GodotPath `
+        -WorkingDirectory $repoRoot -TimeoutSeconds $GutTimeoutSeconds `
+        -ProgressIntervalSeconds 60 -ProgressAction $shardProgress)
+    $resultByLabel = @{}
+    foreach ($groupResult in $groupResults) {
+        $resultByLabel[$groupResult.Label] = $groupResult
+    }
+    foreach ($meta in $shardMeta) {
+        $shardOutput = if ($resultByLabel.ContainsKey($meta.Label)) {
+            $resultByLabel[$meta.Label].Output
+        }
+        else { '' }
+        [IO.File]::WriteAllText($meta.LogPath, $shardOutput, [Text.UTF8Encoding]::new($false))
+    }
+
+    $allScripts = [Collections.Generic.List[object]]::new()
+    $allAdded = [Collections.Generic.List[object]]::new()
+    $allComplete = $true
+    $logParts = [Collections.Generic.List[string]]::new()
+
+    foreach ($meta in $shardMeta) {
+        $shardResult = if ($resultByLabel.ContainsKey($meta.Label)) {
+            $resultByLabel[$meta.Label]
+        }
+        else { $null }
+
+        if ($null -eq $shardResult) {
+            $allComplete = $false
+            $step = [pscustomobject]@{
+                name = "$Category-gut-batch-$($meta.Label)"
+                category = $Category
+                status = 'FAIL'
+                exit_code = -1
+                timed_out = $false
+                duration_ms = 0
+                markers = @()
+                error_markers = @()
+                note = "Lo shard $($meta.Label) non ha restituito alcun risultato."
+                log = $null
+            }
+            $steps.Add($step)
+            $allAdded.Add($step)
+            if (-not $KeepGoing) {
+                $script:halted = $true
+            }
+            continue
+        }
+
+        $logParts.Add("=== $($meta.Label) ===`n$($shardResult.Output)")
+        $shardErrorMarkers = @(
+            [regex]::Matches($shardResult.Output, $failurePattern) |
+                ForEach-Object { $_.Value.ToUpperInvariant() } |
+                Sort-Object -Unique
+        )
+        $shardScripts = Get-GutJUnitResults -XmlPath $meta.JunitPath
+
+        if ($null -eq $shardScripts) {
+            $allComplete = $false
+            $step = [pscustomobject]@{
+                name = "$Category-gut-batch-$($meta.Label)"
+                category = $Category
+                status = 'FAIL'
+                exit_code = $shardResult.ExitCode
+                timed_out = $shardResult.TimedOut
+                duration_ms = $shardResult.DurationMs
+                markers = @()
+                error_markers = @($shardErrorMarkers)
+                note = if ($shardResult.TimedOut) {
+                    "TIMEOUT dopo $GutTimeoutSeconds s prima che GUT scrivesse il report " +
+                    "(shard $($meta.Label)): processo terminato, log parziale conservato."
+                }
+                else {
+                    "Report JUnit GUT assente o illeggibile (shard $($meta.Label))."
+                }
+                log = $meta.LogPath
+            }
+            $steps.Add($step)
+            $allAdded.Add($step)
+            if (-not $KeepGoing) {
+                $script:halted = $true
+            }
+            continue
+        }
+
+        $shardScripts = @($shardScripts)
+        $allScripts.AddRange($shardScripts)
+
+        $shardAdded = @(Add-GutStepsFromScripts -Scripts $shardScripts -Category $Category `
+            -LogPath $meta.LogPath -DurationMs $shardResult.DurationMs `
+            -ExitCode $shardResult.ExitCode -TimedOut $shardResult.TimedOut)
+        foreach ($addedStep in $shardAdded) {
+            $allAdded.Add($addedStep)
+        }
+
+        $shardReportedFailures = @($shardScripts | Where-Object { $_.status -eq 'FAIL' }).Count
+        $shardBatchReasons = @(Get-GutBatchFailureReasons `
+            -ExitCode $shardResult.ExitCode `
+            -TimedOut ([bool]$shardResult.TimedOut) `
+            -ErrorMarkers @($shardErrorMarkers) `
+            -ReportedFailures $shardReportedFailures `
+            -TimeoutSeconds $GutTimeoutSeconds)
+        if ($shardBatchReasons.Count -gt 0) {
+            $batchStep = [pscustomobject]@{
+                name = "$Category-gut-batch-$($meta.Label)"
+                category = $Category
+                status = 'FAIL'
+                exit_code = $shardResult.ExitCode
+                timed_out = $shardResult.TimedOut
+                duration_ms = $shardResult.DurationMs
+                markers = @()
+                error_markers = @($shardErrorMarkers)
+                note = ($shardBatchReasons -join ' ')
+                log = $meta.LogPath
+            }
+            $steps.Add($batchStep)
+            $allAdded.Add($batchStep)
+            if (-not $KeepGoing) {
+                $script:halted = $true
+            }
+        }
+    }
+
+    [IO.File]::WriteAllText($LogPath, ($logParts -join "`n`n"), [Text.UTF8Encoding]::new($false))
+
+    # Una copertura incompleta (shard morto o scaduto) non va cachata: un
+    # cache hit successivo rimaterializzerebbe silenziosamente un piano che
+    # non ha mai visto tutti i file passare (stesso principio del ritorno
+    # anticipato nel percorso sequenziale quando rawScripts e' null).
+    if (-not $allComplete) {
+        return @($allAdded)
+    }
+
+    $overallStatus = if (@($allAdded | Where-Object { $_.status -eq 'FAIL' }).Count -gt 0) {
+        'FAIL'
+    }
+    else {
+        'PASS'
+    }
+    Save-GutCachedBatch -Key $CacheKey -InputHash $InputHash -Scripts @($allScripts) -Status $overallStatus
+    return @($allAdded)
 }
 
 function Get-CategorySummary {
@@ -1053,6 +1311,7 @@ $plan = [ordered]@{
     export_android = [bool]$ExportAndroid
     inspect_android = [bool]$InspectAndroid
     cache_enabled = $cacheEnabled
+    parallel_jobs = $ParallelJobs
 }
 
 Write-Host (
@@ -1105,14 +1364,16 @@ try {
     if (-not $halted) {
         Write-StepStart "focused: $($FocusedSmoke.Count) test GUT"
         Invoke-GutBatch -Category 'focused' -TestPaths $FocusedSmoke -GodotPath $godot `
-            -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion | Out-Null
+            -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion `
+            -ParallelJobs $ParallelJobs | Out-Null
         Write-Host "<== focused: $(Get-CategorySummary -Category 'focused')"
     }
 
     if (-not $halted) {
         Write-StepStart "regression: $($RegressionSmoke.Count) test GUT"
         Invoke-GutBatch -Category 'regression' -TestPaths $RegressionSmoke -GodotPath $godot `
-            -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion | Out-Null
+            -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion `
+            -ParallelJobs $ParallelJobs | Out-Null
         Write-Host "<== regression: $(Get-CategorySummary -Category 'regression')"
     }
 
