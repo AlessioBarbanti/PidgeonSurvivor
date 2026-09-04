@@ -1308,9 +1308,9 @@ func _validate_current_contract() -> bool:
 		failures.append("Ogni run B18G deve iniziare con l'abilita al rank 1.")
 	if _upgrade_service.get_experience_system() != _experience_system:
 		failures.append("UpgradeService non collegato a ExperienceSystem.")
-	if _upgrade_registry.get_speciality_definitions().size() != 4:
-		failures.append("UpgradeRegistry deve contenere le quattro Specialità di Barb PS-012.")
-	if _upgrade_service.get_locked_speciality_definitions().size() != 4:
+	if _upgrade_registry.get_speciality_definitions().size() != 8:
+		failures.append("UpgradeRegistry deve contenere le otto Specialità di Barb PS-077.")
+	if _upgrade_service.get_locked_speciality_definitions().size() != 8:
 		failures.append("Ogni run deve iniziare con tutte le Specialità di Barb bloccate.")
 	if _upgrade_service.is_barb_reward_active():
 		failures.append("La run non deve iniziare con una ricompensa Barb già attiva.")

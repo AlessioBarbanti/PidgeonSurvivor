@@ -17,4 +17,5 @@ effect_parameters = {
 }
 weight = 1.0
 max_rank = 1
+is_speciality = true
 tags = Array[StringName]([&"signature", &"weapon", &"projectile", &"aim_spread"])

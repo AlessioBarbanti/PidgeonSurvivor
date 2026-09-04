@@ -1,10 +1,10 @@
 extends GutGameplayTest
 
-const ANXIETY := preload("res://data/upgrades/anxiety_signature.tres")
+const ANXIETY := preload("res://data/upgrades/specialities/anxiety_signature.tres")
 const GOSSIP := preload("res://data/upgrades/specialities/gossip_projectiles.tres")
-const CHRONIC_DELAY := preload("res://data/upgrades/chronic_delay.tres")
-const BEER := preload("res://data/upgrades/beer_signature.tres")
-const DAMAGE_SHOCKWAVE := preload("res://data/upgrades/damage_shockwave.tres")
+const CHRONIC_DELAY := preload("res://data/upgrades/specialities/chronic_delay.tres")
+const BEER := preload("res://data/upgrades/specialities/beer_signature.tres")
+const DAMAGE_SHOCKWAVE := preload("res://data/upgrades/specialities/damage_shockwave.tres")
 const SWIFT_STEPS := preload("res://data/upgrades/swift_steps.tres")
 const RAPID_FIRE := preload("res://data/upgrades/rapid_fire.tres")
 const WIDE_MAGNET := preload("res://data/upgrades/wide_magnet.tres")
@@ -98,23 +98,26 @@ func test_signature_composition() -> void:
 	assert_true(player.take_contact_damage(base_health_max * 0.5), "La fixture deve portare il Player al 50%.")
 	health.clear_invulnerability()
 
-	# PS-012: Gossip è una Specialità di Barb, bloccata all'inizio della run.
-	# Va sbloccata a parte, non compare nella pesca normale come le altre.
-	service.queue_barb_reward()
-	assert_true(
-		service.select_barb_speciality(&"gossip_projectiles"),
-		"Gossip deve essere sbloccabile come Specialità di Barb prima della composizione B13."
-	)
-
+	# PS-077: tutte e cinque le signature sono Specialità di Barb, bloccate
+	# all'inizio della run. Nessuna passa più dal level-up normale: si
+	# compongono solo accumulando ricompense Boss.
 	var signature_ids: Array[StringName] = [
 		&"anxiety_signature", &"gossip_projectiles", &"chronic_delay", &"beer_signature", &"damage_shockwave",
 	]
-	var normal_pool_signature_ids: Array[StringName] = [
-		&"anxiety_signature", &"chronic_delay", &"beer_signature", &"damage_shockwave",
-	]
+	for signature_id in signature_ids:
+		assert_true(
+			catalog.resolve_definition(signature_id).is_speciality,
+			"%s deve dichiararsi Specialità di Barb." % signature_id
+		)
+	for draw_index in 8:
+		for offered_definition in service.generate_offer(draw_index + 1):
+			assert_false(
+				offered_definition.is_speciality,
+				"Il level-up normale non deve offrire signature ancora bloccate."
+			)
 	assert_true(
-		_select_all_signatures(experience, service, normal_pool_signature_ids),
-		"Le quattro signature restanti devono essere acquisibili in offerte uniche."
+		_unlock_every_speciality(service, signature_ids.size()),
+		"Ogni ricompensa Boss deve sbloccare una signature, senza mai ripetere la stessa carta."
 	)
 	assert_eq(_applied_ids.size(), 5, "Ogni signature deve applicarsi una sola volta.")
 	for signature_id in signature_ids:
@@ -277,33 +280,21 @@ func test_signature_composition() -> void:
 	controller.prepare_restart()
 
 
-func _select_all_signatures(
-	experience: ExperienceSystem, service: UpgradeService, signature_ids: Array[StringName]
-) -> bool:
-	var remaining := signature_ids.duplicate()
-	var guard := 0
-	while not remaining.is_empty() and guard < 30:
-		guard += 1
-		if not experience.add_experience(experience.experience_required):
+## Ogni ricompensa Boss sblocca una sola Specialità: ne servono tante quante
+## sono le signature da comporre. L'offerta pesca senza rimpiazzo fra quelle
+## ancora bloccate, quindi la prima carta offerta basta a esaurirle tutte.
+func _unlock_every_speciality(service: UpgradeService, expected_count: int) -> bool:
+	var unlocked_ids: Dictionary = {}
+	for _reward_index in expected_count:
+		service.queue_barb_reward()
+		var offered_ids := service.get_current_barb_offer_ids()
+		if offered_ids.is_empty():
 			return false
-		var selected_id := StringName()
-		for offered_id in service.get_current_offer_ids():
-			if offered_id in remaining:
-				selected_id = offered_id
-				break
-		if String(selected_id).is_empty():
-			for offered_id in service.get_current_offer_ids():
-				if offered_id in [WIDE_MAGNET.id, MEAT_FORK_DAMAGE.id]:
-					selected_id = offered_id
-					break
-		if String(selected_id).is_empty():
-			# PS-012: Gossip, già sbloccata, può occupare uno slot "rumore" non
-			# riconosciuto (non va toccata: deve restare al rank 1). Si riprova.
-			continue
-		if not service.select_upgrade(selected_id):
+		var chosen_id := offered_ids[0]
+		if unlocked_ids.has(chosen_id) or not service.select_barb_speciality(chosen_id):
 			return false
-		remaining.erase(selected_id)
-	return remaining.is_empty()
+		unlocked_ids[chosen_id] = true
+	return service.get_locked_speciality_definitions().is_empty()
 
 
 func _spawn_enemy(spawner: EnemySpawner, position: Vector2) -> BaseEnemy:

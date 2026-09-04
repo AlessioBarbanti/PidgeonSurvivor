@@ -160,6 +160,7 @@
         "tests/unit/test_b18j_summer_grill.gd",
         "tests/unit/test_b41_weapon_shapes.gd",
         "tests/unit/test_ps012_barb_specialities.gd",
+        "tests/unit/test_ps077_barb_speciality_pool_expansion.gd",
         "tests/unit/test_ps047_upgrade_card_hierarchy.gd"
       ]
     },
@@ -175,6 +176,7 @@
         "tests/unit/test_b39_health_pickup.gd",
         "tests/unit/test_b41_weapon_shapes.gd",
         "tests/unit/test_ps012_barb_specialities.gd",
+        "tests/unit/test_ps077_barb_speciality_pool_expansion.gd",
         "tests/unit/test_ps047_upgrade_card_hierarchy.gd"
       ]
     },
@@ -236,6 +238,7 @@
         "tests/unit/test_b54_tutorial_flow.gd",
         "tests/unit/test_ps005_boss_warning.gd",
         "tests/unit/test_ps012_barb_specialities.gd",
+        "tests/unit/test_ps077_barb_speciality_pool_expansion.gd",
         "tests/unit/test_ps008_wave_events.gd",
         "tests/unit/test_ps044_ui_capture_states.gd",
         "tests/unit/test_ps045_arena_visual_hierarchy.gd",

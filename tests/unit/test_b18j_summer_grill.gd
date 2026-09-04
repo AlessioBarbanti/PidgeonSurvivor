@@ -1,7 +1,7 @@
 extends GutGameplayTest
 
 const SUMMER_GRILL := preload("res://data/upgrades/summer_grill.tres")
-const ANXIETY := preload("res://data/upgrades/anxiety_signature.tres")
+const ANXIETY := preload("res://data/upgrades/specialities/anxiety_signature.tres")
 const SWIFT_STEPS := preload("res://data/upgrades/swift_steps.tres")
 const RAPID_FIRE := preload("res://data/upgrades/rapid_fire.tres")
 const WIDE_MAGNET := preload("res://data/upgrades/wide_magnet.tres")
@@ -141,8 +141,12 @@ func test_summer_grill_contract() -> void:
 	assert_true(
 		player.take_contact_damage(base_health_max * 0.5), "La seconda run deve poter testare la composizione."
 	)
+	# PS-077: L'Ansia e' una Specialità di Barb, bloccata a inizio run. Va
+	# sbloccata dalla ricompensa Boss, non pescata dal level-up normale.
+	service.queue_barb_reward()
 	assert_true(
-		_grant_and_select(experience, service, ANXIETY.id), "L'Ansia deve essere selezionabile prima di Grigliata."
+		service.select_barb_speciality(ANXIETY.id),
+		"L'Ansia deve essere sbloccabile come Specialità di Barb prima di Grigliata."
 	)
 	assert_almost_eq(
 		health.health_max, base_health_max * 0.8, FLOAT_TOLERANCE, "L'Ansia deve applicare il proprio massimo."

@@ -3,19 +3,19 @@ id: PS-077
 titolo: Espandi il pool delle Specialità di Barb con le carte signature rimaste
 tipo: feat
 area: gameplay
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: [PS-012]
 origine: B13
 creato: 2026-09-02
-aggiornato: 2026-09-02
+aggiornato: 2026-09-04
 ---
 
 # PS-077 — Espandi il pool delle Specialità di Barb con le carte signature rimaste
 
 ## Contesto
 
-[PS-012](./4_to_test/PS-012-barb-specialities.md) ha introdotto il sistema
+[PS-012](./PS-012-barb-specialities.md) ha introdotto il sistema
 Specialità di Barb migrando quattro carte "strutturali" dal pool ordinario:
 Gossip, Colpo Perforante, Raffica Doppia, Esplosione Finale
 (`data/upgrades/specialities/`). Il criterio dichiarato da PS-012 era
@@ -51,27 +51,27 @@ seguono le stesse regole già in vigore.
 
 ## Criteri di accettazione
 
-- [ ] `anxiety_signature`, `beer_signature`, `chronic_delay` e
+- [x] `anxiety_signature`, `beer_signature`, `chronic_delay` e
       `damage_shockwave` ottengono `is_speciality = true`, seguendo
       esattamente lo schema già usato dalle quattro Specialità esistenti.
-- [ ] I quattro file vengono spostati sotto `data/upgrades/specialities/`,
+- [x] I quattro file vengono spostati sotto `data/upgrades/specialities/`,
       coerentemente con l'organizzazione già stabilita da PS-012.
-- [ ] Le quattro nuove Specialità non compaiono nel pool normale di
+- [x] Le quattro nuove Specialità non compaiono nel pool normale di
       level-up finché non sono sbloccate da Barb.
-- [ ] Alla sconfitta di un Boss, Barb offre fino a tre Specialità pescate
+- [x] Alla sconfitta di un Boss, Barb offre fino a tre Specialità pescate
       fra le otto totali (le quattro originali più le quattro nuove), senza
       duplicati.
-- [ ] Essendo `max_rank = 1`, una volta sbloccata ciascuna nuova Specialità
+- [x] Essendo `max_rank = 1`, una volta sbloccata ciascuna nuova Specialità
       non viene più riproposta né da Barb né dal normale level-up (già al
       rango massimo), tramite lo stesso `is_eligible()` invariato.
-- [ ] Restart e cambio personaggio azzerano lo sblocco delle nuove
+- [x] Restart e cambio personaggio azzerano lo sblocco delle nuove
       Specialità esattamente come per le quattro esistenti.
-- [ ] Stesso seed e stesse scelte producono la stessa sequenza di offerte
+- [x] Stesso seed e stesse scelte producono la stessa sequenza di offerte
       Barb su tutte e otto le Specialità.
-- [ ] Nessuna modifica a `effect_id`, `effect_parameters`, `weight` o
+- [x] Nessuna modifica a `effect_id`, `effect_parameters`, `weight` o
       `max_rank` delle quattro carte: restano bit-per-bit identiche nei loro
       effetti a quanto implementato in B13.
-- [ ] Registry e preload sono aggiornati ai nuovi percorsi; nessun
+- [x] Registry e preload sono aggiornati ai nuovi percorsi; nessun
       riferimento residuo alle vecchie path.
 
 ## Ambito
@@ -92,7 +92,7 @@ Non toccare:
   Doppia, Esplosione Finale);
 - `BarbRewardOverlay` e il suo trattamento visivo (PS-036) — nome,
   descrizione e icona di queste quattro carte restano quelle attuali: la
-  tematizzazione è demandata a [PS-078](./PS-078-tematizza-catalogo-specialita-barb.md);
+  tematizzazione è demandata a [PS-078](../2_to_do/PS-078-tematizza-catalogo-specialita-barb.md);
 - il pool statistico ordinario e le altre carte taggate `stat`.
 
 ## Verifica
@@ -136,11 +136,50 @@ Non toccare:
   refactor meccanico (questa card) con il restyle di nomi/icone, sullo
   stesso schema già usato per PS-012 → PS-036.
 
+- **2026-09-04 — Il pool normale va misurato su molte pesche, non su una.**
+  Una singola `generate_offer()` non prova l'esclusione: il pool e' pesato e
+  potrebbe non mostrare una Specialità comunque. Lo smoke ripete ventiquattro
+  pesche sulla scena composta e altrettante dopo lo sblocco.
+- **2026-09-04 — I valori B13 sono congelati a mano nello smoke.** Rileggere
+  il `.tres` che la card si impegna a non toccare non proverebbe niente:
+  `effect_id`, parametri, peso, `max_rank` e ripetibilità sono scritti come
+  costanti nel test e confrontati contro il dato.
+- **2026-09-04 — Tre smoke esistenti passavano dalla pesca normale.**
+  `test_b13_signature_upgrades.gd`, `test_b18j_summer_grill.gd` e
+  `test_b26_damage_upgrade.gd` acquisivano queste carte dal level-up: ora le
+  sbloccano da ricompense Boss, che e' il percorso reale dopo la migrazione.
+  Nessuna asserzione di effetto e' stata rilassata.
+- **2026-09-04 — `movement_slice.gd` pinnava il conteggio a quattro.** Il
+  contratto di scena verifica ora otto Specialità registrate e otto bloccate a
+  inizio run; e' l'unica riga di runtime cambiata dalla card.
+
 ## Documenti sincronizzati
 
-- [ ] `docs/prd.md` §3.3: elenco Specialità aggiornato da quattro a otto.
+- [x] `docs/prd.md` §3.3: elenco Specialità aggiornato da quattro a otto.
 
 ## Note
 
 Le quattro carte restano quelle implementate in B13: nessun nuovo effetto,
 nessun nuovo parametro, nessuna nuova regola di rank.
+
+Evidenze automatiche (2026-09-04):
+
+```powershell
+.	oolsun-milestone-checks.ps1 -Milestone PS-077 -Profile Focused `
+  -FocusedSmoke tests/unit/test_ps077_barb_speciality_pool_expansion.gd -RefreshEditor
+.	oolsun-milestone-checks.ps1 -Milestone PS-077 -Profile Relevant `
+  -FocusedSmoke tests/unit/test_ps077_barb_speciality_pool_expansion.gd
+.	oolsun-milestone-checks.ps1 -Milestone PS-077 -Profile Full
+```
+
+- Focused `PASS` — 5 test, 325 assert, marker
+  `BARB_SPECIALITY_POOL_EXPANSION_SMOKE_OK` presente in `gut-focused.log`.
+- Relevant `PASS` — focused 1/1, regressione 28/28, 78 test, 2307 assert.
+- Full `PASS` — focused 5/5, regressione 95/95, toolchain 1/1, 288 test,
+  22385 assert.
+- Nessun `SCRIPT ERROR` né `FATAL EXCEPTION` nei log dei tre profili.
+
+Gate ancora aperti: runtime Windows interattivo, validazione statica dell'APK,
+runtime fisico su Pixel 9 e controllo percettivo sul ritmo delle prime run.
+Sono tre risultati distinti e nessuno è stato esercitato: la verifica sopra è
+soltanto automatica.
