@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-064
 titolo: I nodi top_level dei modal ignorano l'offset del safe-rect del display
 tipo: fix
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: [PS-059]
 origine:
 creato: 2026-09-01
-aggiornato: 2026-09-01
+aggiornato: 2026-09-04
 ---
 
 # PS-064 — I nodi `top_level` dei modal ignorano l'offset del safe-rect del display
@@ -114,17 +114,15 @@ test).
       safe area" (era il file che copriva `UpgradeOverlay`, cioè il modal di
       livello segnalato dal proprietario), senza indebolire la soglia
       (`LAYOUT_TOLERANCE`) né rimuovere il controllo.
-- [ ] `test_ps047_upgrade_card_hierarchy.gd` (solo i casi `BARB_SPECIALITY`/
-      `BARB_BONUS`) e `test_ps036_barb_reward_visual_identity.gd` restano
-      rossi: non per l'offset (corretto), ma per un difetto distinto e
-      indipendente — il contenuto di `BarbRewardOverlay` (header con
-      ritratto di Barb + carte) non entra più nel rettangolo sicuro corretto
-      una volta che questo non è più gonfiato dal bug di offset. Aperta
-      **PS-065** per questo, invece di allargare questa card o toccare un
-      asset visivo (il ritratto di Barb) senza conferma del proprietario.
-- [ ] Nessuna regressione sul comportamento già confermato su device reale
-      (Pixel 9): da riconfermare dal proprietario con la prossima build,
-      insieme alla card che ha motivato questa (vedi Note).
+- [x] `test_ps047_upgrade_card_hierarchy.gd` (solo i casi `BARB_SPECIALITY`/
+      `BARB_BONUS`) e `test_ps036_barb_reward_visual_identity.gd`: restavano
+      rossi per un difetto distinto e indipendente (il contenuto di
+      `BarbRewardOverlay` non entrava nel rettangolo sicuro), tracciato in
+      **PS-065**. PS-067 ha corretto lo stesso meccanismo alla radice e
+      PS-065 conferma entrambi i test verdi su tutti i profili (vedi PS-065,
+      Decisioni 2026-09-02).
+- [x] Nessuna regressione sul comportamento già confermato su device reale
+      (Pixel 9): confermato dal proprietario con la build corrente.
 
 ## Ambito
 
@@ -170,15 +168,14 @@ Non toccato:
 
 ## Gate manuali
 
-- [ ] Runtime Windows: non eseguito in questa sessione.
-- [ ] Validazione statica APK: da confermare con un run CI (PS-060) su
-      questo commit.
-- [ ] Runtime fisico Pixel 9: da riconfermare dal proprietario — la
-      segnalazione originale (carte non centrate, sopra la safe area) è
-      arrivata da una build su questo device.
-- [ ] Controllo percettivo richiesto: sì — il proprietario ha segnalato il
-      difetto originale da uno screenshot reale; la correzione va
-      riconfermata allo stesso modo.
+- [x] Runtime Windows: confermato dal proprietario.
+- [x] Validazione statica APK: confermata dal proprietario.
+- [x] Runtime fisico Pixel 9: confermato dal proprietario — la segnalazione
+      originale (carte non centrate, sopra la safe area) era arrivata da una
+      build su questo device.
+- [x] Controllo percettivo richiesto: sì — il proprietario ha riconfermato la
+      correzione allo stesso modo in cui aveva segnalato il difetto
+      originale.
 
 ## Decisioni
 
@@ -211,9 +208,8 @@ Non toccato:
 - [x] [docs/ui-ux-flow.md](../../ui-ux-flow.md) — aggiunta una voce su come
       `_apply_layout()` inoltra la safe area a `UpgradeOverlay`/
       `BarbRewardOverlay` via `apply_safe_area()`, e sul centraggio sul
-      viewport invece che sulla safe area. Il contratto di codice è
-      documentato indipendentemente dal gate percettivo su device, ancora
-      aperto (vedi Gate manuali).
+      viewport invece che sulla safe area. Il gate percettivo su device è
+      stato confermato dal proprietario (vedi Gate manuali).
 
 ## Note
 

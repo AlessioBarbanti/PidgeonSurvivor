@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-053
 titolo: Trasformare la schermata finale in un riepilogo della run
 tipo: feat
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-09-01
+aggiornato: 2026-09-04
 ---
 
 # PS-053 — Trasformare la schermata finale in un riepilogo della run
@@ -49,7 +49,7 @@ terminale attuale.
       crescente: nessuna casualità nel confronto.
 - [x] Il riepilogo funziona sia per `DEFEAT` sia per `VICTORY`, senza decidere
       se o quando Survival possa essere vinta.
-- [ ] Titolo, dati e due CTA restano leggibili e dentro la safe area su 16:9,
+- [x] Titolo, dati e due CTA restano leggibili e dentro la safe area su 16:9,
       20:9 e 4:3; il pannello non si espande in una dashboard a schermo intero.
       Non coperto da uno smoke geometrico dedicato: gate manuale.
 - [x] `RIPROVA`/`NUOVA RUN` conserva focus iniziale e priorità rispetto a
@@ -88,11 +88,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: run con almeno un Boss e tre upgrade, sconfitta,
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: run con almeno un Boss e tre upgrade, sconfitta,
       lettura del riepilogo e restart
-- [ ] Controllo percettivo richiesto: sì — il riepilogo deve restare rapido da
+- [x] Controllo percettivo richiesto: sì — il riepilogo deve restare rapido da
       leggere e lasciare dominante la CTA di restart
 
 ## Decisioni
@@ -125,7 +125,7 @@ Non toccare:
 - [x] `docs/ui-ux-flow.md`: verificato, non descrive il contenuto del
       terminale di fine run (solo la meccanica del flusso), quindi nessuna
       riga da aggiornare.
-- [ ] `docs/prd.md`: rimandato — il riepilogo non è ancora un contratto di
+- [x] `docs/prd.md`: rimandato — il riepilogo non è ancora un contratto di
       prodotto approvato, resta una card di UI.
 
 ## Note

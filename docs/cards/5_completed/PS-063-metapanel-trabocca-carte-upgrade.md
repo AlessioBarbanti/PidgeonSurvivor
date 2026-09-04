@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-063
 titolo: Il MetaPanel delle carte upgrade esce dal bordo della carta
 tipo: fix
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: [PS-047]
 origine:
 creato: 2026-09-01
-aggiornato: 2026-09-01
+aggiornato: 2026-09-04
 ---
 
 # PS-063 — Il MetaPanel delle carte upgrade esce dal bordo della carta
@@ -103,7 +103,7 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows: non eseguito in questa sessione.
+- [x] Runtime Windows: confermato dal proprietario.
 - [x] Validazione statica APK: confermata via CI (workflow PS-060,
       `android-debug-release.yml`) sul commit `d3c72b0`. Il primo run
       (`33501795354`, tentativo 1) era fallito al passo "Export Android APK
@@ -118,12 +118,11 @@ Non toccare:
       https://github.com/AlessioBarbanti/PidgeonSurvivor/releases/tag/android-debug-latest
       (asset `pidgeon-survivor-debug.apk`, 105 MB, corpo release che cita
       `d3c72b0aa43adf2d08fe2e8f1ef65de9bd96f897`).
-- [ ] Runtime fisico Pixel 9: da riconfermare dal proprietario dopo la
-      nuova build (il fix precedente del velo, PS-059, era già confermato;
+- [x] Runtime fisico Pixel 9: confermato dal proprietario sulla build
+      pubblicata (il fix precedente del velo, PS-059, era già confermato;
       questa card cambia solo le carte).
-- [ ] Controllo percettivo richiesto: sì — il proprietario ha già visto e
-      confermato la direzione sugli screenshot generati in sessione; resta
-      da confermare sul device fisico con la build appena pubblicata.
+- [x] Controllo percettivo richiesto: sì — confermato dal proprietario sia
+      sugli screenshot sia sul device fisico con la build pubblicata.
 
 ## Decisioni
 
@@ -159,7 +158,7 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno: modifica di presentazione interna, nessun contratto
+- [x] Nessuno: modifica di presentazione interna, nessun contratto
       durevole in `docs/ui-ux-flow.md` cambia oltre a quanto già coperto da
       PS-047.
 

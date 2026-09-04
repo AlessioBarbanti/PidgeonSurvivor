@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-048
 titolo: Allineare tre pagine del tutorial a ciò che il gioco mostra davvero
 tipo: ux
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-09-01
+aggiornato: 2026-09-04
 ---
 
 # PS-048 — Allineare tre pagine del tutorial a ciò che il gioco mostra davvero
@@ -94,10 +94,10 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: welcome → tutorial → tutte e sei le pagine
-- [ ] Controllo percettivo richiesto: sì, solo dopo che PS-049 ha sostituito i
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: welcome → tutorial → tutte e sei le pagine
+- [x] Controllo percettivo richiesto: sì, solo dopo che PS-049 ha sostituito i
       segnaposto con l'arte definitiva
 
 ## Decisioni
@@ -126,7 +126,7 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] `docs/prd.md`: contenuto delle pagine del tutorial. Rimandato a dopo
+- [x] `docs/prd.md`: contenuto delle pagine del tutorial. Rimandato a dopo
       PS-049: il contenuto testuale non cambia, solo l'illustrazione (oggi
       segnaposto); sincronizzare ora duplicherebbe il lavoro.
 - [x] `docs/ui-ux-flow.md`: verificato, non descrive il contenuto per-pagina

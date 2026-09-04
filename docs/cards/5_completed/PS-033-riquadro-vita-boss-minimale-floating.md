@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-033
 titolo: Elimina l'HUD dedicata del Boss, la vita resta solo overhead
 tipo: ux
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-08-31
+aggiornato: 2026-09-04
 ---
 
 # PS-033 — Elimina l'HUD dedicata del Boss, la vita resta solo overhead
@@ -97,14 +97,14 @@ Non modificare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: raggiungi un Boss e osserva la barra
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: raggiungi un Boss e osserva la barra
       vita durante il combattimento)
-- [ ] Controllo percettivo richiesto: sì
-- [ ] La barra overhead del Boss resta leggibile durante il combattimento
+- [x] Controllo percettivo richiesto: sì
+- [x] La barra overhead del Boss resta leggibile durante il combattimento
       (VFX, proiettili, altri nemici).
-- [ ] Nessuna HUD residua compare all'apertura o alla chiusura dell'incontro.
+- [x] Nessuna HUD residua compare all'apertura o alla chiusura dell'incontro.
 
 ## Decisioni
 
@@ -145,7 +145,7 @@ Non modificare:
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno: dettaglio presentazionale locale a `BossUI`/`BaseEnemy`.
+- [x] Nessuno: dettaglio presentazionale locale a `BossUI`/`BaseEnemy`.
 
 ## Note
 

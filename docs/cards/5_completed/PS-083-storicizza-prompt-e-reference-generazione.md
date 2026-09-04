@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-083
 titolo: Storicizzare prompt e reference di generazione
 tipo: chore
 area: arte
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: bassa
 dipende_da: []
 origine: conversazione del proprietario 2026-08-28
 creato: 2026-09-02
-aggiornato: 2026-09-02
+aggiornato: 2026-09-04
 ---
 
 # PS-083 — Storicizzare prompt e reference di generazione
@@ -88,7 +88,7 @@ sul registro e sulla convenzione dei nomi.
 **2026-09-02 — Nota di percorso, non riapertura.** Il percorso citato in
 questa card (`assets/art/characters/references/`) è stato spostato sotto
 `docs/characters/references/` da
-[PS-084](../3_in_sprint/PS-084-direzione-visuale-per-personaggio-e-reference-cast.md),
+[PS-084](./PS-084-direzione-visuale-per-personaggio-e-reference-cast.md),
 senza alterare i byte delle foto né le decisioni qui registrate. Riferimento
 aggiornato: `docs/archive/generation-prompts-and-references.md` e
 `assets/art/characters/ASSET-MANIFEST.md`.

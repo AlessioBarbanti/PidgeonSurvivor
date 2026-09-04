@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-049
 titolo: Generare le tre illustrazioni definitive del tutorial
 tipo: art
 area: arte
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: [PS-048]
 origine:
 creato: 2026-08-31
-aggiornato: 2026-09-02
+aggiornato: 2026-09-04
 ---
 
 # PS-049 — Generare le tre illustrazioni definitive del tutorial
@@ -90,16 +90,14 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK — i master HD restano esclusi dai tre preset
+- [x] Runtime Windows
+- [x] Validazione statica APK — i master HD restano esclusi dai tre preset
       (verificato solo nel `exclude_filter` di `export_presets.cfg`, non su un
       APK esportato)
-- [ ] Runtime fisico Pixel 9: pagine 3, 4 e 6 alla scala reale
-- [ ] Controllo percettivo richiesto: sì — le immagini insegnano gli stessi
-      segnali che compaiono nella run. Fatta solo una prima lettura dei tre
-      derivati fuori contesto (non nel contenitore tutorial reale, non su
-      device): coerenti fra loro e con i criteri, ma il gate resta aperto
-      finché non vengono viste nel contenitore a scala reale.
+- [x] Runtime fisico Pixel 9: pagine 3, 4 e 6 alla scala reale
+- [x] Controllo percettivo richiesto: sì — le immagini insegnano gli stessi
+      segnali che compaiono nella run. Confermato dal proprietario nel
+      contenitore tutorial reale, a scala reale su device.
 
 ## Decisioni
 

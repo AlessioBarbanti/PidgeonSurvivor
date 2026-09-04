@@ -65,7 +65,7 @@ senza rimpiazzarlo riapre quel problema invece di chiudere questo.
   profilo dello sprite — a non funzionare. I criteri percettivi ancora aperti
   sopra restano intenzionalmente non spuntati: non passeranno mai con questa
   implementazione. La responsabilità di trovare una soluzione sostitutiva
-  passa a [PS-079](../2_to_do/PS-079-particellare-tell-stato-personaggi.md);
+  passa a [PS-079](../5_completed/PS-079-particellare-tell-stato-personaggi.md);
   questa card resta storica come primo tentativo (contorno invece di tinta
   piena) e come diagnosi valida del problema originale di B44, non come
   contratto ancora da chiudere con l'implementazione attuale.

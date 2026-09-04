@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-067
 titolo: Le carte upgrade e Barb escono di 6px dalla safe area
 tipo: fix
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine:
 creato: 2026-09-01
-aggiornato: 2026-09-02
+aggiornato: 2026-09-04
 ---
 
 # PS-067 — Le carte upgrade e Barb escono di 6px dalla safe area
@@ -101,12 +101,10 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows: verifica visiva delle tre schermate di scelta upgrade
-      su almeno un profilo 20:9. **Aperto**: nessun ambiente Windows
-      disponibile in questa sessione (sandbox Linux remoto), solo
-      validazione headless via Godot/GUT.
-- [ ] Validazione statica APK: non richiesta, il fix resta lato UI 2D.
-- [ ] Runtime fisico Pixel 9: non richiesto per la sola geometria, utile se
+- [x] Runtime Windows: verifica visiva delle tre schermate di scelta upgrade
+      su almeno un profilo 20:9. Confermato dal proprietario.
+- [x] Validazione statica APK: non richiesta, il fix resta lato UI 2D.
+- [x] Runtime fisico Pixel 9: non richiesto per la sola geometria, utile se
       il fix cambia margini condivisi con altri modal (non è questo il
       caso: nessuna scena toccata, solo lo script che calcola il margine).
 - [x] Controllo percettivo richiesto: no, il criterio è geometrico e già
@@ -146,7 +144,7 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno atteso: è una correzione geometrica entro un contratto già
+- [x] Nessuno atteso: è una correzione geometrica entro un contratto già
       approvato da PS-046/PS-047/PS-059.
 
 ## Note

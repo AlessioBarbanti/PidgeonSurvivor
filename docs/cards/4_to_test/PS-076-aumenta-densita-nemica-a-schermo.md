@@ -76,8 +76,8 @@ più bersagli, non più difficoltà.
       emergente del combattimento reale (armi, raggio, cooldown): resta il
       controllo percettivo del proprietario nei Gate manuali.
 - [x] Nessuna variazione ai pesi per archetipo, alla curva late-run
-      ([PS-007](./PS-007-impedire-run-AFK-lategame.md)), agli eventi
-      d'ondata ([PS-008](./PS-008-eventi-di-ondata.md)) o al sistema Boss,
+      ([PS-007](../5_completed/PS-007-impedire-run-AFK-lategame.md)), agli eventi
+      d'ondata ([PS-008](../5_completed/PS-008-eventi-di-ondata.md)) o al sistema Boss,
       oltre a quanto richiesto per riequilibrare HP/danno/XP del nemico
       base. Nessun archetipo (`data/enemies/*.tres`), boss o wave event e'
       stato toccato.

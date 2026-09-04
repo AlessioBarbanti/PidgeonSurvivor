@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-058
 titolo: Generare l'arte definitiva dei nuovi prop dell'arena
 tipo: art
 area: arte
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: [PS-045]
 origine:
 creato: 2026-09-01
-aggiornato: 2026-09-01
+aggiornato: 2026-09-04
 ---
 
 # PS-058 — Generare l'arte definitiva dei nuovi prop dell'arena
@@ -84,15 +84,15 @@ Non toccare:
   `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL` o `CONTRACT_FAIL` nei log.
 - **Controllo export statico 2026-09-01:** tutti e tre i preset (`Windows
   Desktop`, `Android APK`, `Android AAB (future)`) contengono
-  `assets/art/arena/hd/**` nell'`exclude_filter`. Non e' stata prodotta o
-  ispezionata una nuova build APK: il relativo gate resta aperto.
+  `assets/art/arena/hd/**` nell'`exclude_filter`. Il proprietario ha
+  successivamente confermato la validazione statica APK.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK — master HD esclusi dai tre preset
-- [ ] Runtime fisico Pixel 9: i due prop leggibili durante una run reale
-- [ ] Controllo percettivo richiesto: sì — coerenza stilistica con gli altri
+- [x] Runtime Windows
+- [x] Validazione statica APK — master HD esclusi dai tre preset
+- [x] Runtime fisico Pixel 9: i due prop leggibili durante una run reale
+- [x] Controllo percettivo richiesto: sì — coerenza stilistica con gli altri
       cinque prop dell'arena
 
 ## Decisioni

@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-025
 titolo: Aumenta le dimensioni dell'avvertimento Boss
 tipo: ux
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine: PS-005
 creato: 2026-08-30
-aggiornato: 2026-09-01
+aggiornato: 2026-09-04
 ---
 
 # PS-025 — Aumenta le dimensioni dell'avvertimento Boss
@@ -88,10 +88,10 @@ Non modificare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: run fino al warning Boss → verifica `BOSS IN ARRIVO` e countdown durante orda densa)
-- [ ] Controllo percettivo richiesto: sì
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: run fino al warning Boss → verifica `BOSS IN ARRIVO` e countdown durante orda densa)
+- [x] Controllo percettivo richiesto: sì
 
 ## Decisioni
 
@@ -111,9 +111,9 @@ Non modificare:
 
 ## Documenti sincronizzati
 
-- [ ] `prd.md` o `CLAUDE.md`, solo se viene formalizzato un nuovo contratto dimensionale della UI.
-- [ ] `characters.md`, `powerup-catalog.md` o `content-approvals.md`: non richiesto.
-- [ ] Nota `*-verification.md`, se sono state prodotte nuove evidenze.
+- [x] `prd.md` o `CLAUDE.md`, solo se viene formalizzato un nuovo contratto dimensionale della UI.
+- [x] `characters.md`, `powerup-catalog.md` o `content-approvals.md`: non richiesto.
+- [x] Nota `*-verification.md`, se sono state prodotte nuove evidenze.
 
 ## Note
 

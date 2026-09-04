@@ -24,7 +24,7 @@ ritaglio `32x32` dallo spritesheet CC0 condiviso
 sostituito `evil_portrait` con arte dedicata per personaggio (attualmente
 `256x256`, prima come segnaposto `fake_evil_portrait.png`, ora come asset
 definitivo prodotto da
-[PS-052](../4_to_test/PS-052-genera-ritratti-evil-e-icone-signature.md)).
+[PS-052](../5_completed/PS-052-genera-ritratti-evil-e-icone-signature.md)).
 
 L'asserzione fallisce per tutti e otto i friend
 ("I due ritratti placeholder di %s devono essere ritagli 32x32.") da quando

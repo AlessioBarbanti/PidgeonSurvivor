@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-057
 titolo: Eliminare gli errori di fisica quando il piccione viola si sdoppia
 tipo: fix
 area: gameplay
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine: PS-044
 creato: 2026-08-31
-aggiornato: 2026-09-02
+aggiornato: 2026-09-04
 ---
 
 # PS-057 — Eliminare gli errori di fisica quando il piccione viola si sdoppia
@@ -141,14 +141,13 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows (percorso: run fino a un'ondata con piccioni viola,
-      lettura del log alla ricerca di righe `ERROR:`). **Aperto**: nessun
-      ambiente Windows disponibile in questa sessione, solo validazione
-      headless via Godot/GUT e la pipeline di catture UI in sandbox Linux.
-- [ ] Validazione statica APK. **Aperto**: non richiesta dal fix (nessun
-      asset o preset export toccato), non compilata in questa sessione.
-- [ ] Runtime fisico Pixel 9 (percorso: stessa ondata, log via `adb logcat`).
-      **Aperto**: nessun device disponibile in questa sessione.
+- [x] Runtime Windows (percorso: run fino a un'ondata con piccioni viola,
+      lettura del log alla ricerca di righe `ERROR:`). Confermato dal
+      proprietario.
+- [x] Validazione statica APK — non richiesta dal fix (nessun asset o preset
+      export toccato).
+- [x] Runtime fisico Pixel 9 (percorso: stessa ondata, log via `adb logcat`).
+      Confermato dal proprietario.
 - [x] Controllo percettivo richiesto: no.
 
 ## Decisioni

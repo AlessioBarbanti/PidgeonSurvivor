@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-005
 titolo: Annuncia l'arrivo del Boss
 tipo: ux
 area: gameplay
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine:
 creato: 2026-08-30
-aggiornato: 2026-08-30
+aggiornato: 2026-09-04
 ---
 
 # PS-005 — Annuncia l'arrivo del Boss
@@ -142,17 +142,17 @@ quindi nuovamente aperti.
 
 ## Gate manuali
 
-* [ ] Runtime Windows
-* [ ] Validazione statica APK
-* [ ] Runtime fisico Pixel 9: run completa almeno fino al secondo Boss
-* [ ] Controllo percettivo richiesto: sì
-* [ ] `LA GRIGLIA STA FACENDO UN PROFUMINO...` è leggibile senza distogliere eccessivamente l'attenzione dal combattimento.
-* [ ] Il countdown `5 → 1` è percepibile durante un'orda densa.
-* [ ] Frase e countdown risultano chiaramente sotto il timer della run.
-* [ ] Il warning ricompare correttamente prima del secondo Boss.
-* [ ] L'avviso non copre telegraph, nemici o proiettili importanti.
-* [ ] Il giocatore ha materialmente il tempo di decidere se conservare l'abilità attiva per il Boss.
-* [ ] La transizione tra countdown e Boss Intro risulta chiara e senza duplicazioni visive.
+* [x] Runtime Windows
+* [x] Validazione statica APK
+* [x] Runtime fisico Pixel 9: run completa almeno fino al secondo Boss
+* [x] Controllo percettivo richiesto: sì
+* [x] `LA GRIGLIA STA FACENDO UN PROFUMINO...` è leggibile senza distogliere eccessivamente l'attenzione dal combattimento.
+* [x] Il countdown `5 → 1` è percepibile durante un'orda densa.
+* [x] Frase e countdown risultano chiaramente sotto il timer della run.
+* [x] Il warning ricompare correttamente prima del secondo Boss.
+* [x] L'avviso non copre telegraph, nemici o proiettili importanti.
+* [x] Il giocatore ha materialmente il tempo di decidere se conservare l'abilità attiva per il Boss.
+* [x] La transizione tra countdown e Boss Intro risulta chiara e senza duplicazioni visive.
 
 ## Decisioni
 

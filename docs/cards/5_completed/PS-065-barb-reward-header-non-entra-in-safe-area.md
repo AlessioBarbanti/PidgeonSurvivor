@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-065
 titolo: L'header del premio Barb non entra nel rettangolo sicuro a risoluzioni compatte
 tipo: fix
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: [PS-064]
 origine:
 creato: 2026-09-01
-aggiornato: 2026-09-02
+aggiornato: 2026-09-04
 ---
 
 # PS-065 — L'header del premio Barb non entra nel rettangolo sicuro a risoluzioni compatte
@@ -98,11 +98,9 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows. **Aperto**: nessun ambiente Windows disponibile in
-      questa sessione (sandbox Linux remoto), solo validazione headless via
-      Godot/GUT.
-- [ ] Validazione statica APK. **Aperto**: non compilato in questa sessione;
-      il fix comunque non tocca asset o preset export.
+- [x] Runtime Windows. Confermato dal proprietario.
+- [x] Validazione statica APK. Confermata dal proprietario; il fix comunque
+      non tocca asset o preset export.
 - [x] Runtime fisico: non richiesto per questa card — nessuna modifica
       visiva è stata applicata (vedi Decisioni), quindi non c'è nulla da
       riprodurre su device oltre a quanto già coperto dagli smoke.
@@ -117,7 +115,7 @@ Non toccare:
   soluzione plausibile tocca un asset visivo che richiede una decisione del
   proprietario, non un default tecnico deciso qui.
 - **2026-09-02 — Risolta da PS-067 senza intervento diretto, nessuna
-  riduzione visiva necessaria.** [PS-067](../4_to_test/PS-067-carte-upgrade-e-barb-escono-di-6px-dalla-safe-area.md)
+  riduzione visiva necessaria.** [PS-067](./PS-067-carte-upgrade-e-barb-escono-di-6px-dalla-safe-area.md)
   ha corretto lo stesso meccanismo di causa alla radice in
   `barb_reward_overlay.gd`/`upgrade_overlay.gd`: (1) `_reflow_top_margin()`
   rileggeva `_safe_margins.size`, che il motore forza a crescere oltre il

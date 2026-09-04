@@ -162,7 +162,7 @@ Non modificare:
   meccanismo che va sostituito, non solo rifinito ulteriormente. I criteri
   percettivi ancora aperti sopra restano intenzionalmente non spuntati. La
   responsabilità di trovare una soluzione sostitutiva passa a
-  [PS-079](../2_to_do/PS-079-particellare-tell-stato-personaggi.md); questa
+  [PS-079](../5_completed/PS-079-particellare-tell-stato-personaggi.md); questa
   card resta storica come evidenza che il problema non era la scelta dei
   colori.
 

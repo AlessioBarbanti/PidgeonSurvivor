@@ -4,7 +4,7 @@ titolo: Genera i placeholder icona per i powerup di eventuali nuove statistiche
 tipo: art
 area: arte
 priorita: bassa
-stato: BLOCCATO
+stato: SCARTATA
 dipende_da: [PS-087, PS-090]
 origine: conversazione del proprietario 2026-09-04
 creato: 2026-09-04
@@ -15,13 +15,13 @@ aggiornato: 2026-09-04
 
 ## Contesto
 
-[PS-087](./PS-087-definisci-statistiche-base-personaggi.md) può concludere
+[PS-087](../5_completed/PS-087-definisci-statistiche-base-personaggi.md) può concludere
 che i tre assi B47 esistenti (salute, velocità, cadenza) non bastano a
 differenziare in modo coerente ogni personaggio dal proprio ruolo, e
 raccomandare un nuovo asse statistico. Se questo accade, ogni nuovo asse
 esposto anche come powerup ordinario avrà bisogno di una nuova carta
 `UpgradeDefinition` e quindi di una nuova icona a tema grigliatore — non
-carne, per non collidere con [PS-078](./PS-078-tematizza-catalogo-specialita-barb.md)/[PS-089](./PS-089-elimina-sovrapposizioni-tema-carne-powerup.md).
+carne, per non collidere con [PS-078](../3_in_sprint/PS-078-tematizza-catalogo-specialita-barb.md)/[PS-089](../5_completed/PS-089-elimina-sovrapposizioni-tema-carne-powerup.md).
 Questa card esiste per preparare quell'asset senza aspettare che l'intera
 implementazione del nuovo asse sia pronta.
 
@@ -36,10 +36,11 @@ non la implementa una card di integrazione separata.
 
 ## Criteri di accettazione
 
-- [ ] Questa card si attiva **solo se** PS-087 chiude raccomandando almeno un
+- [x] Questa card si attiva **solo se** PS-087 chiude raccomandando almeno un
       nuovo asse statistico; se PS-087 si chiude senza quella
       raccomandazione, questa card passa a `SCARTATA` con riferimento alla
-      decisione di PS-087, senza produrre alcun asset.
+      decisione di PS-087, senza produrre alcun asset. **Esito: `SCARTATA`**,
+      vedi Decisioni.
 - [ ] Per ogni nuovo asse confermato dal proprietario, esiste un'icona
       `128×128` derivata in `assets/art/icons/upgrades/generated/`, con
       master HD corrispondente in `hd/` e riga nel relativo
@@ -89,6 +90,14 @@ Non toccare:
 
 ## Decisioni
 
+- **2026-09-04 — `SCARTATA`: PS-087 non ha raccomandato alcun nuovo asse.**
+  [PS-087](../5_completed/PS-087-definisci-statistiche-base-personaggi.md) ha
+  chiuso (`COMPLETATO`) concludendo che i tre assi B47 esistenti bastano a
+  differenziare tutti gli otto personaggi dal proprio ruolo, con solo Alea e
+  Aleo rivisti; nessun quarto asse statistico è stato raccomandato (vedi
+  Decisioni di PS-087). Per il primo criterio di accettazione di questa
+  card, l'esito previsto e ora verificato è lo scarto senza lavoro svolto:
+  nessuna icona prodotta, nessuna modifica a `data/upgrades/*.tres`.
 - **2026-09-04 — Card condizionale, non speculativa nel contenuto.** Non
   genera in anticipo un'intera famiglia di icone per assi ipotetici: resta
   bloccata finché PS-087 non nomina esplicitamente un asse reale, poi produce
@@ -103,6 +112,19 @@ Non toccare:
   nessun nuovo asse — esito atteso quanto l'alternativa, dato che i tre assi
   esistenti potrebbero bastare — questa card si scarta senza lavoro svolto:
   non è un fallimento della card, è l'esito previsto di una domanda aperta.
+- **2026-09-04 — Non contraddetta da [PS-093](../2_to_do/PS-093-nuovi-assi-scarto-base-personaggi.md).**
+  PS-093 introduce cinque nuovi assi di scarto base, ma nasce da una
+  richiesta diretta del proprietario in una conversazione successiva, non
+  da una raccomandazione di PS-087 (che infatti non l'ha mai fatta): il
+  trigger scritto sopra resta quello letterale e non si è mai verificato.
+  Nel merito, PS-093 non genera comunque nuove carte del catalogo ordinario
+  (compone coi powerup già esistenti per XP/raggio/difesa, introduce il
+  critico come sistema in `WeaponController` senza impegnarsi a costruire
+  una carta catalogo per esso): non c'è quindi un buco di icone lasciato
+  scoperto da questo scarto. Se in futuro nascesse davvero una nuova carta
+  catalogo per uno di quegli assi, è materia di una card nuova aperta allora
+  (stesso principio già dichiarato per `COMPLETATO`/`SCARTATA` nella board),
+  non una riapertura di questa.
 
 ## Documenti sincronizzati
 

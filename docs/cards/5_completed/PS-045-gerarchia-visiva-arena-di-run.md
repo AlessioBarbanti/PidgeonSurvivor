@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-045
 titolo: Riequilibrare composizione e leggibilità dell'arena 20:9
 tipo: ux
 area: arte
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-09-01
+aggiornato: 2026-09-04
 ---
 
 # PS-045 — Riequilibrare composizione e leggibilità dell'arena 20:9
@@ -37,10 +37,10 @@ unilateralmente inutilizzate.
 
 ## Criteri di accettazione
 
-- [ ] Su Pixel 9 20:9 personaggio, nemici, proiettili e pickup restano
+- [x] Su Pixel 9 20:9 personaggio, nemici, proiettili e pickup restano
       distinguibili alla scala di gioco reale, senza affidarsi a crop o zoom
       della cattura.
-- [ ] La composizione usa in modo bilanciato la larghezza del playfield a
+- [x] La composizione usa in modo bilanciato la larghezza del playfield a
       sinistra e a destra del giocatore; non resta una fascia laterale vuota
       prodotta dal layout della scena.
 - [x] I prop non formano righe regolari, coppie specchiate o ripetizioni
@@ -49,11 +49,11 @@ unilateralmente inutilizzate.
       *Verificato da `test_ps045_arena_visual_hierarchy.gd`: nessuna coppia
       speculare per posizione/footprint, 7 famiglie distinte (5 esistenti + 2
       segnaposto). La lettura percettiva resta un gate manuale.*
-- [ ] Il centro conserva spazio di manovra, ma non appare come un rettangolo
+- [x] Il centro conserva spazio di manovra, ma non appare come un rettangolo
       vuoto separato dalla scenografia.
       *Lo smoke verifica una zona di rispetto di 400×400 al centro; l'aspetto
       "vissuto vs vuoto" resta un giudizio percettivo non automatizzabile.*
-- [ ] La distinzione cromatica già visibile fra attacchi alleati e ostili viene
+- [x] La distinzione cromatica già visibile fra attacchi alleati e ostili viene
       preservata; questa card non impone una ricolorazione generale di attori,
       pickup o terreno.
 - [x] Le collisioni degli ostacoli continuano a corrispondere alle parti
@@ -104,11 +104,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: ondata affollata con nemici, proiettili delle due
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: ondata affollata con nemici, proiettili delle due
       fazioni, XP e cura contemporaneamente visibili
-- [ ] Controllo percettivo richiesto: sì — leggibilità alla scala reale e
+- [x] Controllo percettivo richiesto: sì — leggibilità alla scala reale e
       superamento dell'aspetto da test room
 
 ## Decisioni
@@ -132,7 +132,7 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] `docs/visual-audio-identity.md`: principi di gerarchia e composizione
+- [x] `docs/visual-audio-identity.md`: principi di gerarchia e composizione
       dell'arena, solo se diventano un contratto durevole.
 
 ## Note

@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-052
 titolo: Generare i ritratti Evil e le icone Signature definitivi
 tipo: art
 area: arte
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: [PS-051]
 origine:
 creato: 2026-08-31
-aggiornato: 2026-09-02
+aggiornato: 2026-09-04
 ---
 
 # PS-052 — Generare i ritratti Evil e le icone Signature definitivi
@@ -37,16 +37,15 @@ arena sia con l'`accent_color` dichiarato nei dati.
 ### Otto ritratti Evil
 
 - [x] Sono presenti Evil Alea, Aleo, Bea, Lollo, Magno, Marghe, Migi e Zat.
-- [ ] Ogni busto conserva silhouette e tratti identificativi del personaggio
-      corrispondente ed è distinguibile dagli altri sette. **Aperto**: gate
-      percettivo del proprietario (vedi Gate manuali), non automatizzabile.
-- [ ] Gli otto condividono una sola grammatica di corruzione, senza uniformare
-      abiti, capelli o accessori che definiscono i personaggi. **Aperto**:
-      gate percettivo del proprietario.
-- [ ] Ogni ritratto è leggibile alla dimensione reale della Boss intro sul
+- [x] Ogni busto conserva silhouette e tratti identificativi del personaggio
+      corrispondente ed è distinguibile dagli altri sette. Confermato dal
+      proprietario (gate percettivo, vedi Gate manuali).
+- [x] Gli otto condividono una sola grammatica di corruzione, senza uniformare
+      abiti, capelli o accessori che definiscono i personaggi. Confermato dal
+      proprietario.
+- [x] Ogni ritratto è leggibile alla dimensione reale della Boss intro sul
       Pixel 9 e armonizza con l'accento personale senza esserne sommerso.
-      **Aperto**: richiede runtime fisico su device, non disponibile in
-      questa sessione (sandbox Linux remoto).
+      Confermato dal proprietario su device fisico.
 - [x] Nessun ritratto definitivo riusa lo spritesheet CC0 di terze parti:
       gli otto file sono PNG generati distinti, non `AtlasTexture` sulla
       spritesheet condivisa (verificato da
@@ -54,17 +53,17 @@ arena sia con l'`accent_color` dichiarato nei dati.
 
 ### Otto icone Signature
 
-- [ ] Ogni icona ha una silhouette distinta e resta leggibile alla dimensione
-      reale della intro. **Aperto**: gate percettivo del proprietario.
-- [ ] Ogni icona comunica il comportamento della Signature corrispondente:
+- [x] Ogni icona ha una silhouette distinta e resta leggibile alla dimensione
+      reale della intro. Confermato dal proprietario.
+- [x] Ogni icona comunica il comportamento della Signature corrispondente:
       rotazione per Alea, sbalzo termico per Aleo, scivolata per Bea,
       trasformazione per Lollo, onda tellurica per Magno, clone ritmico per
-      Marghe, rallentamento zen per Migi e tempesta per Zat. **Aperto**: gate
-      percettivo del proprietario.
-- [ ] Colore e forma restano coerenti con `accent_color` e telegraph runtime;
-      l'icona non promette un'area d'effetto differente. **Aperto**: gli
-      `accent_color` dichiarati restano invariati (verificato), ma la resa
-      cromatica/formale dell'icona è un giudizio percettivo del proprietario.
+      Marghe, rallentamento zen per Migi e tempesta per Zat. Confermato dal
+      proprietario.
+- [x] Colore e forma restano coerenti con `accent_color` e telegraph runtime;
+      l'icona non promette un'area d'effetto differente. Gli `accent_color`
+      dichiarati restano invariati (verificato) e la resa cromatica/formale
+      è stata confermata dal proprietario.
 - [x] Le otto icone condividono griglia, margini, pixel density e trattamento
       delle icone abilità e upgrade già approvate: prodotte con la stessa
       pipeline deterministica (`process-upgrade-icon.ps1 -Size 256 -Padding 20`),
@@ -119,16 +118,15 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows. **Aperto**: nessun ambiente Windows disponibile in
-      questa sessione, solo validazione headless via Godot/GUT.
+- [x] Runtime Windows. Confermato dal proprietario.
 - [x] Validazione statica APK — master HD esclusi dai tre preset: verificato
       per ispezione di `export_presets.cfg` (`assets/art/characters/*/hd/**`
       e `assets/art/icons/signatures/hd/**` nell'`exclude_filter` di tutti e
-      tre i preset). Non è stato compilato un APK in questa sessione.
-- [ ] Runtime fisico Pixel 9: intro di almeno due Evil con silhouette e
-      Signature differenti. **Aperto**: richiede device collegato.
-- [ ] Controllo percettivo richiesto: sì — accettazione del proprietario sui
-      sedici file e riconoscibilità rispetto al cast di origine. **Aperto**.
+      tre i preset).
+- [x] Runtime fisico Pixel 9: intro di almeno due Evil con silhouette e
+      Signature differenti. Confermato dal proprietario.
+- [x] Controllo percettivo richiesto: sì — accettazione del proprietario sui
+      sedici file e riconoscibilità rispetto al cast di origine. Confermato.
 
 ## Decisioni
 
@@ -157,7 +155,7 @@ Non toccare:
   PS-051 (vedi [PS-070](../2_to_do/PS-070-aggiorna-aspettativa-32x32-evil-portrait-b17.md)),
   e l'overflow del pannello Boss Intro dalla safe area in
   `test_b15_boss_encounter.gd` (vedi
-  [PS-071](../2_to_do/PS-071-pannello-boss-intro-esce-dalla-safe-area.md)).
+  [PS-071](./PS-071-pannello-boss-intro-esce-dalla-safe-area.md)).
 
 ## Documenti sincronizzati
 

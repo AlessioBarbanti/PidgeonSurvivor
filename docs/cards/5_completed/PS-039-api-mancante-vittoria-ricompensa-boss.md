@@ -187,7 +187,7 @@ Non modificare:
   la correzione dell'arità dei due handler di `boss_defeated`
   (`_on_boss_defeated_for_horde_pause`, `_on_boss_defeated_for_barb_reward`),
   che era il regresso reale sul ramo `DEFEAT`. Vedi
-  [PS-034](../4_to_test/PS-034-rimuovi-xp-fissa-ricompensa-boss.md).
+  [PS-034](./PS-034-rimuovi-xp-fissa-ricompensa-boss.md).
 
 ## Documenti sincronizzati
 

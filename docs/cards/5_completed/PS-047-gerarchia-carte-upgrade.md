@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-047
 titolo: Compattare e gerarchizzare le carte upgrade
 tipo: ux
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: [PS-046]
 origine:
 creato: 2026-08-31
-aggiornato: 2026-09-01
+aggiornato: 2026-09-04
 ---
 
 # PS-047 — Compattare e gerarchizzare le carte upgrade
@@ -121,11 +121,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: offerta normale e due offerte Barb, navigazione
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: offerta normale e due offerte Barb, navigazione
       touch e gamepad
-- [ ] Controllo percettivo richiesto: sì — densità, leggibilità e chiarezza
+- [x] Controllo percettivo richiesto: sì — densità, leggibilità e chiarezza
       della selezione alla scala reale
 
 ## Decisioni
@@ -152,7 +152,7 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] `docs/ui-ux-flow.md`: anatomia della carta upgrade, se cambia il
+- [x] `docs/ui-ux-flow.md`: anatomia della carta upgrade, se cambia il
       contratto durevole.
 
 ## Note

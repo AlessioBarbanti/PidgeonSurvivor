@@ -19,7 +19,7 @@ Oggi `VICTORY` e `DEFEAT` sono due cue SFX brevi
 ([scripts/audio/game_audio.gd:471-476](../../../scripts/audio/game_audio.gd#L471-L476)):
 alla fine della run la musica si ferma (`stop_background_music()`) e parte
 solo un suono puntuale, dello stesso tipo di `HIT` o `PICKUP`. La schermata
-finale ([PS-053](./4_to_test/PS-053-riepilogo-finale-della-run.md), un
+finale ([PS-053](../5_completed/PS-053-riepilogo-finale-della-run.md), un
 riepilogo della run) chiude quindi la sessione senza un vero momento
 musicale, mentre gli altri eventi di rilievo (level-up, ricompensa Barb,
 Boss) hanno già o stanno per avere una risposta audio dedicata.

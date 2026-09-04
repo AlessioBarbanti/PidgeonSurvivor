@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-084
 titolo: Documentare la direzione visuale per personaggio e collegarla agli agenti art
 tipo: chore
 area: arte
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine: conversazione del proprietario 2026-09-02
 creato: 2026-09-02
-aggiornato: 2026-09-02
+aggiornato: 2026-09-04
 ---
 
 # PS-084 — Documentare la direzione visuale per personaggio e collegarla agli agenti art
@@ -103,9 +103,9 @@ di ispezionare i fratelli visivi reali.
 
 ## Gate manuali
 
-- [ ] Runtime Windows — non applicabile, nessun asset runtime o scena toccata.
-- [ ] Validazione statica APK — non applicabile.
-- [ ] Runtime fisico Pixel 9 — non applicabile.
+- [x] Runtime Windows — non applicabile, nessun asset runtime o scena toccata.
+- [x] Validazione statica APK — non applicabile.
+- [x] Runtime fisico Pixel 9 — non applicabile.
 - [x] Controllo percettivo richiesto: no per l'automazione; il proprietario
       resta libero di rileggere i nuovi file di direzione visuale per
       accuratezza dei contenuti.

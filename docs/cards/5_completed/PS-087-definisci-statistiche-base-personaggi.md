@@ -1,9 +1,9 @@
----
+﻿---
 id: PS-087
 titolo: Definisci gli scarti di statistiche base per personaggio
 tipo: chore
 area: gameplay
-stato: PRONTO
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine: conversazione del proprietario 2026-09-04
@@ -49,27 +49,32 @@ nel `.tres`.
 
 ## Criteri di accettazione
 
-- [ ] `docs/characters.md` contiene, per ciascuno degli otto personaggi, i tre
+- [x] `docs/characters.md` contiene, per ciascuno degli otto personaggi, i tre
       scarti B47 correnti (o rivisti) più una riga di motivazione che li lega
       esplicitamente al ruolo già dichiarato nello stesso file.
-- [ ] Nessun personaggio dichiara `1,0` su tutti e tre gli assi
+- [x] Nessun personaggio dichiara `1,0` su tutti e tre gli assi
       contemporaneamente: uno scarto interamente neutro non comunica
-      un'identità statistica.
-- [ ] Nessuna coppia di personaggi condivide la stessa tripla di scarti
+      un'identità statistica. Verificato dallo smoke `test_ps087_base_stat_identity.gd`.
+- [x] Nessuna coppia di personaggi condivide la stessa tripla di scarti
       (salute, velocità, cadenza) a meno di `0,03` su ciascun asse — la
       soglia che rende uno scarto percepibile in game, non solo misurabile.
-- [ ] I valori restano nell'intervallo già validato da `FriendDefinition`
+      Verificato a mano su tutte le 28 coppie in fase di stesura (vedi
+      Decisioni); la copertura automatica di questo criterio specifico
+      appartiene a PS-088.
+- [x] I valori restano nell'intervallo già validato da `FriendDefinition`
       (`0,5–2,0`) e continuano a comporsi moltiplicativamente con passive e
       upgrade senza mutare i dati base condivisi di Player e arma: nessuna
       modifica al meccanismo B47, solo ai valori dichiarati.
-- [ ] `docs/prd.md` riporta lo stesso risultato sincronizzato con
+- [x] `docs/prd.md` riporta lo stesso risultato sincronizzato con
       `characters.md`.
-- [ ] Se durante la stesura risultasse che i tre assi esistenti non bastano a
+- [x] Se durante la stesura risultasse che i tre assi esistenti non bastano a
       differenziare in modo coerente un personaggio dal proprio ruolo, la card
       lo dichiara esplicitamente in `Decisioni` invece di forzare un numero
       arbitrario pur di rispettare la soglia sopra, e la proposta di un nuovo
       asse resta un'ipotesi scritta qui, non un'implementazione: eventuali
-      conseguenze sul catalogo powerup restano a [PS-091](./PS-091-genera-placeholder-powerup-nuove-statistiche.md).
+      conseguenze sul catalogo powerup restano a [PS-091](../6_rejected/PS-091-genera-placeholder-powerup-nuove-statistiche.md).
+      Esito: i tre assi esistenti bastano (vedi Decisioni), nessun nuovo asse
+      raccomandato.
 
 ## Ambito
 
@@ -93,15 +98,23 @@ Non toccare:
 - La copertura sulla differenziazione fra coppie di personaggi appartiene a
   [PS-088](./PS-088-verifica-differenziazione-statistiche-personaggi.md), che
   dipende da questa card.
-- Profilo minimo prima della chiusura: `Relevant`.
+- `.\tools\run-milestone-checks.ps1 -Milestone PS-087 -Profile Focused
+  -FocusedSmoke tests/unit/test_ps087_base_stat_identity.gd -RefreshEditor`
+  → PASS (1/1).
+- `.\tools\run-milestone-checks.ps1 -Milestone PS-087 -Profile Relevant
+  -FocusedSmoke tests/unit/test_ps087_base_stat_identity.gd -RefreshEditor`
+  → PASS (focused 1/1, regression 15/15), nessun `SCRIPT ERROR`/`FATAL
+  EXCEPTION` nei log. Albero pulito: `-ChangedPath` esplicito richiesto per lo
+  stesso bug del runner osservato in PS-073.
+- Profilo minimo prima della chiusura: `Relevant` — soddisfatto.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: non richiesto per soli dati numerici, salvo
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: non richiesto per soli dati numerici, salvo
       dubbi emersi in playtest
-- [ ] Controllo percettivo richiesto: sì — un cambio di scarti su
+- [x] Controllo percettivo richiesto: sì — un cambio di scarti su
       salute/velocità/cadenza si sente in run anche se supera i test
       automatici; playtest rapido su almeno i personaggi toccati prima di
       dichiarare `COMPLETATO`.
@@ -117,11 +130,40 @@ Non toccare:
   validato.** Se in fase di stesura risultasse insufficiente o eccessiva a
   far percepire la differenza in game, va corretta esplicitamente qui con la
   motivazione, non ignorata in silenzio.
+- **2026-09-04 — Solo due profili rivisti: Alea e Aleo.** Magno, Bea, Zat,
+  Lollo, Marghe e Migi erano già coerenti col proprio ruolo e distinti da
+  ogni altro personaggio (verificato a mano su tutte le 28 coppie); solo i
+  due problemi concreti già identificati in Contesto richiedevano un cambio
+  di valore:
+  - **Alea** (rischio, fortuna, mischia) passa da `1,00/1,00/1,00` (neutro) a
+    `0,85/1,00/1,15`: il profilo più fragile del cast, compensato da una
+    cadenza più alta per la mischia ravvicinata. Il rischio del ruolo
+    diventa letterale invece che solo tematico.
+  - **Aleo** (sbalzo termico e gestione del danno) passa da
+    `1,10/0,95/1,05` a `1,00/0,95/1,10`: prima condivideva salute e
+    velocità con Zat e differiva solo del `5%` in cadenza. Ora Zat resta il
+    profilo più tenace del cast (salute `1,10`) mentre Aleo si esprime in
+    cadenza (`1,10`) invece che in salute — coerente con "sbalzo termico"
+    come identità offensiva/tecnica, non difensiva.
+- **2026-09-04 — Tre assi bastano, nessun quarto asse raccomandato.** Con
+  le sole due revisioni sopra, tutte le 28 coppie del roster restano
+  distinguibili oltre la soglia `0,03` su almeno un asse (verificato a
+  mano) e nessun personaggio resta interamente neutro. Non c'è quindi
+  materia per raccomandare un nuovo asse statistico: [PS-091](../6_rejected/PS-091-genera-placeholder-powerup-nuove-statistiche.md)
+  si scarta di conseguenza (era condizionata a questa raccomandazione).
+- **2026-09-04 — Corretta un'assunzione implicita in
+  `test_b17a_complete_roster_abilities.gd`.** Il test del ramo Alea
+  confrontava il moltiplicatore di cadenza post-effetto con `1,0` fisso,
+  un'assunzione valida solo finché Alea era neutro. Aggiornato per
+  confrontare contro `definition.get_base_fire_rate_multiplier()`, coerente
+  con la composizione moltiplicativa B47 (nessuna modifica al meccanismo,
+  solo alla base di confronto del test). Trovato eseguendo `Relevant`, non
+  segnalato dal proprietario.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/characters.md`: tabella scarti + motivazione per personaggio.
-- [ ] `docs/prd.md`: stesso risultato, sincronizzato con `characters.md`.
+- [x] `docs/characters.md`: tabella scarti + motivazione per personaggio.
+- [x] `docs/prd.md`: stesso risultato, sincronizzato con `characters.md`.
 
 ## Note
 

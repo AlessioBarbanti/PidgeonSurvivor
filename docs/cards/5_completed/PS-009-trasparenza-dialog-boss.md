@@ -139,7 +139,7 @@ Non modificare:
   Verifica di conseguenza.
 - **2026-08-31 — Chiusura per superamento: il pannello a cui si applicava
   questa card non esiste più.** Il proprietario ha chiesto di eliminare del
-  tutto `%BossHealthPanel` (vedi [PS-033](../4_to_test/PS-033-riquadro-vita-boss-minimale-floating.md)),
+  tutto `%BossHealthPanel` (vedi [PS-033](./PS-033-riquadro-vita-boss-minimale-floating.md)),
   sostituendolo con la sola barra vita overhead già disegnata sopra ogni
   nemico. Senza un pannello da far sparire, l'intera logica di dissolvenza di
   questa card (`set_player_fade_target`, `is_player_occluding_boss_ui`,

@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-046
 titolo: Isolare il modal di level-up da HUD e cronometro
 tipo: ux
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-09-01
+aggiornato: 2026-09-04
 ---
 
 # PS-046 — Isolare il modal di level-up da HUD e cronometro
@@ -113,11 +113,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: level-up normale, ricompensa Speciality e bonus
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: level-up normale, ricompensa Speciality e bonus
       Barb, poi ritorno alla run
-- [ ] Controllo percettivo richiesto: sì
+- [x] Controllo percettivo richiesto: sì
 
 ## Decisioni
 
@@ -153,7 +153,7 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] `docs/ui-ux-flow.md`: comportamento dell'HUD durante `LEVEL_UP` e
+- [x] `docs/ui-ux-flow.md`: comportamento dell'HUD durante `LEVEL_UP` e
       `BARB_REWARD`.
 
 ## Note

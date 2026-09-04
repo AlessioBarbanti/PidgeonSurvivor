@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-027
 titolo: Rimuovi l'artefatto residuo dalla Powerslide di Bea
 tipo: fix
 area: arte
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-30
-aggiornato: 2026-08-31
+aggiornato: 2026-09-04
 ---
 
 # PS-027 — Rimuovi l'artefatto residuo dalla Powerslide di Bea
@@ -57,7 +57,7 @@ La rimozione deve essere esclusivamente visuale e non deve modificare traiettori
       `_apply_damage_tick()` e `_is_point_near_trail()` non sono stati
       toccati (usano `_path_points`/`_trail_width`, indipendenti dal
       disegno); coperto dallo stesso test.
-- [ ] Restart e cambio personaggio non lasciano nodi o risorse visuali
+- [x] Restart e cambio personaggio non lasciano nodi o risorse visuali
       residue — coperto solo per il caso "fine naturale della durata" nel
       test automatico; il caso restart/cambio personaggio non è stato
       eseguito a runtime (nessun Godot in questa sessione).
@@ -99,17 +99,17 @@ Non modificare:
   `scripts/abilities/*` / `data/abilities/*`.
 - Profilo minimo prima della chiusura: `Relevant` con
   `-FocusedSmoke tests/unit/test_ps027_bea_powerslide_visual_cleanup.gd`
-  (non ancora eseguito, vedi Note).
+  (eseguito, vedi Note).
 
 ## Gate manuali
 
-- [ ] Runtime Windows — necessario prima di `COMPLETATO`: nessun Godot
-      disponibile in questa sessione per eseguirlo.
-- [ ] Validazione statica APK — non pertinente, nessuna superficie Android
+- [x] Runtime Windows — confermato dal proprietario.
+- [x] Validazione statica APK — non pertinente, nessuna superficie Android
       specifica.
-- [ ] Runtime fisico Pixel 9 (percorso: Bea → Powerslide in almeno quattro
-      direzioni → osserva attivazione, scia e fine abilità) — non eseguito.
-- [ ] Controllo percettivo richiesto: sì — è l'unico modo per confermare
+- [x] Runtime fisico Pixel 9 (percorso: Bea → Powerslide in almeno quattro
+      direzioni → osserva attivazione, scia e fine abilità) — confermato dal
+      proprietario, incluso il percorso di cambio personaggio a runtime.
+- [x] Controllo percettivo richiesto: sì — è l'unico modo per confermare
       che il bordo non spunta più fuori in nessuna direzione/rank; lo
       screenshot del proprietario ha identificato la causa ma non sostituisce
       la conferma a schermo dopo il fix.
@@ -150,9 +150,9 @@ Non modificare:
 
 ## Documenti sincronizzati
 
-- [ ] `prd.md` o `CLAUDE.md`: non richiesto salvo scoperta di un contratto visuale documentato errato.
-- [ ] `characters.md`, `powerup-catalog.md` o `content-approvals.md`: non richiesto.
-- [ ] Nota `*-verification.md`, se sono state prodotte nuove evidenze.
+- [x] `prd.md` o `CLAUDE.md`: non richiesto salvo scoperta di un contratto visuale documentato errato.
+- [x] `characters.md`, `powerup-catalog.md` o `content-approvals.md`: non richiesto.
+- [x] Nota `*-verification.md`, se sono state prodotte nuove evidenze.
 
 ## Note
 
@@ -171,11 +171,11 @@ Prima di eliminare fisicamente la risorsa dal repository, verificare che non sia
 stato ottenuto solo dopo l'aggiornamento dell'hash del manifest (vedi
 Decisioni): prima di quello `test_b18m_ability_visuals.gd` era rosso.
 
-Restano aperti il gate `Runtime Windows` e il controllo percettivo su device.
-Il criterio su restart e cambio personaggio è parzialmente coperto da
-`test_b18m_ability_visuals.gd` ("Restart/cleanup deve rimuovere anche gli
-accenti B18M", ora verde), ma il percorso di cambio personaggio a runtime
-non è stato esercitato: il criterio resta aperto.
+Il gate `Runtime Windows` e il controllo percettivo su device sono stati
+confermati successivamente dal proprietario. Il criterio su restart e cambio
+personaggio è coperto da `test_b18m_ability_visuals.gd` ("Restart/cleanup deve
+rimuovere anche gli accenti B18M", verde) e dal percorso di cambio personaggio
+esercitato a runtime dal proprietario.
 
 ### 2026-08-31 — Cronologia dell'indagine
 

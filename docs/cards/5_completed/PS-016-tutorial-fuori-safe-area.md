@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-016
 titolo: Riporta il tutorial dentro la safe area su tutti i profili
 tipo: fix
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-30
-aggiornato: 2026-08-30
+aggiornato: 2026-09-04
 ---
 
 # PS-016 — Riporta il tutorial dentro la safe area su tutti i profili
@@ -74,12 +74,12 @@ Non modificare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: apri il tutorial, verifica il
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: apri il tutorial, verifica il
       pannello e i controlli su un device reale con cutout)
-- [ ] Controllo percettivo richiesto: sì
-- [ ] Il pannello resta leggibile e non tagliato dai bordi fisici del
+- [x] Controllo percettivo richiesto: sì
+- [x] Il pannello resta leggibile e non tagliato dai bordi fisici del
       device.
 
 ## Decisioni
@@ -126,7 +126,7 @@ Non modificare:
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno previsto; fix layout interno.
+- [x] Nessuno previsto; fix layout interno.
 
 ## Note
 

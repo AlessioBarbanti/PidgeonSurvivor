@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-014
 titolo: Riporta il logo della welcome dentro il viewport
 tipo: fix
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-30
-aggiornato: 2026-08-30
+aggiornato: 2026-09-04
 ---
 
 # PS-014 — Riporta il logo della welcome dentro il viewport
@@ -64,12 +64,12 @@ Non modificare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: apri la welcome, verifica il logo su
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: apri la welcome, verifica il logo su
       orientamento e cutout reali del device)
-- [ ] Controllo percettivo richiesto: sì
-- [ ] Il logo non risulta tagliato o schiacciato su nessun aspect ratio
+- [x] Controllo percettivo richiesto: sì
+- [x] Il logo non risulta tagliato o schiacciato su nessun aspect ratio
       provato.
 
 ## Decisioni
@@ -106,7 +106,7 @@ Non modificare:
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno previsto; fix visivo interno senza impatto su contratti di
+- [x] Nessuno previsto; fix visivo interno senza impatto su contratti di
       prodotto.
 
 ## Note

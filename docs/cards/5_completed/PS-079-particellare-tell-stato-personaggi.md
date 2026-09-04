@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-079
 titolo: Sostituisci il contorno bocciato con un particellare non aderente
 tipo: ux
 area: arte
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine: PS-001, PS-029
 creato: 2026-09-02
-aggiornato: 2026-09-03
+aggiornato: 2026-09-04
 ---
 
 # PS-079 — Sostituisci il contorno bocciato con un particellare non aderente
@@ -53,12 +53,12 @@ aggiunge accanto al personaggio, non sopra la sua sagoma.
       della hitbox del texture 32x32 alla scala fissa 1.65×1.25 (y=-33), che
       a sua volta e' piu' largo della sagoma pixel-art visibile. Conferma
       finale sulla sagoma reale nel gate percettivo sotto.
-- [ ] La fase attiva di Aleo, Lollo, Alea e Migi è distinguibile a colpo
+- [x] La fase attiva di Aleo, Lollo, Alea e Migi è distinguibile a colpo
       d'occhio con il Player fermo e in movimento. *Percettivo.*
-- [ ] Le due fasi opposte dello stesso personaggio restano distinguibili fra
+- [x] Le due fasi opposte dello stesso personaggio restano distinguibili fra
       loro (colore, forma o comportamento delle particelle, non solo
       intensità). *Percettivo.*
-- [ ] Il particellare resta leggibile sopra lo sfondo arena e durante orde
+- [x] Il particellare resta leggibile sopra lo sfondo arena e durante orde
       dense, restando visibile anche quando il corpo del personaggio è
       parzialmente coperto dai nemici. *Percettivo.*
 - [x] Il flash da danno mantiene la precedenza sul tell di stato. Smoke:
@@ -127,11 +127,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: run con Aleo, Lollo, Alea e Migi fino
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: run con Aleo, Lollo, Alea e Migi fino
       al cambio di fase di ciascuno, anche durante un'ondata densa)
-- [ ] Controllo percettivo richiesto: sì — data la bocciatura precedente, non
+- [x] Controllo percettivo richiesto: sì — data la bocciatura precedente, non
       dichiarare `COMPLETATO` senza che il proprietario l'abbia vista in gioco
 
 ## Decisioni

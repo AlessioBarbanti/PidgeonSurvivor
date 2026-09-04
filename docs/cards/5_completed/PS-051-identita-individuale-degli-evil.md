@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-051
 titolo: Dare identità individuale agli Evil nella Boss intro
 tipo: ux
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-09-02
+aggiornato: 2026-09-04
 ---
 
 # PS-051 — Dare identità individuale agli Evil nella Boss intro
@@ -94,10 +94,10 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: intro Piccione Malvagio e intro di almeno un Evil
-- [ ] Controllo percettivo richiesto: sì, solo dopo che PS-052 ha sostituito i
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: intro Piccione Malvagio e intro di almeno un Evil
+- [x] Controllo percettivo richiesto: sì, solo dopo che PS-052 ha sostituito i
       segnaposto con gli asset definitivi
 
 ## Decisioni

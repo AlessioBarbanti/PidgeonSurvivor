@@ -1,9 +1,9 @@
----
+﻿---
 id: PS-072
 titolo: Dai un audio alla schivata Sesto Senso Equino di Bea
 tipo: feat
 area: audio
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine: B45
@@ -39,16 +39,16 @@ l'accento visivo esistente, con lo stesso tempismo.
       (`_on_instinctive_dodge_triggered`, coerente con com'e' gia' cablato
       `UI_CONFIRM`); mancava solo lo stream, ora assegnato.
 - [x] `has_complete_cue_set()` include `DODGE` fra i cue verificati.
-- [ ] Il suono è udibile in sincrono con la comparsa dell'accento visivo
-      (`InstinctiveDodgeAccent`), senza ritardo percepibile. **Gate percettivo,
-      non chiuso automaticamente**: vedi Gate manuali.
+- [x] Il suono è udibile in sincrono con la comparsa dell'accento visivo
+      (`InstinctiveDodgeAccent`), senza ritardo percepibile. Confermato
+      dal proprietario con le cuffie (vedi Gate manuali).
 - [x] Personaggi diversi da Bea, che non hanno questa passiva, non generano mai
       il cue.
-- [ ] Schivate ravvicinate (ai limiti del cooldown di 9 secondi della passiva)
+- [x] Schivate ravvicinate (ai limiti del cooldown di 9 secondi della passiva)
       non producono sovrapposizione fastidiosa o distorsione. Garantito a
       livello strutturale dal cooldown di 9s della passiva stessa (non e'
-      possibile ritriggerare piu' spesso), ma non c'e' stato un ascolto reale
-      a conferma: resta un gate percettivo.
+      possibile ritriggerare piu' spesso); confermato anche a orecchio dal
+      proprietario.
 - [x] Con audio disattivato o volume a zero non è udibile alcun suono
       (stessa garanzia gia' in uso per gli altri 14 cue, coperta dallo smoke).
 - [x] Il cue riusa uno stream CC0 già presente in `assets/audio/` se ne esiste
@@ -90,11 +90,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: gioca con Bea fino a far scattare la passiva più
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: gioca con Bea fino a far scattare la passiva più
       volte, con le cuffie
-- [ ] Controllo percettivo richiesto: sì — il suono deve leggersi come
+- [x] Controllo percettivo richiesto: sì — il suono deve leggersi come
       "schivata/scarto", non come un hit o un pickup
 
 ## Decisioni

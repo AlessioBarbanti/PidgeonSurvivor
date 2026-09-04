@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-050
 titolo: Uniformare le impostazioni della welcome al sistema della pausa
 tipo: ux
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-09-01
+aggiornato: 2026-09-04
 ---
 
 # PS-050 — Uniformare le impostazioni della welcome al sistema della pausa
@@ -57,7 +57,7 @@ composti nello spazio della welcome senza copiarne ciecamente le dimensioni.
       `focus_neighbor_top`/`bottom` restano fra gli stessi nodi fratelli,
       solo rinominato il container comune (`SettingsPanel` → `SettingsContent`
       come figlio); nessun percorso relativo è cambiato.
-- [ ] Welcome e pausa restano nella safe area su 16:9, 20:9 e 4:3. Non
+- [x] Welcome e pausa restano nella safe area su 16:9, 20:9 e 4:3. Non
       coperto da uno smoke geometrico dedicato: gate manuale.
 - [x] Il layout attuale della pausa non viene ridisegnato da questa card.
       `scenes/ui/pause_overlay.tscn` non toccato.
@@ -86,11 +86,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: cambia volume e dimensione joystick nella
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: cambia volume e dimensione joystick nella
       welcome, avvia la run e confronta gli stessi valori nella pausa
-- [ ] Controllo percettivo richiesto: sì — le due schermate devono sembrare due
+- [x] Controllo percettivo richiesto: sì — le due schermate devono sembrare due
       istanze dello stesso sistema
 
 ## Decisioni

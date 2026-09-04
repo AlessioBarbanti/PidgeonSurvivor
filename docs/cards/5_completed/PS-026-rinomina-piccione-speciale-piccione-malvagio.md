@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-026
 titolo: Rinomina Piccione Speciale in Piccione Malvagio
 tipo: chore
 area: gameplay
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine: B22
 creato: 2026-08-30
-aggiornato: 2026-08-31
+aggiornato: 2026-09-04
 ---
 
 # PS-026 — Rinomina Piccione Speciale in Piccione Malvagio
@@ -89,8 +89,8 @@ Non modificare:
 ## Gate manuali
 
 - [x] Runtime Windows — project smoke del profilo `Full` superato.
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: genera Boss baseline → verifica nome in Boss Intro e HUD)
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: genera Boss baseline → verifica nome in Boss Intro e HUD)
 - [x] Controllo percettivo richiesto: no
 
 ## Decisioni
@@ -110,8 +110,8 @@ Non modificare:
   restano invariati per non allargare la card oltre il nome mostrato al
   giocatore.
 - **2026-08-31 — Verifica automatica eseguita su Windows.** Il contratto GUT
-  sostitutivo dello smoke legacy passa sia focused sia nella `Full`; resta
-  aperto soltanto il percorso Android dichiarato nei gate.
+  sostitutivo dello smoke legacy passa sia focused sia nella `Full`; il
+  percorso Android è stato confermato successivamente dal proprietario.
 
 ## Documenti sincronizzati
 

@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-041
 titolo: La scia di slancio di Magno non si azzera all'avvio di una nuova partita
 tipo: fix
 area: gameplay
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-08-31
+aggiornato: 2026-09-04
 ---
 
 # PS-041 — La scia di slancio di Magno non si azzera all'avvio di una nuova partita
@@ -105,10 +105,10 @@ Non modificare:
 - [x] Validazione statica APK — non pertinente.
 - [x] Runtime fisico Pixel 9 — non richiesto, nessuna superficie touch
       specifica coinvolta.
-- [ ] Controllo percettivo richiesto: sì — percorso: equipaggia Magno,
+- [x] Controllo percettivo richiesto: sì — percorso: equipaggia Magno,
       accumula slancio, muori o premi restart, verifica che la scia non sia
       visibile in nessun frame della nuova run prima che Magno riacceleri.
-      Non eseguito in questa sessione.
+      Confermato dal proprietario.
 
 ## Decisioni
 
@@ -128,6 +128,6 @@ Non modificare:
 
 **Stato in verifica (2026-08-31).** Il fix del commit `5a4ac6a`, la suite
 dedicata e il project smoke Windows sono già verdi. Il proprietario ha chiesto
-di non rilanciare test perché l'audit non ha modificato il runtime. Resta
-aperto soltanto il controllo percettivo sul frame immediatamente successivo
-al reset, che il test headless non può sostituire.
+di non rilanciare test perché l'audit non ha modificato il runtime. Il
+controllo percettivo sul frame immediatamente successivo al reset, che il
+test headless non può sostituire, è stato confermato dal proprietario.

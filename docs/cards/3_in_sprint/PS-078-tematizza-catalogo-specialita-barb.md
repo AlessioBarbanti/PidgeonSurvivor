@@ -67,7 +67,10 @@ senza alterare l'effetto meccanico che rappresentano.
 - [ ] `effect_id`, `effect_parameters`, `weight`, `max_rank` e ogni altro
       dato meccanico restano bit-per-bit identici: la card cambia solo
       identità (`title`, `description`, `effect_summary`, `icon`), mai
-      gameplay.
+      gameplay. Scrivere questi quattro campi sugli otto `.tres` già
+      esistenti (nessun nuovo componente, scena o registry) è l'unica
+      integrazione di questa card, esplicitamente ammessa come eccezione
+      "banale" alla regola generale di PS-090 — vedi Decisioni.
 - [ ] Le otto Specialità restano distinguibili fra loro e dagli upgrade
       statistici ordinari già tematizzati, senza sovrapposizioni semantiche
       (stesso principio già dichiarato per le due pirofile in
@@ -132,9 +135,26 @@ Non toccare:
   "il pezzo speciale" invece che come l'ennesimo attrezzo. La divisione è
   anche il criterio anti-collisione: se un nome di questa card potesse stare
   nel catalogo ordinario, non è abbastanza "carne".
+- **2026-09-04 — Rivista contro PS-090, resta card singola.**
+  [PS-090](./PS-090-separa-generazione-integrazione-card-art.md) impone di
+  default due card collegate quando una richiesta implica sia generare arte
+  sia usarla in gioco, con l'eccezione esplicita del lavoro di integrazione
+  "banale a sufficienza da restare un singolo criterio di accettazione
+  marcato come tale". Qui l'integrazione si riduce a scrivere quattro campi
+  di identità (`title`, `description`, `effect_summary`, `icon`) su otto
+  `.tres` già esistenti — nessun nuovo componente, scena, registry o
+  modifica a `BarbRewardOverlay` — quindi resta dentro questa card invece di
+  aprire otto card di wiring separate. Il criterio di accettazione
+  corrispondente è stato marcato esplicitamente come tale.
 - **2026-09-04 — Sbloccata.** PS-077 è entrata in `4_to_test/` con stato
   `IN VERIFICA`: la regola di dipendenza della board è soddisfatta e questa
   card passa a `PRONTO`.
+- **2026-09-04 — Possibile nona Specialità in arrivo.**
+  [PS-094](../2_to_do/PS-094-specialita-cariche-abilita-attiva.md) propone
+  una nuova Specialità (cariche multiple per l'abilità attiva). Se PS-094
+  viene presa in carico prima che questa card sia chiusa, il proprio
+  criterio la obbliga ad aggiornare questa card da "otto" a "nove"
+  Specialità invece di aprire un secondo passaggio di tematizzazione.
 - **2026-09-02 — Bloccata da PS-077.** PS-077 era ancora `PRONTO`, non aveva
   raggiunto `IN VERIFICA`: la card è restata `BLOCCATO` fino a quel momento,
   coerente con la regola di dipendenza della board.
@@ -162,3 +182,34 @@ meno leggibile rispetto a oggi, va preferita la leggibilità: segnalarlo
 invece di forzare un titolo a effetto ma ambiguo. Il vincolo "pezzo di carne"
 riguarda il soggetto, non impedisce di qualificarlo: un taglio più una parola
 che punta all'effetto resta dentro il tema e mantiene la carta leggibile.
+
+Non implementata in questa sessione (card `art` di sola generazione, delegata
+a `game-art-designer`). Candidati di nome/soggetto per orientare il brief,
+**non decisi**: restano da sottoporre all'approvazione del proprietario
+(gate sopra) prima di generare qualunque icona, e sono solo un punto di
+partenza — chi implementa può proporne di migliori.
+
+| Specialità (ID) | Effetto | Candidato taglio/preparazione |
+|---|---|---|
+| `anxiety_signature` | +velocità, -vita max, bordi offuscati | Straccetti (striscioline sottili e nervose: "ansia" = agitazione) |
+| `beer_signature` | +cadenza, dispersione del colpo | Spiedini "alticci" (leggermente storti/sbandati, come dopo una birra) |
+| `chronic_delay` | rallenta i nemici a intervalli | Stracotto (cottura lenta: "ritardo cronico" come pun letterale) |
+| `damage_shockwave` | onda d'urto quando Barb subisce danno | Salsiccia scoppiettante (che sfrigola/scoppietta sulla brace) |
+| `weapon_death_burst` | esplosione alla morte del nemico | Costata flambé (fiammata finale, letterale) |
+| `weapon_multishot` | proiettili aggiuntivi a ventaglio | Doppio spiedino (due pezzi affiancati) |
+| `gossip_projectiles` | rimbalzi in catena fra nemici | Salsicce a catena (i link fisici = il rimbalzo che "passa parola") |
+| `weapon_pierce` | il colpo attraversa più bersagli | Spiedone trafiggente (attraversa più pezzi infilzati) |
+
+Prompt di generazione di base (da adattare per soggetto e ripetere per le
+otto varianti, mantenendo identica l'impostazione per la coerenza di
+famiglia richiesta dai criteri):
+
+> Pixel-art icon, 128×128, game upgrade card icon for a backyard-grill
+> survivor game, part of an eight-icon "chef's specialities" family handed
+> out by the grill master character after defeating a boss. Subject:
+> [candidato taglio/preparazione], freshly grilled/cooked, presented as a
+> single hero cut on a plate or skewer with warm embers/smoke accents.
+> Clean readable silhouette at small size, thick outline, flat cel-shaded
+> pixel art matching an established barbecue visual family (same palette,
+> outline weight and lighting as the other seven). No pigeons. Centered
+> composition, transparent background.

@@ -25,7 +25,7 @@ due conteggi del `TargetingSystem`:
 
 Sempre esattamente **due bersagli registrati in più**. Lo stesso test passa
 in isolamento (`Focused` sul solo file). Non è una regressione di
-[PS-013](../4_to_test/PS-013-crash-typedarray-seconda-offerta-upgrade.md): le stesse due
+[PS-013](./PS-013-crash-typedarray-seconda-offerta-upgrade.md): le stesse due
 asserzioni erano già fallite il 2026-08-29 alle 01:26 nello smoke legacy
 equivalente `tests/integration/_boss_encounter_smoke.gd`, che girava in un
 processo tutto suo (log `20260829-012625-B18M`,

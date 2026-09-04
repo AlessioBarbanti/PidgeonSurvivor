@@ -27,7 +27,7 @@ La proposta originale di questa card si limitava a variazioni leggere sulla
 musica di run esistente; il vincolo "nessuna nuova traccia" è stato rimosso
 il 2026-09-02 (vedi Decisioni) e non condiziona più l'implementazione.
 
-**`BOSS_INTRO` non è più fra i momenti di questa card.** [PS-073](./PS-073-musica-boss-dedicata.md)
+**`BOSS_INTRO` non è più fra i momenti di questa card.** [PS-073](../5_completed/PS-073-musica-boss-dedicata.md)
 introduce una traccia Boss dedicata proprio a quell'ingresso: allo scattare
 di `boss_intro_started` la musica di run smette del tutto (crossfade verso la
 traccia Boss), quindi non c'è più una musica di run da "abbassare" in quel
@@ -114,8 +114,8 @@ Non toccare:
 - **2026-09-02 — Vincolo rimosso.** Il proprietario ha tolto esplicitamente
   il divieto di aggiungere nuove tracce/asset audio: non è più un limite né
   per questa card né per il progetto in generale. Nuovi cue o tracce sono
-  ammessi ovunque servano (vedi anche [PS-072](./PS-072-audio-schivata-sesto-senso-equino-bea.md),
-  [PS-073](./PS-073-musica-boss-dedicata.md) e
+  ammessi ovunque servano (vedi anche [PS-072](../5_completed/PS-072-audio-schivata-sesto-senso-equino-bea.md),
+  [PS-073](../5_completed/PS-073-musica-boss-dedicata.md) e
   [PS-075](./PS-075-sfx-morte-nemico.md), che ne fanno uso). Questa card
   resta comunque un ducking leggero sulla musica di run per scelta di
   design (i quattro momenti sono brevi), non per un vincolo di produzione.

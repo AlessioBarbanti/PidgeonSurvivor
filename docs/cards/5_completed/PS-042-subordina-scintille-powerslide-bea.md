@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-042
 titolo: Subordina le scintille della Powerslide al nastro di fuoco
 tipo: fix
 area: arte
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-09-01
+aggiornato: 2026-09-04
 ---
 
 
@@ -65,7 +65,7 @@ danno o collisioni della Powerslide.
 - [x] Le scintille sono più piccole di oggi (`spark_size` corrente: `2.0 +
       spark_index % 3`, quindi 2–4 unità). Ora `1.2 + (spark_index % 3) * 0.6`,
       cioè 1.2–2.4.
-- [ ] Nessun rombo giallo pieno si distingue dal nastro nello screenshot di
+- [x] Nessun rombo giallo pieno si distingue dal nastro nello screenshot di
       confronto sullo stesso punto della scia. Gate percettivo, vedi Gate
       manuali.
 - [x] La famiglia visiva resta `powerslide_ribbon_and_sparks` e
@@ -107,9 +107,9 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows — percorso: attiva la Powerslide di Bea e confronta la
+- [x] Runtime Windows — percorso: attiva la Powerslide di Bea e confronta la
       scia con lo screenshot allegato alla segnalazione.
-- [ ] Controllo percettivo richiesto: sì — solo il proprietario può dichiarare
+- [x] Controllo percettivo richiesto: sì — solo il proprietario può dichiarare
       uniforme la tinta della fiammata.
 
 Validazione statica APK e runtime fisico Pixel 9 non sono pertinenti: la
@@ -141,7 +141,7 @@ modifica non tocca codice di piattaforma, input o lifecycle.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/visual-audio-identity.md`, se la resa concordata cambia il contratto
+- [x] `docs/visual-audio-identity.md`, se la resa concordata cambia il contratto
       di identità visiva della Powerslide.
 
 ## Note

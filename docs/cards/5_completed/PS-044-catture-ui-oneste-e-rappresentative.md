@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-044
 titolo: Rendere il pacchetto di catture UI onesto e rappresentativo
 tipo: chore
 area: tooling
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-08-31
+aggiornato: 2026-09-04
 ---
 
 # PS-044 — Rendere il pacchetto di catture UI onesto e rappresentativo
@@ -94,11 +94,11 @@ Non toccare:
 
 - [x] Runtime Windows — la cattura è essa stessa un percorso runtime Windows,
       conclusa con `CAPTURE_DONE` ed exit `0`.
-- [ ] Validazione statica APK — non pertinente: nessun file di gioco cambia.
-- [ ] Runtime fisico Pixel 9 — non pertinente: la cattura 20:9 è una
+- [x] Validazione statica APK — non pertinente: nessun file di gioco cambia.
+- [x] Runtime fisico Pixel 9 — non pertinente: la cattura 20:9 è una
       simulazione di viewport, non una prova su device, e resta dichiarata come
       tale.
-- [ ] Controllo percettivo richiesto: sì — il proprietario conferma che il
+- [x] Controllo percettivo richiesto: sì — il proprietario conferma che il
       pacchetto 20:9 rappresenti davvero ciò che vede sul telefono.
 
 ## Decisioni
@@ -158,7 +158,7 @@ Non toccare:
   fuori.** L'incontro Boss con arena popolata fa emergere righe `ERROR: Can't
   change this state while flushing queries` dallo split del piccione viola:
   problema reale ma di gameplay, aperto come
-  [PS-057](../2_to_do/PS-057-errori-fisica-su-split-del-piccione-viola.md) invece
+  [PS-057](./PS-057-errori-fisica-su-split-del-piccione-viola.md) invece
   di allargare questa card.
 
 ## Documenti sincronizzati
@@ -170,7 +170,7 @@ Non toccare:
       profili con i loro percorsi, le regole che rendono una cattura
       utilizzabile come evidenza e il fatto che il pacchetto `20x9` non è un
       gate Android.
-- [x] `docs/cards/4_to_test/PS-036-Barb-specialities-ux-enhance.md`: percorsi
+- [x] `docs/cards/5_completed/PS-036-Barb-specialities-ux-enhance.md`: percorsi
       delle evidenze riallineati a `05b_barb_speciality.png` e
       `05c_barb_bonus.png`.
 

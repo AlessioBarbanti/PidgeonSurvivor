@@ -1,10 +1,10 @@
----
+﻿---
 id: PS-089
 titolo: Elimina le sovrapposizioni fra il tema carne delle Specialità e il catalogo powerup ordinario
 tipo: chore
 area: arte
 priorita: media
-stato: PRONTO
+stato: COMPLETATO
 dipende_da: []
 origine: conversazione del proprietario 2026-09-04
 creato: 2026-09-04
@@ -37,19 +37,24 @@ Specialità.
 
 ## Criteri di accettazione
 
-- [ ] Ogni `title` in `data/upgrades/*.tres` **fuori** da
+- [x] Ogni `title` in `data/upgrades/*.tres` **fuori** da
       `data/upgrades/specialities/` è stato controllato contro la regola "non
       è un pezzo/taglio/piatto di carne"; ogni violazione trovata è stata
-      rinominata.
-- [ ] `ability_cooldown` non si chiama più `Bis di Salsiccia` (o qualunque
+      rinominata. Audit testuale su tutti i 17 `.tres` di primo livello
+      (grep su una lista di 25 parole vietate): unica violazione trovata
+      `Bis di Salsiccia`. Copertura permanente in
+      `test_ps089_ordinary_catalog_meat_audit.gd`.
+- [x] `ability_cooldown` non si chiama più `Bis di Salsiccia` (o qualunque
       variante che nomini un salume/taglio di carne); il nuovo titolo resta
-      leggibile come riduzione del cooldown dell'abilità attiva.
-- [ ] `effect_id`, `effect_parameters`, `weight`, `max_rank`, `tags`
+      leggibile come riduzione del cooldown dell'abilità attiva. Rinominato
+      in `Ravviva la Brace!` (primo tentativo `Bis di Brace`, corretto lo
+      stesso giorno su richiesta del proprietario — vedi Decisioni).
+- [x] `effect_id`, `effect_parameters`, `weight`, `max_rank`, `tags`
       meccanici di ogni carta toccata restano bit-per-bit identici: la card
       cambia solo `title`/`description`/`effect_summary`, mai gameplay.
-- [ ] `docs/powerup-catalog.md` riflette i nuovi titoli ovunque il vecchio
+- [x] `docs/powerup-catalog.md` riflette i nuovi titoli ovunque il vecchio
       nome compariva.
-- [ ] Nessuna Specialità di Barb (`data/upgrades/specialities/*.tres`) viene
+- [x] Nessuna Specialità di Barb (`data/upgrades/specialities/*.tres`) viene
       toccata da questa card: la loro tematizzazione resta compito esclusivo
       di PS-078.
 
@@ -76,18 +81,23 @@ Non toccare:
 - Smoke: `tests/unit/test_ps089_ordinary_catalog_meat_audit.gd` → marker
   `ORDINARY_CATALOG_MEAT_AUDIT_SMOKE_OK` — verifica che nessun titolo fuori da
   `specialities/` contenga una delle parole vietate (salsiccia, bistecca,
-  costata, spiedino, filetto, ecc. — lista da fissare in fase di
-  implementazione insieme all'elenco definitivo degli otto nomi Specialità di
-  PS-078, per evitare falsi negativi) e che `effect_id`/`effect_parameters`
-  restino quelli pre-rinomina.
-- Profilo minimo prima della chiusura: `Relevant`.
+  costata, spiedino, filetto, ecc.) e che `effect_id`/`effect_parameters`/
+  `weight`/`max_rank` di `ability_cooldown` restino quelli pre-rinomina.
+- `.\tools\run-milestone-checks.ps1 -Milestone PS-089 -Profile Focused
+  -FocusedSmoke tests/unit/test_ps089_ordinary_catalog_meat_audit.gd
+  -RefreshEditor` → PASS (1/1).
+- `.\tools\run-milestone-checks.ps1 -Milestone PS-089 -Profile Relevant
+  -FocusedSmoke tests/unit/test_ps089_ordinary_catalog_meat_audit.gd
+  -RefreshEditor` → PASS (focused 1/1, regression 10/10), nessun `SCRIPT
+  ERROR`/`FATAL EXCEPTION` nei log.
+- Profilo minimo prima della chiusura: `Relevant` — soddisfatto.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: non richiesto, solo testo
-- [ ] Controllo percettivo richiesto: no per il testo; sì solo se questa card
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: non richiesto, solo testo
+- [x] Controllo percettivo richiesto: no per il testo; sì solo se questa card
       apre la card `art` per una nuova icona (vedi Ambito)
 
 ## Decisioni
@@ -108,10 +118,29 @@ Non toccare:
   serve una card `tipo: art` separata per la nuova icona, delegata
   all'agente Game Art Designer secondo la regola di board — non generata
   dentro questa card.
+- **2026-09-04 — Confermato: l'icona ritrae letteralmente una salsiccia.**
+  Aperta [PS-092](../2_to_do/PS-092-nuova-icona-ravviva-la-brace.md) per la
+  nuova icona, con un possibile prompt di generazione già proposto in nota;
+  resta `PRONTO` in `2_to_do/`, non implementata in questa sessione.
+- **2026-09-04 — Primo tentativo di titolo: `Bis di Brace`.** Restava nel
+  registro brace/cottura già stabilito dal resto del catalogo (`A Tutta
+  Brace!`) invece di utensili o condimenti, conservando l'eco del vecchio
+  "Bis" (ripetizione). **Sostituito lo stesso giorno da `Ravviva la
+  Brace!`**: il proprietario ha giudicato `Bis di Brace` un titolo debole;
+  il nuovo titolo comunica più direttamente "l'abilità è di nuovo pronta"
+  (la brace che si riaccende) invece di limitarsi all'eco del vecchio "bis".
+  Propagato in `data/upgrades/ability_cooldown.tres`,
+  `docs/powerup-catalog.md`, questa card, PS-090 e nei test coinvolti.
+- **2026-09-04 — Manifest asset non toccato.** La riga di
+  `assets/art/icons/upgrades/ASSET-MANIFEST.md` per `Bis di Salsiccia`
+  documenta il file fisico `bis_di_salsiccia.png` tuttora esistente e
+  invariato (icone fuori ambito per questa card): rinominarla nel manifest
+  senza rinominare il file avrebbe reso il manifest inconsistente. La
+  aggiornerà PS-092 insieme al nuovo asset.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/powerup-catalog.md`: nomi aggiornati ovunque compaia il vecchio
+- [x] `docs/powerup-catalog.md`: nomi aggiornati ovunque compaia il vecchio
       titolo.
 
 ## Note

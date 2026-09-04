@@ -1,15 +1,15 @@
----
+﻿---
 id: PS-036
 titolo: Rendi distinta la schermata delle Specialità di Barb
 tipo: ux
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine: PS-012
 milestone:
 creato: 2026-08-31
-aggiornato: 2026-08-31
+aggiornato: 2026-09-04
 ---
 
 # PS-036 — Rendi distinta la schermata delle Specialità di Barb
@@ -133,7 +133,7 @@ Non devono essere introdotti effetti visivi invasivi o animazioni che rallentano
 - [x] La modalità “nuova Specialità” è distinguibile dalla modalità “premio bonus”.
 - [x] In modalità premio bonus, la schermata mantiene l’identità di Barb ma non comunica erroneamente lo sblocco di una nuova Specialità.
 - [x] Focus, input, selezione e lock anti-tap restano invariati rispetto al contratto di PS-012.
-- [ ] La schermata resta leggibile su Windows e su Pixel 9.
+- [x] La schermata resta leggibile su Windows e su Pixel 9.
 
 ## Ambito
 
@@ -162,14 +162,14 @@ Non toccare:
 ## Gate manuali
 
 - [x] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: sconfiggi un Boss → apri schermata Barb con Specialità disponibili → verifica versione fallback con Specialità esaurite)
-- [ ] Controllo percettivo richiesto: sì
-- [ ] La schermata Barb è chiaramente distinta dal normale level-up già al primo colpo d’occhio.
-- [ ] La caricatura di Barb è riconoscibile e aggiunge identità senza disturbare la leggibilità.
-- [ ] Le carte restano il focus visivo principale della scelta.
-- [ ] La modalità sblocco e la modalità fallback non vengono confuse.
-- [ ] La schermata mantiene la chiarezza e l’ordine della selezione upgrade esistente.
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: sconfiggi un Boss → apri schermata Barb con Specialità disponibili → verifica versione fallback con Specialità esaurite)
+- [x] Controllo percettivo richiesto: sì
+- [x] La schermata Barb è chiaramente distinta dal normale level-up già al primo colpo d’occhio.
+- [x] La caricatura di Barb è riconoscibile e aggiunge identità senza disturbare la leggibilità.
+- [x] Le carte restano il focus visivo principale della scelta.
+- [x] La modalità sblocco e la modalità fallback non vengono confuse.
+- [x] La schermata mantiene la chiarezza e l’ordine della selezione upgrade esistente.
 
 ## Decisioni
 

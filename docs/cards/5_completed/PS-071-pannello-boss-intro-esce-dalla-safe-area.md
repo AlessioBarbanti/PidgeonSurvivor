@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-071
 titolo: Il pannello della Boss Intro esce dalla safe area
 tipo: fix
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine: B15
 creato: 2026-09-02
-aggiornato: 2026-09-02
+aggiornato: 2026-09-04
 ---
 
 # PS-071 — Il pannello della Boss Intro esce dalla safe area
@@ -27,11 +27,11 @@ Interno [P: (20.0, 18.5), S: (620.0, 683.0)], esterno [P: (20.0, 20.0), S: (1240
 Il pannello sborda sia in alto (`18.5` contro un top sicuro di `20.0`) sia in
 basso (`18.5 + 683 = 701.5` contro un fondo sicuro di `700.0`). Riprodotto in
 un sandbox Linux con Godot 4.7.1 headless su `HEAD`, prima di qualunque
-modifica di [PS-052](../4_to_test/PS-052-genera-ritratti-evil-e-icone-signature.md):
+modifica di [PS-052](./PS-052-genera-ritratti-evil-e-icone-signature.md):
 non è quindi legato alla produzione dei ritratti Evil/icone Signature, ma a
 un difetto preesistente di `scripts/ui/boss_ui.gd` /
 `scenes/ui/boss_ui.tscn`, la stessa famiglia di problema già risolta da
-[PS-067](../4_to_test/PS-067-carte-upgrade-e-barb-escono-di-6px-dalla-safe-area.md)
+[PS-067](./PS-067-carte-upgrade-e-barb-escono-di-6px-dalla-safe-area.md)
 sugli overlay upgrade/Barb (contenimento nella safe area come vincolo duro,
 non rispettato quando il contenuto del pannello cresce). A differenza di
 quegli overlay, `boss_ui.gd` non espone un metodo `apply_safe_area()` né usa
@@ -88,14 +88,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows: verifica visiva della Boss Intro su almeno un profilo
-      20:9. **Aperto**: nessun ambiente Windows disponibile in questa
-      sessione, solo validazione headless via Godot/GUT.
+- [x] Runtime Windows: verifica visiva della Boss Intro su almeno un profilo
+      20:9. Confermato dal proprietario.
 - [x] Validazione statica APK: non richiesta, il fix resta lato UI 2D
       (nessun asset o preset export toccato).
-- [ ] Runtime fisico Pixel 9: utile se il fix cambia margini condivisi con
-      altri modal, non indispensabile per la sola geometria. **Aperto**:
-      nessun device disponibile in questa sessione.
+- [x] Runtime fisico Pixel 9: confermato dal proprietario.
 - [x] Controllo percettivo richiesto: no, il criterio è geometrico e già
       verificato dagli smoke esistenti.
 

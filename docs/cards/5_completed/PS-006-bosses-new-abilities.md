@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-006
 titolo: Dai agli Evil una Signature Ability
 tipo: feat
 area: gameplay
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: [PS-004]
 origine:
 creato: 2026-08-30
-aggiornato: 2026-08-31
+aggiornato: 2026-09-04
 ---
 
 # PS-006 — Dai agli Evil una Signature Ability
@@ -154,7 +154,7 @@ La Signature non modifica direttamente i comandi del Player.
 * [x] Ogni Signature deriva dall'attiva del personaggio corrispondente.
 * [x] Ogni Signature presenta un telegraph leggibile prima del primo effetto pericoloso.
   Automatico: durante il preavviso non esistono né area né danno. La
-  *leggibilità* percettiva resta un gate manuale aperto.
+  *leggibilità* percettiva è stata confermata dal proprietario.
 * [x] Nessuna Signature infligge danno inevitabile al Player.
 * [x] Ogni Evil conserva almeno un pattern Boss comune oltre alla Signature personale.
   La rotazione diventa salva radiale, colpo mirato, Signature: restano entrambi
@@ -240,20 +240,20 @@ Non modificare:
 
 ## Gate manuali
 
-* [ ] Runtime Windows
-* [ ] Validazione statica APK
-* [ ] Runtime fisico Pixel 9 con almeno un incontro per ogni Evil
-* [ ] Controllo percettivo richiesto: sì
-* [ ] Ogni Signature è riconoscibile prima che produca danno.
-* [ ] Evil diversi richiedono reazioni differenti al Player.
-* [ ] I telegraph restano leggibili insieme ai pattern Boss comuni.
-* [ ] Powerslide di Bea resta leggibile a velocità reale.
-* [ ] La fase fredda di Aleo lascia materialmente il tempo di uscire prima della detonazione.
-* [ ] Gran Piroetta di Alea non produce inseguimenti inevitabili.
-* [ ] La copia annunciata di Lollo è comprensibile senza testo tecnico.
-* [ ] La zona di Migi non rende impossibile danneggiare il Boss per una durata eccessiva.
-* [ ] Il clone di Marghe non viene confuso con il Boss reale.
-* [ ] Nessuna Signature produce residui visivi dopo la morte del Boss.
+* [x] Runtime Windows
+* [x] Validazione statica APK
+* [x] Runtime fisico Pixel 9 con almeno un incontro per ogni Evil
+* [x] Controllo percettivo richiesto: sì
+* [x] Ogni Signature è riconoscibile prima che produca danno.
+* [x] Evil diversi richiedono reazioni differenti al Player.
+* [x] I telegraph restano leggibili insieme ai pattern Boss comuni.
+* [x] Powerslide di Bea resta leggibile a velocità reale.
+* [x] La fase fredda di Aleo lascia materialmente il tempo di uscire prima della detonazione.
+* [x] Gran Piroetta di Alea non produce inseguimenti inevitabili.
+* [x] La copia annunciata di Lollo è comprensibile senza testo tecnico.
+* [x] La zona di Migi non rende impossibile danneggiare il Boss per una durata eccessiva.
+* [x] Il clone di Marghe non viene confuso con il Boss reale.
+* [x] Nessuna Signature produce residui visivi dopo la morte del Boss.
 
 ## Decisioni
 

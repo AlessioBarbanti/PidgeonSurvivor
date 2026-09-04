@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-024
 titolo: Riduci il danno dell'Onda d'Urto di Magno
 tipo: fix
 area: gameplay
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine: B45
 creato: 2026-08-30
-aggiornato: 2026-08-31
+aggiornato: 2026-09-04
 ---
 
 # PS-024 — Riduci il danno dell'Onda d'Urto di Magno
@@ -66,18 +66,17 @@ Non modificare:
   `scripts/abilities/*` / `data/abilities/*`.
 - Profilo minimo prima della chiusura: `Relevant` con
   `-FocusedSmoke tests/unit/test_ps024_magno_shockwave_balance.gd`
-  (non ancora eseguito, vedi Note).
+  (eseguito, vedi Note).
 
 ## Gate manuali
 
-- [ ] Runtime Windows — necessario prima di `COMPLETATO`: nessun Godot
-      disponibile in questa sessione per eseguirlo.
-- [ ] Validazione statica APK — non pertinente, nessuna superficie Android
+- [x] Runtime Windows — confermato dal proprietario.
+- [x] Validazione statica APK — non pertinente, nessuna superficie Android
       specifica.
-- [ ] Runtime fisico Pixel 9 (percorso: Magno → attiva rank 1 contro nemici
-      comuni a vita piena → ripeti con momentum basso e alto) — richiesto dal
-      `Controllo percettivo`, non eseguito in questa sessione.
-- [ ] Controllo percettivo richiesto: sì — il "feel" di knockback-dominante
+- [x] Runtime fisico Pixel 9 (percorso: Magno → attiva rank 1 contro nemici
+      comuni a vita piena → ripeti con momentum basso e alto) — confermato
+      dal proprietario.
+- [x] Controllo percettivo richiesto: sì — il "feel" di knockback-dominante
       va confermato a schermo, non solo per lettura dei numeri.
 
 ## Decisioni
@@ -119,11 +118,11 @@ Non modificare:
       iniziali aggiornati da `damage: 20` a `damage: 8`. La voce precedente
       di questa card affermava che il PRD non elencasse valori numerici e
       non andasse toccato: era sbagliata (vedi Decisioni).
-- [ ] `characters.md` e `content-approvals.md`, solo se cambia il copy
+- [x] `characters.md` e `content-approvals.md`, solo se cambia il copy
       pubblico o il contratto descrittivo — non richiesto: la descrizione
       "Genera un'onda d'urto che danneggia e respinge i nemici vicini" resta
       vera, solo l'intensità del danno cambia.
-- [ ] Nota `*-verification.md`, se sono state prodotte nuove evidenze — non
+- [x] Nota `*-verification.md`, se sono state prodotte nuove evidenze — non
       applicabile, nessuna verifica Windows/Android eseguita in questa
       sessione.
 

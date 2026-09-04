@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-004
 titolo: Lega Tempesta di Tuoni al danno recuperabile
 tipo: feat
 area: gameplay
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: [PS-003]
 origine: B43
 creato: 2026-08-29
-aggiornato: 2026-08-30
+aggiornato: 2026-09-04
 ---
 
 # PS-004 — Lega Tempesta di Tuoni al danno recuperabile
@@ -126,18 +126,18 @@ Tempesta di Tuoni non applica knockback, slow o controllo radiale.
 
 ## Gate manuali
 
-* [ ] Runtime Windows
-* [ ] Validazione statica APK
-* [ ] Runtime fisico Pixel 9: Zat → accumula progressivamente danno recuperabile → verifica verde/giallo/rosso → attiva il Tuono nelle tre fasce
-* [ ] Controllo percettivo richiesto: sì
-* [ ] 1/2/3 fulmini restano leggibili con orde dense.
-* [ ] Verde/giallo/rosso restano distinguibili durante il gameplay.
-* [ ] Le tre velocità di rotazione risultano chiaramente differenti.
-* [ ] La fascia rossa comunica chiaramente uno stato di alta carica.
-* [ ] Il VFX non viene confuso con proiettili o telegraph ostili.
-* [ ] **Ereditato da PS-003**: la salute recuperabile è comprensibile durante
+* [x] Runtime Windows
+* [x] Validazione statica APK
+* [x] Runtime fisico Pixel 9: Zat → accumula progressivamente danno recuperabile → verifica verde/giallo/rosso → attiva il Tuono nelle tre fasce
+* [x] Controllo percettivo richiesto: sì
+* [x] 1/2/3 fulmini restano leggibili con orde dense.
+* [x] Verde/giallo/rosso restano distinguibili durante il gameplay.
+* [x] Le tre velocità di rotazione risultano chiaramente differenti.
+* [x] La fascia rossa comunica chiaramente uno stato di alta carica.
+* [x] Il VFX non viene confuso con proiettili o telegraph ostili.
+* [x] **Ereditato da PS-003**: la salute recuperabile è comprensibile durante
   una run reale guardando l'aura.
-* [ ] Tempesta di Tuoni non viene percepita come la shockwave di Magno.
+* [x] Tempesta di Tuoni non viene percepita come la shockwave di Magno.
 
 ## Decisioni
 

@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-037
 titolo: Alza la probabilità Evil Boss dal 25% al 50%
 tipo: chore
 area: gameplay
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine: B22
 creato: 2026-08-31
-aggiornato: 2026-08-31
+aggiornato: 2026-09-04
 ---
 
 # PS-037 — Alza la probabilità Evil Boss dal 25% al 50%
@@ -95,7 +95,7 @@ Non modificare:
 ## Gate manuali
 
 - [x] Runtime Windows — project smoke dell'evidenza `Full` preesistente.
-- [ ] Validazione statica APK
+- [x] Validazione statica APK
 - [x] Runtime fisico Pixel 9 (percorso: non richiesto, nessuna superficie
       touch coinvolta)
 - [x] Controllo percettivo richiesto: no

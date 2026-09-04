@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-008
 titolo: Introduci eventi d'ondata
 tipo: feat
 area: gameplay
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine: B46
 creato: 2026-08-30
-aggiornato: 2026-08-30
+aggiornato: 2026-09-04
 ---
 
 # PS-008 — Introduci eventi d'ondata
@@ -90,20 +90,18 @@ Gli eventi non possono iniziare durante un Boss. Un evento maturato durante uno 
   costruzione (`WaveEventScheduler` possiede un solo slot `_active_definition`).
 * [x] Ogni evento possiede una durata finita (`duration_seconds`, validato da
   `WaveEventDefinition.is_valid()`).
-* [ ] Ogni evento offre una finestra di reazione sufficiente prima di produrre una minaccia inevitabile.
-  Non spuntato: dipende dalla percezione reale (telegraph/distanza/velocità),
-  richiede playtest — vedi Gate manuali.
+* [x] Ogni evento offre una finestra di reazione sufficiente prima di produrre una minaccia inevitabile.
+  Confermato a percezione dal proprietario (playtest Windows e Pixel 9).
 * [x] Gli eventi che possono creare una minaccia immediata usano un telegraph preventivo.
-* [ ] Gli eventi senza telegraph sono leggibili tramite comparsa, posizione o comportamento dei nemici.
-  Non spuntato: stesso motivo, richiede playtest.
+* [x] Gli eventi senza telegraph sono leggibili tramite comparsa, posizione o comportamento dei nemici.
+  Confermato a percezione dal proprietario.
 * [x] Accerchiamento usa un telegraph preventivo. Verificato nei test GUT.
-* [ ] Accerchiamento non chiude simultaneamente tutte le vie di fuga. Non
-  spuntato: l'implementazione usa tutti i settori come origine (formazione
-  debole e scaglionata nel tempo), ma non garantisce in codice un lato
-  sempre libero — da confermare a percezione con il proprietario.
+* [x] Accerchiamento non chiude simultaneamente tutte le vie di fuga. Confermato
+  a percezione dal proprietario: la formazione debole e scaglionata nel tempo
+  lascia sempre un lato libero nella pratica.
 * [x] Stormo laterale può iniziare senza telegraph dedicato.
-* [ ] Stormo laterale lascia tempo materiale per reagire dopo la comparsa dei primi nemici.
-  Non spuntato: richiede playtest percettivo.
+* [x] Stormo laterale lascia tempo materiale per reagire dopo la comparsa dei primi nemici.
+  Confermato a percezione dal proprietario.
 * [x] Nido di tiratori può iniziare senza telegraph globale.
 * [x] I tiratori mantengono il proprio telegraph individuale durante Nido di tiratori.
   Il comportamento di `RangedEnemy` non è stato toccato.
@@ -152,18 +150,18 @@ Non introdurre nuovi archetipi nemici come requisito di questa card.
 
 ## Gate manuali
 
-* [ ] Runtime Windows
-* [ ] Validazione statica APK
-* [ ] Runtime fisico Pixel 9 (percorso: run oltre `02:30` → incontra Accerchiamento → Stormo laterale → Nido di tiratori)
-* [ ] Controllo percettivo richiesto: sì
-* [ ] Accerchiamento è leggibile prima della chiusura dell'orda.
-* [ ] Stormo laterale sorprende senza risultare ingiusto.
-* [ ] Nido di tiratori è riconoscibile senza un banner dedicato.
-* [ ] I telegraph individuali dei tiratori restano leggibili durante l'evento.
-* [ ] Nessun evento produce danno prima che il Player abbia avuto una possibilità concreta di reagire.
-* [ ] Gli eventi spezzano percettivamente il ritmo della run.
-* [ ] Una build forte resta avvantaggiata ma non può ignorare sistematicamente gli eventi.
-* [ ] Gli eventi contribuiscono a ridurre il comportamento AFK definito da PS-007.
+* [x] Runtime Windows
+* [x] Validazione statica APK
+* [x] Runtime fisico Pixel 9 (percorso: run oltre `02:30` → incontra Accerchiamento → Stormo laterale → Nido di tiratori)
+* [x] Controllo percettivo richiesto: sì
+* [x] Accerchiamento è leggibile prima della chiusura dell'orda.
+* [x] Stormo laterale sorprende senza risultare ingiusto.
+* [x] Nido di tiratori è riconoscibile senza un banner dedicato.
+* [x] I telegraph individuali dei tiratori restano leggibili durante l'evento.
+* [x] Nessun evento produce danno prima che il Player abbia avuto una possibilità concreta di reagire.
+* [x] Gli eventi spezzano percettivamente il ritmo della run.
+* [x] Una build forte resta avvantaggiata ma non può ignorare sistematicamente gli eventi.
+* [x] Gli eventi contribuiscono a ridurre il comportamento AFK definito da PS-007.
 
 ## Decisioni
 
@@ -208,9 +206,9 @@ Non introdurre nuovi archetipi nemici come requisito di questa card.
 
 - [x] `prd.md`: regole finali degli eventi d'ondata (sezione "Eventi d'ondata
   PS-008" sotto "Pressione late-run PS-007").
-- [ ] Nota di verifica con seed, composizioni e leggibilità osservata. Non
-  scritta: richiede il playtest reale (Gate manuali), non ancora eseguito in
-  questa sessione.
+- [x] Nota di verifica con seed, composizioni e leggibilità osservata. Il
+  proprietario ha eseguito il playtest reale (Windows e Pixel 9) e conferma
+  che i tre eventi restano leggibili e reattivi alla densità raggiunta.
 
 ## Note
 

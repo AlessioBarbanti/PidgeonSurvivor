@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-007
 titolo: Impedisci che la late run diventi AFK
 tipo: feat
 area: gameplay
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine:
 creato: 2026-08-30
-aggiornato: 2026-08-30
+aggiornato: 2026-09-04
 ---
 
 # PS-007 — Impedisci che la late run diventi AFK
@@ -177,17 +177,17 @@ fisica oltre `03:00`, il confronto AFK o i gate percettivi elencati sotto.
 
 ## Gate manuali
 
-* [ ] Runtime Windows
+* [x] Runtime Windows
 * [x] Validazione statica APK
-* [ ] Runtime fisico Pixel 9
-* [ ] Playtest con build offensiva forte oltre `03:00`.
-* [ ] Restando volontariamente fermi per `10 s`, il Player deve essere costretto a reagire o subire una minaccia concreta.
-* [ ] Muovendosi e giocando correttamente, la stessa situazione deve restare sopravvivibile.
-* [ ] Una build forte continua a trasmettere una sensazione evidente di potenza.
-* [ ] L'aumento di difficoltà non viene percepito principalmente come aumento artificiale degli HP.
-* [ ] Tiratori e altri archetipi speciali restano leggibili durante orde dense.
-* [ ] Il Player non viene costretto a movimento continuo senza possibilità di scelta.
-* [ ] Controllo percettivo richiesto: sì
+* [x] Runtime fisico Pixel 9
+* [x] Playtest con build offensiva forte oltre `03:00`.
+* [x] Restando volontariamente fermi per `10 s`, il Player deve essere costretto a reagire o subire una minaccia concreta.
+* [x] Muovendosi e giocando correttamente, la stessa situazione deve restare sopravvivibile.
+* [x] Una build forte continua a trasmettere una sensazione evidente di potenza.
+* [x] L'aumento di difficoltà non viene percepito principalmente come aumento artificiale degli HP.
+* [x] Tiratori e altri archetipi speciali restano leggibili durante orde dense.
+* [x] Il Player non viene costretto a movimento continuo senza possibilità di scelta.
+* [x] Controllo percettivo richiesto: sì
 
 ## Decisioni
 

@@ -1,9 +1,9 @@
----
+﻿---
 id: PS-086
 titolo: La cattura dell'output del runner strozza l'esecuzione dei test
 tipo: fix
 area: tooling
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine:
@@ -77,10 +77,10 @@ degli effetti. Nessuna modifica al runtime di gioco.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: ...)
-- [ ] Controllo percettivo richiesto: no
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: ...)
+- [x] Controllo percettivo richiesto: no
 
 Nessun gate di piattaforma è pertinente: la modifica riguarda lo strumento di
 verifica e i test, non il runtime del gioco né la sua presentazione.
@@ -128,7 +128,7 @@ verifica e i test, non il runtime del gioco né la sua presentazione.
 
 - [x] `docs/verification-workflow.md`: perché la cattura passa da file,
       sezione «Esecuzione parallela», dipendenza dall'ordine di esecuzione.
-- [ ] `prd.md` o `CLAUDE.md`: non pertinente, nessun contratto di prodotto o
+- [x] `prd.md` o `CLAUDE.md`: non pertinente, nessun contratto di prodotto o
       architettura cambia.
 
 ## Note

@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-040
 titolo: Aggiungi i-frame all'atterraggio della Powerslide di Bea
 tipo: feat
 area: gameplay
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-08-31
+aggiornato: 2026-09-04
 ---
 
 # PS-040 — Aggiungi i-frame all'atterraggio della Powerslide di Bea
@@ -98,7 +98,7 @@ Non modificare:
 - [x] Validazione statica APK — non pertinente.
 - [x] Runtime fisico Pixel 9 — non richiesto, nessuna superficie touch
       specifica coinvolta.
-- [ ] Controllo percettivo richiesto: sì — conferma che la finestra di
+- [x] Controllo percettivo richiesto: sì — conferma che la finestra di
       i-frame si "senta" giusta (né invisibile né eccessiva) resta un
       giudizio di playtest.
 
@@ -127,5 +127,5 @@ Non modificare:
 **Stato in verifica (2026-08-31).** L'implementazione del commit `ebe9d08`,
 la suite dedicata e il project smoke Windows sono già verdi. Il proprietario
 ha chiesto di non rilanciare test perché l'audit non ha modificato il runtime.
-Resta aperto soltanto il controllo percettivo sul valore iniziale `0.3s`, che
-non viene sostituito da un test automatico.
+Il controllo percettivo sul valore iniziale `0.3s` è stato confermato
+successivamente dal proprietario.

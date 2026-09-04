@@ -22,7 +22,7 @@ chiude più la run: lo stato resta dormiente, come registrato in
 [ui-ux-flow.md](../../ui-ux-flow.md).
 
 Finché la domanda non ha una risposta esplicita, la schermata terminale, il
-riepilogo finale di [PS-053](../2_to_do/PS-053-riepilogo-finale-della-run.md), i
+riepilogo finale di [PS-053](../5_completed/PS-053-riepilogo-finale-della-run.md), i
 record e la futura Difesa Grigliata restano ambigui: non si sa
 se Survival possa essere "vinta" o solo sopravvissuta.
 

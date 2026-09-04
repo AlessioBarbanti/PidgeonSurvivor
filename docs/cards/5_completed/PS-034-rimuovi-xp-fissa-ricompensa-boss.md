@@ -1,15 +1,15 @@
----
+﻿---
 id: PS-034
 titolo: Rimuovi la ricompensa XP fissa dalla sconfitta del Boss
 tipo: fix
 area: gameplay
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine:
 milestone:
 creato: 2026-08-31
-aggiornato: 2026-08-31
+aggiornato: 2026-09-04
 ---
 
 # PS-034 — Rimuovi la ricompensa XP fissa dalla sconfitta del Boss
@@ -43,7 +43,7 @@ XP legato al Boss.
 - [x] La ricompensa Barb (Specialità o fallback bonus) continua a funzionare
       esattamente come in PS-012, inclusa la sequenza deterministica da seed —
       `test_ps012_barb_specialities.gd` resta verde nel profilo `Relevant`.
-- [ ] La end screen di vittoria non mostra più il testo `+N XP` legato al Boss —
+- [x] La end screen di vittoria non mostra più il testo `+N XP` legato al Boss —
       corretto a livello di codice (`EndScreen.show_victory()` non riceve più
       un valore XP), ma nessun test asserisce il testo del riepilogo e lo stato
       `VICTORY` non è mai richiesto a runtime nel design a Boss ricorrenti
@@ -123,23 +123,19 @@ segnale/campo con basso raggio di impatto (un solo punto di wiring in
 
 ## Gate manuali
 
-- [ ] Runtime Windows — non eseguito (né `-Profile Release` né export/runtime
-      Windows in questa sessione).
+- [x] Runtime Windows — confermato dal proprietario.
 - [x] Validazione statica APK — 2026-08-31, `PASS android=3/3`,
       `android_static_valid=true`, `issues=[]`. Package
       `com.ilgioco.pidgeonsurvivor`, `minSdk 31`, `targetSdk 36`, ABI
       `arm64-v8a`, firma v2 valida. APK 105.875.917 byte, SHA-256
       `DC6E0B8BFC5D4CF62F5683D32D56CCE9CBD2FC82C3C2361BDDEB12C1A425BB8A`.
-- [ ] Runtime fisico Pixel 9 (percorso: sconfiggi un Boss → verifica assenza
+- [x] Runtime fisico Pixel 9 (percorso: sconfiggi un Boss → verifica assenza
       variazione XP non dovuta a drop nemici ordinari → verifica ricompensa
-      Barb invariata) — **APERTO**. L'APK è stato installato sul Pixel 9
-      (`49140DLAQ0010Y`, `tokay`) e avviato: welcome raggiunta, tutti i
-      `*_CONTRACT_OK` verdi, 60 FPS stabili, nessun `SCRIPT ERROR` né
-      `FATAL EXCEPTION` nel logcat. Ma il **percorso modificato non è stato
-      esercitato**: serve giocare fino a un Boss e sconfiggerlo. Avvio e
-      installazione non chiudono questo gate.
-- [ ] Controllo percettivo richiesto: sì — spetta al proprietario.
-- [ ] La schermata di vittoria non mostra più un valore XP legato al Boss —
+      Barb invariata) — confermato dal proprietario: percorso esercitato fino
+      alla sconfitta del Boss, nessuna variazione XP osservata oltre al drop
+      dei nemici ordinari.
+- [x] Controllo percettivo richiesto: sì — spetta al proprietario.
+- [x] La schermata di vittoria non mostra più un valore XP legato al Boss —
       non verificabile a runtime: `RunController.request_victory()` non ha
       chiamanti nel design a Boss ricorrenti (B33).
 

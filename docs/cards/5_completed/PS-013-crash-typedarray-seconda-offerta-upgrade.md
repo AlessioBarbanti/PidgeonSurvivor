@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-013
 titolo: Correggi il crash TypedArray alla seconda offerta upgrade
 tipo: fix
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine:
 creato: 2026-08-30
-aggiornato: 2026-08-30
+aggiornato: 2026-09-04
 ---
 
 # PS-013 — Correggi il crash TypedArray alla seconda offerta upgrade
@@ -75,13 +75,12 @@ Non modificare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows — **aperto**: non eseguito, serve una partita reale
-      fino ad almeno due level-up.
-- [ ] Validazione statica APK — **aperto**: nessun export prodotto in questa
-      sessione.
-- [ ] Runtime fisico Pixel 9 (percorso: gioca fino ad almeno due level-up
+- [x] Runtime Windows — confermato dal proprietario: partita reale fino ad
+      almeno due level-up.
+- [x] Validazione statica APK — confermato dal proprietario.
+- [x] Runtime fisico Pixel 9 (percorso: gioca fino ad almeno due level-up
       nella stessa run, verifica assenza di comportamenti anomali sul focus
-      delle carte) — **aperto**: device non collegato.
+      delle carte) — confermato dal proprietario sul device.
 - [x] Controllo percettivo richiesto: no
 
 ## Decisioni

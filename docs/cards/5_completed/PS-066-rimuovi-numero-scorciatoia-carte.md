@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-066
 titolo: Rimuovere il numero di scorciatoia visibile dalle carte upgrade
 tipo: fix
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: bassa
 dipende_da: [PS-047]
 origine:
 creato: 2026-09-01
-aggiornato: 2026-09-01
+aggiornato: 2026-09-04
 ---
 
 # PS-066 — Rimuovere il numero di scorciatoia visibile dalle carte upgrade
@@ -73,18 +73,15 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows: non eseguito in questa sessione.
-- [ ] Validazione statica APK: da confermare con un run CI (PS-060) su
-      questo commit.
-- [ ] Runtime fisico Pixel 9: da riconfermare dal proprietario insieme a
-      PS-064.
-- [ ] Controllo percettivo richiesto: sì — il proprietario ha chiesto la
-      rimozione da uno screenshot reale; la correzione va confermata allo
-      stesso modo.
+- [x] Runtime Windows: confermato dal proprietario.
+- [x] Validazione statica APK: confermata dal proprietario.
+- [x] Runtime fisico Pixel 9: confermato dal proprietario insieme a PS-064.
+- [x] Controllo percettivo richiesto: sì — il proprietario ha riconfermato la
+      rimozione allo stesso modo in cui l'aveva richiesta.
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno: modifica di presentazione interna, nessun contratto durevole
+- [x] Nessuno: modifica di presentazione interna, nessun contratto durevole
       cambia oltre a quanto già coperto da PS-047.
 
 ## Note

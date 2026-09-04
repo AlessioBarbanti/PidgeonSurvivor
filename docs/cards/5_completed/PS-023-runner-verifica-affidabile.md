@@ -1,14 +1,14 @@
----
+﻿---
 id: PS-023
 titolo: Rendi leggibile e non bloccante il runner di verifica
 tipo: chore
 area: tooling
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine:
 creato: 2026-08-30
-aggiornato: 2026-09-02
+aggiornato: 2026-09-04
 ---
 
 # PS-023 — Rendi leggibile e non bloccante il runner di verifica

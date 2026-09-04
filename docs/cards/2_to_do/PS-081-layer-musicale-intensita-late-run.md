@@ -45,7 +45,7 @@ esistente.
       `EnemySpawnProfile` (`late_run_curve_start_seconds`/
       `late_run_curve_full_seconds`) invece di introdurne di nuove duplicate.
 - [ ] Durante `BOSS_INTRO` (di competenza esclusiva di
-      [PS-073](./PS-073-musica-boss-dedicata.md)) sia il loop di base sia il
+      [PS-073](../5_completed/PS-073-musica-boss-dedicata.md)) sia il loop di base sia il
       layer si interrompono insieme; al ritorno alla musica di run dopo la
       sconfitta del Boss, il layer riprende dal livello di intensità
       corretto per il tempo di run trascorso, non da zero.
