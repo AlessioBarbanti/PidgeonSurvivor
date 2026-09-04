@@ -1,17 +1,17 @@
 ---
 id: PS-078
-titolo: Tematizza il catalogo delle Specialità di Barb come piatti speciali del grigliatore
+titolo: Tematizza le Specialità di Barb come pezzi di carne alla griglia
 tipo: art
 area: arte
-stato: BLOCCATO
+stato: PRONTO
 priorita: media
 dipende_da: [PS-077]
 origine:
 creato: 2026-09-02
-aggiornato: 2026-09-02
+aggiornato: 2026-09-04
 ---
 
-# PS-078 — Tematizza il catalogo delle Specialità di Barb come piatti speciali del grigliatore
+# PS-078 — Tematizza le Specialità di Barb come pezzi di carne alla griglia
 
 ## Contesto
 
@@ -27,29 +27,43 @@ icone restano un linguaggio generico da upgrade d'arma/abilità, scollegato
 dall'identità di Barb come grigliatore che premia il Player con un "pezzo
 speciale" dopo ogni Boss: `Gossip`, `Colpo Perforante`, `Raffica Doppia`,
 `Esplosione Finale`, e — dopo
-[PS-077](./PS-077-espandi-pool-specialita-barb.md) — anche `L'Ansia`,
+[PS-077](../4_to_test/PS-077-espandi-pool-specialita-barb.md) — anche `L'Ansia`,
 `Birre di classe di Lollo`, `Ritardo Cronico`, `Non Ho Tempo Per Questo`.
 Le icone attuali di queste ultime quattro (`anxiety.png`, `beer.png`,
 `chronic_delay.png`, `no_time.png`) non appartengono al linguaggio visivo
 grigliatore già stabilito per il resto del catalogo.
 
+La finzione che regge la ricompensa la rende più precisa di un generico
+"tema barbecue". Barb è il grigliatore, e il Boss è la minaccia da cui il
+Player lo difende: mentre il Player regge lo scontro, Barb ha il tempo di
+cucinare. Quello che consegna alla fine non è un attrezzo né un condimento —
+è **un pezzo di carne**, la sua specialità, cotta apposta. Le otto Specialità
+sono quindi tutte tagli e pezzi di carne alla griglia, ed è esattamente
+questo a distinguerle a colpo d'occhio dal catalogo statistico ordinario, che
+resta sul registro più largo di utensili, pirofile, brace e condimenti.
+
 ## Comportamento atteso
 
-Ognuna delle otto Specialità si presenta come un pezzo/piatto speciale del
-menù di Barb: nome, descrizione e icona coerenti con l'identità grigliatore
-già stabilita per il resto del catalogo, senza alterare l'effetto meccanico
-che rappresentano.
+Ognuna delle otto Specialità si presenta come un pezzo di carne alla griglia
+cucinato da Barb: nome, descrizione e icona di un taglio riconoscibile,
+coerenti con l'identità grigliatore già stabilita per il resto del catalogo,
+senza alterare l'effetto meccanico che rappresentano.
 
 ## Criteri di accettazione
 
-- [ ] Ognuna delle otto Specialità ha un nome tematizzato attorno
-      all'identità di pezzo/piatto speciale di Barb (grigliata, carne,
-      brace, condimenti, utensili), mantenendo leggibile a colpo d'occhio
-      l'effetto rappresentato.
-- [ ] Ogni Specialità ha una nuova icona coerente con la direzione visiva
-      dichiarata in `docs/powerup-catalog.md` (nessun piccione come
-      soggetto principale, stile pixel-art già stabilito nel resto del
-      catalogo).
+- [ ] Ognuna delle otto Specialità ha per nome un pezzo di carne alla
+      griglia — un taglio o una preparazione riconoscibile, non un utensile
+      e non un condimento — mantenendo leggibile a colpo d'occhio l'effetto
+      rappresentato.
+- [ ] Gli otto nomi non si ripetono e non si sovrappongono ai nomi già usati
+      dal catalogo statistico ordinario (`A Tutta Brace!`, `Pinza Lunga`,
+      `Il condimento di Barb`, `Forchettone da Braciere`, ecc.).
+- [ ] Ogni Specialità ha una nuova icona che raffigura quel pezzo di carne,
+      coerente con la direzione visiva dichiarata in
+      `docs/powerup-catalog.md` (nessun piccione come soggetto principale,
+      stile pixel-art già stabilito nel resto del catalogo).
+- [ ] Le otto icone si leggono come una famiglia: un menù di tagli diversi
+      dello stesso grigliatore, non otto illustrazioni scollegate.
 - [ ] `effect_id`, `effect_parameters`, `weight`, `max_rank` e ogni altro
       dato meccanico restano bit-per-bit identici: la card cambia solo
       identità (`title`, `description`, `effect_summary`, `icon`), mai
@@ -94,16 +108,36 @@ Non toccare:
 - [ ] Validazione statica APK
 - [ ] Runtime fisico Pixel 9: apri la schermata Barb con le nuove
       Specialità, verifica leggibilità di nome e icona a dimensione reale
-- [ ] Controllo percettivo richiesto: sì — le otto icone devono leggersi
-      come pezzi/piatti distinti del menù di Barb, non solo come restyle
-      cosmetico casuale
+- [ ] Controllo percettivo richiesto: sì — le otto icone devono leggersi come
+      otto pezzi di carne distinti dello stesso menù, riconoscibili l'uno
+      dall'altro a dimensione carta, non come restyle cosmetico casuale
+- [ ] Approvazione del proprietario sugli otto nomi prima di generare le
+      icone: il nome decide il soggetto del disegno, rifarlo dopo costa una
+      seconda generazione
 
 ## Decisioni
 
-- **2026-09-02 — Bloccata da PS-077.** PS-077 è ancora `PRONTO`, non ha
-  raggiunto `IN VERIFICA`: questa card resta `BLOCCATO` finché PS-077 non
-  arriva almeno a quello stato, coerente con la regola di dipendenza della
-  board. Si sblocca da sola quando PS-077 entra in `4_to_test/`.
+- **2026-09-04 — Il tema è "pezzo di carne", non "barbecue" in generale.**
+  Richiesta esplicita del proprietario, con la sua motivazione narrativa: il
+  Player difende Barb dal Boss, Barb ne approfitta per cucinare e consegna la
+  sua specialità, cioè un pezzo di carne. Il criterio passa quindi da
+  "coerente col mondo grigliatore" (che ammetteva anche utensili e
+  condimenti) a "è un taglio di carne alla griglia", che è più stretto e
+  rende le otto carte immediatamente distinguibili dal catalogo ordinario.
+- **2026-09-04 — Il catalogo statistico ordinario non viene rinominato.**
+  Confermato dal proprietario: le Specialità di Barb sono pezzi di carne, le
+  altre carte restano a tema ma non sono carne — forchettone, condimento,
+  pinza, pirofila. Sono due registri distinti dentro lo stesso mondo
+  grigliatore, ed è proprio quel contrasto a far leggere una Specialità come
+  "il pezzo speciale" invece che come l'ennesimo attrezzo. La divisione è
+  anche il criterio anti-collisione: se un nome di questa card potesse stare
+  nel catalogo ordinario, non è abbastanza "carne".
+- **2026-09-04 — Sbloccata.** PS-077 è entrata in `4_to_test/` con stato
+  `IN VERIFICA`: la regola di dipendenza della board è soddisfatta e questa
+  card passa a `PRONTO`.
+- **2026-09-02 — Bloccata da PS-077.** PS-077 era ancora `PRONTO`, non aveva
+  raggiunto `IN VERIFICA`: la card è restata `BLOCCATO` fino a quel momento,
+  coerente con la regola di dipendenza della board.
 - **2026-09-02 — Card `art`: delega a `game-art-designer`.** Richiede nuove
   icone generate, non solo adattamento di arte esistente; per contratto di
   board (`docs/cards/README.md`) va delegata all'agente Game Art Designer,
@@ -125,4 +159,6 @@ Non toccare:
 
 Se in fase di implementazione il nuovo nome di una carta rendesse l'effetto
 meno leggibile rispetto a oggi, va preferita la leggibilità: segnalarlo
-invece di forzare un titolo a effetto ma ambiguo.
+invece di forzare un titolo a effetto ma ambiguo. Il vincolo "pezzo di carne"
+riguarda il soggetto, non impedisce di qualificarlo: un taglio più una parola
+che punta all'effetto resta dentro il tema e mantiene la carta leggibile.

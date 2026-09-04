@@ -126,7 +126,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-075](./2_to_do/PS-075-sfx-morte-nemico.md) | Aggiungi un SFX alla morte dei nemici | feat | audio | PRONTO | media | — |
 | [PS-076](./4_to_test/PS-076-aumenta-densita-nemica-a-schermo.md) | Aumenta la densità nemica a schermo a parità di rischio e progressione | chore | gameplay | IN VERIFICA | alta | — |
 | [PS-077](./4_to_test/PS-077-espandi-pool-specialita-barb.md) | Espandi il pool delle Specialità di Barb con le carte signature rimaste | feat | gameplay | IN VERIFICA | media | PS-012 |
-| [PS-078](./2_to_do/PS-078-tematizza-catalogo-specialita-barb.md) | Tematizza il catalogo delle Specialità di Barb come piatti speciali del grigliatore | art | arte | BLOCCATO | media | PS-077 |
+| [PS-078](./3_in_sprint/PS-078-tematizza-catalogo-specialita-barb.md) | Tematizza le Specialità di Barb come pezzi di carne alla griglia | art | arte | PRONTO | media | PS-077 |
 | [PS-079](./4_to_test/PS-079-particellare-tell-stato-personaggi.md) | Sostituisci il contorno bocciato con un particellare non aderente | ux | arte | IN VERIFICA | alta | — |
 | [PS-080](./2_to_do/PS-080-musica-vittoria-sconfitta.md) | Aggiungi una musica dedicata a vittoria e sconfitta | feat | audio | PRONTO | media | — |
 | [PS-081](./2_to_do/PS-081-layer-musicale-intensita-late-run.md) | Aggiungi un layer musicale di intensità crescente late-run | feat | audio | PRONTO | media | — |
@@ -135,3 +135,8 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-084](./4_to_test/PS-084-direzione-visuale-per-personaggio-e-reference-cast.md) | Documentare la direzione visuale per personaggio e collegarla agli agenti art | chore | arte | IN VERIFICA | media | — |
 | [PS-085](./2_to_do/PS-085-introduci-sparo-manuale-con-secondo-joystick.md) | Introduci lo sparo manuale come modalità alternativa allo sparo automatico | feat | gameplay | PRONTO | media | — |
 | [PS-086](./4_to_test/PS-086-cattura-output-runner-strozza-i-test.md) | La cattura dell'output del runner strozza l'esecuzione dei test | fix | tooling | IN VERIFICA | alta | — |
+| [PS-087](./3_in_sprint/PS-087-definisci-statistiche-base-personaggi.md) | Definisci gli scarti di statistiche base per personaggio | chore | gameplay | PRONTO | alta | — |
+| [PS-088](./3_in_sprint/PS-088-verifica-differenziazione-statistiche-personaggi.md) | Verifica automaticamente la differenziazione statistica dei personaggi | chore | tooling | BLOCCATO | alta | PS-087 |
+| [PS-089](./3_in_sprint/PS-089-elimina-sovrapposizioni-tema-carne-powerup.md) | Elimina le sovrapposizioni fra il tema carne delle Specialità e il catalogo powerup ordinario | chore | arte | PRONTO | media | — |
+| [PS-090](./3_in_sprint/PS-090-separa-generazione-integrazione-card-art.md) | Separa generazione asset e integrazione nel workflow delle card tipo art | chore | tooling | PRONTO | media | — |
+| [PS-091](./3_in_sprint/PS-091-genera-placeholder-powerup-nuove-statistiche.md) | Genera i placeholder icona per i powerup di eventuali nuove statistiche | art | arte | BLOCCATO | bassa | PS-087, PS-090 |
