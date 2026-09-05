@@ -251,7 +251,8 @@
         "tests/unit/test_ps045_arena_visual_hierarchy.gd",
         "tests/unit/test_ps053_run_summary.gd",
         "tests/unit/test_ps072_bea_dodge_audio.gd",
-        "tests/unit/test_ps073_boss_dedicated_music.gd"
+        "tests/unit/test_ps073_boss_dedicated_music.gd",
+        "tests/unit/test_ps082_camera_recenter_on_restart.gd"
       ]
     },
     {

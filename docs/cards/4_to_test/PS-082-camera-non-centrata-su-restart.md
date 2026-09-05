@@ -3,12 +3,12 @@ id: PS-082
 titolo: Ricentra davvero la camera sul personaggio al restart
 tipo: fix
 area: gameplay
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-09-02
-aggiornato: 2026-09-02
+aggiornato: 2026-09-05
 ---
 
 # PS-082 — Ricentra davvero la camera sul personaggio al restart
@@ -50,15 +50,22 @@ intermedio in cui la camera è ancora spostata rispetto al player.
 
 ## Criteri di accettazione
 
-- [ ] Dopo un restart, la posizione sullo schermo del player coincide con il
+- [x] Dopo un restart, la posizione sullo schermo del player coincide con il
       centro del viewport di gioco (entro l'arrotondamento in pixel), sia se
       il restart avviene subito dopo l'avvio sia dopo che la camera si è
-      spostata per effetto del drag durante la run precedente.
-- [ ] Nessun frame visibile mostra la camera ancora spostata rispetto al
+      spostata per effetto del drag durante la run precedente. Verificato in
+      automatico; resta aperto il controllo percettivo su device/Windows
+      reale (vedi Gate manuali).
+- [x] Nessun frame visibile mostra la camera ancora spostata rispetto al
       player prima dello snap (non un'interpolazione che si conclude dopo
-      il restart, uno snap immediato).
-- [ ] Il comportamento di drag/smoothing della camera durante il gameplay
-      normale (fuori dal restart) resta invariato.
+      il restart, uno snap immediato). Confermato: lo scarto scende a zero
+      al primo frame dopo il restart e resta stabile nei frame successivi
+      (nessuna convergenza graduale).
+- [x] Il comportamento di drag/smoothing della camera durante il gameplay
+      normale (fuori dal restart) resta invariato: la correzione tocca solo
+      i tre punti di riposizionamento (`_ready()`, `restart_run()`,
+      `_start_selected_run()`), non la logica di drag per-frame della
+      `Camera2D`.
 
 ## Ambito
 
@@ -81,16 +88,21 @@ Non toccare:
 ## Verifica
 
 - Test: `tests/unit/test_ps082_camera_recenter_on_restart.gd`
-  (`extends GutGameplayTest`), marker `PS082_CAMERA_RECENTER_OK`. Deve
-  spostare la camera dal centro (facendo muovere il player abbastanza da
-  attivare il drag), invocare il restart e verificare che
-  `_camera.get_screen_center_position()` (o equivalente) coincida con la
-  nuova posizione del player entro una tolleranza minima.
-- Registrare la regola in
+  (`extends GutGameplayTest`), marker `PS082_CAMERA_RECENTER_OK`. Trascina la
+  camera muovendo il player verso un punto lontano per 40 frame (dead zone
+  del drag margin realmente attivata, non un salto istantaneo), forza lo
+  stato terminale (`request_defeat()`), invoca `restart_run()` e verifica che
+  `get_screen_center_position()` coincida con la nuova posizione del player
+  entro 1px al primo frame dopo il restart e resti stabile 5 frame dopo.
+- Regola aggiunta in
   [tools/milestone-test-map.json](../../../tools/milestone-test-map.json)
-  sotto `scripts/game/movement_slice.gd`.
-- Profilo minimo prima della chiusura: `Relevant` con
-  `-FocusedSmoke tests/unit/test_ps082_camera_recenter_on_restart.gd`.
+  sotto la voce `scripts/game/movement_slice.gd` / `run_controller.gd`.
+- Eseguito in sandbox Linux (headless, Godot 4.7.1): focalizzato
+  `tests/unit/test_ps082_camera_recenter_on_restart.gd` (1/1, 7 assert) e
+  profilo `Relevant` (i 21 smoke della regola, 71/71 test, 1932 assert);
+  eseguita anche la suite `Full` per sicurezza vista la centralità del file
+  toccato (321/321, 23908 assert). Nessun `SCRIPT ERROR`/`FATAL EXCEPTION`
+  nei log.
 
 ## Gate manuali
 
@@ -108,6 +120,35 @@ Non toccare:
   sospetto (drag margin della `Camera2D` non riallineato da
   `reset_smoothing()`) va verificato in fase di risoluzione prima di
   scrivere il fix.
+- **2026-09-05 — Causa confermata: `reset_smoothing()` da solo non basta.**
+  Verificato con un probe headless dedicato (poi eliminato) e con la
+  sorgente `Camera2D` upstream (Godot 4.7.1-stable): `reset_smoothing()`
+  sincronizza solo `smoothed_camera_pos` con `camera_pos`, ma non ricalcola
+  `camera_pos` stesso — quello resta l'ultima ancora del drag margin della
+  run precedente. Sul frame successivo al teletrasporto, la dead zone del
+  drag riaggancia `camera_pos` al **bordo** del margine rispetto al nuovo
+  target, non al centro: con `drag_*_margin = 0.35` l'offset visibile è
+  circa il 35% dello schermo, esattamente il sintomo segnalato dal
+  proprietario.
+- **2026-09-05 — Fix: `Camera2D.align()` prima di `reset_smoothing()`.**
+  `align()` (metodo nativo Godot pensato per questo caso) ricalcola subito
+  `camera_pos` esattamente sulla posizione del target quando
+  `drag_horizontal_offset`/`drag_vertical_offset` sono 0 (default e invariati
+  in questa scena); `reset_smoothing()` chiamato subito dopo azzera anche il
+  ritardo di smoothing visivo. I tre punti che riposizionano il player
+  (`_ready()`, `restart_run()`, `_start_selected_run()`) condividono ora il
+  nuovo helper privato `_recenter_camera_on_player()` invece di ripetere la
+  sequenza tre volte.
+- **2026-09-05 — Lo snap effettivo si legge al frame successivo, non nello
+  stesso frame-script.** `get_screen_center_position()` riflette l'ultimo
+  aggiornamento di `_update_scroll()`; `reset_smoothing()` lo richiama prima
+  di sincronizzare lo smoothing, quindi chi legge la posizione nello stesso
+  frame-script di `restart_run()` vede ancora il valore pre-fix. Non è un
+  ritardo visibile al giocatore: il rendering della run avviene dopo il
+  passo di processo automatico della `Camera2D`, che nello stesso frame
+  applica già lo stato corretto. Il test misura quindi dopo un frame
+  (`wait_process_frames(1)`), lo stesso confine naturale di rendering, non
+  a zero frame.
 
 ## Documenti sincronizzati
 

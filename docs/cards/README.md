@@ -139,7 +139,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-079](./5_completed/PS-079-particellare-tell-stato-personaggi.md) | Sostituisci il contorno bocciato con un particellare non aderente | ux | arte | COMPLETATO | alta | — |
 | [PS-080](./2_to_do/PS-080-musica-vittoria-sconfitta.md) | Aggiungi una musica dedicata a vittoria e sconfitta | feat | audio | PRONTO | media | — |
 | [PS-081](./2_to_do/PS-081-layer-musicale-intensita-late-run.md) | Aggiungi un layer musicale di intensità crescente late-run | feat | audio | PRONTO | media | — |
-| [PS-082](./2_to_do/PS-082-camera-non-centrata-su-restart.md) | Ricentra davvero la camera sul personaggio al restart | fix | gameplay | PRONTO | media | — |
+| [PS-082](./4_to_test/PS-082-camera-non-centrata-su-restart.md) | Ricentra davvero la camera sul personaggio al restart | fix | gameplay | IN VERIFICA | media | — |
 | [PS-083](./5_completed/PS-083-storicizza-prompt-e-reference-generazione.md) | Storicizzare prompt e reference di generazione | chore | arte | COMPLETATO | bassa | — |
 | [PS-084](./5_completed/PS-084-direzione-visuale-per-personaggio-e-reference-cast.md) | Documentare la direzione visuale per personaggio e collegarla agli agenti art | chore | arte | COMPLETATO | media | — |
 | [PS-085](./2_to_do/PS-085-introduci-sparo-manuale-con-secondo-joystick.md) | Introduci lo sparo manuale come modalità alternativa allo sparo automatico | feat | gameplay | PRONTO | media | — |

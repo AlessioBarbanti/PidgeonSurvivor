@@ -129,7 +129,7 @@ func _ready() -> void:
 	_hud.set_ability_fade_target(_camera, _player, _player.collision_radius)
 	_player.set_run_controller(_run_controller)
 	_player.global_position = _arena_world.get_world_center()
-	_camera.reset_smoothing()
+	_recenter_camera_on_player()
 	_player.set_movement_input(_input_router.movement_vector)
 	_game_director.configure(_run_controller, _enemy_spawner)
 	_enemy_spawner.configure(
@@ -691,7 +691,7 @@ func restart_run(seed_value: int = 0) -> bool:
 		return false
 
 	_player.global_position = _arena_world.get_world_center()
-	_camera.reset_smoothing()
+	_recenter_camera_on_player()
 	_input_router.resume_input()
 	return true
 
@@ -718,6 +718,20 @@ func run_b18v_restart_profile_cycle(friend_id: StringName, seed_value: int) -> b
 	if not select_friend_for_next_run(friend_id):
 		return false
 	return start_selected_run(seed_value)
+
+
+## PS-082: dopo un teletrasporto del player, `align()` deve precedere
+## `reset_smoothing()`. La Camera2D con drag margin insegue il target solo
+## entro una dead zone: `camera_pos` (l'ancora del drag) resta quello della
+## posizione precedente finche' un frame di processo non lo ricalcola, e lo
+## fa agganciando il player al bordo del margine, non al centro. `align()`
+## ricalcola subito `camera_pos` esattamente sul target; solo a quel punto
+## `reset_smoothing()` puo' azzerare anche il ritardo di smoothing visivo.
+## Scambiare l'ordine, o omettere `align()`, lascia la camera visibilmente
+## sfalsata del margine di drag (qui 35%) fin dal primo frame.
+func _recenter_camera_on_player() -> void:
+	_camera.align()
+	_camera.reset_smoothing()
 
 
 func _configure_performance_hardening() -> void:
@@ -903,7 +917,7 @@ func _start_selected_run(seed_value: int) -> bool:
 	_hud.show()
 	_touch_joystick.show()
 	_player.global_position = _arena_world.get_world_center()
-	_camera.reset_smoothing()
+	_recenter_camera_on_player()
 	_input_router.resume_input()
 	return true
 
