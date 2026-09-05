@@ -20,10 +20,10 @@ passiva di Alea, "L'Aquila Non Sbaglia Mai" (RNG a intervalli,
 `alea_eagle_never_misses`), con "Due Dita e Parto": una barra Sobrietà che si
 riempie in modo prevedibile e, raggiunta la soglia, fa entrare Alea in
 "Brilla" per qualche secondo. Il proprietario vuole rappresentare la barra
-con un **calice di vino rosso** nella safe area, in alto a sinistra, e ha
-posto lui stesso la domanda che apre questa card: può la stessa icona servire
-anche altrove, per esempio come tell di stato aggiuntivo o preparatorio
-invece di un semplice indicatore HUD?
+con un **calice di vino rosso** nella safe area, in alto a sinistra. In fase
+di richiesta si era posta la domanda se la stessa icona potesse servire
+anche altrove (es. come tell di stato aggiuntivo): il proprietario ha
+confermato che resta **solo un indicatore HUD** (vedi Decisioni).
 
 Il precedente diretto è il particellare di stato già in uso per Alea
 (`TELL_ALEA_POSITIVE`/`TELL_ALEA_NEGATIVE`,
@@ -31,9 +31,8 @@ Il precedente diretto è il particellare di stato già in uso per Alea
 oggi verde/rosso durante l'effetto casuale attivo: con la nuova passiva
 diventa obsoleto (non esiste più un esito positivo/negativo) e
 [PS-105](./PS-105-nuova-passiva-alea-due-dita-e-parto.md) lo sostituisce con
-un tell dedicato a "in Brilla". Un'icona a più livelli di riempimento
-(vuoto → pieno) può coprire sia la barra HUD sia, eventualmente, quel tell,
-se il proprietario conferma di volerla riusare lì.
+un nuovo particellare colorato dedicato a "in Brilla" — non con questa
+icona, che resta separata.
 
 Questa card si ferma alla produzione degli asset, come impone
 [PS-090](../5_completed/PS-090-separa-generazione-integrazione-card-art.md).
@@ -97,23 +96,22 @@ Non toccare:
 
 ## Decisioni
 
-- **Aperto per il proprietario — l'icona serve solo per la barra HUD o
-  anche come tell di stato per "in Brilla"?** Domanda posta direttamente dal
-  proprietario in fase di richiesta, non ancora decisa. Se la risposta è
-  "anche come tell", [PS-105](./PS-105-nuova-passiva-alea-due-dita-e-parto.md)
-  userà questa stessa icona al posto di (o accanto a) un nuovo particellare
-  colorato; se la risposta è "solo HUD", il tell "in Brilla" resta un
-  particellare colorato sullo stile già esistente per gli altri profili.
+- **2026-09-05 — L'icona resta un indicatore HUD, non un tell di stato.**
+  Il proprietario ha confermato: il calice copre solo la barra Sobrietà in
+  alto a sinistra. Il tell "in Brilla" (ex `TELL_ALEA_POSITIVE`/
+  `TELL_ALEA_NEGATIVE`) resta un particellare colorato indipendente,
+  cablato da [PS-105](./PS-105-nuova-passiva-alea-due-dita-e-parto.md) sullo
+  stesso meccanismo già in uso per Aleo/Lollo/Migi — non questa icona.
 - **Aperto per il resolver — numero esatto di stati/frame di riempimento.**
   Il proprietario ha indicato solo "calice di vino rosso" senza specificare
   quanti livelli intermedi servano fra vuoto e pieno.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/visual-audio-identity.md`: nuova riga per l'icona, se il
-      proprietario conferma anche il riuso come tell di stato.
+- [ ] `docs/visual-audio-identity.md`: nuova riga per l'icona HUD, quando
+      generata.
 
 ## Note
 
 Card gemella di [PS-105](./PS-105-nuova-passiva-alea-due-dita-e-parto.md),
-che la cablerà in HUD (e nell'eventuale tell di stato).
+che la cablerà in HUD.
