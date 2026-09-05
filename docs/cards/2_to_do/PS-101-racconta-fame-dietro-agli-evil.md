@@ -167,3 +167,11 @@ Questa card è indipendente dal redesign visivo del pannello
 ([PS-102](./PS-102-cornice-dedicata-boss-intro.md)/PS-103): tocca solo dati e
 copy, non frame o layout. Le due linee di lavoro possono procedere in
 parallelo e chiudersi in qualunque ordine.
+
+Non è una card `tipo: art`: non richiede delega a `game-art-designer`. Una
+volta scritte le otto citazioni e la riga di redenzione, il proprietario può
+invocare manualmente `revisore-design-ux` per verificare che il nuovo testo
+comunichi davvero "fame → scontro → redenzione" a chi gioca per la prima
+volta, invece di restare un dettaglio di lore che nessuno legge — non è
+invocazione automatica di `card-risolvi`, va richiesta esplicitamente se il
+proprietario la ritiene utile.

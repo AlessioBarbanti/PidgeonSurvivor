@@ -117,3 +117,10 @@ Non toccare:
 Card gemella di [PS-103](./PS-103-integra-cornice-boss-intro.md), che la
 cablerà in scena. Nessuna relazione con [PS-101](./PS-101-racconta-fame-dietro-agli-evil.md)
 (narrativa/copy): le due linee di lavoro sono indipendenti.
+
+Card `tipo: art` con generazione di nuovi asset: per contratto di board
+([docs/cards/README.md](../README.md)) va delegata all'agente
+`game-art-designer`, non implementata da `card-risolvi`. A generazione
+completata, il proprietario può invocare manualmente `direttore-artistico`
+per confrontare la nuova cornice con i "fratelli visivi" già esistenti negli
+altri asset UI Boss, prima di considerarla pronta per l'art review.
