@@ -161,3 +161,5 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-101](./4_to_test/PS-101-racconta-fame-dietro-agli-evil.md) | Racconta la fame dietro agli Evil e la redenzione di Barb | feat | gameplay | IN VERIFICA | media | — |
 | [PS-102](./2_to_do/PS-102-cornice-dedicata-boss-intro.md) | Genera una cornice dedicata per la Boss Intro | art | arte | PRONTO | media | — |
 | [PS-103](./2_to_do/PS-103-integra-cornice-boss-intro.md) | Integra la cornice dedicata nella Boss Intro | ux | ui | BLOCCATO | media | PS-102 |
+| [PS-104](./2_to_do/PS-104-icona-calice-sobrieta-alea.md) | Genera l'icona del calice per la Sobrietà di Alea | art | arte | PRONTO | media | — |
+| [PS-105](./2_to_do/PS-105-nuova-passiva-alea-due-dita-e-parto.md) | Sostituisci la passiva di Alea con Due Dita e Parto | feat | gameplay | BLOCCATO | media | PS-104 |
