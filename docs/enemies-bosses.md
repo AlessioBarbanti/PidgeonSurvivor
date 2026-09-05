@@ -137,6 +137,36 @@ segnaposto procedurali temporanei — stato dettagliato in
 definitiva è compito di
 [PS-052](./cards/2_to_do/PS-052-genera-ritratti-evil-e-icone-signature.md).
 
+### Perché diventano Evil: la fame (PS-101)
+
+Ogni `Evil <Nome>` non è cattivo per natura: ha fame. È il solo aggancio
+narrativo alla trasformazione, coerente col tono leggero del gioco e col
+tema griglia (`Barb`, `docs/prd.md` §3.3): il Player affronta l'amico per
+fermarlo, non per punirlo, e la Specialità di Barb che il Boss lascia in
+premio lo sfama e lo fa tornare come prima.
+
+- La citazione resta **unica e condivisa** fra il Piccione Malvagio e tutti
+  gli otto `Evil <Nome>`: `BossDefinition.get_safe_quote()` non fa alcun
+  branch sul `friend_profile` (a differenza di `get_safe_title()`/
+  `get_safe_portrait()`, che invece risolvono l'identità per amico) — la
+  variante Evil eredita semplicemente il campo `quote` del Boss baseline via
+  `duplicate(true)` in `BossEncounter.resolve_variant()`. Il proprietario ha
+  scartato esplicitamente otto citazioni distinte per profilo in favore di
+  una sola, a tema fame, valida per qualunque volto.
+- La citazione vive in `data/bosses/first_boss.tres` (`quote`,
+  `quote_approved`), a tema fame e **approvata** dal proprietario
+  (`quote_approved = true`): `get_safe_quote()` la mostra per il Piccione
+  Malvagio e per ogni `Evil <Nome>`, invece del fallback
+  `safe_quote_placeholder`.
+- Alla morte di un `Evil <Nome>`, `BossEncounter.get_last_defeated_friend_name()`
+  espone il nome "buono" dell'amico appena redento (stringa vuota per il
+  Piccione Malvagio, che non ha nessun amico da salvare). `BarbRewardOverlay`
+  lo mostra in una riga sempre **positiva verso Barb**, mai un ammonimento
+  sulla fame: "`<Nome>` è tornato tra noi, grazie a Barb!" quando un amico è
+  stato redento, altrimenti la riga generica
+  `BarbRewardOverlay.BARB_GENERIC_REWARD_LINE` ("Con Barb ai fornelli, va
+  sempre a finire bene!").
+
 ### Signature Ability per profilo
 
 Una sola Signature per profilo Evil, associata via `friend_id`

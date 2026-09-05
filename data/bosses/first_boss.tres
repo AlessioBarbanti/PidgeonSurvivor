@@ -11,8 +11,9 @@ region = Rect2(0, 0, 48, 48)
 script = ExtResource("1_boss_definition")
 id = &"special_pigeon"
 title = "PICCIONE MALVAGIO"
-quote = "Citazione personale in attesa di approvazione."
-quote_approved = false
+quote = "Non sono cattivo, sono solo affamato...
+E nessuno mi ha ancora portato la grigliata!"
+quote_approved = true
 safe_quote_placeholder = "Qualcuno ha sentito profumo di griglia."
 health_max = 2400.0
 move_speed = 85.0

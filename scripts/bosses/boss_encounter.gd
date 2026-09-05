@@ -36,6 +36,12 @@ var _active_definition: BossDefinition
 var _active_schedule_index := -1
 var _reward_granted := false
 var _last_defeated_title := ""
+## Nome "buono" dell'amico appena redento (PS-101), vuoto quando il Boss
+## sconfitto è il Piccione Malvagio baseline (nessun `friend_profile`, niente
+## da redimere). A differenza di `_last_defeated_title`
+## (`get_safe_title()`, che per un Evil resta "Evil <Nome>"), questo è il
+## nome che l'amico riprende dopo la Specialità di Barb.
+var _last_defeated_friend_name := ""
 
 
 func _init() -> void:
@@ -203,6 +209,13 @@ static func resolve_variant(
 
 func get_last_defeated_title() -> String:
 	return _last_defeated_title
+
+
+## Nome "buono" dell'amico appena redento dalla Specialità di Barb (PS-101).
+## Stringa vuota quando l'ultimo Boss sconfitto era il Piccione Malvagio
+## baseline: non c'è nessun amico da dichiarare salvo.
+func get_last_defeated_friend_name() -> String:
+	return _last_defeated_friend_name
 
 
 func get_run_controller() -> RunController:
@@ -437,6 +450,13 @@ func _on_boss_died(boss: BaseEnemy) -> void:
 	if defeated_definition == null:
 		defeated_definition = boss_definition
 	_last_defeated_title = defeated_definition.get_safe_title()
+	_last_defeated_friend_name = ""
+	if (
+		defeated_definition.is_evil_variant()
+		and defeated_definition.friend_profile != null
+		and defeated_definition.friend_profile.is_valid()
+	):
+		_last_defeated_friend_name = defeated_definition.friend_profile.get_public_display_name()
 
 	if dying_boss.died.is_connected(_on_boss_died):
 		dying_boss.died.disconnect(_on_boss_died)

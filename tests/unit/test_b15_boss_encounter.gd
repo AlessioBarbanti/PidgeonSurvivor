@@ -82,9 +82,15 @@ func test_composed_encounter() -> void:
 		"AFFRONTA deve usare la plancia Boss pixel-art dedicata."
 	)
 	assert_true(
-		definition.quote not in boss_ui.get_intro_quote_text() and definition.get_safe_quote() in boss_ui.get_intro_quote_text(),
-		"La UI non deve mostrare una citazione non approvata."
+		definition.get_safe_quote() in boss_ui.get_intro_quote_text(),
+		"La UI deve mostrare esattamente la citazione risolta da get_safe_quote() (approvata o fallback sicuro)."
 	)
+	# Il wrapping di titolo/citazione può assestarsi un paio di frame dopo
+	# l'assegnazione (PS-071, `_defer_reflow_intro_panel_position`): con una
+	# citazione approvata più lunga del vecchio placeholder, il rect
+	# immediato (frame 0) può eccedere transitoriamente la safe area finché
+	# il ricalcolo differito non lo corregge.
+	await wait_process_frames(2)
 	assert_rect_inside(
 		boss_ui.get_intro_panel_rect(), arena_layout.get_safe_area_rect(), "Il pannello intro Boss deve restare nella safe area."
 	)

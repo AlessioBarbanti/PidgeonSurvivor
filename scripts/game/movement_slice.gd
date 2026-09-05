@@ -1787,6 +1787,7 @@ func _on_boss_defeated_for_horde_pause(_boss: FirstBoss) -> void:
 ## in corso, o un nuovo Boss gia' pendente): riparte da sola non appena lo
 ## stato torna RUNNING.
 func _on_boss_defeated_for_barb_reward(_boss: FirstBoss) -> void:
+	_barb_reward_overlay.set_redeemed_friend_name(_boss_encounter.get_last_defeated_friend_name())
 	_upgrade_service.queue_barb_reward()
 
 

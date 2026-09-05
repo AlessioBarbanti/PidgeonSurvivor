@@ -11,6 +11,10 @@ const SELECTION_LOCK_SECONDS := 0.45
 # dal cronometro nella fascia superiore dell'HUD (GameHud.GAMEPLAY_TOP_INSET).
 const TOP_BAND_CLEARANCE := 16.0
 const CONTENT_TOP_MARGIN := GameHud.GAMEPLAY_TOP_INSET + TOP_BAND_CLEARANCE
+# PS-101: riga mostrata quando il Boss appena sconfitto era il Piccione
+# Malvagio baseline (nessun amico da nominare). Barb resta una figura
+# positiva: mai un tono ammonitore, solo il calore della sua cucina.
+const BARB_GENERIC_REWARD_LINE := "Con Barb ai fornelli, va sempre a finire bene!"
 
 @onready var _safe_margins: MarginContainer = %SafeMargins
 @onready var _layout: VBoxContainer = %Layout
@@ -18,6 +22,7 @@ const CONTENT_TOP_MARGIN := GameHud.GAMEPLAY_TOP_INSET + TOP_BAND_CLEARANCE
 @onready var _title_label: Label = %TitleLabel
 @onready var _mode_label: Label = %ModeLabel
 @onready var _portrait: TextureRect = %BarbPortrait
+@onready var _redemption_label: Label = %RedemptionLabel
 @onready var _cards: Array[UpgradeCard] = [
 	%BarbCard1,
 	%BarbCard2,
@@ -27,6 +32,10 @@ const CONTENT_TOP_MARGIN := GameHud.GAMEPLAY_TOP_INSET + TOP_BAND_CLEARANCE
 var _upgrade_service: UpgradeService
 var _touch_joystick: TouchJoystick
 var _is_bonus_mode := false
+# PS-101: nome "buono" dell'amico appena redento dalla Specialità di Barb,
+# impostato da `movement_slice.gd` (`BossEncounter.get_last_defeated_friend_name()`)
+# subito dopo `boss_defeated`. Vuoto per il Piccione Malvagio baseline.
+var _redeemed_friend_name := ""
 var _active_card_count := 0
 var _accepting_selection := false
 var _joystick_was_visible := false
@@ -154,6 +163,18 @@ func is_bonus_mode() -> bool:
 
 func get_title_text() -> String:
 	return _title_label.text if is_instance_valid(_title_label) else ""
+
+
+## Chiamato da `movement_slice.gd` subito dopo `BossEncounter.boss_defeated`,
+## prima che l'offerta effettiva compaia (PS-101): la ricompensa può restare
+## accodata da `UpgradeService` finché la run non torna `RUNNING`, quindi il
+## nome va conservato qui e applicato alla prossima `_show_offer()`.
+func set_redeemed_friend_name(friend_name: String) -> void:
+	_redeemed_friend_name = friend_name.strip_edges()
+
+
+func get_redemption_text() -> String:
+	return _redemption_label.text if is_instance_valid(_redemption_label) else ""
 
 
 func get_title_label_rect() -> Rect2:
@@ -344,6 +365,11 @@ func _show_offer(
 		Color(0.76, 0.84, 0.92, 1.0) if is_bonus else Color(1.0, 0.72, 0.24, 1.0)
 	)
 	_title_label.text = "IL PREMIO DI BARB" if is_bonus else "LE SPECIALITÀ DI BARB"
+	_redemption_label.text = (
+		"%s è tornato tra noi, grazie a Barb!" % _redeemed_friend_name
+		if not _redeemed_friend_name.is_empty()
+		else BARB_GENERIC_REWARD_LINE
+	)
 	_hide_touch_joystick()
 	visible = true
 	_accepting_selection = true

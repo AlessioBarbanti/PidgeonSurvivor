@@ -142,6 +142,17 @@ text = "LE SPECIALITÀ DI BARB"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="RedemptionLabel" type="Label" parent="SafeMargins/Layout/HeaderPanel/HeaderContent/TextMargins/HeaderText"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.72, 1)
+theme_type_variation = &"BodyS"
+text = "Con Barb ai fornelli, va sempre a finire bene!"
+horizontal_alignment = 1
+clip_text = true
+text_overrun_behavior = 3
+
 [node name="Cards" type="HBoxContainer" parent="SafeMargins/Layout"]
 layout_mode = 2
 size_flags_vertical = 4

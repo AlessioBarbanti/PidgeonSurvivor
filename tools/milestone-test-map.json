@@ -49,7 +49,8 @@
         "tests/unit/test_b38_arena_world.gd",
         "tests/unit/test_ps006_evil_signature_abilities.gd",
         "tests/unit/test_ps026_boss_baseline_display_name.gd",
-        "tests/unit/test_ps051_boss_intro_identity.gd"
+        "tests/unit/test_ps051_boss_intro_identity.gd",
+        "tests/unit/test_ps101_evil_hunger_narrative.gd"
       ]
     },
     {
@@ -289,7 +290,8 @@
         "tests/unit/test_ps036_barb_reward_visual_identity.gd",
         "tests/unit/test_ps046_level_up_modal_isolation.gd",
         "tests/unit/test_ps047_upgrade_card_hierarchy.gd",
-        "tests/unit/test_ps059_upgrade_modal_contrast.gd"
+        "tests/unit/test_ps059_upgrade_modal_contrast.gd",
+        "tests/unit/test_ps101_evil_hunger_narrative.gd"
       ]
     },
     {
