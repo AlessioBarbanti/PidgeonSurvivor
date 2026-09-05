@@ -360,9 +360,33 @@ func _show_offer(
 	_defer_reflow_top_margin()
 
 
+## Usa due connessioni one-shot a `process_frame` invece di
+## `await get_tree().process_frame` ripetuto (PS-097, stesso schema di
+## UpgradeCard._grow_to_fit_content in PS-096): un `await` sospeso su quel
+## segnale può riprendere dopo che l'overlay è già stato liberato (es. in
+## teardown di un test), producendo l'errore motore "Resumed function ...
+## after await, but class instance is gone" — il guardiano `is_inside_tree()`
+## non basta perché il crash avviene nel tentativo stesso di riprendere la
+## funzione, prima che il suo corpo torni a eseguire. Una connessione a
+## segnale, quando il bersaglio viene liberato, si disconnette da sola senza
+## invocare nulla.
 func _defer_reflow_top_margin() -> void:
-	await get_tree().process_frame
-	await get_tree().process_frame
+	if not is_inside_tree():
+		return
+	var frame_signal := get_tree().process_frame
+	if not frame_signal.is_connected(_on_first_reflow_frame_elapsed):
+		frame_signal.connect(_on_first_reflow_frame_elapsed, CONNECT_ONE_SHOT)
+
+
+func _on_first_reflow_frame_elapsed() -> void:
+	if not is_instance_valid(self) or not is_inside_tree():
+		return
+	var frame_signal := get_tree().process_frame
+	if not frame_signal.is_connected(_on_second_reflow_frame_elapsed):
+		frame_signal.connect(_on_second_reflow_frame_elapsed, CONNECT_ONE_SHOT)
+
+
+func _on_second_reflow_frame_elapsed() -> void:
 	if is_instance_valid(self) and is_inside_tree():
 		_reflow_top_margin()
 
