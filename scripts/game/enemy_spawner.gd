@@ -106,17 +106,30 @@ func get_hostile_projectile_parent() -> Node:
 	)
 
 
-## Rettangolo di riferimento per spawn/despawn: la stessa dimensione dello
-## schermo di `ArenaLayout`, ma centrato sulla vista corrente della camera
-## invece che sul rettangolo statico del viewport. Senza camera assegnata
-## (es. i fixture di test) il comportamento storico resta identico.
+## Rettangolo di riferimento per spawn/despawn: le dimensioni dello schermo
+## effettivamente visibile (PS-095), centrate sulla vista corrente della
+## camera invece che sul rettangolo statico del viewport. Senza camera
+## assegnata (es. i fixture di test) il comportamento storico resta
+## identico. Usa il viewport reale di `ArenaLayout` e non il suo
+## `playfield_rect`: `project.godot` dichiara
+## `window/stretch/aspect="expand"`, quindi mondo e camera riempiono
+## l'intero viewport senza letterbox, mentre `playfield_rect` resta
+## deliberatamente piu' stretto su schermi piu' larghi del suo
+## `target_aspect_ratio` (es. Android landscape 20:9) per motivi di
+## composizione (PS-045). Usare quella dimensione qui trattava un crop
+## artistico come "lo schermo", lasciando nemici comparire dentro l'area
+## davvero visibile. Leggere il viewport dal vivo evita anche la finestra in
+## cui `playfield_rect` e' ancora quello precedente a un resize/cambio
+## orientamento, perche' `ArenaLayout.refresh_layout()` lo aggiorna in modo
+## differito (`call_deferred`).
 func get_visible_reference_rect() -> Rect2:
 	var playfield_rect := _arena_layout.get_playfield_rect()
 	if not is_instance_valid(_camera) or not playfield_rect.has_area():
 		return playfield_rect
-	var half_size := playfield_rect.size * 0.5
+	var viewport_rect := _arena_layout.get_viewport_rect()
+	var reference_size := viewport_rect.size if viewport_rect.has_area() else playfield_rect.size
 	var center := _camera.get_screen_center_position()
-	return Rect2(center - half_size, half_size * 2.0)
+	return Rect2(center - reference_size * 0.5, reference_size)
 
 
 func set_run_controller(value: RunController) -> void:

@@ -236,8 +236,15 @@ Due concetti distinti:
   riaggiorna su resize/focus/resume.
 - La fascia di spawn/despawn nemici (`EnemySpawner`) non usa
   `ArenaLayout.get_playfield_rect()` direttamente ma
-  `get_visible_reference_rect()` (righe 109-119): stessa dimensione del
-  playfield ma **ricentrata sulla vista camera corrente**.
+  `get_visible_reference_rect()` (PS-095): dimensione del **viewport reale**
+  (`ArenaLayout.get_viewport_rect()`, letto dal vivo a ogni chiamata, non il
+  playfield ritagliato a `target_aspect_ratio`) **ricentrata sulla vista
+  camera corrente**. `project.godot` dichiara
+  `window/stretch/aspect="expand"`: mondo e camera riempiono l'intero
+  viewport senza letterbox, quindi il playfield (più stretto su schermi più
+  larghi di 16:9, es. Android landscape 20:9) non rappresenta lo schermo
+  davvero visibile — usarlo per lo spawn lasciava nemici comparire dentro
+  l'area visibile reale.
 - Adattamento a risoluzioni diverse (Windows vs Android landscape):
   `movement_slice._apply_layout()` (righe 338-380) posiziona la safe area
   root sulla safe area calcolata da `ArenaLayout`, ma ancora le barre XP/HP
