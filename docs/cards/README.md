@@ -153,4 +153,5 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-093](./2_to_do/PS-093-nuovi-assi-scarto-base-personaggi.md) | Introduci cinque nuovi assi di scarto base per personaggio | feat | gameplay | PRONTO | media | PS-087 |
 | [PS-094](./2_to_do/PS-094-specialita-cariche-abilita-attiva.md) | Introduci una Specialità di Barb per cariche multiple dell'abilità attiva | feat | gameplay | PRONTO | media | — |
 | [PS-095](./4_to_test/PS-095-audita-spawn-nemici-sempre-fuori-vista.md) | Audita e correggi lo spawn nemici che compare dentro l'area visibile | fix | gameplay | IN VERIFICA | media | — |
-| [PS-096](./2_to_do/PS-096-await-orfano-grow-to-fit-content-upgrade-card.md) | Diagnostica l'await orfano di UpgradeCard._grow_to_fit_content in full suite | fix | tooling | PRONTO | bassa | — |
+| [PS-096](./4_to_test/PS-096-await-orfano-grow-to-fit-content-upgrade-card.md) | Diagnostica l'await orfano di UpgradeCard._grow_to_fit_content in full suite | fix | tooling | IN VERIFICA | bassa | — |
+| [PS-097](./2_to_do/PS-097-await-orfano-defer-reflow-top-margin.md) | Applica a UpgradeOverlay/BarbRewardOverlay la correzione dell'await orfano di PS-096 | fix | tooling | PRONTO | bassa | PS-096 |

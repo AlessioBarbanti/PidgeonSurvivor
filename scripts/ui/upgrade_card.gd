@@ -69,13 +69,37 @@ func configure(
 ## capo come se fosse strettissima). Sommare le altezze minime dei singoli figli
 ## — già corrette, perché ciascuna riflette la propria larghezza reale assegnata
 ## — evita il problema.
+##
+## Usa due connessioni one-shot a `process_frame` invece di
+## `await get_tree().process_frame` ripetuto (PS-096): una carta liberata
+## (es. `add_child_autofree` a fine test) mentre una coroutine `await` è
+## sospesa su quel segnale può riprendere su un'istanza già distrutta,
+## producendo l'errore motore "Resumed function ... after await, but class
+## instance is gone" — l'`is_inside_tree()` di guardia non basta perché il
+## crash avviene nel tentativo stesso di riprendere la funzione, prima che il
+## suo corpo torni a eseguire. Una connessione a segnale, quando il bersaglio
+## viene liberato, si disconnette invece da sola senza invocare nulla.
 func _grow_to_fit_content() -> void:
 	# La riga assegna la larghezza reale delle carte solo un paio di frame
 	# dopo configure(): prima di allora ogni misura di un'etichetta con
 	# autowrap è inattendibile (vedi commento sopra la chiamata).
-	await get_tree().process_frame
-	await get_tree().process_frame
 	if not is_inside_tree():
+		return
+	var frame_signal := get_tree().process_frame
+	if not frame_signal.is_connected(_on_first_grow_frame_elapsed):
+		frame_signal.connect(_on_first_grow_frame_elapsed, CONNECT_ONE_SHOT)
+
+
+func _on_first_grow_frame_elapsed() -> void:
+	if not is_instance_valid(self) or not is_inside_tree():
+		return
+	var frame_signal := get_tree().process_frame
+	if not frame_signal.is_connected(_on_second_grow_frame_elapsed):
+		frame_signal.connect(_on_second_grow_frame_elapsed, CONNECT_ONE_SHOT)
+
+
+func _on_second_grow_frame_elapsed() -> void:
+	if not is_instance_valid(self) or not is_inside_tree():
 		return
 
 	var content := get_node_or_null("Margins/Content") as VBoxContainer
