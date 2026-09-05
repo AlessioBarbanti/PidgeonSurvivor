@@ -15,7 +15,7 @@ aggiornato: 2026-09-04
 
 ## Contesto
 
-Durante la verifica di [PS-095](../3_in_sprint/PS-095-audita-spawn-nemici-sempre-fuori-vista.md)
+Durante la verifica di [PS-095](../4_to_test/PS-095-audita-spawn-nemici-sempre-fuori-vista.md)
 (profilo `Full`, l'intera cartella `tests/unit/`), `test_b27_upgrade_icon_refresh.gd`
 (`test_upgrade_card_icons_stay_centered_and_scaled_across_viewports`) ha
 fallito con una raffica di errori motore ripetuti:
