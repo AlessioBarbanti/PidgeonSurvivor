@@ -2,7 +2,7 @@ extends GutTest
 
 ## PS-089 — Il catalogo powerup ordinario non nomina pezzi di carne.
 ##
-## Le otto Specialità di Barb (`data/upgrades/specialities/`) sono l'unico
+## Le Specialità di Barb (`data/upgrades/specialities/`) sono l'unico
 ## registro autorizzato a nominare tagli/pezzi/piatti di carne alla griglia
 ## (PS-078). Questo smoke scopre dinamicamente ogni `.tres` di primo livello
 ## in `data/upgrades/` (esclusa la sottocartella `specialities/`) e fallisce
@@ -11,12 +11,18 @@ extends GutTest
 const UPGRADES_DIRECTORY := "res://data/upgrades"
 const SPECIALITIES_DIRECTORY_NAME := "specialities"
 
-## Lista di partenza sui casi noti nel catalogo attuale; da estendere quando
-## PS-078 assegna i nomi definitivi delle otto Specialità, per evitare falsi
-## negativi su nuovi tagli non ancora presenti in questo elenco.
+## Lista di partenza sui casi noti nel catalogo attuale, estesa il 5 settembre
+## 2026 con i tagli approvati da PS-078 (`alette`, `costine`, `fiorentina`,
+## `arrosticini`; `hamburger`, `tagliata` e `salsiccia` erano già coperti).
+## Va estesa di nuovo se una futura Specialità introduce un taglio non ancora
+## elencato, altrimenti il catalogo ordinario potrebbe riprenderselo.
 const FORBIDDEN_MEAT_WORDS: Array[String] = [
 	"salsiccia",
+	"alette",
+	"arrosticini",
 	"bistecca",
+	"costine",
+	"fiorentina",
 	"costata",
 	"spiedino",
 	"spiedo",

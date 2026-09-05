@@ -5,6 +5,59 @@ stato operativo delle implementazioni resta nella
 [`board`](./cards/README.md); questo file descrive identità, effetti e direzione
 visiva del catalogo senza funzionare da backlog parallelo.
 
+## I due registri del catalogo
+
+Il catalogo vive su due registri distinti dentro lo stesso mondo grigliatore, e
+il contrasto fra i due è deliberato: è quello che fa leggere una Specialità come
+"il pezzo speciale" invece che come l'ennesimo attrezzo.
+
+- Le **carte statistiche ordinarie** stanno su utensili, pirofile, brace e
+  condimenti — `A Tutta Brace!`, `Pinza Lunga`, `Forchettone da Braciere`,
+  `Il condimento di Barb`, `Pirofila Rinforzata`. Non nominano mai un pezzo di
+  carne: è questa regola ad aver rinominato `Bis di Salsiccia` in
+  `Ravviva la Brace!` (PS-089).
+- Le **Specialità di Barb** portano ognuna il nome di un taglio cotto alla
+  griglia. La finzione lo giustifica: mentre il Player difende Barb dal Boss,
+  Barb ha il tempo di cucinare, e quello che consegna alla fine è un pezzo di
+  carne, la sua specialità.
+
+I sette nomi sono stati approvati dal proprietario il 5 settembre 2026
+(PS-078), su un registro "menù secco": il nome è il solo taglio, una parola,
+senza aggettivi, come una lavagna del grigliatore. Il vincolo è più stretto di
+"carne": deve essere una cottura **alla griglia**, motivo per cui candidati
+come straccetti, polpette e stracotto sono stati scartati.
+
+| Specialità | ID | Effetto | Perché quel taglio |
+|---|---|---|---|
+| **Alette** | `beer_signature` | +25% cadenza, ±24° di dispersione | cottura rapida, e i pezzi partono in direzioni diverse |
+| **Costine** | `chronic_delay` | rallenta i nemici a intervalli | la cottura lenta sulla brace per eccellenza |
+| **Hamburger** | `damage_shockwave` | onda d'urto quando il Player subisce danno | lo schiacciamento sulla piastra *è* l'onda d'urto |
+| **Fiorentina** | `death_burst` | i nemici uccisi esplodono | il pezzo grosso, avvolto dalla fiammata |
+| **Tagliata** | `double_barrel` | proiettili aggiuntivi a ventaglio | è il pezzo che arriva già diviso in fette |
+| **Salsiccia** | `gossip_projectiles` | rimbalzi in catena fra nemici | la salsiccia a nodi è una catena: il colpo passa di anello in anello |
+| **Arrosticini** | `piercing_rounds` | il colpo attraversa più bersagli | uno stecco che infilza bocconi in fila |
+
+Con un nome di una parola sola il titolo non basta più a comunicare l'effetto:
+`description` ed `effect_summary` restano l'unico veicolo testuale e non vanno
+accorciati per ragioni estetiche.
+
+L'ottava Specialità, `L'Ansia` (`anxiety_signature`), è rimasta col nome
+originale perché esce dal gioco con
+[PS-100](./cards/2_to_do/PS-100-rimuovi-ansia-dalle-specialita-di-barb.md).
+
+Due conseguenze operative sulla separazione fra i registri:
+
+- `tests/unit/test_ps089_ordinary_catalog_meat_audit.gd` fallisce se una carta
+  ordinaria nomina un taglio di carne. La sua lista di parole vietate include
+  i sette tagli qui sopra e va estesa se una nuova Specialità ne introduce
+  altri, altrimenti il catalogo ordinario potrebbe riprenderseli.
+- Le proposte non ancora implementate `Pancetta Croccante` e `Spiedo Passante`
+  violano la regola: sono letteralmente carne alla griglia in un registro che
+  non dovrebbe averla. Vanno rinominate prima di diventare carte runtime,
+  oppure la regola va rivista esplicitamente.
+
+---
+
 ## Modifiche ai potenziamenti esistenti
 
 Questa sezione raccoglie esclusivamente le modifiche proposte ai powerup già

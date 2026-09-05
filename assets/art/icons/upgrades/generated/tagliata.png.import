@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://burricgx4kvi"
-path="res://.godot/imported/piercing_rounds.png-8c56fce2285869e170ce74032f73a41e.ctex"
+uid="uid://dkkmp1tlf1xg3"
+path="res://.godot/imported/tagliata.png-e948f39c30c9e728592190abd9148566.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/icons/upgrades/generated/piercing_rounds.png"
-dest_files=["res://.godot/imported/piercing_rounds.png-8c56fce2285869e170ce74032f73a41e.ctex"]
+source_file="res://assets/art/icons/upgrades/generated/tagliata.png"
+dest_files=["res://.godot/imported/tagliata.png-e948f39c30c9e728592190abd9148566.ctex"]
 
 [params]
 

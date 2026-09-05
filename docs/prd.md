@@ -113,10 +113,16 @@ centrati con margine trasparente coerente; ID, pesi, rank, prerequisiti ed
 effetti restano invariati. Master e derivati sono tracciati nel
 [`manifest upgrade`](../assets/art/icons/upgrades/ASSET-MANIFEST.md).
 
-**Specialità di Barb (PS-012, PS-077):** Gossip, Colpo Perforante, Raffica
-Doppia, Esplosione Finale, L'Ansia, Birre di classe di Lollo, Ritardo Cronico
-e Non Ho Tempo Per Questo sono `UpgradeDefinition` con `is_speciality = true`,
-definite sotto `data/upgrades/specialities/`. Non compaiono nel pool di
+**Specialità di Barb (PS-012, PS-077, PS-078):** `Salsiccia` (rimbalzi in
+catena), `Arrosticini` (perforazione), `Tagliata` (proiettili a ventaglio),
+`Fiorentina` (esplosione alla morte del nemico), `Alette` (cadenza con
+dispersione), `Costine` (rallentamento periodico) e `Hamburger` (onda d'urto
+sul danno subito) sono `UpgradeDefinition` con `is_speciality = true`, definite
+sotto `data/upgrades/specialities/`. Portano tutte il nome di un taglio cotto
+alla griglia: è il registro riservato che le distingue a colpo d'occhio dal
+catalogo statistico ordinario, che resta su utensili, pirofile, brace e
+condimenti (PS-078, PS-089). L'ottava, `L'Ansia` (`anxiety_signature`), è
+ancora presente nel pool ma ne uscirà con PS-100. Non compaiono nel pool di
 level-up normale finché non vengono sbloccate come ricompensa dopo la
 sconfitta di un Boss: quella ricompensa apre lo stato dedicato
 `RunController.BARB_REWARD` e propone fino a tre Specialità ancora bloccate,
@@ -481,6 +487,12 @@ resta configurabile e sarà congelato soltanto dopo confronto percettivo su
 Windows e Pixel 9 con orde dense, Boss, VFX e bordi del playfield.
 
 ## 4. Idee per i potenziamenti (Citazioni e Amici)
+
+I titoli di questa sezione sono le proposte originali con cui le carte sono
+state ideate e restano leggibili come storia del design. L'identità pubblicata
+è un'altra: PS-078 ha rinominato le Specialità di Barb con nomi di tagli alla
+griglia, elencati nel contratto della sezione precedente. Gli effetti descritti
+qui sotto sono invece ancora quelli correnti.
 
 ### “L'Ansia”
 

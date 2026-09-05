@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dor3hf8j8wr28"
-path="res://.godot/imported/chronic_delay.png-4b99950eb18b08e09a4104b529d67ee0.ctex"
+uid="uid://baqay63g2okf"
+path="res://.godot/imported/salsiccia.png-9349934217cd4bff8ba7bee2830e4c51.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/icons/upgrades/generated/chronic_delay.png"
-dest_files=["res://.godot/imported/chronic_delay.png-4b99950eb18b08e09a4104b529d67ee0.ctex"]
+source_file="res://assets/art/icons/upgrades/generated/salsiccia.png"
+dest_files=["res://.godot/imported/salsiccia.png-9349934217cd4bff8ba7bee2830e4c51.ctex"]
 
 [params]
 

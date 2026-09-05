@@ -11,20 +11,20 @@ const SWIFT_STEPS := preload("res://data/upgrades/swift_steps.tres")
 
 const SPAWN_ATTEMPT_LIMIT := 20
 const ICON_MANIFEST_PATH := "res://assets/art/icons/upgrades/ASSET-MANIFEST.md"
-const PIERCING_ICON_PATH := "res://assets/art/icons/upgrades/generated/piercing_rounds.png"
-const DOUBLE_ICON_PATH := "res://assets/art/icons/upgrades/generated/double_barrel.png"
-const DEATH_BURST_ICON_PATH := "res://assets/art/icons/upgrades/generated/death_burst.png"
-const PIERCING_ICON_SHA256 := "c619a100c1e7d31b81aa98474c192211aed394fd8d48c8d2354d245cb851858b"
-const DOUBLE_ICON_SHA256 := "a7f5fb212ced181a29050970d397de23795cb2b4405a47d1d154f731e83318ce"
-const DEATH_BURST_ICON_SHA256 := "8e47934030daa0a5be124b151b54e10bbc8f58d3a0f7efba79543da388ae450d"
+const PIERCING_ICON_PATH := "res://assets/art/icons/upgrades/generated/arrosticini.png"
+const DOUBLE_ICON_PATH := "res://assets/art/icons/upgrades/generated/tagliata.png"
+const DEATH_BURST_ICON_PATH := "res://assets/art/icons/upgrades/generated/fiorentina.png"
+const PIERCING_ICON_SHA256 := "4d42b3845ec05006b8caabf921f03eb72a2b17cb510ac1ad5c8cba64296a4801"
+const DOUBLE_ICON_SHA256 := "ccd2c3fc0384ef17835183a4229227ecec6595bad4a352105f846d3236f08a53"
+const DEATH_BURST_ICON_SHA256 := "0485a376b82e5999bad0a3172e612417a72863baaba3e96aadc3eb5887536eb0"
 
 var _fired_projectiles: Array[Projectile] = []
 
 
 func test_upgrade_icons() -> void:
-	_assert_upgrade_icon(PIERCING_ROUNDS, PIERCING_ICON_PATH, PIERCING_ICON_SHA256, "Colpo Perforante")
-	_assert_upgrade_icon(DOUBLE_BARREL, DOUBLE_ICON_PATH, DOUBLE_ICON_SHA256, "Raffica Doppia")
-	_assert_upgrade_icon(DEATH_BURST, DEATH_BURST_ICON_PATH, DEATH_BURST_ICON_SHA256, "Esplosione Finale")
+	_assert_upgrade_icon(PIERCING_ROUNDS, PIERCING_ICON_PATH, PIERCING_ICON_SHA256, "Arrosticini")
+	_assert_upgrade_icon(DOUBLE_BARREL, DOUBLE_ICON_PATH, DOUBLE_ICON_SHA256, "Tagliata")
+	_assert_upgrade_icon(DEATH_BURST, DEATH_BURST_ICON_PATH, DEATH_BURST_ICON_SHA256, "Fiorentina")
 	assert_true(FileAccess.file_exists(ICON_MANIFEST_PATH), "Le icone B41 richiedono un manifest.")
 	var manifest := FileAccess.get_file_as_string(ICON_MANIFEST_PATH)
 	var manifest_lower := manifest.to_lower()
@@ -37,11 +37,11 @@ func test_upgrade_icons() -> void:
 	)
 	assert_true(manifest.contains("upgrade_death_burst_coppa.png"), "Il manifest deve registrare il master Coppa.")
 	assert_true(
-		manifest_lower.contains(PIERCING_ICON_SHA256), "Il manifest deve registrare l'hash di Colpo Perforante."
+		manifest_lower.contains(PIERCING_ICON_SHA256), "Il manifest deve registrare l'hash di Arrosticini."
 	)
-	assert_true(manifest_lower.contains(DOUBLE_ICON_SHA256), "Il manifest deve registrare l'hash di Raffica Doppia.")
+	assert_true(manifest_lower.contains(DOUBLE_ICON_SHA256), "Il manifest deve registrare l'hash di Tagliata.")
 	assert_true(
-		manifest_lower.contains(DEATH_BURST_ICON_SHA256), "Il manifest deve registrare l'hash di Esplosione Finale."
+		manifest_lower.contains(DEATH_BURST_ICON_SHA256), "Il manifest deve registrare l'hash di Fiorentina."
 	)
 
 

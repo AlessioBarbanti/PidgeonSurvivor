@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cdp8sisvo6tel"
-path="res://.godot/imported/double_barrel.png-3bed827e8a430d165be8c3309af5f4f8.ctex"
+uid="uid://bvmurlwtupukr"
+path="res://.godot/imported/arrosticini.png-1e66ff43d810cd459b77c148c98fa3ce.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/icons/upgrades/generated/double_barrel.png"
-dest_files=["res://.godot/imported/double_barrel.png-3bed827e8a430d165be8c3309af5f4f8.ctex"]
+source_file="res://assets/art/icons/upgrades/generated/arrosticini.png"
+dest_files=["res://.godot/imported/arrosticini.png-1e66ff43d810cd459b77c148c98fa3ce.ctex"]
 
 [params]
 
