@@ -158,3 +158,6 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-098](./2_to_do/PS-098-genera-aura-potenziamento-e-tell-termici.md) | Genera l'aura di potenziamento di Lollo e i tell termici di Aleo | art | arte | PRONTO | media | — |
 | [PS-099](./2_to_do/PS-099-aura-iperfocus-lollo-e-tell-termico-aleo.md) | Sostituisci il particellare di Lollo e Aleo con aura di potenziamento e tell termico | ux | arte | BLOCCATO | media | PS-098 |
 | [PS-100](./2_to_do/PS-100-rimuovi-ansia-dalle-specialita-di-barb.md) | Rimuovi L'Ansia dalle Specialità di Barb | chore | gameplay | PRONTO | media | — |
+| [PS-101](./2_to_do/PS-101-racconta-fame-dietro-agli-evil.md) | Racconta la fame dietro agli Evil e la redenzione di Barb | feat | gameplay | PRONTO | media | — |
+| [PS-102](./2_to_do/PS-102-cornice-dedicata-boss-intro.md) | Genera una cornice dedicata per la Boss Intro | art | arte | PRONTO | media | — |
+| [PS-103](./2_to_do/PS-103-integra-cornice-boss-intro.md) | Integra la cornice dedicata nella Boss Intro | ux | ui | BLOCCATO | media | PS-102 |
