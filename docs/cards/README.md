@@ -157,3 +157,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-097](./4_to_test/PS-097-await-orfano-defer-reflow-top-margin.md) | Applica a UpgradeOverlay/BarbRewardOverlay la correzione dell'await orfano di PS-096 | fix | tooling | IN VERIFICA | bassa | PS-096 |
 | [PS-098](./2_to_do/PS-098-genera-aura-potenziamento-e-tell-termici.md) | Genera l'aura di potenziamento di Lollo e i tell termici di Aleo | art | arte | PRONTO | media | — |
 | [PS-099](./2_to_do/PS-099-aura-iperfocus-lollo-e-tell-termico-aleo.md) | Sostituisci il particellare di Lollo e Aleo con aura di potenziamento e tell termico | ux | arte | BLOCCATO | media | PS-098 |
+| [PS-100](./2_to_do/PS-100-rimuovi-ansia-dalle-specialita-di-barb.md) | Rimuovi L'Ansia dalle Specialità di Barb | chore | gameplay | PRONTO | media | — |
