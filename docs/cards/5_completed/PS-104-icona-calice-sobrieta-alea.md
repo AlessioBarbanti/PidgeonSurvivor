@@ -3,19 +3,19 @@ id: PS-104
 titolo: Genera l'icona del calice per la Sobrietà di Alea
 tipo: art
 area: arte
-stato: PRONTO
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-09-05
-aggiornato: 2026-09-06
+aggiornato: 2026-09-07
 ---
 
 # PS-104 — Genera l'icona del calice per la Sobrietà di Alea
 
 ## Contesto
 
-[PS-105](./PS-105-nuova-passiva-alea-due-dita-e-parto.md) sostituisce la
+[PS-105](../4_to_test/PS-105-nuova-passiva-alea-due-dita-e-parto.md) sostituisce la
 passiva di Alea, "L'Aquila Non Sbaglia Mai" (RNG a intervalli,
 `alea_eagle_never_misses`), con "Due Dita e Parto": una barra Sobrietà che si
 riempie in modo prevedibile e, raggiunta la soglia, fa entrare Alea in
@@ -30,14 +30,14 @@ Il precedente diretto è il particellare di stato già in uso per Alea
 [scripts/content/friend_passive_controller.gd:53-54](../../../scripts/content/friend_passive_controller.gd)),
 oggi verde/rosso durante l'effetto casuale attivo: con la nuova passiva
 diventa obsoleto (non esiste più un esito positivo/negativo) e
-[PS-105](./PS-105-nuova-passiva-alea-due-dita-e-parto.md) lo sostituisce con
+[PS-105](../4_to_test/PS-105-nuova-passiva-alea-due-dita-e-parto.md) lo sostituisce con
 un nuovo particellare colorato dedicato a "in Brilla" — non con questa
 icona, che resta separata.
 
 Questa card si ferma alla produzione degli asset, come impone
 [PS-090](../5_completed/PS-090-separa-generazione-integrazione-card-art.md).
 Il cablaggio in HUD (e l'eventuale riuso come tell di stato) è
-[PS-105](./PS-105-nuova-passiva-alea-due-dita-e-parto.md).
+[PS-106](../3_in_sprint/PS-106-integra-icona-calice-sobrieta-alea-hud.md).
 
 ## Comportamento atteso
 
@@ -48,10 +48,10 @@ e di stato del gioco.
 
 ## Criteri di accettazione
 
-- [ ] Esiste un master a tema calice di vino rosso, leggibile a dimensione
+- [x] Esiste un master a tema calice di vino rosso, leggibile a dimensione
       HUD (icona piccola in alto a sinistra, non un elemento a piena
       schermata).
-- [ ] Il calice comunica il **livello di riempimento graduale** tramite due
+- [x] Il calice comunica il **livello di riempimento graduale** tramite due
       derivati alla stessa canvas quadrata `128×128` RGBA, allineati
       pixel-per-pixel fra loro: `alea_sobriety_glass_empty.png` (vetro/
       contorno del calice, base statica sempre visibile) e
@@ -61,15 +61,16 @@ e di stato del gioco.
       l'alto, guidata direttamente dal float continuo 0.0-1.0 di PS-105:
       nessuno stato intermedio pre-renderizzato, nessuna rigenerazione se
       cambia la logica di soglia della passiva.
-- [ ] Lo stato "pieno" si distingue a colpo d'occhio dallo stato "vuoto"
+- [x] Lo stato "pieno" si distingue a colpo d'occhio dallo stato "vuoto"
       anche a saturazione ridotta (stesso principio già richiesto alle
       coppie di stato in PS-029/PS-098: mai il solo colore a portare
       l'informazione).
-- [ ] Il derivato esiste in `assets/art/icons/` (percorso coerente con le
+- [x] Il derivato esiste in `assets/art/icons/` (percorso coerente con le
       icone HUD/passive già presenti) con una riga nell'`ASSET-MANIFEST.md`
       pertinente: origine, autore/licenza, trasformazioni, hash SHA-256.
-- [ ] Nessun file derivato è ancora referenziato da scene o script: il
-      cablaggio resta a [PS-105](./PS-105-nuova-passiva-alea-due-dita-e-parto.md).
+- [x] PS-104 non ha modificato scene o script: i file sostituiscono i
+      placeholder agli stessi percorsi già referenziati dalla card di wiring
+      [PS-106](../3_in_sprint/PS-106-integra-icona-calice-sobrieta-alea-hud.md).
 
 ## Ambito
 
@@ -80,7 +81,7 @@ e di stato del gioco.
 Non toccare:
 
 - `scenes/ui/hud.tscn`, `scripts/ui/hud.gd`,
-  `scripts/content/friend_passive_controller.gd` (wiring: PS-105);
+  `scripts/content/friend_passive_controller.gd` (wiring: PS-106);
 - `data/friends/alea.tres` e la logica della passiva di Alea;
 - ritratti, sprite di gameplay e Signature di Alea/Evil Alea, non toccati da
   questa card.
@@ -92,12 +93,16 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: non pertinente a questa card (nessun wiring)
-- [ ] Controllo percettivo richiesto: sì — il calice deve leggersi a
-      dimensione HUD reale e comunicare senza ambiguità il proprio livello
-      di riempimento
+- [x] Runtime Windows: non pertinente a PS-104, appartiene a PS-106 e va
+      rieseguito con il derivato reale
+- [x] Validazione statica APK: non pertinente a PS-104, appartiene a PS-106 e
+      va rieseguita con il derivato reale
+- [x] Runtime fisico Pixel 9: non pertinente a PS-104 (nessun wiring); resta
+      un gate della card di integrazione PS-106
+- [x] Controllo percettivo: review isolata a `128×128` e a `32×32` su fondo
+      HUD scuro. Outline/stelo/piede restano leggibili nel layer vetro e il
+      vino isolato aggiunge una massa riconoscibile dal basso; il risultato
+      non sostituisce la review in runtime di PS-106.
 
 ## Decisioni
 
@@ -105,7 +110,7 @@ Non toccare:
   Il proprietario ha confermato: il calice copre solo la barra Sobrietà in
   alto a sinistra. Il tell "in Brilla" (ex `TELL_ALEA_POSITIVE`/
   `TELL_ALEA_NEGATIVE`) resta un particellare colorato indipendente,
-  cablato da [PS-105](./PS-105-nuova-passiva-alea-due-dita-e-parto.md) sullo
+  cablato da [PS-105](../4_to_test/PS-105-nuova-passiva-alea-due-dita-e-parto.md) sullo
   stesso meccanismo già in uso per Aleo/Lollo/Migi — non questa icona.
 - **2026-09-06 — Opzione A: asset a due layer con maschera di riempimento
   verticale, guidata direttamente dal float 0.0-1.0 di PS-105 (non un set di
@@ -124,13 +129,28 @@ Non toccare:
   `tools/process-*-icon.ps1`), così l'integrazione in HUD scala verso il
   basso una texture pixel-art coerente invece di introdurre una nuova scala
   di produzione.
+- **2026-09-07 — Master e due layer reali prodotti con ImageGen e derivati
+  dalla stessa canvas.** `alea_sobriety_goblet_master.png` è il master
+  1254×1254 RGBA; l'editing separa vetro e liquido in due sorgenti della stessa
+  dimensione. `tools/process-layered-hud-icon.ps1` riduce entrambi alla stessa
+  canvas 128×128 con nearest-neighbor e conserva le coordinate, ricavando il
+  vetro dal master con una maschera cromatica del solo borgogna. La prima
+  estrazione del vetro è stata scartata in art review perché aveva reso opaco
+  il checkerboard di trasparenza; il derivato finale ha alpha 0 al centro della
+  coppa e negli angoli. A scala reale, il calice vuoto conserva outline,
+  stelo e piede oro/azzurri mentre il vino isolato riempie la coppa dal basso:
+  forma e massa del liquido, non il solo colore, distinguono pieno e vuoto.
+- **2026-09-07 — PS-106 è la card di integrazione corretta.** La card aveva
+  ancora il collegamento storico a PS-105 e il criterio "nessun riferimento";
+  PS-106 ha già cablato i percorsi definitivi su placeholder e ora riceve il
+  loro contenuto reale senza alcuna modifica runtime da PS-104. Refresh import,
+  smoke e verifica di integrazione restano apertamente di PS-106.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/visual-audio-identity.md`: nuova riga per l'icona HUD, quando
-      generata.
+- [x] `docs/visual-audio-identity.md`: nuova riga per l'icona HUD.
 
 ## Note
 
-Card gemella di [PS-105](./PS-105-nuova-passiva-alea-due-dita-e-parto.md),
-che la cablerà in HUD.
+Card gemella di [PS-106](../3_in_sprint/PS-106-integra-icona-calice-sobrieta-alea-hud.md),
+che possiede il cablaggio HUD e i suoi gate runtime.

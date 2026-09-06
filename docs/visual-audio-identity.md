@@ -16,6 +16,11 @@ del documento architetturale, non una lacuna di questo file.
   barbecue, pirofile, brace, condimenti, oggetti da cucina. I piccioni
   restano associati ai nemici e non devono essere il soggetto principale
   delle icone dei powerup positivi.
+- **Indicatore HUD di Alea** ([manifest](../assets/art/icons/hud/ASSET-MANIFEST.md)):
+  il calice Sobrietà è una coppia di layer pixel-art allineati, con vetro
+  freddo/ornamenti oro statici e vino borgogna isolato; il riempimento verticale
+  progressivo comunica lo stato anche attraverso la massa del liquido, non il
+  solo colore.
 - **Cast giocabile** ([characters.md](./characters.md), righe 111-124): gli
   otto profili (Zat, Bea, Aleo, Alea, Lollo, Migi, Marghe, Magno, con le
   rispettive Evil) seguono la direzione presentazionale approvata per il

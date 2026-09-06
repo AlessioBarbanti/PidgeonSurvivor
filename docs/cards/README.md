@@ -201,7 +201,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-101](./4_to_test/PS-101-racconta-fame-dietro-agli-evil.md) | Racconta la fame dietro agli Evil e la redenzione di Barb | feat | gameplay | IN VERIFICA | media | — |
 | [PS-102](./4_to_test/PS-102-cornice-dedicata-boss-intro.md) | Genera una cornice dedicata per la Boss Intro | art | arte | IN VERIFICA | media | — |
 | [PS-103](./4_to_test/PS-103-integra-cornice-boss-intro.md) | Integra la cornice dedicata nella Boss Intro | ux | ui | IN VERIFICA | media | PS-102 |
-| [PS-104](./2_to_do/PS-104-icona-calice-sobrieta-alea.md) | Genera l'icona del calice per la Sobrietà di Alea | art | arte | PRONTO | media | — |
+| [PS-104](./5_completed/PS-104-icona-calice-sobrieta-alea.md) | Genera l'icona del calice per la Sobrietà di Alea | art | arte | COMPLETATO | media | — |
 | [PS-105](./4_to_test/PS-105-nuova-passiva-alea-due-dita-e-parto.md) | Sostituisci la passiva di Alea con Due Dita e Parto | feat | gameplay | IN VERIFICA | media | — |
 | [PS-106](./3_in_sprint/PS-106-integra-icona-calice-sobrieta-alea-hud.md) | Integra l'icona del calice Sobrietà di Alea in HUD | ux | ui | IN ATTESA ASSET | media | PS-104 |
 | [PS-107](./2_to_do/PS-107-rigenera-icona-punto-di-cottura.md) | Rigenera l'icona di Punto di Cottura (ex Salamoia Bolognese) | art | arte | PRONTO | media | — |
