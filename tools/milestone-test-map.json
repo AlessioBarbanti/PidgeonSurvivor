@@ -31,7 +31,8 @@
         "tests/unit/test_ps051_boss_intro_identity.gd",
         "tests/unit/test_ps079_state_tell_particles.gd",
         "tests/unit/test_ps087_base_stat_identity.gd",
-        "tests/unit/test_ps088_base_stat_differentiation.gd"
+        "tests/unit/test_ps088_base_stat_differentiation.gd",
+        "tests/unit/test_ps105_alea_sobriety_cycle.gd"
       ]
     },
     {
@@ -404,7 +405,8 @@
         "tests/unit/test_ps004_zat_thunder_charge.gd",
         "tests/unit/test_ps029_state_tell_visibility.gd",
         "tests/unit/test_ps079_state_tell_particles.gd",
-        "tests/unit/test_ps072_bea_dodge_audio.gd"
+        "tests/unit/test_ps072_bea_dodge_audio.gd",
+        "tests/unit/test_ps105_alea_sobriety_cycle.gd"
       ]
     },
     {

@@ -22,10 +22,11 @@ const RUN_SEED := 4711
 
 
 func test_ps029_state_color_pairs_meet_minimum_contrast() -> void:
+	# PS-105: Alea non ha piu' una coppia di colori (l'esito non e' piu'
+	# casuale), quindi non compare in questa lista di coppie di stato.
 	var pairs := [
 		["Aleo", FriendPassiveController.TELL_ALEO_HOT, FriendPassiveController.TELL_ALEO_COLD],
 		["Lollo", FriendPassiveController.TELL_LOLLO_FOCUSED, FriendPassiveController.TELL_LOLLO_DISTRACTED],
-		["Alea", FriendPassiveController.TELL_ALEA_POSITIVE, FriendPassiveController.TELL_ALEA_NEGATIVE],
 		["Migi", FriendPassiveController.TELL_MIGI_SHELL_READY, FriendPassiveController.TELL_MIGI_SHIELD],
 	]
 	for pair in pairs:
@@ -40,7 +41,7 @@ func test_ps029_state_color_pairs_meet_minimum_contrast() -> void:
 		)
 
 
-func test_ps029_alea_tell_active_only_during_window() -> void:
+func test_ps029_alea_tell_active_only_during_brilla() -> void:
 	var context := await _build_context()
 	if context.is_empty():
 		return
@@ -58,28 +59,23 @@ func test_ps029_alea_tell_active_only_during_window() -> void:
 
 	assert_true(
 		not player.has_passive_state_tell(),
-		"PS-029: fuori dalla finestra attiva Alea non deve mostrare alcun tell."
+		"PS-029: fuori da Brilla Alea non deve mostrare alcun tell."
 	)
 
-	passive._activate_alea_effect()
-	assert_true(player.has_passive_state_tell(), "PS-029: nella finestra attiva il tell deve comparire.")
-	var positive: bool = passive._alea_move_multiplier > 1.0 or passive._alea_fire_multiplier > 1.0
-	var expected := (
-		FriendPassiveController.TELL_ALEA_POSITIVE if positive
-		else FriendPassiveController.TELL_ALEA_NEGATIVE
-	)
+	passive._start_alea_brilla()
+	assert_true(player.has_passive_state_tell(), "PS-029: durante Brilla il tell deve comparire.")
 	assert_true(
-		player.get_passive_state_tell_color() == expected,
-		"PS-029: il colore del tell deve corrispondere alla polarita' estratta."
+		player.get_passive_state_tell_color() == FriendPassiveController.TELL_ALEA_BRILLA,
+		"PS-029: durante Brilla il tell deve essere il colore dedicato (PS-105)."
 	)
 
-	var effect_duration := alea.get_passive_float(
-		&"effect_duration", 5.0, AbilityDefinition.MINIMUM_POSITIVE_VALUE
+	var brilla_duration := alea.get_passive_float(
+		&"brilla_duration", 6.0, AbilityDefinition.MINIMUM_POSITIVE_VALUE
 	)
-	passive._process(effect_duration + 0.01)
+	passive._process(brilla_duration + 0.01)
 	assert_true(
 		not player.has_passive_state_tell(),
-		"PS-029: allo scadere della finestra il tell deve tornare neutro."
+		"PS-029: allo scadere di Brilla il tell deve tornare neutro."
 	)
 
 	controller.prepare_restart()

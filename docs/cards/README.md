@@ -162,4 +162,5 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-102](./2_to_do/PS-102-cornice-dedicata-boss-intro.md) | Genera una cornice dedicata per la Boss Intro | art | arte | PRONTO | media | — |
 | [PS-103](./2_to_do/PS-103-integra-cornice-boss-intro.md) | Integra la cornice dedicata nella Boss Intro | ux | ui | BLOCCATO | media | PS-102 |
 | [PS-104](./2_to_do/PS-104-icona-calice-sobrieta-alea.md) | Genera l'icona del calice per la Sobrietà di Alea | art | arte | PRONTO | media | — |
-| [PS-105](./2_to_do/PS-105-nuova-passiva-alea-due-dita-e-parto.md) | Sostituisci la passiva di Alea con Due Dita e Parto | feat | gameplay | BLOCCATO | media | PS-104 |
+| [PS-105](./4_to_test/PS-105-nuova-passiva-alea-due-dita-e-parto.md) | Sostituisci la passiva di Alea con Due Dita e Parto | feat | gameplay | IN VERIFICA | media | — |
+| [PS-106](./2_to_do/PS-106-integra-icona-calice-sobrieta-alea-hud.md) | Integra l'icona del calice Sobrietà di Alea in HUD | ux | ui | BLOCCATO | media | PS-104 |

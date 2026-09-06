@@ -456,7 +456,7 @@ Baseline iniziali delle passive, tutte configurabili nei `.tres`:
 | Magno | velocità di movimento `×1,15` |
 | Bea | probabilità di evasione `15%` |
 | Zat | `35%` del danno recuperabile dopo `3 s`, recupero in `4 s` |
-| Alea | effetto ogni `10 s` per `5 s`; `60%` positivo (`×1,50`) e negativo (`×0,70`) su movimento o fuoco; ogni kill carica `+1%` di probabilità positiva fino al cap `95%`, e il tiro spende l'intera carica accumulata (B42) |
+| Alea | barra Sobrietà: si riempie in `48 s`, piena entra in Brilla per `6 s` (movimento `×1,30`, fuoco `×1,35`) con deriva periodica sull'input ogni `1,6 s` (`35°` per `0,35 s`), poi si azzera e ricomincia; nessun esito casuale (PS-105, sostituisce l'RNG a intervalli e il luck-per-kill di B42) |
 | Aleo | sopra il `50%` HP danno inflitto `×1,20`; sotto il `50%` HP danno subito `-25%`, nemici entro `140 px` rallentati a `×0,70` e brinati per `12` danni al secondo con tick da `0,25 s` (B44) |
 | Lollo | iperfocus `4-8 s` (movimento `×1,35`, fuoco `×1,45`) alternato a distrazione `3-6 s` (movimento `×0,85`, fuoco `×0,80`); durata di ogni fase estratta casualmente. Ogni kill accorcia la sola distrazione di `0,15 s`, mai l'iperfocus (B44) |
 | Migi | riduzione danno `10%`; sotto `35%` HP scudo da un colpo per `4 s`, cooldown `20 s` |

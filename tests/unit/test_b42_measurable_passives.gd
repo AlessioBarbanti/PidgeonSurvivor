@@ -1,12 +1,15 @@
 extends GutGameplayTest
 
-## B42 — Passive misurabili: Marghe e Alea.
+## B42 — Passive misurabili: Marghe.
 ##
 ## Verifica che l'aura di Marghe amplifichi davvero il danno subito dai nemici
 ## vicini (con un caso documentato in cui cambia il numero di colpi necessari),
-## che non alteri piu' la salute massima come faceva la passiva pre-B42, e che
-## la fortuna di Alea si carichi con le kill, si spenda al tiro e resti
-## deterministica per seed.
+## e che non alteri piu' la salute massima come faceva la passiva pre-B42.
+##
+## La copertura di Alea originariamente qui (fortuna caricata dalle kill, spesa
+## al tiro, deterministica per seed) e' stata rimossa da PS-105, che sostituisce
+## integralmente quel meccanismo RNG con "Due Dita e Parto": vive ora in
+## test_ps105_alea_sobriety_cycle.gd.
 
 const ENEMY_SCENE := preload("res://scenes/actors/base_enemy.tscn")
 const BASE_ENEMY_HEALTH := 10.0
@@ -157,78 +160,3 @@ func test_marghe_aura() -> void:
 	controller.prepare_restart()
 
 
-func test_alea_luck() -> void:
-	var movement_slice := await instantiate_movement_slice()
-
-	var controller := movement_slice.get_run_controller() as RunController
-	var registry := movement_slice.get_friend_registry() as FriendRegistry
-	var player := movement_slice.get_player() as Player
-	var passive := movement_slice.get_friend_passive_controller() as FriendPassiveController
-	var spawner := movement_slice.get_enemy_spawner() as EnemySpawner
-	if controller == null or registry == null or passive == null or spawner == null:
-		assert_true(false, "La scena di run deve esporre le dipendenze di Alea.")
-		return
-
-	controller.set_process(false)
-	spawner.set_process(false)
-	player.set_physics_process(false)
-	passive.set_process(false)
-	controller.start_run(3131)
-
-	var alea := registry.resolve_definition(&"alea")
-	assert_true(alea != null, "Il profilo Alea deve esistere.")
-	if alea == null:
-		return
-	player.set_friend_definition(alea)
-	assert_true(passive.equip_definition(alea), "La passiva deve accettare Alea.")
-
-	var base_chance := alea.get_passive_float(&"positive_chance", 0.6, 0.0, 1.0)
-	var luck_per_kill := alea.get_passive_float(&"luck_per_kill", 0.0, 0.0, 1.0)
-	var chance_cap := alea.get_passive_float(&"luck_chance_cap", 0.95, 0.0, 1.0)
-	var positive_multiplier := alea.get_passive_float(&"positive_multiplier", 1.2, 0.0)
-	var negative_multiplier := alea.get_passive_float(&"negative_multiplier", 0.9, 0.0)
-
-	assert_true(luck_per_kill > 0.0, "Alea deve dichiarare una carica di fortuna per kill.")
-	assert_true(
-		positive_multiplier >= 1.4 and negative_multiplier <= 0.8, "La posta di Alea deve essere alta in entrambe le direzioni."
-	)
-	assert_almost_eq(passive.get_luck_bonus(), 0.0, FLOAT_TOLERANCE, "La run deve iniziare senza fortuna accumulata.")
-	assert_almost_eq(
-		passive.get_effective_positive_chance(), base_chance, FLOAT_TOLERANCE,
-		"Senza kill la probabilita' effettiva coincide con quella base."
-	)
-
-	# Le kill caricano la fortuna e la caricano fino a un tetto dichiarato.
-	var enemy := spawner.try_spawn_enemy()
-	assert_true(enemy != null, "Serve un bersaglio fixture per le kill di Alea.")
-	if enemy != null:
-		enemy.set_physics_process(false)
-		enemy.take_damage(9999.0)
-		await wait_process_frames(1)
-		assert_almost_eq(
-			passive.get_luck_bonus(), luck_per_kill, FLOAT_TOLERANCE, "Una kill deve caricare esattamente la quota dichiarata."
-		)
-		assert_almost_eq(
-			passive.get_effective_positive_chance(), base_chance + luck_per_kill, FLOAT_TOLERANCE,
-			"La fortuna deve sommarsi alla probabilita' base."
-		)
-
-	for _index in range(500):
-		passive._charge_alea_luck()
-	assert_true(
-		passive.get_luck_bonus() <= chance_cap + FLOAT_TOLERANCE,
-		"La fortuna accumulata non deve superare il tetto dichiarato."
-	)
-	assert_true(
-		passive.get_effective_positive_chance() <= chance_cap + FLOAT_TOLERANCE,
-		"La probabilita' effettiva non deve superare il tetto dichiarato."
-	)
-
-	# Il tiro spende integralmente la fortuna accumulata.
-	passive._process(alea.get_passive_float(&"trigger_interval", 10.0))
-	assert_almost_eq(passive.get_luck_bonus(), 0.0, FLOAT_TOLERANCE, "Il tiro deve azzerare la fortuna accumulata.")
-
-	# Restart: nessun residuo di fortuna fra le run.
-	passive._charge_alea_luck()
-	controller.prepare_restart()
-	assert_almost_eq(passive.get_luck_bonus(), 0.0, FLOAT_TOLERANCE, "Il restart deve azzerare la fortuna accumulata.")

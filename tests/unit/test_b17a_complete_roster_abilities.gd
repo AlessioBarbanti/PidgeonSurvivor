@@ -171,23 +171,34 @@ func _assert_passive(player: Player, passive: FriendPassiveController, weapon: W
 		&"alea":
 			var definition := passive.get_definition()
 			# PS-087: Alea non e' piu' un profilo neutro, quindi il "riposo" a cui
-			# l'effetto temporaneo deve tornare e' il proprio scarto base, non 1.0.
+			# il moltiplicatore di Brilla deve tornare e' il proprio scarto base,
+			# non 1.0. PS-105: sostituisce l'RNG a intervalli con Due Dita e Parto,
+			# un ciclo Sobrieta'/Brilla interamente deterministico.
 			var base_move_speed := definition.get_base_move_speed_multiplier()
 			var base_fire_rate := definition.get_base_fire_rate_multiplier()
-			passive._process(definition.get_passive_float(&"trigger_interval"))
+			assert_almost_eq(
+				passive.get_alea_sobriety_ratio(), 0.0, ROSTER_FLOAT_TOLERANCE,
+				"Alea deve iniziare senza Sobrieta' accumulata."
+			)
+			passive._process(definition.get_passive_float(&"sobriety_fill_duration"))
+			assert_true(passive.is_alea_brilla_active(), "Al riempimento della barra Alea deve entrare in Brilla.")
 			assert_true(
 				(
 					not is_equal_approx(player.get_character_move_speed_multiplier(), base_move_speed)
 					or not is_equal_approx(weapon.get_character_fire_rate_multiplier(), base_fire_rate)
 				),
-				"Alea deve ottenere un modificatore temporaneo deterministico."
+				"Alea deve ottenere un modificatore deterministico durante Brilla."
 			)
-			passive._process(definition.get_passive_float(&"effect_duration"))
+			passive._process(definition.get_passive_float(&"brilla_duration") + 0.01)
+			assert_true(not passive.is_alea_brilla_active(), "Trascorsa Brilla, Alea deve tornare normale.")
 			assert_almost_eq(
 				player.get_character_move_speed_multiplier(), base_move_speed, ROSTER_FLOAT_TOLERANCE, "L'effetto Alea deve terminare."
 			)
 			assert_almost_eq(
 				weapon.get_character_fire_rate_multiplier(), base_fire_rate, ROSTER_FLOAT_TOLERANCE, "L'effetto arma Alea deve terminare."
+			)
+			assert_almost_eq(
+				passive.get_alea_sobriety_ratio(), 0.0, ROSTER_FLOAT_TOLERANCE, "Trascorsa Brilla la Sobrieta' si azzera completamente."
 			)
 		&"aleo":
 			assert_almost_eq(

@@ -22,7 +22,7 @@ const EXPECTED_CAST := {
 	&"alea": {
 		"path": "res://assets/art/characters/alea/generated/sprite.png",
 		"sha256": "5FA4E05D766D22F323B18BD2D61B0059CA5298C19B386A794C6EFB14FD8FDD51",
-		"passive": &"alea_eagle_never_misses",
+		"passive": &"alea_two_fingers_and_go",
 		"ability": &"alea_grand_spin",
 	},
 	&"aleo": {

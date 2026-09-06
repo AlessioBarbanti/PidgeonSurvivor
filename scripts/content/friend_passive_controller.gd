@@ -6,11 +6,11 @@ signal damage_avoided(passive_id: StringName)
 signal delayed_healing_changed(recoverable_health: float)
 signal thunder_charge_tier_changed(tier: int)
 signal shield_changed(active: bool, remaining: float)
-signal random_effect_started(positive: bool, stat_id: StringName, multiplier: float)
+## Due Dita e Parto (PS-105): 0.0 (vuota) a 1.0 (piena, entra in Brilla).
+signal alea_sobriety_changed(fill_ratio: float)
 signal thermal_mode_changed(hot: bool)
 signal hyperfocus_changed(focused: bool, phase_duration: float)
 signal marked_targets_changed(marked_count: int)
-signal luck_charge_changed(luck_bonus: float)
 signal distraction_shortened(remaining: float)
 signal migi_shell_charges_changed(charges: int, max_charges: int)
 signal instinctive_dodge_triggered(position: Vector2, direction: Vector2)
@@ -18,7 +18,7 @@ signal instinctive_dodge_triggered(position: Vector2, direction: Vector2)
 const MAGNO_AERODYNAMIC_FLOW := &"magno_aerodynamic_flow"
 const BEA_SIXTH_SENSE := &"bea_sixth_sense"
 const ZAT_DELAYED_HEALING := &"zat_delayed_healing"
-const ALEA_EAGLE_NEVER_MISSES := &"alea_eagle_never_misses"
+const ALEA_TWO_FINGERS_AND_GO := &"alea_two_fingers_and_go"
 const ALEO_INTERNAL_THERMOSTAT := &"aleo_internal_thermostat"
 const LOLLO_HYPERACTIVITY := &"lollo_hyperactivity"
 const MIGI_TURTLE_SHELL := &"migi_turtle_shell"
@@ -50,8 +50,10 @@ const TELL_ALEO_HOT := Color(1.0, 0.55, 0.18, 1.0)
 const TELL_ALEO_COLD := Color(0.35, 0.78, 1.0, 1.0)
 const TELL_LOLLO_FOCUSED := Color(1.0, 0.88, 0.28, 1.0)
 const TELL_LOLLO_DISTRACTED := Color(0.30, 0.36, 0.98, 1.0)
-const TELL_ALEA_POSITIVE := Color(0.36, 1.0, 0.52, 1.0)
-const TELL_ALEA_NEGATIVE := Color(1.0, 0.38, 0.42, 1.0)
+## Due Dita e Parto (PS-105): un solo colore "in Brilla", non piu' una coppia
+## positiva/negativa — l'esito non e' piu' casuale, quindi non esiste piu'
+## una polarita' da distinguere.
+const TELL_ALEA_BRILLA := Color(1.0, 0.82, 0.24, 1.0)
 const TELL_MIGI_SHELL_READY := Color(0.32, 0.94, 0.84, 1.0)
 const TELL_MIGI_SHIELD := Color(0.68, 0.32, 1.0, 1.0)
 
@@ -69,11 +71,13 @@ var _recovery_duration_remaining := 0.0
 var _shield_remaining := 0.0
 var _shield_cooldown_remaining := 0.0
 var _shield_hits_remaining := 0
-var _alea_interval_remaining := 0.0
-var _alea_effect_remaining := 0.0
+var _alea_sobriety_ratio := 0.0
+var _alea_brilla_remaining := 0.0
 var _alea_move_multiplier := 1.0
 var _alea_fire_multiplier := 1.0
-var _alea_luck_bonus := 0.0
+var _alea_drift_timer_remaining := 0.0
+var _alea_drift_pulse_remaining := 0.0
+var _alea_drift_sign := 1.0
 var _aleo_hot := true
 var _aleo_chilled_targets: Array[BaseEnemy] = []
 var _aleo_cold_damage_accumulator := 0.0
@@ -104,8 +108,8 @@ func _process(delta: float) -> void:
 		ZAT_DELAYED_HEALING:
 			_advance_delayed_healing(safe_delta)
 			_advance_thunder_charge_rotation(safe_delta)
-		ALEA_EAGLE_NEVER_MISSES:
-			_advance_alea_effect(safe_delta)
+		ALEA_TWO_FINGERS_AND_GO:
+			_advance_alea_sobriety(safe_delta)
 		ALEO_INTERNAL_THERMOSTAT:
 			_advance_aleo_thermostat(safe_delta)
 		LOLLO_HYPERACTIVITY:
@@ -297,7 +301,7 @@ func is_supported_definition(definition: FriendDefinition) -> bool:
 		MAGNO_AERODYNAMIC_FLOW,
 		BEA_SIXTH_SENSE,
 		ZAT_DELAYED_HEALING,
-		ALEA_EAGLE_NEVER_MISSES,
+		ALEA_TWO_FINGERS_AND_GO,
 		ALEO_INTERNAL_THERMOSTAT,
 		LOLLO_HYPERACTIVITY,
 		MIGI_TURTLE_SHELL,
@@ -369,89 +373,119 @@ func _resolve_thunder_rotation_speed(tier: int) -> float:
 			return _definition.get_passive_float(&"aura_rotation_speed_low", 0.6, 0.0)
 
 
-func _advance_alea_effect(delta: float) -> void:
-	if _alea_effect_remaining > 0.0:
-		_alea_effect_remaining = maxf(_alea_effect_remaining - delta, 0.0)
-		if _alea_effect_remaining <= 0.0:
-			_alea_move_multiplier = 1.0
-			_alea_fire_multiplier = 1.0
-			_apply_character_multipliers()
-			_refresh_passive_state_tell()
-	_alea_interval_remaining -= delta
-	if _alea_interval_remaining > 0.0:
+## Due Dita e Parto (PS-105): ciclo interamente deterministico, senza RNG.
+## La barra Sobrietà si riempie a velocità costante; raggiunta la soglia
+## entra automaticamente in Brilla per una durata fissa, poi si azzera e
+## ricomincia. Nessuna kill, danno o esito casuale la influenza in alcun modo
+## (a differenza della vecchia "L'Aquila Non Sbaglia Mai").
+func _advance_alea_sobriety(delta: float) -> void:
+	if _alea_brilla_remaining > 0.0:
+		_advance_alea_brilla(delta)
 		return
-	_alea_interval_remaining = _definition.get_passive_float(
-		&"trigger_interval",
-		12.0,
+	var fill_duration := _definition.get_passive_float(
+		&"sobriety_fill_duration",
+		48.0,
 		AbilityDefinition.MINIMUM_POSITIVE_VALUE
 	)
-	_activate_alea_effect()
+	var previous_ratio := _alea_sobriety_ratio
+	_alea_sobriety_ratio = clampf(_alea_sobriety_ratio + delta / fill_duration, 0.0, 1.0)
+	if not is_equal_approx(_alea_sobriety_ratio, previous_ratio):
+		alea_sobriety_changed.emit(_alea_sobriety_ratio)
+	if _alea_sobriety_ratio >= 1.0:
+		_start_alea_brilla()
 
 
-## La fortuna accumulata dalle kill si somma alla probabilita' base e viene
-## spesa integralmente a ogni tiro: il giocatore puo' influenzare la scommessa
-## invece di subirla.
-func get_luck_bonus() -> float:
-	return _alea_luck_bonus
+func get_alea_sobriety_ratio() -> float:
+	return _alea_sobriety_ratio
 
 
-func get_effective_positive_chance() -> float:
-	if _definition == null or _definition.passive_id != ALEA_EAGLE_NEVER_MISSES:
-		return 0.0
-	var base_chance := _definition.get_passive_float(
-		&"positive_chance",
-		0.6,
-		0.0,
-		1.0
+func get_alea_brilla_remaining() -> float:
+	return _alea_brilla_remaining
+
+
+func is_alea_brilla_active() -> bool:
+	return _alea_brilla_remaining > 0.0
+
+
+func _start_alea_brilla() -> void:
+	_alea_brilla_remaining = _definition.get_passive_float(
+		&"brilla_duration",
+		6.0,
+		AbilityDefinition.MINIMUM_POSITIVE_VALUE
 	)
-	var chance_cap := _definition.get_passive_float(
-		&"luck_chance_cap",
-		0.95,
-		0.0,
-		1.0
-	)
-	return minf(base_chance + _alea_luck_bonus, chance_cap)
-
-
-func _charge_alea_luck() -> void:
-	var luck_per_kill := _definition.get_passive_float(
-		&"luck_per_kill",
-		0.0,
-		0.0,
-		1.0
-	)
-	if luck_per_kill <= 0.0:
-		return
-	var chance_cap := _definition.get_passive_float(
-		&"luck_chance_cap",
-		0.95,
-		0.0,
-		1.0
-	)
-	_alea_luck_bonus = minf(_alea_luck_bonus + luck_per_kill, chance_cap)
-	luck_charge_changed.emit(_alea_luck_bonus)
-
-
-func _activate_alea_effect() -> void:
-	var positive := _rng.randf() < get_effective_positive_chance()
-	_alea_luck_bonus = 0.0
-	luck_charge_changed.emit(_alea_luck_bonus)
-	var multiplier := _definition.get_passive_float(
-		&"positive_multiplier" if positive else &"negative_multiplier",
-		1.2 if positive else 0.9,
+	_alea_move_multiplier = _definition.get_passive_float(
+		&"brilla_move_speed_multiplier",
+		1.3,
 		MINIMUM_MULTIPLIER
 	)
-	var stat_id := &"move_speed" if _rng.randi_range(0, 1) == 0 else &"fire_rate"
-	_alea_move_multiplier = multiplier if stat_id == &"move_speed" else 1.0
-	_alea_fire_multiplier = multiplier if stat_id == &"fire_rate" else 1.0
-	_alea_effect_remaining = _definition.get_passive_float(
-		&"effect_duration",
-		5.0,
-		AbilityDefinition.MINIMUM_POSITIVE_VALUE
+	_alea_fire_multiplier = _definition.get_passive_float(
+		&"brilla_fire_rate_multiplier",
+		1.35,
+		MINIMUM_MULTIPLIER
 	)
+	_alea_drift_timer_remaining = _resolve_alea_drift_interval()
+	_alea_drift_pulse_remaining = 0.0
 	_apply_character_multipliers()
 	_refresh_passive_state_tell()
-	random_effect_started.emit(positive, stat_id, multiplier)
+
+
+func _advance_alea_brilla(delta: float) -> void:
+	_alea_brilla_remaining = maxf(_alea_brilla_remaining - delta, 0.0)
+	_advance_alea_drift(delta)
+	if _alea_brilla_remaining <= 0.0:
+		_end_alea_brilla()
+
+
+func _end_alea_brilla() -> void:
+	_alea_move_multiplier = 1.0
+	_alea_fire_multiplier = 1.0
+	_alea_drift_timer_remaining = 0.0
+	_set_alea_drift_pulse(0.0)
+	_alea_sobriety_ratio = 0.0
+	_apply_character_multipliers()
+	_refresh_passive_state_tell()
+	alea_sobriety_changed.emit(_alea_sobriety_ratio)
+
+
+## La deriva devia per un istante la direzione effettiva di movimento (non
+## quella voluta dal giocatore, ne' la direzione di facing/animazione):
+## un evento periodico e prevedibile, non un rumore continuo. Il verso
+## alterna in modo deterministico ad ogni impulso, cosi' come il resto del
+## meccanismo non dipende mai da RNG (confermato dal proprietario).
+func _advance_alea_drift(delta: float) -> void:
+	if _alea_drift_pulse_remaining > 0.0:
+		_alea_drift_pulse_remaining = maxf(_alea_drift_pulse_remaining - delta, 0.0)
+		if _alea_drift_pulse_remaining <= 0.0:
+			_set_alea_drift_pulse(0.0)
+		return
+	_alea_drift_timer_remaining -= delta
+	if _alea_drift_timer_remaining > 0.0:
+		return
+	_alea_drift_timer_remaining = _resolve_alea_drift_interval()
+	_alea_drift_sign = -_alea_drift_sign
+	var angle_degrees := _definition.get_passive_float(&"drift_angle_degrees", 35.0, 0.0)
+	_set_alea_drift_pulse(
+		_definition.get_passive_float(
+			&"drift_duration",
+			0.35,
+			AbilityDefinition.MINIMUM_POSITIVE_VALUE
+		),
+		deg_to_rad(angle_degrees) * _alea_drift_sign
+	)
+
+
+func _resolve_alea_drift_interval() -> float:
+	return _definition.get_passive_float(
+		&"drift_interval",
+		1.6,
+		AbilityDefinition.MINIMUM_POSITIVE_VALUE
+	)
+
+
+func _set_alea_drift_pulse(remaining: float, rotation_radians: float = 0.0) -> void:
+	_alea_drift_pulse_remaining = remaining
+	if is_instance_valid(_player):
+		_player.set_movement_drift_rotation(rotation_radians if remaining > 0.0 else 0.0)
 
 
 func _advance_lollo_hyperfocus(delta: float) -> void:
@@ -690,13 +724,9 @@ func _refresh_passive_state_tell() -> void:
 			tell_color = TELL_ALEO_HOT if _aleo_hot else TELL_ALEO_COLD
 		LOLLO_HYPERACTIVITY:
 			tell_color = TELL_LOLLO_FOCUSED if _lollo_focused else TELL_LOLLO_DISTRACTED
-		ALEA_EAGLE_NEVER_MISSES:
-			if _alea_effect_remaining > 0.0:
-				var positive := (
-					_alea_move_multiplier > 1.0
-					or _alea_fire_multiplier > 1.0
-				)
-				tell_color = TELL_ALEA_POSITIVE if positive else TELL_ALEA_NEGATIVE
+		ALEA_TWO_FINGERS_AND_GO:
+			if _alea_brilla_remaining > 0.0:
+				tell_color = TELL_ALEA_BRILLA
 		MIGI_TURTLE_SHELL:
 			if is_shield_active():
 				tell_color = TELL_MIGI_SHIELD
@@ -760,7 +790,7 @@ func _apply_character_multipliers() -> void:
 					1.0,
 					MINIMUM_MULTIPLIER
 				)
-			ALEA_EAGLE_NEVER_MISSES:
+			ALEA_TWO_FINGERS_AND_GO:
 				move_multiplier = _alea_move_multiplier
 				fire_multiplier = _alea_fire_multiplier
 	# Gli scarti di partenza B47 compongono moltiplicativamente con la passiva
@@ -841,23 +871,17 @@ func _reset_runtime(seed_value: int) -> void:
 	_shield_remaining = 0.0
 	_shield_cooldown_remaining = 0.0
 	_shield_hits_remaining = 0
-	_alea_effect_remaining = 0.0
+	_alea_sobriety_ratio = 0.0
+	_alea_brilla_remaining = 0.0
 	_alea_move_multiplier = 1.0
 	_alea_fire_multiplier = 1.0
-	_alea_luck_bonus = 0.0
+	_alea_drift_timer_remaining = 0.0
+	_set_alea_drift_pulse(0.0)
+	_alea_drift_sign = 1.0
 	_clear_aleo_cold_aura()
 	_clear_marghe_aura()
 	_aleo_cold_damage_accumulator = 0.0
 	_aleo_hot = true
-	_alea_interval_remaining = (
-		_definition.get_passive_float(
-			&"trigger_interval",
-			12.0,
-			AbilityDefinition.MINIMUM_POSITIVE_VALUE
-		)
-		if _definition != null and _definition.passive_id == ALEA_EAGLE_NEVER_MISSES
-		else 0.0
-	)
 	_lollo_focused = true
 	_lollo_phase_remaining = 0.0
 	if _definition != null and _definition.passive_id == LOLLO_HYPERACTIVITY:
@@ -891,7 +915,7 @@ func _reset_runtime(seed_value: int) -> void:
 	_refresh_thunder_charge_aura()
 	delayed_healing_changed.emit(0.0)
 	shield_changed.emit(false, 0.0)
-	luck_charge_changed.emit(_alea_luck_bonus)
+	alea_sobriety_changed.emit(_alea_sobriety_ratio)
 
 
 func _has_valid_dependencies() -> bool:
@@ -986,15 +1010,12 @@ func _on_target_died(_target: BaseEnemy) -> void:
 	):
 		return
 	match _definition.passive_id:
-		ALEA_EAGLE_NEVER_MISSES:
-			_charge_alea_luck()
 		LOLLO_HYPERACTIVITY:
 			_shorten_lollo_distraction()
 
 
 func _reacts_to_kills() -> bool:
 	return _definition != null and _definition.passive_id in [
-		ALEA_EAGLE_NEVER_MISSES,
 		LOLLO_HYPERACTIVITY,
 	]
 

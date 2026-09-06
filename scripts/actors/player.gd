@@ -80,6 +80,10 @@ var _move_speed_multiplier := 1.0
 var _pickup_radius_multiplier := 1.0
 var _health_max_multiplier := 1.0
 var _damage_taken_multiplier := 1.0
+## Due Dita e Parto di Alea (PS-105): devia per un istante la direzione
+## effettiva di movimento rispetto a quella voluta (`movement_input`), senza
+## alterare facing/animazione. Zero fuori da Brilla e per chiunque altro.
+var _movement_drift_rotation_radians := 0.0
 var _passive_controller: FriendPassiveController
 var _character_base_scale := Vector2.ONE
 var _facing_direction := DEFAULT_FACING_DIRECTION
@@ -152,7 +156,7 @@ func _physics_process(delta: float) -> void:
 		if _external_impulse_remaining <= 0.0:
 			_external_impulse_velocity = Vector2.ZERO
 	else:
-		velocity = movement_input * move_speed
+		velocity = movement_input.rotated(_movement_drift_rotation_radians) * move_speed
 	move_and_slide()
 	_clamp_to_playfield()
 	_advance_character_animation(safe_delta)
@@ -167,6 +171,19 @@ func set_movement_input(value: Vector2) -> void:
 func clear_movement_input() -> void:
 	movement_input = Vector2.ZERO
 	velocity = Vector2.ZERO
+
+
+## Character-agnostic come `set_momentum_trail_enabled()`: e' la passiva
+## equipaggiata a deciderlo (solo Alea in Brilla, PS-105), il Player resta
+## agnostico rispetto a quale personaggio sia attivo. Non tocca
+## `movement_input` ne' il facing: solo la direzione effettiva di
+## `_physics_process()`.
+func set_movement_drift_rotation(radians: float) -> void:
+	_movement_drift_rotation_radians = radians if is_finite(radians) else 0.0
+
+
+func get_movement_drift_rotation() -> float:
+	return _movement_drift_rotation_radians
 
 
 func get_facing_direction() -> Vector2:
@@ -288,6 +305,7 @@ func reset_for_run() -> void:
 	_damage_reaction_remaining = 0.0
 	reset_upgrade_stat_multipliers()
 	clear_movement_input()
+	_movement_drift_rotation_radians = 0.0
 	_set_facing_direction(DEFAULT_FACING_DIRECTION)
 	_last_movement_direction = DEFAULT_FACING_DIRECTION
 	_momentum_ratio = 0.0

@@ -57,17 +57,11 @@ func test_ps079_phase_tells_are_distinct_per_character() -> void:
 	if alea != null:
 		player.set_friend_definition(alea)
 		passive.equip_definition(alea)
-		assert_true(not player.has_passive_state_tell(), "Fuori dalla finestra attiva Alea non deve mostrare alcun tell.")
-		passive._activate_alea_effect()
-		var polarity := player.get_passive_state_tell_color()
-		assert_true(
-			polarity == FriendPassiveController.TELL_ALEA_POSITIVE
-			or polarity == FriendPassiveController.TELL_ALEA_NEGATIVE,
-			"Nella finestra attiva il tell di Alea deve essere una delle due polarita' dichiarate."
-		)
-		assert_true(
-			FriendPassiveController.TELL_ALEA_POSITIVE != FriendPassiveController.TELL_ALEA_NEGATIVE,
-			"PS-079: le due polarita' di Alea devono restare cromaticamente distinte."
+		assert_true(not player.has_passive_state_tell(), "Fuori da Brilla Alea non deve mostrare alcun tell.")
+		passive._start_alea_brilla()
+		assert_eq(
+			player.get_passive_state_tell_color(), FriendPassiveController.TELL_ALEA_BRILLA,
+			"PS-105: durante Brilla il tell di Alea deve essere il colore dedicato (non piu' una coppia positiva/negativa)."
 		)
 
 	var migi := registry.resolve_definition(&"migi")

@@ -81,12 +81,12 @@ in `scripts/abilities/lightning_storm.gd` e `FriendPassiveController`):
 
 ## Alea
 
-Ruolo: Rischio, fortuna e mischia.  
-Passiva — L’Aquila Non Sbaglia Mai: Ogni 10 secondi tira un effetto a caso: uccidere nemici aiuta la sorte (ogni kill carica la fortuna del tiro successivo, che la spende per intero).  
+Ruolo: Caos, vino e piroette.  
+Passiva — Due Dita e Parto (PS-105): una barra Sobrietà si riempie nel tempo, in modo interamente prevedibile; piena, fa entrare Alea in Brilla — più cadenza e velocità di movimento, ma il movimento diventa instabile per pochi secondi (deriva periodica sull'input) — poi torna normale e la barra riparte da zero. Nessun esito è casuale: sostituisce integralmente "L'Aquila Non Sbaglia Mai" (RNG a intervalli, luck-per-kill).  
 Attiva — Gran Piroetta: Una rotazione rapida che colpisce ripetutamente tutti i nemici vicini.
 Boss: Evil Alea — Signature *Gran Piroetta*: entra in rotazione con un'area di contatto sempre visibile e insegue a velocità ridotta senza poter cambiare direzione all'istante.
 
-Scarti base (B47, PS-087): salute `×0,85`, velocità `×1,00`, cadenza `×1,15` — il profilo più fragile del cast, compensato dalla cadenza più alta della mischia ravvicinata: il rischio del ruolo è letterale, non solo tematico. Sostituisce la tripla interamente neutra assegnata durante B47 (vedi Decisioni di PS-087): un ruolo di "rischio e fortuna" non può restare senza identità statistica.
+Scarti base (B47, PS-087): salute `×0,85`, velocità `×1,00`, cadenza `×1,15` — il profilo più fragile del cast, compensato dalla cadenza più alta della mischia ravvicinata: l'instabilità del ruolo è letterale, non solo tematica. Sostituisce la tripla interamente neutra assegnata durante B47 (vedi Decisioni di PS-087); il ruolo è cambiato da "Rischio, fortuna e mischia" a "Caos, vino e piroette" con PS-105, ma il profilo statistico resta lo stesso.
 
 ## Aleo
 
