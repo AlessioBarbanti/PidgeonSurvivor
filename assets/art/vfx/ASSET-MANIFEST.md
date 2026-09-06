@@ -1,5 +1,32 @@
 # Manifest grafico VFX
 
+## PS-098 — tell di stato di Lollo e Aleo — 6 settembre 2026
+
+Cinque master originali per i tell di stato sono stati prodotti con OpenAI
+ImageGen built-in per il progetto IL GIOCO. Origine e autore: progetto IL GIOCO
+con assistenza OpenAI ImageGen; licenza: Licenza del progetto. I prompt hanno
+richiesto pixel-art arcade a palette limitata, contorno scuro netto, canvas
+quadrato e angoli trasparenti, senza testo o UI; i master vengono conservati
+fuori da import/export in `state_tells/hd/` e il runtime PS-099 userà solo i
+derivati in `state_tells/generated/`.
+
+`tools/process-ability-vfx.ps1 -Size 512` ha ricampionato ogni master sul
+canvas intero e azzerato alpha residuo sotto `32`. Per l'aura calda, l'output
+ImageGen rettangolare è stato centrato su canvas quadrato con padding
+trasparente prima della derivazione. Il termometro freddo deriva dalla
+composizione del termometro caldo: palette resa fredda, segno `+` sostituito con
+`−` nello stesso punto e colonnina portata bassa; la griglia opaca introdotta
+dall'editing è stata rimossa con una maschera alfa deterministica connessa agli
+angoli, senza modificare il soggetto.
+
+| Ruolo | Master HD | Runtime | Trasformazione specifica | SHA-256 master | SHA-256 runtime |
+|---|---|---|---|---|---|
+| Iperfocus Lollo | `assets/art/vfx/state_tells/hd/hyperfocus_aura_source.png` | `assets/art/vfx/state_tells/generated/hyperfocus_aura.png` | Aura dorata verticale a forma propria, con apertura centrale per il personaggio | `4061F5FE72DF8384BD45B1D6330FEFFFB2B3917557935D6EDE10AC034A7C1032` | `5A3E9B3F3C703D7043FF2F2F74F7C80EEA1058FE136807DFD2448A77328E3DD4` |
+| Aleo caldo | `assets/art/vfx/state_tells/hd/thermal_aura_hot_source.png` | `assets/art/vfx/state_tells/generated/thermal_aura_hot.png` | Brace larga e schiacciata, padding trasparente verticale sul master | `9BC15CC580507536462466EFC7A9E4421A11FBAFBF9B02CBA37279BF7FBDA0FC` | `C021A4DF734DEF013094DAE9AE98059BA74BC57A7C8F8FEE05FD25E2FCD313F1` |
+| Aleo freddo | `assets/art/vfx/state_tells/hd/thermal_aura_cold_source.png` | `assets/art/vfx/state_tells/generated/thermal_aura_cold.png` | Brina larga con cristalli laterali e vapore freddo | `B682B492369152E7CEF421023050A2AE8C38AF2167F005A7C4A43DA6161C84E1` | `7C614221E608B2DF62B22742DA7D0B6A3F6B2C6690DC95EAF85B3C69BC2B54BD` |
+| Termometro Aleo caldo | `assets/art/vfx/state_tells/hd/thermometer_hot_source.png` | `assets/art/vfx/state_tells/generated/thermometer_hot.png` | Segno `+` alto a destra e colonnina alta | `1C289FA73F6001A9206E5F66221340AB90940BE62922F5B74B363FA0B9CE579A` | `CFDD5C4DC64577658A890390E0B307569179075C4345012163434A83EF864195` |
+| Termometro Aleo freddo | `assets/art/vfx/state_tells/hd/thermometer_cold_source.png` | `assets/art/vfx/state_tells/generated/thermometer_cold.png` | Derivato dal termometro caldo: segno `−` alto a destra, colonnina bassa e palette fredda | `6060B9D1E764563381B16D9A9E31EF0E27E12573EBBB283B1291646F86850AC0` | `FBD272DA188D2C7CBBA3F0515379E2E2FD34A9C8CCE2161C878F5E316332F689` |
+
 ## PS-002 — proiettili giocatore e ostili — 29 agosto 2026
 
 Due master originali sono stati generati separatamente con OpenAI ImageGen

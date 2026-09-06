@@ -351,6 +351,7 @@
     {
       "patterns": [
         "scripts/vfx/*",
+        "assets/art/vfx/state_tells/*",
         "assets/art/icons/abilities/*"
       ],
       "smokes": [

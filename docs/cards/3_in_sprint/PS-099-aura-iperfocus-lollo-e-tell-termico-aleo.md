@@ -3,12 +3,12 @@ id: PS-099
 titolo: Sostituisci il particellare di Lollo e Aleo con aura di potenziamento e tell termico
 tipo: ux
 area: arte
-stato: BLOCCATO
+stato: PRONTO
 priorita: media
 dipende_da: [PS-098]
 origine: PS-079
 creato: 2026-09-05
-aggiornato: 2026-09-05
+aggiornato: 2026-09-06
 ---
 
 # PS-099 — Sostituisci il particellare di Lollo e Aleo con aura di potenziamento e tell termico
@@ -32,8 +32,12 @@ esplicitamente reversibile ("si riconsidererà solo se il gate percettivo lo
 segnala"), e le sue Note lasciavano aperto che la prima resa non fosse la
 definitiva. Questa card esercita quella riserva su Lollo e Aleo.
 
-[PS-098](./PS-098-genera-aura-potenziamento-e-tell-termici.md) produce i cinque
+[PS-098](../4_to_test/PS-098-genera-aura-potenziamento-e-tell-termici.md) produce i cinque
 asset; questa card li porta a schermo.
+
+PS-098 è entrata in `IN VERIFICA` il 6 settembre 2026: la dipendenza minima è
+soddisfatta e la card è ora pronta. L'approvazione percettiva dei master resta
+un gate di PS-098, ma non blocca il cablaggio pianificato qui.
 
 ## Comportamento atteso
 
