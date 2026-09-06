@@ -53,6 +53,12 @@ var _critical_chance_bonus := 0.0
 var _critical_damage_multiplier := 1.0
 var _last_shot_was_critical := false
 var _critical_rng := RandomNumberGenerator.new()
+## PS-085: sorgente di mira/consenso a sparare esterna quando lo sparo e'
+## manuale — sostituisce TargetingSystem.get_nearest_alive() come origine
+## della direzione, senza toccare bilanciamento o modificatori upgrade.
+var _manual_fire_enabled := false
+var _manual_aim_active := false
+var _manual_aim_direction := Vector2.RIGHT
 
 
 func _exit_tree() -> void:
@@ -98,16 +104,23 @@ func try_fire() -> Projectile:
 	):
 		return null
 
-	var target := _targeting_system.get_nearest_alive(_source.global_position)
-	if target == null:
-		return null
-
-	var offset_to_target := target.global_position - _source.global_position
+	var target: BaseEnemy = null
 	var base_aim_direction := _last_aim_direction
 	var muzzle_offset := 0.0
-	if not offset_to_target.is_zero_approx():
-		base_aim_direction = offset_to_target.normalized()
-		muzzle_offset = minf(weapon_profile.muzzle_offset, offset_to_target.length())
+
+	if _manual_fire_enabled:
+		if not _manual_aim_active:
+			return null
+		base_aim_direction = _manual_aim_direction
+		muzzle_offset = weapon_profile.muzzle_offset
+	else:
+		target = _targeting_system.get_nearest_alive(_source.global_position)
+		if target == null:
+			return null
+		var offset_to_target := target.global_position - _source.global_position
+		if not offset_to_target.is_zero_approx():
+			base_aim_direction = offset_to_target.normalized()
+			muzzle_offset = minf(weapon_profile.muzzle_offset, offset_to_target.length())
 
 	var fan_offsets := calculate_multishot_fan_offsets(
 		get_effective_multishot_count(),
@@ -191,10 +204,35 @@ func reset_for_run(clear_existing_projectiles: bool = true) -> void:
 	_last_shot_was_critical = false
 	_invalid_projectile_scene_warning_emitted = false
 	_projectile_scene_valid = true
+	_manual_aim_active = false
 	rotation = 0.0
 	queue_redraw()
 	if clear_existing_projectiles:
 		clear_projectiles()
+
+
+## PS-085: impostazione persistente (FireModeSettings), non un dato di run:
+## non viene toccata da reset_for_run().
+func set_manual_fire_enabled(value: bool) -> void:
+	_manual_fire_enabled = value
+
+
+func is_manual_fire_enabled() -> bool:
+	return _manual_fire_enabled
+
+
+## Aggiornata ogni frame da InputRouter.manual_aim_changed tramite
+## movement_slice: la direzione resta quella dell'ultimo impegno anche
+## quando active passa a false, cosi' come _last_aim_direction per
+## l'automatico.
+func set_manual_aim_state(direction: Vector2, active: bool) -> void:
+	_manual_aim_active = active
+	if active and direction.is_finite() and not direction.is_zero_approx():
+		_manual_aim_direction = direction.normalized()
+
+
+func is_manually_aiming() -> bool:
+	return _manual_aim_active
 
 
 func clear_projectiles() -> void:

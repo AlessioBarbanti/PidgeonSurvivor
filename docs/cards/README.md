@@ -142,7 +142,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-082](./4_to_test/PS-082-camera-non-centrata-su-restart.md) | Ricentra davvero la camera sul personaggio al restart | fix | gameplay | IN VERIFICA | media | — |
 | [PS-083](./5_completed/PS-083-storicizza-prompt-e-reference-generazione.md) | Storicizzare prompt e reference di generazione | chore | arte | COMPLETATO | bassa | — |
 | [PS-084](./5_completed/PS-084-direzione-visuale-per-personaggio-e-reference-cast.md) | Documentare la direzione visuale per personaggio e collegarla agli agenti art | chore | arte | COMPLETATO | media | — |
-| [PS-085](./2_to_do/PS-085-introduci-sparo-manuale-con-secondo-joystick.md) | Introduci lo sparo manuale come modalità alternativa allo sparo automatico | feat | gameplay | PRONTO | media | — |
+| [PS-085](./4_to_test/PS-085-introduci-sparo-manuale-con-secondo-joystick.md) | Introduci lo sparo manuale come modalità alternativa allo sparo automatico | feat | gameplay | IN VERIFICA | media | — |
 | [PS-086](./5_completed/PS-086-cattura-output-runner-strozza-i-test.md) | La cattura dell'output del runner strozza l'esecuzione dei test | fix | tooling | COMPLETATO | alta | — |
 | [PS-087](./5_completed/PS-087-definisci-statistiche-base-personaggi.md) | Definisci gli scarti di statistiche base per personaggio | chore | gameplay | COMPLETATO | alta | — |
 | [PS-088](./5_completed/PS-088-verifica-differenziazione-statistiche-personaggi.md) | Verifica automaticamente la differenziazione statistica dei personaggi | chore | tooling | COMPLETATO | alta | PS-087 |

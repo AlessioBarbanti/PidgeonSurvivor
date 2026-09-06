@@ -7,6 +7,7 @@ signal audio_volume_changed(value: float)
 signal audio_mute_toggled(muted: bool)
 signal reduced_flashes_toggled(enabled: bool)
 signal touch_control_scale_changed(control_id: StringName, value: float)
+signal fire_mode_toggled(manual_enabled: bool)
 
 @onready var _resume_button: Button = %ResumeButton
 @onready var _change_character_button: Button = %ChangeCharacterButton
@@ -18,15 +19,24 @@ signal touch_control_scale_changed(control_id: StringName, value: float)
 @onready var _volume_value_label: Label = %VolumeValueLabel
 @onready var _mute_check_button: CheckButton = %MuteCheckButton
 @onready var _reduced_flashes_check_button: CheckButton = %ReducedFlashesCheckButton
+@onready var _manual_fire_check_button: CheckButton = %ManualFireCheckButton
 @onready var _ability_size_slider: HSlider = %AbilitySizeSlider
 @onready var _ability_size_value_label: Label = %AbilitySizeValueLabel
 @onready var _joystick_size_slider: HSlider = %JoystickSizeSlider
 @onready var _joystick_size_value_label: Label = %JoystickSizeValueLabel
+@onready var _pause_scroll: ScrollContainer = %PauseScroll
+@onready var _pause_vbox: VBoxContainer = %VBox
+
+## PS-085: margine di respiro fra lo scroll del pannello e i bordi del
+## viewport, cosi' il contenuto non tocca mai esattamente il limite anche
+## quando e' clampato al massimo consentito.
+const PAUSE_SCROLL_SAFETY_MARGIN := 24.0
 
 var _accepting_resume := false
 var _syncing_audio_controls := false
 var _syncing_accessibility_controls := false
 var _syncing_touch_controls := false
+var _syncing_fire_mode_controls := false
 
 
 func _ready() -> void:
@@ -38,11 +48,14 @@ func _ready() -> void:
 	_volume_slider.value_changed.connect(_on_volume_slider_value_changed)
 	_mute_check_button.toggled.connect(_on_mute_check_button_toggled)
 	_reduced_flashes_check_button.toggled.connect(_on_reduced_flashes_toggled)
+	_manual_fire_check_button.toggled.connect(_on_manual_fire_toggled)
 	_ability_size_slider.value_changed.connect(_on_ability_size_changed)
 	_joystick_size_slider.value_changed.connect(_on_joystick_size_changed)
 	_refresh_volume_label(_volume_slider.value)
 	_refresh_scale_label(_ability_size_value_label, _ability_size_slider.value)
 	_refresh_scale_label(_joystick_size_value_label, _joystick_size_slider.value)
+	get_viewport().size_changed.connect(_clamp_pause_scroll_height)
+	_clamp_pause_scroll_height()
 	hide_pause()
 
 
@@ -60,6 +73,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func show_pause() -> void:
 	_accepting_resume = true
 	visible = true
+	_clamp_pause_scroll_height()
 	_show_pause_controls()
 	_resume_button.call_deferred("grab_focus")
 
@@ -159,6 +173,28 @@ func get_reduced_flashes_check_button() -> CheckButton:
 	)
 
 
+func set_manual_fire_mode(enabled: bool) -> void:
+	_syncing_fire_mode_controls = true
+	_manual_fire_check_button.button_pressed = enabled
+	_syncing_fire_mode_controls = false
+
+
+func is_manual_fire_mode_enabled() -> bool:
+	return (
+		_manual_fire_check_button.button_pressed
+		if is_instance_valid(_manual_fire_check_button)
+		else false
+	)
+
+
+func get_manual_fire_check_button() -> CheckButton:
+	return (
+		_manual_fire_check_button
+		if is_instance_valid(_manual_fire_check_button)
+		else null
+	)
+
+
 func set_touch_control_scales(ability_scale: float, joystick_scale: float) -> void:
 	_syncing_touch_controls = true
 	_ability_size_slider.value = TouchControlSettings.sanitize_ability_scale(ability_scale)
@@ -181,6 +217,32 @@ func get_pause_panel_rect() -> Rect2:
 		return Rect2()
 	var panel := _pause_center.get_child(0) as Control
 	return panel.get_global_rect() if is_instance_valid(panel) else Rect2()
+
+
+## PS-085: come WelcomeScreen._clamp_settings_scroll_height(), la riga SPARO
+## MANUALE ha eroso l'ultimo margine libero del pannello pausa nel viewport
+## 16:9. PauseCenter (CenterContainer) non clippa ne' scorre da solo: senza
+## questo clamp il pannello sforerebbe semplicemente il viewport invece di
+## restare centrato. Sui profili con margine sufficiente il risultato resta
+## identico a prima (nessuno scroll).
+func _clamp_pause_scroll_height() -> void:
+	if (
+		not is_instance_valid(_pause_scroll)
+		or not is_instance_valid(_pause_vbox)
+		or not is_instance_valid(_pause_center)
+		or _pause_center.get_child_count() == 0
+		or not is_inside_tree()
+	):
+		return
+	var panel := _pause_center.get_child(0) as PanelContainer
+	if panel == null:
+		return
+	var natural_height := _pause_vbox.get_combined_minimum_size().y
+	var style := panel.get_theme_stylebox(&"panel")
+	var chrome := (style.content_margin_top + style.content_margin_bottom) if style != null else 0.0
+	var viewport_height := get_viewport().get_visible_rect().size.y
+	var available_height := maxf(viewport_height - chrome - PAUSE_SCROLL_SAFETY_MARGIN, 0.0)
+	_pause_scroll.custom_minimum_size.y = minf(natural_height, available_height)
 
 
 func _on_resume_button_pressed() -> void:
@@ -248,6 +310,11 @@ func _on_mute_check_button_toggled(muted: bool) -> void:
 func _on_reduced_flashes_toggled(enabled: bool) -> void:
 	if not _syncing_accessibility_controls:
 		reduced_flashes_toggled.emit(enabled)
+
+
+func _on_manual_fire_toggled(enabled: bool) -> void:
+	if not _syncing_fire_mode_controls:
+		fire_mode_toggled.emit(enabled)
 
 
 func _on_ability_size_changed(value: float) -> void:
