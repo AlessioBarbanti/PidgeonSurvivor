@@ -28,3 +28,22 @@ La plancia e' usata solo da `ContinueButton` in `scenes/ui/boss_ui.tscn`; i
 margin del nine-patch preservano estremita' e bevel su tutte le larghezze.
 Il controllo percettivo Windows/Pixel 9 durante un'introduzione Boss resta un
 gate manuale aperto.
+
+## Cornice Boss Intro — PS-102 (06/09/2026)
+
+Nuova cornice per la rivelazione Boss, distinta dal pannello di pausa. Origine
+e autore: progetto IL GIOCO con assistenza OpenAI ImageGen built-in. Licenza:
+Licenza del progetto. Generazione senza immagini di riferimento: nessun
+riferimento di progetto è stato usato.
+
+Prompt finale: placca 3:2 frontale, trasparente e senza testo, con medaglione
+ritratto circolare integrato in alto, piume scure, ferro brunito, brace arancio
+e centro neutro quasi nero per contenuto Godot dinamico; nessun personaggio,
+logo, simbolo leggibile, bottone o tinta personale. Il linguaggio è una
+rivelazione drammatica e giocosa di un amico divenuto Evil, non un menu di
+sistema.
+
+| Percorso | Generatore | Dimensioni | Trasformazioni | SHA-256 |
+|---|---|---:|---|---|
+| `hd/boss_intro_frame_source.png` | OpenAI ImageGen built-in | `1536x1024` RGBA PNG | Master originale, escluso da import/export con `.gdignore` e filtri dei tre preset. | `AE736D41B4C30671238EF02D7E5A3906D6831BF2DB66849D797EFB6F58AA478D` |
+| `generated/boss_intro_frame.png` | Derivazione deterministica | `764x464` RGBA PNG | Alpha bounds (soglia 8), padding 4, scala 50% nearest-neighbor tramite `tools/process-character-select-cta.ps1`. Non ancora referenziato: cablaggio PS-103. | `07AF5CBBA3E8A1BA895ED4DF06492B33E8DD015C45B053920B1820D18D799E28` |

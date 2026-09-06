@@ -3,19 +3,19 @@ id: PS-103
 titolo: Integra la cornice dedicata nella Boss Intro
 tipo: ux
 area: ui
-stato: BLOCCATO
+stato: PRONTO
 priorita: media
 dipende_da: [PS-102]
 origine:
 creato: 2026-09-05
-aggiornato: 2026-09-05
+aggiornato: 2026-09-06
 ---
 
 # PS-103 — Integra la cornice dedicata nella Boss Intro
 
 ## Contesto
 
-[PS-102](./PS-102-cornice-dedicata-boss-intro.md) produce una cornice propria
+[PS-102](../4_to_test/PS-102-cornice-dedicata-boss-intro.md) produce una cornice propria
 per il pannello `IntroPanel` di `BossUI` ([scenes/ui/boss_ui.tscn](../../../scenes/ui/boss_ui.tscn),
 righe 89-93), oggi ancora sullo `StyleBoxTexture_intro_panel` costruito su
 `pause_panel_frame.png` — lo stesso asset del pannello di pausa. Questa card
@@ -102,7 +102,7 @@ Non toccare:
 
 - **2026-09-05 — Card di solo wiring, nessuna decisione creativa propria.**
   Ogni scelta sul linguaggio visivo della cornice appartiene a
-  [PS-102](./PS-102-cornice-dedicata-boss-intro.md); questa card la applica e
+  [PS-102](../4_to_test/PS-102-cornice-dedicata-boss-intro.md); questa card la applica e
   basta.
 
 ## Documenti sincronizzati
@@ -113,9 +113,8 @@ Non toccare:
 
 ## Note
 
-`BLOCCATO` finché [PS-102](./PS-102-cornice-dedicata-boss-intro.md) non
-raggiunge almeno `IN VERIFICA` (asset e manifest pronti da cablare), per il
-contratto board in `docs/cards/README.md`.
+PS-102 è `IN VERIFICA`: asset e manifest sono pronti da cablare, perciò questa
+card è `PRONTO` secondo il contratto board in `docs/cards/README.md`.
 
 Non è una card `tipo: art`: è wiring in scena, quindi non va delegata a
 `game-art-designer` (quella resta la competenza di PS-102). Merita però una
