@@ -103,6 +103,8 @@ var _momentum_trail_enabled := false
 var _momentum_trail_points: PackedVector2Array = PackedVector2Array()
 var _momentum_trail_sample_elapsed := 0.0
 var _thunder_charge_active := false
+var _hyperfocus_aura_active := false
+var _thermal_ground_aura_active := false
 var _external_speed_modifiers: Dictionary = {}
 var _external_impulse_velocity := Vector2.ZERO
 var _external_impulse_remaining := 0.0
@@ -114,6 +116,9 @@ var _external_impulse_remaining := 0.0
 @onready var _character_sprite: Sprite2D = %CharacterSprite
 @onready var _passive_state_particles: PassiveStateParticles = %PassiveStateParticles
 @onready var _thunder_charge_aura: ThunderChargeAura = %ThunderChargeAura
+@onready var _hyperfocus_aura: HyperfocusAura = %HyperfocusAura
+@onready var _thermal_ground_aura: ThermalGroundAura = %ThermalGroundAura
+@onready var _thermal_transition_announcer: ThermalTransitionAnnouncer = %ThermalTransitionAnnouncer
 
 
 func _ready() -> void:
@@ -362,6 +367,9 @@ func set_run_controller(value: RunController) -> void:
 	_connect_run_controller()
 	_sync_passive_state_tell_visibility()
 	_sync_thunder_charge_aura_visibility()
+	_sync_hyperfocus_aura_visibility()
+	_sync_thermal_ground_aura_visibility()
+	_sync_thermal_transition_announcement_visibility()
 
 
 func get_run_controller() -> RunController:
@@ -559,6 +567,134 @@ func _sync_thunder_charge_aura_visibility() -> void:
 		_thunder_charge_active
 		and is_instance_valid(_run_controller)
 		and _run_controller.is_running()
+	)
+
+
+## Aura di potenziamento dell'iperfocus di Lollo (PS-099), stesso schema del
+## tell di stato: la fase (attiva/no) arriva da `FriendPassiveController`, qui
+## si applica solo la presentazione.
+func set_hyperfocus_aura_presented(value: bool) -> void:
+	_hyperfocus_aura_active = value
+	_sync_hyperfocus_aura_visibility()
+
+
+func advance_hyperfocus_aura(delta: float) -> void:
+	if is_instance_valid(_hyperfocus_aura):
+		_hyperfocus_aura.advance(delta)
+
+
+func is_hyperfocus_aura_presented() -> bool:
+	return is_instance_valid(_hyperfocus_aura) and _hyperfocus_aura.is_presented()
+
+
+## Osservabilita' per lo smoke PS-099: stesso principio di
+## `is_passive_state_tell_effectively_visible()`.
+func is_hyperfocus_aura_effectively_visible() -> bool:
+	return is_instance_valid(_hyperfocus_aura) and _hyperfocus_aura.is_effectively_visible()
+
+
+func _sync_hyperfocus_aura_visibility() -> void:
+	if not is_instance_valid(_hyperfocus_aura):
+		return
+	_hyperfocus_aura.set_presented(
+		_hyperfocus_aura_active
+		and is_instance_valid(_run_controller)
+		and _run_controller.is_running()
+	)
+
+
+## Aura a terra della modalita' termica di Aleo (PS-099): persistente per
+## tutta la durata della modalita' calda o fredda.
+func set_thermal_ground_aura_mode(hot: bool) -> void:
+	_thermal_ground_aura_active = true
+	if is_instance_valid(_thermal_ground_aura):
+		_thermal_ground_aura.set_mode(hot)
+	_sync_thermal_ground_aura_visibility()
+
+
+func clear_thermal_ground_aura() -> void:
+	_thermal_ground_aura_active = false
+	if is_instance_valid(_thermal_ground_aura):
+		_thermal_ground_aura.set_presented(false)
+
+
+func advance_thermal_ground_aura(delta: float) -> void:
+	if is_instance_valid(_thermal_ground_aura):
+		_thermal_ground_aura.advance(delta)
+
+
+func is_thermal_ground_aura_hot() -> bool:
+	return _thermal_ground_aura.is_hot() if is_instance_valid(_thermal_ground_aura) else true
+
+
+func is_thermal_ground_aura_presented() -> bool:
+	return is_instance_valid(_thermal_ground_aura) and _thermal_ground_aura.is_presented()
+
+
+func is_thermal_ground_aura_effectively_visible() -> bool:
+	return (
+		is_instance_valid(_thermal_ground_aura)
+		and _thermal_ground_aura.is_effectively_visible()
+	)
+
+
+func _sync_thermal_ground_aura_visibility() -> void:
+	if not is_instance_valid(_thermal_ground_aura):
+		return
+	_thermal_ground_aura.set_presented(
+		_thermal_ground_aura_active
+		and is_instance_valid(_run_controller)
+		and _run_controller.is_running()
+	)
+
+
+## Annuncio transitorio del cambio caldo<->freddo di Aleo (PS-099): un
+## termometro breve, non lo stato persistente (quello e' l'aura a terra).
+func announce_thermal_transition(hot: bool) -> void:
+	if is_instance_valid(_thermal_transition_announcer):
+		_thermal_transition_announcer.trigger(hot)
+	_sync_thermal_transition_announcement_visibility()
+
+
+func advance_thermal_transition_announcement(delta: float) -> void:
+	if is_instance_valid(_thermal_transition_announcer):
+		_thermal_transition_announcer.advance(delta)
+
+
+## Azzera l'annuncio senza attendere lo scadere naturale: restart e cambio
+## personaggio non devono lasciare un termometro residuo a schermo.
+func clear_thermal_transition_announcement() -> void:
+	if is_instance_valid(_thermal_transition_announcer):
+		_thermal_transition_announcer.clear()
+
+
+func is_thermal_transition_announcement_presented() -> bool:
+	return (
+		is_instance_valid(_thermal_transition_announcer)
+		and _thermal_transition_announcer.is_presented()
+	)
+
+
+func is_thermal_transition_announcement_hot() -> bool:
+	return (
+		_thermal_transition_announcer.is_hot()
+		if is_instance_valid(_thermal_transition_announcer)
+		else true
+	)
+
+
+func is_thermal_transition_announcement_effectively_visible() -> bool:
+	return (
+		is_instance_valid(_thermal_transition_announcer)
+		and _thermal_transition_announcer.is_effectively_visible()
+	)
+
+
+func _sync_thermal_transition_announcement_visibility() -> void:
+	if not is_instance_valid(_thermal_transition_announcer):
+		return
+	_thermal_transition_announcer.set_presented(
+		is_instance_valid(_run_controller) and _run_controller.is_running()
 	)
 
 
@@ -1038,6 +1174,9 @@ func _on_run_state_changed(
 ) -> void:
 	_sync_passive_state_tell_visibility()
 	_sync_thunder_charge_aura_visibility()
+	_sync_hyperfocus_aura_visibility()
+	_sync_thermal_ground_aura_visibility()
+	_sync_thermal_transition_announcement_visibility()
 
 
 func _on_run_started(_seed_value: int) -> void:

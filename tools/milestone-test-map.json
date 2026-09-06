@@ -34,7 +34,9 @@
         "tests/unit/test_ps087_base_stat_identity.gd",
         "tests/unit/test_ps088_base_stat_differentiation.gd",
         "tests/unit/test_ps105_alea_sobriety_cycle.gd",
-        "tests/unit/test_ps093_extended_base_stats.gd"
+        "tests/unit/test_ps093_extended_base_stats.gd",
+        "tests/unit/test_b44_state_tells.gd",
+        "tests/unit/test_ps099_state_tell_aura.gd"
       ]
     },
     {
@@ -372,7 +374,12 @@
         "tests/unit/test_b18r_visual_timing.gd",
         "tests/unit/test_b18m_ability_visuals.gd",
         "tests/unit/test_b18_audiovisual_feedback.gd",
-        "tests/unit/test_ps004_zat_thunder_charge.gd"
+        "tests/unit/test_ps004_zat_thunder_charge.gd",
+        "tests/unit/test_ps098_state_tell_vfx_assets.gd",
+        "tests/unit/test_ps099_state_tell_aura.gd",
+        "tests/unit/test_b44_state_tells.gd",
+        "tests/unit/test_ps029_state_tell_visibility.gd",
+        "tests/unit/test_ps079_state_tell_particles.gd"
       ]
     },
     {
@@ -422,7 +429,8 @@
         "tests/unit/test_ps072_bea_dodge_audio.gd",
         "tests/unit/test_ps105_alea_sobriety_cycle.gd",
         "tests/unit/test_ps093_extended_base_stats.gd",
-        "tests/unit/test_ps106_alea_sobriety_hud.gd"
+        "tests/unit/test_ps106_alea_sobriety_hud.gd",
+        "tests/unit/test_ps099_state_tell_aura.gd"
       ]
     },
     {

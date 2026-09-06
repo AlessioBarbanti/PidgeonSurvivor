@@ -24,9 +24,13 @@ const RUN_SEED := 4711
 func test_ps029_state_color_pairs_meet_minimum_contrast() -> void:
 	# PS-105: Alea non ha piu' una coppia di colori (l'esito non e' piu'
 	# casuale), quindi non compare in questa lista di coppie di stato.
+	# PS-099: Aleo e Lollo non usano piu' una tinta a portare la distinzione
+	# fra fasi — l'aura a terra di Aleo distingue caldo/freddo per soggetto
+	# (brace/brina, non solo colore) e l'aura di Lollo compare solo in
+	# iperfocus (la distrazione non ha alcun tell da contrastare). Il test di
+	# contrasto cromatico non si applica piu' a loro; resta per Migi, che
+	# continua a usare `PassiveStateParticles`.
 	var pairs := [
-		["Aleo", FriendPassiveController.TELL_ALEO_HOT, FriendPassiveController.TELL_ALEO_COLD],
-		["Lollo", FriendPassiveController.TELL_LOLLO_FOCUSED, FriendPassiveController.TELL_LOLLO_DISTRACTED],
 		["Migi", FriendPassiveController.TELL_MIGI_SHELL_READY, FriendPassiveController.TELL_MIGI_SHIELD],
 	]
 	for pair in pairs:

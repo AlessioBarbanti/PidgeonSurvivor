@@ -24,33 +24,37 @@ func test_ps079_phase_tells_are_distinct_per_character() -> void:
 	var registry: FriendRegistry = context["registry"]
 	var controller: RunController = context["controller"]
 
+	# PS-099: Aleo e Lollo non usano piu' il particellare/colore — le due fasi
+	# di ciascuno restano distinguibili tramite la propria API pubblica
+	# (aura a terra calda/fredda per Aleo, presenza/assenza dell'aura di
+	# potenziamento per Lollo), non piu' un contrasto cromatico.
 	var aleo := registry.resolve_definition(&"aleo")
 	assert_true(aleo != null, "Il profilo Aleo deve esistere.")
 	if aleo != null:
 		player.set_friend_definition(aleo)
 		passive.equip_definition(aleo)
-		var hot := player.get_passive_state_tell_color()
-		assert_eq(hot, FriendPassiveController.TELL_ALEO_HOT, "Aleo deve avviarsi in fase calda.")
+		assert_true(
+			player.is_thermal_ground_aura_presented() and player.is_thermal_ground_aura_hot(),
+			"Aleo deve avviarsi in fase calda."
+		)
 		player.get_health_component().take_damage(player.get_health_component().health_max * 0.7)
 		passive._process(0.1)
-		var cold := player.get_passive_state_tell_color()
-		assert_eq(cold, FriendPassiveController.TELL_ALEO_COLD, "Sotto meta' vita Aleo deve passare alla fase fredda.")
-		assert_true(hot != cold, "PS-079: le due fasi di Aleo devono restare cromaticamente distinte.")
+		assert_true(
+			player.is_thermal_ground_aura_presented() and not player.is_thermal_ground_aura_hot(),
+			"Sotto meta' vita Aleo deve passare alla fase fredda."
+		)
 
 	var lollo := registry.resolve_definition(&"lollo")
 	assert_true(lollo != null, "Il profilo Lollo deve esistere.")
 	if lollo != null:
 		player.set_friend_definition(lollo)
 		passive.equip_definition(lollo)
-		var focused := player.get_passive_state_tell_color()
-		assert_eq(focused, FriendPassiveController.TELL_LOLLO_FOCUSED, "Lollo deve avviarsi in iperfocus.")
+		assert_true(player.is_hyperfocus_aura_presented(), "Lollo deve avviarsi in iperfocus.")
 		passive._process(passive.get_hyperfocus_remaining() + 0.01)
-		var distracted := player.get_passive_state_tell_color()
-		assert_eq(
-			distracted, FriendPassiveController.TELL_LOLLO_DISTRACTED,
-			"Alla scadenza dell'iperfocus il tell deve passare alla distrazione."
+		assert_false(
+			player.is_hyperfocus_aura_presented(),
+			"Alla scadenza dell'iperfocus l'aura di potenziamento deve spegnersi (nessun tell in distrazione)."
 		)
-		assert_true(focused != distracted, "PS-079: le due fasi di Lollo devono restare cromaticamente distinte.")
 
 	var alea := registry.resolve_definition(&"alea")
 	assert_true(alea != null, "Il profilo Alea deve esistere.")
@@ -101,9 +105,11 @@ func test_ps079_damage_flash_takes_precedence_over_tell() -> void:
 	player.set_friend_definition(aleo)
 	assert_true(passive.equip_definition(aleo), "La passiva deve accettare Aleo.")
 
+	# PS-099: Aleo non usa piu' il particellare, ma l'aura a terra eredita lo
+	# stesso principio di precedenza del flash da danno.
 	assert_true(
-		player.is_passive_state_tell_effectively_visible(),
-		"Fuori dal lampeggio da invulnerabilita' il tell deve risultare visibile."
+		player.is_thermal_ground_aura_effectively_visible(),
+		"Fuori dal lampeggio da invulnerabilita' l'aura a terra deve risultare visibile."
 	)
 
 	var health := player.get_health_component()
@@ -125,15 +131,15 @@ func test_ps079_damage_flash_takes_precedence_over_tell() -> void:
 		"Il fixture deve trovarsi in un frame di lampeggio invisibile per verificare la precedenza."
 	)
 	assert_true(
-		not player.is_passive_state_tell_effectively_visible(),
-		"PS-079: il flash da danno deve mantenere la precedenza e nascondere il tell durante il lampeggio."
+		not player.is_thermal_ground_aura_effectively_visible(),
+		"PS-079/PS-099: il flash da danno deve mantenere la precedenza e nascondere l'aura durante il lampeggio."
 	)
 
 	health.advance_invulnerability(blink_interval)
 	assert_true(player.is_damage_blink_visible(), "Il fixture deve tornare a un frame di lampeggio visibile.")
 	assert_true(
-		player.is_passive_state_tell_effectively_visible(),
-		"PS-079: fuori dal frame di lampeggio invisibile il tell deve ricomparire."
+		player.is_thermal_ground_aura_effectively_visible(),
+		"PS-079/PS-099: fuori dal frame di lampeggio invisibile l'aura deve ricomparire."
 	)
 
 	controller.prepare_restart()
@@ -148,12 +154,15 @@ func test_ps079_particles_advance_only_while_running() -> void:
 	var registry: FriendRegistry = context["registry"]
 	var controller: RunController = context["controller"]
 
-	var aleo := registry.resolve_definition(&"aleo")
-	assert_true(aleo != null, "Il profilo Aleo deve esistere.")
-	if aleo == null:
+	# PS-099: Aleo non usa piu' PassiveStateParticles. Migi resta invariato e
+	# continua a essere il fixture giusto per il contratto generico del
+	# particellare (orbita, pausa/ripresa).
+	var migi := registry.resolve_definition(&"migi")
+	assert_true(migi != null, "Il profilo Migi deve esistere.")
+	if migi == null:
 		return
-	player.set_friend_definition(aleo)
-	assert_true(passive.equip_definition(aleo), "La passiva deve accettare Aleo.")
+	player.set_friend_definition(migi)
+	assert_true(passive.equip_definition(migi), "La passiva deve accettare Migi.")
 
 	var angle_running := player.get_passive_state_particles_orbit_angle()
 	passive._process(0.2)
@@ -202,8 +211,8 @@ func test_ps079_tell_resets_on_restart_and_character_change() -> void:
 	assert_true(passive.equip_definition(aleo), "La passiva deve accettare Aleo.")
 	player.get_health_component().take_damage(player.get_health_component().health_max * 0.7)
 	passive._process(0.1)
-	assert_eq(
-		player.get_passive_state_tell_color(), FriendPassiveController.TELL_ALEO_COLD,
+	assert_true(
+		player.is_thermal_ground_aura_presented() and not player.is_thermal_ground_aura_hot(),
 		"Aleo deve trovarsi in fase fredda prima del cambio personaggio."
 	)
 
@@ -211,9 +220,13 @@ func test_ps079_tell_resets_on_restart_and_character_change() -> void:
 	# restare agganciato, la nuova passiva riparte dalla sua fase iniziale.
 	player.set_friend_definition(migi)
 	assert_true(passive.equip_definition(migi), "La passiva deve accettare Migi dopo il cambio personaggio.")
+	assert_false(
+		player.is_thermal_ground_aura_presented(),
+		"PS-099: il cambio personaggio deve spegnere l'aura a terra di Aleo."
+	)
 	assert_eq(
 		player.get_passive_state_tell_color(), FriendPassiveController.TELL_MIGI_SHELL_READY,
-		"PS-079: il cambio personaggio deve azzerare il tell precedente e presentare la fase iniziale del nuovo."
+		"PS-079: il cambio personaggio deve presentare la fase iniziale del nuovo profilo."
 	)
 
 	assert_true(controller.prepare_restart(), "Il restart deve tornare in BOOT.")

@@ -492,6 +492,8 @@ func _set_alea_drift_pulse(remaining: float, rotation_radians: float = 0.0) -> v
 
 
 func _advance_lollo_hyperfocus(delta: float) -> void:
+	if is_instance_valid(_player):
+		_player.advance_hyperfocus_aura(delta)
 	_lollo_phase_remaining -= delta
 	if _lollo_phase_remaining > 0.0:
 		return
@@ -499,7 +501,23 @@ func _advance_lollo_hyperfocus(delta: float) -> void:
 	_lollo_phase_remaining = _roll_lollo_phase_duration(_lollo_focused)
 	_apply_character_multipliers()
 	_refresh_passive_state_tell()
+	_refresh_lollo_hyperfocus_aura()
 	hyperfocus_changed.emit(_lollo_focused, _lollo_phase_remaining)
+
+
+## Aura di potenziamento (PS-098/PS-099): sostituisce il particellare per
+## Lollo. Visibile solo durante l'iperfocus, per scelta esplicita del
+## proprietario la fase distratta non presenta alcun tell (vedi Decisioni di
+## PS-099).
+func _refresh_lollo_hyperfocus_aura() -> void:
+	if not is_instance_valid(_player):
+		return
+	var active := (
+		_definition != null
+		and _definition.passive_id == LOLLO_HYPERACTIVITY
+		and _lollo_focused
+	)
+	_player.set_hyperfocus_aura_presented(active)
 
 
 ## Le kill accorciano la fase distratta: la distrazione resta una fase reale
@@ -537,11 +555,15 @@ func _roll_lollo_phase_duration(focused: bool) -> float:
 
 
 func _advance_aleo_thermostat(delta: float) -> void:
+	if is_instance_valid(_player):
+		_player.advance_thermal_ground_aura(delta)
+		_player.advance_thermal_transition_announcement(delta)
 	var hot := _resolve_aleo_hot_mode()
 	if hot != _aleo_hot:
 		_aleo_hot = hot
 		_apply_character_multipliers()
 		_refresh_passive_state_tell()
+		_refresh_aleo_thermal_tell(true)
 		thermal_mode_changed.emit(_aleo_hot)
 	if _aleo_hot:
 		_clear_aleo_cold_aura()
@@ -549,6 +571,21 @@ func _advance_aleo_thermostat(delta: float) -> void:
 		return
 	_refresh_aleo_cold_aura()
 	_advance_aleo_cold_damage(delta)
+
+
+## Aura a terra + annuncio a termometro (PS-098/PS-099): sostituiscono il
+## particellare per Aleo. L'aura resta il tell persistente della modalita';
+## il termometro (`announce == true`) segnala solo il momento del passaggio,
+## mai lo stato in se'.
+func _refresh_aleo_thermal_tell(announce: bool) -> void:
+	if not is_instance_valid(_player):
+		return
+	if _definition == null or _definition.passive_id != ALEO_INTERNAL_THERMOSTAT:
+		_player.clear_thermal_ground_aura()
+		return
+	_player.set_thermal_ground_aura_mode(_aleo_hot)
+	if announce:
+		_player.announce_thermal_transition(_aleo_hot)
 
 
 ## Componente offensiva della fase fredda: l'aura non si limita a rallentare,
@@ -723,10 +760,6 @@ func _refresh_passive_state_tell() -> void:
 		return
 	var tell_color := TELL_NEUTRAL
 	match _definition.passive_id:
-		ALEO_INTERNAL_THERMOSTAT:
-			tell_color = TELL_ALEO_HOT if _aleo_hot else TELL_ALEO_COLD
-		LOLLO_HYPERACTIVITY:
-			tell_color = TELL_LOLLO_FOCUSED if _lollo_focused else TELL_LOLLO_DISTRACTED
 		ALEA_TWO_FINGERS_AND_GO:
 			if _alea_brilla_remaining > 0.0:
 				tell_color = TELL_ALEA_BRILLA
@@ -931,6 +964,10 @@ func _reset_runtime(seed_value: int) -> void:
 		)
 	_apply_character_multipliers()
 	_refresh_passive_state_tell()
+	_refresh_lollo_hyperfocus_aura()
+	_refresh_aleo_thermal_tell(false)
+	if is_instance_valid(_player):
+		_player.clear_thermal_transition_announcement()
 	if _definition != null and _definition.passive_id == MARGHE_CONTAGIOUS_SMILE:
 		_refresh_marghe_aura()
 	_refresh_thunder_charge_aura()

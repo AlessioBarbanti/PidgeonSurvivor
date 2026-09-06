@@ -10,6 +10,9 @@
 [ext_resource type="Resource" path="res://data/friends/magno.tres" id="8_friend"]
 [ext_resource type="Script" path="res://scripts/vfx/passive_state_particles.gd" id="9_passive_particles"]
 [ext_resource type="Script" path="res://scripts/vfx/thunder_charge_aura.gd" id="10_thunder_charge_aura"]
+[ext_resource type="Script" path="res://scripts/vfx/hyperfocus_aura.gd" id="11_hyperfocus_aura"]
+[ext_resource type="Script" path="res://scripts/vfx/thermal_ground_aura.gd" id="12_thermal_ground_aura"]
+[ext_resource type="Script" path="res://scripts/vfx/thermal_transition_announcer.gd" id="13_thermal_transition_announcer"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 24.0
@@ -44,6 +47,24 @@ unique_name_in_owner = true
 z_index = 2
 visible = false
 script = ExtResource("10_thunder_charge_aura")
+
+[node name="HyperfocusAura" type="Node2D" parent="."]
+unique_name_in_owner = true
+z_index = 0
+visible = false
+script = ExtResource("11_hyperfocus_aura")
+
+[node name="ThermalGroundAura" type="Node2D" parent="."]
+unique_name_in_owner = true
+z_index = 0
+visible = false
+script = ExtResource("12_thermal_ground_aura")
+
+[node name="ThermalTransitionAnnouncer" type="Node2D" parent="."]
+unique_name_in_owner = true
+z_index = 2
+visible = false
+script = ExtResource("13_thermal_transition_announcer")
 
 [node name="HealthComponent" type="Node" parent="."]
 unique_name_in_owner = true

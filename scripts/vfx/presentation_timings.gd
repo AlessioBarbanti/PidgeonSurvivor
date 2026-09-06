@@ -29,6 +29,12 @@ const HUD_ABILITY_FADE_SECONDS := 0.18
 ## dedicata, in entrambe le direzioni (boss_intro_started/boss_defeated).
 const BOSS_MUSIC_CROSSFADE_SECONDS := 1.5
 
+## PS-099: durata dell'annuncio del cambio di modalita' termica di Aleo
+## (il termometro di PS-098), con lo stesso helper `one_shot_opacity` gia'
+## usato per gli accenti transitori. L'aura a terra resta persistente:
+## questo e' solo il preavviso del passaggio.
+const THERMAL_TRANSITION_ANNOUNCE_SECONDS := 1.4
+
 
 static func is_valid() -> bool:
 	return (
@@ -52,6 +58,7 @@ static func is_valid() -> bool:
 		and HUD_ABILITY_FADE_SECONDS < HUD_HEALTH_FEEDBACK_SECONDS
 		and BOSS_MUSIC_CROSSFADE_SECONDS > 0.8
 		and BOSS_MUSIC_CROSSFADE_SECONDS < 4.0
+		and THERMAL_TRANSITION_ANNOUNCE_SECONDS > ONE_SHOT_ENTRY_SECONDS + ONE_SHOT_EXIT_SECONDS
 	)
 
 

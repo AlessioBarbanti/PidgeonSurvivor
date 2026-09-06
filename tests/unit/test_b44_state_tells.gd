@@ -30,22 +30,19 @@ func test_aleo_thermal_state() -> void:
 	var aura_radius := aleo.get_passive_float(&"cold_aura_radius", 0.0, 0.0)
 	assert_true(cold_dps > 0.0, "La fase fredda deve dichiarare una componente offensiva.")
 
-	# Sopra meta' vita: modalita' calda, tell caldo, nessun danno d'aura.
+	# Sopra meta' vita: modalita' calda, aura a terra calda, nessun danno d'aura.
 	passive._process(0.1)
 	assert_true(passive.is_thermal_hot(), "Sopra meta' vita Aleo deve essere in riscaldamento.")
 	assert_true(
-		player.get_passive_state_tell_color() == FriendPassiveController.TELL_ALEO_HOT,
-		"Il tell caldo deve essere attivo sopra la soglia."
+		player.is_thermal_ground_aura_presented() and player.is_thermal_ground_aura_hot(),
+		"L'aura a terra calda (PS-099) deve essere attiva sopra la soglia."
 	)
-	# PS-001/PS-079: il tell vive nel particellare, non nello sprite. Se questa
-	# cade, la tinta piena e' rientrata dalla finestra e il personaggio torna a
-	# essere ridipinto.
+	# PS-001/PS-079: il tell vive fuori dallo sprite. Se questa cade, la tinta
+	# piena e' rientrata dalla finestra e il personaggio torna a essere
+	# ridipinto.
 	assert_true(
 		player.get_character_self_modulate() == Color.WHITE,
 		"Lo sprite del personaggio non deve essere ridipinto dal tell di stato."
-	)
-	assert_true(
-		player.is_passive_state_tell_presented(), "Il tell deve risultare attivo quando la fase e' dichiarata."
 	)
 
 	var enemy := spawner.try_spawn_enemy()
@@ -68,8 +65,8 @@ func test_aleo_thermal_state() -> void:
 	passive._process(0.1)
 	assert_true(not passive.is_thermal_hot(), "Sotto meta' vita Aleo deve passare in raffrescamento.")
 	assert_true(
-		player.get_passive_state_tell_color() == FriendPassiveController.TELL_ALEO_COLD,
-		"Il tell freddo deve essere attivo sotto la soglia."
+		player.is_thermal_ground_aura_presented() and not player.is_thermal_ground_aura_hot(),
+		"L'aura a terra fredda (PS-099) deve essere attiva sotto la soglia."
 	)
 	assert_eq(passive.get_chilled_target_count(), 1, "Il bersaglio dentro il raggio deve risultare brinato.")
 	assert_true(enemy.get_speed_multiplier() < 1.0, "La brina deve continuare a rallentare il bersaglio.")
@@ -89,13 +86,13 @@ func test_aleo_thermal_state() -> void:
 		"L'aura fredda non deve avanzare fuori da RUNNING."
 	)
 	assert_true(
-		not player.is_passive_state_tell_presented(),
-		"Il tell di stato deve sparire durante la pausa."
+		not player.is_thermal_ground_aura_presented(),
+		"L'aura a terra deve sparire durante la pausa."
 	)
 	assert_true(controller.resume_run(), "La ripresa deve riuscire.")
 	assert_true(
-		player.is_passive_state_tell_presented(),
-		"Il tell di stato deve riapparire alla ripresa della run."
+		player.is_thermal_ground_aura_presented(),
+		"L'aura a terra deve riapparire alla ripresa della run."
 	)
 
 	# Tornando sopra la soglia l'accumulatore si azzera e la brina sparisce.
@@ -110,15 +107,18 @@ func test_aleo_thermal_state() -> void:
 
 	assert_true(controller.prepare_restart(), "Il restart deve tornare in BOOT.")
 	assert_true(
-		not player.is_passive_state_tell_presented(),
-		"Il tell di stato deve restare nascosto in BOOT dopo il restart."
+		not player.is_thermal_ground_aura_presented(),
+		"L'aura a terra deve restare nascosta in BOOT dopo il restart."
 	)
 	assert_true(controller.start_run(4712), "La nuova run deve poter partire.")
 	assert_true(passive.is_thermal_hot(), "Il restart deve azzerare Aleo alla fase calda iniziale.")
 	assert_true(
-		player.is_passive_state_tell_presented()
-		and player.get_passive_state_tell_color() == FriendPassiveController.TELL_ALEO_HOT,
-		"La nuova run deve ripresentare il tell della fase iniziale."
+		player.is_thermal_ground_aura_presented() and player.is_thermal_ground_aura_hot(),
+		"La nuova run deve ripresentare l'aura a terra della fase iniziale."
+	)
+	assert_false(
+		player.is_thermal_transition_announcement_presented(),
+		"Il restart non deve lasciare un termometro residuo: la fase iniziale non e' un passaggio."
 	)
 	controller.prepare_restart()
 
@@ -143,11 +143,11 @@ func test_lollo_distraction() -> void:
 	var reduction := lollo.get_passive_float(&"distraction_seconds_per_kill", 0.0, 0.0)
 	assert_true(reduction > 0.0, "Lollo deve dichiarare una riduzione della distrazione per kill.")
 
-	# In iperfocus il tell e' quello focalizzato e le kill non accorciano nulla.
+	# In iperfocus l'aura di potenziamento (PS-099) e' attiva e le kill non
+	# accorciano nulla.
 	assert_true(passive.is_hyperfocused(), "Lollo deve avviare la run in iperfocus.")
 	assert_true(
-		player.get_passive_state_tell_color() == FriendPassiveController.TELL_LOLLO_FOCUSED,
-		"Il tell di iperfocus deve essere attivo."
+		player.is_hyperfocus_aura_presented(), "L'aura di potenziamento deve essere attiva in iperfocus."
 	)
 	var focus_before := passive.get_hyperfocus_remaining()
 	var focus_enemy := spawner.try_spawn_enemy()
@@ -163,9 +163,9 @@ func test_lollo_distraction() -> void:
 	# Passaggio in distrazione: tell distratto e kill che accorciano la fase.
 	passive._process(passive.get_hyperfocus_remaining() + 0.01)
 	assert_true(not passive.is_hyperfocused(), "Alla scadenza Lollo deve passare in distrazione.")
-	assert_true(
-		player.get_passive_state_tell_color() == FriendPassiveController.TELL_LOLLO_DISTRACTED,
-		"Il tell di distrazione deve essere attivo."
+	assert_false(
+		player.is_hyperfocus_aura_presented(),
+		"Scelta esplicita del proprietario (PS-099): la distrazione non mostra alcun tell."
 	)
 
 	var distracted_before := passive.get_hyperfocus_remaining()

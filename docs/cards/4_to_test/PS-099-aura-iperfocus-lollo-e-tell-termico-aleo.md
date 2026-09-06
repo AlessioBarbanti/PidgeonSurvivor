@@ -3,12 +3,12 @@ id: PS-099
 titolo: Sostituisci il particellare di Lollo e Aleo con aura di potenziamento e tell termico
 tipo: ux
 area: arte
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: [PS-098]
 origine: PS-079
 creato: 2026-09-05
-aggiornato: 2026-09-06
+aggiornato: 2026-09-07
 ---
 
 # PS-099 — Sostituisci il particellare di Lollo e Aleo con aura di potenziamento e tell termico
@@ -35,10 +35,6 @@ definitiva. Questa card esercita quella riserva su Lollo e Aleo.
 [PS-098](../4_to_test/PS-098-genera-aura-potenziamento-e-tell-termici.md) produce i cinque
 asset; questa card li porta a schermo.
 
-PS-098 è entrata in `IN VERIFICA` il 6 settembre 2026: la dipendenza minima è
-soddisfatta e la card è ora pronta. L'approvazione percettiva dei master resta
-un gate di PS-098, ma non blocca il cablaggio pianificato qui.
-
 ## Comportamento atteso
 
 Quando Lollo entra in iperfocus, gli si accende attorno un'aura di potenziamento
@@ -52,41 +48,45 @@ essere il loro tell.
 
 ## Criteri di accettazione
 
-- [ ] Durante l'iperfocus di Lollo l'aura è visibile dietro allo sprite; alla
+- [x] Durante l'iperfocus di Lollo l'aura è visibile dietro allo sprite; alla
       fine della fase sparisce entro un frame logico.
-- [ ] Durante la fase distratta di Lollo **non** viene presentato alcun tell di
+- [x] Durante la fase distratta di Lollo **non** viene presentato alcun tell di
       stato: né aura, né particellare, né altro. Scelta esplicita del
       proprietario, vedi Decisioni.
-- [ ] L'aura di Lollo non disegna mai sopra la sagoma del personaggio e non ne
-      ricalca il profilo: resta dietro, con la propria forma (vincolo ereditato
-      dalla bocciatura di PS-001).
-- [ ] Aleo mostra a terra, sotto i piedi, l'aura arancio in modalità calda e
+- [x] L'aura di Lollo non disegna mai sopra la sagoma del personaggio e non ne
+      ricalca il profilo: resta dietro, con la propria forma (`z_index` sotto
+      quello di `CharacterSprite`, non un `show_behind_parent` su un figlio).
+- [x] Aleo mostra a terra, sotto i piedi, l'aura arancio in modalità calda e
       quella azzurra in modalità fredda, per tutta la durata della modalità.
-- [ ] L'aura a terra di Aleo resta sotto al personaggio nell'ordine di disegno:
+- [x] L'aura a terra di Aleo resta sotto al personaggio nell'ordine di disegno:
       il corpo non viene mai coperto dall'aura.
-- [ ] A ogni passaggio caldo↔freddo di Aleo compare il termometro corrispondente
+- [x] A ogni passaggio caldo↔freddo di Aleo compare il termometro corrispondente
       (rosso `+` verso il caldo, azzurro `−` verso il freddo) e svanisce da solo
       dopo una durata dichiarata in
-      [presentation_timings.gd](../../../scripts/vfx/presentation_timings.gd).
-- [ ] Il termometro non è persistente: passata la sua finestra non resta nulla a
+      [presentation_timings.gd](../../../scripts/vfx/presentation_timings.gd)
+      (`THERMAL_TRANSITION_ANNOUNCE_SECONDS`).
+- [x] Il termometro non è persistente: passata la sua finestra non resta nulla a
       schermo oltre all'aura a terra.
-- [ ] Né Lollo né Aleo usano più `PassiveStateParticles`; Alea e Migi continuano
+- [x] Né Lollo né Aleo usano più `PassiveStateParticles`; Alea e Migi continuano
       a usarlo con lo stesso comportamento di oggi, colori compresi.
-- [ ] Il flash da danno mantiene la precedenza su tutti e tre i nuovi tell, come
-      già garantito da PS-079 per il particellare.
-- [ ] I nuovi tell avanzano solo in `RunController.RUNNING`: pausa, modali,
+- [x] Il flash da danno mantiene la precedenza su tutti e tre i nuovi tell,
+      come già garantito da PS-079 per il particellare.
+- [x] I nuovi tell avanzano solo in `RunController.RUNNING`: pausa, modali,
       `BOOT` e stati terminali li nascondono senza perdere la fase da
       ripresentare alla ripresa.
-- [ ] Restart e cambio personaggio azzerano ogni tell residuo e riportano la
+- [x] Restart e cambio personaggio azzerano ogni tell residuo e riportano la
       passiva alla propria fase iniziale (Aleo riparte caldo, Lollo in
       iperfocus).
-- [ ] Il cambio resta puramente presentazionale: durate delle fasi, soglia
+- [x] Il cambio resta puramente presentazionale: durate delle fasi, soglia
       termica, bonus/malus dell'iperfocus, statistiche, cooldown e collisioni
-      restano invariati bit per bit.
-- [ ] Il numero di nodi e di disegni per frame resta compatibile con
-      `PerformanceProfile` su mobile: i nuovi tell riguardano un solo Player,
-      non un'orda.
-- [ ] `test_b44_state_tells.gd`, `test_ps029_state_tell_visibility.gd` e
+      restano invariati bit per bit — verificato dal fatto che
+      `test_ps105_alea_sobriety_cycle.gd` e le asserzioni di meccanica già
+      presenti in `test_b44_state_tells.gd` restano verdi senza modifiche.
+- [x] Il numero di nodi e di disegni per frame resta compatibile con
+      `PerformanceProfile` su mobile: garanzia strutturale (tre nodi fissi sul
+      solo `Player`, non scalano con il numero di nemici), non misurata con un
+      profiling dedicato.
+- [x] `test_b44_state_tells.gd`, `test_ps029_state_tell_visibility.gd` e
       `test_ps079_state_tell_particles.gd` sono **aggiornati** al nuovo
       contratto, non aggirati né cancellati: dove oggi asseriscono
       `get_passive_state_tell_color()` per Lollo e Aleo, devono asserire il
@@ -95,28 +95,31 @@ essere il loro tell.
 
 ## Ambito
 
-- Nuovi VFX in [scripts/vfx/](../../../scripts/vfx/), sullo schema di
-  `PassiveStateParticles` e `ThunderChargeAura` (nodi **fratelli** di
-  `CharacterSprite` sotto `Player`, non figli): aura di potenziamento, aura a
-  terra termica e annuncio a termometro.
-- [scenes/actors/player.tscn](../../../scenes/actors/player.tscn) — i nuovi nodi
-  accanto a `PassiveStateParticles`, che resta per Alea e Migi.
+- Nuovi VFX in [scripts/vfx/](../../../scripts/vfx/): `hyperfocus_aura.gd`,
+  `thermal_ground_aura.gd`, `thermal_transition_announcer.gd` — sullo schema
+  di `PassiveStateParticles`/`ThunderChargeAura` (nodi **fratelli** di
+  `CharacterSprite` sotto `Player`, non figli).
+- [scenes/actors/player.tscn](../../../scenes/actors/player.tscn) — i tre
+  nuovi nodi accanto a `PassiveStateParticles`/`ThunderChargeAura`, che
+  restano per Alea e Migi.
 - [scripts/actors/player.gd](../../../scripts/actors/player.gd) — punti di
   aggancio e osservabilità per lo smoke, sullo schema di
   `set_passive_state_tell` / `is_passive_state_tell_effectively_visible`
   introdotti da PS-079.
 - [scripts/content/friend_passive_controller.gd](../../../scripts/content/friend_passive_controller.gd)
-  — instrada la fase di Lollo e Aleo sul nuovo canale invece che sul colore del
-  particellare; `_refresh_passive_state_tell()` e i punti che già lo chiamano
-  (`_advance_lollo_hyperfocus`, `_advance_aleo_thermostat`) restano il punto
-  unico di verità della fase.
+  — `_refresh_lollo_hyperfocus_aura()`/`_refresh_aleo_thermal_tell()`
+  instradano la fase di Lollo e Aleo sul nuovo canale invece che sul colore
+  del particellare; `_advance_lollo_hyperfocus`/`_advance_aleo_thermostat`
+  restano il punto unico di verità della fase.
 - [scripts/vfx/presentation_timings.gd](../../../scripts/vfx/presentation_timings.gd)
-  — durata e dissolvenza del termometro, per contratto di progetto separate dai
-  valori di gameplay.
+  — nuova costante `THERMAL_TRANSITION_ANNOUNCE_SECONDS`.
 - [tools/milestone-test-map.json](../../../tools/milestone-test-map.json) — i
-  nuovi file vanno nella regola che già lega `friend_passive_controller.gd` e
-  `passive_state_particles.gd` agli smoke dell'area.
+  nuovi file registrati nelle regole che legano `friend_passive_controller.gd`,
+  `passive_state_particles.gd`, `scripts/vfx/*` e `player.gd`/`player.tscn`
+  agli smoke dell'area.
 - I cinque asset prodotti da PS-098, sotto `assets/art/vfx/state_tells/`.
+- `docs/characters.md` — descrizioni pubbliche del tell di Aleo e Lollo
+  riscritte.
 
 Da **non** toccare:
 
@@ -137,10 +140,20 @@ Da **non** toccare:
   `STATE_TELL_AURA_SMOKE_OK` — presenza dell'aura solo durante l'iperfocus e
   sua assenza in distrazione, aura a terra corretta per le due modalità di
   Aleo, comparsa e scadenza del termometro alla transizione, precedenza del
-  flash da danno, avanzamento solo in `RUNNING`, reset su restart e cambio
-  personaggio, e persistenza invariata del particellare per Alea e Migi.
-- Profilo minimo prima della chiusura: `Relevant` — la card tocca tre suite
-  condivise dell'area (`b44`, `ps029`, `ps079`) e non basta il profilo mirato.
+  flash da danno su tutti e tre i nuovi tell, avanzamento solo in `RUNNING`,
+  reset su restart e cambio personaggio, e persistenza invariata del
+  particellare per Alea e Migi. 7/7 verdi.
+- Suite aggiornate: `test_b44_state_tells.gd`, `test_ps029_state_tell_visibility.gd`,
+  `test_ps079_state_tell_particles.gd` — riscritte sul nuovo canale,
+  invariate su Alea/Migi.
+- Profilo eseguito: `Relevant` (30/30) e `Full` (110/110 + toolchain), nessun
+  `SCRIPT ERROR`/`FATAL EXCEPTION` nei log.
+- Verifica visiva non bloccante: cattura reale (gameplay headed, non
+  screenshot statico) di Lollo in iperfocus/distrazione e Aleo caldo/freddo
+  con termometro — aura dietro la sagoma, aura a terra sotto i piedi,
+  termometro leggibile nella posizione attesa, nessuna sovrapposizione
+  indebita. Non sostituisce il controllo percettivo del proprietario
+  richiesto sotto.
 
 ## Gate manuali
 
@@ -182,39 +195,58 @@ Da **non** toccare:
   cablaggio (nodi, scena, controller, timing, test) vive qui. L'integrazione non
   è "banale a sufficienza" per l'eccezione ammessa: introduce tre nuovi VFX, un
   nuovo instradamento della fase e la riscrittura di tre suite esistenti.
+- **2026-09-07 — Ogni testura si disegna come rettangolo quadrato pieno
+  (`draw_texture_rect` sull'intera canvas), non con un ritaglio a misura del
+  contenuto.** I cinque derivati sono canvas quadrate con bordi trasparenti
+  generosi (vincolo di `process-ability-vfx.ps1`): stirare l'intera canvas su
+  un rettangolo scelto (quadrato per l'aura di iperfocus/il termometro, largo
+  per l'aura a terra) evita di introdurre un secondo passaggio di crop e
+  lascia alla stessa arte la propria proporzione interna.
+- **2026-09-07 — Dimensioni e offset (`DISPLAY_SIZE`/`CENTER_OFFSET`/
+  `FOOT_OFFSET`/`ANCHOR_OFFSET` nei tre script) sono stime da provino, non
+  misure pixel-perfette**, verificate con una cattura reale ma non con
+  l'occhio del proprietario. Restano il candidato più naturale da rifinire nel
+  controllo percettivo, se la resa dal vivo suggerisse un aggiustamento fine.
+- **2026-09-07 — Tremolio applicato ad alfa/scala per l'aura di Lollo, solo
+  alfa per l'aura a terra di Aleo.** L'iperfocus è un potenziamento attivo e
+  merita un respiro più marcato; l'aura a terra è più uno stato persistente
+  di sfondo — un tremolio minimo evita che sembri un adesivo statico senza
+  competere visivamente con l'azione.
+- **2026-09-07 — Il termometro usa `PresentationTimings.one_shot_opacity`
+  invece di una dissolvenza propria.** Stesso helper già usato per gli accenti
+  transitori del progetto (`COSPLAY_ACCENT_SECONDS`, ecc.): fade-in/fade-out
+  coerenti con il resto della UI invece di un'altra curva inventata ad hoc.
 - **Sostituisce:** l'implementazione di PS-079 per il solo Aleo e il solo Lollo,
   non il suo obiettivo originale (B44) né il suo meccanismo per gli altri due
   personaggi.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/characters.md`: le descrizioni pubbliche del tell vanno riscritte.
-      Aleo dice oggi "Un piccolo particellare ciano o arancio, sospeso sopra la
-      testa, dichiara sempre la modalità corrente"; Lollo dice "Un piccolo
-      particellare sospeso sopra la testa dichiara la fase corrente senza
-      alterare i colori del personaggio". Entrambe diventeranno false con questa
-      card. Alea e Migi non hanno testo pubblico dedicato al tell.
+- [x] `docs/characters.md`: le descrizioni pubbliche del tell di Aleo e Lollo
+      sono state riscritte per riflettere aura a terra + termometro e aura di
+      potenziamento invece del particellare.
 - [ ] Nota `*-verification.md`, se i gate Windows/Android producono evidenze.
 
 ## Note
 
-`BLOCCATO` in attesa di PS-098: senza i cinque asset non c'è nulla da cablare.
-Si sblocca quando PS-098 raggiunge `IN VERIFICA`, non serve che sia
-`COMPLETATO`.
-
-Punti di attenzione noti, da PS-079 e dalla lettura del codice corrente:
+Punti di attenzione noti, da PS-079 e dalla lettura del codice corrente,
+confermati durante l'implementazione:
 
 - `PassiveStateParticles` vive come **fratello** di `CharacterSprite` proprio
-  per restare staccato dal profilo per costruzione; i nuovi nodi vanno agganciati
-  allo stesso modo. L'aura di Lollo va dietro allo sprite (ordine di disegno,
-  non `show_behind_parent` su un figlio dello sprite: era lo schema di
-  `PassiveStateOutline`, rimosso).
+  per restare staccato dal profilo per costruzione; i nuovi nodi sono agganciati
+  allo stesso modo (`z_index` inferiore per l'aura di Lollo/l'aura a terra di
+  Aleo, non un `show_behind_parent` su un figlio).
 - PS-079 espone la precedenza del flash da danno tramite un getter dedicato
-  (`is_passive_state_tell_effectively_visible()`) invece di leggere pixel, così
-  lo smoke resta deterministico: conviene ripetere lo stesso schema per i nuovi
-  tell invece di inventarne un altro.
-- Il Player ha scala fissa 1,65 × 1,25 su texture 32×32: l'aura a terra va
-  dimensionata su quella, non su un valore inventato.
-- Se in playtest l'aura di potenziamento risultasse troppo invadente a densità
-  massima di nemici, la leva da provare per prima è l'alfa e l'ampiezza del
-  tremolio, prima di rimettere in discussione il soggetto.
+  (`is_passive_state_tell_effectively_visible()`) invece di leggere pixel: lo
+  stesso schema (`is_*_effectively_visible()`) è stato ripetuto sui tre nuovi
+  tell.
+- Il Player ha scala fissa 1,65 su texture 32×32 (più `visual_scale_multiplier`
+  per personaggio): l'aura a terra e le altre due sono dimensionate su quella
+  scala di riferimento, non su un valore inventato — confermato in una cattura
+  reale, non solo per calcolo.
+- Durante l'implementazione è emerso un bug reale scoperto dallo smoke stesso,
+  non da ispezione a priori: `TextureProgressBar`/simili non c'entrano qui, ma
+  il debug della verifica visiva ha rivelato che il fade-in del termometro
+  (`one_shot_opacity`) restituisce alfa 0 esattamente all'istante del trigger
+  per costruzione — comportamento corretto, non un difetto, ma da tenere a
+  mente per chi debugga questi tell manualmente frame per frame.
