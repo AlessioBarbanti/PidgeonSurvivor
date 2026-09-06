@@ -134,12 +134,15 @@ nuove convenzioni durevoli; non trasformare il brief in un documento separato.
 - Riusa o deriva arte esistente quando rappresenta già fedelmente il runtime
   o la famiglia; non ridisegnare inutilmente elementi approvati.
 - Per creare o modificare raster tramite sintesi visiva usa l'interfaccia
-  ImageGen attiva e il suo workflow (su Codex `$imagegen`; su Claude i tool
-  MCP `mcp__plugin_imagegen_imagegen__generate_image`,
-  `mcp__plugin_imagegen_imagegen__edit_image` e
-  `mcp__plugin_imagegen_imagegen__generate_image_set`). Per crop, resize,
-  padding, palette o altre trasformazioni deterministiche usa gli script
-  `tools/process-*.ps1` pertinenti.
+  ImageGen attiva e il suo workflow — **solo su Codex, tramite `$imagegen`**
+  (PS-112): l'agente lato Claude non ha né deve avere accesso diretto a
+  ImageGen, per decisione esplicita del proprietario che vuole un solo punto
+  di generazione. Se lavori come agente Claude e la card richiede nuova
+  sintesi non ancora prodotta da Codex, fermati e segnalalo invece di
+  generare con altri mezzi. Per crop, resize, padding, palette o altre
+  trasformazioni deterministiche (su asset già generati) usa gli script
+  `tools/process-*.ps1` pertinenti: questo passo resta disponibile su
+  entrambi gli agenti.
 - Le immagini di riferimento possono guidare anche una nuova generazione, non
   soltanto un editing. Applica il contratto in
   [`references/imagegen-reference-policy.md`](references/imagegen-reference-policy.md):
