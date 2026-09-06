@@ -3,12 +3,12 @@ id: PS-098
 titolo: Genera l'aura di potenziamento di Lollo e i tell termici di Aleo
 tipo: art
 area: arte
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine: PS-079
 creato: 2026-09-05
-aggiornato: 2026-09-05
+aggiornato: 2026-09-06
 ---
 
 # PS-098 — Genera l'aura di potenziamento di Lollo e i tell termici di Aleo
@@ -39,7 +39,7 @@ scena classica in cui un personaggio si carica e gli si accende l'aura attorno,
 non come un cambio di colore.
 
 Questa card si ferma alla produzione degli asset. Il cablaggio in gioco è
-[PS-099](./PS-099-aura-iperfocus-lollo-e-tell-termico-aleo.md), come impone
+[PS-099](../3_in_sprint/PS-099-aura-iperfocus-lollo-e-tell-termico-aleo.md), come impone
 [PS-090](../5_completed/PS-090-separa-generazione-integrazione-card-art.md).
 
 ## Comportamento atteso
@@ -51,41 +51,41 @@ passaggio.
 
 ## Criteri di accettazione
 
-- [ ] Esiste il master `hyperfocus_aura_source.png`: aura di potenziamento che
+- [x] Esiste il master `hyperfocus_aura_source.png`: aura di potenziamento che
       si alza attorno e dietro al personaggio, dorata, coerente con il colore di
       fase già in uso (`TELL_LOLLO_FOCUSED`, `Color(1.0, 0.88, 0.28)`).
-- [ ] L'aura di Lollo è una **silhouette propria** — una forma di energia con un
+- [x] L'aura di Lollo è una **silhouette propria** — una forma di energia con un
       contorno suo — e non il ricalco del profilo di uno sprite del cast: è il
       difetto che ha fatto bocciare PS-001 e non va reintrodotto per via grafica.
-- [ ] Esistono i master `thermal_aura_hot_source.png` e
+- [x] Esistono i master `thermal_aura_hot_source.png` e
       `thermal_aura_cold_source.png`: due aure a terra, schiacciate in
       prospettiva (più larghe che alte), pensate per stare sotto i piedi del
       personaggio. Arancio di brace la calda, azzurra di brina la fredda,
       coerenti con `TELL_ALEO_HOT` e `TELL_ALEO_COLD`.
-- [ ] Le due aure di Aleo si distinguono anche per soggetto e non solo per
+- [x] Le due aure di Aleo si distinguono anche per soggetto e non solo per
       tinta: la calda legge come calore/brace, la fredda come brina/gelo.
-- [ ] Esistono i master `thermometer_hot_source.png` e
+- [x] Esistono i master `thermometer_hot_source.png` e
       `thermometer_cold_source.png`: due termometri, rosso con il segno `+` e
       azzurro con il segno `−`.
-- [ ] I due termometri restano distinguibili l'uno dall'altro **anche a
+- [x] I due termometri restano distinguibili l'uno dall'altro **anche a
       saturazione azzerata**: il segno e il livello della colonnina bastano a
       dire quale sia, senza dipendere dal solo colore (stesso principio già
       imposto da PS-029 alle coppie di stato).
-- [ ] I due termometri sono leggibili alla dimensione a cui compariranno
+- [x] I due termometri sono leggibili alla dimensione a cui compariranno
       accanto a un personaggio da 32×32, non solo a piena risoluzione.
-- [ ] Tutti e cinque i master hanno canvas **quadrato** e angoli trasparenti:
+- [x] Tutti e cinque i master hanno canvas **quadrato** e angoli trasparenti:
       sono i due vincoli che
       [tools/process-ability-vfx.ps1](../../../tools/process-ability-vfx.ps1)
       verifica, ed è il pipeline con cui vanno derivati.
-- [ ] I cinque derivati esistono in `assets/art/vfx/state_tells/generated/` e si
+- [x] I cinque derivati esistono in `assets/art/vfx/state_tells/generated/` e si
       importano in Godot senza errori.
-- [ ] I cinque master e i cinque derivati hanno una riga in
+- [x] I cinque master e i cinque derivati hanno una riga in
       [assets/art/vfx/ASSET-MANIFEST.md](../../../assets/art/vfx/ASSET-MANIFEST.md)
       con percorso, origine, autore, licenza, trasformazioni e SHA-256.
-- [ ] I cinque asset si leggono come una famiglia coerente con i VFX già
+- [x] I cinque asset si leggono come una famiglia coerente con i VFX già
       approvati in `assets/art/vfx/abilities/`: stesso peso di contorno, stessa
       resa pixel-art, stessa logica di trasparenza.
-- [ ] **Nessuna integrazione**: nessun `.gd`, `.tscn`, `.tres` o registry viene
+- [x] **Nessuna integrazione**: nessun `.gd`, `.tscn`, `.tres` o registry viene
       toccato da questa card. È PS-099 a cablare gli asset.
 
 ## Ambito
@@ -158,10 +158,15 @@ PS-099, dove il tell arriva davvero a schermo.
   all'asset, prima ancora che al codice.
 - **Non sostituisce PS-079** come meccanismo per Alea e Migi: il particellare
   resta il loro tell e non viene toccato.
+- **2026-09-06 — Il termometro freddo eredita la composizione di quello caldo.**
+  Il proprietario ha richiesto che il segno `−` occupi la stessa posizione alta
+  a destra del `+`: la variante finale conserva quindi ingombro e silhouette,
+  cambiando solo palette, segno e colonnina bassa. Conseguenza: il confronto
+  caldo/freddo resta leggibile anche senza fare affidamento sul colore.
 
 ## Documenti sincronizzati
 
-- [ ] `assets/art/vfx/ASSET-MANIFEST.md`: cinque righe nuove (obbligatorio per
+- [x] `assets/art/vfx/ASSET-MANIFEST.md`: cinque righe nuove (obbligatorio per
       igiene del repository).
 - [x] `characters.md` — non da questa card: le descrizioni pubbliche del tell di
       Aleo e Lollo restano accurate finché gli asset non sono in gioco, ed è
@@ -178,6 +183,7 @@ Riferimenti di stile e vincoli tecnici già validi nel repository:
   -OutputPath <generated/....png> -Size 512`; lo script **rifiuta** master non
   quadrati o con angoli non trasparenti.
 - I master HD restano esclusi dagli export, come il resto di `assets/art/vfx/`.
+- I tre preset ora escludono esplicitamente `assets/art/vfx/state_tells/hd/**`.
 - Colori di riferimento già calibrati per contrasto in PS-029 e conservati da
   PS-079, in
   [friend_passive_controller.gd:49-52](../../../scripts/content/friend_passive_controller.gd#L49-L52):
@@ -186,3 +192,20 @@ Riferimenti di stile e vincoli tecnici già validi nel repository:
 - L'aura di Lollo deve funzionare **dietro** un personaggio alto circa 40 unità
   a schermo (texture 32×32 alla scala fissa 1,65 × 1,25): va composta in modo che
   il centro resti leggibile quando ci sta davanti un corpo di quelle proporzioni.
+
+## Evidenze di verifica
+
+- 2026-09-06 — Art review isolata: cinque master e relativi derivati valutati
+  contro i VFX `abilities/`; contorno scuro, luce crema e trasparenza sono
+  coerenti. Lollo mantiene un'apertura centrale e non ricalca lo sprite; le
+  aure termiche distinguono brace e brina per soggetto; `+`/colonnina alta e
+  `−`/colonnina bassa restano leggibili in scala di grigi.
+- Storico visivo: [`docs/archive/PS-098-generation`](../../archive/PS-098-generation/README.md)
+  conserva i contatti di review, la pulizia alfa e il confronto finale dei
+  termometri; non sono asset runtime.
+- 2026-09-06 — `run-milestone-checks.ps1 -Milestone PS-098 -Profile Focused
+  -FocusedSmoke tests/unit/test_ps098_state_tell_vfx_assets.gd -RefreshEditor`:
+  PASS, 1/1. Log `gut-focused.log`: marker `STATE_TELL_VFX_ASSETS_SMOKE_OK`;
+  nessun `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL` o `CONTRACT_FAIL`.
+- Gate ancora aperto: approvazione percettiva del proprietario sui cinque asset
+  fermi. L'integrazione e ogni animazione runtime restano in PS-099.

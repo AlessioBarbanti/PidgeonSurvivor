@@ -155,8 +155,8 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-095](./4_to_test/PS-095-audita-spawn-nemici-sempre-fuori-vista.md) | Audita e correggi lo spawn nemici che compare dentro l'area visibile | fix | gameplay | IN VERIFICA | media | — |
 | [PS-096](./4_to_test/PS-096-await-orfano-grow-to-fit-content-upgrade-card.md) | Diagnostica l'await orfano di UpgradeCard._grow_to_fit_content in full suite | fix | tooling | IN VERIFICA | bassa | — |
 | [PS-097](./4_to_test/PS-097-await-orfano-defer-reflow-top-margin.md) | Applica a UpgradeOverlay/BarbRewardOverlay la correzione dell'await orfano di PS-096 | fix | tooling | IN VERIFICA | bassa | PS-096 |
-| [PS-098](./2_to_do/PS-098-genera-aura-potenziamento-e-tell-termici.md) | Genera l'aura di potenziamento di Lollo e i tell termici di Aleo | art | arte | PRONTO | media | — |
-| [PS-099](./2_to_do/PS-099-aura-iperfocus-lollo-e-tell-termico-aleo.md) | Sostituisci il particellare di Lollo e Aleo con aura di potenziamento e tell termico | ux | arte | BLOCCATO | media | PS-098 |
+| [PS-098](./4_to_test/PS-098-genera-aura-potenziamento-e-tell-termici.md) | Genera l'aura di potenziamento di Lollo e i tell termici di Aleo | art | arte | IN VERIFICA | media | — |
+| [PS-099](./3_in_sprint/PS-099-aura-iperfocus-lollo-e-tell-termico-aleo.md) | Sostituisci il particellare di Lollo e Aleo con aura di potenziamento e tell termico | ux | arte | PRONTO | media | PS-098 |
 | [PS-100](./2_to_do/PS-100-rimuovi-ansia-dalle-specialita-di-barb.md) | Rimuovi L'Ansia dalle Specialità di Barb | chore | gameplay | PRONTO | media | — |
 | [PS-101](./4_to_test/PS-101-racconta-fame-dietro-agli-evil.md) | Racconta la fame dietro agli Evil e la redenzione di Barb | feat | gameplay | IN VERIFICA | media | — |
 | [PS-102](./4_to_test/PS-102-cornice-dedicata-boss-intro.md) | Genera una cornice dedicata per la Boss Intro | art | arte | IN VERIFICA | media | — |
