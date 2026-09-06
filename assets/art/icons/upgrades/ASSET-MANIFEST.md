@@ -236,3 +236,79 @@ reale con `health_pickup.png`: il pickup resta un singolo pezzo tondeggiante
 con osso bianco a vista e pallina terminale; il nuovo `alette.png` è un
 gruppo di tre cunei piatti e angolati senza osso, disposti in ventaglio — le
 due silhouette non si sovrappongono più nemmeno a colpo d'occhio a 128px.
+
+## PS-107 — Rigenera l'icona di Punto di Cottura (ex Salamoia Bolognese)
+
+- Data integrazione: 7 settembre 2026.
+- Contesto: il master orfano precedente `hd/upgrade_salamoia_bolognese.png`
+  (mai derivato) era stato bocciato in art review durante PS-093 per tre
+  motivi: silhouette a tre nuclei diagonali (ciotola, pennello, bistecca)
+  invece di un unico cluster compatto, illeggibilità a 48×48 (macchia
+  arancione/marrone indistinguibile), e confondibilità con "Il condimento di
+  Barb" (stesso soggetto ciotola/spezie, stessa palette). Il vecchio master
+  resta sul disco come storico bocciato, non toccato da questa card.
+- Origine: **ImageGen via Codex CLI (gpt-image)**, tool MCP
+  `mcp__plugin_imagegen_imagegen__generate_image` di questa sessione Claude,
+  `background: transparent`. Autore: progetto IL GIOCO con assistenza OpenAI
+  ImageGen; licenza: Licenza del progetto. Nessuna immagine di riferimento
+  usata come edit target; la calibrazione di stile/densità/palette è avvenuta
+  per ispezione diretta di `generated/meat_fork_damage.png`,
+  `generated/pinza_lunga.png` e, per contrasto negativo,
+  `generated/condimento_di_barb.png`.
+- Direzione: un unico cluster fuso bistecca+termometro da cucina, non tre
+  elementi separati. La sonda del termometro è infilata diagonalmente nella
+  bistecca; il quadrante analogico mostra un arco colorato rosso-arancio-verde
+  con l'ago fermo esattamente nella zona verde "perfetta", e un unico
+  glint/scintilla ciano-bianco concentrato sul quadrante è l'elemento univoco
+  di "colpo critico/punto di cottura perfetto" (accento cromatico freddo,
+  isolato, mai ripetuto altrove nell'immagine — a differenza degli accenti
+  ambra ricorrenti nel resto della famiglia). Nessuna ciotola, erbe, aglio,
+  vaso o pennello: la composizione non condivide silhouette con "Il
+  condimento di Barb". Densità di contorno: bistecca + sonda/quadrante +
+  un solo accento di glint, coerente con `meat_fork_damage.png`/
+  `pinza_lunga.png`, non con l'estremo scatter di `condimento_di_barb.png`.
+- Prompt effettivo: "Pixel-art arcade game upgrade icon, square canvas
+  1024x1024, transparent background (real alpha channel, fully transparent
+  pixels, absolutely no checkerboard pattern baked into the image). Subject:
+  ONE single compact visual cluster — a single thick grilled steak wedge
+  lying diagonally (comparable size and weight to a classic fork-and-steak
+  icon, not oversized), with a single metal meat thermometer probe plunged
+  straight down into the center of the steak at a steep diagonal angle. The
+  probe's thin shaft disappears into the meat; its round analog dial gauge
+  head sits just above the steak surface, clearly visible. The dial face
+  shows a simple colored arc gauge (red on one end, orange in the middle,
+  green at the other end) with a thin dark needle pointing exactly into the
+  green 'perfect' zone at the top of the dial. Right at the tip of the needle
+  in the green zone, a small sharp bright cyan-white starburst spark/glint
+  bursts outward, as the single unique visual cue for 'critical hit / perfect
+  cooking point', compact and sitting directly on the dial, not scattered
+  into the background margin. Add only one or two thin diagonal grill sear
+  marks on the steak's surface. Do not include a bowl, jar, herbs, garlic,
+  paintbrush, or any scattered spice flecks anywhere in the image. Style:
+  matching an established pixel-art barbecue arcade family — thick dark
+  outline, flat cel-shading without soft gradients, warm palette (charred
+  umber, brick red, roasted orange) for the steak and thermometer body, plus
+  a single isolated accent of bright cyan-white spark glow only at the
+  critical-hit starburst (nowhere else in the image). Single compact centered
+  composition with uniform margin, crisp readable silhouette even when scaled
+  down to 128x128 and 48x48 pixels. No text, no numbers, no badge, no frame,
+  no plate, no cutlery besides the thermometer, no person, no firearm, no
+  pigeon."
+- Verificato con PowerShell/System.Drawing: master RGBA reale `1254×1254`,
+  alpha `0` ai quattro angoli. Trasformazione:
+  `tools/process-upgrade-icon.ps1`, soglia alpha `8`, padding quadrato `12`,
+  nearest-neighbor a `128×128` RGBA, derivato `128×128` verificato senza
+  scacchiera. Leggibilità a 48×48 verificata esplicitamente con un
+  downscale nearest-neighbor addizionale del derivato (fuori pipeline
+  runtime, solo per art review): bistecca, sonda, quadrante e i tre colori
+  dell'arco restano distinti a colpo d'occhio; confronto diretto contro lo
+  stesso downscale di `meat_fork_damage.png` (silhouette comparabile) e
+  `condimento_di_barb.png` (diventa una macchia illeggibile a quella scala,
+  confermando il problema originale che questa card doveva evitare).
+- Runtime: nessun file `.tres`/scena/registry referenzia ancora il derivato.
+  Il cablaggio nel catalogo live resta a
+  [PS-108](../../../../docs/cards/2_to_do/PS-108-integra-carta-punto-di-cottura.md).
+
+| Carta | Master HD escluso | Derivato runtime | SHA-256 master | SHA-256 runtime |
+|---|---|---|---|---|
+| Punto di Cottura | `hd/upgrade_cooking_point_crit.png` (`1254×1254`) | `generated/cooking_point_crit.png` (`128×128`) | `D3D6ECE6067D288831E531DA77047EA8324778E6E475E60773540DBDA743BAA6` | `451EA2A9C00E090D252FDAE509EB3CDF068823C3C781A71FB7C96BA0445723E6` |

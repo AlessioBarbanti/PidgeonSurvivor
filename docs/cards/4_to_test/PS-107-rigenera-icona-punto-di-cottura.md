@@ -3,19 +3,19 @@ id: PS-107
 titolo: Rigenera l'icona di Punto di Cottura (ex Salamoia Bolognese)
 tipo: art
 area: arte
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-09-06
-aggiornato: 2026-09-06
+aggiornato: 2026-09-07
 ---
 
 # PS-107 — Rigenera l'icona di Punto di Cottura (ex Salamoia Bolognese)
 
 ## Contesto
 
-[PS-093](../3_in_sprint/PS-093-nuovi-assi-scarto-base-personaggi.md) introduce
+[PS-093](../4_to_test/PS-093-nuovi-assi-scarto-base-personaggi.md) introduce
 la carta upgrade del colpo critico (`data/upgrades/cooking_point_crit.tres`,
 titolo "Punto di Cottura", rinominata da "Salamoia Bolognese" per la regola
 PS-089 che riserva i nomi di tagli/preparazioni di carne alle Specialità di
@@ -51,31 +51,47 @@ tre problemi sopra: un solo nucleo visivo, leggibile a 48px, distinguibile da
 
 ## Criteri di accettazione
 
-- [ ] Il master a tema "colpo critico/punto perfetto" risolve in **un solo
+- [x] Il master a tema "colpo critico/punto perfetto" risolve in **un solo
       nucleo visivo compatto** (non tre elementi separati agli angoli, come
       il master bocciato) — coerente con la convenzione osservata in tutti
       gli altri 14 derivati del catalogo upgrade (un solo cluster silhouette
-      contenuto).
-- [ ] Al massimo 2-3 elementi di contorno, coerente con la densità di
+      contenuto). Verificato: bistecca+sonda del termometro sono un unico
+      cluster fuso, la sonda è infilata nella carne, non tre elementi
+      agli angoli.
+- [x] Al massimo 2-3 elementi di contorno, coerente con la densità di
       `meat_fork_damage`/`pinza_lunga`, non con l'estremo di
-      `condimento_di_barb`.
-- [ ] Include un elemento visivo univoco che comunichi "colpo perfetto" (es.
+      `condimento_di_barb`. Verificato per ispezione diretta affiancata dei
+      tre derivati (vedi Decisioni): bistecca + sonda/quadrante + un solo
+      accento di glint, nessuna ciotola/erbe/aglio/vaso.
+- [x] Include un elemento visivo univoco che comunichi "colpo perfetto" (es.
       una scintilla/bagliore concentrato sul punto di contatto), distinto da
       "Il condimento di Barb" invece di ripeterne bowl/vaso + erbe sparse.
-- [ ] Il derivato a 128×128 (stesso script/algoritmo `process-upgrade-icon.ps1`)
+      Verificato: quadrante analogico rosso-arancio-verde con ago fermo sulla
+      zona verde e glint ciano-bianco isolato proprio lì, unico accento
+      freddo dell'immagine.
+- [x] Il derivato a 128×128 (stesso script/algoritmo `process-upgrade-icon.ps1`)
       resta leggibile e riconoscibile **anche ridimensionato a 48×48**
       (dimensione reale d'uso in HUD/fine run) — verificarlo esplicitamente
-      prima di consegnare, non solo a 128px.
-- [ ] Il titolo "Salamoia Bolognese"/il tema "carne" non compare: il nome
+      prima di consegnare, non solo a 128px. Verificato con un downscale
+      nearest-neighbor aggiuntivo del derivato a 48×48 (fuori pipeline
+      runtime, solo per questa verifica): bistecca, sonda, quadrante e i tre
+      colori dell'arco restano distinti; confronto diretto contro lo stesso
+      downscale di `meat_fork_damage.png` (comparabile) e
+      `condimento_di_barb.png` (diventa una macchia illeggibile a quella
+      scala, il problema originale che questa card doveva evitare).
+- [x] Il titolo "Salamoia Bolognese"/il tema "carne" non compare: il nome
       della carta è "Punto di Cottura" ([PS-089](../5_completed/PS-089-elimina-sovrapposizioni-tema-carne-powerup.md)
       vieta ai nomi del catalogo ordinario di citare tagli/preparazioni di
-      carne).
-- [ ] Il derivato esiste in `assets/art/icons/upgrades/generated/` con una
+      carne). Nessun testo è renderizzato nell'icona; il nome carta non è
+      stato toccato.
+- [x] Il derivato esiste in `assets/art/icons/upgrades/generated/` con una
       riga nell'`ASSET-MANIFEST.md` pertinente: origine, autore/licenza,
       trasformazioni, hash SHA-256.
-- [ ] Nessun file derivato è ancora referenziato da scene o script: il
+- [x] Nessun file derivato è ancora referenziato da scene o script: il
       cablaggio nel catalogo live resta a
-      [PS-108](../2_to_do/PS-108-integra-carta-punto-di-cottura.md).
+      [PS-108](../2_to_do/PS-108-integra-carta-punto-di-cottura.md). Verificato
+      con una ricerca del nome file nel repository: nessun risultato fuori da
+      questa card e dal manifest.
 
 ## Ambito
 
@@ -102,7 +118,13 @@ Non toccare:
 - [ ] Validazione statica APK
 - [ ] Runtime fisico Pixel 9: non pertinente a questa card (nessun wiring)
 - [ ] Controllo percettivo richiesto: sì — leggibilità a 48px reale, non solo
-      a 128px in isolamento
+      a 128px in isolamento. Lasciato aperto per approvazione del
+      proprietario: la direzione bistecca+termometro è una reinterpretazione
+      creativa non ancora vista da un umano, non solo un ricontrollo tecnico.
+      Verifica tecnica già svolta e documentata in Decisioni: downscale
+      nearest-neighbor esplicito a 48×48 del derivato, confrontato affiancato
+      con lo stesso downscale di `meat_fork_damage.png` e
+      `condimento_di_barb.png` (vedi `ASSET-MANIFEST.md` per il dettaglio).
 
 ## Decisioni
 
@@ -117,15 +139,45 @@ Non toccare:
   nomi di tagli/preparazioni di carne alle Specialità di Barb. La proposta
   originale in `docs/powerup-catalog.md` (31 agosto 2026) precedeva quella
   regola.
+- **2026-09-07 — Nuovo master: bistecca + termometro da cucina come nucleo
+  unico, non ridisegno del vecchio soggetto ciotola/pennello/bistecca.** I
+  criteri della card fissano già la direzione ("colpo critico/punto di
+  cottura perfetto", un solo nucleo, elemento univoco tipo scintilla/bagliore
+  sul punto di contatto) senza specificare l'oggetto esatto: ho scelto un
+  termometro da cucina infilato nella bistecca perché rappresenta
+  letteralmente "punto di cottura" (la sonda misura il punto di cottura
+  della carne) e permette di ancorare l'elemento univoco richiesto a un
+  quadrante analogico con arco colorato rosso-arancio-verde e ago fermo sulla
+  zona verde — un "colpo perfetto" leggibile come stato, non solo come
+  effetto decorativo. L'accento del glint è ciano-bianco (non ambra come il
+  resto della famiglia "Specialità"): scelta deliberata per marcare
+  visivamente "critico" come categoria diversa dagli accenti di brace/calore
+  già usati ovunque, riprendendo la convenzione di glow freddo già stabilita
+  da `pinza_lunga.png` per un effetto potenziato/speciale. Risolve i tre
+  problemi diagnosticati: (1) un solo cluster fuso bistecca+sonda, non tre
+  elementi separati; (2) verificato leggibile a 48×48 (vedi Criteri di
+  accettazione e `ASSET-MANIFEST.md`); (3) nessuna ciotola/erbe/aglio/vaso,
+  silhouette non sovrapponibile a "Il condimento di Barb". Generato con
+  ImageGen via Codex CLI (gpt-image), un solo candidato accettato in art
+  review senza bisogno di iterazione: master `hd/upgrade_cooking_point_crit.png`
+  (`1254×1254` RGBA, alpha reale verificato ai quattro angoli), derivato
+  `generated/cooking_point_crit.png` (`128×128`, stesso
+  `tools/process-upgrade-icon.ps1` degli altri derivati della cartella).
+  Decisione rivedibile: se il proprietario preferisce un soggetto diverso in
+  sede di controllo percettivo (gate lasciato aperto sotto), rigenerare
+  restando dentro gli stessi criteri già fissati.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/powerup-catalog.md`: sezione "Punto di Cottura" — aggiornare lo
-      stato icona una volta accettata la rigenerazione.
+- [x] `docs/powerup-catalog.md`: sezione "Punto di Cottura" — stato icona
+      aggiornato per riflettere il nuovo master/derivato prodotti; resta un
+      riferimento a "controllo percettivo aperto" finché il proprietario non
+      approva la direzione bistecca+termometro.
 
 ## Note
 
 Delegata a `game-art-designer` per la regola di board sulle card `tipo: art`
 che richiedono nuova generazione. Al momento dell'apertura di questa card,
-l'agente ha segnalato ImageGen non disponibile su altre card aperte in
-parallelo (PS-102, PS-104): stesso blocco atteso qui.
+l'agente aveva segnalato ImageGen non disponibile su altre card aperte in
+parallelo (PS-102, PS-104): in questa sessione ImageGen era disponibile e la
+generazione è avvenuta al primo tentativo, senza bisogno di iterazione.

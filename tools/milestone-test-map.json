@@ -174,7 +174,8 @@
         "tests/unit/test_ps077_barb_speciality_pool_expansion.gd",
         "tests/unit/test_ps078_barb_speciality_theming.gd",
         "tests/unit/test_ps047_upgrade_card_hierarchy.gd",
-        "tests/unit/test_ps089_ordinary_catalog_meat_audit.gd"
+        "tests/unit/test_ps089_ordinary_catalog_meat_audit.gd",
+        "tests/unit/test_ps108_cooking_point_catalog_wiring.gd"
       ]
     },
     {
@@ -192,7 +193,8 @@
         "tests/unit/test_ps077_barb_speciality_pool_expansion.gd",
         "tests/unit/test_ps078_barb_speciality_theming.gd",
         "tests/unit/test_ps047_upgrade_card_hierarchy.gd",
-        "tests/unit/test_ps093_extended_base_stats.gd"
+        "tests/unit/test_ps093_extended_base_stats.gd",
+        "tests/unit/test_ps108_cooking_point_catalog_wiring.gd"
       ]
     },
     {
@@ -240,6 +242,7 @@
         "scripts/game/run_summary.gd"
       ],
       "smokes": [
+        "tests/unit/test_ps108_cooking_point_catalog_wiring.gd",
         "tests/unit/test_b03_movement_slice.gd",
         "tests/unit/test_b16_complete_run.gd",
         "tests/unit/test_b06a_platform_lifecycle.gd",

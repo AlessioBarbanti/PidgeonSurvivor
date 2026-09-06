@@ -173,8 +173,8 @@ orologi, timer o simboli tecnici. Vedi anche [PS-092](./cards/2_to_do/PS-092-nuo
 
 *(PS-093, 2026-09-06 — rinominata da "Salamoia Bolognese": `salamoia` è in
 lista nera per il catalogo ordinario, PS-089, riservata alle Specialità di
-Barb. Il meccanismo è implementato e mergiato in `main`; l'icona resta
-bloccata, vedi sotto.)*
+Barb. Il meccanismo è implementato e mergiato in `main`. PS-108, 2026-09-07 —
+la carta è ora cablata nel catalogo pescabile live, vedi sotto.)*
 
 **ID:** `cooking_point_crit`, in `data/upgrades/cooking_point_crit.tres`.
 
@@ -192,22 +192,24 @@ bloccata, vedi sotto.)*
 **Descrizione carta:** “Colpisce il punto perfetto: aumenta di 5 punti
 percentuali la probabilità di colpo critico per rango.”
 
-**Stato icona (PS-093, 2026-09-06):** il master HD orfano riusato
-(`upgrade_salamoia_bolognese.png`) è stato bocciato in art review
-(`direttore-artistico`): composizione a tre nuclei visivi separati (ciotola,
-pennello, bistecca), illeggibile alla dimensione reale d'uso (48×48 in HUD/
-fine run) e confondibile con "Il condimento di Barb" (stesso soggetto
-ciotola/vaso di spezie). La carta non è ancora cablata nel catalogo live in
-attesa di un nuovo master — vedi PS-107 (rigenerazione, delegata a
-`game-art-designer`) e PS-108 (derivazione + wiring, dipende da PS-107).
-
-**Identità visiva richiesta per la rigenerazione:** un solo nucleo visivo
-compatto (es. bistecca in primo piano con gocce di marinata già versate, non
-un flusso da una ciotola distante), 2-3 elementi di contorno al massimo
-(coerente con la densità di `meat_fork_damage`/`pinza_lunga`), un elemento
-univoco che comunichi "colpo perfetto" (scintilla/bagliore concentrato sul
-punto di contatto) per distinguersi da "Il condimento di Barb" invece di
-duplicarne bowl+erbe. Verificare la leggibilità a 48px prima di consegnare.
+**Stato icona (PS-107, 2026-09-07):** il vecchio master HD orfano
+(`upgrade_salamoia_bolognese.png`, bocciato in art review durante PS-093:
+composizione a tre nuclei visivi separati, illeggibile a 48×48, confondibile
+con "Il condimento di Barb") resta sul disco come storico, non toccato.
+Rigenerato un nuovo master a tema "colpo critico/punto di cottura perfetto":
+un unico cluster bistecca+termometro da cucina, sonda infilata nella carne,
+quadrante analogico con arco rosso-arancio-verde e ago fermo sulla zona verde,
+glint ciano-bianco isolato come unico elemento univoco di "colpo perfetto".
+Master (`assets/art/icons/upgrades/hd/upgrade_cooking_point_crit.png`) e
+derivato (`assets/art/icons/upgrades/generated/cooking_point_crit.png`,
+`128×128`) esistono a manifest e leggibili anche a 48×48 (vedi
+`ASSET-MANIFEST.md` e [PS-107](./cards/4_to_test/PS-107-rigenera-icona-punto-di-cottura.md)
+per dettaglio prompt e verifica). Il controllo percettivo del proprietario
+sulla direzione bistecca+termometro resta un gate aperto in PS-107, ma non
+blocca il cablaggio: **PS-108, 2026-09-07 — la carta è ora referenziata in
+`data/upgrades/cooking_point_crit.tres` (`icon`) e presente in
+`UpgradeRegistry.definitions`** ([scenes/game/movement_slice.tscn](../scenes/game/movement_slice.tscn)):
+pescabile a level-up in ogni run, catalogo ordinario.
 
 ---
 

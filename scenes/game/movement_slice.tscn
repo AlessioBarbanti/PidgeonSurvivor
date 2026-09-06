@@ -1,4 +1,4 @@
-[gd_scene load_steps=118 format=3]
+[gd_scene load_steps=119 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -101,6 +101,7 @@
 [ext_resource type="Resource" path="res://data/upgrades/reinforced_roasting_tray.tres" id="97_reinforced_tray"]
 [ext_resource type="Resource" path="res://data/upgrades/barb_seasoning_xp.tres" id="98_barb_xp"]
 [ext_resource type="Resource" path="res://data/upgrades/ability_cooldown.tres" id="99_ability_cooldown"]
+[ext_resource type="Resource" path="res://data/upgrades/cooking_point_crit.tres" id="127_cooking_point_crit"]
 [ext_resource type="Script" path="res://scripts/game/arena_world.gd" id="100_arena_world"]
 [ext_resource type="PackedScene" path="res://scenes/game/obstacles/static_obstacle.tscn" id="101_static_obstacle"]
 [ext_resource type="Texture2D" path="res://assets/art/arena/generated/obstacle_fireplace.png" id="102_obstacle_fireplace"]
@@ -229,7 +230,7 @@ experience_curve = ExtResource("16_experience_curve")
 [node name="UpgradeRegistry" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("21_upgrade_registry")
-definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"), ExtResource("24_rapid_fire"), ExtResource("25_wide_magnet"), ExtResource("94_meat_fork_damage"), ExtResource("96_projectile_speed"), ExtResource("97_reinforced_tray"), ExtResource("98_barb_xp"), ExtResource("99_ability_cooldown"), ExtResource("86_summer_grill"), ExtResource("31_anxiety_signature"), ExtResource("32_gossip_projectiles"), ExtResource("33_chronic_delay"), ExtResource("34_beer_signature"), ExtResource("35_damage_shockwave"), ExtResource("78_rank_magno"), ExtResource("79_rank_bea"), ExtResource("80_rank_zat"), ExtResource("81_rank_alea"), ExtResource("82_rank_aleo"), ExtResource("83_rank_lollo"), ExtResource("84_rank_migi"), ExtResource("85_rank_marghe"), ExtResource("115_piercing_rounds"), ExtResource("116_double_barrel"), ExtResource("117_death_burst")])
+definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"), ExtResource("24_rapid_fire"), ExtResource("25_wide_magnet"), ExtResource("94_meat_fork_damage"), ExtResource("96_projectile_speed"), ExtResource("97_reinforced_tray"), ExtResource("98_barb_xp"), ExtResource("99_ability_cooldown"), ExtResource("86_summer_grill"), ExtResource("31_anxiety_signature"), ExtResource("32_gossip_projectiles"), ExtResource("33_chronic_delay"), ExtResource("34_beer_signature"), ExtResource("35_damage_shockwave"), ExtResource("78_rank_magno"), ExtResource("79_rank_bea"), ExtResource("80_rank_zat"), ExtResource("81_rank_alea"), ExtResource("82_rank_aleo"), ExtResource("83_rank_lollo"), ExtResource("84_rank_migi"), ExtResource("85_rank_marghe"), ExtResource("115_piercing_rounds"), ExtResource("116_double_barrel"), ExtResource("117_death_burst"), ExtResource("127_cooking_point_crit")])
 
 [node name="UpgradeService" type="Node" parent="."]
 unique_name_in_owner = true

@@ -60,7 +60,11 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
   (`.claude/agents/game-art-designer.md`) sia su Codex
   (`.codex/agents/game-art-designer.toml`); la skill `card-risolvi` su Claude
   non le seleziona automaticamente come "prossima card" e le implementa solo
-  delegandole a quell'agente.
+  delegandole a quell'agente. La sintesi visiva vera e propria resta
+  esclusiva di Codex (PS-112): il game-art-designer lato Claude non ha
+  accesso diretto a ImageGen e, quando serve nuova sintesi non ancora
+  prodotta da Codex, si ferma e la segnala invece di generarla con altri
+  mezzi.
 - Una card `tipo: art` che richiede nuovi asset **non include mai** la
   propria integrazione nei criteri di accettazione (PS-090): si ferma a
   master, derivato, manifest e art review. Collegare l'asset finito al dato,
@@ -203,9 +207,10 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-103](./4_to_test/PS-103-integra-cornice-boss-intro.md) | Integra la cornice dedicata nella Boss Intro | ux | ui | IN VERIFICA | media | PS-102 |
 | [PS-104](./5_completed/PS-104-icona-calice-sobrieta-alea.md) | Genera l'icona del calice per la Sobrietà di Alea | art | arte | COMPLETATO | media | — |
 | [PS-105](./4_to_test/PS-105-nuova-passiva-alea-due-dita-e-parto.md) | Sostituisci la passiva di Alea con Due Dita e Parto | feat | gameplay | IN VERIFICA | media | — |
-| [PS-106](./3_in_sprint/PS-106-integra-icona-calice-sobrieta-alea-hud.md) | Integra l'icona del calice Sobrietà di Alea in HUD | ux | ui | IN ATTESA ASSET | media | PS-104 |
-| [PS-107](./2_to_do/PS-107-rigenera-icona-punto-di-cottura.md) | Rigenera l'icona di Punto di Cottura (ex Salamoia Bolognese) | art | arte | PRONTO | media | — |
-| [PS-108](./2_to_do/PS-108-integra-carta-punto-di-cottura.md) | Integra la carta Punto di Cottura nel catalogo live | chore | gameplay | BLOCCATO | media | PS-107 |
+| [PS-106](./4_to_test/PS-106-integra-icona-calice-sobrieta-alea-hud.md) | Integra l'icona del calice Sobrietà di Alea in HUD | ux | ui | IN VERIFICA | media | PS-104 |
+| [PS-107](./4_to_test/PS-107-rigenera-icona-punto-di-cottura.md) | Rigenera l'icona di Punto di Cottura (ex Salamoia Bolognese) | art | arte | IN VERIFICA | media | — |
+| [PS-108](./4_to_test/PS-108-integra-carta-punto-di-cottura.md) | Integra la carta Punto di Cottura nel catalogo live | chore | gameplay | IN VERIFICA | media | PS-107 |
 | [PS-109](./5_completed/PS-109-consulta-game-art-designer-prima-di-fissare-criteri-art.md) | Consulta il game-art-designer prima di fissare i criteri di una card che tocca l'arte | chore | tooling | COMPLETATO | media | PS-090 |
 | [PS-110](./5_completed/PS-110-placeholder-asset-e-stato-in-attesa-asset.md) | Placeholder generato e stato IN ATTESA ASSET per procedere prima dell'asset reale | chore | tooling | COMPLETATO | media | PS-109 |
 | [PS-111](./5_completed/PS-111-askuserquestion-non-disponibile-ai-sottoagenti.md) | Correggi PS-109: AskUserQuestion non è disponibile ai sotto-agenti | fix | tooling | COMPLETATO | media | PS-109 |
+| [PS-112](./5_completed/PS-112-vieta-imagegen-diretto-game-art-designer-claude.md) | Vieta l'accesso diretto a ImageGen al game-art-designer lato Claude | fix | tooling | COMPLETATO | media | — |

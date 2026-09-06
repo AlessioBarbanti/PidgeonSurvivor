@@ -185,7 +185,7 @@ func test_composed_level_flow() -> void:
 			ability.set_process(false)
 
 	assert_eq(
-		registry.get_definitions().size(), 25, "Il catalogo composto deve avere venticinque carte normali dopo B41."
+		registry.get_definitions().size(), 26, "Il catalogo composto deve avere ventisei carte normali dopo PS-108."
 	)
 	assert_true(service.get_current_offer().is_empty(), "Una run senza level-up non deve anticipare carte.")
 	assert_true(experience.add_experience(45), "La scena composta deve attraversare tre soglie.")

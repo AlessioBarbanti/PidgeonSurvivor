@@ -3,12 +3,12 @@ id: PS-106
 titolo: Integra l'icona del calice Sobrietà di Alea in HUD
 tipo: ux
 area: ui
-stato: IN ATTESA ASSET
+stato: IN VERIFICA
 priorita: media
 dipende_da: [PS-104]
 origine:
 creato: 2026-09-05
-aggiornato: 2026-09-06
+aggiornato: 2026-09-07
 ---
 
 # PS-106 — Integra l'icona del calice Sobrietà di Alea in HUD
@@ -16,10 +16,10 @@ aggiornato: 2026-09-06
 ## Contesto
 
 [PS-105](./PS-105-nuova-passiva-alea-due-dita-e-parto.md) sostituisce la
-passiva di Alea con "Due Dita e Parto": una barra Sobrietà che si riempie nel
+passiva di Alea con "Duer e i segnali che la espongono
+(`FriendPassiveController Dita e Parto": una barra Sobrietà che si riempie nel
 tempo e, raggiunta la soglia, fa entrare Alea in "Brilla". PS-105 copre la
-logica di accumulo/trigger e i segnali che la espongono
-(`FriendPassiveController.alea_sobriety_changed`/`alea_brilla_changed`), ma
+logica di accumulo/trigge.alea_sobriety_changed`/`alea_brilla_changed`), ma
 non tocca `hud.tscn`/`hud.gd`: quella card si ferma alla logica, per lo stesso
 motivo per cui [PS-104](./PS-104-icona-calice-sobrieta-alea.md) (l'icona a
 calice di vino rosso) si ferma a master/derivato/manifest (PS-090).
@@ -40,13 +40,13 @@ Con qualunque altro personaggio equipaggiato, l'icona non appare.
 
 ## Criteri di accettazione
 
-- [ ] L'icona calice **reale** di PS-104 è visibile in HUD, in alto a
+- [x] L'icona calice **reale** di PS-104 è visibile in HUD, in alto a
       sinistra nella safe area, senza sovrapporsi a
       `HealthPanel`/`ExperiencePanel` ([scenes/ui/hud.tscn](../../../scenes/ui/hud.tscn)
-      righe 146-179). Il posizionamento e l'assenza di sovrapposizione sono
-      verificati dallo smoke, ma con l'asset placeholder di PS-110 (vedi
-      Decisioni): resta da confermare che l'asset reale, una volta generato
-      da PS-104, non cambi le dimensioni assunte qui.
+      righe 146-179). PS-104 ha scritto l'asset reale agli stessi due
+      percorsi con le stesse dimensioni `128×128` del placeholder (vedi
+      Decisioni 2026-09-07): nessun adattamento di scena richiesto, lo smoke
+      resta verde con l'asset reale.
 - [x] Il riempimento dell'icona riflette in tempo reale il valore esposto
       dalla passiva di Alea introdotta da PS-105 (0.0 = vuoto, 1.0 = pieno),
       aggiornato ad ogni variazione, senza polling né valori stantii —
@@ -104,14 +104,12 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows: non pertinente finché l'asset è un placeholder
-      (scacchiera magenta riconoscibile, non arte da giudicare)
+- [ ] Runtime Windows: ora pertinente con l'asset reale, non ancora eseguito
 - [ ] Validazione statica APK
 - [ ] Runtime fisico Pixel 9 (percorso: run con Alea, osservare il calice
-      riempirsi fino a un ciclo Brilla completo) — da rifare con l'asset
-      reale, non ha senso con il placeholder
-- [ ] Controllo percettivo richiesto: sì — ma non prima che l'asset reale di
-      PS-104 sostituisca il placeholder
+      riempirsi fino a un ciclo Brilla completo)
+- [ ] Controllo percettivo richiesto: sì, ora che l'asset reale di PS-104 ha
+      sostituito il placeholder — non ancora eseguito dal proprietario
 
 ## Decisioni
 
@@ -143,16 +141,21 @@ Non toccare:
   più vicino (0.5 diventava 1.0) — scoperto dallo smoke stesso durante
   questa prova, non da ispezione a priori. Impostato esplicitamente nella
   scena.
-- **Aperto:** questa card non può passare a `IN VERIFICA`/`COMPLETATO`
-  finché PS-104 non genera l'asset reale e lo scrive agli stessi due
-  percorsi in `assets/art/icons/hud/generated/`, sostituendo il
-  placeholder. Il gate è il pixel `(0,0)` dei due derivati: finché resta
-  magenta pieno (`255,0,255,255`), la card resta qui.
+- **2026-09-07 — PS-104 ha sostituito il placeholder con l'asset reale;
+  gate verificato.** Pixel `(0,0)` di entrambi i derivati
+  (`generated/alea_sobriety_glass_empty.png`, `generated/alea_sobriety_wine_fill.png`)
+  non è più magenta pieno ma trasparente (`0,0,0,0`); dimensioni invariate
+  a `128×128`. Rilanciato lo smoke (`test_ps106_alea_sobriety_hud.gd`) col
+  profilo `Relevant`: 1/1 focused verde, nessun `SCRIPT ERROR`/
+  `FATAL EXCEPTION` nei log. Card portata a `IN VERIFICA`; restano aperti
+  solo i gate manuali (Windows, APK, Pixel 9, controllo percettivo del
+  proprietario), ora pertinenti perché l'arte è quella reale.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/visual-audio-identity.md`: da aggiornare quando l'asset reale
-      (non il placeholder) sostituisce quello attuale.
+- [x] `docs/visual-audio-identity.md`: descrive già la coppia di layer reale
+      (vetro freddo/ornamenti oro, vino borgogna isolato), nessun riferimento
+      al placeholder residuo.
 
 ## Note
 
