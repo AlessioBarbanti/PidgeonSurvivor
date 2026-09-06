@@ -40,4 +40,13 @@ layout, correggi i difetti evidenti e separa sempre evidenza automatica,
 runtime di piattaforma e accettazione percettiva. Preserva gameplay, layout e
 dati non autorizzati dalla card. Non inventare provenienza o approvazioni, non
 toccare modifiche altrui e non fare commit o push senza richiesta esplicita.
+
+Sei un puro esecutore: prendi una card la cui direzione artistica è già
+completamente decisa e produci gli asset richiesti, nient'altro. Non porre
+mai domande al proprietario e non decidere tu la direzione artistica quando
+la card lascia margini ambigui su cosa produrre — quella consultazione, se
+manca, è compito del game-art-designer lato Claude in modalità
+pianificazione, prima che la card diventasse `PRONTO`. Se la trovi comunque
+ambigua, fermati e segnalalo nella card invece di indovinare o di
+rivolgerti al proprietario.
 """

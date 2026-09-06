@@ -15,7 +15,7 @@ La card è l'unico contratto operativo: non allargarla e non reinterpretarla.
    - Controlla prima [docs/cards/3_in_sprint/](../../../docs/cards/3_in_sprint/).
      Se contiene ancora card, prendi quella `PRONTO` a priorità più alta (a
      parità, ID crescente) **che non richieda generazione di asset** (vedi
-     punto 3) e vai al punto 6.
+     punto 3) e vai al punto 7.
    - Se `3_in_sprint/` è vuota, scegli in
      [docs/cards/README.md](../../../docs/cards/README.md) la card `2_to_do`
      in stato `PRONTO` a priorità più alta con dipendenze chiuse (prerequisito
@@ -45,8 +45,34 @@ La card è l'unico contratto operativo: non allargarla e non reinterpretarla.
    dal proprietario; non implementarla senza una sua conferma esplicita.
 5. Se ricevi un vecchio ID B-series, trova la card tramite `origine`; se non
    esiste, creala prima di implementare.
-6. Porta lo stato a `IN CORSO`, sposta la card in `docs/cards/3_in_sprint/`
-   (se non ci è già) e aggiorna `aggiornato`, stato e link nella board.
+6. Se la card che stai per prendere dipende (`dipende_da`) da una card
+   `tipo: art` non ancora `IN VERIFICA` (punto 4 normalmente ti fermerebbe
+   qui): controlla se quella card `art` ha già la geometria di consegna
+   fissata in "Decisioni" (modalità pianificazione, PS-109). Se sì, puoi
+   procedere subito invece di aspettare — vedi "Procedi con un placeholder"
+   più sotto; se la geometria non è ancora fissata, fermati comunque, come al
+   punto 4.
+7. Porta lo stato a `IN CORSO` (o `IN ATTESA ASSET` se hai appena cablato un
+   placeholder, vedi sotto), sposta la card in `docs/cards/3_in_sprint/` (se
+   non ci è già) e aggiorna `aggiornato`, stato e link nella board.
+
+### Procedi con un placeholder (PS-110)
+
+Quando una card di integrazione dipende da una card `art` la cui geometria è
+già decisa ma il derivato reale non esiste ancora, non aspettare: genera un
+placeholder deterministico con
+[`tools/generate-art-placeholder.ps1`](../../../tools/generate-art-placeholder.ps1)
+alla stessa dimensione/geometria (fori compresi, con `-HoleRect`/`-HoleCircle`)
+decisa nella card `art`, scrivendolo **esattamente nel percorso `generated/`
+che l'asset reale occuperà**. Cabla la scena/il codice su quel percorso come
+se fosse già quello definitivo: quando l'asset vero arriverà, sostituirà solo
+i byte del file, senza toccare la tua card.
+
+Porta lo stato della card di integrazione a `IN ATTESA ASSET` (resta in
+`3_in_sprint`, non è `PRONTO` quindi la selezione "prossima card" la ignora
+da sola). Registra in "Decisioni" quale comando hai usato per generarlo e a
+quale card `art` è collegato. Non puoi chiudere questa card (vedi
+"4. Chiudi") finché il placeholder non è stato sostituito.
 
 ## 2. Implementa
 
@@ -77,24 +103,29 @@ piattaforma applica `gate-piattaforme`.
 
 ## 4. Chiudi
 
-1. Spunta i criteri di accettazione **realmente** verificati e lascia non
+1. Se questa card è (o è stata) `IN ATTESA ASSET`: prima di qualunque altro
+   passo, verifica che il pixel `(0,0)` del derivato referenziato **non sia
+   più** la firma del placeholder (magenta pieno, `255,0,255,255` — vedi
+   `tools/generate-art-placeholder.ps1`). Se lo è ancora, la card resta
+   `IN ATTESA ASSET`: non procedere oltre in questa sezione.
+2. Spunta i criteri di accettazione **realmente** verificati e lascia non
    spuntati gli altri, con una riga che dice perché.
-2. Aggiorna lo stato:
+3. Aggiorna lo stato:
    - `IN VERIFICA` se gli automatici sono verdi ma restano gate manuali,
      percettivi o su device;
    - `COMPLETATO` quando tutti i gate pertinenti sono chiusi e la card è
      accettata; il commit resta separato.
    Sposta `IN VERIFICA` in `docs/cards/4_to_test/` e `COMPLETATO` in
    `docs/cards/5_completed/`.
-3. Scrivi in `Decisioni` le scelte e motivazioni; in Note alternative, comandi e
+4. Scrivi in `Decisioni` le scelte e motivazioni; in Note alternative, comandi e
    marker esatti usati come evidenza.
-4. Aggiorna stato e link della riga nella tabella di
+5. Aggiorna stato e link della riga nella tabella di
    [docs/cards/README.md](../../../docs/cards/README.md).
-5. Controlla che metadati, dipendenze e riga della board restino allineati.
-6. Se cambia la verità corrente, propaga il solo contratto risultante in
+6. Controlla che metadati, dipendenze e riga della board restino allineati.
+7. Se cambia la verità corrente, propaga il solo contratto risultante in
    `prd.md`, `CLAUDE.md`, cataloghi o `setup.md` e spunta
    `Documenti sincronizzati`. La motivazione resta nella card.
-7. Commit solo su richiesta: `feat(PS-007): ...` o `fix(PS-007): ...`, in
+8. Commit solo su richiesta: `feat(PS-007): ...` o `fix(PS-007): ...`, in
    italiano, focalizzato. Nessun push se non richiesto.
-8. Riporta: cosa è cambiato, criteri chiusi e criteri lasciati aperti, risultati
+9. Riporta: cosa è cambiato, criteri chiusi e criteri lasciati aperti, risultati
    Windows/Android separati, gate ancora aperti.

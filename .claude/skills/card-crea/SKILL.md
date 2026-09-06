@@ -19,7 +19,41 @@ verificabile e risolvibile da sola in un'altra sessione.
    i contratti in gioco. Una card che sbaglia l'ambito costa più di una card che
    non esiste.
 
-## 2. Scrivi la card
+## 2. Se la richiesta tocca l'arte, consulta prima il game-art-designer
+
+Non scrivere tu "Comportamento atteso" e "Criteri di accettazione" quando la
+richiesta:
+
+- è ambigua o soggettiva sulla direzione visiva (es. "il personaggio deve
+  essere meno vistoso", "più minaccioso", "più coerente con le altre
+  schermate") — non è ancora chiaro *cosa* cambiare concretamente (scala?
+  palette? posa? animazione?), oppure
+- implica generare un asset che dovrà contenere o comporsi con contenuto
+  variabile a runtime (un ritratto, un'icona, del testo) o integrarsi in un
+  layout Godot esistente (nine-slice, safe area, overlay).
+
+In questi casi invoca l'agente `game-art-designer` in modalità
+pianificazione (vedi `.claude/agents/game-art-designer.md`) **prima** di
+redigere quelle due sezioni. Il sotto-agente non può interpellare
+direttamente il proprietario (`AskUserQuestion` non è disponibile ai
+sotto-agenti, PS-111): ti restituirà le domande mirate sulla direzione
+(idealmente come opzioni concrete già analizzate) e, se prevede nuova arte
+da integrare, la scomposizione in pezzi/geometria di consegna. Poni tu quelle
+domande al proprietario con `AskUserQuestion`, poi rispondi al sotto-agente
+con `SendMessage` perché finalizzi la card. Scrivi
+"Comportamento atteso"/"Criteri di accettazione" solo a quel punto, con le
+risposte già in mano.
+
+Non serve questo passaggio quando la richiesta è già concreta e non tocca
+arte (es. "sposta questo pulsante a destra", "cambia questo numero"), o
+quando riusa arte esistente senza ambiguità (es. "usa lo stesso stile del
+pulsante di pausa anche qui").
+
+L'esecutore Codex (`.codex/agents/game-art-designer.toml`) resta comunque un
+puro produttore: non è mai lui a rispondere a queste domande, e non va
+invocato in questa fase.
+
+## 3. Scrivi la card
 
 - ID progressivo `PS-<numero>` guardando ricorsivamente i file esistenti; nome
   file `PS-007-nome-slug.md` nella cartella della fase sotto
@@ -54,7 +88,7 @@ verificabile e risolvibile da sola in un'altra sessione.
   l'integrazione è banale a sufficienza da restare un singolo criterio di
   accettazione esplicitamente marcato come tale — non come scelta di default.
 
-## 3. Registra e riporta
+## 4. Registra e riporta
 
 1. Aggiungi la riga alla tabella in
    [docs/cards/README.md](../../../docs/cards/README.md), con il link alla

@@ -71,6 +71,19 @@ scrivi esattamente questo: asset del progetto fornito dal proprietario.
 Per contenuti che ritraggono persone reali del cast, l'approvazione va
 registrata nella card pertinente.
 
+## 0. Se l'asset reale non esiste ancora (PS-110)
+
+Una card di integrazione non deve aspettare che l'asset `art` sia pronto se
+quella card ha già fissato la geometria di consegna in pianificazione
+(PS-109): genera un placeholder con
+[`tools/generate-art-placeholder.ps1`](../../../tools/generate-art-placeholder.ps1)
+alla stessa dimensione/geometria, direttamente nel percorso `generated/`
+definitivo, e cabla su quello. Stato della card: `IN ATTESA ASSET` (vedi
+`card-risolvi`), non `IN CORSO`. Quando il derivato reale arriva (passi 1–3
+sopra, eseguiti da chi genera), sostituisce lo stesso file: nessuna modifica
+al wiring. La card non può chiudersi finché il pixel `(0,0)` del derivato è
+ancora la firma del placeholder (magenta pieno, `255,0,255,255`).
+
 ## 4. Verifica (card di integrazione, non la card `art`)
 
 1. Rinfresca la cache di import dell'editor prima degli smoke: un asset nuovo

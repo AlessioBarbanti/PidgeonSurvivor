@@ -6,16 +6,23 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 - Un file per card: `PS-<numero>-<slug>.md`, numerazione progressiva, nella
   cartella corrispondente alla fase corrente.
 - Il vocabolario degli stati è: `DA DEFINIRE`,
-  `BLOCCATO`, `PRONTO`, `IN CORSO`, `IN VERIFICA`, `COMPLETATO`, `SCARTATA`.
+  `BLOCCATO`, `PRONTO`, `IN CORSO`, `IN ATTESA ASSET`, `IN VERIFICA`,
+  `COMPLETATO`, `SCARTATA`.
 - Le sei cartelle sono numerate secondo l'ordine di avanzamento e
   raggruppano gli stati senza sostituirli:
   - `1_idea`: `DA DEFINIRE`;
   - `2_to_do`: `BLOCCATO`, `PRONTO` (non ancora pescata nello sprint corrente);
   - `3_in_sprint`: `PRONTO` (pescata nel blocco su cui si sta lavorando adesso,
-    in coda) o `IN CORSO`;
+    in coda), `IN CORSO` o `IN ATTESA ASSET`;
   - `4_to_test`: `IN VERIFICA`;
   - `5_completed`: `COMPLETATO`;
   - `6_rejected`: `SCARTATA`.
+- `IN ATTESA ASSET` (PS-110) è una card di integrazione già cablata su un
+  placeholder generato (`tools/generate-art-placeholder.ps1`), in attesa
+  del solo asset reale prodotto da una card `art` collegata via
+  `dipende_da`. Resta in `3_in_sprint` come `IN CORSO`; la selezione
+  "prossima card" la ignora perché non è `PRONTO`. Vedi la regola dedicata
+  più sotto.
 - `SCARTATA` è uno stato terminale come `COMPLETATO`: il proprietario ha
   valutato la card e ha deciso di non perseguirla. Si applica da qualunque
   stato non `IN CORSO`; la card resta storica in `6_rejected` con il motivo
@@ -29,6 +36,14 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 - Le dipendenze vivono in `dipende_da`; una card non può essere `PRONTO` se un
   prerequisito non ha raggiunto almeno `IN VERIFICA` (si sblocca quando il
   prerequisito entra in `4_to_test`, non serve che sia `COMPLETATO`).
+  Eccezione (PS-110): una card di integrazione che dipende da una card
+  `tipo: art` può iniziare subito, anche col prerequisito ancora `PRONTO`/
+  `IN CORSO`, cablando un placeholder al posto dell'asset reale — a patto
+  che quella card `art` abbia già fissato la geometria di consegna in
+  modalità pianificazione (PS-109). In tal caso l'integrazione entra in
+  `IN ATTESA ASSET` invece che restare bloccata, ma non può comunque
+  raggiungere `IN VERIFICA`/`COMPLETATO` finché l'asset reale non sostituisce
+  il placeholder.
 - Ordine: prima `IN CORSO`, poi `PRONTO` per priorità e, a parità, ID crescente.
 - Sprint corrente: a "procediamo con la prossima card" si controlla prima
   `3_in_sprint/`. Se contiene ancora card, si continua da lì per priorità (a
@@ -55,6 +70,31 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
   esplicitamente in autoria/handoff — mai bundlata dentro la card `art`.
   Le card `art` chiuse prima di PS-090 restano storiche sotto il contratto
   con cui sono state lavorate.
+- Quando una richiesta è ambigua sulla direzione visiva o implica un asset
+  che dovrà contenere/comporsi con contenuto variabile a runtime o
+  integrarsi in un layout esistente, `card-crea` non fissa da sola
+  "Comportamento atteso"/"Criteri di accettazione" (PS-109): delega prima la
+  consultazione al Game Art Designer lato Claude in modalità pianificazione.
+  Il sotto-agente non può interpellare direttamente il proprietario
+  (`AskUserQuestion` non è disponibile ai sotto-agenti, PS-111): prepara le
+  domande/opzioni e, se prevede nuova arte, la scomposizione in
+  pezzi/geometria di consegna, ma è l'orchestratore (`card-crea`) a porle
+  al proprietario e a rigirargli la risposta perché finalizzi la card.
+  L'esecutore Codex resta comunque un puro produttore: opera solo su card
+  già complete di direzione, mai in questa fase.
+  Le card `art` chiuse prima di PS-109 restano storiche sotto il contratto
+  con cui sono state lavorate.
+- Una card di integrazione può procedere prima che l'asset reale esista,
+  cablando `tools/generate-art-placeholder.ps1` alla geometria già decisa in
+  pianificazione (PS-110): stato `IN ATTESA ASSET`, non `IN CORSO` generico,
+  così è visibile in tabella senza dover risalire a mano la catena
+  `dipende_da`. Il segnale serve anche a chi gestisce la coda di Codex: una
+  card `art` referenziata da una riga `IN ATTESA ASSET` sta bloccando
+  qualcosa di reale e ha priorità su una card `art` `PRONTO` che nessuno sta
+  ancora aspettando. La card di integrazione non può chiudersi (`IN VERIFICA`/
+  `COMPLETATO`) finché il pixel (0,0) del derivato referenziato è ancora la
+  firma del placeholder (magenta pieno, `255,0,255,255`): è il gate
+  automatico che impedisce di spedire uno stand-in per errore.
 - Decisioni e motivazioni restano nella card. Il contratto risultante viene
   sincronizzato in PRD, `CLAUDE.md`, cataloghi o approvazioni pertinenti.
 - Una card completata resta storica; un cambiamento successivo apre una nuova
@@ -163,6 +203,9 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-103](./4_to_test/PS-103-integra-cornice-boss-intro.md) | Integra la cornice dedicata nella Boss Intro | ux | ui | IN VERIFICA | media | PS-102 |
 | [PS-104](./2_to_do/PS-104-icona-calice-sobrieta-alea.md) | Genera l'icona del calice per la Sobrietà di Alea | art | arte | PRONTO | media | — |
 | [PS-105](./4_to_test/PS-105-nuova-passiva-alea-due-dita-e-parto.md) | Sostituisci la passiva di Alea con Due Dita e Parto | feat | gameplay | IN VERIFICA | media | — |
-| [PS-106](./2_to_do/PS-106-integra-icona-calice-sobrieta-alea-hud.md) | Integra l'icona del calice Sobrietà di Alea in HUD | ux | ui | BLOCCATO | media | PS-104 |
+| [PS-106](./3_in_sprint/PS-106-integra-icona-calice-sobrieta-alea-hud.md) | Integra l'icona del calice Sobrietà di Alea in HUD | ux | ui | IN ATTESA ASSET | media | PS-104 |
 | [PS-107](./2_to_do/PS-107-rigenera-icona-punto-di-cottura.md) | Rigenera l'icona di Punto di Cottura (ex Salamoia Bolognese) | art | arte | PRONTO | media | — |
 | [PS-108](./2_to_do/PS-108-integra-carta-punto-di-cottura.md) | Integra la carta Punto di Cottura nel catalogo live | chore | gameplay | BLOCCATO | media | PS-107 |
+| [PS-109](./5_completed/PS-109-consulta-game-art-designer-prima-di-fissare-criteri-art.md) | Consulta il game-art-designer prima di fissare i criteri di una card che tocca l'arte | chore | tooling | COMPLETATO | media | PS-090 |
+| [PS-110](./5_completed/PS-110-placeholder-asset-e-stato-in-attesa-asset.md) | Placeholder generato e stato IN ATTESA ASSET per procedere prima dell'asset reale | chore | tooling | COMPLETATO | media | PS-109 |
+| [PS-111](./5_completed/PS-111-askuserquestion-non-disponibile-ai-sottoagenti.md) | Correggi PS-109: AskUserQuestion non è disponibile ai sotto-agenti | fix | tooling | COMPLETATO | media | PS-109 |

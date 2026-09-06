@@ -25,6 +25,15 @@ produzione paralleli: decisioni ed evidenze restano nella card.
   regola riutilizzabile, ma produci solo le varianti necessarie alla card.
 - Non inventare prompt, origine, autore, licenza, consenso o approvazione.
 - Non fare commit o push senza richiesta esplicita.
+- **Non interpellare il proprietario per decisioni di direzione artistica.**
+  Questa skill esegue una card la cui direzione è già stata decisa (la
+  consultazione preventiva, quando serve, è compito del game-art-designer
+  lato Claude in modalità pianificazione, prima che la card diventi
+  `PRONTO` — vedi `.claude/agents/game-art-designer.md`). Se la card lascia
+  margini realmente ambigui su cosa produrre perché scritta senza quella
+  consultazione, fermati e segnalalo nella card invece di deciderlo da solo
+  o di rivolgerti tu al proprietario. Questo vale sempre per l'agente Codex,
+  che resta un puro esecutore.
 
 ## Comprendi il problema nel contesto reale
 
@@ -32,14 +41,23 @@ Prima di produrre immagini:
 
 1. Leggi board, card e dipendenze; conferma che `tipo: art` e stato consentano
    il lavoro. Se la card è `BLOCCATO` o `DA DEFINIRE`, fermati sul blocco
-   dichiarato.
-2. Individua scena, componente, dati e percorso runtime in cui l'asset verrà
+   dichiarato. Se più card `art` sono `PRONTO`, dai priorità a quella
+   referenziata da `dipende_da` di una card in stato `IN ATTESA ASSET`
+   (PS-110): significa che un'integrazione è già cablata su un placeholder e
+   sta aspettando solo questo derivato.
+2. Se in `generated/` esiste già un placeholder (prodotto da
+   `tools/generate-art-placeholder.ps1`, riconoscibile dal pixel `(0,0)`
+   magenta pieno `255,0,255,255`) al percorso che questa card deve produrre,
+   sostituiscilo semplicemente col derivato reale allo stesso percorso: chi
+   ha cablato l'integrazione lo referenzia già, non serve altro
+   coordinamento.
+3. Individua scena, componente, dati e percorso runtime in cui l'asset verrà
    mostrato. Misura dimensione reale, aspect ratio, crop, maschere, ancoraggio,
    safe area, layering e possibili sovrapposizioni della UI.
-3. Determina la funzione primaria: gameplay, informativa, narrativa,
+4. Determina la funzione primaria: gameplay, informativa, narrativa,
    decorativa, UI, reward, portrait, icona, background, prop o VFX. Traducila
    nel messaggio che deve essere riconoscibile per primo.
-4. Verifica se la soluzione suggerita dalla card è sufficiente. Proponi nella
+5. Verifica se la soluzione suggerita dalla card è sufficiente. Proponi nella
    card una soluzione migliore solo quando risolve più chiaramente lo stesso
    problema senza ampliare l'ambito.
 
