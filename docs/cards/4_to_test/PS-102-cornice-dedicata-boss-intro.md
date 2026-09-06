@@ -3,12 +3,12 @@ id: PS-102
 titolo: Genera una cornice dedicata per la Boss Intro
 tipo: art
 area: arte
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-09-05
-aggiornato: 2026-09-05
+aggiornato: 2026-09-06
 ---
 
 # PS-102 — Genera una cornice dedicata per la Boss Intro
@@ -32,7 +32,7 @@ stata disegnata per questo scopo.
 
 Questa card si ferma alla produzione degli asset, come impone
 [PS-090](../5_completed/PS-090-separa-generazione-integrazione-card-art.md).
-Il cablaggio in `boss_ui.tscn` è [PS-103](./PS-103-integra-cornice-boss-intro.md).
+Il cablaggio in `boss_ui.tscn` è [PS-103](../2_to_do/PS-103-integra-cornice-boss-intro.md).
 
 ## Comportamento atteso
 
@@ -44,27 +44,27 @@ riquadro 112×112.
 
 ## Criteri di accettazione
 
-- [ ] Esiste un nuovo master per la cornice del pannello Boss Intro,
+- [x] Esiste un nuovo master per la cornice del pannello Boss Intro,
       distinguibile a colpo d'occhio da `pause_panel_frame.png` (non una
       semplice ricolorazione: cambia anche linguaggio decorativo/silhouette),
       coerente con la palette e lo stile pixel-art già stabiliti nel resto
       della UI (vedi `docs/visual-audio-identity.md`).
-- [ ] La cornice funziona sia per il Piccione Malvagio (nessun trattamento
+- [x] La cornice funziona sia per il Piccione Malvagio (nessun trattamento
       cromatico personale, riga 122-125 di `docs/enemies-bosses.md`) sia per
       un `Evil <Nome>` (tinta name/frame con l'`accent_color` della
       Signature, riga 126-129) senza contraddire quel contratto.
-- [ ] Include un trattamento dedicato per il ritratto (cornice/vignetta
+- [x] Include un trattamento dedicato per il ritratto (cornice/vignetta
       propria) più protagonista dell'attuale riquadro semplice 112×112, senza
       richiedere ritratti a risoluzione diversa da quelli già generati in
       PS-052.
-- [ ] Il file rispetta i vincoli di canvas/trasparenza richiesti dalla
+- [x] Il file rispetta i vincoli di canvas/trasparenza richiesti dalla
       pipeline `tools/process-*.ps1` usata per derivarlo.
-- [ ] Il derivato esiste in `assets/art/ui/boss/generated/` (o percorso
+- [x] Il derivato esiste in `assets/art/ui/boss/generated/` (o percorso
       equivalente coerente con gli altri asset UI Boss già presenti) con una
       riga nell'`ASSET-MANIFEST.md` pertinente: origine, autore/licenza,
       trasformazioni, hash SHA-256.
-- [ ] Nessun file derivato è ancora referenziato da `boss_ui.tscn`: il
-      cablaggio resta a [PS-103](./PS-103-integra-cornice-boss-intro.md).
+- [x] Nessun file derivato è ancora referenziato da `boss_ui.tscn`: il
+      cablaggio resta a [PS-103](../2_to_do/PS-103-integra-cornice-boss-intro.md).
 
 ## Ambito
 
@@ -102,6 +102,12 @@ Non toccare:
   `pause_panel_frame.png` la causa diretta della mancanza di coerenza/qualità
   percepita: la correzione richiede un asset nuovo, non un aggiustamento di
   parametri sullo `StyleBoxTexture` esistente.
+- **2026-09-06 — Placca larga 3:2 con medaglione ritratto integrato.** Il
+  derivato conserverà un centro scuro pulito per title/copy/CTA, mentre una
+  vignetta circolare in alto interrompe la silhouette rettangolare del menu.
+  La decorazione usa ferro brunito, brace e piume scure neutre: l'accento
+  resta modulabile dalla UI per gli `Evil <Nome>` senza personalizzare il
+  Piccione Malvagio.
 - **Aperto per il resolver — dimensione e forma esatta del nuovo riquadro
   ritratto.** Il proprietario ha chiesto un ritratto "più protagonista" senza
   fissare una dimensione target; va proposta in bozza rispettando i vincoli
@@ -109,12 +115,12 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] `docs/visual-audio-identity.md`: nuova riga per la cornice Boss Intro,
+- [x] `docs/visual-audio-identity.md`: nuova riga per la cornice Boss Intro,
       stesso trattamento riservato agli altri asset UI Boss già in tabella.
 
 ## Note
 
-Card gemella di [PS-103](./PS-103-integra-cornice-boss-intro.md), che la
+Card gemella di [PS-103](../2_to_do/PS-103-integra-cornice-boss-intro.md), che la
 cablerà in scena. Nessuna relazione con [PS-101](./PS-101-racconta-fame-dietro-agli-evil.md)
 (narrativa/copy): le due linee di lavoro sono indipendenti.
 
@@ -124,3 +130,20 @@ Card `tipo: art` con generazione di nuovi asset: per contratto di board
 completata, il proprietario può invocare manualmente `direttore-artistico`
 per confrontare la nuova cornice con i "fratelli visivi" già esistenti negli
 altri asset UI Boss, prima di considerarla pronta per l'art review.
+
+### Evidenze 2026-09-06
+
+- **Direzione e review isolata:** master `1536x1024` e derivato
+  `764x464` ispezionati visivamente. Il medaglione è il punto focale, resta
+  compatibile con i ritratti `256x256` esistenti e il corpo inferiore conserva
+  spazio calmo per titolo, citazione e CTA. Piume/braci/ferro rendono la
+  silhouette inequivocabilmente distinta da `pause_panel_frame.png`; non sono
+  emersi testo, soggetti estranei, tinte di personaggio o bordi opachi fuori
+  dall'asset.
+- **Produzione:** derivazione riproducibile con
+  `process-character-select-cta.ps1 -ScalePercent 50 -VisibleAlphaThreshold 8 -Padding 4`.
+  Hash e filtri `hd/` dei preset Windows/APK/AAB sono registrati nel manifest.
+- **Integrazione:** fuori ambito. `boss_ui.tscn` continua a referenziare
+  `pause_panel_frame.png`; PS-103 è stata sbloccata a `PRONTO` per il wiring.
+- **Gate aperti:** review percettiva del proprietario e i gate Windows/APK
+  restano da svolgere dopo PS-103, quando l'asset sarà nel contesto runtime.

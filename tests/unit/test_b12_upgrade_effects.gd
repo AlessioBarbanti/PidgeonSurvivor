@@ -61,6 +61,12 @@ func test_composed_upgrade_effects() -> void:
 	var base_pickup_radius := player.get_base_pickup_radius()
 	var base_fire_rate := weapon.get_base_shots_per_second()
 	var base_damage := weapon.get_base_damage()
+	# PS-093: get_base_*() include ora lo stadio "character" (scarto del
+	# profilo auto-equipaggiato), quindi non coincidono piu' necessariamente
+	# col dato grezzo del WeaponProfile condiviso: le due asserzioni
+	# "Resource condiviso" più sotto vogliono proprio il dato grezzo.
+	var shared_resource_fire_rate := weapon.weapon_profile.shots_per_second
+	var shared_resource_damage := weapon.weapon_profile.damage
 	assert_almost_eq(player.move_speed, base_move_speed, FLOAT_TOLERANCE, "La velocita iniziale deve essere quella base.")
 	assert_almost_eq(
 		player.get_pickup_radius(), base_pickup_radius, FLOAT_TOLERANCE, "Il pickup iniziale deve essere quello base."
@@ -176,10 +182,11 @@ func test_composed_upgrade_effects() -> void:
 	)
 
 	assert_almost_eq(
-		weapon.weapon_profile.shots_per_second, base_fire_rate, FLOAT_TOLERANCE, "B12 non deve mutare la frequenza nel Resource condiviso."
+		weapon.weapon_profile.shots_per_second, shared_resource_fire_rate, FLOAT_TOLERANCE,
+		"B12 non deve mutare la frequenza nel Resource condiviso."
 	)
 	assert_almost_eq(
-		weapon.weapon_profile.damage, base_damage, FLOAT_TOLERANCE, "B12 non deve mutare il danno nel Resource condiviso."
+		weapon.weapon_profile.damage, shared_resource_damage, FLOAT_TOLERANCE, "B12 non deve mutare il danno nel Resource condiviso."
 	)
 	assert_true(_applied_effect_count > 15, "Ogni scelta B12 deve emettere effect_applied.")
 

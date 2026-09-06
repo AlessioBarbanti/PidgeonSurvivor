@@ -61,7 +61,7 @@ del documento architetturale, non una lacuna di questo file.
 | `ui/welcome` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/welcome/ASSET-MANIFEST.md) | Fondale welcome B18O |
 | `ui/barb_reward` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/barb_reward/ASSET-MANIFEST.md) | Caricatura Barb (PS-036), da foto personale non conservata nel repo |
 | `ui/pause` | 2 | [ASSET-MANIFEST.md](../assets/art/ui/pause/ASSET-MANIFEST.md) | Cornice riusata da pausa, cambio personaggio, tutorial, terminale, intro Boss |
-| `ui/boss` | 2 | [ASSET-MANIFEST.md](../assets/art/ui/boss/ASSET-MANIFEST.md) | Plancia CTA "AFFRONTA" |
+| `ui/boss` | 4 | [ASSET-MANIFEST.md](../assets/art/ui/boss/ASSET-MANIFEST.md) | Plancia CTA "AFFRONTA" e cornice Boss Intro PS-102 (in attesa di wiring PS-103) |
 | `pickups` | 2 | [ASSET-MANIFEST.md](../assets/art/pickups/ASSET-MANIFEST.md) | Coscia di piccione, pickup cura |
 | `branding` | 3 | [ASSET-MANIFEST.md](../assets/art/branding/ASSET-MANIFEST.md) | Icona app e adaptive icon Android |
 | `third_party/eldiran_rpg_characters` | 2 | `LICENSE.md` | Sprite RPG 32×32 CC0, vedi nota sotto |
@@ -107,6 +107,14 @@ trattamento neutro, senza slot icona.
 L'accettazione percettiva del proprietario (silhouette, leggibilità alla
 dimensione reale della Boss intro sul Pixel 9) resta un gate manuale aperto
 su [PS-052](../docs/cards/4_to_test/PS-052-genera-ritratti-evil-e-icone-signature.md).
+
+### Cornice Boss Intro (PS-102, in attesa di PS-103)
+
+`assets/art/ui/boss/generated/boss_intro_frame.png` è la placca di rivelazione
+neutra: medaglione ritratto circolare in alto, ferro brunito, piume plum e
+brace arancio attorno a un centro libero per il copy nativo. Non contiene
+colori personali né testo; PS-103 la applicherà senza cambiare la modulazione
+già prevista per `Evil <Nome>` o il trattamento neutro del Piccione Malvagio.
 
 ## Audio
 

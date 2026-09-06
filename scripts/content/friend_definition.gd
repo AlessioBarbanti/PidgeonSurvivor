@@ -43,6 +43,37 @@ const MAXIMUM_BASE_STAT_MULTIPLIER := 2.0
 	0.01
 ) var base_fire_rate_multiplier := 1.0
 
+## Assi estesi (PS-093): stesso pattern dei tre assi B47 sopra — default
+## neutro `1.0`, stesso range, compongono moltiplicativamente con l'upgrade
+## corrispondente del catalogo (stadio "character" + stadio "upgrade", mai un
+## unico campo condiviso) senza mutare i dati base condivisi.
+@export_range(
+	MINIMUM_BASE_STAT_MULTIPLIER,
+	MAXIMUM_BASE_STAT_MULTIPLIER,
+	0.01
+) var base_damage_multiplier := 1.0
+@export_range(
+	MINIMUM_BASE_STAT_MULTIPLIER,
+	MAXIMUM_BASE_STAT_MULTIPLIER,
+	0.01
+) var base_xp_gain_multiplier := 1.0
+@export_range(
+	MINIMUM_BASE_STAT_MULTIPLIER,
+	MAXIMUM_BASE_STAT_MULTIPLIER,
+	0.01
+) var base_pickup_radius_multiplier := 1.0
+@export_range(
+	MINIMUM_BASE_STAT_MULTIPLIER,
+	MAXIMUM_BASE_STAT_MULTIPLIER,
+	0.01
+) var base_damage_taken_multiplier := 1.0
+## Probabilità critica (PS-093): additivo in punti percentuali, non un
+## moltiplicatore — una probabilità non ha una baseline `×1,0` da scalare.
+## Si compone per somma con l'eventuale carta catalogo "Salamoia Bolognese",
+## poi il totale viene sempre limitato al cap dichiarato da
+## `WeaponController` (`MAXIMUM_CRITICAL_CHANCE`).
+@export_range(0.0, 1.0, 0.01) var base_critical_chance_bonus := 0.0
+
 @export_group("Evil Counterpart")
 @export var evil_display_name := ""
 
@@ -203,6 +234,32 @@ func get_base_fire_rate_multiplier() -> float:
 	return _sanitize_base_stat_multiplier(base_fire_rate_multiplier)
 
 
+func get_base_damage_multiplier() -> float:
+	return _sanitize_base_stat_multiplier(base_damage_multiplier)
+
+
+func get_base_xp_gain_multiplier() -> float:
+	return _sanitize_base_stat_multiplier(base_xp_gain_multiplier)
+
+
+func get_base_pickup_radius_multiplier() -> float:
+	return _sanitize_base_stat_multiplier(base_pickup_radius_multiplier)
+
+
+func get_base_damage_taken_multiplier() -> float:
+	return _sanitize_base_stat_multiplier(base_damage_taken_multiplier)
+
+
+## Additivo in punti percentuali (0.0-1.0), non un moltiplicatore: niente
+## baseline `1.0` da cui scostarsi, un dato malformato o fuori range collassa
+## semplicemente a "nessuno scarto" invece che alla baseline neutra dei
+## quattro assi moltiplicativi sopra.
+func get_base_critical_chance_bonus() -> float:
+	if not is_finite(base_critical_chance_bonus):
+		return 0.0
+	return clampf(base_critical_chance_bonus, 0.0, 1.0)
+
+
 ## Vero quando il profilo dichiara almeno uno scarto diverso dalla baseline
 ## condivisa, così i consumatori possono distinguere un profilo neutro da uno
 ## caratterizzato senza confrontare i tre valori a mano.
@@ -211,6 +268,18 @@ func has_base_stat_spread() -> bool:
 		not is_equal_approx(get_base_health_multiplier(), 1.0)
 		or not is_equal_approx(get_base_move_speed_multiplier(), 1.0)
 		or not is_equal_approx(get_base_fire_rate_multiplier(), 1.0)
+	)
+
+
+## Come `has_base_stat_spread()`, ma sui cinque assi estesi di PS-093
+## (i quattro moltiplicativi e la probabilità critica additiva).
+func has_extended_base_stat_spread() -> bool:
+	return (
+		not is_equal_approx(get_base_damage_multiplier(), 1.0)
+		or not is_equal_approx(get_base_xp_gain_multiplier(), 1.0)
+		or not is_equal_approx(get_base_pickup_radius_multiplier(), 1.0)
+		or not is_equal_approx(get_base_damage_taken_multiplier(), 1.0)
+		or get_base_critical_chance_bonus() > 0.0
 	)
 
 

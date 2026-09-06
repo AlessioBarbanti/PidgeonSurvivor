@@ -142,7 +142,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-082](./4_to_test/PS-082-camera-non-centrata-su-restart.md) | Ricentra davvero la camera sul personaggio al restart | fix | gameplay | IN VERIFICA | media | — |
 | [PS-083](./5_completed/PS-083-storicizza-prompt-e-reference-generazione.md) | Storicizzare prompt e reference di generazione | chore | arte | COMPLETATO | bassa | — |
 | [PS-084](./5_completed/PS-084-direzione-visuale-per-personaggio-e-reference-cast.md) | Documentare la direzione visuale per personaggio e collegarla agli agenti art | chore | arte | COMPLETATO | media | — |
-| [PS-085](./2_to_do/PS-085-introduci-sparo-manuale-con-secondo-joystick.md) | Introduci lo sparo manuale come modalità alternativa allo sparo automatico | feat | gameplay | PRONTO | media | — |
+| [PS-085](./4_to_test/PS-085-introduci-sparo-manuale-con-secondo-joystick.md) | Introduci lo sparo manuale come modalità alternativa allo sparo automatico | feat | gameplay | IN VERIFICA | media | — |
 | [PS-086](./5_completed/PS-086-cattura-output-runner-strozza-i-test.md) | La cattura dell'output del runner strozza l'esecuzione dei test | fix | tooling | COMPLETATO | alta | — |
 | [PS-087](./5_completed/PS-087-definisci-statistiche-base-personaggi.md) | Definisci gli scarti di statistiche base per personaggio | chore | gameplay | COMPLETATO | alta | — |
 | [PS-088](./5_completed/PS-088-verifica-differenziazione-statistiche-personaggi.md) | Verifica automaticamente la differenziazione statistica dei personaggi | chore | tooling | COMPLETATO | alta | PS-087 |
@@ -150,7 +150,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-090](./5_completed/PS-090-separa-generazione-integrazione-card-art.md) | Separa generazione asset e integrazione nel workflow delle card tipo art | chore | tooling | COMPLETATO | media | — |
 | [PS-091](./6_rejected/PS-091-genera-placeholder-powerup-nuove-statistiche.md) | Genera i placeholder icona per i powerup di eventuali nuove statistiche | art | arte | SCARTATA | bassa | PS-087, PS-090 |
 | [PS-092](./2_to_do/PS-092-nuova-icona-ravviva-la-brace.md) | Genera una nuova icona per Ravviva la Brace! (ex Bis di Salsiccia) | art | arte | PRONTO | bassa | — |
-| [PS-093](./2_to_do/PS-093-nuovi-assi-scarto-base-personaggi.md) | Introduci cinque nuovi assi di scarto base per personaggio | feat | gameplay | PRONTO | media | PS-087 |
+| [PS-093](./4_to_test/PS-093-nuovi-assi-scarto-base-personaggi.md) | Introduci cinque nuovi assi di scarto base per personaggio | feat | gameplay | IN VERIFICA | media | PS-087 |
 | [PS-094](./2_to_do/PS-094-specialita-cariche-abilita-attiva.md) | Introduci una Specialità di Barb per cariche multiple dell'abilità attiva | feat | gameplay | PRONTO | media | — |
 | [PS-095](./4_to_test/PS-095-audita-spawn-nemici-sempre-fuori-vista.md) | Audita e correggi lo spawn nemici che compare dentro l'area visibile | fix | gameplay | IN VERIFICA | media | — |
 | [PS-096](./4_to_test/PS-096-await-orfano-grow-to-fit-content-upgrade-card.md) | Diagnostica l'await orfano di UpgradeCard._grow_to_fit_content in full suite | fix | tooling | IN VERIFICA | bassa | — |
@@ -159,8 +159,10 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-099](./3_in_sprint/PS-099-aura-iperfocus-lollo-e-tell-termico-aleo.md) | Sostituisci il particellare di Lollo e Aleo con aura di potenziamento e tell termico | ux | arte | PRONTO | media | PS-098 |
 | [PS-100](./2_to_do/PS-100-rimuovi-ansia-dalle-specialita-di-barb.md) | Rimuovi L'Ansia dalle Specialità di Barb | chore | gameplay | PRONTO | media | — |
 | [PS-101](./4_to_test/PS-101-racconta-fame-dietro-agli-evil.md) | Racconta la fame dietro agli Evil e la redenzione di Barb | feat | gameplay | IN VERIFICA | media | — |
-| [PS-102](./2_to_do/PS-102-cornice-dedicata-boss-intro.md) | Genera una cornice dedicata per la Boss Intro | art | arte | PRONTO | media | — |
-| [PS-103](./2_to_do/PS-103-integra-cornice-boss-intro.md) | Integra la cornice dedicata nella Boss Intro | ux | ui | BLOCCATO | media | PS-102 |
+| [PS-102](./4_to_test/PS-102-cornice-dedicata-boss-intro.md) | Genera una cornice dedicata per la Boss Intro | art | arte | IN VERIFICA | media | — |
+| [PS-103](./4_to_test/PS-103-integra-cornice-boss-intro.md) | Integra la cornice dedicata nella Boss Intro | ux | ui | IN VERIFICA | media | PS-102 |
 | [PS-104](./2_to_do/PS-104-icona-calice-sobrieta-alea.md) | Genera l'icona del calice per la Sobrietà di Alea | art | arte | PRONTO | media | — |
 | [PS-105](./4_to_test/PS-105-nuova-passiva-alea-due-dita-e-parto.md) | Sostituisci la passiva di Alea con Due Dita e Parto | feat | gameplay | IN VERIFICA | media | — |
 | [PS-106](./2_to_do/PS-106-integra-icona-calice-sobrieta-alea-hud.md) | Integra l'icona del calice Sobrietà di Alea in HUD | ux | ui | BLOCCATO | media | PS-104 |
+| [PS-107](./2_to_do/PS-107-rigenera-icona-punto-di-cottura.md) | Rigenera l'icona di Punto di Cottura (ex Salamoia Bolognese) | art | arte | PRONTO | media | — |
+| [PS-108](./2_to_do/PS-108-integra-carta-punto-di-cottura.md) | Integra la carta Punto di Cottura nel catalogo live | chore | gameplay | BLOCCATO | media | PS-107 |

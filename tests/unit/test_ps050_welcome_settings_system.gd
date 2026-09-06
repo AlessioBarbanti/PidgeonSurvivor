@@ -44,6 +44,9 @@ func test_welcome_settings_system_contract() -> void:
 	_assert_shared_component(
 		welcome.get_reduced_flashes_check_button(), "res://scripts/ui/pixel_arcade_toggle.gd", "Flash ridotti"
 	)
+	_assert_shared_component(
+		welcome.get_manual_fire_check_button(), "res://scripts/ui/pixel_arcade_toggle.gd", "Sparo manuale"
+	)
 
 	var panel := welcome.get_settings_panel()
 	assert_true(panel != null, "Le impostazioni devono stare in un pannello, non sospese sullo sfondo.")

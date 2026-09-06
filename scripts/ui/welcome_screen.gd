@@ -7,6 +7,7 @@ signal audio_volume_changed(value: float)
 signal audio_mute_toggled(muted: bool)
 signal reduced_flashes_toggled(enabled: bool)
 signal touch_control_scale_changed(control_id: StringName, value: float)
+signal fire_mode_toggled(manual_enabled: bool)
 
 @onready var _content_area: Control = %Center
 @onready var _content_panel: Control = %ContentPanel
@@ -16,6 +17,8 @@ signal touch_control_scale_changed(control_id: StringName, value: float)
 @onready var _background: TextureRect = %Background
 @onready var _main_actions: VBoxContainer = %MainActions
 @onready var _settings_panel: PanelContainer = %SettingsPanel
+@onready var _settings_scroll: ScrollContainer = %SettingsScroll
+@onready var _settings_content: VBoxContainer = %SettingsContent
 @onready var _play_button: Button = %PlayButton
 @onready var _tutorial_button: Button = %TutorialButton
 @onready var _settings_button: Button = %SettingsButton
@@ -23,6 +26,7 @@ signal touch_control_scale_changed(control_id: StringName, value: float)
 @onready var _volume_value_label: Label = %VolumeValueLabel
 @onready var _mute_check_button: CheckButton = %MuteCheckButton
 @onready var _reduced_flashes_check_button: CheckButton = %ReducedFlashesCheckButton
+@onready var _manual_fire_check_button: CheckButton = %ManualFireCheckButton
 @onready var _ability_size_slider: HSlider = %AbilitySizeSlider
 @onready var _ability_size_value_label: Label = %AbilitySizeValueLabel
 @onready var _joystick_size_slider: HSlider = %JoystickSizeSlider
@@ -46,6 +50,7 @@ func _ready() -> void:
 	_volume_slider.value_changed.connect(_on_volume_changed)
 	_mute_check_button.toggled.connect(_on_mute_toggled)
 	_reduced_flashes_check_button.toggled.connect(_on_reduced_flashes_toggled)
+	_manual_fire_check_button.toggled.connect(_on_manual_fire_toggled)
 	_ability_size_slider.value_changed.connect(_on_ability_size_changed)
 	_joystick_size_slider.value_changed.connect(_on_joystick_size_changed)
 	_close_settings_button.pressed.connect(_close_settings)
@@ -111,6 +116,12 @@ func set_reduced_flashes(enabled: bool) -> void:
 	_syncing_controls = false
 
 
+func set_manual_fire_mode(enabled: bool) -> void:
+	_syncing_controls = true
+	_manual_fire_check_button.button_pressed = enabled
+	_syncing_controls = false
+
+
 func set_touch_control_scales(ability_scale: float, joystick_scale: float) -> void:
 	_syncing_controls = true
 	_ability_size_slider.value = TouchControlSettings.sanitize_ability_scale(ability_scale)
@@ -168,6 +179,14 @@ func get_reduced_flashes_check_button() -> CheckButton:
 	return (
 		_reduced_flashes_check_button
 		if is_instance_valid(_reduced_flashes_check_button)
+		else null
+	)
+
+
+func get_manual_fire_check_button() -> CheckButton:
+	return (
+		_manual_fire_check_button
+		if is_instance_valid(_manual_fire_check_button)
 		else null
 	)
 
@@ -300,6 +319,11 @@ func _on_reduced_flashes_toggled(enabled: bool) -> void:
 		reduced_flashes_toggled.emit(enabled)
 
 
+func _on_manual_fire_toggled(enabled: bool) -> void:
+	if not _syncing_controls:
+		fire_mode_toggled.emit(enabled)
+
+
 func _on_ability_size_changed(value: float) -> void:
 	_refresh_scale_label(_ability_size_value_label, value)
 	if not _syncing_controls:
@@ -325,6 +349,7 @@ func _refresh_scale_label(label: Label, value: float) -> void:
 func _update_content_panel_rect() -> void:
 	if not is_instance_valid(_content_area) or not is_instance_valid(_content_panel):
 		return
+	_clamp_settings_scroll_height()
 	var available := _content_area.size
 	var content_size := _content_panel.get_combined_minimum_size()
 	_content_panel.size = content_size
@@ -333,6 +358,38 @@ func _update_content_panel_rect() -> void:
 		maxf(centered.x, 0.0),
 		maxf(centered.y, _minimum_content_panel_top())
 	)
+
+
+## PS-085: il pannello IMPOSTAZIONI non ha piu' margine libero nella safe area
+## piu' compatta (960x720): un'altezza naturale del contenuto anche di poco
+## superiore a quella disponibile lo farebbe uscire dal rettangolo sicuro
+## (PS-050/PS-067). Invece di un'altezza fissa, la scroll area riceve il
+## minimo fra l'altezza naturale del contenuto e quella davvero disponibile:
+## sui profili larghi resta identica a prima (nessuno scroll), su quelli
+## compatti scorre internamente invece di sforare.
+func _clamp_settings_scroll_height() -> void:
+	if (
+		not is_instance_valid(_settings_scroll)
+		or not is_instance_valid(_settings_content)
+		or not is_instance_valid(_content_area)
+		or not is_instance_valid(_settings_panel)
+		or not is_instance_valid(_actions_frame)
+	):
+		return
+	var natural_height := _settings_content.get_combined_minimum_size().y
+	var chrome := _panel_vertical_chrome(_settings_panel) + _panel_vertical_chrome(_actions_frame)
+	# Il logo puo' imporre un margine minimo sopra il pannello (vedi
+	# _minimum_content_panel_top()) anche a TitlePlaque nascosta: quel margine
+	# va tolto dal budget verticale reale, altrimenti il pannello continua a
+	# sforare pur restando piu' piccolo del solo content_area.
+	var top_floor := maxf(_minimum_content_panel_top(), 0.0)
+	var available_height := maxf(_content_area.size.y - chrome - top_floor, 0.0)
+	_settings_scroll.custom_minimum_size.y = minf(natural_height, available_height)
+
+
+static func _panel_vertical_chrome(panel: PanelContainer) -> float:
+	var style := panel.get_theme_stylebox(&"panel")
+	return style.content_margin_top + style.content_margin_bottom if style != null else 0.0
 
 
 ## Il logo sporge sopra TitlePlaque per design (vedi PS-014): il centraggio

@@ -140,11 +140,18 @@ custom_minimum_size = Vector2(454, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_pause_panel")
 
-[node name="VBox" type="VBoxContainer" parent="PauseCenter/Panel"]
+[node name="PauseScroll" type="ScrollContainer" parent="PauseCenter/Panel"]
+unique_name_in_owner = true
 layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="VBox" type="VBoxContainer" parent="PauseCenter/Panel/PauseScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="TitleLabel" type="Label" parent="PauseCenter/Panel/VBox"]
+[node name="TitleLabel" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_override_colors/font_outline_color = Color(0.09, 0.055, 0.02, 1)
@@ -153,11 +160,11 @@ theme_type_variation = &"TitleXL"
 text = "IN PAUSA"
 horizontal_alignment = 1
 
-[node name="AudioSeparator" type="HSeparator" parent="PauseCenter/Panel/VBox"]
+[node name="AudioSeparator" type="HSeparator" parent="PauseCenter/Panel/PauseScroll/VBox"]
 layout_mode = 2
 theme_override_styles/separator = SubResource("StyleBoxFlat_separator")
 
-[node name="AudioTitle" type="Label" parent="PauseCenter/Panel/VBox"]
+[node name="AudioTitle" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
 theme_override_colors/font_outline_color = Color(0.09, 0.055, 0.02, 1)
@@ -165,18 +172,18 @@ theme_override_constants/outline_size = 2
 theme_type_variation = &"TitleXS"
 text = "AUDIO"
 
-[node name="VolumeRow" type="HBoxContainer" parent="PauseCenter/Panel/VBox"]
+[node name="VolumeRow" type="HBoxContainer" parent="PauseCenter/Panel/PauseScroll/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="VolumeCaption" type="Label" parent="PauseCenter/Panel/VBox/VolumeRow"]
+[node name="VolumeCaption" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox/VolumeRow"]
 custom_minimum_size = Vector2(142, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_type_variation = &"BodyM"
 text = "Volume audio"
 
-[node name="VolumeSlider" type="HSlider" parent="PauseCenter/Panel/VBox/VolumeRow"]
+[node name="VolumeSlider" type="HSlider" parent="PauseCenter/Panel/PauseScroll/VBox/VolumeRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(180, 44)
 layout_mode = 2
@@ -187,7 +194,7 @@ step = 0.05
 value = 0.8
 script = ExtResource("2_slider")
 
-[node name="VolumeValueLabel" type="Label" parent="PauseCenter/Panel/VBox/VolumeRow"]
+[node name="VolumeValueLabel" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox/VolumeRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
@@ -196,7 +203,7 @@ theme_type_variation = &"ValueNumeric"
 text = "80%"
 horizontal_alignment = 2
 
-[node name="MuteCheckButton" type="CheckButton" parent="PauseCenter/Panel/VBox"]
+[node name="MuteCheckButton" type="CheckButton" parent="PauseCenter/Panel/PauseScroll/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
@@ -205,11 +212,11 @@ theme_type_variation = &"CheckLabel"
 text = "AUDIO DISATTIVATO"
 script = ExtResource("3_toggle")
 
-[node name="AccessibilitySeparator" type="HSeparator" parent="PauseCenter/Panel/VBox"]
+[node name="AccessibilitySeparator" type="HSeparator" parent="PauseCenter/Panel/PauseScroll/VBox"]
 layout_mode = 2
 theme_override_styles/separator = SubResource("StyleBoxFlat_separator")
 
-[node name="AccessibilityTitle" type="Label" parent="PauseCenter/Panel/VBox"]
+[node name="AccessibilityTitle" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
 theme_override_colors/font_outline_color = Color(0.09, 0.055, 0.02, 1)
@@ -217,17 +224,17 @@ theme_override_constants/outline_size = 2
 theme_type_variation = &"TitleXS"
 text = "ACCESSIBILITÀ"
 
-[node name="ReducedFlashesCheckButton" type="CheckButton" parent="PauseCenter/Panel/VBox"]
+[node name="ReducedFlashesCheckButton" type="CheckButton" parent="PauseCenter/Panel/PauseScroll/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-focus_neighbor_bottom = NodePath("../AbilitySizeRow/AbilitySizeSlider")
+focus_neighbor_bottom = NodePath("../ManualFireCheckButton")
 theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_type_variation = &"CheckLabel"
 text = "FLASH RIDOTTI"
 script = ExtResource("3_toggle")
 
-[node name="ControlsTitle" type="Label" parent="PauseCenter/Panel/VBox"]
+[node name="ControlsTitle" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
 theme_override_colors/font_outline_color = Color(0.09, 0.055, 0.02, 1)
@@ -235,18 +242,29 @@ theme_override_constants/outline_size = 2
 theme_type_variation = &"TitleXS"
 text = "CONTROLLI TOUCH"
 
-[node name="AbilitySizeRow" type="HBoxContainer" parent="PauseCenter/Panel/VBox"]
+[node name="ManualFireCheckButton" type="CheckButton" parent="PauseCenter/Panel/PauseScroll/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+focus_neighbor_top = NodePath("../ReducedFlashesCheckButton")
+focus_neighbor_bottom = NodePath("../AbilitySizeRow/AbilitySizeSlider")
+theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
+theme_type_variation = &"CheckLabel"
+text = "SPARO MANUALE"
+script = ExtResource("3_toggle")
+
+[node name="AbilitySizeRow" type="HBoxContainer" parent="PauseCenter/Panel/PauseScroll/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Caption" type="Label" parent="PauseCenter/Panel/VBox/AbilitySizeRow"]
+[node name="Caption" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox/AbilitySizeRow"]
 custom_minimum_size = Vector2(142, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_type_variation = &"BodyM"
 text = "Icona abilità"
 
-[node name="AbilitySizeSlider" type="HSlider" parent="PauseCenter/Panel/VBox/AbilitySizeRow"]
+[node name="AbilitySizeSlider" type="HSlider" parent="PauseCenter/Panel/PauseScroll/VBox/AbilitySizeRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(180, 42)
 layout_mode = 2
@@ -255,11 +273,11 @@ min_value = 1.0
 max_value = 1.5
 step = 0.25
 value = 1.25
-focus_neighbor_top = NodePath("../../ReducedFlashesCheckButton")
+focus_neighbor_top = NodePath("../../ManualFireCheckButton")
 focus_neighbor_bottom = NodePath("../../JoystickSizeRow/JoystickSizeSlider")
 script = ExtResource("2_slider")
 
-[node name="AbilitySizeValueLabel" type="Label" parent="PauseCenter/Panel/VBox/AbilitySizeRow"]
+[node name="AbilitySizeValueLabel" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox/AbilitySizeRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
@@ -268,18 +286,18 @@ theme_type_variation = &"ValueNumeric"
 text = "125%"
 horizontal_alignment = 2
 
-[node name="JoystickSizeRow" type="HBoxContainer" parent="PauseCenter/Panel/VBox"]
+[node name="JoystickSizeRow" type="HBoxContainer" parent="PauseCenter/Panel/PauseScroll/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Caption" type="Label" parent="PauseCenter/Panel/VBox/JoystickSizeRow"]
+[node name="Caption" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox/JoystickSizeRow"]
 custom_minimum_size = Vector2(142, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_type_variation = &"BodyM"
 text = "Joystick"
 
-[node name="JoystickSizeSlider" type="HSlider" parent="PauseCenter/Panel/VBox/JoystickSizeRow"]
+[node name="JoystickSizeSlider" type="HSlider" parent="PauseCenter/Panel/PauseScroll/VBox/JoystickSizeRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(180, 42)
 layout_mode = 2
@@ -292,7 +310,7 @@ focus_neighbor_top = NodePath("../../AbilitySizeRow/AbilitySizeSlider")
 focus_neighbor_bottom = NodePath("../../ResumeButton")
 script = ExtResource("2_slider")
 
-[node name="JoystickSizeValueLabel" type="Label" parent="PauseCenter/Panel/VBox/JoystickSizeRow"]
+[node name="JoystickSizeValueLabel" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox/JoystickSizeRow"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(52, 0)
 layout_mode = 2
@@ -301,7 +319,7 @@ theme_type_variation = &"ValueNumeric"
 text = "100%"
 horizontal_alignment = 2
 
-[node name="ResumeButton" type="Button" parent="PauseCenter/Panel/VBox"]
+[node name="ResumeButton" type="Button" parent="PauseCenter/Panel/PauseScroll/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
@@ -315,7 +333,7 @@ theme_override_styles/pressed = SubResource("StyleBoxTexture_primary_pressed")
 theme_override_styles/focus = SubResource("StyleBoxTexture_primary_hover")
 text = "RIPRENDI"
 
-[node name="ChangeCharacterButton" type="Button" parent="PauseCenter/Panel/VBox"]
+[node name="ChangeCharacterButton" type="Button" parent="PauseCenter/Panel/PauseScroll/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2

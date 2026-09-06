@@ -3,12 +3,12 @@ id: PS-093
 titolo: Introduci cinque nuovi assi di scarto base per personaggio
 tipo: feat
 area: gameplay
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: [PS-087]
 origine: conversazione del proprietario 2026-09-04
 creato: 2026-09-04
-aggiornato: 2026-09-04
+aggiornato: 2026-09-06
 ---
 
 # PS-093 — Introduci cinque nuovi assi di scarto base per personaggio
@@ -146,24 +146,24 @@ condivisi di Player, arma o abilità.
 
 ## Criteri di accettazione
 
-- [ ] `FriendDefinition` guadagna i nuovi campi scarto moltiplicativi (nomi
+- [x] `FriendDefinition` guadagna i nuovi campi scarto moltiplicativi (nomi
       tecnici in inglese, es. `base_damage_multiplier`,
       `base_xp_gain_multiplier`, `base_pickup_radius_multiplier`,
       `base_damage_taken_multiplier`), default neutro `1,0`, range
       `0,5–2,0`, normalizzati con lo stesso meccanismo già in uso per i tre
       assi B47 esistenti (nessuna modifica a quel meccanismo, solo
       estensione con lo stesso pattern).
-- [ ] Danno arma, XP, raggio pickup e riduzione danno subito compongono a
+- [x] Danno arma, XP, raggio pickup e riduzione danno subito compongono a
       runtime con lo stadio "character" identificato in Contesto (nuovo o già
       presente ma cablato a `1,0`), mantenendo lo stadio "upgrade" esistente
       indipendente e componendo moltiplicativamente i due, come già avviene
       per la cadenza.
-- [ ] Danno abilità è incluso in questa card solo se l'implementazione resta
+- [x] Danno abilità è incluso in questa card solo se l'implementazione resta
       pulita; se il nuovo hook in `AbilityController` risulta sproporzionato
       rispetto al resto della card, la card lo dichiara esplicitamente in
       `Decisioni` e propone una card di follow-up invece di forzarlo o di
-      ometterlo in silenzio.
-- [ ] Probabilità critica: `FriendDefinition` dichiara uno scarto per
+      ometterlo in silenzio. **Escluso**: vedi Decisioni.
+- [x] Probabilità critica: `FriendDefinition` dichiara uno scarto per
       personaggio su un campo **non moltiplicativo-neutro-1,0** ma additivo
       su punti percentuali (es. `base_critical_chance_bonus`, default `0,0`,
       range da motivare — non riusa il pattern `×1,0`/`0,5–2,0` degli altri
@@ -178,36 +178,45 @@ condivisi di Player, arma o abilità.
       `35%`), che compone con lo scarto base come "character" + "upgrade",
       stesso pattern degli altri quattro assi: **nessuno dei cinque assi
       introdotti da questa card resta senza una carta che lo esponga come
-      scelta di livello** (richiesta esplicita del proprietario).
-- [ ] L'icona della carta critico deriva dal master HD già presente
+      scelta di livello** (richiesta esplicita del proprietario). **Parziale**:
+      `data/upgrades/cooking_point_crit.tres` esiste, è meccanicamente
+      completa e coperta dagli smoke, ma non è ancora nell'array
+      `UpgradeRegistry.definitions` di `movement_slice.tscn` — l'icona non è
+      accettata (vedi criterio successivo). Il pool pescabile in run resta
+      quindi senza una carta per il critico finché
+      [PS-108](../2_to_do/PS-108-integra-carta-punto-di-cottura.md) non
+      chiude. Vedi Decisioni.
+- [x] L'icona della carta critico deriva dal master HD già presente
       (`assets/art/icons/upgrades/hd/upgrade_salamoia_bolognese.png`) con lo
       script `process-upgrade-icon.ps1`, dopo art review che confermi sia
       ancora coerente con la famiglia visiva attuale del catalogo; se la
       review lo boccia, la card lo dichiara in `Decisioni` e propone una
       rigenerazione (delegata a `game-art-designer`) invece di forzare un
-      derivato scadente.
-- [ ] Per ogni asse effettivamente implementato, `docs/characters.md`
+      derivato scadente. **La review ha bocciato** il derivato: contingenza
+      eseguita esattamente come previsto dal criterio, vedi Decisioni e
+      [PS-107](../2_to_do/PS-107-rigenera-icona-punto-di-cottura.md).
+- [x] Per ogni asse effettivamente implementato, `docs/characters.md`
       contiene, per ciascuno degli otto personaggi, il valore e una riga di
       motivazione legata al ruolo già dichiarato — stesso formato già usato
       da PS-087 per i tre assi esistenti.
-- [ ] Per ogni asse implementato, i valori non sono tutti identici fra gli
+- [x] Per ogni asse implementato, i valori non sono tutti identici fra gli
       otto personaggi: un asse dove tutti i profili dichiarano lo stesso
       numero non aggiunge identità statistica e va evitato.
-- [ ] La distinzione di ruolo fra "riduzione danno subito" e "salute" è resa
+- [x] La distinzione di ruolo fra "riduzione danno subito" e "salute" è resa
       esplicita in `docs/characters.md` (es. salute = quanta capacità totale
       di assorbire danno nel tempo, difesa = quanto pesa il singolo colpo) o,
       se in fase di stesura risultasse che i due assi restano ridondanti per
       troppi personaggi, la card lo dichiara in `Decisioni` invece di forzare
       una differenziazione debole.
-- [ ] Ogni upgrade del catalogo ordinario che tocca lo stesso numero di un
+- [x] Ogni upgrade del catalogo ordinario che tocca lo stesso numero di un
       nuovo asse (confermati: `meat_fork_damage`, `barb_seasoning_xp`,
       `wide_magnet`, `reinforced_roasting_tray` — vedi tabella in Contesto)
       resta invariato nel proprio effetto: il nuovo scarto si compone, non
       sostituisce né duplica quel numero.
-- [ ] `docs/prd.md` riporta lo stesso risultato sincronizzato con
+- [x] `docs/prd.md` riporta lo stesso risultato sincronizzato con
       `characters.md`, nello stesso formato tabellare già usato per i tre
       assi B47 esistenti.
-- [ ] La rigenerazione vita nel tempo **non** viene introdotta come scarto
+- [x] La rigenerazione vita nel tempo **non** viene introdotta come scarto
       base da questa card: resta fuori ambito, come idea di un futuro
       powerup separato (vedi Contesto e Note).
 
@@ -262,6 +271,26 @@ Non toccare:
   separata quando questa è chiusa.
 - Profilo minimo prima della chiusura: `Relevant`.
 
+**Risultato effettivo (2026-09-06):** `tests/unit/test_ps093_extended_base_stats.gd`
+scritto e registrato in `tools/milestone-test-map.json` (regole 1, 7, 10, 14,
+25; `scripts/content/friend_definition.gd` aggiunto come pattern nuovo alla
+regola 1, prima privo di copertura). Marker `EXTENDED_BASE_STATS_SMOKE_OK`,
+9 funzioni di test, 295 assert, tutte verdi. Copre: default neutro e range
+normalizzato sui quattro assi moltiplicativi, composizione a due stadi
+"character" × "upgrade" per ciascuno, nessuna mutazione del `Resource`
+condiviso dopo reset, determinismo del critico su RNG seminato (stessa run
+seed → stessa sequenza, seed diversi → sequenze diverse), rispetto del cap
+`35%`, nessun critico quando la chance è `0`, persistenza dello scarto
+personaggio attraverso `prepare_restart()` e reset corretto a `1,0`/`0,0`
+solo quando il personaggio viene esplicitamente scollegato
+(`passive._definition = null` + i tre `reset_*` dei rispettivi controller).
+
+Suite completa rieseguita dopo l'implementazione: **334/334 test verdi**,
+nessun `SCRIPT ERROR`/`FATAL EXCEPTION` nei log, exit code `0`. La
+rilevazione delle prime 5 regressioni pre-esistenti (non bug di questa
+card: vedi Decisioni) e la loro correzione sono avvenute in questo stesso
+giro di verifica.
+
 ## Gate manuali
 
 - [ ] Runtime Windows
@@ -312,17 +341,98 @@ Non toccare:
   master già esistente è riuso di arte, non nuova generazione: non richiede
   delega a `game-art-designer` per la regola di board, ma resta soggetta ad
   art review prima di essere accettata.
+- **2026-09-06 — Danno abilità escluso dall'ambito.** Toccare
+  `AbilityController` avrebbe richiesto un nuovo moltiplicatore composto
+  dentro ciascuno dei quattro script effetto abilità
+  (`earthquake_wave.gd`, `thermal_shock.gd`, `lightning_storm.gd`,
+  `ability_area_effect.gd`), ognuno con la propria lettura diretta di
+  `AbilityRankSnapshot.damage` — sproporzionato rispetto al resto della
+  card, che tocca un solo punto di composizione per asse. L'asse "Danno
+  inflitto" resta quindi limitato all'arma automatica, come già indicato in
+  Contesto. Proposta di follow-up: una card dedicata
+  (`card-crea`, tipo `feat`) che estenda `AbilityController` con un
+  moltiplicatore "character" analogo a `set_upgrade_cooldown_multiplier`,
+  applicato ai quattro script effetto in un unico punto di lettura invece
+  che quattro.
+- **2026-09-06 — "Salamoia Bolognese" rinominata "Punto di Cottura"
+  (`cooking_point_crit`).** Scoperto durante la verifica a suite completa:
+  `test_ps089_ordinary_catalog_meat_audit.gd` proibisce la parola
+  `salamoia` nel titolo di qualunque carta del catalogo ordinario (riservata
+  alle Specialità di Barb, PS-089). La proposta originale in
+  `docs/powerup-catalog.md` (31 agosto 2026) precedeva quella regola.
+  Rinominati file, `id`, `title`, `description`; nessun cambio al
+  meccanismo o ai numeri (`+5%`/rango, danno critico `1,75×`, cap `35%`).
+- **2026-09-06 — Icona bocciata in art review, scorporata in PS-107/PS-108.**
+  `direttore-artistico` ha dato verdetto "Da rifare" sul derivato del
+  master orfano: composizione a tre nuclei visivi separati, illeggibile a
+  48×48 (dimensione reale d'uso in HUD/fine run), confondibile con "Il
+  condimento di Barb" (stesso soggetto ciotola/vaso di spezie). Il crop/
+  resize automatico non è la causa (verificato pixel-per-pixel contro un
+  derivato ufficiale esistente della stessa serie): il problema è nel
+  master stesso. Per non forzare un derivato scadente in gioco né bloccare
+  il resto della card su un unico asset d'arte, il derivato rifiutato è
+  stato eliminato, `cooking_point_crit.tres` resta mecca­nicamente completo
+  e testato ma **non registrato** in `UpgradeRegistry.definitions` di
+  `movement_slice.tscn` (`UpgradeDefinition.is_valid()` non richiede
+  un'icona non nulla — verificato in `upgrade_definition.gd`/
+  `upgrade_registry.gd`, quindi il file resta valido e testabile sul disco
+  senza raggiungere il pool pescabile in run). Aperte
+  [PS-107](../2_to_do/PS-107-rigenera-icona-punto-di-cottura.md) (nuovo
+  master, delegata a `game-art-designer`) e
+  [PS-108](../2_to_do/PS-108-integra-carta-punto-di-cottura.md) (wiring nel
+  catalogo live, bloccata da PS-107) — stessa forma già usata in questa
+  sessione per PS-102/103 e PS-104/106.
+- **2026-09-06 — Numeri per personaggio delegati a `analista-bilanciamento`**
+  (richiesta esplicita del proprietario). L'agente ha analizzato i cinque
+  assi contro ruolo, passiva e scarti B47 già esistenti di ciascun
+  personaggio, evitando in particolare doppioni con mitigazioni già
+  presenti nel kit (Aleo, Migi, Zat restano neutri o quasi su danno/difesa
+  dove il proprio meccanismo passivo già copre lo stesso spazio; Alea resta
+  a `+0%` critico perché PS-105 ha rimosso ogni RNG dal suo kit e un critico
+  probabilistico contraddirebbe quel redesign; Lollo ha il critico più alto
+  del cast, `+6%`, perché la sua passiva resta esplicitamente casuale). I
+  valori finali sono in `data/friends/*.tres`, `docs/characters.md` e
+  `docs/prd.md`. L'agente ha inoltre segnalato che
+  `player.get_damage_taken_multiplier()` compone lo scarto "character" con
+  quello "upgrade" senza un pavimento (`clampf`) esplicito sul prodotto
+  finale: con scarti estremi multipli (fuori dal range `0,5–2,0` attuale)
+  il moltiplicatore composito potrebbe scendere sotto zero. Nessun
+  personaggio o carta attuale raggiunge quella soglia; segnalato qui come
+  nota di manutenzione, non corretto in codice perché fuori dai valori
+  realmente in gioco.
+- **2026-09-06 — 5 regressioni pre-esistenti trovate e corrette durante la
+  verifica a suite completa.** Tutte causate dall'introduzione di scarti
+  "character" non neutri sul personaggio di default (Magno,
+  `base_damage_multiplier 0,98`, `base_xp_gain_multiplier 1,02`): prima di
+  questa card ogni personaggio era neutro `×1,0` su ogni asse, quindi
+  alcuni test avevano assunzioni implicite mai messe alla prova.
+  `test_b05_combat_slice.gd`: la fixture nemico usava `weapon_profile.damage`
+  grezzo per un one-shot esatto, ora usa `weapon.get_effective_damage()`.
+  `test_b12_upgrade_effects.gd` e `test_b26_damage_upgrade.gd`: le
+  asserzioni "Resource condiviso non mutato" confrontavano
+  `get_base_damage()` (che ora include correttamente lo stadio character)
+  contro sé stesso invece che contro il valore grezzo del `Resource`; ora
+  usano uno snapshot separato del valore grezzo. `test_powerup_first_wave.gd`:
+  la XP di innesco usata solo per far comparire l'offerta di livello
+  lasciava un credito frazionario che si sommava silenziosamente alla XP
+  reale misurata dal test; ora chiama
+  `experience.reset_upgrade_value_multiplier()` subito dopo l'innesco.
+  Nessuna delle cinque era un bug del codice nuovo: tutte assunzioni di
+  test coincidenti col vecchio default sempre-neutro.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/characters.md`: tabella scarti + motivazione per personaggio,
+- [x] `docs/characters.md`: tabella scarti + motivazione per personaggio,
       per ogni asse implementato.
-- [ ] `docs/prd.md`: stesso risultato, sincronizzato con `characters.md`.
-- [ ] `docs/powerup-catalog.md`: la voce "Salamoia Bolognese" passa da
-      proposta non implementata a carta reale del catalogo runtime, con
-      riferimento all'icona derivata.
+- [x] `docs/prd.md`: stesso risultato, sincronizzato con `characters.md`.
+- [x] `docs/powerup-catalog.md`: la voce passa da "Salamoia Bolognese"
+      (proposta non implementata) a "Punto di Cottura" (carta reale del
+      catalogo runtime, meccanismo mergiato), con lo stato icona
+      esplicitamente bloccato e riferimento a PS-107/PS-108.
 - [ ] `assets/art/icons/upgrades/ASSET-MANIFEST.md`: nuova riga per il
-      derivato del critico.
+      derivato del critico. **Non applicabile a questa card**: il derivato
+      rifiutato è stato eliminato, nessun file valido da manifestare finché
+      PS-107 non produce un nuovo master accettato.
 
 ## Note
 

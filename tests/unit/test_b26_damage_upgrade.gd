@@ -69,6 +69,10 @@ func test_damage_upgrade() -> void:
 
 	var base_damage := weapon.get_base_damage()
 	var base_fire_rate := weapon.get_base_shots_per_second()
+	# PS-093: get_base_damage() include ora lo stadio "character" del profilo
+	# auto-equipaggiato, quindi non coincide piu' necessariamente col dato
+	# grezzo del WeaponProfile condiviso.
+	var shared_resource_damage := weapon.weapon_profile.damage
 	assert_almost_eq(
 		weapon.get_effective_damage(), base_damage, FLOAT_TOLERANCE, "Il danno iniziale deve restare base."
 	)
@@ -151,7 +155,7 @@ func test_damage_upgrade() -> void:
 			)
 
 	assert_almost_eq(
-		weapon.weapon_profile.damage, base_damage, FLOAT_TOLERANCE, "B26 non deve mutare il WeaponProfile condiviso."
+		weapon.weapon_profile.damage, shared_resource_damage, FLOAT_TOLERANCE, "B26 non deve mutare il WeaponProfile condiviso."
 	)
 	assert_true(controller.request_defeat(), "La fixture deve poter terminare la prima run.")
 	assert_true(movement_slice.restart_run(26027), "B26 deve poter avviare una seconda run.")

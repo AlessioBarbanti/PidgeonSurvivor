@@ -40,6 +40,25 @@ var _multishot_fan_mirror := false
 var _death_burst_enabled := false
 var _death_burst_radius := 0.0
 var _death_burst_damage_multiplier := 0.0
+## Probabilità critica (PS-093): due sorgenti additive, mai un unico campo
+## condiviso — `_character_critical_chance_bonus` dallo scarto base del
+## personaggio (`FriendDefinition.base_critical_chance_bonus`),
+## `_critical_chance_bonus` dalla carta catalogo "Salamoia Bolognese". La
+## somma resta sempre limitata da `MAXIMUM_CRITICAL_CHANCE`. Il moltiplicatore
+## di danno critico è di sola pertinenza della carta: nessun personaggio ha
+## un moltiplicatore base diverso da neutro.
+const MAXIMUM_CRITICAL_CHANCE := 0.35
+var _character_critical_chance_bonus := 0.0
+var _critical_chance_bonus := 0.0
+var _critical_damage_multiplier := 1.0
+var _last_shot_was_critical := false
+var _critical_rng := RandomNumberGenerator.new()
+## PS-085: sorgente di mira/consenso a sparare esterna quando lo sparo e'
+## manuale — sostituisce TargetingSystem.get_nearest_alive() come origine
+## della direzione, senza toccare bilanciamento o modificatori upgrade.
+var _manual_fire_enabled := false
+var _manual_aim_active := false
+var _manual_aim_direction := Vector2.RIGHT
 
 
 func _exit_tree() -> void:
@@ -71,7 +90,9 @@ func configure(
 	_arena_layout = arena_layout
 	_capture_base_stats()
 	_connect_run_controller()
-	_seed_aim_rng(_run_controller.get_seed() if is_instance_valid(_run_controller) else 0)
+	var seed_value := _run_controller.get_seed() if is_instance_valid(_run_controller) else 0
+	_seed_aim_rng(seed_value)
+	_seed_critical_rng(seed_value)
 	reset_for_run(false)
 
 
@@ -83,16 +104,23 @@ func try_fire() -> Projectile:
 	):
 		return null
 
-	var target := _targeting_system.get_nearest_alive(_source.global_position)
-	if target == null:
-		return null
-
-	var offset_to_target := target.global_position - _source.global_position
+	var target: BaseEnemy = null
 	var base_aim_direction := _last_aim_direction
 	var muzzle_offset := 0.0
-	if not offset_to_target.is_zero_approx():
-		base_aim_direction = offset_to_target.normalized()
-		muzzle_offset = minf(weapon_profile.muzzle_offset, offset_to_target.length())
+
+	if _manual_fire_enabled:
+		if not _manual_aim_active:
+			return null
+		base_aim_direction = _manual_aim_direction
+		muzzle_offset = weapon_profile.muzzle_offset
+	else:
+		target = _targeting_system.get_nearest_alive(_source.global_position)
+		if target == null:
+			return null
+		var offset_to_target := target.global_position - _source.global_position
+		if not offset_to_target.is_zero_approx():
+			base_aim_direction = offset_to_target.normalized()
+			muzzle_offset = minf(weapon_profile.muzzle_offset, offset_to_target.length())
 
 	var fan_offsets := calculate_multishot_fan_offsets(
 		get_effective_multishot_count(),
@@ -139,7 +167,7 @@ func _spawn_projectile(aim_direction: Vector2, muzzle_offset: float) -> Projecti
 	projectile.global_position = _source.global_position + aim_direction * muzzle_offset
 	if not projectile.initialize(
 		aim_direction,
-		get_effective_damage(),
+		resolve_shot_damage(),
 		get_effective_projectile_speed(),
 		weapon_profile.projectile_lifetime,
 		weapon_profile.projectile_radius,
@@ -173,12 +201,38 @@ func reset_for_run(clear_existing_projectiles: bool = true) -> void:
 	_cooldown_remaining = 0.0
 	reset_upgrade_stat_multipliers()
 	_last_aim_direction = Vector2.RIGHT
+	_last_shot_was_critical = false
 	_invalid_projectile_scene_warning_emitted = false
 	_projectile_scene_valid = true
+	_manual_aim_active = false
 	rotation = 0.0
 	queue_redraw()
 	if clear_existing_projectiles:
 		clear_projectiles()
+
+
+## PS-085: impostazione persistente (FireModeSettings), non un dato di run:
+## non viene toccata da reset_for_run().
+func set_manual_fire_enabled(value: bool) -> void:
+	_manual_fire_enabled = value
+
+
+func is_manual_fire_enabled() -> bool:
+	return _manual_fire_enabled
+
+
+## Aggiornata ogni frame da InputRouter.manual_aim_changed tramite
+## movement_slice: la direzione resta quella dell'ultimo impegno anche
+## quando active passa a false, cosi' come _last_aim_direction per
+## l'automatico.
+func set_manual_aim_state(direction: Vector2, active: bool) -> void:
+	_manual_aim_active = active
+	if active and direction.is_finite() and not direction.is_zero_approx():
+		_manual_aim_direction = direction.normalized()
+
+
+func is_manually_aiming() -> bool:
+	return _manual_aim_active
 
 
 func clear_projectiles() -> void:
@@ -239,27 +293,55 @@ func reset_upgrade_stat_multipliers() -> void:
 	_projectile_speed_multiplier = 1.0
 	reset_projectile_upgrade_modifiers()
 	reset_projectile_shape_modifiers()
+	reset_critical_strike_modifiers()
+
+
+## "Salamoia Bolognese" (PS-093): probabilità critica additiva per rango e
+## moltiplicatore di danno, entrambi di sola pertinenza della carta — nessun
+## personaggio dichiara un moltiplicatore di danno critico proprio, solo una
+## chance base (vedi `set_character_stat_multipliers`).
+func set_critical_strike_modifiers(chance_bonus: float, damage_multiplier: float) -> bool:
+	if (
+		not is_finite(chance_bonus)
+		or chance_bonus < 0.0
+		or not is_finite(damage_multiplier)
+		or damage_multiplier <= 0.0
+	):
+		return false
+	_critical_chance_bonus = chance_bonus
+	_critical_damage_multiplier = damage_multiplier
+	return true
+
+
+func reset_critical_strike_modifiers() -> void:
+	_critical_chance_bonus = 0.0
+	_critical_damage_multiplier = 1.0
 
 
 func set_character_stat_multipliers(
 	fire_rate_multiplier: float,
-	damage_multiplier: float = 1.0
+	damage_multiplier: float = 1.0,
+	critical_chance_bonus: float = 0.0
 ) -> bool:
 	if (
 		not is_finite(fire_rate_multiplier)
 		or fire_rate_multiplier <= 0.0
 		or not is_finite(damage_multiplier)
 		or damage_multiplier <= 0.0
+		or not is_finite(critical_chance_bonus)
+		or critical_chance_bonus < 0.0
 	):
 		return false
 	_character_fire_rate_multiplier = fire_rate_multiplier
 	_character_damage_multiplier = damage_multiplier
+	_character_critical_chance_bonus = critical_chance_bonus
 	return true
 
 
 func reset_character_stat_multipliers() -> void:
 	_character_fire_rate_multiplier = 1.0
 	_character_damage_multiplier = 1.0
+	_character_critical_chance_bonus = 0.0
 
 
 func set_projectile_upgrade_modifiers(
@@ -432,6 +514,48 @@ func get_effective_damage() -> float:
 	return get_base_damage() * _damage_multiplier
 
 
+func get_character_critical_chance_bonus() -> float:
+	return _character_critical_chance_bonus
+
+
+func get_critical_chance_bonus() -> float:
+	return _critical_chance_bonus
+
+
+func get_critical_damage_multiplier() -> float:
+	return _critical_damage_multiplier
+
+
+## Somma delle due sorgenti (scarto base del personaggio + carta catalogo),
+## sempre limitata al cap dichiarato: mai un singolo personaggio o una
+## singola carta possono superarlo da soli, ma nemmeno insieme.
+func get_effective_critical_chance() -> float:
+	return clampf(
+		_character_critical_chance_bonus + _critical_chance_bonus,
+		0.0,
+		MAXIMUM_CRITICAL_CHANCE
+	)
+
+
+## Danno effettivo di un singolo colpo, con l'eventuale critico già risolto e
+## applicato. Chiamata una sola volta per proiettile, allo spawn: il pierce
+## applica il proprio decadimento sul valore già risolto qui, non ne innesca
+## uno nuovo per bersaglio colpito (stesso contratto di `get_effective_damage()`
+## rispetto al pierce, solo con il critico deciso a monte). Deterministica per
+## seed: `_critical_rng` è seminato dal seed di run, mai dall'orologio di
+## sistema, e resta indipendente dallo stream di mira (`_aim_rng`).
+func resolve_shot_damage() -> float:
+	var base_damage := get_effective_damage()
+	_last_shot_was_critical = _critical_rng.randf() < get_effective_critical_chance()
+	if not _last_shot_was_critical:
+		return base_damage
+	return base_damage * get_critical_damage_multiplier()
+
+
+func was_last_shot_critical() -> bool:
+	return _last_shot_was_critical
+
+
 func get_effective_projectile_speed() -> float:
 	return weapon_profile.projectile_speed * _projectile_speed_multiplier if weapon_profile != null else 0.0
 
@@ -505,8 +629,15 @@ func _seed_aim_rng(seed_value: int) -> void:
 	_aim_rng.seed = seed_value ^ 0x42454552
 
 
+func _seed_critical_rng(seed_value: int) -> void:
+	# Stream locale e indipendente da _aim_rng: la stessa run produce sempre
+	# la stessa sequenza di critici, senza consumare lo stream di mira.
+	_critical_rng.seed = seed_value ^ 0x43524954
+
+
 func _on_run_started(seed_value: int) -> void:
 	_seed_aim_rng(seed_value)
+	_seed_critical_rng(seed_value)
 	reset_for_run()
 
 

@@ -190,6 +190,12 @@ func _select_fixture_upgrade(
 		return false
 	if not experience.add_experience(experience.experience_required):
 		return false
+	# PS-093: questa XP e' solo per far comparire l'offerta di livello, non
+	# fa parte di cio' che l'asserzione del chiamante misura. Con uno scarto
+	# "character" attivo (es. Magno) l'arrotondamento lascia un credito
+	# frazionario che altrimenti si sommerebbe silenziosamente al prossimo
+	# add_experience() del test, spostandone il risultato intero atteso.
+	experience.reset_upgrade_value_multiplier()
 	if selected.id not in service.get_current_offer_ids():
 		return false
 	return service.select_upgrade(selected.id)

@@ -61,6 +61,7 @@ var _run_controller: RunController
 var _player: Player
 var _weapon_controller: WeaponController
 var _targeting_system: TargetingSystem
+var _experience_system: ExperienceSystem
 var _definition: FriendDefinition
 var _rng := RandomNumberGenerator.new()
 
@@ -135,13 +136,15 @@ func configure(
 	run_controller: RunController,
 	player: Player,
 	weapon_controller: WeaponController,
-	targeting_system: TargetingSystem
+	targeting_system: TargetingSystem,
+	experience_system: ExperienceSystem
 ) -> bool:
 	_disconnect_dependencies()
 	_run_controller = run_controller
 	_player = player
 	_weapon_controller = weapon_controller
 	_targeting_system = targeting_system
+	_experience_system = experience_system
 	if not _has_valid_dependencies():
 		return false
 	_player.set_passive_controller(self)
@@ -796,12 +799,30 @@ func _apply_character_multipliers() -> void:
 	# Gli scarti di partenza B47 compongono moltiplicativamente con la passiva
 	# e restano neutri per i profili che non li dichiarano.
 	var health_multiplier := 1.0
+	# Assi estesi (PS-093): stesso principio B47, stadio "character" composto
+	# con l'eventuale stadio "upgrade" a valle (WeaponController/Player/
+	# ExperienceSystem), mai un campo condiviso. Il critico e' additivo, non
+	# moltiplicativo: nessun `*=` qui.
+	var pickup_radius_multiplier := 1.0
+	var damage_taken_multiplier := 1.0
+	var xp_gain_multiplier := 1.0
+	var critical_chance_bonus := 0.0
 	if _definition != null:
 		move_multiplier *= _definition.get_base_move_speed_multiplier()
 		fire_multiplier *= _definition.get_base_fire_rate_multiplier()
 		health_multiplier = _definition.get_base_health_multiplier()
-	_player.set_character_stat_multipliers(move_multiplier, 1.0, health_multiplier)
-	_weapon_controller.set_character_stat_multipliers(fire_multiplier, damage_multiplier)
+		damage_multiplier *= _definition.get_base_damage_multiplier()
+		pickup_radius_multiplier = _definition.get_base_pickup_radius_multiplier()
+		damage_taken_multiplier = _definition.get_base_damage_taken_multiplier()
+		xp_gain_multiplier = _definition.get_base_xp_gain_multiplier()
+		critical_chance_bonus = _definition.get_base_critical_chance_bonus()
+	_player.set_character_stat_multipliers(
+		move_multiplier, pickup_radius_multiplier, health_multiplier, damage_taken_multiplier
+	)
+	_weapon_controller.set_character_stat_multipliers(
+		fire_multiplier, damage_multiplier, critical_chance_bonus
+	)
+	_experience_system.set_character_value_multiplier(xp_gain_multiplier)
 
 
 ## Aura di indebolimento: i nemici dentro il raggio subiscono piu' danno da
@@ -924,6 +945,7 @@ func _has_valid_dependencies() -> bool:
 		and is_instance_valid(_player)
 		and is_instance_valid(_weapon_controller)
 		and is_instance_valid(_targeting_system)
+		and is_instance_valid(_experience_system)
 	)
 
 
@@ -950,6 +972,7 @@ func _disconnect_dependencies() -> void:
 	_player = null
 	_weapon_controller = null
 	_targeting_system = null
+	_experience_system = null
 
 
 func _on_player_damaged(_player_value: Player, amount: float, _health_current: float) -> void:

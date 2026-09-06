@@ -19,6 +19,11 @@ var gut_test_run_seed_override := 0
 ## Visual breathing room for HUD actions after the OS safe area.
 ## The ability keeps this inset in addition to the mandatory gesture padding.
 @export var hud_control_edge_padding := Vector2(20.0, 20.0)
+## PS-085: extra vertical lift for the active-ability button, in both fire
+## modes, so it reads as intentionally clear of the aim joystick's corner
+## instead of flush with it. The joystick itself is dynamic-origin and
+## invisible at rest, so this is a cosmetic margin, not a collision budget.
+@export_range(0.0, 200.0, 1.0) var ability_panel_aim_lift := 72.0
 
 @export_group("Performance Hardening")
 @export var windows_performance_profile: PerformanceProfile
@@ -30,6 +35,7 @@ var gut_test_run_seed_override := 0
 @onready var _run_controller: RunController = %RunController
 @onready var _visual_accessibility_settings: VisualAccessibilitySettings = %VisualAccessibilitySettings
 @onready var _touch_control_settings: TouchControlSettings = %TouchControlSettings
+@onready var _fire_mode_settings: FireModeSettings = %FireModeSettings
 @onready var _friend_registry: FriendRegistry = %FriendRegistry
 @onready var _game_director: GameDirector = %GameDirector
 @onready var _boss_encounter: BossEncounter = %BossEncounter
@@ -60,6 +66,7 @@ var gut_test_run_seed_override := 0
 @onready var _platform_lifecycle: PlatformLifecycle = %PlatformLifecycle
 @onready var _performance_stress_harness: PerformanceStressHarness = %PerformanceStressHarness
 @onready var _touch_joystick: TouchJoystick = %TouchJoystick
+@onready var _aim_touch_joystick: TouchJoystick = %AimTouchJoystick
 @onready var _vignette_effect: VignetteEffect = %VignetteEffect
 @onready var _safe_area_root: Control = %SafeAreaRoot
 @onready var _performance_monitor: PerformanceMonitor = %PerformanceMonitor
@@ -83,8 +90,11 @@ var _defeated_boss_count := 0
 
 func _ready() -> void:
 	_input_router.bind_touch_joystick(_touch_joystick)
+	_input_router.bind_aim_touch_joystick(_aim_touch_joystick)
+	_input_router.bind_aim_origin(_player)
 	_input_router.bind_active_ability_button(_hud.get_active_ability_button())
 	_input_router.movement_vector_changed.connect(_on_movement_vector_changed)
+	_input_router.manual_aim_changed.connect(_on_manual_aim_changed)
 	_arena_layout.playfield_changed.connect(_on_playfield_changed)
 	_run_controller.state_changed.connect(_on_run_state_changed_for_joystick)
 	_player.died.connect(_on_player_died)
@@ -116,6 +126,8 @@ func _ready() -> void:
 	_visual_accessibility_settings.configure(_pause_overlay)
 	_touch_control_settings.configure(_welcome_screen, _pause_overlay)
 	_touch_control_settings.settings_changed.connect(_on_touch_control_settings_changed)
+	_fire_mode_settings.configure(_welcome_screen, _pause_overlay)
+	_fire_mode_settings.settings_changed.connect(_on_fire_mode_settings_changed)
 
 	_arena_layout.set_top_reserved_height(_hud.get_gameplay_top_inset())
 	_arena_layout.refresh_layout()
@@ -203,11 +215,13 @@ func _ready() -> void:
 		_player,
 		_arena_layout
 	)
+	_weapon_controller.set_manual_fire_enabled(_fire_mode_settings.is_manual_fire_enabled())
 	_friend_passive_controller.configure(
 		_run_controller,
 		_player,
 		_weapon_controller,
-		_targeting_system
+		_targeting_system,
+		_experience_system
 	)
 	_friend_passive_controller.instinctive_dodge_triggered.connect(
 		_on_instinctive_dodge_triggered
@@ -313,6 +327,10 @@ func _on_movement_vector_changed(value: Vector2) -> void:
 	_player.set_movement_input(value)
 
 
+func _on_manual_aim_changed(direction: Vector2, active: bool) -> void:
+	_weapon_controller.set_manual_aim_state(direction, active)
+
+
 func _on_playfield_changed(_playfield_rect: Rect2) -> void:
 	_apply_layout()
 
@@ -321,9 +339,33 @@ func _on_run_state_changed_for_joystick(
 	_previous_state: RunController.RunState,
 	current_state: RunController.RunState
 ) -> void:
-	_touch_joystick.set_capture_enabled(
-		current_state == RunController.RunState.RUNNING
+	var running := current_state == RunController.RunState.RUNNING
+	_touch_joystick.set_capture_enabled(running)
+	_sync_aim_touch_joystick_capture(running)
+
+
+## PS-085: joystick di mira attivo solo mentre la run e' RUNNING e la
+## modalita' e' Manuale — in Automatico resta disabilitato anche a schermo
+## visibile, cosi' non ruba mai un tocco al joystick di movimento.
+func _sync_aim_touch_joystick_capture(running: bool) -> void:
+	_aim_touch_joystick.set_capture_enabled(
+		running and _fire_mode_settings.is_manual_fire_enabled()
 	)
+
+
+func _sync_aim_touch_joystick_visibility() -> void:
+	if _fire_mode_settings.is_manual_fire_enabled() and _touch_joystick.visible:
+		_aim_touch_joystick.show()
+	else:
+		_aim_touch_joystick.hide()
+
+
+func _on_fire_mode_settings_changed(manual_enabled: bool) -> void:
+	_weapon_controller.set_manual_fire_enabled(manual_enabled)
+	if is_node_ready():
+		_apply_layout()
+	_sync_aim_touch_joystick_capture(_run_controller.is_running())
+	_sync_aim_touch_joystick_visibility()
 
 
 func _is_dynamic_joystick_origin_valid(viewport_position: Vector2) -> bool:
@@ -360,11 +402,35 @@ func _apply_layout() -> void:
 	)
 	_touch_joystick.position = joystick_rect.position - safe_area.position
 	_touch_joystick.size = joystick_rect.size
+
+	var aim_joystick_rect := calculate_bottom_right_control_rect(
+		safe_area,
+		_aim_touch_joystick.custom_minimum_size,
+		joystick_edge_padding,
+		gesture_navigation_padding
+	)
+	_aim_touch_joystick.position = aim_joystick_rect.position - safe_area.position
+	_aim_touch_joystick.size = aim_joystick_rect.size
+
+	# PS-085: in automatico il joystick di movimento resta invariato (tutta la
+	# safe area, come da B18L); in manuale la meta' destra e' riservata alla
+	# mira, cosi' i due tocchi non si contendono la stessa origine dinamica.
+	var manual_fire_enabled := _fire_mode_settings.is_manual_fire_enabled()
 	_touch_joystick.configure_dynamic_capture(
-		calculate_dynamic_joystick_capture_rect(
+		calculate_dynamic_movement_capture_rect(
 			safe_area,
 			joystick_edge_padding,
-			gesture_navigation_padding
+			gesture_navigation_padding,
+			manual_fire_enabled
+		),
+		_is_dynamic_joystick_origin_valid
+	)
+	_aim_touch_joystick.configure_dynamic_capture(
+		calculate_dynamic_aim_capture_rect(
+			safe_area,
+			joystick_edge_padding,
+			gesture_navigation_padding,
+			manual_fire_enabled
 		),
 		_is_dynamic_joystick_origin_valid
 	)
@@ -408,11 +474,18 @@ func _apply_touch_control_settings(
 	joystick_scale: float
 ) -> void:
 	_hud.set_pause_edge_padding(hud_control_edge_padding)
+	# PS-085: il pulsante abilita' sale leggermente rispetto al bordo, in
+	# entrambe le modalita' di sparo (decisione: il layout non deve mai
+	# saltare quando si cambia modalita'). Il joystick di mira e' a origine
+	# dinamica come quello di movimento: resta invisibile a riposo e non
+	# disegna nulla nel suo angolo (TouchJoystick._draw()), quindi non serve
+	# riservargli l'intera altezza di controllo, solo un margine di cortesia.
 	_hud.set_active_ability_scale(
 		ability_scale,
-		hud_control_edge_padding + gesture_navigation_padding
+		hud_control_edge_padding + gesture_navigation_padding + Vector2(0.0, ability_panel_aim_lift)
 	)
 	_touch_joystick.set_control_scale(joystick_scale)
+	_aim_touch_joystick.set_control_scale(joystick_scale)
 	if is_node_ready():
 		_apply_layout()
 
@@ -428,6 +501,19 @@ func get_touch_joystick_viewport_rect() -> Rect2:
 
 func get_touch_joystick_capture_rect() -> Rect2:
 	return _touch_joystick.get_capture_rect() if is_node_ready() else Rect2()
+
+
+func get_aim_touch_joystick_viewport_rect() -> Rect2:
+	if not is_node_ready():
+		return Rect2()
+	return Rect2(
+		_safe_area_root.position + _aim_touch_joystick.position,
+		_aim_touch_joystick.size
+	)
+
+
+func get_aim_touch_joystick_capture_rect() -> Rect2:
+	return _aim_touch_joystick.get_capture_rect() if is_node_ready() else Rect2()
 
 
 static func calculate_bottom_left_control_rect(
@@ -483,6 +569,86 @@ static func calculate_dynamic_joystick_capture_rect(
 	return Rect2(
 		safe_area.position + Vector2(left_margin, top_margin),
 		available_size
+	)
+
+
+## Specchio di calculate_bottom_left_control_rect() per il riposo del
+## joystick di mira (PS-085): stesso angolo che occupava il pulsante
+## abilita' prima del suo spostamento verso l'alto.
+static func calculate_bottom_right_control_rect(
+	safe_area: Rect2,
+	control_size: Vector2,
+	edge_padding: Vector2,
+	gesture_padding: Vector2
+) -> Rect2:
+	if not safe_area.has_area():
+		return Rect2(safe_area.position, Vector2.ZERO)
+
+	var fitted_size := Vector2(
+		minf(maxf(control_size.x, 0.0), safe_area.size.x),
+		minf(maxf(control_size.y, 0.0), safe_area.size.y)
+	)
+	var requested_padding := Vector2(
+		maxf(edge_padding.x, 0.0) + maxf(gesture_padding.x, 0.0),
+		maxf(edge_padding.y, 0.0) + maxf(gesture_padding.y, 0.0)
+	)
+	var available_padding := (safe_area.size - fitted_size).max(Vector2.ZERO)
+	var applied_padding := requested_padding.min(available_padding)
+
+	return Rect2(
+		Vector2(
+			safe_area.end.x - fitted_size.x - applied_padding.x,
+			safe_area.end.y - fitted_size.y - applied_padding.y
+		),
+		fitted_size
+	)
+
+
+## PS-085: in automatico il movimento conserva l'intera safe area dinamica
+## (comportamento B18L invariato, criterio di accettazione "nessuna
+## regressione sull'automatico"); in manuale si ferma alla meta' sinistra,
+## lasciando la destra alla mira.
+static func calculate_dynamic_movement_capture_rect(
+	safe_area: Rect2,
+	edge_padding: Vector2,
+	gesture_padding: Vector2,
+	manual_fire_enabled: bool
+) -> Rect2:
+	var full_rect := calculate_dynamic_joystick_capture_rect(
+		safe_area,
+		edge_padding,
+		gesture_padding
+	)
+	if not manual_fire_enabled or not full_rect.has_area():
+		return full_rect
+	return Rect2(
+		full_rect.position,
+		Vector2(full_rect.size.x * 0.5, full_rect.size.y)
+	)
+
+
+## Specchio di calculate_dynamic_movement_capture_rect(): nullo in
+## automatico (il joystick di mira e' nascosto e non deve mai catturare un
+## tocco), meta' destra della stessa zona dinamica in manuale.
+static func calculate_dynamic_aim_capture_rect(
+	safe_area: Rect2,
+	edge_padding: Vector2,
+	gesture_padding: Vector2,
+	manual_fire_enabled: bool
+) -> Rect2:
+	if not manual_fire_enabled:
+		return Rect2(safe_area.get_center(), Vector2.ZERO)
+	var full_rect := calculate_dynamic_joystick_capture_rect(
+		safe_area,
+		edge_padding,
+		gesture_padding
+	)
+	if not full_rect.has_area():
+		return full_rect
+	var half_width := full_rect.size.x * 0.5
+	return Rect2(
+		Vector2(full_rect.position.x + half_width, full_rect.position.y),
+		Vector2(half_width, full_rect.size.y)
 	)
 
 
@@ -648,6 +814,14 @@ func get_hud() -> GameHud:
 
 func get_touch_joystick() -> TouchJoystick:
 	return _touch_joystick
+
+
+func get_aim_touch_joystick() -> TouchJoystick:
+	return _aim_touch_joystick
+
+
+func get_fire_mode_settings() -> FireModeSettings:
+	return _fire_mode_settings
 
 
 func get_platform_lifecycle() -> PlatformLifecycle:
@@ -916,6 +1090,7 @@ func _start_selected_run(seed_value: int) -> bool:
 	_tutorial_screen.hide_tutorial()
 	_hud.show()
 	_touch_joystick.show()
+	_sync_aim_touch_joystick_visibility()
 	_player.global_position = _arena_world.get_world_center()
 	_recenter_camera_on_player()
 	_input_router.resume_input()
@@ -927,6 +1102,7 @@ func _show_character_selection() -> void:
 	_player.clear_movement_input()
 	_hud.hide()
 	_touch_joystick.hide()
+	_aim_touch_joystick.hide()
 	_welcome_screen.hide_welcome()
 	_tutorial_screen.hide_tutorial()
 	_game_audio.start_menu_music()
@@ -944,6 +1120,7 @@ func _show_welcome_screen(focus_tutorial: bool = false) -> void:
 	_player.clear_movement_input()
 	_hud.hide()
 	_touch_joystick.hide()
+	_aim_touch_joystick.hide()
 	_character_select_overlay.hide_selection()
 	_tutorial_screen.hide_tutorial()
 	_game_audio.start_menu_music()
@@ -958,6 +1135,7 @@ func _show_tutorial_screen() -> void:
 	_player.clear_movement_input()
 	_hud.hide()
 	_touch_joystick.hide()
+	_aim_touch_joystick.hide()
 	_character_select_overlay.hide_selection()
 	_welcome_screen.hide_welcome()
 	_game_audio.start_menu_music()
@@ -984,6 +1162,15 @@ func _validate_current_contract() -> bool:
 		failures.append("B18L richiede una zona di acquisizione dinamica valida.")
 	elif _touch_joystick.mouse_filter != Control.MOUSE_FILTER_IGNORE:
 		failures.append("B18L non deve intercettare il secondo dito via GUI.")
+	if not _aim_touch_joystick.dynamic_origin:
+		failures.append("PS-085 richiede il joystick di mira dinamico.")
+	elif _aim_touch_joystick.mouse_filter != Control.MOUSE_FILTER_IGNORE:
+		failures.append("PS-085 non deve intercettare il secondo dito via GUI.")
+	for action in [&"aim_left", &"aim_right", &"aim_up", &"aim_down", &"manual_fire_hold"]:
+		if not InputMap.has_action(action):
+			failures.append("InputMap privo di %s." % action)
+	if _weapon_controller.is_manual_fire_enabled() != _fire_mode_settings.is_manual_fire_enabled():
+		failures.append("WeaponController non riflette FireModeSettings.")
 	if _player.get_arena_layout() != _arena_layout:
 		failures.append("Player non collegato ad ArenaLayout.")
 	if _player.get_run_controller() != _run_controller:

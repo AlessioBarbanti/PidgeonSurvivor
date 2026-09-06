@@ -6,6 +6,18 @@ da cui sono state estratte è conservata soltanto come
 Nomi e testi sono stati approvati dal proprietario del progetto il 17 agosto
 2026. La fonte runtime è `data/friends/*.tres`.
 
+Ogni personaggio dichiara, oltre ai tre scarti base B47 (PS-087: salute,
+velocità, cadenza), cinque scarti estesi (PS-093): danno, avidità (XP),
+raggio pickup, difesa (riduzione del danno subito) e critico. Salute e
+difesa non sono ridondanti: la salute è quanta capacità totale di
+assorbire danno nel tempo un personaggio porta con sé (il "serbatoio"), la
+difesa è quanto pesa il singolo colpo che lo intacca (il "moltiplicatore
+per hit"). Un personaggio può essere alto sull'uno e neutro sull'altro
+(es. Migi, salute alta e difesa neutra: il guscio a cariche già copre la
+mitigazione a singolo colpo) o viceversa (es. Bea, salute bassa e l'unico
+vero bonus difensivo passivo del cast, a compensare l'evasione opportunista
+della sua passiva).
+
 ## Magno
 
 Ruolo: Mobilità e controllo delle orde.  
@@ -14,6 +26,8 @@ Attiva — Onda d'Urto Tellurica: Genera un'onda d'urto che danneggia e respinge
 Boss: Evil Magno — Signature *Onda d'Urto Tellurica*: dopo un forte impatto a terra telegrafato, un fronte anulare parte dal Boss e si espande verso l'esterno, danneggiando e respingendo una sola volta chi attraversa. La versione Boss non usa lo slancio del Player.
 
 Scarti base (B47, PS-087): salute `×1,15`, velocità `×0,95`, cadenza `×1,00` — pesante e resistente come un energumeno tellurico; la mobilità del ruolo viene dallo slancio della passiva, non dalla velocità base, che resta sotto la norma.
+
+Scarti estesi (PS-093): danno `×0,98`, avidità `×1,02`, raggio pickup `×1,05`, difesa `×1,00`, critico `+0%` — il peso resta nell'onda d'urto della passiva, non nella precisione dei colpi automatici; il piccolo bonus di raccolta compensa la velocità sotto la norma.
 
 ## Bea
 
@@ -24,6 +38,8 @@ Boss: Evil Bea — Signature *Powerslide*: una linea di preavviso mostra direzio
 
 Scarti base (B47, PS-087): salute `×0,90`, velocità `×1,10`, cadenza `×1,00` — l'agilità da pattinatrice si traduce in velocità alta e salute bassa: l'evasione è di movimento, non di resistenza.
 
+Scarti estesi (PS-093): danno `×1,00`, avidità `×1,03`, raggio pickup `×1,04`, difesa `×0,94`, critico `+5%` — l'unico vero bonus difensivo del cast: il Sesto Senso Equino copre un colpo ogni 9 secondi, questo asse copre i colpi minori nel mezzo. La mobilità raccoglie di più incidentalmente; il critico è il fit più pulito per un'evasione opportunista.
+
 ## Zat
 
 Ruolo: Gestione del danno e sopravvivenza.  
@@ -32,6 +48,8 @@ Attiva — Tempesta di Tuoni: Fotografa tutti i nemici vivi presenti in quel mom
 Boss: Evil Zat — Signature *Tempesta di Tuoni*: l'aura orbitante di PS-004 dichiara la fascia di carica, che qui sale con il danno già subito dal Boss; dopo il telegraph il Tuono colpisce soltanto dentro il raggio annunciato, quindi resta evitabile.
 
 Scarti base (B47, PS-087): salute `×1,10`, velocità `×0,95`, cadenza `×1,00` — più salute per dare margine alla quota recuperabile di Guarigione Ritardata; la sopravvivenza del ruolo è di posizionamento e cuscinetto, non di rapidità.
+
+Scarti estesi (PS-093): danno `×0,97`, avidità `×0,97`, raggio pickup `×1,04`, difesa `×1,00`, critico `+0%` — l'arma resta secondaria a Tempesta di Tuoni, leggermente sotto la norma per non sommare un quarto vettore di potenza. Difesa neutra apposta: salute alta e Guarigione Ritardata già coprono la sopravvivenza, un terzo strato l'avrebbe resa tenace su tre assi insieme.
 
 Contratto runtime di Guarigione Ritardata (confermato da PS-003; i valori vivono
 in `data/friends/zat.tres`, la logica in `FriendPassiveController`):
@@ -88,6 +106,8 @@ Boss: Evil Alea — Signature *Gran Piroetta*: entra in rotazione con un'area di
 
 Scarti base (B47, PS-087): salute `×0,85`, velocità `×1,00`, cadenza `×1,15` — il profilo più fragile del cast, compensato dalla cadenza più alta della mischia ravvicinata: l'instabilità del ruolo è letterale, non solo tematica. Sostituisce la tripla interamente neutra assegnata durante B47 (vedi Decisioni di PS-087); il ruolo è cambiato da "Rischio, fortuna e mischia" a "Caos, vino e piroette" con PS-105, ma il profilo statistico resta lo stesso.
 
+Scarti estesi (PS-093): danno `×1,10`, avidità `×1,08`, raggio pickup `×0,92`, difesa `×1,05`, critico `+0%` — rinforza il glass cannon già scritto nei tre assi B47 (cadenza alta, salute bassa): più danno e più difesa completano il rischio/ricompensa invece di contraddirlo, la raccolta più bassa riflette che Alea è occupata a piroettare, non a raccogliere con metodo. Critico deliberatamente a zero: PS-105 ha riscritto la sua intera passiva per rimuovere ogni esito casuale dal suo kit ("Nessun esito è casuale"), e il critico è un meccanismo probabilistico per natura — reintrodurlo qui contraddirebbe quel redesign.
+
 ## Aleo
 
 Ruolo: Sbalzo termico e gestione del danno.  
@@ -96,6 +116,8 @@ Attiva — Shock Termico: Congela un'area per un istante, poi la fa esplodere di
 Boss: Evil Aleo — Signature *Shock Termico*: un'area ciano rallenta chi vi resta dentro, poi la stessa area detona; il rallentamento lascia comunque il tempo di uscire.
 
 Scarti base (B47, PS-087): salute `×1,00`, velocità `×0,95`, cadenza `×1,10` — tecnico metodico, leggermente sotto la norma in mobilità e sopra in cadenza per i getti di caldo/freddo frequenti; differenziato da Zat, con cui condivideva due scarti su tre prima di questa card (vedi Decisioni di PS-087): la sopravvivenza di Zat resta la più tenace del cast, lo sbalzo termico di Aleo si esprime in cadenza invece che in salute.
+
+Scarti estesi (PS-093): danno `×1,00`, avidità `×0,97`, raggio pickup `×1,00`, difesa `×1,00`, critico `+0%` — danno e difesa restano neutri per non duplicare quello che il Termostato Interno già fa dinamicamente (`hot_damage_multiplier ×1,2` sopra metà vita, `cold_damage_reduction 25%` sotto): un bonus statico si sommerebbe proprio dove Aleo è già più forte. L'avidità leggermente sotto la norma è la sua vera identità su questi assi: tecnico concentrato sullo scontro, non sulla raccolta.
 
 ## Lollo
 
@@ -106,6 +128,8 @@ Boss: Evil Lollo — Signature *Cosplay Casuale*: prepara in anticipo la Signatu
 
 Scarti base (B47, PS-087): salute `×0,90`, velocità `×1,05`, cadenza `×1,05` — fragile e rapido su entrambi gli assi offensivo e di movimento, coerente con l'imprevedibilità e il caos del ruolo.
 
+Scarti estesi (PS-093): danno `×1,00`, avidità `×1,05`, raggio pickup `×0,93`, difesa `×1,04`, critico `+6%` — raccoglitore compulsivo coerente con "caos e imprevedibilità", ma metodico nella raccolta no: il raggio scende sotto la norma a bilanciare i bonus già assegnati su XP e critico. Il critico più alto del cast non è casuale: a differenza di Alea, Iperfocus ADHD resta esplicitamente un meccanismo casuale ("Alterna a intervalli casuali"), quindi è Lollo, non più Alea, il personaggio ancora legato tematicamente al caso.
+
 ## Migi
 
 Ruolo: Difesa e controllo delle orde.  
@@ -115,6 +139,8 @@ Boss: Evil Migi — Signature *Rallentamento Zen*: una zona attorno al Boss rall
 
 Scarti base (B47, PS-087): salute `×1,15`, velocità `×0,90`, cadenza `×0,95` — il profilo più lento e resistente del cast, coerente con "difesa": il guscio assorbe, non insegue.
 
+Scarti estesi (PS-093): danno `×1,05`, avidità `×0,95`, raggio pickup `×1,10`, difesa `×1,00`, critico `+0%` — il danno leggermente sopra compensa la cadenza più bassa del cast, mantenendo il DPS totale vicino alla media; il magnete più forte del cast esenta il personaggio più lento dal doversi muovere per raccogliere. Difesa neutra apposta: salute alta e il guscio a cariche già coprono la mitigazione, un terzo strato l'avrebbe resa la "non toccare mai" del cast.
+
 ## Marghe
 
 Ruolo: Indebolimento e distrazione dei nemici.  
@@ -123,6 +149,8 @@ Attiva — Reggaeton time!: Genera un clone che balla reggaeton e diventa il ber
 Boss: Evil Marghe — Signature *Reggaeton time!*: genera un clone ballerino distinguibile dal Boss reale, che l'auto-targeting del Player può preferire mentre Marghe continua a usare i propri pattern.
 
 Scarti base (B47, PS-087): salute `×0,95`, velocità `×1,00`, cadenza `×1,10` — la cadenza sopra la norma rinforza "indebolimento e distrazione": più colpi distribuiti nel tempo per marcare bersagli.
+
+Scarti estesi (PS-093): danno `×0,95`, avidità `×1,03`, raggio pickup `×1,02`, difesa `×1,03`, critico `+0%` — il danno personale resta deliberatamente sotto la norma: Sorriso Contagioso già amplifica del `30%` ogni danno (arma e abilità) contro i nemici marchiati, un bonus diretto qui si sarebbe moltiplicato con quello. La difesa leggermente sopra riflette che la sua vera mitigazione (il clone che devia l'aggro) va guadagnata giocando l'abilità, non è passiva.
 
 ## Direzione visuale del cast
 

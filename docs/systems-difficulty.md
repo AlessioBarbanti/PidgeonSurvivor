@@ -178,3 +178,25 @@ multipli), più il layer opzionale degli eventi d'ondata `PS-008`
 nuove decisioni e nuova pressione, non soltanto numeri più grandi"*. Entrambe
 le card hanno gate di playtest percettivo ancora aperti: il risultato
 automatico è verde, quello percettivo no.
+
+## Sparo manuale e responsabilità del DPS (PS-085)
+
+`WeaponController` ([scripts/combat/weapon_controller.gd](../scripts/combat/weapon_controller.gd))
+espone una modalità di sparo Manuale alternativa all'Automatico
+(`FireModeSettings`, impostazione persistente da welcome/pausa): il
+personaggio spara solo mentre il giocatore mira attivamente
+(`_manual_aim_active`, aggiornato da `InputRouter.manual_aim_changed`), non
+più sempre appena un bersaglio è a portata e il cooldown è scaduto. Nessun
+dato di bilanciamento (danno, cadenza, upgrade) cambia fra le due modalità:
+cambia solo chi decide *quando* e *dove* parte il colpo.
+
+Questo sposta parte della responsabilità del DPS effettivo sul giocatore: il
+tempo speso "non mirando" (per riposizionarsi, osservare l'orda o
+prepararsi ad attivare l'abilità) è tempo senza danno, un margine che
+l'Automatico non lascia mai scoprire. Le curve di spawn e i moltiplicatori
+late-run descritti sopra restano tarati sul DPS dell'Automatico, l'unico
+comportamento storicamente misurato: la modalità Manuale è dichiarata come
+scelta del giocatore, non ancora bilanciata né validata su questa curva. Un
+eventuale riequilibrio (o una guardia esplicita) resta materia di una card
+dedicata, se il playtest percettivo del Manuale mostrasse un DPS
+significativamente diverso da quello assunto qui.

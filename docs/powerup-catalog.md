@@ -169,29 +169,45 @@ orologi, timer o simboli tecnici. Vedi anche [PS-092](./cards/2_to_do/PS-092-nuo
 
 ---
 
-### Salamoia Bolognese
+### Punto di Cottura
 
-**ID proposto:** `salamoia_bolognese_crit`  
+*(PS-093, 2026-09-06 — rinominata da "Salamoia Bolognese": `salamoia` è in
+lista nera per il catalogo ordinario, PS-089, riservata alle Specialità di
+Barb. Il meccanismo è implementato e mergiato in `main`; l'icona resta
+bloccata, vedi sotto.)*
 
-L'icona di questa abilità è nel file `upgrade_salamoia_bolognese.png`.
+**ID:** `cooking_point_crit`, in `data/upgrades/cooking_point_crit.tres`.
 
-**Effetto proposto:** `weapon_critical_chance`  
+**Effetto:** `weapon_critical_chance`, in `WeaponController`/
+`UpgradeEffectRegistry`.  
 **Ruolo:** colpi critici dell'arma automatica
 
 - `+5` punti percentuali di probabilità critica per rango;
-- rango nominale `5`; ripetibile all'infinito;
-- ripetibile;
-- danno critico iniziale proposto `1,75×`;
-- cap iniziale consigliato `35%` di probabilità critica complessiva;
-- si applica all'arma automatica del Player, non alle abilità salvo futura
-  compatibilità esplicita.
+- rango nominale `5`; ripetibile;
+- danno critico `1,75×`;
+- cap totale `35%` (`WeaponController.MAXIMUM_CRITICAL_CHANCE`), somma dello
+  scarto base per personaggio e della carta;
+- si applica all'arma automatica del Player, non alle abilità.
 
-**Descrizione carta:** “Aumenta di 5 punti percentuali la probabilità di colpo critico per rango.”
+**Descrizione carta:** “Colpisce il punto perfetto: aumenta di 5 punti
+percentuali la probabilità di colpo critico per rango.”
 
-**Identità visiva:** una ciotola di salamoia bolognese con sale, rosmarino e
-aromi riconoscibili, applicata a una bistecca rovente. Poche scintille di brace
-possono comunicare il colpo “perfetto”, senza trasformare il condimento in una
-pozione magica.
+**Stato icona (PS-093, 2026-09-06):** il master HD orfano riusato
+(`upgrade_salamoia_bolognese.png`) è stato bocciato in art review
+(`direttore-artistico`): composizione a tre nuclei visivi separati (ciotola,
+pennello, bistecca), illeggibile alla dimensione reale d'uso (48×48 in HUD/
+fine run) e confondibile con "Il condimento di Barb" (stesso soggetto
+ciotola/vaso di spezie). La carta non è ancora cablata nel catalogo live in
+attesa di un nuovo master — vedi PS-107 (rigenerazione, delegata a
+`game-art-designer`) e PS-108 (derivazione + wiring, dipende da PS-107).
+
+**Identità visiva richiesta per la rigenerazione:** un solo nucleo visivo
+compatto (es. bistecca in primo piano con gocce di marinata già versate, non
+un flusso da una ciotola distante), 2-3 elementi di contorno al massimo
+(coerente con la densità di `meat_fork_damage`/`pinza_lunga`), un elemento
+univoco che comunichi "colpo perfetto" (scintilla/bagliore concentrato sul
+punto di contatto) per distinguersi da "Il condimento di Barb" invece di
+duplicarne bowl+erbe. Verificare la leggibilità a 48px prima di consegnare.
 
 ---
 

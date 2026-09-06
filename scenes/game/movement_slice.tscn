@@ -1,4 +1,4 @@
-[gd_scene load_steps=117 format=3]
+[gd_scene load_steps=118 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -79,6 +79,7 @@
 [ext_resource type="Script" path="res://scripts/vfx/combat_feedback.gd" id="76_feedback"]
 [ext_resource type="Script" path="res://scripts/app/visual_accessibility_settings.gd" id="77_accessibility"]
 [ext_resource type="Script" path="res://scripts/app/touch_control_settings.gd" id="88_touch_settings"]
+[ext_resource type="Script" path="res://scripts/app/fire_mode_settings.gd" id="126_fire_mode_settings"]
 [ext_resource type="Texture2D" path="res://assets/art/arena/arena_floor_imagegen.png" id="89_arena_floor"]
 [ext_resource type="Script" path="res://scripts/platform/performance_monitor.gd" id="90_performance_monitor"]
 [ext_resource type="Script" path="res://scripts/platform/performance_stress_harness.gd" id="91_stress_harness"]
@@ -174,6 +175,10 @@ script = ExtResource("77_accessibility")
 [node name="TouchControlSettings" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("88_touch_settings")
+
+[node name="FireModeSettings" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("126_fire_mode_settings")
 
 [node name="FriendRegistry" type="Node" parent="."]
 unique_name_in_owner = true
@@ -403,6 +408,7 @@ unique_name_in_owner = true
 script = ExtResource("5_input_router")
 touch_joystick_path = NodePath("../UI/SafeAreaRoot/TouchJoystick")
 active_ability_button_path = NodePath("../UI/SafeAreaRoot/HUD/AbilityPanel/ActiveAbilityButton")
+aim_touch_joystick_path = NodePath("../UI/SafeAreaRoot/AimTouchJoystick")
 
 [node name="PlatformLifecycle" type="Node" parent="."]
 unique_name_in_owner = true
@@ -432,6 +438,10 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 
 [node name="TouchJoystick" parent="UI/SafeAreaRoot" instance=ExtResource("6_touch_joystick")]
+unique_name_in_owner = true
+debug_mode_in_editor = true
+
+[node name="AimTouchJoystick" parent="UI/SafeAreaRoot" instance=ExtResource("6_touch_joystick")]
 unique_name_in_owner = true
 debug_mode_in_editor = true
 

@@ -142,7 +142,11 @@ guardia oltre alla safe area di sistema già applicata da `SafeAreaRoot`.
   telegraph delle ondate (`_on_wave_event_telegraph_changed`, :642), pulsante
   pausa abilitato solo se `is_running()` (`_set_pause_available`, :665) e
   pulsante abilità attiva touch (`TouchAbilityButton`, con dissolvenza al
-  passaggio del player, righe 286-330).
+  passaggio del player, righe 286-330). **PS-085**: il pulsante è più in
+  alto rispetto al bordo inferiore che occupava prima, in entrambe le
+  modalità di sparo — lo spazio liberato è l'angolo di riposo del nuovo
+  `AimTouchJoystick`, visibile solo in modalità Manuale
+  (`_sync_aim_touch_joystick_visibility`, `movement_slice.gd`).
 - **Level up** — `UpgradeOverlay` (`scripts/ui/upgrade_overlay.gd`): appare
   su `offer_generated` di `UpgradeService` (:327), innescato quando
   `ExperienceSystem` chiama `RunController.request_level_up()`. Mostra 3
@@ -179,21 +183,32 @@ raggiungibile in pratica è `request_defeat()`, cablato in
 ## `InputRouter` — input unificato
 
 [scripts/input/input_router.gd](../scripts/input/input_router.gd) unifica
-tastiera (`Input.get_vector` sulle action di movimento, righe 296-302),
+tastiera (`Input.get_vector` sulle action di movimento, righe 472-478),
 gamepad (stesse action, mappate su `InputMap`) e touch (`TouchJoystick`
-legato via `bind_touch_joystick`, righe 73-87) in due intenzioni pubbliche:
+legato via `bind_touch_joystick`, righe 107-121) in tre intenzioni pubbliche:
 
 - `movement_vector: Vector2` (segnale `movement_vector_changed`) — se il
   joystick touch è attivo prevale su tastiera/gamepad (`_refresh_movement`,
-  righe 258-260).
-- `active_ability_requested` — emesso da `request_active_ability()` (:107),
+  righe 354-369).
+- `active_ability_requested` — emesso da `request_active_ability()` (:164),
   collegabile sia al `TouchAbilityButton` sia alla action da
   tastiera/gamepad `active_ability` (`_refresh_active_ability`, righe
-  279-286).
+  455-462).
+- **`manual_aim_changed(direction, active)` (PS-085)** — mira per lo sparo
+  manuale, stesso schema del movimento ma con tre sorgenti in ordine di
+  priorità (`_refresh_aim`, righe 392-415): joystick touch dedicato
+  (`bind_aim_touch_joystick`, :123, mentre il dito lo tiene premuto) → stick
+  destro gamepad (action `aim_left`/`aim_right`/`aim_up`/`aim_down`) → mouse
+  su desktop (direzione dal Player verso `get_global_mouse_position()`,
+  attiva solo mentre l'action `manual_fire_hold` è premuta). `direction`
+  conserva l'ultimo impegno anche quando `active` torna a `false`, come
+  `_last_aim_direction` dell'automatico. `bind_aim_origin(_player)`
+  (`movement_slice.gd`) è l'unica dipendenza di `InputRouter` su un nodo di
+  mondo, usata solo per la proiezione del cursore.
 
-`movement_slice.gd:77` collega `movement_vector_changed` al Player;
-`AbilityController` si collega direttamente a `InputRouter`
-(`movement_slice.gd:204-209`).
+`movement_slice.gd` collega `movement_vector_changed` al Player e
+`manual_aim_changed` a `WeaponController.set_manual_aim_state()`;
+`AbilityController` si collega direttamente a `InputRouter`.
 
 Gate anti-input residuo: `suspend_input()`/`resume_input()` (righe 118-131)
 con riarmo neutro (`_try_neutral_rearm`, righe 265-276) — l'input riprende

@@ -65,11 +65,6 @@ Contratti da preservare:
 - `PerformanceProfile` regola risoluzione interna, VFX e particelle per
   piattaforma; non cambia mai il bilanciamento in modo invisibile.
 
-Layout: [scripts/](scripts/) per la logica, [scenes/](scenes/) per le scene,
-[data/](data/) per le `Resource` `.tres`, [assets/](assets/) per arte, audio e
-font, [tests/unit/](tests/unit/) per i test GUT (`test_*.gd`),
-[tools/](tools/) per gli script PowerShell.
-
 ## Stile GDScript
 
 - `class_name` + `extends` in testa; tipi espliciti ovunque, anche nei segnali.
