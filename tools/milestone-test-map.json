@@ -53,7 +53,8 @@
         "tests/unit/test_ps006_evil_signature_abilities.gd",
         "tests/unit/test_ps026_boss_baseline_display_name.gd",
         "tests/unit/test_ps051_boss_intro_identity.gd",
-        "tests/unit/test_ps101_evil_hunger_narrative.gd"
+        "tests/unit/test_ps101_evil_hunger_narrative.gd",
+        "tests/unit/test_ps103_boss_intro_frame_wiring.gd"
       ]
     },
     {
@@ -334,7 +335,8 @@
         "tests/unit/test_ps047_upgrade_card_hierarchy.gd",
         "tests/unit/test_ps059_upgrade_modal_contrast.gd",
         "tests/unit/test_ps051_boss_intro_identity.gd",
-        "tests/unit/test_ps085_manual_fire_mode.gd"
+        "tests/unit/test_ps085_manual_fire_mode.gd",
+        "tests/unit/test_ps103_boss_intro_frame_wiring.gd"
       ]
     },
     {

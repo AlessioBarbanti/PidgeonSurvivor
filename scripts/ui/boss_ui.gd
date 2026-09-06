@@ -21,6 +21,18 @@ const VBOX_SEPARATION_PREFERRED := 18
 const VBOX_SEPARATION_MIN := 8
 const VBOX_GAP_COUNT := 4
 
+# PS-103: il medaglione della cornice generata da PS-102
+# (`generated/boss_intro_frame.png`) è un cerchio scavato nella parte alta
+# dell'immagine, fuori dal flusso della VBox. `PortraitFrame` è quindi un
+# overlay disegnato prima di `%Center` nell'ordine dei figli di `IntroLayer`
+# (vedi `boss_ui.tscn`): l'anello opaco della cornice, disegnato sopra, ne
+# ritaglia gli angoli quadrati in un cerchio senza bisogno di uno shader.
+# Dimensione e offset verticale riflettono il foro della cornice a 620px di
+# larghezza pannello (`custom_minimum_size` di `IntroPanel`) e restano da
+# rifinire nel controllo percettivo manuale della card.
+const PORTRAIT_MEDALLION_SIZE := Vector2(128.0, 144.0)
+const PORTRAIT_MEDALLION_CENTER_Y := 136.0
+
 @onready var _intro_layer: Control = %IntroLayer
 @onready var _intro_position: MarginContainer = %Center
 @onready var _intro_panel: PanelContainer = %IntroPanel
@@ -116,6 +128,19 @@ func _reflow_intro_panel_position() -> void:
 	_intro_position.add_theme_constant_override("margin_right", int(margin_x))
 	_intro_position.add_theme_constant_override("margin_top", int(margin_y))
 	_intro_position.add_theme_constant_override("margin_bottom", int(margin_y))
+	_reflow_portrait_frame(Vector2(margin_x, margin_y), content)
+
+
+## PS-103: `%Center` (un `MarginContainer`) posiziona `IntroPanel` esattamente
+## a `(margin_x, margin_y)` al prossimo sort — leggere `_intro_panel.position`
+## qui sarebbe ancora il valore di un frame fa. Riusare gli stessi valori già
+## calcolati sopra evita quel ritardo di un frame.
+func _reflow_portrait_frame(panel_position: Vector2, panel_size: Vector2) -> void:
+	if not is_instance_valid(_portrait_frame):
+		return
+	var center := panel_position + Vector2(panel_size.x / 2.0, PORTRAIT_MEDALLION_CENTER_Y)
+	_portrait_frame.position = center - PORTRAIT_MEDALLION_SIZE / 2.0
+	_portrait_frame.size = PORTRAIT_MEDALLION_SIZE
 
 
 func _apply_portrait(portrait: Texture2D) -> void:
