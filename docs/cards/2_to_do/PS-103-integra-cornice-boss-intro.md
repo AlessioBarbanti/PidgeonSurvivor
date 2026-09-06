@@ -118,8 +118,8 @@ raggiunge almeno `IN VERIFICA` (asset e manifest pronti da cablare), per il
 contratto board in `docs/cards/README.md`.
 
 Non è una card `tipo: art`: è wiring in scena, quindi non va delegata a
-`game-art-designer` (quella resta la competenza di PS-102). È invece un buon
-candidato per `revisore-contratti` prima della chiusura, dato che tocca
+`game-art-designer` (quella resta la competenza di PS-102). Merita però una
+rilettura del diff prima della chiusura, dato che tocca
 `boss_ui.tscn`/`boss_ui.gd` e deve preservare il contratto identità
 individuale PS-051 senza toccarne la logica. Il proprietario può inoltre
 invocare manualmente `qa-esplorativo` una volta cablata la nuova cornice, per
