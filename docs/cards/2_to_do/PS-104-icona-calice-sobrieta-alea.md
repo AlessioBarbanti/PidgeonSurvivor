@@ -8,7 +8,7 @@ priorita: media
 dipende_da: []
 origine:
 creato: 2026-09-05
-aggiornato: 2026-09-05
+aggiornato: 2026-09-06
 ---
 
 # PS-104 — Genera l'icona del calice per la Sobrietà di Alea
@@ -51,11 +51,16 @@ e di stato del gioco.
 - [ ] Esiste un master a tema calice di vino rosso, leggibile a dimensione
       HUD (icona piccola in alto a sinistra, non un elemento a piena
       schermata).
-- [ ] Il calice comunica un **livello di riempimento graduale** (es. una
-      sequenza di frame/stati da vuoto a pieno, o un unico asset pensato per
-      un mascheramento/shader di riempimento in PS-105 — la scelta tecnica
-      esatta è dell'integrazione, ma l'asset deve supportarla senza
-      richiedere una rigenerazione).
+- [ ] Il calice comunica il **livello di riempimento graduale** tramite due
+      derivati alla stessa canvas quadrata `128×128` RGBA, allineati
+      pixel-per-pixel fra loro: `alea_sobriety_glass_empty.png` (vetro/
+      contorno del calice, base statica sempre visibile) e
+      `alea_sobriety_wine_fill.png` (solo il liquido isolato, senza il
+      contorno del vetro). I due file sono pensati perché PS-106 li componga
+      con una maschera/shader di riempimento verticale dal basso verso
+      l'alto, guidata direttamente dal float continuo 0.0-1.0 di PS-105:
+      nessuno stato intermedio pre-renderizzato, nessuna rigenerazione se
+      cambia la logica di soglia della passiva.
 - [ ] Lo stato "pieno" si distingue a colpo d'occhio dallo stato "vuoto"
       anche a saturazione ridotta (stesso principio già richiesto alle
       coppie di stato in PS-029/PS-098: mai il solo colore a portare
@@ -102,9 +107,23 @@ Non toccare:
   `TELL_ALEA_NEGATIVE`) resta un particellare colorato indipendente,
   cablato da [PS-105](./PS-105-nuova-passiva-alea-due-dita-e-parto.md) sullo
   stesso meccanismo già in uso per Aleo/Lollo/Migi — non questa icona.
-- **Aperto per il resolver — numero esatto di stati/frame di riempimento.**
-  Il proprietario ha indicato solo "calice di vino rosso" senza specificare
-  quanti livelli intermedi servano fra vuoto e pieno.
+- **2026-09-06 — Opzione A: asset a due layer con maschera di riempimento
+  verticale, guidata direttamente dal float 0.0-1.0 di PS-105 (non un set di
+  frame discreti a soglia).** Confermato dal proprietario: il segnale
+  sorgente è un float continuo, non un insieme di stati fissi, e PS-106
+  richiede un aggiornamento in tempo reale "senza polling né valori
+  stantii" — un mascheramento/shader verticale legge il float direttamente
+  senza introdurre gradini visibili né richiedere N unità d'arte aggiuntive
+  ad ogni ritocco della soglia di Brilla. Geometria di consegna (decisione
+  tecnica di integrazione, non creativa): due derivati `128×128` RGBA sulla
+  stessa canvas — `alea_sobriety_glass_empty.png` (vetro/contorno, sempre
+  visibile) e `alea_sobriety_wine_fill.png` (solo liquido, da mascherare
+  verticalmente dal basso in PS-106). La dimensione `128×128` non è
+  arbitraria: è la stessa già in uso da tutta la pipeline icone del
+  progetto (passive, abilità, nemici — tutte derivate a `128×128` da
+  `tools/process-*-icon.ps1`), così l'integrazione in HUD scala verso il
+  basso una texture pixel-art coerente invece di introdurre una nuova scala
+  di produzione.
 
 ## Documenti sincronizzati
 

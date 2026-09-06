@@ -336,7 +336,8 @@
         "tests/unit/test_ps059_upgrade_modal_contrast.gd",
         "tests/unit/test_ps051_boss_intro_identity.gd",
         "tests/unit/test_ps085_manual_fire_mode.gd",
-        "tests/unit/test_ps103_boss_intro_frame_wiring.gd"
+        "tests/unit/test_ps103_boss_intro_frame_wiring.gd",
+        "tests/unit/test_ps106_alea_sobriety_hud.gd"
       ]
     },
     {
@@ -420,7 +421,16 @@
         "tests/unit/test_ps079_state_tell_particles.gd",
         "tests/unit/test_ps072_bea_dodge_audio.gd",
         "tests/unit/test_ps105_alea_sobriety_cycle.gd",
-        "tests/unit/test_ps093_extended_base_stats.gd"
+        "tests/unit/test_ps093_extended_base_stats.gd",
+        "tests/unit/test_ps106_alea_sobriety_hud.gd"
+      ]
+    },
+    {
+      "patterns": [
+        "assets/art/icons/hud/*"
+      ],
+      "smokes": [
+        "tests/unit/test_ps106_alea_sobriety_hud.gd"
       ]
     },
     {

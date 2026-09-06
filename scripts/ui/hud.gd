@@ -41,6 +41,8 @@ const WAVE_EVENT_TELEGRAPH_COLOR := Color("6ee7ff")
 @onready var _pause_button: Button = %PauseButton
 @onready var _ability_panel: Control = %AbilityPanel
 @onready var _active_ability_button: TouchAbilityButton = %ActiveAbilityButton
+@onready var _sobriety_slot: Control = %SobrietySlot
+@onready var _sobriety_icon: TextureProgressBar = %SobrietyIcon
 
 var _run_controller: RunController
 var _health_component: HealthComponent
@@ -48,6 +50,7 @@ var _experience_system: ExperienceSystem
 var _ability_controller: AbilityController
 var _game_director: GameDirector
 var _wave_event_scheduler: WaveEventScheduler
+var _friend_passive_controller: FriendPassiveController
 var _friend_definition: FriendDefinition
 var _health_feedback_remaining := 0.0
 var _ability_ready_pulse_remaining := 0.0
@@ -98,7 +101,8 @@ func configure(
 	experience_system: ExperienceSystem,
 	ability_controller: AbilityController = null,
 	game_director: GameDirector = null,
-	wave_event_scheduler: WaveEventScheduler = null
+	wave_event_scheduler: WaveEventScheduler = null,
+	friend_passive_controller: FriendPassiveController = null
 ) -> bool:
 	if (
 		not is_node_ready()
@@ -115,12 +119,16 @@ func configure(
 	_ability_controller = ability_controller
 	_game_director = game_director
 	_wave_event_scheduler = wave_event_scheduler
+	_friend_passive_controller = friend_passive_controller
 
 	_run_controller.run_time_changed.connect(_on_run_time_changed)
 	_run_controller.state_changed.connect(_on_run_state_changed)
 	_health_component.health_changed.connect(_on_health_changed)
 	_health_component.damaged.connect(_on_health_damaged)
 	_experience_system.progression_changed.connect(_on_progression_changed)
+	if is_instance_valid(_friend_passive_controller):
+		_friend_passive_controller.alea_sobriety_changed.connect(_on_alea_sobriety_changed)
+		_on_alea_sobriety_changed(_friend_passive_controller.get_alea_sobriety_ratio())
 	if is_instance_valid(_ability_controller):
 		_ability_controller.cooldown_changed.connect(_on_ability_cooldown_changed)
 		_ability_controller.readiness_changed.connect(_on_ability_readiness_changed)
@@ -164,11 +172,43 @@ func set_friend_definition(definition: FriendDefinition) -> bool:
 	if definition == null or not definition.is_valid():
 		return false
 	_friend_definition = definition
+	_refresh_sobriety_visibility()
 	return true
 
 
 func get_friend_definition() -> FriendDefinition:
 	return _friend_definition
+
+
+## PS-106: il calice Sobrietà è un indicatore esclusivo di Alea (contratto
+## PS-104), non un elemento HUD generico — nascosto senza riservare spazio
+## per qualunque altro personaggio equipaggiato.
+func _refresh_sobriety_visibility() -> void:
+	if not is_instance_valid(_sobriety_slot):
+		return
+	var is_alea := (
+		_friend_definition != null
+		and _friend_definition.passive_id == FriendPassiveController.ALEA_TWO_FINGERS_AND_GO
+	)
+	_sobriety_slot.visible = is_alea
+	if not is_alea:
+		_sobriety_icon.value = 0.0
+
+
+func _on_alea_sobriety_changed(fill_ratio: float) -> void:
+	_sobriety_icon.value = clampf(fill_ratio, 0.0, 1.0)
+
+
+func is_sobriety_icon_visible() -> bool:
+	return is_instance_valid(_sobriety_slot) and _sobriety_slot.visible
+
+
+func get_sobriety_fill_ratio() -> float:
+	return _sobriety_icon.value if is_instance_valid(_sobriety_icon) else 0.0
+
+
+func get_sobriety_icon_rect() -> Rect2:
+	return _sobriety_slot.get_global_rect() if is_instance_valid(_sobriety_slot) else Rect2()
 
 
 func get_health_value() -> float:
@@ -530,6 +570,7 @@ func _show_default_values() -> void:
 	_show_default_ability()
 	_hide_boss_warning()
 	_hide_wave_event_telegraph()
+	_on_alea_sobriety_changed(0.0)
 
 
 func _disconnect_sources() -> void:
@@ -577,6 +618,13 @@ func _disconnect_sources() -> void:
 				_on_pending_cosplay_changed
 			)
 	if (
+		is_instance_valid(_friend_passive_controller)
+		and _friend_passive_controller.alea_sobriety_changed.is_connected(
+			_on_alea_sobriety_changed
+		)
+	):
+		_friend_passive_controller.alea_sobriety_changed.disconnect(_on_alea_sobriety_changed)
+	if (
 		is_instance_valid(_game_director)
 		and _game_director.boss_warning_changed.is_connected(_on_boss_warning_changed)
 	):
@@ -597,6 +645,7 @@ func _disconnect_sources() -> void:
 	_ability_controller = null
 	_game_director = null
 	_wave_event_scheduler = null
+	_friend_passive_controller = null
 	_last_ability_ready = false
 	_hide_boss_warning()
 	_hide_wave_event_telegraph()

@@ -248,7 +248,8 @@ func _ready() -> void:
 		_experience_system,
 		_ability_controller,
 		_game_director,
-		_wave_event_scheduler
+		_wave_event_scheduler,
+		_friend_passive_controller
 	)
 	_hud.set_friend_definition(_player.get_friend_definition())
 	_character_select_overlay.configure(_friend_registry, _ability_effect_registry)
