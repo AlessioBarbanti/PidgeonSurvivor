@@ -526,7 +526,11 @@ func test_composed_scene() -> void:
 		var enemy := spawner.get_spawned_enemies()[0]
 		enemy.set_physics_process(false)
 		enemy.global_position = player.global_position + Vector2(120.0, 160.0)
-		enemy.get_health_component().set_health_max(weapon.weapon_profile.damage)
+		# PS-093: usa il danno effettivo (composto con lo scarto "character" del
+		# profilo auto-equipaggiato), non il dato grezzo del profilo arma: solo
+		# così il colpo resta letale a un solo hit indipendentemente dal
+		# personaggio con cui la scena headless parte.
+		enemy.get_health_component().set_health_max(weapon.get_effective_damage())
 		enemy.get_health_component().reset_to_max()
 		weapon.reset_for_run(false)
 		var projectile := weapon.try_fire()

@@ -449,6 +449,30 @@ stessa tripla entro `0,03` per asse.
 | Marghe | `×0,95` | `×1,00` | `×1,10` |
 | Migi | `×1,15` | `×0,90` | `×0,95` |
 
+PS-093 estende lo stesso principio con cinque assi ulteriori: danno inflitto,
+avidità (XP), raggio di raccolta pickup e riduzione del danno subito
+(moltiplicativi, stesso range `0,5–2,0`, stesso stadio "character" composto
+con l'eventuale carta catalogo corrispondente — mai un campo condiviso), più
+la probabilità di colpo critico (additiva in punti percentuali, non un
+moltiplicatore: default `0,0`, si compone per somma con la carta catalogo
+"Punto di Cottura" e il totale resta sempre limitato al cap dichiarato da
+`WeaponController.MAXIMUM_CRITICAL_CHANCE`, `35%`). Il moltiplicatore di
+danno critico resta di sola pertinenza della carta: senza di essa un colpo
+"critico" non infligge danno aggiuntivo, quindi lo scarto critico di un
+personaggio vale solo se quella carta compare nella run. Valori motivati per
+ruolo in `docs/characters.md` ("Scarti estesi").
+
+| Profilo | Danno | Avidità | Raggio pickup | Difesa | Critico |
+|---|---|---|---|---|---|
+| Magno | `×0,98` | `×1,02` | `×1,05` | `×1,00` | `+0%` |
+| Bea | `×1,00` | `×1,03` | `×1,04` | `×0,94` | `+5%` |
+| Zat | `×0,97` | `×0,97` | `×1,04` | `×1,00` | `+0%` |
+| Alea | `×1,10` | `×1,08` | `×0,92` | `×1,05` | `+0%` |
+| Aleo | `×1,00` | `×0,97` | `×1,00` | `×1,00` | `+0%` |
+| Lollo | `×1,00` | `×1,05` | `×0,93` | `×1,04` | `+6%` |
+| Marghe | `×0,95` | `×1,03` | `×1,02` | `×1,03` | `+0%` |
+| Migi | `×1,05` | `×0,95` | `×1,10` | `×1,00` | `+0%` |
+
 Baseline iniziali delle passive, tutte configurabili nei `.tres`:
 
 | Profilo | Parametri runtime B17A |

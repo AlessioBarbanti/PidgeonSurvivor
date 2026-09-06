@@ -46,6 +46,14 @@ var _run_controller: RunController
 var _fallback_curve := ExperienceCurve.new()
 var _upgrade_value_multiplier := 1.0
 var _upgrade_value_credit := 0.0
+## Avidità (PS-093): stadio "character", composto moltiplicativamente con
+## quello "upgrade" sopra — stesso pattern a due stadi già in uso per
+## cadenza/danno/raggio pickup. Non si azzera in `reset_for_run()`: il suo
+## ciclo di vita è quello della passiva equipaggiata
+## (`FriendPassiveController._apply_character_multipliers()`), non quello
+## della run, esattamente come i moltiplicatori "character" di
+## `WeaponController`.
+var _character_value_multiplier := 1.0
 
 
 func set_run_controller(value: RunController) -> void:
@@ -139,6 +147,21 @@ func get_upgrade_value_multiplier() -> float:
 	return _upgrade_value_multiplier
 
 
+func set_character_value_multiplier(multiplier: float) -> bool:
+	if not is_finite(multiplier) or multiplier <= 0.0:
+		return false
+	_character_value_multiplier = multiplier
+	return true
+
+
+func reset_character_value_multiplier() -> void:
+	_character_value_multiplier = 1.0
+
+
+func get_character_value_multiplier() -> float:
+	return _character_value_multiplier
+
+
 func reset_for_run() -> void:
 	reset_upgrade_value_multiplier()
 	var experience_was_changed := _experience_current != 0
@@ -189,7 +212,10 @@ func _get_curve() -> ExperienceCurve:
 
 
 func _resolve_upgrade_value(amount: int) -> int:
-	var total_value := float(amount) * _upgrade_value_multiplier + _upgrade_value_credit
+	var total_value := (
+		float(amount) * _upgrade_value_multiplier * _character_value_multiplier
+		+ _upgrade_value_credit
+	)
 	var whole_amount := floori(total_value + 0.00001)
 	_upgrade_value_credit = maxf(total_value - float(whole_amount), 0.0)
 	return whole_amount

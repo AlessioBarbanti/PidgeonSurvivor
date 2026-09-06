@@ -33,6 +33,11 @@ const CHRONIC_DELAY_MODIFIER := &"upgrade_chronic_delay"
 const WEAPON_PIERCE := &"weapon_pierce"
 const WEAPON_MULTISHOT := &"weapon_multishot"
 const WEAPON_DEATH_BURST := &"weapon_death_burst"
+## Salamoia Bolognese (PS-093): probabilità critica additiva per rango +
+## moltiplicatore di danno fisso. Il cap totale (scarto base personaggio +
+## carta) vive in `WeaponController.MAXIMUM_CRITICAL_CHANCE`, non qui: questo
+## registry passa solo il contributo grezzo della carta.
+const WEAPON_CRITICAL_STRIKE := &"weapon_critical_chance"
 
 const MINIMUM_MULTIPLIER := 0.001
 
@@ -241,6 +246,18 @@ func can_apply(definition: UpgradeDefinition) -> bool:
 					definition.effect_parameters,
 					"damage_multiplier_per_rank"
 				) > 0.0
+			)
+		WEAPON_CRITICAL_STRIKE:
+			return (
+				definition.repeatable
+				and _get_unit_number(
+					definition.effect_parameters,
+					"chance_bonus_per_rank"
+				) > 0.0
+				and _get_positive_number(
+					definition.effect_parameters,
+					"critical_damage_multiplier"
+				) > 1.0
 			)
 		CHRONIC_DELAY:
 			var slow_factor := _get_positive_number(
@@ -456,6 +473,17 @@ func recalculate_effects(preserve_health_ratio: bool = true) -> bool:
 						max_weapon_death_burst_damage_multiplier
 					),
 				}
+			WEAPON_CRITICAL_STRIKE:
+				next_signatures[definition.effect_id] = {
+					"chance_bonus": _get_unit_number(
+						definition.effect_parameters,
+						"chance_bonus_per_rank"
+					) * float(rank),
+					"damage_multiplier": _get_positive_number(
+						definition.effect_parameters,
+						"critical_damage_multiplier"
+					),
+				}
 			_:
 				_multiply_effect(
 					next_multipliers,
@@ -662,6 +690,18 @@ func _apply_signature_effects(next_signatures: Dictionary) -> bool:
 	):
 		return false
 
+	var critical_parameters := _parameters_from(next_signatures, WEAPON_CRITICAL_STRIKE)
+	var critical_chance_bonus := 0.0
+	var critical_damage_multiplier := 1.0
+	if not critical_parameters.is_empty():
+		critical_chance_bonus = float(critical_parameters["chance_bonus"])
+		critical_damage_multiplier = float(critical_parameters["damage_multiplier"])
+	if not _weapon_controller.set_critical_strike_modifiers(
+		critical_chance_bonus,
+		critical_damage_multiplier
+	):
+		return false
+
 	_apply_chronic_delay_configuration(
 		_parameters_from(next_signatures, CHRONIC_DELAY)
 	)
@@ -738,6 +778,7 @@ func _clear_signature_runtime() -> void:
 	if is_instance_valid(_weapon_controller):
 		_weapon_controller.reset_projectile_upgrade_modifiers()
 		_weapon_controller.reset_projectile_shape_modifiers()
+		_weapon_controller.reset_critical_strike_modifiers()
 	for pulse in _active_shockwaves.duplicate():
 		if is_instance_valid(pulse):
 			pulse.finish()

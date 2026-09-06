@@ -207,7 +207,8 @@ func _ready() -> void:
 		_run_controller,
 		_player,
 		_weapon_controller,
-		_targeting_system
+		_targeting_system,
+		_experience_system
 	)
 	_friend_passive_controller.instinctive_dodge_triggered.connect(
 		_on_instinctive_dodge_triggered

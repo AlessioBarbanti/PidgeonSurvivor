@@ -76,6 +76,10 @@ var _base_pickup_radius := 160.0
 var _character_move_speed_multiplier := 1.0
 var _character_pickup_radius_multiplier := 1.0
 var _character_health_max_multiplier := 1.0
+## Riduzione danno subito (PS-093): stadio "character", composto
+## moltiplicativamente con `_damage_taken_multiplier` (stadio "upgrade",
+## invariato) al momento dell'applicazione — non un campo condiviso.
+var _character_damage_taken_multiplier := 1.0
 var _move_speed_multiplier := 1.0
 var _pickup_radius_multiplier := 1.0
 var _health_max_multiplier := 1.0
@@ -291,7 +295,7 @@ func take_contact_damage(amount: float, source_position: Vector2 = Vector2.INF) 
 	var resolved_amount := amount
 	if is_instance_valid(_passive_controller):
 		resolved_amount = _passive_controller.resolve_incoming_damage(amount, source_position)
-	resolved_amount *= _damage_taken_multiplier
+	resolved_amount *= _damage_taken_multiplier * _character_damage_taken_multiplier
 	if resolved_amount <= 0.0:
 		return false
 	return _health_component.take_damage(resolved_amount)
@@ -410,7 +414,8 @@ func set_upgrade_stat_multipliers(
 func set_character_stat_multipliers(
 	move_speed_multiplier: float,
 	pickup_radius_multiplier: float = 1.0,
-	health_max_multiplier: float = 1.0
+	health_max_multiplier: float = 1.0,
+	damage_taken_multiplier: float = 1.0
 ) -> bool:
 	if (
 		not is_finite(move_speed_multiplier)
@@ -419,10 +424,13 @@ func set_character_stat_multipliers(
 		or pickup_radius_multiplier <= 0.0
 		or not is_finite(health_max_multiplier)
 		or health_max_multiplier <= 0.0
+		or not is_finite(damage_taken_multiplier)
+		or damage_taken_multiplier <= 0.0
 	):
 		return false
 	_character_move_speed_multiplier = move_speed_multiplier
 	_character_pickup_radius_multiplier = pickup_radius_multiplier
+	_character_damage_taken_multiplier = damage_taken_multiplier
 	_character_health_max_multiplier = health_max_multiplier
 	_recalculate_effective_stats(true)
 	return true
