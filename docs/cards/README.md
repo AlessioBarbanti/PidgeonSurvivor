@@ -228,3 +228,5 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-124](./4_to_test/PS-124-eventi-ondata-che-riducono-la-pressione.md) | Correggi gli eventi d'ondata che riducono la pressione invece di aumentarla | fix | gameplay | IN VERIFICA | alta | — |
 | [PS-125](./6_rejected/PS-125-scala-xp-costante-lungo-la-curva-late-run.md) | Rendi costante la scala XP/kill lungo la curva late-run | fix | gameplay | SCARTATA | alta | — |
 | [PS-126](./4_to_test/PS-126-nessuna-scala-difficolta-oltre-5-minuti.md) | Introduci una curva di pressione oltre il minuto 5 (Boss ricorrente trivializzato) | feat | gameplay | IN VERIFICA | alta | PS-055 |
+| [PS-128](./5_completed/PS-128-genera-ritratto-definitivo-piccione-malvagio.md) | Genera un ritratto definitivo per il Piccione Malvagio | art | arte | COMPLETATO | media | — |
+| [PS-129](./5_completed/PS-129-integra-ritratto-piccione-malvagio-boss-intro.md) | Integra il ritratto definitivo del Piccione Malvagio nella Boss intro | fix | UI | COMPLETATO | media | PS-128 |

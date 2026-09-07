@@ -6,6 +6,7 @@ extends GutGameplayTest
 ## rompersi quando ritratto, icona o Signature mancano.
 
 const BOSS_UI_SCENE := preload("res://scenes/ui/boss_ui.tscn")
+const BASELINE_PORTRAIT_PATH := "res://assets/art/characters/piccione_malvagio/generated/portrait.png"
 const REFERENCE_SIGNATURE := preload("res://data/bosses/signatures/evil_alea_grand_spin.tres")
 const SIGNATURE_CATALOG: BossSignatureCatalog = preload("res://data/bosses/evil_signature_catalog.tres")
 const FRIEND_IDS_WITH_EVIL_VARIANT := [
@@ -36,6 +37,16 @@ func test_baseline_intro_shows_pigeon_without_signature_slot() -> void:
 	if definition == null:
 		return
 
+	var portrait := definition.get_safe_portrait()
+	assert_true(portrait != null, "Il Piccione Malvagio deve risolvere il ritratto definitivo PS-128.")
+	assert_eq(
+		portrait.resource_path, BASELINE_PORTRAIT_PATH,
+		"Il baseline deve usare il derivato definitivo 256x256, non lo spritesheet pigeon_special.png."
+	)
+	assert_false(
+		portrait is AtlasTexture,
+		"Il ritratto baseline non deve più essere un AtlasTexture ritagliato dallo sprite di gameplay."
+	)
 	assert_true(boss_ui.is_intro_portrait_visible(), "Il Piccione Malvagio deve mostrare il proprio ritratto.")
 	assert_eq(
 		boss_ui.get_intro_portrait_texture(), definition.get_safe_portrait(),

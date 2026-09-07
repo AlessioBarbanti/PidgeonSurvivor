@@ -378,3 +378,80 @@ Sono stati raggruppati per personaggio sotto `assets/art/characters/<id>/`
 mantenendo la distinzione `hd/`/`generated/` e i due manifest sono stati fusi
 in questo file. Nessun contenuto binario è cambiato: solo percorso e nome file;
 gli hash SHA-256 sopra restano quelli originali.
+
+## Parte 4 — Ritratto del Piccione Malvagio (PS-128)
+
+### Produzione art-only del 7 settembre 2026
+
+- Origine: OpenAI ImageGen built-in, generazione testuale guidata dallo sprite
+  runtime esistente `assets/art/enemies/pigeons/pigeon_special.png` e dalla
+  famiglia corrente dei ritratti Evil, entrambi ispezionati prima della
+  generazione ma non allegati come input ImageGen.
+- Autore: progetto IL GIOCO con assistenza OpenAI ImageGen.
+- Licenza: Licenza del progetto.
+- Output ImageGen selezionato:
+  `exec-1833b260-03b9-4457-ba8c-79619be5ab77.png`.
+- Integrazione runtime: fuori ambito per PS-128; appartiene a PS-129. Il
+  derivato è pronto nel percorso definitivo ma nessun `.tres`, scena o test è
+  stato modificato da questa produzione.
+
+Prompt finale normalizzato:
+
+```text
+Use case: stylized-concept
+Asset type: square 2D game Boss-intro portrait master for Pidgeon Survivor
+Primary request: create a definitive high-resolution bust portrait of the
+existing Piccione Malvagio, translating its tiny gameplay sprite into the same
+polished arcade pixel-art portrait family as the game's Evil Boss portraits;
+this is the same character, not a redesign
+Scene/backdrop: genuinely transparent background, with only a small restrained
+plume of detached plum-purple corruption smoke behind the silhouette
+Subject: exactly one sinister real pigeon, clearly avian and non-humanoid,
+chest-up three-quarter view facing right; broad charcoal and deep indigo body
+feathers; near-black plum outline; vivid magenta neck collar and iridescent
+band; orange-gold beak and a few clean gold-orange wing-feather accents; one
+sharp luminous magenta eye; proud, hungry, scheming expression; compact
+powerful pigeon silhouette matching a game Boss
+Style/medium: polished caricatural 16-bit arcade pixel art; visibly stepped
+edges, intentional chunky pixel clusters, limited palette, two or three clear
+shadow bands, crisp near-black plum outline; match the density and finish of a
+premium 256x256 Boss portrait, not a tiny sprite enlargement
+Composition/framing: square canvas, centered chest-up bust, head fully visible,
+safe transparent margin on every side, subject fills roughly 78 percent of the
+canvas, essential beak crest chest and shoulders kept away from edges
+Lighting/mood: dramatic warm orange-gold rim light against cool indigo feathers;
+ominous but playful arcade villain
+Color palette: body #291F47-like charcoal indigo, outline #090513-like near-black
+plum, accent #FFAD29-like orange-gold, corruption glow #FF387F-like magenta,
+restrained plum smoke
+Constraints: preserve pigeon anatomy and the existing character identity; true
+alpha transparency; exactly one pigeon; no human body, hands, clothing, armor,
+crown, sunglasses, grill, food, scenery, floor, cast shadow, frame, UI, text,
+letters, logo, watermark, checkerboard, white backdrop or opaque background
+Avoid: photorealism, smooth digital painting, 3D render, vector art, anime
+humanization, generic demon, raven or eagle anatomy, excessive particles,
+muddy gradients, tiny noisy feather detail
+```
+
+Trasformazione deterministica:
+
+```powershell
+.\tools\process-upgrade-icon.ps1 `
+  -InputPath assets\art\characters\piccione_malvagio\hd\portrait.png `
+  -OutputPath assets\art\characters\piccione_malvagio\generated\portrait.png `
+  -Size 256 -Padding 24
+```
+
+Lo script ritaglia sui bounds alpha con soglia `8`, aggiunge padding quadrato e
+riduce nearest-neighbor su canvas RGBA trasparente. La review isolata ha
+confermato silhouette, palette, leggibilità del volto e margini a `256×256`; i
+quattro angoli del derivato hanno alpha `0`.
+
+| Asset | Dimensioni | Byte | SHA-256 |
+|---|---:|---:|---|
+| `piccione_malvagio/hd/portrait.png` | `1254x1254` | `1508058` | `E74C9D86FE605669DB6BB7BC6B673E38F12F89B1D6CE069B0E87FD2FAE6735FA` |
+| `piccione_malvagio/generated/portrait.png` | `256x256` | `120448` | `51C4ADCAFC11B9ECCE53C2E3910AC62C3FE5CAD1C0F78A11ED92F62C1D5865AB` |
+
+Il master è escluso da import tramite
+`piccione_malvagio/hd/.gdignore` e dai tre export tramite il filtro comune
+`assets/art/characters/*/hd/**`.

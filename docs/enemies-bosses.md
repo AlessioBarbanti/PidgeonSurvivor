@@ -125,10 +125,10 @@ Aleo, Bea, Lollo, Magno, Marghe, Migi, Zat — vedi
 `BossUI.show_intro()` ([scripts/ui/boss_ui.gd](../scripts/ui/boss_ui.gd))
 distingue le due varianti invece di mostrare soltanto titolo, citazione e CTA:
 
-- **Piccione Malvagio**: mostra il proprio `portrait`
-  (`BossDefinition.get_safe_portrait()`), nessuna icona Signature (non ha
-  Signature) e nessun trattamento cromatico personale — titolo e cornice
-  restano sul colore neutro.
+- **Piccione Malvagio**: mostra il ritratto definitivo `256×256`
+  `assets/art/characters/piccione_malvagio/generated/portrait.png`, risolto da
+  `BossDefinition.get_safe_portrait()`; non ha icona Signature né trattamento
+  cromatico personale, quindi titolo e cornice restano sul colore neutro.
 - **`Evil <Nome>`**: mostra il ritratto risolto dal `FriendDefinition`
   (`friend_profile.get_public_evil_portrait()`), l'icona della Signature
   attiva (`BossSignatureDefinition.icon`) e tinge nome e cornice con
@@ -136,12 +136,12 @@ distingue le due varianti invece di mostrare soltanto titolo, citazione e CTA:
 
 Ritratto, icona o Signature mancanti fanno ricomporre la intro sugli elementi
 restanti (slot nascosto, mai una texture nulla visibile o uno spazio vuoto
-dedicato). La CTA "AFFRONTA" non cambia mai stile o colore in base al Boss. I
-sedici asset coinvolti (otto `evil_portrait`, otto icone Signature) sono
-segnaposto procedurali temporanei — stato dettagliato in
-[visual-audio-identity.md](./visual-audio-identity.md); la sostituzione
-definitiva è compito di
-[PS-052](./cards/2_to_do/PS-052-genera-ritratti-evil-e-icone-signature.md).
+dedicato). La CTA "AFFRONTA" non cambia mai stile o colore in base al Boss.
+Gli otto `evil_portrait` e le otto icone Signature sono gli asset definitivi
+integrati da [PS-052](./cards/5_completed/PS-052-genera-ritratti-evil-e-icone-signature.md);
+il ritratto baseline dedicato è prodotto da PS-128 e collegato da PS-129. Lo
+stato artistico dettagliato resta in
+[visual-audio-identity.md](./visual-audio-identity.md).
 
 ### Perché diventano Evil: la fame (PS-101)
 
