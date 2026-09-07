@@ -914,6 +914,10 @@ func _configure_performance_hardening() -> void:
 	if profile == null or not profile.is_valid():
 		push_error("B18V: PerformanceProfile non valido.")
 		return
+	## PS-113: senza questo cap il motore rende senza limite di frame, unico
+	## responsabile del calore/consumo batteria segnalato su Android di fascia
+	## bassa a refresh rate alto (90/120Hz) dove nulla lo limitava prima.
+	Engine.max_fps = profile.target_fps
 	_combat_feedback.set_max_active_effects(profile.max_transient_feedback)
 	var sources := {
 		&"arena": _arena_layout,
