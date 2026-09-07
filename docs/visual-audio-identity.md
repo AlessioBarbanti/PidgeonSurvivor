@@ -72,6 +72,24 @@ del documento architetturale, non una lacuna di questo file.
 | `third_party/eldiran_rpg_characters` | 2 | `LICENSE.md` | Sprite RPG 32×32 CC0, vedi nota sotto |
 | `third_party/pinhead_inline_skate` | 1 | `LICENSE.md` | Provenienza storica, sostituito da `icons/abilities/generated/powerslide.png` |
 
+### Sprite di gameplay del cast (PS-116)
+
+Dal 7 settembre 2026 `assets/art/characters/<id>/generated/sprite.png` è una
+striscia `192x64` (3 frame da `64x64`, prima `96x32`/`32x32`), derivata dallo
+stesso master `hd/poses.png` con `tools/process-cast-sprite.ps1 -CanvasSize 64
+-Padding 4` (prima `-CanvasSize 32 -Padding 2`, stesso rapporto area
+utile/canvas). Causa: il canvas nativo del Player era piu' piccolo di quello
+dei piccioni nemici (`48x48`) ma veniva ingrandito ~2x a schermo
+(`CharacterSprite.scale` in `player.tscn`), risultando piu' "morbido" a
+confronto. La scala del nodo e' stata dimezzata in proporzione
+(`1.65 → 0.825`) cosi' il footprint finale a schermo resta invariato
+(~66px); le region `AtlasTexture_gameplay_*` nei `data/friends/<id>.tres`
+sono state aggiornate da celle `32x32` a `64x64`. Il corpo Evil (Boss) riusa
+la stessa texture (`BossDefinition.get_visual_texture()` →
+`friend_profile.get_gameplay_idle_right()`), quindi beneficia
+automaticamente di un fattore di ingrandimento dimezzato
+(`target_diameter / texture_size`, indipendente dal cambio).
+
 ### Ritratti busto Player (PS-068)
 
 Dal 3 settembre 2026 ogni `data/friends/*.tres` usa come `portrait` e
@@ -165,6 +183,13 @@ bilanciamento" (commento sorgente). Campi: `target_fps` (30-240),
 test (`stress_enemy_count`, `stress_projectile_count`,
 `stress_pickup_count`) usate dall'harness di stress, non dal gameplay
 normale.
+
+**`target_fps` (PS-113):** applicato a `Engine.max_fps` in
+`movement_slice._configure_performance_hardening()`, subito dopo la
+risoluzione del profilo attivo. Prima di PS-113 il campo era dichiarato e
+validato ma non consumato: il motore rendeva senza limite di frame, probabile
+causa principale di calore e consumo batteria su Android di fascia bassa a
+refresh rate alto.
 
 Due profili dati: `windows_performance_profile.tres`
 (`max_transient_feedback = 300`) e `mobile_performance_profile.tres`

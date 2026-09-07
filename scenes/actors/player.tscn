@@ -34,7 +34,7 @@ shape = SubResource("CircleShape2D_player")
 unique_name_in_owner = true
 z_index = 1
 texture_filter = 1
-scale = Vector2(1.65, 1.65)
+scale = Vector2(0.825, 0.825)
 
 [node name="PassiveStateParticles" type="Node2D" parent="."]
 unique_name_in_owner = true

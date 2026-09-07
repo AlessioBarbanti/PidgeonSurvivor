@@ -133,10 +133,20 @@ hard e intenzionale: i PNG intermedi non contengono alpha parziale.
 `tools/process-cast-sprite.ps1` divide ogni sorgente in tre celle uguali,
 seleziona deterministicamente la componente connessa opaca piu grande di ogni
 cella usando soglia alpha `192`, la ricampiona nearest-neighbor dentro un'area
-massima `28x28`, la centra orizzontalmente e la allinea a `2 px` dal fondo di un
-canvas trasparente `32x32`. I tre frame diventano una striscia RGBA `96x32`
-ordinata `passo A | idle | passo B`. Nessun ritocco di colore, compositing o VFX
-e applicato dopo ImageGen.
+massima e la centra orizzontalmente allineandola al fondo di un canvas
+trasparente. Nessun ritocco di colore, compositing o VFX e applicato dopo
+ImageGen.
+
+**Comando corrente (PS-116, dal 7 settembre 2026):**
+`-FrameCount 3 -CanvasSize 64 -Padding 4` (area utile `56x56`, striscia
+runtime `192x64`, ordine `passo A | idle | passo B`). Sostituisce il comando
+originale `-CanvasSize 32 -Padding 2` (area utile `28x28`, striscia `96x32`):
+stesso rapporto area utile/canvas (`87.5%`), quindi la stessa inquadratura e
+gli stessi margini relativi, solo con il doppio di pixel sorgente per lato.
+Causa: gap di definizione percepito fra il personaggio giocabile (nativo
+32x32, poi ingrandito ~2x a schermo) e i piccioni nemici (nativi 48x48) — vedi
+la card PS-116 per l'analisi completa. Nessun master toccato: stesso
+`hd/poses.png` di ciascun personaggio, gia' approvato.
 
 Le sorgenti selezionate dopo la rimozione del chroma sono conservate come PNG
 RGBA HD `1536x1024` in `<id>/hd/`, su richiesta del proprietario, per riusi
@@ -147,16 +157,19 @@ nearest.
 
 ### File e integrita
 
+Byte/hash "runtime" aggiornati al 7 settembre 2026 (PS-116, derivato `192x64`);
+il master HD e il suo hash sono invariati.
+
 | File runtime | Byte master HD | SHA-256 master HD | Byte runtime | SHA-256 runtime |
 |---|---:|---|---:|---|
-| `magno/generated/sprite.png` | `1060810` | `2EA717859B91B420B97F8D9975D67A3C827BA94CC4355739A4DB4FE370F836A5` | `3162` | `BF3CDDC9AFAC4028A037B588DEF3A0E8C0F7562C6952662E772A9432240766BB` |
-| `bea/generated/sprite.png` | `953157` | `3C6B26826B9A6B5708174AE6EDB42F1F652A120DE0B17C3405DCAB8CB756059D` | `2942` | `0646F8C7E1486C548A3C1F96090297E826EA5EC419B698AAC6C4A74144256CB3` |
-| `zat/generated/sprite.png` | `810909` | `DD1EB3F249F37426E9573DE02C2E0292F32A932A0C2059F82325D1F92919780B` | `2390` | `A3B621F76C222873017A21E2206A072A71D908713B4A59BBAEA5AD7B9867E0FA` |
-| `alea/generated/sprite.png` | `829661` | `61C760FA609852BA31F5C24CE43626EA41228AAC6DFC9371D78D83F65408FEA5` | `1853` | `5FA4E05D766D22F323B18BD2D61B0059CA5298C19B386A794C6EFB14FD8FDD51` |
-| `aleo/generated/sprite.png` | `980832` | `53999B4B51D97A918B5AC8F68444417E07B8B17EA4837C239173C5DEF4C787DE` | `2743` | `2408BC57B90877DE4F34C99BB9A0FD6404E33B61A542A19263CCE7B2C99149C6` |
-| `lollo/generated/sprite.png` | `862437` | `CA66A174E501BEAB30CA3076F3682CCE955E488EC6EB8BBFC3C7734FDC1CF424` | `2655` | `633751EE7DB25DDC92F3156BE4898124923894A4F6722D52045B2AC49F74BA31` |
-| `migi/generated/sprite.png` | `810304` | `04EDEE8F99B5849384D268BD35CB4E498EA80BEA1FA961A67BD19B8D1DC75499` | `2821` | `CC2C6CFC7A7CE160AD0870FE3DC6166771242610CABE7A89F9E72EE6E1446430` |
-| `marghe/generated/sprite.png` | `1110523` | `D20B2CBA8B5FEB9A70D62D5E5CBEDFAB96E0FC9BB4E1C954B9BDBEC782A1872C` | `3145` | `30CA08F5BF1E59F0D6856B69B487C77CF75A8F0314827C3FB62F73096349DB9C` |
+| `magno/generated/sprite.png` | `1060810` | `2EA717859B91B420B97F8D9975D67A3C827BA94CC4355739A4DB4FE370F836A5` | `11399` | `6D38CF835DBA9ECDA91A46BF57BAA5F07D7EA3DB9D5B1E85705498DCF4634F92` |
+| `bea/generated/sprite.png` | `953157` | `3C6B26826B9A6B5708174AE6EDB42F1F652A120DE0B17C3405DCAB8CB756059D` | `10550` | `0268364C47C4F21983DB54DA0A18BBA2D97C957A6712041B2DE9B42A0D871D52` |
+| `zat/generated/sprite.png` | `810909` | `DD1EB3F249F37426E9573DE02C2E0292F32A932A0C2059F82325D1F92919780B` | `8584` | `98BB6BFEA0E0144923D7A233AD96BC91695ACBD55D9352F79E04251214C5E1F0` |
+| `alea/generated/sprite.png` | `829661` | `61C760FA609852BA31F5C24CE43626EA41228AAC6DFC9371D78D83F65408FEA5` | `6260` | `5E4A2CFED4B2DB4E749EF87F1801AB7D835F9C736405E7EEA9B4D5EDA0493F26` |
+| `aleo/generated/sprite.png` | `980832` | `53999B4B51D97A918B5AC8F68444417E07B8B17EA4837C239173C5DEF4C787DE` | `9905` | `DC7069EF10B070072337822386A14DE4CA52E7EB412464F08D70D5A32DCC438E` |
+| `lollo/generated/sprite.png` | `862437` | `CA66A174E501BEAB30CA3076F3682CCE955E488EC6EB8BBFC3C7734FDC1CF424` | `9311` | `85CCFA620E98B9B4167C4F06B195228EDB0DCDE4EC91BC79E8834A04B8644872` |
+| `migi/generated/sprite.png` | `810304` | `04EDEE8F99B5849384D268BD35CB4E498EA80BEA1FA961A67BD19B8D1DC75499` | `10130` | `DACE18ACE1A38858B80EF2D4475B2A4ECB4E1EFEEB59D75EE6AF56ECE17DC56E` |
+| `marghe/generated/sprite.png` | `1110523` | `D20B2CBA8B5FEB9A70D62D5E5CBEDFAB96E0FC9BB4E1C954B9BDBEC782A1872C` | `11259` | `F6E8F39C8A815C5F292CDE57273E6BD030F1C8899B843DEC77E19D89368D59CA` |
 
 ### Sorgenti HD trasparenti conservate
 

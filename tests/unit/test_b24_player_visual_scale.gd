@@ -1,6 +1,6 @@
 extends GutGameplayTest
 
-const BASE_SPRITE_SCALE := Vector2(1.65, 1.65)
+const BASE_SPRITE_SCALE := Vector2(0.825, 0.825)
 const EXPECTED_VISUAL_MULTIPLIER := 1.25
 const EXPECTED_COLLISION_RADIUS := 24.0
 const LAYOUT_PROFILES: Array[Vector2i] = [

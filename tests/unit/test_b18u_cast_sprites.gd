@@ -3,49 +3,49 @@ extends GutGameplayTest
 const EXPECTED_CAST := {
 	&"magno": {
 		"path": "res://assets/art/characters/magno/generated/sprite.png",
-		"sha256": "BF3CDDC9AFAC4028A037B588DEF3A0E8C0F7562C6952662E772A9432240766BB",
+		"sha256": "6D38CF835DBA9ECDA91A46BF57BAA5F07D7EA3DB9D5B1E85705498DCF4634F92",
 		"passive": &"magno_aerodynamic_flow",
 		"ability": &"magno_earthquake_shockwave",
 	},
 	&"bea": {
 		"path": "res://assets/art/characters/bea/generated/sprite.png",
-		"sha256": "0646F8C7E1486C548A3C1F96090297E826EA5EC419B698AAC6C4A74144256CB3",
+		"sha256": "0268364C47C4F21983DB54DA0A18BBA2D97C957A6712041B2DE9B42A0D871D52",
 		"passive": &"bea_sixth_sense",
 		"ability": &"bea_fire_z_trail",
 	},
 	&"zat": {
 		"path": "res://assets/art/characters/zat/generated/sprite.png",
-		"sha256": "A3B621F76C222873017A21E2206A072A71D908713B4A59BBAEA5AD7B9867E0FA",
+		"sha256": "98BB6BFEA0E0144923D7A233AD96BC91695ACBD55D9352F79E04251214C5E1F0",
 		"passive": &"zat_delayed_healing",
 		"ability": &"zat_lightning_storm",
 	},
 	&"alea": {
 		"path": "res://assets/art/characters/alea/generated/sprite.png",
-		"sha256": "5FA4E05D766D22F323B18BD2D61B0059CA5298C19B386A794C6EFB14FD8FDD51",
+		"sha256": "5E4A2CFED4B2DB4E749EF87F1801AB7D835F9C736405E7EEA9B4D5EDA0493F26",
 		"passive": &"alea_two_fingers_and_go",
 		"ability": &"alea_grand_spin",
 	},
 	&"aleo": {
 		"path": "res://assets/art/characters/aleo/generated/sprite.png",
-		"sha256": "2408BC57B90877DE4F34C99BB9A0FD6404E33B61A542A19263CCE7B2C99149C6",
+		"sha256": "DC7069EF10B070072337822386A14DE4CA52E7EB412464F08D70D5A32DCC438E",
 		"passive": &"aleo_internal_thermostat",
 		"ability": &"aleo_thermal_shock",
 	},
 	&"lollo": {
 		"path": "res://assets/art/characters/lollo/generated/sprite.png",
-		"sha256": "633751EE7DB25DDC92F3156BE4898124923894A4F6722D52045B2AC49F74BA31",
+		"sha256": "85CCFA620E98B9B4167C4F06B195228EDB0DCDE4EC91BC79E8834A04B8644872",
 		"passive": &"lollo_hyperactivity",
 		"ability": &"lollo_random_cosplay",
 	},
 	&"migi": {
 		"path": "res://assets/art/characters/migi/generated/sprite.png",
-		"sha256": "CC2C6CFC7A7CE160AD0870FE3DC6166771242610CABE7A89F9E72EE6E1446430",
+		"sha256": "DACE18ACE1A38858B80EF2D4475B2A4ECB4E1EFEEB59D75EE6AF56ECE17DC56E",
 		"passive": &"migi_turtle_shell",
 		"ability": &"migi_zen_slowdown",
 	},
 	&"marghe": {
 		"path": "res://assets/art/characters/marghe/generated/sprite.png",
-		"sha256": "30CA08F5BF1E59F0D6856B69B487C77CF75A8F0314827C3FB62F73096349DB9C",
+		"sha256": "F6E8F39C8A815C5F292CDE57273E6BD030F1C8899B843DEC77E19D89368D59CA",
 		"passive": &"marghe_contagious_smile",
 		"ability": &"marghe_shadow_deception",
 	},
@@ -113,7 +113,7 @@ func _assert_cast_resources(player: Player, registry: FriendRegistry) -> void:
 		var idle := definition.get_gameplay_idle_right()
 		var walk := definition.get_gameplay_walk_right_frames()
 		assert_true(
-			idle != null and idle.get_size() == Vector2(32.0, 32.0), "%s deve avere idle 32x32." % definition.id
+			idle != null and idle.get_size() == Vector2(64.0, 64.0), "%s deve avere idle 64x64 (PS-116)." % definition.id
 		)
 		assert_eq(walk.size(), 4, "%s deve conservare quattro fasi di camminata." % definition.id)
 		if idle == null or walk.size() != 4:
@@ -123,7 +123,7 @@ func _assert_cast_resources(player: Player, registry: FriendRegistry) -> void:
 		)
 		for frame in walk:
 			assert_true(
-				frame != null and frame.get_size() == Vector2(32.0, 32.0) and _atlas_path(frame) == expected_path,
+				frame != null and frame.get_size() == Vector2(64.0, 64.0) and _atlas_path(frame) == expected_path,
 				"Ogni frame di %s deve provenire dalla propria striscia B18U." % definition.id
 			)
 		assert_true(
@@ -214,10 +214,10 @@ func _assert_collision_contract(player: Player) -> void:
 	)
 	assert_true(
 		sprite != null
-		and player.get_character_base_scale().is_equal_approx(Vector2(1.65, 1.65))
-		and sprite.scale.is_equal_approx(Vector2(2.0625, 2.0625))
+		and player.get_character_base_scale().is_equal_approx(Vector2(0.825, 0.825))
+		and sprite.scale.is_equal_approx(Vector2(1.03125, 1.03125))
 		and sprite.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST,
-		"B18U deve conservare la scala base B18C e accettare il moltiplicatore visuale B24 con filtro nearest."
+		"B18U deve conservare la scala base 0,825 (PS-116, texture 64x64) e accettare il moltiplicatore visuale B24 con filtro nearest."
 	)
 
 

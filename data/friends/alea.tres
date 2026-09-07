@@ -14,15 +14,15 @@ region = Rect2(32, 288, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gameplay_walk_a"]
 atlas = ExtResource("3_gameplay")
-region = Rect2(0, 0, 32, 32)
+region = Rect2(0, 0, 64, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gameplay_idle"]
 atlas = ExtResource("3_gameplay")
-region = Rect2(32, 0, 32, 32)
+region = Rect2(64, 0, 64, 64)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gameplay_walk_b"]
 atlas = ExtResource("3_gameplay")
-region = Rect2(64, 0, 32, 32)
+region = Rect2(128, 0, 64, 64)
 
 [resource]
 script = ExtResource("1_definition")

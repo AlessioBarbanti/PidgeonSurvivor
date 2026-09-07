@@ -81,7 +81,7 @@ func _assert_roster_animation_data(friend_registry: FriendRegistry) -> void:
 			definition.has_directional_gameplay_animation(), "%s deve dichiarare idle e camminata laterale." % definition.id
 		)
 		assert_eq(
-			definition.get_gameplay_idle_right().get_size(), Vector2(32.0, 32.0), "%s deve usare una posa idle 32x32." % definition.id
+			definition.get_gameplay_idle_right().get_size(), Vector2(64.0, 64.0), "%s deve usare una posa idle 64x64 (PS-116)." % definition.id
 		)
 		assert_eq(
 			definition.get_gameplay_walk_right_frames().size(), 4, "%s deve alternare quattro fasi di camminata." % definition.id

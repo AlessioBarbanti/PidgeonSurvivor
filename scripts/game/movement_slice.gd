@@ -1761,7 +1761,7 @@ func _validate_current_contract() -> bool:
 			cast_idle == null
 			or cast_idle.atlas == null
 			or cast_idle.atlas.resource_path != expected_cast_path
-			or cast_idle.get_size() != Vector2(32.0, 32.0)
+			or cast_idle.get_size() != Vector2(64.0, 64.0)
 		):
 			failures.append("B18U idle originale mancante per %s." % friend_definition.id)
 		if cast_walk.size() != 4:
@@ -1773,7 +1773,7 @@ func _validate_current_contract() -> bool:
 				cast_atlas == null
 				or cast_atlas.atlas == null
 				or cast_atlas.atlas.resource_path != expected_cast_path
-				or cast_atlas.get_size() != Vector2(32.0, 32.0)
+				or cast_atlas.get_size() != Vector2(64.0, 64.0)
 			):
 				failures.append("B18U frame originale non valido per %s." % friend_definition.id)
 				break

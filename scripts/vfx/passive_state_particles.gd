@@ -17,8 +17,10 @@ extends Node2D
 
 const PARTICLE_COUNT := 5
 ## Centro dell'orbita: abbastanza sopra la testa da restare fuori dal
-## riquadro 32x32 del cast (mezza diagonale ~46.7 unita' alla scala fissa
-## 1.65 x 1.25 del Player) anche al massimo dell'escursione verticale.
+## riquadro del cast anche al massimo dell'escursione verticale. Calcolato
+## sul footprint finale a schermo (~66px, invariato da PS-116 nonostante il
+## raddoppio della texture nativa a 64x64: la scala base e' scesa da 1.65 a
+## 0.825 in proporzione), non sul pixel count sorgente.
 const HEAD_OFFSET := Vector2(0.0, -48.0)
 const ORBIT_RADIUS := 12.0
 const ORBIT_RADIUS_JITTER := 3.0
