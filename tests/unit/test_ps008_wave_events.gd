@@ -366,6 +366,10 @@ func test_real_boss_lifecycle_interrupts_matured_event_and_postpones() -> void:
 		"Il combattimento Boss in RUNNING deve interrompere l'evento rimasto congelato durante l'intro."
 	)
 	assert_false(spawner.is_sector_override_active(), "L'interruzione da Boss deve liberare l'override dei settori.")
+	assert_true(
+		spawner.is_ordinary_spawn_suspended(),
+		"PS-119: interrompere un evento maturato non deve riattivare lo spawn ordinario con il Boss ancora vivo."
+	)
 
 	var boss := encounter.get_active_boss()
 	assert_not_null(boss, "Il test richiede un Boss attivo da sconfiggere.")
@@ -396,6 +400,40 @@ func test_real_boss_lifecycle_interrupts_matured_event_and_postpones() -> void:
 	assert_true(
 		scheduler.get_phase() != WaveEventScheduler.Phase.IDLE,
 		"La regola 'postpone' di default deve far ritentare l'evento non appena il Boss libera lo scheduler."
+	)
+
+	# PS-119: lo scenario segnalato dal proprietario era specificamente il
+	# secondo Boss (ricorrente), non il primo: ripete la stessa prova lì,
+	# con un nuovo evento fatto maturare apposta prima della finestra
+	# ricorrente, per riprodurre esattamente il bug osservato.
+	var lateral_2 := _make_formation_definition(&"stormo_boss_reale_2", WaveEventDefinition.EFFECT_LATERAL_SWARM)
+	lateral_2.duration_seconds = 600.0
+	_apply_profile(built, _make_profile([lateral_2], 0.0, 1.0, 1.0))
+	controller._process(1.0)
+	scheduler._process(1.0)
+	assert_true(
+		scheduler.is_event_active(), "Serve un secondo evento gia' attivo prima che il Boss ricorrente maturi."
+	)
+
+	var window := director.get_recurring_window_seconds()
+	var last_spawn_time := director.get_last_boss_spawn_run_time()
+	var wait_seconds := (last_spawn_time + window + 0.01) - controller.get_run_time()
+	controller._process(wait_seconds)
+	scheduler._process(wait_seconds)
+	spawner._process(wait_seconds)
+	assert_eq(
+		controller.get_state(), RunController.RunState.BOSS_INTRO,
+		"La finestra ricorrente scaduta deve aprire BOSS_INTRO anche con un secondo evento gia' in corso."
+	)
+	assert_true(encounter.complete_intro(), "L'intro del Boss ricorrente deve poter essere confermata.")
+	scheduler._process(0.1)
+	assert_eq(
+		scheduler.get_phase(), WaveEventScheduler.Phase.IDLE,
+		"Il combattimento del Boss ricorrente deve interrompere il secondo evento rimasto congelato."
+	)
+	assert_true(
+		spawner.is_ordinary_spawn_suspended(),
+		"PS-119: il Boss ricorrente deve restare sospeso anche quando lo scheduler interrompe un evento maturato."
 	)
 
 	_teardown_fixture(built)

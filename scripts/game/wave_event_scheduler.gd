@@ -274,12 +274,19 @@ func _apply_spawner_overrides() -> void:
 			)
 
 
-func _clear_spawner_overrides() -> void:
+## PS-119: `reset_ordinary_suspension` deve restare `false` quando a chiamare
+## e' `_handle_boss_active()`. `ordinary_spawn_suspended` non e' di proprieta'
+## di questo scheduler: durante un Boss attivo il flag lo possiede il ciclo
+## di vita del Boss (movement_slice.gd), che lo rimette a `false` solo alla
+## sconfitta. Riattivarlo qui clobberebbe quella sospensione con il Boss
+## ancora vivo.
+func _clear_spawner_overrides(reset_ordinary_suspension: bool = true) -> void:
 	if not is_instance_valid(_enemy_spawner):
 		return
 	_enemy_spawner.clear_active_sector_override()
 	_enemy_spawner.clear_archetype_weight_overrides()
-	_enemy_spawner.set_ordinary_spawn_suspended(false)
+	if reset_ordinary_suspension:
+		_enemy_spawner.set_ordinary_spawn_suspended(false)
 	_enemy_spawner.set_spawn_interval_multiplier(1.0)
 
 
@@ -314,7 +321,7 @@ func _handle_boss_active() -> void:
 		return
 
 	var ended_id := _active_definition.event_id if _active_definition != null else &""
-	_clear_spawner_overrides()
+	_clear_spawner_overrides(false)
 	_active_definition = null
 	_phase = Phase.IDLE
 	_phase_elapsed = 0.0
