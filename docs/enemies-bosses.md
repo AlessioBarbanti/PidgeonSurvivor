@@ -93,28 +93,60 @@ Ability).
 `title = "PICCIONE MALVAGIO"` (PS-026). Stats: `health_max 2400.0`,
 `move_speed 85.0`, `collision_radius 46.0`, `contact_damage 25.0`.
 
-Due pattern comuni, alternati senza Signature
-(`_resolve_next_pattern_id`, `first_boss.gd:459-461`):
+**PS-127 (2026-09-07).** Il baseline non è più pensato come la variante
+"leggera" da pareggiare in probabilità con gli Evil: è un incontro raro
+(vedi `evil_boss_chance` sotto) e deliberatamente più duro di ognuno di loro.
+Cicla su **tre** pattern comuni, mai su due (`_resolve_next_pattern_id`,
+`first_boss.gd`):
 
 - **Raffica radiale**: `12` proiettili a 360° equidistanti dal centro,
   telegraph `0.75s`, danno `14.0` per proiettile.
 - **Area mirata**: la posizione bersaglio si fissa all'inizio del telegraph
   (`1.0s`, posizione del player in quel momento); a fine telegraph chi è
   ancora entro `115.0` unità dal centro subisce `26.0` danni.
+- **Scia di Piume**: terzo pattern nativo, esclusivo del baseline (mai
+  aggiunto al ciclo degli Evil). Un ventaglio di `6` linee oblique
+  (`feather_line_count`, mai allineate agli assi dell'arena, orientamento
+  seedato da run+soglia+utilizzo) attraversa il campo dall'origine del Boss:
+  ogni linea è una coppia di raggi opposti, quindi il ventaglio produce `12`
+  direzioni. Tutte le linee telegrafano insieme (`0.9s`) e a fine preavviso
+  sparano insieme una sequenza continua di `20` "battiti" (una piuma per
+  ogni direzione a ogni battito, stessa `BossProjectile` condivisa col
+  Tiratore), uno ogni `0.08s` — un solo slot del ciclo pattern, non
+  allungato in più turni.
 
-Con una Signature disponibile (variante Evil), il ciclo diventa a tre:
-radiale → area mirata → Signature (`first_boss.gd:462-467`).
+Il cooldown fra un pattern e l'altro è proprio del baseline
+(`baseline_pattern_interval = 1.6s`, contro `pattern_interval = 2.5s`
+ereditato dagli Evil): il baseline attacca più spesso di qualunque Evil a
+parità di soglia.
+
+**Specchio a doppio attacco.** Sceso sotto `split_health_ratio` (metà vita),
+il baseline non genera una seconda entità: apre una seconda origine
+"fantasma" che orbita attorno a sé (`split_ghost_distance`,
+`split_ghost_orbit_speed`) e ripete da lì ogni pattern normale (raffica,
+area mirata, Scia di Piume), raddoppiando la densità di proiettili/aree da
+schivare senza raddoppiare gli HP totali dell'incontro né toccare
+l'invariante "un solo Boss attivo" di `BossEncounter`/`GameDirector`.
+Attivazione irreversibile per l'intero incontro, mai per gli Evil.
+
+Con una Signature disponibile (variante Evil), il ciclo resta quello
+esistente e **non cambia**: radiale → area mirata → Signature
+(`first_boss.gd`). Nessuna delle modifiche PS-127 sopra (terzo pattern
+aggiuntivo, cooldown ridotto, specchio a doppio attacco) si applica agli
+Evil.
 
 ### Baseline vs `Evil <Nome>`
 
 Risoluzione in `BossEncounter.resolve_variant`
-(`boss_encounter.gd:161-201`): `evil_boss_chance = 0.5` (PS-037), RNG
+(`boss_encounter.gd`): `evil_boss_chance = 0.9` (PS-127, prima `0.5` da
+PS-037 — il baseline è ora raro al 10% invece che paritario), RNG
 deterministico seedato da seed-run + indice soglia
 (`seed = run_seed ^ EVENT_SEED_SALT ^ ((schedule_index+1) *
-SCHEDULE_SEED_FACTOR)`). Sotto soglia resta baseline; sopra soglia estrae un
-`FriendDefinition` a caso fra gli otto profili validi di `FriendRegistry` e
-duplica il `BossDefinition` in Evil (id `evil_<friend_id>`, colori e
-telegraph dedicati magenta/viola, Signature risolta dal catalogo).
+SCHEDULE_SEED_FACTOR)`), applicato a ogni soglia Boss inclusa la prima.
+Sotto soglia resta baseline; sopra soglia estrae un `FriendDefinition` a
+caso fra gli otto profili validi di `FriendRegistry` e duplica il
+`BossDefinition` in Evil (id `evil_<friend_id>`, colori e telegraph dedicati
+magenta/viola, Signature risolta dal catalogo).
 
 Profili confermati (uno-a-uno con `data/bosses/signatures/*.tres`): Alea,
 Aleo, Bea, Lollo, Magno, Marghe, Migi, Zat — vedi

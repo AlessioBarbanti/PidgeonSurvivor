@@ -19,7 +19,10 @@ const SCHEDULE_SEED_FACTOR := 0x045D9F3B
 ## Catalogo delle Signature Evil (PS-006): la variante composta riceve la
 ## mossa del profilo estratto senza toccare il Boss baseline.
 @export var signature_catalog: BossSignatureCatalog
-@export_range(0.0, 1.0, 0.01) var evil_boss_chance := 0.5
+## PS-127: il baseline (Piccione Malvagio) e' ora un incontro raro e
+## deliberatamente piu' duro di ogni Evil, non piu' una versione "leggera" da
+## pareggiare in probabilita'. Default precedente (PS-037): 0.5.
+@export_range(0.0, 1.0, 0.01) var evil_boss_chance := 0.9
 
 var _run_controller: RunController
 var _game_director: GameDirector
@@ -194,7 +197,9 @@ static func resolve_variant(
 	evil_definition.id = StringName("evil_%s" % selected_profile.id)
 	evil_definition.friend_profile = selected_profile
 	evil_definition.visual_kind = BossDefinition.VisualKind.EVIL_FRIEND
-	evil_definition.quote_approved = false
+	# PS-101: la citazione resta condivisa e approvata con il baseline via
+	# duplicate(true) — non va forzata al fallback qui (residuo di BOSS-001,
+	# da quando nessun Evil aveva ancora un testo approvato).
 	evil_definition.body_color = EVIL_BODY_COLOR
 	evil_definition.outline_color = EVIL_OUTLINE_COLOR
 	evil_definition.accent_color = EVIL_ACCENT_COLOR

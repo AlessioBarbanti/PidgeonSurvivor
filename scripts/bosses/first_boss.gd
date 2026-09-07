@@ -22,6 +22,17 @@ signal signature_announced(
 const RADIAL_VOLLEY := &"radial_volley"
 const TARGETED_BLAST := &"targeted_blast"
 const SIGNATURE := &"signature"
+## PS-127: terzo pattern nativo del baseline, mai usato dagli Evil (che
+## restano sul ciclo radiale/mirato/Signature esistente).
+const FEATHER_LINE := &"feather_line"
+## Lunghezza di disegno/volo della linea telegrafata: non e' una coordinata di
+## schermo, solo una distanza generosa che attraversa qualunque arena reale.
+const FEATHER_LINE_TELEGRAPH_LENGTH := 1600.0
+## Seed dell'orientamento del ventaglio di linee, stesso schema additivo di
+## `BossSignatureRegistry.select_copy` (run seed ^ salt ^ soglia ^ utilizzo).
+const FEATHER_FAN_SEED_SALT := 0x2F3A6B11
+const FEATHER_FAN_SEED_FACTOR := 0x15C3F2A7
+const FEATHER_FAN_USE_FACTOR := 0x0A9E4D5B
 
 ## PS-033: senza più una HUD dedicata, la barra vita disegnata da BaseEnemy
 ## sopra lo sprite resta l'unico indicatore del Boss e va resa più leggibile.
@@ -78,6 +89,34 @@ var _signature_motion_speed := 0.0
 var _signature_motion_turn_rate := 0.0
 var _thunder_charge_tier := ThunderChargeAura.TIER_LOW
 
+## PS-127: specchio a doppio attacco del baseline. Nessuna seconda entita',
+## nessun secondo HealthComponent: solo una seconda origine "fantasma" da cui
+## ripetere ogni pattern normale una volta sotto `split_health_ratio`.
+var _split_active := false
+var _split_orbit_angle := 0.0
+var _split_ghost_offset := Vector2.ZERO
+
+## PS-127: stato di esecuzione della Scia di Piume, l'unico pattern che non
+## si risolve in un solo frame ma lancia proiettili in sequenza nel tempo.
+var _feather_line_active := false
+var _feather_line_fired_count := 0
+var _feather_line_total_hits := 0
+var _feather_line_launch_timer := 0.0
+var _feather_line_origin := Vector2.ZERO
+var _feather_line_ghost_origin := Vector2.ZERO
+## Un ventaglio di raggi opposti a due a due (ogni coppia forma una linea
+## intera che attraversa il campo dall'origine): non punta piu' al Player,
+## e' un campo di corridoi obliqui che il giocatore deve attraversare.
+var _feather_line_directions: Array[Vector2] = []
+## Conta quante volte questo pattern e' stato eseguito in questo incontro:
+## alimenta il seed dell'orientamento del ventaglio, stesso schema di
+## `_signature_count` per Cosplay Casuale (`BossSignatureRegistry.select_copy`).
+var _feather_line_pattern_uses := 0
+## Congelata come `_targeted_position` all'inizio del telegraph mirato, cosi'
+## il secondo colpo dello specchio a doppio attacco resta onesto quanto il
+## primo invece di inseguire l'offset fantasma corrente.
+var _targeted_position_ghost := Vector2.ZERO
+
 @onready var _boss_sprite := get_node_or_null("BossSprite") as Sprite2D
 @onready var _thunder_aura := get_node_or_null("ThunderChargeAura") as ThunderChargeAura
 
@@ -96,6 +135,7 @@ func _exit_tree() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	_advance_split_ghost(delta)
 	if _advance_signature_motion(delta):
 		_sync_boss_facing()
 		_advance_attack_cycle(delta)
@@ -110,6 +150,7 @@ func _draw() -> void:
 	super._draw()
 	_draw_active_telegraph()
 	_draw_signature_motion()
+	_draw_split_ghost()
 
 
 func configure_boss(
@@ -180,6 +221,10 @@ func reset_attack_cycle() -> void:
 	_radial_volley_count = 0
 	_targeted_blast_count = 0
 	_signature_count = 0
+	_feather_line_pattern_uses = 0
+	_split_active = false
+	_split_orbit_angle = 0.0
+	_split_ghost_offset = Vector2.ZERO
 	queue_redraw()
 
 
@@ -188,6 +233,12 @@ func clear_attack_runtime() -> void:
 	_telegraph_remaining = 0.0
 	_telegraph_duration = 0.0
 	_targeted_position = Vector2.ZERO
+	_targeted_position_ghost = Vector2.ZERO
+	_feather_line_active = false
+	_feather_line_fired_count = 0
+	_feather_line_total_hits = 0
+	_feather_line_launch_timer = 0.0
+	_feather_line_directions.clear()
 	var projectiles_to_clear := _active_projectiles.duplicate()
 	_active_projectiles.clear()
 	for projectile in projectiles_to_clear:
@@ -195,6 +246,37 @@ func clear_attack_runtime() -> void:
 			projectile.expire()
 	clear_signature_runtime()
 	queue_redraw()
+
+
+## PS-127: attiva una sola volta lo specchio a doppio attacco quando il
+## baseline (mai una variante Evil) scende sotto `split_health_ratio`. Non
+## viene mai resettato finche' il Boss non muore o la run non riparte
+## (`reset_attack_cycle`): e' irreversibile per l'intero incontro.
+func _on_health_changed(health_current: float, health_max: float) -> void:
+	super._on_health_changed(health_current, health_max)
+	if (
+		_split_active
+		or definition == null
+		or definition.is_evil_variant()
+		or health_max <= 0.0
+	):
+		return
+	if health_current / health_max <= definition.split_health_ratio:
+		_split_active = true
+
+
+## Offset dell'origine "fantasma" attorno al Boss reale: orbita lentamente
+## cosi' si legge come un secondo piccione vivo, non come un decalcomania
+## statica. Nessuna dipendenza da ArenaLayout o da coordinate di schermo.
+func _advance_split_ghost(delta: float) -> void:
+	if not _split_active or definition == null:
+		return
+	var safe_delta := maxf(delta, 0.0) if is_finite(delta) else 0.0
+	_split_orbit_angle = fmod(
+		_split_orbit_angle + definition.split_ghost_orbit_speed * safe_delta,
+		TAU
+	)
+	_split_ghost_offset = Vector2.RIGHT.rotated(_split_orbit_angle) * definition.split_ghost_distance
 
 
 ## Rimuove ogni residuo della Signature: aree, scie, cloni, telegraph e stato
@@ -317,6 +399,33 @@ func get_active_projectile_count() -> int:
 
 func get_attack_cooldown_remaining() -> float:
 	return _attack_cooldown_remaining
+
+
+## PS-127: accessori pubblici per osservare lo specchio a doppio attacco e la
+## Scia di Piume dai test, sullo stesso schema degli accessori gia' esistenti
+## per gli altri pattern (`get_targeted_position`, `get_radial_volley_count`).
+func is_split_active() -> bool:
+	return _split_active
+
+
+func get_split_ghost_offset() -> Vector2:
+	return _split_ghost_offset
+
+
+func is_feather_line_active() -> bool:
+	return _feather_line_active
+
+
+func get_feather_line_fired_count() -> int:
+	return _feather_line_fired_count
+
+
+func get_feather_line_origin() -> Vector2:
+	return _feather_line_origin
+
+
+func get_feather_line_directions() -> Array[Vector2]:
+	return _feather_line_directions.duplicate()
 
 
 func _sync_boss_visual() -> void:
@@ -443,6 +552,10 @@ func _advance_attack_cycle(delta: float) -> void:
 			_execute_active_pattern()
 		return
 
+	if _feather_line_active:
+		_advance_feather_line_stream(safe_delta)
+		return
+
 	_attack_cooldown_remaining = maxf(
 		_attack_cooldown_remaining - safe_delta,
 		0.0
@@ -454,11 +567,18 @@ func _advance_attack_cycle(delta: float) -> void:
 		_begin_next_pattern()
 
 
-## Rotazione dei pattern. Con una Signature disponibile diventa un ciclo di
-## tre: entrambi i pattern Boss comuni restano nella rotazione.
+## Rotazione dei pattern: sempre un ciclo di tre, ma il terzo slot dipende
+## dalla variante (PS-127). Il baseline (mai una Signature) ottiene la Scia
+## di Piume al posto della Signature esclusiva degli Evil, che restano sul
+## proprio ciclo invariato.
 func _resolve_next_pattern_id() -> StringName:
 	if not has_signature():
-		return RADIAL_VOLLEY if _next_pattern_index % 2 == 0 else TARGETED_BLAST
+		match _next_pattern_index % 3:
+			0:
+				return RADIAL_VOLLEY
+			1:
+				return TARGETED_BLAST
+		return FEATHER_LINE
 	match _next_pattern_index % 3:
 		0:
 			return RADIAL_VOLLEY
@@ -482,6 +602,9 @@ func _begin_next_pattern() -> void:
 				if is_instance_valid(target)
 				else global_position
 			)
+			_targeted_position_ghost = _targeted_position + _split_ghost_offset
+		FEATHER_LINE:
+			_begin_feather_line_telegraph()
 		SIGNATURE:
 			if not _begin_signature_telegraph():
 				_active_pattern_id = RADIAL_VOLLEY
@@ -489,6 +612,48 @@ func _begin_next_pattern() -> void:
 	_telegraph_remaining = _telegraph_duration
 	attack_telegraphed.emit(self, _active_pattern_id, _telegraph_duration)
 	queue_redraw()
+
+
+## Congela origine e ventaglio della Scia di Piume all'inizio del telegraph:
+## da qui in poi il preavviso mostra esattamente cosa attraversera' l'arena,
+## anche se il Boss continua a muoversi durante l'attesa (come gia' avviene
+## per l'area mirata). Con lo specchio a doppio attacco attivo, viene
+## congelata anche l'origine fantasma per un secondo ventaglio parallelo.
+func _begin_feather_line_telegraph() -> void:
+	_telegraph_duration = definition.feather_line_telegraph_duration
+	_feather_line_origin = global_position
+	_feather_line_ghost_origin = global_position + _split_ghost_offset
+	_feather_line_directions = _build_feather_fan_directions()
+	_feather_line_pattern_uses += 1
+	_feather_line_fired_count = 0
+	_feather_line_total_hits = 0
+	_feather_line_launch_timer = 0.0
+
+
+## Genera un ventaglio di `feather_line_count` linee: ogni linea e' una coppia
+## di raggi opposti (angolo e angolo+PI) cosi' attraversa l'arena in entrambe
+## le direzioni dall'origine. L'orientamento e' seedato (run + soglia +
+## utilizzo) cosi' non e' mai lo stesso due volte di fila ma resta
+## riproducibile a parita' di seed/soglia/utilizzo, e non e' quasi mai
+## allineato agli assi dell'arena.
+func _build_feather_fan_directions() -> Array[Vector2]:
+	var directions: Array[Vector2] = []
+	var line_count := maxi(definition.feather_line_count, 1)
+	var run_controller := get_run_controller()
+	var run_seed := run_controller.get_seed() if run_controller != null else 0
+	var rng := RandomNumberGenerator.new()
+	rng.seed = (
+		run_seed
+		^ FEATHER_FAN_SEED_SALT
+		^ ((_schedule_index + 1) * FEATHER_FAN_SEED_FACTOR)
+		^ ((_feather_line_pattern_uses + 1) * FEATHER_FAN_USE_FACTOR)
+	)
+	var base_angle := rng.randf_range(0.0, PI)
+	for line_index in line_count:
+		var line_angle := base_angle + float(line_index) * PI / float(line_count)
+		directions.append(Vector2.RIGHT.rotated(line_angle))
+		directions.append(Vector2.RIGHT.rotated(line_angle + PI))
+	return directions
 
 
 ## Estrae la Signature che verra' eseguita e ne blocca origine e traiettoria.
@@ -543,29 +708,128 @@ func _resolve_announced_signature() -> BossSignatureDefinition:
 
 func _execute_active_pattern() -> void:
 	var executed_pattern := _active_pattern_id
-	var affected_count := 0
-	match executed_pattern:
-		RADIAL_VOLLEY:
-			affected_count = _spawn_radial_volley()
-			_radial_volley_count += 1
-		TARGETED_BLAST:
-			affected_count = _execute_targeted_blast()
-			_targeted_blast_count += 1
-		SIGNATURE:
-			affected_count = _execute_signature()
-			_signature_count += 1
-		_:
-			return
-
 	_active_pattern_id = &""
 	_telegraph_remaining = 0.0
 	_telegraph_duration = 0.0
-	_attack_cooldown_remaining = definition.pattern_interval
-	if executed_pattern == SIGNATURE and _announced_signature != null:
-		_attack_cooldown_remaining += _announced_signature.recovery_seconds
+	match executed_pattern:
+		RADIAL_VOLLEY:
+			_radial_volley_count += 1
+			_finish_pattern(executed_pattern, _spawn_radial_volley())
+		TARGETED_BLAST:
+			_targeted_blast_count += 1
+			_finish_pattern(executed_pattern, _execute_targeted_blast())
+		SIGNATURE:
+			_signature_count += 1
+			var affected := _execute_signature()
+			var interval := _get_pattern_interval()
+			if _announced_signature != null:
+				interval += _announced_signature.recovery_seconds
+			_finish_pattern(executed_pattern, affected, interval)
+		FEATHER_LINE:
+			# Il cooldown e l'avanzamento del ciclo arrivano solo al termine
+			# dello stream (_advance_feather_line_stream), non qui: la Scia di
+			# Piume e' l'unico pattern che non si risolve in un solo frame.
+			_feather_line_active = true
+		_:
+			return
+	queue_redraw()
+
+
+## Centralizza la chiusura di un pattern (cooldown, avanzamento del ciclo,
+## segnale): tutti i pattern la chiamano non appena hanno smesso di essere
+## "in corso", tranne la Scia di Piume che la rimanda a fine stream.
+func _finish_pattern(
+	executed_pattern: StringName,
+	affected_count: int,
+	interval_override := -1.0
+) -> void:
+	_attack_cooldown_remaining = (
+		interval_override if interval_override >= 0.0 else _get_pattern_interval()
+	)
 	_next_pattern_index += 1
 	attack_executed.emit(self, executed_pattern, affected_count)
 	queue_redraw()
+
+
+## PS-127: il baseline (mai una Signature) attacca con un cooldown proprio,
+## piu' basso di quello ereditato dagli Evil per duplicazione da
+## `resolve_variant()`. `pattern_interval` resta quindi identico fra baseline
+## ed Evil (vedi `_same_gameplay_contract` in test_b22), solo il baseline
+## legge il campo aggiuntivo.
+func _get_pattern_interval() -> float:
+	if definition == null:
+		return 0.0
+	if not definition.is_evil_variant():
+		return definition.baseline_pattern_interval
+	return definition.pattern_interval
+
+
+## Avanza lo sparo continuo della Scia di Piume: una piuma (due con lo
+## specchio a doppio attacco) ogni `feather_line_launch_interval`, finche' non
+## sono state lanciate `feather_line_projectile_count` piume per origine. Il
+## ciclo `while` recupera in un colpo solo un delta grande quanto l'intero
+## stream (utile ai test), senza mai girare a vuoto perche' la condizione
+## smette di essere vera non appena lo stream si chiude.
+func _advance_feather_line_stream(delta: float) -> void:
+	_feather_line_launch_timer -= delta
+	while _feather_line_active and _feather_line_launch_timer <= 0.0:
+		_fire_feather_line_shot()
+		_feather_line_launch_timer += definition.feather_line_launch_interval
+	queue_redraw()
+
+
+## Ogni tick lancia una piuma per ciascun raggio del ventaglio, dall'origine
+## reale e (con lo specchio attivo) anche da quella fantasma: un intero
+## "battito" del campo di corridoi invece di una singola piuma isolata.
+func _fire_feather_line_shot() -> void:
+	_feather_line_fired_count += 1
+	for direction in _feather_line_directions:
+		_feather_line_total_hits += _spawn_feather_projectile(_feather_line_origin, direction)
+		if _split_active:
+			_feather_line_total_hits += _spawn_feather_projectile(_feather_line_ghost_origin, direction)
+	if _feather_line_fired_count >= definition.feather_line_projectile_count:
+		_feather_line_active = false
+		var total_hits := _feather_line_total_hits
+		_finish_pattern(FEATHER_LINE, total_hits, _get_pattern_interval())
+
+
+func _spawn_feather_projectile(origin: Vector2, direction: Vector2) -> int:
+	if (
+		projectile_scene == null
+		or not is_instance_valid(_projectile_parent)
+		or not _projectile_parent.is_inside_tree()
+	):
+		return 0
+	var run_controller := get_run_controller()
+	var player := get_target() as Player
+	if run_controller == null or player == null:
+		return 0
+
+	var instance := projectile_scene.instantiate()
+	if not instance is BossProjectile:
+		if is_instance_valid(instance):
+			instance.free()
+		return 0
+	var projectile := instance as BossProjectile
+	_projectile_parent.add_child(projectile)
+	projectile.global_position = origin
+	if not projectile.initialize(
+		direction,
+		definition.feather_line_projectile_damage * pressure_multiplier,
+		definition.feather_line_projectile_speed,
+		definition.feather_line_projectile_lifetime,
+		definition.feather_line_projectile_radius,
+		run_controller,
+		player
+	):
+		projectile.queue_free()
+		return 0
+	_active_projectiles.append(projectile)
+	projectile.tree_exiting.connect(
+		_on_projectile_tree_exiting.bind(projectile),
+		CONNECT_ONE_SHOT
+	)
+	return 1
 
 
 func _execute_signature() -> int:
@@ -774,7 +1038,17 @@ func _steer_signature_direction(delta: float) -> void:
 	_signature_direction = Vector2.RIGHT.rotated(current_angle + angle_delta)
 
 
+## Con lo specchio a doppio attacco attivo, la raffica parte anche da una
+## seconda origine (il fantasma orbitante), raddoppiando i proiettili senza
+## una seconda entita' o un secondo HealthComponent.
 func _spawn_radial_volley() -> int:
+	var spawned_count := _spawn_radial_volley_from(global_position)
+	if _split_active:
+		spawned_count += _spawn_radial_volley_from(global_position + _split_ghost_offset)
+	return spawned_count
+
+
+func _spawn_radial_volley_from(origin: Vector2) -> int:
 	if (
 		projectile_scene == null
 		or not is_instance_valid(_projectile_parent)
@@ -795,7 +1069,7 @@ func _spawn_radial_volley() -> int:
 			continue
 		var projectile := instance as BossProjectile
 		_projectile_parent.add_child(projectile)
-		projectile.global_position = global_position
+		projectile.global_position = origin
 		var angle := TAU * float(projectile_index) / float(definition.radial_projectile_count)
 		if not projectile.initialize(
 			Vector2.RIGHT.rotated(angle),
@@ -817,6 +1091,9 @@ func _spawn_radial_volley() -> int:
 	return spawned_count
 
 
+## Con lo specchio a doppio attacco attivo, una seconda area colpisce nella
+## posizione fantasma congelata a inizio telegraph (vedi `_begin_next_pattern`):
+## il giocatore puo' subire entrambi i colpi se resta dentro a entrambe.
 func _execute_targeted_blast() -> int:
 	var run_controller := get_run_controller()
 	var player := get_target() as Player
@@ -827,10 +1104,24 @@ func _execute_targeted_blast() -> int:
 		or not player.is_alive()
 	):
 		return 0
-	var effective_radius := definition.targeted_blast_radius + player.collision_radius
-	if player.global_position.distance_squared_to(_targeted_position) > effective_radius * effective_radius:
-		return 0
-	return 1 if player.take_contact_damage(definition.targeted_blast_damage * pressure_multiplier, _targeted_position) else 0
+	var hits := 0
+	if _is_within_targeted_blast(player.global_position, _targeted_position, player.collision_radius):
+		hits += 1 if player.take_contact_damage(definition.targeted_blast_damage * pressure_multiplier, _targeted_position) else 0
+	if (
+		_split_active
+		and _is_within_targeted_blast(player.global_position, _targeted_position_ghost, player.collision_radius)
+	):
+		hits += (
+			1
+			if player.take_contact_damage(definition.targeted_blast_damage * pressure_multiplier, _targeted_position_ghost)
+			else 0
+		)
+	return hits
+
+
+func _is_within_targeted_blast(player_position: Vector2, blast_center: Vector2, player_radius: float) -> bool:
+	var effective_radius := definition.targeted_blast_radius + player_radius
+	return player_position.distance_squared_to(blast_center) <= effective_radius * effective_radius
 
 
 func _draw_active_telegraph() -> void:
@@ -844,47 +1135,80 @@ func _draw_active_telegraph() -> void:
 	var color := definition.telegraph_color
 	match _active_pattern_id:
 		RADIAL_VOLLEY:
-			var ring_radius := collision_radius + 24.0 + progress * 18.0
-			draw_arc(Vector2.ZERO, ring_radius, 0.0, TAU, 48, color, 5.0, true)
-			for projectile_index in definition.radial_projectile_count:
-				var direction := Vector2.RIGHT.rotated(
-					TAU * float(projectile_index) / float(definition.radial_projectile_count)
-				)
-				draw_line(
-					direction * (collision_radius + 8.0),
-					direction * (collision_radius + 38.0),
-					color,
-					3.0,
-					true
-				)
+			_draw_radial_volley_telegraph(Vector2.ZERO, progress, color)
+			if _split_active:
+				_draw_radial_volley_telegraph(_split_ghost_offset, progress, color)
 		TARGETED_BLAST:
-			var local_target := _targeted_position - global_position
-			draw_circle(
-				local_target,
-				definition.targeted_blast_radius * progress,
-				Color(color, 0.16)
-			)
-			draw_arc(
-				local_target,
-				definition.targeted_blast_radius,
-				0.0,
-				TAU,
-				64,
-				color,
-				5.0,
-				true
-			)
-			var crosshair_radius := definition.targeted_blast_radius * 0.72
-			for direction in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
-				draw_line(
-					local_target + direction * crosshair_radius * 0.62,
-					local_target + direction * crosshair_radius,
-					Color(1.0, 1.0, 1.0, color.a),
-					4.0,
-					true
-				)
+			_draw_targeted_blast_telegraph(_targeted_position - global_position, progress, color)
+			if _split_active:
+				_draw_targeted_blast_telegraph(_targeted_position_ghost - global_position, progress, color)
+		FEATHER_LINE:
+			_draw_feather_line_telegraph(_feather_line_origin - global_position, progress, color)
+			if _split_active:
+				_draw_feather_line_telegraph(_feather_line_ghost_origin - global_position, progress, color)
 		SIGNATURE:
 			_draw_signature_telegraph(progress)
+
+
+func _draw_radial_volley_telegraph(local_center: Vector2, progress: float, color: Color) -> void:
+	var ring_radius := collision_radius + 24.0 + progress * 18.0
+	draw_arc(local_center, ring_radius, 0.0, TAU, 48, color, 5.0, true)
+	for projectile_index in definition.radial_projectile_count:
+		var direction := Vector2.RIGHT.rotated(
+			TAU * float(projectile_index) / float(definition.radial_projectile_count)
+		)
+		draw_line(
+			local_center + direction * (collision_radius + 8.0),
+			local_center + direction * (collision_radius + 38.0),
+			color,
+			3.0,
+			true
+		)
+
+
+func _draw_targeted_blast_telegraph(local_target: Vector2, progress: float, color: Color) -> void:
+	draw_circle(
+		local_target,
+		definition.targeted_blast_radius * progress,
+		Color(color, 0.16)
+	)
+	draw_arc(
+		local_target,
+		definition.targeted_blast_radius,
+		0.0,
+		TAU,
+		64,
+		color,
+		5.0,
+		true
+	)
+	var crosshair_radius := definition.targeted_blast_radius * 0.72
+	for direction in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
+		draw_line(
+			local_target + direction * crosshair_radius * 0.62,
+			local_target + direction * crosshair_radius,
+			Color(1.0, 1.0, 1.0, color.a),
+			4.0,
+			true
+		)
+
+
+## Il telegraph della Scia di Piume mostra la linea intera fin da subito
+## (tenue) e la "riempie" progressivamente in bianco, cosi' il giocatore vede
+## esattamente dove passeranno le piume prima che partano. Disegna l'intero
+## ventaglio: ogni coppia di raggi opposti in `_feather_line_directions`
+## forma una linea intera attraverso l'origine.
+func _draw_feather_line_telegraph(local_origin: Vector2, progress: float, color: Color) -> void:
+	for direction in _feather_line_directions:
+		var local_end := local_origin + direction * FEATHER_LINE_TELEGRAPH_LENGTH
+		draw_line(local_origin, local_end, Color(color, color.a * 0.4), 6.0, true)
+		draw_line(
+			local_origin,
+			local_origin.lerp(local_end, progress),
+			Color(1.0, 1.0, 1.0, color.a),
+			3.0,
+			true
+		)
 
 
 ## Il preavviso della Signature disegna la forma esatta che sta per diventare
@@ -989,6 +1313,22 @@ func _draw_signature_motion() -> void:
 		4.0,
 		true
 	)
+
+
+## Sprite fantasma nella posizione orbitante: senza di questo lo specchio a
+## doppio attacco resterebbe invisibile finche' non parte un pattern. Stessa
+## tinta spettrale gia' usata dal clone di Evil Marghe (`BossDecoy`), per non
+## confondersi con la tinta viola/magenta riservata agli Evil.
+func _draw_split_ghost() -> void:
+	if not _split_active or not is_instance_valid(_boss_sprite) or _boss_sprite.texture == null:
+		return
+	draw_set_transform(_split_ghost_offset, 0.0, _boss_sprite.scale)
+	draw_texture(
+		_boss_sprite.texture,
+		-_boss_sprite.texture.get_size() * 0.5,
+		BossDecoy.GHOST_MODULATE
+	)
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
 func _prune_projectiles() -> void:

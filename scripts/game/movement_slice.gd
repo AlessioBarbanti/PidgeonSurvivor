@@ -87,6 +87,15 @@ var _last_logged_joystick_rect := Rect2()
 ## richiede, quindi il conteggio vive qui invece che in BossEncounter.
 var _defeated_boss_count := 0
 
+# TEMP DEBUG — telemetria di validazione batch PS-123/124/126, da rimuovere
+# dopo la sessione di raccolta dati sul Pixel (non e' una card).
+const _DEBUG_BALANCE_SAMPLE_INTERVAL_SECONDS := 5.0
+var _debug_balance_sample_elapsed := 0.0
+var _debug_balance_window_enemy_count := 0
+var _debug_balance_window_hp_sum := 0.0
+var _debug_balance_window_contact_damage_sum := 0.0
+var _debug_balance_window_xp_awarded := 0
+
 
 func _ready() -> void:
 	_input_router.bind_touch_joystick(_touch_joystick)
@@ -157,6 +166,9 @@ func _ready() -> void:
 		_game_director,
 		_enemy_spawner
 	)
+	# TEMP DEBUG — vedi dichiarazione dei campi sopra.
+	_enemy_spawner.enemy_spawned.connect(_on_debug_balance_enemy_spawned)
+	_run_controller.run_started.connect(_on_debug_balance_run_started)
 	_combat_feedback.configure(
 		_run_controller,
 		_enemy_spawner,
@@ -172,6 +184,8 @@ func _ready() -> void:
 		_visual_accessibility_settings
 	)
 	_experience_system.set_run_controller(_run_controller)
+	# TEMP DEBUG — vedi dichiarazione dei campi sopra.
+	_experience_system.experience_added.connect(_on_debug_balance_experience_added)
 	_boss_encounter.configure(
 		_run_controller,
 		_game_director,
@@ -1283,8 +1297,8 @@ func _validate_current_contract() -> bool:
 				or boss_definition.id != &"special_pigeon"
 			):
 				failures.append("B22 richiede il piccione speciale come Boss baseline.")
-			if not is_equal_approx(_boss_encounter.evil_boss_chance, 0.5):
-				failures.append("PS-037 richiede evil_boss_chance dati al 50%.")
+			if not is_equal_approx(_boss_encounter.evil_boss_chance, 0.9):
+				failures.append("PS-127 richiede evil_boss_chance dati al 90% (baseline raro al 10%).")
 			if (
 				not boss_definition.quote_approved
 				and boss_definition.get_safe_quote() != boss_definition.safe_quote_placeholder
@@ -2070,6 +2084,63 @@ func _on_boss_defeated_for_summary(_boss: FirstBoss) -> void:
 
 func _on_run_started_for_summary(_seed_value: int) -> void:
 	_defeated_boss_count = 0
+
+
+# TEMP DEBUG — telemetria di validazione batch PS-123/124/126, da rimuovere
+# dopo la sessione di raccolta dati sul Pixel (non e' una card). Campiona
+# ogni _DEBUG_BALANCE_SAMPLE_INTERVAL_SECONDS il flusso HP/danno/XP in
+# ingresso nella finestra appena trascorsa, cosi' i numeri si confrontano
+# direttamente con le stime statiche del report analista-bilanciamento.
+func _process(_delta: float) -> void:
+	if not _run_controller.is_running():
+		return
+	_debug_balance_sample_elapsed += _delta
+	if _debug_balance_sample_elapsed < _DEBUG_BALANCE_SAMPLE_INTERVAL_SECONDS:
+		return
+	var window_seconds := _debug_balance_sample_elapsed
+	var sample := {
+		"t": snappedf(_run_controller.get_run_time(), 0.1),
+		"enemies_spawned_per_s": snappedf(_debug_balance_window_enemy_count / window_seconds, 0.01),
+		"hp_flow_per_s": snappedf(_debug_balance_window_hp_sum / window_seconds, 0.1),
+		"contact_dmg_flow_per_s": snappedf(_debug_balance_window_contact_damage_sum / window_seconds, 0.1),
+		"xp_flow_per_s": snappedf(_debug_balance_window_xp_awarded / window_seconds, 0.1),
+		"alive_now": _enemies.get_child_count(),
+		"post_curve_mult": snappedf(
+			_enemy_spawner.spawn_profile.get_post_curve_pressure_multiplier(
+				_run_controller.get_run_time()
+			),
+			0.001
+		),
+		"boss_recurrences": _game_director.get_recurring_boss_count(),
+	}
+	print("PS_BALANCE_TELEMETRY %s" % JSON.stringify(sample))
+	_debug_balance_sample_elapsed = 0.0
+	_debug_balance_window_enemy_count = 0
+	_debug_balance_window_hp_sum = 0.0
+	_debug_balance_window_contact_damage_sum = 0.0
+	_debug_balance_window_xp_awarded = 0
+
+
+func _on_debug_balance_enemy_spawned(enemy: BaseEnemy) -> void:
+	_debug_balance_window_enemy_count += 1
+	var health_component := enemy.get_health_component()
+	if health_component != null:
+		_debug_balance_window_hp_sum += health_component.health_max
+	var contact_damage_component := enemy.get_contact_damage()
+	if contact_damage_component != null:
+		_debug_balance_window_contact_damage_sum += contact_damage_component.damage
+
+
+func _on_debug_balance_experience_added(amount: int, _experience_current: int) -> void:
+	_debug_balance_window_xp_awarded += amount
+
+
+func _on_debug_balance_run_started(_seed_value: int) -> void:
+	_debug_balance_sample_elapsed = 0.0
+	_debug_balance_window_enemy_count = 0
+	_debug_balance_window_hp_sum = 0.0
+	_debug_balance_window_contact_damage_sum = 0.0
+	_debug_balance_window_xp_awarded = 0
 
 
 func _on_restart_requested() -> void:

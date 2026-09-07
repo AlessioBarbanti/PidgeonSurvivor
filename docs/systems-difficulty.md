@@ -147,9 +147,11 @@ la pressione oltre quel punto:
   `boss_recurrence_growth_per_occurrence` (default `1.2`) per ogni
   ricorrenza successiva. Applicato in
   `BossEncounter._apply_recurrence_scaling`, dopo `configure_signature()`,
-  a: HP e danno da contatto del Boss; danno della raffica radiale e del
-  colpo mirato (`FirstBoss._spawn_radial_volley`/`_execute_targeted_blast`,
-  via `pressure_multiplier`); danno di ogni Signature Evil, composto con
+  a: HP e danno da contatto del Boss; danno della raffica radiale, del
+  colpo mirato e della Scia di Piume del baseline (PS-127)
+  (`FirstBoss._spawn_radial_volley`/`_execute_targeted_blast`/
+  `_spawn_feather_projectile`, via `pressure_multiplier`); danno di ogni
+  Signature Evil, composto con
   l'eventuale carica del Tuono di Evil Zat invece di sostituirla
   (`FirstBoss._spawn_signature_area`, `damage_scale *= pressure_multiplier`).
   Non tocca `resolve_variant()` né l'identità delle Signature. Estendere la

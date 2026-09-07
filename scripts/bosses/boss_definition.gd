@@ -25,6 +25,37 @@ enum VisualKind {
 @export_range(0.01, 60.0, 0.01, "or_greater") var initial_attack_delay := 1.5
 @export_range(0.01, 60.0, 0.01, "or_greater") var pattern_interval := 2.5
 
+@export_group("Baseline hardening")
+## PS-127: il piccione baseline (mai Evil, mai una Signature) attacca con
+## questo cooldown invece di `pattern_interval`, cosi' resta piu' aggressivo
+## dei suoi stessi cloni Evil senza toccare il valore che questi ultimi
+## ereditano per duplicazione da `resolve_variant()`.
+@export_range(0.01, 60.0, 0.01, "or_greater") var baseline_pattern_interval := 1.6
+## Frazione di vita residua sotto la quale il baseline attiva lo specchio a
+## doppio attacco (PS-127): non una seconda entita', solo una seconda origine
+## fantasma da cui ripetere ogni pattern normale.
+@export_range(0.0, 1.0, 0.01) var split_health_ratio := 0.5
+@export_range(1.0, 1024.0, 1.0, "or_greater") var split_ghost_distance := 96.0
+@export_range(0.0, 16.0, 0.01, "or_greater") var split_ghost_orbit_speed := 0.8
+
+@export_group("Feather line")
+## PS-127: terzo pattern nativo del baseline (mai usato dagli Evil, che
+## restano sul ciclo radiale/mirato/Signature). Un ventaglio di linee oblique
+## (mai allineate agli assi dell'arena) attraversa il campo, ciascuna
+## telegrafata e poi attraversata da una sequenza continua di
+## proiettili-piuma, stile Tiratore.
+@export_range(0.01, 10.0, 0.01, "or_greater") var feather_line_telegraph_duration := 0.9
+## Numero di linee del ventaglio (ognuna attraversa il campo in entrambe le
+## direzioni dall'origine, quindi conta come una singola "linea" anche se
+## produce due raggi di piume opposti).
+@export_range(1, 16, 1, "or_greater") var feather_line_count := 6
+@export_range(1, 64, 1, "or_greater") var feather_line_projectile_count := 20
+@export_range(0.01, 2.0, 0.01, "or_greater") var feather_line_launch_interval := 0.08
+@export_range(0.0, 1000000.0, 0.1, "or_greater") var feather_line_projectile_damage := 10.0
+@export_range(1.0, 4000.0, 1.0, "or_greater") var feather_line_projectile_speed := 420.0
+@export_range(0.01, 30.0, 0.01, "or_greater") var feather_line_projectile_lifetime := 3.0
+@export_range(1.0, 128.0, 0.5, "or_greater") var feather_line_projectile_radius := 7.0
+
 @export_group("Radial volley")
 @export_range(0.01, 10.0, 0.01, "or_greater") var radial_telegraph_duration := 0.75
 @export_range(4, 64, 1, "or_greater") var radial_projectile_count := 12
@@ -40,7 +71,8 @@ enum VisualKind {
 
 @export_group("Signature")
 ## Signature Ability dell'Evil (PS-006). Il piccione baseline non ne ha:
-## resta `null` e il Boss gira sui due soli pattern comuni.
+## resta `null` e il terzo slot del ciclo va invece alla Scia di Piume
+## (PS-127), esclusiva del baseline.
 @export var signature: BossSignatureDefinition
 
 @export_group("Visual")
@@ -108,6 +140,21 @@ func is_valid() -> bool:
 		and contact_damage >= 0.0
 		and _is_positive_finite(initial_attack_delay)
 		and _is_positive_finite(pattern_interval)
+		and _is_positive_finite(baseline_pattern_interval)
+		and is_finite(split_health_ratio)
+		and split_health_ratio >= 0.0
+		and split_health_ratio <= 1.0
+		and _is_positive_finite(split_ghost_distance)
+		and is_finite(split_ghost_orbit_speed)
+		and split_ghost_orbit_speed >= 0.0
+		and _is_positive_finite(feather_line_telegraph_duration)
+		and feather_line_count >= 1
+		and feather_line_projectile_count >= 1
+		and _is_positive_finite(feather_line_launch_interval)
+		and _is_positive_finite(feather_line_projectile_damage)
+		and _is_positive_finite(feather_line_projectile_speed)
+		and _is_positive_finite(feather_line_projectile_lifetime)
+		and _is_positive_finite(feather_line_projectile_radius)
 		and _is_positive_finite(radial_telegraph_duration)
 		and radial_projectile_count >= 4
 		and _is_positive_finite(radial_projectile_damage)
