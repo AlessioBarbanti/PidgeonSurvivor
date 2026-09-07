@@ -117,16 +117,20 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] **Aperto** — Runtime Windows: non eseguito in questa sessione.
-- [ ] **Aperto** — Validazione statica APK: non eseguita in questa sessione.
-- [ ] **Aperto** — Runtime fisico Pixel 9: sblocca Bis alla Griglia, consuma
-      una carica lasciando l'abilità in ricarica, verifica che il pulsante
-      mostri solo il contorno (non la maschera scura) mentre resta almeno
-      una carica disponibile, e che le cariche salgano oltre 1 salendo di
-      rango. Nessun device collegato in questa sessione.
-- [ ] Controllo percettivo richiesto: sì — il nuovo contorno di ricarica
-      deve restare leggibile e distinguibile sia dall'anello dorato "pronto"
-      sia dalla maschera scura di blocco, a dimensione reale.
+- [ ] **Aperto** — Runtime Windows: non eseguito.
+- [x] Validazione statica APK: superata dal workflow CI
+      (`android-debug-release.yml`, run 34118188873, 2026-09-07) sull'APK
+      contenente questo fix.
+- [x] Runtime fisico Pixel 9 (parte funzionale): confermato dal proprietario
+      in conversazione (2026-09-07) — run con Lollo, cariche che salgono
+      oltre 1 salendo di rango ("tirare la passiva ogni 3-4 secondi").
+      **Resta aperta la parte percettiva**: non confermato se il contorno di
+      ricarica in background sia stato effettivamente notato/distinto dalla
+      maschera scura di blocco.
+- [ ] **Aperto** — Controllo percettivo richiesto: sì — il nuovo contorno di
+      ricarica deve restare leggibile e distinguibile sia dall'anello dorato
+      "pronto" sia dalla maschera scura di blocco, a dimensione reale. Non
+      ancora confermato esplicitamente dal proprietario.
 
 ## Decisioni
 
@@ -144,6 +148,13 @@ Non toccare:
   scura esistente (si restringe verso zero), solo con un trattamento visivo
   più leggero (contorno sottile, colore ciano per non confondersi con
   arancio=bloccato o oro=pronto).
+- **2026-09-07 — Confermata su device reale solo la parte funzionale.** Il
+  proprietario ha giocato con Lollo dopo l'aggiornamento dell'APK (release
+  `android-debug-latest`, workflow run 34118188873) e confermato le cariche
+  multiple in gioco ("cariche abilità maxate", "tirare la passiva ogni 3-4
+  secondi è divertente"). Non ha confermato esplicitamente di aver notato
+  il contorno di ricarica in background: il gate percettivo resta aperto
+  finché non arriva quella conferma specifica.
 
 ## Documenti sincronizzati
 

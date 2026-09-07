@@ -115,14 +115,14 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] **Aperto** — Runtime Windows: non eseguito in questa sessione.
-- [ ] **Aperto** — Validazione statica APK: non eseguita in questa sessione.
-- [ ] **Aperto** — Runtime fisico Pixel 9: raggiungi un secondo Boss con un
-      evento d'ondata in corso e verifica che nessun nemico ordinario
-      compaia durante il combattimento. Nessun device collegato in questa
-      sessione — è esattamente il gate che il proprietario ha già superato
-      manualmente riportando il bug originale; da ripetere per confermare il
-      fix sul device reale.
+- [ ] **Aperto** — Runtime Windows: non eseguito.
+- [x] Validazione statica APK: superata dal workflow CI
+      (`android-debug-release.yml`, run 34118188873, 2026-09-07) sull'APK
+      contenente questo fix — `aapt2 dump badging`, `apksigner verify`,
+      controllo librerie native, tutti verdi.
+- [x] Runtime fisico Pixel 9: confermato dal proprietario in conversazione
+      (2026-09-07) su una run reale — raggiunto un secondo Boss, spawn
+      ordinario correttamente sospeso per tutto il combattimento.
 - [ ] Controllo percettivo richiesto: no.
 
 ## Decisioni
@@ -142,6 +142,15 @@ Non toccare:
   Boss. Il "secondo Boss" del titolo del bug è solo la prima occasione
   temporale in cui il profilo di gioco reale rende probabile un evento
   d'ondata già maturato, non una causa distinta.
+
+- **2026-09-07 — Confermato su device reale.** Il proprietario ha giocato
+  una run con Lollo dopo l'aggiornamento dell'APK (release
+  `android-debug-latest`, workflow run 34118188873) e ha raggiunto un
+  secondo Boss: "sì" alla domanda esplicita se lo spawn si fosse fermato
+  correttamente durante il combattimento. Resta aperto solo il gate Runtime
+  Windows (non pertinente in pratica: la logica è identica su ogni
+  piattaforma, nessun percorso Windows-specifico coinvolto, ma non
+  eseguito esplicitamente in questa sessione).
 
 ## Documenti sincronizzati
 
