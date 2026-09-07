@@ -21,6 +21,8 @@
         "tests/unit/test_b06_player_survival.gd",
         "tests/unit/test_b18c_player_direction_animation.gd",
         "tests/unit/test_b18u_cast_sprites.gd",
+        "tests/unit/test_b24_player_visual_scale.gd",
+        "tests/unit/test_ps116_cast_sprite_resolution.gd",
         "tests/unit/test_b17a_complete_roster_abilities.gd",
         "tests/unit/test_b17_friend_content.gd",
         "tests/unit/test_ps068_friend_portrait_assets.gd",
@@ -154,7 +156,8 @@
         "tests/unit/test_ps024_magno_shockwave_balance.gd",
         "tests/unit/test_ps027_bea_powerslide_visual_cleanup.gd",
         "tests/unit/test_ps040_bea_powerslide_landing_iframe.gd",
-        "tests/unit/test_ps042_bea_powerslide_spark_subordination.gd"
+        "tests/unit/test_ps042_bea_powerslide_spark_subordination.gd",
+        "tests/unit/test_ps094_ability_charge_stacking.gd"
       ]
     },
     {
@@ -175,7 +178,9 @@
         "tests/unit/test_ps078_barb_speciality_theming.gd",
         "tests/unit/test_ps047_upgrade_card_hierarchy.gd",
         "tests/unit/test_ps089_ordinary_catalog_meat_audit.gd",
-        "tests/unit/test_ps108_cooking_point_catalog_wiring.gd"
+        "tests/unit/test_ps108_cooking_point_catalog_wiring.gd",
+        "tests/unit/test_ps094_ability_charge_stacking.gd",
+        "tests/unit/test_ps100_anxiety_removal.gd"
       ]
     },
     {
@@ -194,7 +199,9 @@
         "tests/unit/test_ps078_barb_speciality_theming.gd",
         "tests/unit/test_ps047_upgrade_card_hierarchy.gd",
         "tests/unit/test_ps093_extended_base_stats.gd",
-        "tests/unit/test_ps108_cooking_point_catalog_wiring.gd"
+        "tests/unit/test_ps108_cooking_point_catalog_wiring.gd",
+        "tests/unit/test_ps094_ability_charge_stacking.gd",
+        "tests/unit/test_ps100_anxiety_removal.gd"
       ]
     },
     {
@@ -266,7 +273,12 @@
         "tests/unit/test_ps073_boss_dedicated_music.gd",
         "tests/unit/test_ps082_camera_recenter_on_restart.gd",
         "tests/unit/test_ps093_extended_base_stats.gd",
-        "tests/unit/test_ps085_manual_fire_mode.gd"
+        "tests/unit/test_ps085_manual_fire_mode.gd",
+        "tests/unit/test_ps113_fps_cap.gd",
+        "tests/unit/test_ps094_ability_charge_stacking.gd",
+        "tests/unit/test_ps100_anxiety_removal.gd",
+        "tests/unit/test_b13_signature_upgrades.gd",
+        "tests/unit/test_b18j_summer_grill.gd"
       ]
     },
     {
@@ -342,7 +354,8 @@
         "tests/unit/test_ps051_boss_intro_identity.gd",
         "tests/unit/test_ps085_manual_fire_mode.gd",
         "tests/unit/test_ps103_boss_intro_frame_wiring.gd",
-        "tests/unit/test_ps106_alea_sobriety_hud.gd"
+        "tests/unit/test_ps106_alea_sobriety_hud.gd",
+        "tests/unit/test_ps094_ability_charge_stacking.gd"
       ]
     },
     {
@@ -404,7 +417,8 @@
         "data/performance/*"
       ],
       "smokes": [
-        "tests/unit/test_b18v_hardening_performance.gd"
+        "tests/unit/test_b18v_hardening_performance.gd",
+        "tests/unit/test_ps113_fps_cap.gd"
       ]
     },
     {

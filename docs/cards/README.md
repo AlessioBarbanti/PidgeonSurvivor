@@ -195,13 +195,13 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-091](./6_rejected/PS-091-genera-placeholder-powerup-nuove-statistiche.md) | Genera i placeholder icona per i powerup di eventuali nuove statistiche | art | arte | SCARTATA | bassa | PS-087, PS-090 |
 | [PS-092](./2_to_do/PS-092-nuova-icona-ravviva-la-brace.md) | Genera una nuova icona per Ravviva la Brace! (ex Bis di Salsiccia) | art | arte | PRONTO | bassa | — |
 | [PS-093](./4_to_test/PS-093-nuovi-assi-scarto-base-personaggi.md) | Introduci cinque nuovi assi di scarto base per personaggio | feat | gameplay | IN VERIFICA | media | PS-087 |
-| [PS-094](./2_to_do/PS-094-specialita-cariche-abilita-attiva.md) | Introduci una Specialità di Barb per cariche multiple dell'abilità attiva | feat | gameplay | PRONTO | media | — |
+| [PS-094](./4_to_test/PS-094-specialita-cariche-abilita-attiva.md) | Introduci una Specialità di Barb per cariche multiple dell'abilità attiva | feat | gameplay | IN VERIFICA | media | — |
 | [PS-095](./4_to_test/PS-095-audita-spawn-nemici-sempre-fuori-vista.md) | Audita e correggi lo spawn nemici che compare dentro l'area visibile | fix | gameplay | IN VERIFICA | media | — |
 | [PS-096](./4_to_test/PS-096-await-orfano-grow-to-fit-content-upgrade-card.md) | Diagnostica l'await orfano di UpgradeCard._grow_to_fit_content in full suite | fix | tooling | IN VERIFICA | bassa | — |
 | [PS-097](./4_to_test/PS-097-await-orfano-defer-reflow-top-margin.md) | Applica a UpgradeOverlay/BarbRewardOverlay la correzione dell'await orfano di PS-096 | fix | tooling | IN VERIFICA | bassa | PS-096 |
 | [PS-098](./4_to_test/PS-098-genera-aura-potenziamento-e-tell-termici.md) | Genera l'aura di potenziamento di Lollo e i tell termici di Aleo | art | arte | IN VERIFICA | media | — |
 | [PS-099](./4_to_test/PS-099-aura-iperfocus-lollo-e-tell-termico-aleo.md) | Sostituisci il particellare di Lollo e Aleo con aura di potenziamento e tell termico | ux | arte | IN VERIFICA | media | PS-098 |
-| [PS-100](./2_to_do/PS-100-rimuovi-ansia-dalle-specialita-di-barb.md) | Rimuovi L'Ansia dalle Specialità di Barb | chore | gameplay | PRONTO | media | — |
+| [PS-100](./4_to_test/PS-100-rimuovi-ansia-dalle-specialita-di-barb.md) | Rimuovi L'Ansia dalle Specialità di Barb | chore | gameplay | IN VERIFICA | media | — |
 | [PS-101](./4_to_test/PS-101-racconta-fame-dietro-agli-evil.md) | Racconta la fame dietro agli Evil e la redenzione di Barb | feat | gameplay | IN VERIFICA | media | — |
 | [PS-102](./4_to_test/PS-102-cornice-dedicata-boss-intro.md) | Genera una cornice dedicata per la Boss Intro | art | arte | IN VERIFICA | media | — |
 | [PS-103](./4_to_test/PS-103-integra-cornice-boss-intro.md) | Integra la cornice dedicata nella Boss Intro | ux | ui | IN VERIFICA | media | PS-102 |
@@ -214,3 +214,9 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-110](./5_completed/PS-110-placeholder-asset-e-stato-in-attesa-asset.md) | Placeholder generato e stato IN ATTESA ASSET per procedere prima dell'asset reale | chore | tooling | COMPLETATO | media | PS-109 |
 | [PS-111](./5_completed/PS-111-askuserquestion-non-disponibile-ai-sottoagenti.md) | Correggi PS-109: AskUserQuestion non è disponibile ai sotto-agenti | fix | tooling | COMPLETATO | media | PS-109 |
 | [PS-112](./5_completed/PS-112-vieta-imagegen-diretto-game-art-designer-claude.md) | Vieta l'accesso diretto a ImageGen al game-art-designer lato Claude | fix | tooling | COMPLETATO | media | — |
+| [PS-113](./4_to_test/PS-113-cabla-cap-fps-performance-profile.md) | Cabla il cap FPS dal PerformanceProfile attivo | perf | piattaforma | IN VERIFICA | alta | — |
+| [PS-114](./1_idea/PS-114-cabla-render-scale-risoluzione-interna.md) | Cabla render_scale del PerformanceProfile alla risoluzione interna | perf | piattaforma | DA DEFINIRE | media | — |
+| [PS-115](./2_to_do/PS-115-modalita-risparmio-energetico-profilo-mobile-low.md) | Aggiungi una Modalità risparmio energetico con profilo mobile_low | feat | piattaforma | BLOCCATO | media | PS-113, PS-117 |
+| [PS-116](./4_to_test/PS-116-aumenta-risoluzione-sprite-gameplay-cast.md) | Aumenta la risoluzione nativa dello sprite di gameplay del cast a 64×64 | fix | arte | IN VERIFICA | media | — |
+| [PS-117](./2_to_do/PS-117-subviewport-mondo-di-gioco-per-render-scale.md) | Sposta il mondo di gioco in un SubViewport dedicato per abilitare render_scale | perf | piattaforma | PRONTO | media | — |
+| [PS-118](./2_to_do/PS-118-nome-e-icona-nona-specialita-cariche-abilita.md) | Genera nome e icona definitivi per la nona Specialità (cariche multiple abilità attiva) | art | arte | PRONTO | bassa | — |
