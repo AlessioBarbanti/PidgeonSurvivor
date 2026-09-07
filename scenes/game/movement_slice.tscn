@@ -27,7 +27,6 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/upgrade_overlay.tscn" id="29_upgrade_overlay"]
 [ext_resource type="PackedScene" path="res://scenes/ui/barb_reward_overlay.tscn" id="120_barb_reward_overlay"]
 [ext_resource type="Script" path="res://scripts/progression/upgrade_effect_registry.gd" id="30_upgrade_effect_registry"]
-[ext_resource type="Resource" path="res://data/upgrades/specialities/anxiety_signature.tres" id="31_anxiety_signature"]
 [ext_resource type="Resource" path="res://data/upgrades/specialities/gossip_projectiles.tres" id="32_gossip_projectiles"]
 [ext_resource type="Resource" path="res://data/upgrades/specialities/chronic_delay.tres" id="33_chronic_delay"]
 [ext_resource type="Resource" path="res://data/upgrades/specialities/beer_signature.tres" id="34_beer_signature"]
@@ -231,7 +230,7 @@ experience_curve = ExtResource("16_experience_curve")
 [node name="UpgradeRegistry" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("21_upgrade_registry")
-definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"), ExtResource("24_rapid_fire"), ExtResource("25_wide_magnet"), ExtResource("94_meat_fork_damage"), ExtResource("96_projectile_speed"), ExtResource("97_reinforced_tray"), ExtResource("98_barb_xp"), ExtResource("99_ability_cooldown"), ExtResource("86_summer_grill"), ExtResource("31_anxiety_signature"), ExtResource("32_gossip_projectiles"), ExtResource("33_chronic_delay"), ExtResource("34_beer_signature"), ExtResource("35_damage_shockwave"), ExtResource("78_rank_magno"), ExtResource("79_rank_bea"), ExtResource("80_rank_zat"), ExtResource("81_rank_alea"), ExtResource("82_rank_aleo"), ExtResource("83_rank_lollo"), ExtResource("84_rank_migi"), ExtResource("85_rank_marghe"), ExtResource("115_piercing_rounds"), ExtResource("116_double_barrel"), ExtResource("117_death_burst"), ExtResource("127_cooking_point_crit"), ExtResource("128_ability_charge_stacking")])
+definitions = Array[ExtResource("23_swift_steps")]([ExtResource("23_swift_steps"), ExtResource("24_rapid_fire"), ExtResource("25_wide_magnet"), ExtResource("94_meat_fork_damage"), ExtResource("96_projectile_speed"), ExtResource("97_reinforced_tray"), ExtResource("98_barb_xp"), ExtResource("99_ability_cooldown"), ExtResource("86_summer_grill"), ExtResource("32_gossip_projectiles"), ExtResource("33_chronic_delay"), ExtResource("34_beer_signature"), ExtResource("35_damage_shockwave"), ExtResource("78_rank_magno"), ExtResource("79_rank_bea"), ExtResource("80_rank_zat"), ExtResource("81_rank_alea"), ExtResource("82_rank_aleo"), ExtResource("83_rank_lollo"), ExtResource("84_rank_migi"), ExtResource("85_rank_marghe"), ExtResource("115_piercing_rounds"), ExtResource("116_double_barrel"), ExtResource("117_death_burst"), ExtResource("127_cooking_point_crit"), ExtResource("128_ability_charge_stacking")])
 
 [node name="UpgradeService" type="Node" parent="."]
 unique_name_in_owner = true

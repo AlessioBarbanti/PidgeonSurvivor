@@ -4,7 +4,6 @@ const UPGRADE_OVERLAY_SCENE := preload("res://scenes/ui/upgrade_overlay.tscn")
 const SWIFT_STEPS := preload("res://data/upgrades/swift_steps.tres")
 const RAPID_FIRE := preload("res://data/upgrades/rapid_fire.tres")
 const WIDE_MAGNET := preload("res://data/upgrades/wide_magnet.tres")
-const ANXIETY := preload("res://data/upgrades/specialities/anxiety_signature.tres")
 const BEER := preload("res://data/upgrades/specialities/beer_signature.tres")
 const CHRONIC_DELAY := preload("res://data/upgrades/specialities/chronic_delay.tres")
 const MEAT_FORK_DAMAGE := preload("res://data/upgrades/meat_fork_damage.tres")
@@ -20,7 +19,6 @@ const DEFINITIONS: Array[UpgradeDefinition] = [
 	SWIFT_STEPS,
 	RAPID_FIRE,
 	WIDE_MAGNET,
-	ANXIETY,
 	BEER,
 	CHRONIC_DELAY,
 	MEAT_FORK_DAMAGE,

@@ -121,18 +121,26 @@ sul danno subito) sono `UpgradeDefinition` con `is_speciality = true`, definite
 sotto `data/upgrades/specialities/`. Portano tutte il nome di un taglio cotto
 alla griglia: è il registro riservato che le distingue a colpo d'occhio dal
 catalogo statistico ordinario, che resta su utensili, pirofile, brace e
-condimenti (PS-078, PS-089). L'ottava, `L'Ansia` (`anxiety_signature`), è
-ancora presente nel pool ma ne uscirà con PS-100. Non compaiono nel pool di
+condimenti (PS-078, PS-089). `L'Ansia` (`anxiety_signature`) è uscita dal
+gioco con PS-100: non è mai più offerta, né da Barb né dal level-up. Un'ottava
+Specialità reale, cariche multiple sull'abilità attiva
+(`ability_charge_stacking`, PS-094), è entrata nel catalogo di run ma resta
+fuori dal registro "menù secco" finché nome e icona definitivi non arrivano
+con PS-118 (titolo di lavoro: "Bis alla Griglia"); a differenza delle altre,
+la sua progressione è una sequenza fissa di cinque rank non ripetibile (più
+cariche disponibili sull'abilità attiva e velocità di ricarica per carica
+variabile per rango), non un moltiplicatore lineare. Non compaiono nel pool di
 level-up normale finché non vengono sbloccate come ricompensa dopo la
 sconfitta di un Boss: quella ricompensa apre lo stato dedicato
 `RunController.BARB_REWARD` e propone fino a tre Specialità ancora bloccate,
 pescate con RNG deterministico derivato dal seed della run su uno stream
 separato da quello del level-up. La scelta assegna subito il rank `1` e
 sblocca la carta per il resto della run; i rank successivi seguono da lì il
-normale sistema di upgrade ed eleggibilità. Le quattro Specialità con
-`max_rank = 1` restano quindi sbloccate e concluse: nessun rank successivo da
-assegnare, e la stessa regola di eleggibilità le tiene fuori sia dalle offerte
-di Barb sia dal level-up normale. Se tutte le Specialità sono già sbloccate,
+normale sistema di upgrade ed eleggibilità. Le tre Specialità con
+`max_rank = 1` (`Alette`, `Costine`, `Hamburger`) restano quindi sbloccate e
+concluse dopo la prima scelta: nessun rank successivo da assegnare, e la
+stessa regola di eleggibilità le tiene fuori sia dalle offerte di Barb sia dal
+level-up normale. Se tutte le Specialità sono già sbloccate,
 la ricompensa Boss diventa due selezioni upgrade bonus consecutive tramite lo
 stesso pool e le stesse regole del level-up, senza avanzare livello o XP.
 Restart e cambio personaggio azzerano tutti gli sblocchi.
@@ -496,19 +504,23 @@ essere sostituiti nei `.tres` senza cambiare codice. Citazioni personali e audio
 non forniti non vengono inventati e restano rispettivamente sul placeholder
 neutro o silenziosi.
 
-Gli sprite gameplay B18U sono invece otto strisce originali ImageGen `96×32`,
-una per profilo, derivate dalla direzione visuale approvata nella welcome B18O.
-Ogni striscia contiene passo A, idle e passo B su celle `32×32`; il Player usa
-nearest-neighbor, alterna quattro fasi di camminata e conserva facing e ultima
-direzione B18C. Le sorgenti trasparenti `1536×1024` sono conservate per riuso
-artistico ma escluse da import ed export. La sostituzione non modifica origine,
-hitbox, velocità, collisioni, passive, abilità o timing gameplay. B24 aggiunge
-separatamente un moltiplicatore esclusivamente presentazionale alla scala base
-dello sprite: il candidato `1,25×` porta `CharacterSprite` da `1,65` a `2,0625`,
-senza scalare il `CharacterBody2D`, il raggio collisione `24`, l'origine di fuoco,
-i raggi, il clamp arena o qualsiasi coordinata/statistica gameplay. Il valore
-resta configurabile e sarà congelato soltanto dopo confronto percettivo su
-Windows e Pixel 9 con orde dense, Boss, VFX e bordi del playfield.
+Gli sprite gameplay B18U sono invece otto strisce originali ImageGen, una per
+profilo, derivate dalla direzione visuale approvata nella welcome B18O. Ogni
+striscia contiene passo A, idle e passo B su celle `64×64` (`192×64` totali,
+risoluzione nativa raddoppiata da PS-116 per pareggiare la definizione dei
+piccioni); il Player usa nearest-neighbor, alterna quattro fasi di camminata e
+conserva facing e ultima direzione B18C. Le sorgenti trasparenti sono
+conservate per riuso artistico ma escluse da import ed export. La
+sostituzione non modifica origine, hitbox, velocità, collisioni, passive,
+abilità o timing gameplay. B24 aggiunge separatamente un moltiplicatore
+esclusivamente presentazionale alla scala base dello sprite: il candidato
+`1,25×` porta `CharacterSprite` da `0,825` a `1,03125` (dimezzato da PS-116
+rispetto ai valori pre-raddoppio `1,65`/`2,0625`, a parità di footprint a
+schermo), senza scalare il `CharacterBody2D`, il raggio collisione `24`,
+l'origine di fuoco, i raggi, il clamp arena o qualsiasi
+coordinata/statistica gameplay. Il valore resta configurabile e sarà
+congelato soltanto dopo confronto percettivo su Windows e Pixel 9 con orde
+dense, Boss, VFX e bordi del playfield.
 
 ## 4. Idee per i potenziamenti (Citazioni e Amici)
 
@@ -518,10 +530,15 @@ state ideate e restano leggibili come storia del design. L'identità pubblicata
 griglia, elencati nel contratto della sezione precedente. Gli effetti descritti
 qui sotto sono invece ancora quelli correnti.
 
-### “L'Ansia”
+### “L'Ansia” *(rimossa dal gioco, PS-100)*
 
-Effetto: `+35%` velocità di movimento e `-20%` vita massima. Applica un leggero
-effetto di vignettatura scura ai bordi dello schermo.
+Effetto storico: `+35%` velocità di movimento e `-20%` vita massima. Applicava
+un leggero effetto di vignettatura scura ai bordi dello schermo. Il
+proprietario ha deciso di toglierla dal catalogo (non di rinominarla, a
+differenza delle altre): non è più offerta né da Barb né dal level-up
+ordinario. Il meccanismo di vignettatura resta cablato in
+`UpgradeEffectRegistry`/`VignetteEffect` come infrastruttura riusabile, ma
+nessuna carta lo pilota più.
 
 ### “Gossip”
 

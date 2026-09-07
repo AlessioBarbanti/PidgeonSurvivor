@@ -22,7 +22,6 @@ const PLAYER_DAMAGE_TAKEN_MULTIPLIER := &"player_damage_taken_multiplier"
 const XP_VALUE_MULTIPLIER := &"xp_value_multiplier"
 const ACTIVE_ABILITY_COOLDOWN_MULTIPLIER := &"active_ability_cooldown_multiplier"
 
-const ANXIETY_SIGNATURE := &"anxiety_signature"
 const GOSSIP_PROJECTILES := &"gossip_projectiles"
 const CHRONIC_DELAY := &"chronic_delay"
 const BEER_SIGNATURE := &"beer_signature"
@@ -187,22 +186,6 @@ func can_apply(definition: UpgradeDefinition) -> bool:
 		XP_VALUE_MULTIPLIER, \
 		ACTIVE_ABILITY_COOLDOWN_MULTIPLIER:
 			return _get_positive_number(definition.effect_parameters, "multiplier") > 0.0
-		ANXIETY_SIGNATURE:
-			return (
-				_is_single_rank_signature(definition)
-				and _get_positive_number(
-					definition.effect_parameters,
-					"move_speed_multiplier"
-				) > 0.0
-				and _get_positive_number(
-					definition.effect_parameters,
-					"health_max_multiplier"
-				) > 0.0
-				and _get_unit_number(
-					definition.effect_parameters,
-					"vignette_intensity"
-				) >= 0.0
-			)
 		GOSSIP_PROJECTILES:
 			return (
 				definition.repeatable
@@ -389,28 +372,6 @@ func recalculate_effects(preserve_health_ratio: bool = true) -> bool:
 				next_multipliers[PLAYER_HEALTH_MAX_MULTIPLIER] = (
 					float(next_multipliers[PLAYER_HEALTH_MAX_MULTIPLIER])
 					* contribution
-				)
-			ANXIETY_SIGNATURE:
-				_multiply_effect(
-					next_multipliers,
-					PLAYER_MOVE_SPEED_MULTIPLIER,
-					_get_positive_number(
-						definition.effect_parameters,
-						"move_speed_multiplier"
-					),
-					rank
-				)
-				_multiply_effect(
-					next_multipliers,
-					PLAYER_HEALTH_MAX_MULTIPLIER,
-					_get_positive_number(
-						definition.effect_parameters,
-						"health_max_multiplier"
-					),
-					rank
-				)
-				next_signatures[definition.effect_id] = (
-					definition.effect_parameters.duplicate(true)
 				)
 			BEER_SIGNATURE:
 				_multiply_effect(
@@ -646,14 +607,11 @@ func _apply_multipliers(
 
 
 func _apply_signature_effects(next_signatures: Dictionary) -> bool:
-	var anxiety_parameters := _parameters_from(next_signatures, ANXIETY_SIGNATURE)
-	var vignette_intensity := 0.0
-	if not anxiety_parameters.is_empty():
-		vignette_intensity = float(anxiety_parameters["vignette_intensity"])
-	if is_instance_valid(_vignette_effect):
-		if not _vignette_effect.set_intensity(vignette_intensity):
-			return false
-	elif vignette_intensity > 0.0:
+	# PS-100: nessuna Specialità pilota più la vignetta da quando L'Ansia è
+	# stata rimossa dal gioco. Il nodo resta cablato come infrastruttura
+	# riusabile (vedi get_vignette_effect()), ma non ha più un contributo
+	# dati da leggere: resta sempre a riposo qui.
+	if is_instance_valid(_vignette_effect) and not _vignette_effect.set_intensity(0.0):
 		return false
 
 	var gossip_parameters := _parameters_from(
@@ -920,9 +878,6 @@ func _reset_multiplier_cache() -> void:
 func _has_required_signature_dependencies() -> bool:
 	for definition in _upgrade_registry.get_definitions():
 		match definition.effect_id:
-			ANXIETY_SIGNATURE:
-				if not is_instance_valid(_vignette_effect):
-					return false
 			GOSSIP_PROJECTILES:
 				if not is_instance_valid(_targeting_system):
 					return false

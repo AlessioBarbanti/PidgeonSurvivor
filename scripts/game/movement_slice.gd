@@ -1515,7 +1515,7 @@ func _validate_current_contract() -> bool:
 	if _upgrade_service.get_experience_system() != _experience_system:
 		failures.append("UpgradeService non collegato a ExperienceSystem.")
 	if _upgrade_registry.get_speciality_definitions().size() != 8:
-		failures.append("UpgradeRegistry deve contenere le otto Specialità di Barb PS-077.")
+		failures.append("UpgradeRegistry deve contenere le otto Specialità di Barb (PS-094 - PS-100).")
 	if _upgrade_service.get_locked_speciality_definitions().size() != 8:
 		failures.append("Ogni run deve iniziare con tutte le Specialità di Barb bloccate.")
 	if _upgrade_service.is_barb_reward_active():
@@ -1539,7 +1539,6 @@ func _validate_current_contract() -> bool:
 	if _upgrade_effect_registry.get_effect_parent() != _ability_effects:
 		failures.append("UpgradeEffectRegistry non collegato ai VFX B13.")
 	for signature_id in [
-		&"anxiety_signature",
 		&"gossip_projectiles",
 		&"chronic_delay",
 		&"beer_signature",

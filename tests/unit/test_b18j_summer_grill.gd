@@ -1,7 +1,6 @@
 extends GutGameplayTest
 
 const SUMMER_GRILL := preload("res://data/upgrades/summer_grill.tres")
-const ANXIETY := preload("res://data/upgrades/specialities/anxiety_signature.tres")
 const SWIFT_STEPS := preload("res://data/upgrades/swift_steps.tres")
 const RAPID_FIRE := preload("res://data/upgrades/rapid_fire.tres")
 const WIDE_MAGNET := preload("res://data/upgrades/wide_magnet.tres")
@@ -53,7 +52,13 @@ func test_summer_grill_contract() -> void:
 	if ability != null:
 		ability.set_process(false)
 
-	catalog.definitions = [SUMMER_GRILL, ANXIETY, SWIFT_STEPS, RAPID_FIRE, WIDE_MAGNET, MEAT_FORK_DAMAGE]
+	# PS-100 ha rimosso L'Ansia (unica altra carta che toccava la vita massima):
+	# la prova di composizione moltiplicativa usa ora una carta ordinaria
+	# sintetica dedicata, invece di una Specialità reale del catalogo di run.
+	var health_multiplier_partner := _make_health_multiplier_partner()
+	catalog.definitions = [
+		SUMMER_GRILL, health_multiplier_partner, SWIFT_STEPS, RAPID_FIRE, WIDE_MAGNET, MEAT_FORK_DAMAGE,
+	]
 	assert_true(catalog.rebuild_registry(), "La fixture B18J deve avere un catalogo valido.")
 	service.reset_for_run(controller.get_seed())
 	assert_true(effects.recalculate_effects(), "Il registry deve accettare Grigliata estiva.")
@@ -141,23 +146,20 @@ func test_summer_grill_contract() -> void:
 	assert_true(
 		player.take_contact_damage(base_health_max * 0.5), "La seconda run deve poter testare la composizione."
 	)
-	# PS-077: L'Ansia e' una Specialità di Barb, bloccata a inizio run. Va
-	# sbloccata dalla ricompensa Boss, non pescata dal level-up normale.
-	service.queue_barb_reward()
 	assert_true(
-		service.select_barb_speciality(ANXIETY.id),
-		"L'Ansia deve essere sbloccabile come Specialità di Barb prima di Grigliata."
+		_grant_and_select(experience, service, health_multiplier_partner.id),
+		"La carta sintetica di prova deve essere selezionabile prima di Grigliata."
 	)
 	assert_almost_eq(
-		health.health_max, base_health_max * 0.8, FLOAT_TOLERANCE, "L'Ansia deve applicare il proprio massimo."
+		health.health_max, base_health_max * 0.8, FLOAT_TOLERANCE, "La carta sintetica deve applicare il proprio massimo."
 	)
 	assert_almost_eq(
-		health.health_current, base_health_max * 0.4, FLOAT_TOLERANCE, "L'Ansia deve conservare la percentuale."
+		health.health_current, base_health_max * 0.4, FLOAT_TOLERANCE, "La carta sintetica deve conservare la percentuale."
 	)
 	var before_grill_max := health.health_max
 	var before_grill_current := health.health_current
 	assert_true(
-		_grant_and_select(experience, service, SUMMER_GRILL.id), "Grigliata deve comporsi con L'Ansia."
+		_grant_and_select(experience, service, SUMMER_GRILL.id), "Grigliata deve comporsi con la carta sintetica."
 	)
 	var composed_max := base_health_max * 0.8 * RANK_MULTIPLIER
 	assert_almost_eq(
@@ -208,6 +210,25 @@ func _assert_definition(effects: UpgradeEffectRegistry) -> void:
 	invalid_cap.id = &"summer_grill_invalid_cap"
 	invalid_cap.effect_parameters = {"multiplier": RANK_MULTIPLIER, "cap": 1.0}
 	assert_false(effects.can_apply(invalid_cap), "Un cap inferiore al singolo rank deve essere rifiutato.")
+
+
+## PS-100: L'Ansia (unica altra carta a toccare la vita massima) è stata
+## rimossa dal gioco. Questa carta sintetica, isolata alla sola fixture di
+## questo file, prova la composizione moltiplicativa di Grigliata estiva con
+## un contributo indipendente, senza dipendere da un'altra carta del
+## bilanciamento reale che potrebbe cambiare o sparire a sua volta.
+func _make_health_multiplier_partner() -> UpgradeDefinition:
+	var definition := UpgradeDefinition.new()
+	definition.id = &"ps100_health_multiplier_test_partner"
+	definition.title = "Prova composizione B18J"
+	definition.description = "Riduce la vita massima, solo per verificare la composizione con Grigliata estiva."
+	definition.effect_id = UpgradeEffectRegistry.PLAYER_HEALTH_MAX_MULTIPLIER
+	definition.effect_parameters = {"multiplier": 0.8}
+	definition.weight = 1.0
+	definition.max_rank = 1
+	definition.repeatable = false
+	definition.tags = [&"test"]
+	return definition
 
 
 func _grant_and_select(

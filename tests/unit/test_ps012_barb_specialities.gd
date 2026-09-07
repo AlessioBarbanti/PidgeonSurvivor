@@ -202,7 +202,7 @@ func test_composed_boss_defeat_opens_barb_reward_end_to_end() -> void:
 		spawner.set_process(false)
 	assert_eq(
 		service.get_locked_speciality_definitions().size(), 8,
-		"La scena composta deve iniziare con tutte le Specialità bloccate (otto dopo PS-077)."
+		"La scena composta deve iniziare con tutte le Specialità bloccate (otto dopo PS-094/PS-100)."
 	)
 
 	controller._process(120.01)

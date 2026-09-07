@@ -167,7 +167,7 @@ il derivato ha lo stesso nome file e contenuto nuovo:
   carta non gli piace e va rimossa dal pool. La rimozione tocca
   `UpgradeEffectRegistry`, la lista di definizioni di `movement_slice.gd` e
   cinque suite di regressione: è gameplay, non identità, quindi è stata aperta
-  [PS-100](../2_to_do/PS-100-rimuovi-ansia-dalle-specialita-di-barb.md) invece
+  [PS-100](../4_to_test/PS-100-rimuovi-ansia-dalle-specialita-di-barb.md) invece
   di allargare questa card. PS-078 tematizza le sette Specialità rimaste e non
   produce alcuna icona per `anxiety_signature`, che resta com'è finché PS-100
   non la elimina. Le due card sono indipendenti: nessuna blocca l'altra.
@@ -247,7 +247,7 @@ il derivato ha lo stesso nome file e contenuto nuovo:
   `IN VERIFICA`: la regola di dipendenza della board è soddisfatta e questa
   card passa a `PRONTO`.
 - **2026-09-04 — Possibile nona Specialità in arrivo.**
-  [PS-094](../2_to_do/PS-094-specialita-cariche-abilita-attiva.md) propone
+  [PS-094](../4_to_test/PS-094-specialita-cariche-abilita-attiva.md) propone
   una nuova Specialità (cariche multiple per l'abilità attiva). Se PS-094
   viene presa in carico prima che questa card sia chiusa, il proprio
   criterio la obbliga ad aggiornare questa card da "otto" a "nove"

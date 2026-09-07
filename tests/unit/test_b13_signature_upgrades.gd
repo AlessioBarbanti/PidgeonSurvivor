@@ -1,6 +1,5 @@
 extends GutGameplayTest
 
-const ANXIETY := preload("res://data/upgrades/specialities/anxiety_signature.tres")
 const GOSSIP := preload("res://data/upgrades/specialities/gossip_projectiles.tres")
 const CHRONIC_DELAY := preload("res://data/upgrades/specialities/chronic_delay.tres")
 const BEER := preload("res://data/upgrades/specialities/beer_signature.tres")
@@ -42,13 +41,12 @@ func test_signature_composition() -> void:
 	var targeting := movement_slice.get_targeting_system() as TargetingSystem
 	var arena := movement_slice.get_node_or_null("ArenaLayout") as ArenaLayout
 	var projectiles := movement_slice.get_projectile_parent() as Node2D
-	var vignette := movement_slice.get_vignette_effect() as VignetteEffect
 
 	assert_true(controller != null and experience != null, "B13 deve conservare run e XP.")
 	assert_true(service != null and catalog != null and effects != null, "B13 deve comporre i registry upgrade.")
 	assert_true(player != null and weapon != null, "B13 deve comporre Player e arma.")
 	assert_true(spawner != null and targeting != null and arena != null, "B13 deve comporre nemici e arena.")
-	assert_true(projectiles != null and vignette != null, "B13 deve comporre proiettili e vignetta.")
+	assert_true(projectiles != null, "B13 deve comporre i proiettili.")
 	if (
 		controller == null
 		or experience == null
@@ -61,7 +59,6 @@ func test_signature_composition() -> void:
 		or targeting == null
 		or arena == null
 		or projectiles == null
-		or vignette == null
 	):
 		return
 
@@ -74,14 +71,15 @@ func test_signature_composition() -> void:
 	if ability != null:
 		ability.set_process(false)
 
-	# Isola le cinque signature e le carte normali ripetibili senza eludere la validazione
-	# della scena completa, gia eseguita durante _ready().
+	# Isola le quattro signature rimaste (PS-100 ha rimosso L'Ansia) e le carte
+	# normali ripetibili senza eludere la validazione della scena completa,
+	# gia eseguita durante _ready().
 	catalog.definitions = [
-		ANXIETY, GOSSIP, CHRONIC_DELAY, BEER, DAMAGE_SHOCKWAVE, SWIFT_STEPS, RAPID_FIRE, WIDE_MAGNET, MEAT_FORK_DAMAGE,
+		GOSSIP, CHRONIC_DELAY, BEER, DAMAGE_SHOCKWAVE, SWIFT_STEPS, RAPID_FIRE, WIDE_MAGNET, MEAT_FORK_DAMAGE,
 	]
 	assert_true(catalog.rebuild_registry(), "Il catalogo signature isolato deve essere valido.")
 	service.reset_for_run(controller.get_seed())
-	assert_true(effects.recalculate_effects(), "Il registry deve accettare le cinque signature.")
+	assert_true(effects.recalculate_effects(), "Il registry deve accettare le quattro signature.")
 	assert_true(effects.has_valid_configuration(), "Le dipendenze B13 devono essere complete.")
 	effects.effect_applied.connect(_on_effect_applied)
 	effects.damage_shockwave_emitted.connect(_on_damage_shockwave_emitted)
@@ -98,11 +96,11 @@ func test_signature_composition() -> void:
 	assert_true(player.take_contact_damage(base_health_max * 0.5), "La fixture deve portare il Player al 50%.")
 	health.clear_invulnerability()
 
-	# PS-077: tutte e cinque le signature sono Specialità di Barb, bloccate
-	# all'inizio della run. Nessuna passa più dal level-up normale: si
-	# compongono solo accumulando ricompense Boss.
+	# PS-077: tutte e quattro le signature rimaste sono Specialità di Barb,
+	# bloccate all'inizio della run (PS-100 ha rimosso L'Ansia). Nessuna passa
+	# più dal level-up normale: si compongono solo accumulando ricompense Boss.
 	var signature_ids: Array[StringName] = [
-		&"anxiety_signature", &"gossip_projectiles", &"chronic_delay", &"beer_signature", &"damage_shockwave",
+		&"gossip_projectiles", &"chronic_delay", &"beer_signature", &"damage_shockwave",
 	]
 	for signature_id in signature_ids:
 		assert_true(
@@ -119,28 +117,18 @@ func test_signature_composition() -> void:
 		_unlock_every_speciality(service, signature_ids.size()),
 		"Ogni ricompensa Boss deve sbloccare una signature, senza mai ripetere la stessa carta."
 	)
-	assert_eq(_applied_ids.size(), 5, "Ogni signature deve applicarsi una sola volta.")
+	assert_eq(_applied_ids.size(), 4, "Ogni signature deve applicarsi una sola volta.")
 	for signature_id in signature_ids:
 		assert_eq(service.get_rank(signature_id), 1, "%s deve fermarsi al rank 1." % signature_id)
 		assert_true(effects.has_signature_effect(signature_id), "%s deve essere attiva." % signature_id)
 
-	# Ansia e Birra compongono trade-off e statistiche senza mutare i
-	# Resource base. La salute conserva esattamente il rapporto precedente.
-	assert_almost_eq(
-		player.move_speed, base_move_speed * 1.35, FLOAT_TOLERANCE, "L'Ansia deve aumentare la velocita."
-	)
-	assert_almost_eq(health.health_max, base_health_max * 0.8, FLOAT_TOLERANCE, "L'Ansia deve ridurre la vita massima.")
-	assert_almost_eq(
-		health.health_current, base_health_max * 0.4, FLOAT_TOLERANCE, "L'Ansia deve conservare il 50% di vita."
-	)
+	# Birra compone trade-off e statistiche senza mutare i Resource base.
 	assert_almost_eq(
 		weapon.get_effective_shots_per_second(), base_fire_rate * 1.25, FLOAT_TOLERANCE, "Birra deve aumentare la frequenza."
 	)
 	assert_almost_eq(
 		weapon.weapon_profile.shots_per_second, base_fire_rate, FLOAT_TOLERANCE, "Il profilo arma deve restare immutabile."
 	)
-	assert_true(vignette.visible, "L'Ansia deve mostrare la vignetta.")
-	assert_almost_eq(vignette.intensity, 0.42, FLOAT_TOLERANCE, "La vignetta deve usare l'intensita dati.")
 
 	assert_true(weapon.is_projectile_chain_enabled(), "Gossip deve abilitare la catena.")
 	assert_eq(weapon.get_projectile_chain_jumps(), 2, "Gossip deve dare due salti.")
@@ -261,7 +249,6 @@ func test_signature_composition() -> void:
 	assert_true(movement_slice.restart_run(13014), "B13 deve supportare una seconda run pulita.")
 	await wait_process_frames(2)
 	assert_true(service.get_ranks().is_empty(), "Il restart deve azzerare i rank signature.")
-	assert_true(not vignette.visible and is_zero_approx(vignette.intensity), "Il restart deve rimuovere la vignetta.")
 	assert_almost_eq(player.move_speed, base_move_speed, FLOAT_TOLERANCE, "Il restart deve ripristinare la velocita.")
 	assert_almost_eq(health.health_max, base_health_max, FLOAT_TOLERANCE, "Il restart deve ripristinare la vita massima.")
 	assert_almost_eq(health.health_current, base_health_max, FLOAT_TOLERANCE, "Il restart deve curare il Player.")
@@ -311,14 +298,6 @@ func _spawn_enemy(spawner: EnemySpawner, position: Vector2) -> BaseEnemy:
 
 
 func _assert_rejected_definitions(effects: UpgradeEffectRegistry) -> void:
-	var bad_anxiety := (ANXIETY as UpgradeDefinition).duplicate(true) as UpgradeDefinition
-	bad_anxiety.id = &"bad_anxiety"
-	bad_anxiety.effect_parameters = {
-		"move_speed_multiplier": 1.35,
-		"health_max_multiplier": 0.8,
-	}
-	assert_true(not effects.can_apply(bad_anxiety), "Una vignetta senza intensita deve essere rifiutata.")
-
 	var bad_gossip := (GOSSIP as UpgradeDefinition).duplicate(true) as UpgradeDefinition
 	bad_gossip.id = &"bad_gossip"
 	bad_gossip.effect_parameters = {
@@ -343,7 +322,7 @@ func _assert_rejected_definitions(effects: UpgradeEffectRegistry) -> void:
 
 
 func _on_effect_applied(definition: UpgradeDefinition, _new_rank: int, _effective_multipliers: Dictionary) -> void:
-	if definition.id in [ANXIETY.id, GOSSIP.id, CHRONIC_DELAY.id, BEER.id, DAMAGE_SHOCKWAVE.id]:
+	if definition.id in [GOSSIP.id, CHRONIC_DELAY.id, BEER.id, DAMAGE_SHOCKWAVE.id]:
 		_applied_ids.append(definition.id)
 
 

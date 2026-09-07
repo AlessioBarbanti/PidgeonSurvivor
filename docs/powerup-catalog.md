@@ -41,9 +41,17 @@ Con un nome di una parola sola il titolo non basta più a comunicare l'effetto:
 `description` ed `effect_summary` restano l'unico veicolo testuale e non vanno
 accorciati per ragioni estetiche.
 
-L'ottava Specialità, `L'Ansia` (`anxiety_signature`), è rimasta col nome
-originale perché esce dal gioco con
-[PS-100](./cards/2_to_do/PS-100-rimuovi-ansia-dalle-specialita-di-barb.md).
+`L'Ansia` (`anxiety_signature`) è uscita dal gioco con
+[PS-100](./cards/4_to_test/PS-100-rimuovi-ansia-dalle-specialita-di-barb.md):
+non è più offerta né dalla ricompensa di Barb né dal level-up ordinario.
+
+Un'ottava Specialità reale, `ability_charge_stacking` (cariche multiple
+sull'abilità attiva), è entrata col catalogo di run con
+[PS-094](./cards/4_to_test/PS-094-specialita-cariche-abilita-attiva.md):
+resta fuori dal registro "menù secco" qui sopra finché nome e icona
+definitivi non arrivano con
+[PS-118](./cards/2_to_do/PS-118-nome-e-icona-nona-specialita-cariche-abilita.md)
+(titolo di lavoro provvisorio: "Bis alla Griglia").
 
 Due conseguenze operative sulla separazione fra i registri:
 

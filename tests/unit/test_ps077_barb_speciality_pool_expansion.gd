@@ -5,7 +5,6 @@ extends GutGameplayTest
 ## una fixture isolata: il punto della card e' proprio che le otto carte
 ## convivano nello stesso catalogo di run.
 
-const ANXIETY := preload("res://data/upgrades/specialities/anxiety_signature.tres")
 const BEER := preload("res://data/upgrades/specialities/beer_signature.tres")
 const CHRONIC_DELAY := preload("res://data/upgrades/specialities/chronic_delay.tres")
 const DAMAGE_SHOCKWAVE := preload("res://data/upgrades/specialities/damage_shockwave.tres")
@@ -14,26 +13,24 @@ const PIERCING_ROUNDS := preload("res://data/upgrades/specialities/piercing_roun
 const DOUBLE_BARREL := preload("res://data/upgrades/specialities/double_barrel.tres")
 const DEATH_BURST := preload("res://data/upgrades/specialities/death_burst.tres")
 
-const EXPECTED_SPECIALITY_COUNT := 8
+## PS-100 ha rimosso L'Ansia (`anxiety_signature`) dal gioco: le fixture
+## isolate di questo file (che ricostruivano il roster con le carte reali
+## dell'epoca PS-077) contano ora sette Specialità, non più otto.
+const EXPECTED_SPECIALITY_COUNT := 7
+## PS-094 aggiunge una nona Specialità reale (Bis alla Griglia) al catalogo di
+## run cablato in movement_slice.tscn; PS-100 ne rimuove una (L'Ansia): la
+## scena composta reale conta otto Specialità, di nuovo, per coincidenza
+## numerica con l'epoca pre-PS-094.
+const EXPECTED_LIVE_SPECIALITY_COUNT := 8
 const BARB_OFFER_SIZE := 3
 
 ## Valori B13 congelati a mano.
 ##
-## La card vieta ogni modifica meccanica alle quattro carte migrate: rileggere
-## il `.tres` che si vuole proteggere non proverebbe niente, quindi il
-## confronto avviene contro i numeri scritti qui.
+## La card vieta ogni modifica meccanica alle carte migrate rimaste (PS-100 ha
+## rimosso `anxiety_signature` da questo elenco): rileggere il `.tres` che si
+## vuole proteggere non proverebbe niente, quindi il confronto avviene contro
+## i numeri scritti qui.
 const FROZEN_B13_MECHANICS := {
-	&"anxiety_signature": {
-		"effect_id": &"anxiety_signature",
-		"weight": 1.0,
-		"max_rank": 1,
-		"repeatable": false,
-		"parameters": {
-			"health_max_multiplier": 0.8,
-			"move_speed_multiplier": 1.35,
-			"vignette_intensity": 0.42,
-		},
-	},
 	&"beer_signature": {
 		"effect_id": &"beer_signature",
 		"weight": 1.0,
@@ -111,7 +108,7 @@ func test_migrated_cards_declare_speciality_without_touching_mechanics() -> void
 		)
 
 
-func test_composed_run_locks_eight_specialities_and_keeps_them_out_of_level_up() -> void:
+func test_composed_run_locks_every_speciality_and_keeps_them_out_of_level_up() -> void:
 	var movement_slice := await instantiate_movement_slice()
 	var controller := movement_slice.get_run_controller() as RunController
 	var registry := movement_slice.get_upgrade_registry() as UpgradeRegistry
@@ -129,12 +126,12 @@ func test_composed_run_locks_eight_specialities_and_keeps_them_out_of_level_up()
 		spawner.set_process(false)
 
 	assert_eq(
-		registry.get_speciality_definitions().size(), EXPECTED_SPECIALITY_COUNT,
-		"Il catalogo di run deve registrare le otto Specialità di Barb."
+		registry.get_speciality_definitions().size(), EXPECTED_LIVE_SPECIALITY_COUNT,
+		"Il catalogo di run deve registrare le nove Specialità di Barb (PS-094)."
 	)
 	assert_eq(
-		service.get_locked_speciality_definitions().size(), EXPECTED_SPECIALITY_COUNT,
-		"Ogni run deve iniziare con tutte e otto le Specialità bloccate."
+		service.get_locked_speciality_definitions().size(), EXPECTED_LIVE_SPECIALITY_COUNT,
+		"Ogni run deve iniziare con tutte e nove le Specialità bloccate."
 	)
 
 	# Una singola pesca non proverebbe l'esclusione: il pool normale e' pesato
@@ -183,14 +180,14 @@ func test_barb_offers_every_speciality_once_without_repeating_an_unlocked_one() 
 
 	assert_eq(
 		seen_ids.size(), EXPECTED_SPECIALITY_COUNT,
-		"Otto ricompense Boss devono coprire tutte e otto le Specialità, senza ripetizioni."
+		"Sette ricompense Boss devono coprire tutte e sette le Specialità, senza ripetizioni."
 	)
 	assert_true(
 		service.get_locked_speciality_definitions().is_empty(),
-		"Dopo otto scelte non deve restare nessuna Specialità bloccata."
+		"Dopo sette scelte non deve restare nessuna Specialità bloccata."
 	)
 
-	# Le quattro carte migrate hanno max_rank = 1: una volta sbloccate escono
+	# Le carte migrate rimaste hanno max_rank = 1: una volta sbloccate escono
 	# anche dal pool normale, senza bisogno di una regola dedicata.
 	for draw_index in 24:
 		for offered in service.generate_offer(draw_index + 1):
@@ -202,7 +199,7 @@ func test_barb_offers_every_speciality_once_without_repeating_an_unlocked_one() 
 	controller.prepare_restart()
 
 
-func test_same_seed_reproduces_the_same_sequence_over_all_eight() -> void:
+func test_same_seed_reproduces_the_same_sequence_over_every_speciality() -> void:
 	var fixture_a := await _create_fixture(78702)
 	var fixture_b := await _create_fixture(78702)
 	var service_a := fixture_a.get_node("UpgradeService") as UpgradeService
@@ -222,7 +219,7 @@ func test_same_seed_reproduces_the_same_sequence_over_all_eight() -> void:
 	(fixture_b.get_node("RunController") as RunController).prepare_restart()
 
 
-func test_restart_and_character_change_relock_all_eight() -> void:
+func test_restart_and_character_change_relock_every_speciality() -> void:
 	var movement_slice := await instantiate_movement_slice()
 	var controller := movement_slice.get_run_controller() as RunController
 	var service := movement_slice.get_upgrade_service() as UpgradeService
@@ -243,7 +240,7 @@ func test_restart_and_character_change_relock_all_eight() -> void:
 		return
 	assert_true(service.select_barb_speciality(offer_ids[0]), "La fixture deve poter sbloccare una Specialità.")
 	assert_eq(
-		service.get_locked_speciality_definitions().size(), EXPECTED_SPECIALITY_COUNT - 1,
+		service.get_locked_speciality_definitions().size(), EXPECTED_LIVE_SPECIALITY_COUNT - 1,
 		"Una sola Specialità deve risultare sbloccata prima del restart."
 	)
 
@@ -251,8 +248,8 @@ func test_restart_and_character_change_relock_all_eight() -> void:
 	assert_true(movement_slice.restart_run(77002), "Il restart deve poter avviare una nuova run.")
 	await wait_process_frames(2)
 	assert_eq(
-		service.get_locked_speciality_definitions().size(), EXPECTED_SPECIALITY_COUNT,
-		"Il restart deve ribloccare tutte e otto le Specialità."
+		service.get_locked_speciality_definitions().size(), EXPECTED_LIVE_SPECIALITY_COUNT,
+		"Il restart deve ribloccare tutte e nove le Specialità."
 	)
 	assert_true(service.get_ranks().is_empty(), "Il restart deve azzerare anche i rank assegnati da Barb.")
 
@@ -271,8 +268,8 @@ func test_restart_and_character_change_relock_all_eight() -> void:
 	)
 	await wait_process_frames(2)
 	assert_eq(
-		service.get_locked_speciality_definitions().size(), EXPECTED_SPECIALITY_COUNT,
-		"Il cambio personaggio deve ribloccare tutte e otto le Specialità."
+		service.get_locked_speciality_definitions().size(), EXPECTED_LIVE_SPECIALITY_COUNT,
+		"Il cambio personaggio deve ribloccare tutte e nove le Specialità."
 	)
 	assert_true(service.get_ranks().is_empty(), "Il cambio personaggio deve azzerare i rank della run precedente.")
 
@@ -282,8 +279,6 @@ func test_restart_and_character_change_relock_all_eight() -> void:
 
 func _resolve_migrated(upgrade_id: StringName) -> UpgradeDefinition:
 	match upgrade_id:
-		&"anxiety_signature":
-			return ANXIETY
 		&"beer_signature":
 			return BEER
 		&"chronic_delay":
@@ -293,12 +288,13 @@ func _resolve_migrated(upgrade_id: StringName) -> UpgradeDefinition:
 	return null
 
 
-## Fixture minima con le sole otto Specialità reali più due carte statistiche
-## fittizie: isola il pool di Barb dal bilanciamento del catalogo completo,
-## che cambia a ogni card e renderebbe instabile un'asserzione sulle pesche.
+## Fixture minima con le sole sette Specialità reali rimaste (PS-100 ha
+## rimosso `anxiety_signature`) più due carte statistiche fittizie: isola il
+## pool di Barb dal bilanciamento del catalogo completo, che cambia a ogni
+## card e renderebbe instabile un'asserzione sulle pesche.
 func _create_fixture(seed_value: int) -> Node:
 	var definitions: Array[UpgradeDefinition] = [
-		ANXIETY, BEER, CHRONIC_DELAY, DAMAGE_SHOCKWAVE,
+		BEER, CHRONIC_DELAY, DAMAGE_SHOCKWAVE,
 		GOSSIP, PIERCING_ROUNDS, DOUBLE_BARREL, DEATH_BURST,
 		_make_filler(&"ps077_filler_a"), _make_filler(&"ps077_filler_b"),
 	]
