@@ -222,3 +222,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-118](./2_to_do/PS-118-nome-e-icona-nona-specialita-cariche-abilita.md) | Genera nome e icona definitivi per la nona Specialità (cariche multiple abilità attiva) | art | arte | PRONTO | bassa | — |
 | [PS-119](./4_to_test/PS-119-fix-spawn-non-sospeso-boss-ricorrente-con-evento-attivo.md) | Correggi lo spawn ordinario che non si sospende durante un Boss se un evento d'ondata è già maturato | fix | gameplay | IN VERIFICA | alta | — |
 | [PS-120](./4_to_test/PS-120-fix-ricarica-cariche-abilita-e-indicatore-hud.md) | Correggi il tetto di ricarica delle cariche abilità e distingui l'indicatore HUD di ricarica in background | fix | gameplay | IN VERIFICA | alta | PS-094 |
+| [PS-121](./4_to_test/PS-121-carte-ripetibili-sature-escono-dal-pool.md) | Le carte ripetibili che hanno raggiunto il proprio tetto runtime escono dal pool di scelta | fix | gameplay | IN VERIFICA | alta | — |

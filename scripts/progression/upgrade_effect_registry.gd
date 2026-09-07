@@ -340,6 +340,73 @@ func can_apply(definition: UpgradeDefinition) -> bool:
 			return false
 
 
+## PS-120: vero se salire di un altro rango non cambierebbe l'effetto
+## applicato in gioco (il contributo ha già raggiunto il tetto/pavimento
+## runtime). Solo le carte `repeatable` possono restare nel pool oltre il
+## proprio `max_rank` (`UpgradeDefinition.is_eligible()`), quindi solo per
+## loro serve un secondo controllo qui: senza, una carta ripetibile continua
+## a essere proposta all'infinito anche quando un rango in più non farebbe
+## più nulla, sprecando la scelta del giocatore (segnalato dal proprietario
+## su "Tagliata").
+func is_rank_saturated(definition: UpgradeDefinition, current_rank: int) -> bool:
+	if not definition.repeatable or current_rank < 1:
+		return false
+	var current_contribution: Variant = _resolve_capped_contribution(definition, current_rank)
+	var next_contribution: Variant = _resolve_capped_contribution(definition, current_rank + 1)
+	if current_contribution == null or next_contribution == null:
+		return false
+	return current_contribution == next_contribution
+
+
+## Ogni effect_id qui sotto appartiene a una sola carta del catalogo (nessuna
+## composizione fra più carte sullo stesso effetto): il contributo isolato
+## della carta coincide quindi con l'effettivo già applicato in gioco, con
+## l'eccezione del critico, che si somma allo scarto base del personaggio e
+## va perciò letto dal `WeaponController` corrente. `null` significa "non
+## calcolabile qui": `is_rank_saturated()` lo tratta come "non saturo", mai
+## come "saturo per errore".
+func _resolve_capped_contribution(definition: UpgradeDefinition, rank: int) -> Variant:
+	match definition.effect_id:
+		WEAPON_MULTISHOT:
+			return mini(
+				1 + _get_positive_integer(definition.effect_parameters, "projectiles_per_rank") * rank,
+				max_weapon_multishot_count
+			)
+		WEAPON_PIERCE:
+			return mini(
+				1 + _get_positive_integer(definition.effect_parameters, "pierce_count_per_rank") * rank,
+				max_weapon_pierce_count
+			)
+		WEAPON_DEATH_BURST:
+			return minf(
+				_get_positive_number(definition.effect_parameters, "damage_multiplier_per_rank") * float(rank),
+				max_weapon_death_burst_damage_multiplier
+			)
+		GOSSIP_PROJECTILES:
+			return mini(
+				_get_positive_integer(definition.effect_parameters, "chain_jumps_per_rank") * rank,
+				max_gossip_chain_jumps
+			)
+		WEAPON_CRITICAL_STRIKE:
+			if not is_instance_valid(_weapon_controller):
+				return null
+			var character_bonus := _weapon_controller.get_character_critical_chance_bonus()
+			var card_bonus := _get_unit_number(
+				definition.effect_parameters, "chance_bonus_per_rank"
+			) * float(rank)
+			return clampf(character_bonus + card_bonus, 0.0, WeaponController.MAXIMUM_CRITICAL_CHANCE)
+		_:
+			# Ramo generico "moltiplicatore composto" (Ravviva la Brace! e le
+			# carte statistiche ordinarie ripetibili): stessa formula di
+			# recalculate_effects(), un solo contributore per effect_id.
+			var multiplier := _get_positive_number(definition.effect_parameters, "multiplier")
+			if multiplier <= 0.0:
+				return null
+			return clampf(
+				pow(multiplier, rank), _get_minimum(definition.effect_id), _get_cap(definition.effect_id)
+			)
+
+
 func recalculate_effects(preserve_health_ratio: bool = true) -> bool:
 	if not has_valid_configuration():
 		return false

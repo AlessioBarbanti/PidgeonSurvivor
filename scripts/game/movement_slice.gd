@@ -241,6 +241,7 @@ func _ready() -> void:
 		_ability_effects,
 		_ability_controller
 	)
+	_upgrade_service.set_effect_registry(_upgrade_effect_registry)
 	_equip_friend(&"magno")
 	_hud.configure(
 		_run_controller,

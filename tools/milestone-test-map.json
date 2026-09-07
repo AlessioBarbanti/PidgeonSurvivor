@@ -189,6 +189,8 @@
         "scripts/progression/experience_*"
       ],
       "smokes": [
+        "tests/unit/test_b10_upgrade_service.gd",
+        "tests/unit/test_b12_upgrade_effects.gd",
         "tests/unit/test_powerup_first_wave.gd",
         "tests/unit/test_b18i_xp_arena_confinement.gd",
         "tests/unit/test_b38_arena_world.gd",

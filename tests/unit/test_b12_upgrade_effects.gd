@@ -155,7 +155,6 @@ func test_composed_upgrade_effects() -> void:
 		"Upgrade primario e fallback devono comporsi sullo stesso effetto."
 	)
 
-	var haste_rank_before_cap := service.get_rank(&"rapid_fire")
 	var guard := 0
 	while (
 		registry.get_effective_multiplier(&"weapon_fire_rate_multiplier") < registry.max_fire_rate_multiplier - FLOAT_TOLERANCE
@@ -170,12 +169,18 @@ func test_composed_upgrade_effects() -> void:
 		registry.get_effective_multiplier(&"weapon_fire_rate_multiplier"), registry.max_fire_rate_multiplier, FLOAT_TOLERANCE,
 		"La frequenza deve fermarsi al cap configurato."
 	)
+	# PS-120: una carta ripetibile che ha raggiunto il proprio tetto runtime
+	# non deve più essere offerta (prima di PS-120 restava selezionabile
+	# all'infinito senza alcun effetto, sprecando la scelta del giocatore).
 	var capped_fire_rate := weapon.get_effective_shots_per_second()
-	assert_true(
-		_grant_and_select(experience, service, &"rapid_fire"), "Un fallback ripetibile deve restare consumabile al cap."
+	var rank_at_cap := service.get_rank(&"rapid_fire")
+	assert_false(
+		_grant_and_select(experience, service, &"rapid_fire"),
+		"PS-120: un fallback ripetibile al proprio tetto non deve più essere offerto."
 	)
-	assert_true(
-		service.get_rank(&"rapid_fire") > haste_rank_before_cap, "I rank fallback devono restare tracciati oltre max_rank."
+	assert_eq(
+		service.get_rank(&"rapid_fire"), rank_at_cap,
+		"PS-120: il rango non deve muoversi dopo che il fallback ha raggiunto il proprio tetto."
 	)
 	assert_almost_eq(
 		weapon.get_effective_shots_per_second(), capped_fire_rate, FLOAT_TOLERANCE, "Selezioni oltre il cap non devono aumentare la statistica."

@@ -308,6 +308,97 @@ func test_scene_behavior() -> void:
 	controller.prepare_restart()
 
 
+## PS-120: una carta ripetibile che ha già raggiunto il proprio tetto/pavimento
+## runtime non deve più essere proposta (altrimenti "vince" un level-up senza
+## dare nulla — il bug segnalato dal proprietario su Tagliata). Verifica sia
+## il caso positivo (Tagliata sparisce dopo il rango 2, che con un catalogo
+## isolato a tre carte fa scendere l'offerta sotto offer_size) sia il caso
+## negativo (una carta statistica ordinaria lontana dal proprio tetto reale
+## non deve sparire prima del tempo).
+func test_saturated_repeatable_cards_stop_being_offered() -> void:
+	var movement_slice := await instantiate_movement_slice()
+
+	var controller := movement_slice.get_run_controller() as RunController
+	var experience := movement_slice.get_experience_system() as ExperienceSystem
+	var service := movement_slice.get_upgrade_service() as UpgradeService
+	var catalog := movement_slice.get_upgrade_registry() as UpgradeRegistry
+	var effects := movement_slice.get_upgrade_effect_registry() as UpgradeEffectRegistry
+	var spawner := movement_slice.get_enemy_spawner() as EnemySpawner
+	var player := movement_slice.get_player() as Player
+	var weapon := movement_slice.get_weapon_controller() as WeaponController
+	assert_true(
+		controller != null and experience != null and service != null and catalog != null
+		and effects != null and spawner != null and player != null and weapon != null,
+		"PS-120 richiede la scena gameplay composta."
+	)
+	if (
+		controller == null or experience == null or service == null or catalog == null
+		or effects == null or spawner == null or player == null or weapon == null
+	):
+		return
+
+	controller.set_process(false)
+	spawner.set_process(false)
+	player.set_physics_process(false)
+	weapon.set_process(false)
+
+	assert_false(
+		effects.is_rank_saturated(DOUBLE_BARREL, 1),
+		"Al rango 1 (2 proiettili su un tetto di 3) Tagliata deve poter ancora salire."
+	)
+	assert_true(
+		effects.is_rank_saturated(DOUBLE_BARREL, 2),
+		"Al rango 2 (3 proiettili, il tetto runtime) Tagliata non deve più cambiare nulla."
+	)
+	assert_false(
+		effects.is_rank_saturated(SWIFT_STEPS, 5),
+		"Dai che si fredda! al rango 5 (x1,1^5≈1,61) resta lontana dal proprio tetto (x2,0): non deve saturare prima del tempo."
+	)
+
+	catalog.definitions = [DOUBLE_BARREL, WIDE_MAGNET, SWIFT_STEPS, MEAT_FORK_DAMAGE]
+	assert_true(catalog.rebuild_registry(), "Il catalogo isolato PS-120 deve essere valido.")
+	service.reset_for_run(controller.get_seed())
+	assert_true(effects.recalculate_effects(), "Il registry deve accettare il catalogo isolato PS-120.")
+
+	service.queue_barb_reward()
+	assert_true(service.select_barb_speciality(DOUBLE_BARREL.id), "Lo sblocco Boss deve accettare Tagliata.")
+	assert_true(
+		_select_when_offered(experience, service, DOUBLE_BARREL.id),
+		"Tagliata al rango 2 deve essere ancora offerta e selezionabile una volta."
+	)
+	assert_eq(service.get_rank(DOUBLE_BARREL.id), 2, "Tagliata deve raggiungere il rango 2 (il proprio tetto).")
+	assert_eq(weapon.get_effective_multishot_count(), 3, "Il rango 2 deve dare tre proiettili per colpo.")
+
+	# Da qui in poi Tagliata non deve più comparire in nessuna offerta,
+	# nonostante resti nel catalogo isolato: esattamente il bug segnalato. Tre
+	# carte di riserva (invece di due) tengono il pool residuo a offer_size
+	# per tutta la prova, cosi' la sola variabile osservata resta l'esclusione
+	# di Tagliata, senza intrecciarla con l'altro fix (offerta piu' corta di
+	# offer_size ma ancora risolvibile), gia' coperto da test_scene_behavior.
+	for draw_index in 24:
+		assert_true(
+			experience.add_experience(experience.experience_required),
+			"La fixture deve poter attraversare la soglia di livello %d." % (draw_index + 1)
+		)
+		assert_false(
+			DOUBLE_BARREL.id in service.get_current_offer_ids(),
+			"Tagliata satura non deve più comparire in un'offerta (pesca %d)." % (draw_index + 1)
+		)
+		var offer_ids := service.get_current_offer_ids()
+		assert_false(offer_ids.is_empty(), "L'offerta non deve mai restare vuota (pesca %d)." % (draw_index + 1))
+		assert_true(
+			service.select_upgrade(offer_ids[0]),
+			"Ogni level-up deve restare risolvibile (pesca %d)." % (draw_index + 1)
+		)
+	assert_eq(service.get_rank(DOUBLE_BARREL.id), 2, "Il rango di Tagliata non deve muoversi dopo la saturazione.")
+	assert_eq(
+		weapon.get_effective_multishot_count(), 3, "Il conteggio proiettili non deve muoversi dopo la saturazione."
+	)
+
+	controller.prepare_restart()
+	print("SATURATED_REPEATABLE_CARDS_SMOKE_OK")
+
+
 func _reference_enemy_health(spawner: EnemySpawner) -> float:
 	var probe := spawner.try_spawn_enemy()
 	if probe == null:

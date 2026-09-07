@@ -40,6 +40,7 @@ enum BarbMode { NONE, SPECIALITY, BONUS }
 @export_range(1, 10, 1) var offer_size := DEFAULT_OFFER_SIZE
 
 var _registry: UpgradeRegistry
+var _effect_registry: UpgradeEffectRegistry
 var _run_controller: RunController
 var _experience_system: ExperienceSystem
 var _rng := RandomNumberGenerator.new()
@@ -81,6 +82,19 @@ func configure(
 	return has_valid_configuration()
 
 
+## PS-120: cablaggio separato da configure(), non un suo parametro. L'effect
+## registry si configura con il service già pronto (dipendenza inversa), e
+## resta comunque opzionale qui: senza, il filtro di saturazione non si
+## applica e il comportamento resta quello di sempre (usato dalle fixture di
+## test isolate che non compongono un UpgradeEffectRegistry).
+func set_effect_registry(effect_registry: UpgradeEffectRegistry) -> void:
+	_effect_registry = effect_registry
+
+
+func get_effect_registry() -> UpgradeEffectRegistry:
+	return _effect_registry if is_instance_valid(_effect_registry) else null
+
+
 func has_valid_configuration() -> bool:
 	return (
 		is_instance_valid(_registry)
@@ -120,6 +134,7 @@ func generate_offer(level: int) -> Array[UpgradeDefinition]:
 	var candidates := _registry.get_eligible_definitions(_ranks)
 	_filter_ability_rank_candidates(candidates)
 	_filter_locked_speciality_candidates(candidates)
+	_filter_saturated_repeatable_candidates(candidates)
 	var next_offer := _draw_weighted_without_replacement(candidates, offer_size)
 
 	_current_offer = next_offer
@@ -132,7 +147,13 @@ func generate_offer(level: int) -> Array[UpgradeDefinition]:
 func select_upgrade(upgrade_id: StringName) -> bool:
 	if (
 		not has_valid_configuration()
-		or _current_offer.size() != offer_size
+		# PS-120: non "esattamente offer_size". Il pool eleggibile può scendere
+		# sotto offer_size (carte ripetibili sature filtrate, o un catalogo
+		# isolato piccolo in test): un'offerta più corta ma non vuota resta
+		# valida. Un'offerta vuota qui non può comunque accadere davvero
+		# (_filter_saturated_repeatable_candidates non svuota mai il pool),
+		# ma la guardia resta a protezione di qualunque altro filtro futuro.
+		or _current_offer.is_empty()
 		or _active_offer_level <= 0
 		or _run_controller.get_state() != RunController.RunState.LEVEL_UP
 		or _experience_system.get_active_level_up_level() != _active_offer_level
@@ -371,6 +392,26 @@ func _filter_locked_speciality_candidates(candidates: Array[UpgradeDefinition]) 
 			candidates.remove_at(index)
 
 
+## PS-120: una carta ripetibile che ha già raggiunto il proprio tetto/pavimento
+## runtime esce dal pool, come una carta non ripetibile a rango massimo. Non
+## svuota mai l'offerta del tutto: se ogni candidato residuo risultasse
+## saturo (cataloghi molto ristretti, come nelle fixture isolate dei test, o
+## un tardo endgame che ha esaurito ogni carta disponibile), meglio riproporre
+## carte sature che lasciare un level-up senza nulla da scegliere.
+func _filter_saturated_repeatable_candidates(candidates: Array[UpgradeDefinition]) -> void:
+	if not is_instance_valid(_effect_registry):
+		return
+	var saturated_indices: Array[int] = []
+	for index in candidates.size():
+		var definition := candidates[index]
+		if _effect_registry.is_rank_saturated(definition, get_rank(definition.id)):
+			saturated_indices.append(index)
+	if saturated_indices.size() >= candidates.size():
+		return
+	for reverse_index in range(saturated_indices.size() - 1, -1, -1):
+		candidates.remove_at(saturated_indices[reverse_index])
+
+
 func _find_in_offer(
 	offer: Array[UpgradeDefinition],
 	upgrade_id: StringName
@@ -413,6 +454,7 @@ func _generate_bonus_offer() -> void:
 	var candidates := _registry.get_eligible_definitions(_ranks)
 	_filter_ability_rank_candidates(candidates)
 	_filter_locked_speciality_candidates(candidates)
+	_filter_saturated_repeatable_candidates(candidates)
 	_barb_current_offer = _draw_weighted_without_replacement(
 		candidates, mini(offer_size, candidates.size()), _barb_rng
 	)
