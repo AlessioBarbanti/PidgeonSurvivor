@@ -821,12 +821,18 @@ func _on_pending_cosplay_changed(_ability_id: StringName) -> void:
 	_refresh_ability_state()
 
 
-## PS-094: aggiorna solo i pallini di carica, senza toccare l'anello di
-## cooldown (già coperto da _on_ability_cooldown_changed).
+## PS-094/PS-122: aggiorna il numero di cariche e il contorno di ricarica in
+## background (tempo alla piena ricarica, non al prossimo rilancio: quello
+## resta _on_ability_cooldown_changed).
 func _on_ability_charges_changed(available_charges: int, max_charges: int) -> void:
-	if not is_instance_valid(_active_ability_button):
+	if not is_instance_valid(_active_ability_button) or not is_instance_valid(_ability_controller):
 		return
-	_active_ability_button.set_charge_state(available_charges, max_charges)
+	_active_ability_button.set_charge_state(
+		available_charges,
+		max_charges,
+		_ability_controller.get_time_until_full_remaining(),
+		_ability_controller.get_time_until_full_total()
+	)
 
 
 func _on_ability_definition_changed(_definition: AbilityDefinition) -> void:
@@ -862,7 +868,9 @@ func _refresh_ability_state() -> void:
 	)
 	_active_ability_button.set_charge_state(
 		_ability_controller.get_available_charges(),
-		_ability_controller.get_max_charges()
+		_ability_controller.get_max_charges(),
+		_ability_controller.get_time_until_full_remaining(),
+		_ability_controller.get_time_until_full_total()
 	)
 
 

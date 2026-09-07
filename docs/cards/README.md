@@ -223,3 +223,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-119](./4_to_test/PS-119-fix-spawn-non-sospeso-boss-ricorrente-con-evento-attivo.md) | Correggi lo spawn ordinario che non si sospende durante un Boss se un evento d'ondata è già maturato | fix | gameplay | IN VERIFICA | alta | — |
 | [PS-120](./4_to_test/PS-120-fix-ricarica-cariche-abilita-e-indicatore-hud.md) | Correggi il tetto di ricarica delle cariche abilità e distingui l'indicatore HUD di ricarica in background | fix | gameplay | IN VERIFICA | alta | PS-094 |
 | [PS-121](./4_to_test/PS-121-carte-ripetibili-sature-escono-dal-pool.md) | Le carte ripetibili che hanno raggiunto il proprio tetto runtime escono dal pool di scelta | fix | gameplay | IN VERIFICA | alta | — |
+| [PS-122](./4_to_test/PS-122-contorno-ricarica-riparte-da-capo.md) | Il contorno di ricarica in background deve sempre ripartire da un cerchio pieno | fix | gameplay | IN VERIFICA | media | PS-120 |

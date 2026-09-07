@@ -74,7 +74,7 @@ func test_ability_charge_stacking() -> void:
 		assert_true(button.has_circular_cooldown(), "A zero cariche il pulsante deve mostrare il cooldown.")
 		assert_false(
 			button.is_recharging_extra_capacity(),
-			"PS-119: a zero cariche deve restare la maschera piena, non il solo contorno."
+			"PS-120: a zero cariche deve restare la maschera piena, non il solo contorno."
 		)
 	ability._process(base_cooldown + 0.01)
 	assert_eq(ability.get_available_charges(), 1, "La ricarica singola deve restituire l'unica carica.")
@@ -123,11 +123,11 @@ func test_ability_charge_stacking() -> void:
 	if button != null:
 		assert_true(
 			button.is_recharging_extra_capacity(),
-			"PS-119: con una carica pronta e un'altra in ricarica deve mostrarsi solo il contorno."
+			"PS-120: con una carica pronta e un'altra in ricarica deve mostrarsi solo il contorno."
 		)
 		assert_false(
 			button.disabled,
-			"PS-119: con almeno una carica disponibile il pulsante deve restare premibile."
+			"PS-120: con almeno una carica disponibile il pulsante deve restare premibile."
 		)
 	ability._process(half_gap)
 	assert_eq(ability.get_available_charges(), 2, "Anche la seconda carica deve tornare, senza essere rimasta bloccata.")
@@ -160,7 +160,7 @@ func test_ability_charge_stacking() -> void:
 	print("ABILITY_CHARGE_STACKING_SMOKE_OK")
 
 
-## PS-119: salire di rango (più capacità di cariche) mentre non si è a
+## PS-120: salire di rango (più capacità di cariche) mentre non si è a
 ## cariche piene apriva una carica "fantasma" senza alcun timer di ricarica
 ## proprio: le cariche disponibili non potevano mai superare il valore che
 ## avevano nel momento esatto dello sblocco/rango, per tutto il resto della
@@ -182,7 +182,7 @@ func test_charge_capacity_growth_while_recharging_still_reaches_new_maximum() ->
 	assert_true(
 		controller != null and experience != null and service != null and catalog != null
 		and effects != null and player != null and spawner != null and weapon != null,
-		"PS-119 richiede la scena gameplay composta con i registry upgrade."
+		"PS-120 richiede la scena gameplay composta con i registry upgrade."
 	)
 	if (
 		controller == null
@@ -202,7 +202,7 @@ func test_charge_capacity_growth_while_recharging_still_reaches_new_maximum() ->
 	weapon.set_process(false)
 	effects.set_process(false)
 	var ability := player.get_ability_controller()
-	assert_not_null(ability, "PS-119 richiede l'AbilityController del Player.")
+	assert_not_null(ability, "PS-120 richiede l'AbilityController del Player.")
 	if ability == null:
 		return
 	ability.set_process(false)
@@ -210,7 +210,7 @@ func test_charge_capacity_growth_while_recharging_still_reaches_new_maximum() ->
 	var base_cooldown := ability.get_activation_definition().cooldown_seconds
 
 	catalog.definitions = [CHARGE_STACKING, SWIFT_STEPS, RAPID_FIRE, WIDE_MAGNET, MEAT_FORK_DAMAGE]
-	assert_true(catalog.rebuild_registry(), "Il catalogo isolato PS-119 deve essere valido.")
+	assert_true(catalog.rebuild_registry(), "Il catalogo isolato PS-120 deve essere valido.")
 	service.reset_for_run(controller.get_seed())
 	assert_true(effects.recalculate_effects(), "Il registry deve accettare Bis alla Griglia.")
 
@@ -256,11 +256,96 @@ func test_charge_capacity_growth_while_recharging_still_reaches_new_maximum() ->
 	ability._process(9999.0)
 	assert_eq(
 		ability.get_available_charges(), 3,
-		"PS-119: la capacità aggiunta mentre non si era a cariche piene deve comunque ricaricarsi fino al nuovo tetto."
+		"PS-120: la capacità aggiunta mentre non si era a cariche piene deve comunque ricaricarsi fino al nuovo tetto."
 	)
 
 	controller.prepare_restart()
 	print("ABILITY_CHARGE_CAPACITY_GROWTH_SMOKE_OK")
+
+
+## PS-122: il contorno di ricarica in background deve sempre ripartire da un
+## cerchio pieno a ogni nuovo consumo — non agganciarsi al timer più vicino
+## al completamento, che può essere una carica quasi pronta lasciata da un
+## consumo precedente. Segnalato dal proprietario su Lollo con più ranghi sia
+## di Bis alla Griglia sia di Ravviva la Brace!: il contorno appariva "già
+## carico circa al 90%" appena lanciata l'abilità, invece di ripartire da
+## zero.
+func test_recharge_outline_always_restarts_from_full_after_each_cast() -> void:
+	var movement_slice := await instantiate_movement_slice()
+
+	var controller := movement_slice.get_run_controller() as RunController
+	var experience := movement_slice.get_experience_system() as ExperienceSystem
+	var service := movement_slice.get_upgrade_service() as UpgradeService
+	var catalog := movement_slice.get_upgrade_registry() as UpgradeRegistry
+	var effects := movement_slice.get_upgrade_effect_registry() as UpgradeEffectRegistry
+	var player := movement_slice.get_player() as Player
+	var spawner := movement_slice.get_enemy_spawner() as EnemySpawner
+	var weapon := movement_slice.get_weapon_controller() as WeaponController
+	assert_true(
+		controller != null and experience != null and service != null and catalog != null
+		and effects != null and player != null and spawner != null and weapon != null,
+		"PS-122 richiede la scena gameplay composta con i registry upgrade."
+	)
+	if (
+		controller == null
+		or experience == null
+		or service == null
+		or catalog == null
+		or effects == null
+		or player == null
+		or spawner == null
+		or weapon == null
+	):
+		return
+
+	controller.set_process(false)
+	spawner.set_process(false)
+	player.set_physics_process(false)
+	weapon.set_process(false)
+	effects.set_process(false)
+	var ability := player.get_ability_controller()
+	assert_not_null(ability, "PS-122 richiede l'AbilityController del Player.")
+	if ability == null:
+		return
+	ability.set_process(false)
+
+	catalog.definitions = [CHARGE_STACKING, SWIFT_STEPS, RAPID_FIRE, WIDE_MAGNET, MEAT_FORK_DAMAGE]
+	assert_true(catalog.rebuild_registry(), "Il catalogo isolato PS-122 deve essere valido.")
+	service.reset_for_run(controller.get_seed())
+	assert_true(effects.recalculate_effects(), "Il registry deve accettare Bis alla Griglia.")
+
+	service.queue_barb_reward()
+	assert_true(service.select_barb_speciality(CHARGE_STACKING.id), "Lo sblocco Boss deve accettare la carta.")
+	assert_true(
+		_grant_and_select(experience, service, CHARGE_STACKING.id), "Bis alla Griglia deve salire al rango 2."
+	)
+	assert_true(
+		_grant_and_select(experience, service, CHARGE_STACKING.id), "Bis alla Griglia deve salire al rango 3."
+	)
+	assert_eq(ability.get_max_charges(), 3, "Al rango 3 il tetto deve essere tre cariche.")
+	ability._process(9999.0)
+	assert_eq(ability.get_available_charges(), 3, "La fixture deve partire a cariche piene.")
+
+	assert_true(ability.try_activate(), "Il primo lancio deve riuscire.")
+	var first_charge_total := ability.get_time_until_full_total()
+	ability._process(first_charge_total * 0.25)
+	assert_almost_eq(
+		ability.get_time_until_full_remaining() / ability.get_time_until_full_total(), 0.75, PS094_TOLERANCE,
+		"A un quarto della prima ricarica il tempo alla piena ricarica deve essere al 75%."
+	)
+
+	# Il secondo lancio crea un nuovo timer fresco (100% da fare): il
+	# contorno deve riflettere QUESTO, non il primo timer ormai al 75% (che
+	# col bug precedente lo avrebbe fatto apparire "già carico" invece di
+	# ripartire da un cerchio pieno).
+	assert_true(ability.try_activate(), "Il secondo lancio deve riuscire.")
+	assert_almost_eq(
+		ability.get_time_until_full_remaining() / ability.get_time_until_full_total(), 1.0, PS094_TOLERANCE,
+		"PS-122: subito dopo un nuovo lancio il contorno deve ripartire da un cerchio pieno."
+	)
+
+	controller.prepare_restart()
+	print("RECHARGE_OUTLINE_RESTART_SMOKE_OK")
 
 
 func _assert_rank_configuration(ability: AbilityController, base_cooldown: float, rank: int) -> void:

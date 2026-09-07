@@ -19,7 +19,7 @@ const CHARGE_COUNT_FONT_SIZE := 30
 const CHARGE_COUNT_INSET := 8.0
 const CHARGE_COUNT_COLOR := Palette.GOLD
 const CHARGE_COUNT_SHADOW_COLOR := Color(0.02, 0.024, 0.043, 0.9)
-## PS-119: quando è disponibile almeno una carica ma un'altra sta ancora
+## PS-120: quando è disponibile almeno una carica ma un'altra sta ancora
 ## ricaricando in background, l'abilità resta lanciabile: la maschera scura +
 ## conto alla rovescia (sotto) deve restare riservata al solo caso "zero
 ## cariche, non posso lanciare". Qui si mostra solo un contorno sottile, senza
@@ -34,6 +34,8 @@ var _action_available := false
 var _control_scale := 1.0
 var _available_charges := 1
 var _max_charges := 1
+var _recharge_remaining := 0.0
+var _recharge_total := 1.0
 
 
 func _ready() -> void:
@@ -64,9 +66,21 @@ func get_ability_icon() -> Texture2D:
 	return icon
 
 
-func set_charge_state(available_charges: int, max_charges: int) -> void:
+## PS-122: `recharge_remaining`/`recharge_total` sono il tempo alla ricarica
+## PIENA (la carica più lontana dal completamento), non al prossimo rilancio
+## (quello resta `set_ability_visual`): guidano solo il contorno qui sotto,
+## cosi' riparte sempre da un cerchio pieno a ogni consumo invece di
+## agganciarsi a qualunque timer risulti più vicino in quel momento.
+func set_charge_state(
+	available_charges: int,
+	max_charges: int,
+	recharge_remaining: float = 0.0,
+	recharge_total: float = 1.0
+) -> void:
 	_available_charges = clampi(available_charges, 0, maxi(max_charges, 1))
 	_max_charges = maxi(max_charges, 1)
+	_recharge_total = maxf(recharge_total, 0.001)
+	_recharge_remaining = clampf(recharge_remaining, 0.0, _recharge_total)
 	queue_redraw()
 
 
@@ -95,6 +109,10 @@ func get_cooldown_fraction() -> float:
 	return clampf(_cooldown_remaining / _cooldown_total, 0.0, 1.0)
 
 
+func get_recharge_fraction() -> float:
+	return clampf(_recharge_remaining / _recharge_total, 0.0, 1.0)
+
+
 func get_cooldown_remaining() -> float:
 	return _cooldown_remaining
 
@@ -117,7 +135,7 @@ func is_ready_visual() -> bool:
 	return _action_available and not has_circular_cooldown()
 
 
-## PS-119: vero solo quando l'abilità è lanciabile adesso (>=1 carica) ma
+## PS-120: vero solo quando l'abilità è lanciabile adesso (>=1 carica) ma
 ## un'altra carica sta ancora ricaricando in background — lo stato che deve
 ## mostrare il solo contorno, non la maschera scura di blocco.
 func is_recharging_extra_capacity() -> bool:
@@ -143,8 +161,8 @@ func _draw() -> void:
 			true
 		)
 		_draw_cooldown_text(center)
-	elif cooldown_fraction > 0.0 and _available_charges > 0:
-		_draw_recharge_outline(center, radius, cooldown_fraction)
+	elif _available_charges > 0 and get_recharge_fraction() > 0.0:
+		_draw_recharge_outline(center, radius, get_recharge_fraction())
 	elif _action_available:
 		draw_arc(
 			center,
@@ -172,10 +190,13 @@ func _draw_cooldown_sector(center: Vector2, radius: float, fraction: float) -> v
 	draw_colored_polygon(points, COOLDOWN_OVERLAY_COLOR)
 
 
-## PS-119: stesso senso di avanzamento di _draw_cooldown_sector (l'arco si
-## restringe verso lo zero mano a mano che la ricarica avanza), ma come solo
-## contorno sottile su un backdrop quasi invisibile, cosi' l'icona resta
-## interamente leggibile e il pulsante resta chiaramente attivabile.
+## PS-120/PS-122: stesso senso di avanzamento di _draw_cooldown_sector
+## (l'arco si restringe verso lo zero mano a mano che la ricarica avanza), ma
+## come solo contorno sottile su un backdrop quasi invisibile, cosi' l'icona
+## resta interamente leggibile e il pulsante resta chiaramente attivabile.
+## Il parametro fraction qui è get_recharge_fraction() (tempo alla piena
+## ricarica), non get_cooldown_fraction() (tempo al prossimo rilancio):
+## riparte sempre da un cerchio pieno a ogni consumo, vedi set_charge_state().
 func _draw_recharge_outline(center: Vector2, radius: float, fraction: float) -> void:
 	draw_arc(
 		center, radius, -PI * 0.5, PI * 1.5, RADIAL_SEGMENTS, CHARGING_OUTLINE_BACKDROP_COLOR, 2.0, true

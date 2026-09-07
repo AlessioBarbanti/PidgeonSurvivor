@@ -238,6 +238,25 @@ func is_cooldown_ready() -> bool:
 	return _available_charges > 0
 
 
+## PS-122: a differenza di get_cooldown_remaining()/get_cooldown_total()
+## (la carica più vicina a tornare, "quando posso lanciare di nuovo"), questi
+## due leggono la carica più lontana dal completamento — "quanto manca per
+## essere di nuovo a cariche piene". Con cariche disponibili >0 il contorno
+## HUD usa questi per restare sempre un'unica rampa piena→vuota che riparte
+## da capo a ogni consumo, invece di saltare a qualunque timer risulti più
+## vicino in quel momento (che poteva già essere quasi completo da un
+## consumo precedente, facendo apparire il contorno "già carico" appena
+## lanciata l'abilità).
+func get_time_until_full_remaining() -> float:
+	var index := _index_of_furthest_charge()
+	return _charge_timer_remaining[index] if index >= 0 else 0.0
+
+
+func get_time_until_full_total() -> float:
+	var index := _index_of_furthest_charge()
+	return _charge_timer_total[index] if index >= 0 else 0.0
+
+
 func get_available_charges() -> int:
 	return _available_charges
 
@@ -261,7 +280,7 @@ func get_upgrade_cooldown_multiplier() -> float:
 	return _upgrade_cooldown_multiplier
 
 
-## PS-094/PS-119: configura il modello a cariche multiple della Specialità di
+## PS-094/PS-120: configura il modello a cariche multiple della Specialità di
 ## Barb. Le cariche già in ricarica non cambiano durata a ritroso: la nuova
 ## velocità vale solo per i consumi successivi, come già fa il moltiplicatore
 ## di ricarica ordinario. Se il personaggio era a cariche piene, il nuovo
@@ -385,6 +404,16 @@ func _index_of_soonest_charge() -> int:
 	var best_remaining := INF
 	for index in _charge_timer_remaining.size():
 		if _charge_timer_remaining[index] < best_remaining:
+			best_remaining = _charge_timer_remaining[index]
+			best_index = index
+	return best_index
+
+
+func _index_of_furthest_charge() -> int:
+	var best_index := -1
+	var best_remaining := -1.0
+	for index in _charge_timer_remaining.size():
+		if _charge_timer_remaining[index] > best_remaining:
 			best_remaining = _charge_timer_remaining[index]
 			best_index = index
 	return best_index
