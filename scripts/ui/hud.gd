@@ -134,6 +134,7 @@ func configure(
 		_ability_controller.readiness_changed.connect(_on_ability_readiness_changed)
 		_ability_controller.definition_changed.connect(_on_ability_definition_changed)
 		_ability_controller.pending_cosplay_changed.connect(_on_pending_cosplay_changed)
+		_ability_controller.charges_changed.connect(_on_ability_charges_changed)
 	if is_instance_valid(_game_director):
 		_game_director.boss_warning_changed.connect(_on_boss_warning_changed)
 	if is_instance_valid(_wave_event_scheduler):
@@ -617,6 +618,8 @@ func _disconnect_sources() -> void:
 			_ability_controller.pending_cosplay_changed.disconnect(
 				_on_pending_cosplay_changed
 			)
+		if _ability_controller.charges_changed.is_connected(_on_ability_charges_changed):
+			_ability_controller.charges_changed.disconnect(_on_ability_charges_changed)
 	if (
 		is_instance_valid(_friend_passive_controller)
 		and _friend_passive_controller.alea_sobriety_changed.is_connected(
@@ -782,6 +785,7 @@ func _show_default_ability() -> void:
 	_ability_cooldown_text = "NON ASSEGNATA"
 	_ability_cooldown_value = 0.0
 	_active_ability_button.set_ability_visual(null, 0.0, 1.0, false)
+	_active_ability_button.set_charge_state(1, 1)
 	_last_ability_ready = false
 
 
@@ -817,6 +821,14 @@ func _on_pending_cosplay_changed(_ability_id: StringName) -> void:
 	_refresh_ability_state()
 
 
+## PS-094: aggiorna solo i pallini di carica, senza toccare l'anello di
+## cooldown (già coperto da _on_ability_cooldown_changed).
+func _on_ability_charges_changed(available_charges: int, max_charges: int) -> void:
+	if not is_instance_valid(_active_ability_button):
+		return
+	_active_ability_button.set_charge_state(available_charges, max_charges)
+
+
 func _on_ability_definition_changed(_definition: AbilityDefinition) -> void:
 	_refresh_ability_definition()
 	_refresh_ability_state()
@@ -847,6 +859,10 @@ func _refresh_ability_state() -> void:
 		_ability_controller.get_cooldown_remaining(),
 		_ability_controller.get_cooldown_total(),
 		running and ready
+	)
+	_active_ability_button.set_charge_state(
+		_ability_controller.get_available_charges(),
+		_ability_controller.get_max_charges()
 	)
 
 

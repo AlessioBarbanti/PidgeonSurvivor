@@ -38,6 +38,11 @@ const WEAPON_DEATH_BURST := &"weapon_death_burst"
 ## carta) vive in `WeaponController.MAXIMUM_CRITICAL_CHANCE`, non qui: questo
 ## registry passa solo il contributo grezzo della carta.
 const WEAPON_CRITICAL_STRIKE := &"weapon_critical_chance"
+## PS-094: cariche multiple sull'abilità attiva, universale come Ravviva la
+## Brace!. Sequenza fissa di 5 ranghi (array indicizzati per rango), non una
+## formula lineare: max_charges/cooldown_multiplier vanno letti dal rango
+## corrente, non moltiplicati per esso.
+const ABILITY_CHARGE_STACKING := &"ability_charge_stacking"
 
 const MINIMUM_MULTIPLIER := 0.001
 
@@ -341,6 +346,13 @@ func can_apply(definition: UpgradeDefinition) -> bool:
 				and multiplier > 1.0
 				and contribution_cap >= multiplier
 			)
+		ABILITY_CHARGE_STACKING:
+			return (
+				definition.max_rank == 5
+				and definition.initial_rank == 0
+				and not definition.repeatable
+				and _is_valid_charge_stacking_table(definition.effect_parameters)
+			)
 		_:
 			return false
 
@@ -484,6 +496,16 @@ func recalculate_effects(preserve_health_ratio: bool = true) -> bool:
 						"critical_damage_multiplier"
 					),
 				}
+			ABILITY_CHARGE_STACKING:
+				var charges_by_rank: Array = definition.effect_parameters["charges_by_rank"]
+				var cooldown_multiplier_by_rank: Array = (
+					definition.effect_parameters["cooldown_multiplier_by_rank"]
+				)
+				var rank_index := clampi(rank - 1, 0, charges_by_rank.size() - 1)
+				next_signatures[definition.effect_id] = {
+					"max_charges": int(charges_by_rank[rank_index]),
+					"cooldown_multiplier": float(cooldown_multiplier_by_rank[rank_index]),
+				}
 			_:
 				_multiply_effect(
 					next_multipliers,
@@ -522,6 +544,7 @@ func reset_effects() -> void:
 		_experience_system.reset_upgrade_value_multiplier()
 	if is_instance_valid(_ability_controller):
 		_ability_controller.reset_upgrade_cooldown_multiplier()
+		_ability_controller.reset_charge_configuration()
 	effects_reset.emit()
 	effects_recalculated.emit(get_effective_multipliers())
 
@@ -705,6 +728,16 @@ func _apply_signature_effects(next_signatures: Dictionary) -> bool:
 	_apply_chronic_delay_configuration(
 		_parameters_from(next_signatures, CHRONIC_DELAY)
 	)
+
+	var charge_stacking_parameters := _parameters_from(next_signatures, ABILITY_CHARGE_STACKING)
+	if charge_stacking_parameters.is_empty():
+		_ability_controller.reset_charge_configuration()
+	elif not _ability_controller.set_charge_configuration(
+		int(charge_stacking_parameters["max_charges"]),
+		float(charge_stacking_parameters["cooldown_multiplier"])
+	):
+		return false
+
 	_signature_parameters = next_signatures.duplicate(true)
 	return true
 
@@ -907,6 +940,26 @@ func _has_required_signature_dependencies() -> bool:
 
 func _is_single_rank_signature(definition: UpgradeDefinition) -> bool:
 	return definition.max_rank == 1 and not definition.repeatable
+
+
+## PS-094: la tabella a 5 ranghi deve avere cariche non decrescenti (il
+## rango 4 abbassa solo la velocità di ricarica, mai il tetto di cariche) e
+## un moltiplicatore finito e positivo per ognuno dei 5 ranghi.
+func _is_valid_charge_stacking_table(parameters: Dictionary) -> bool:
+	var charges_by_rank: Variant = parameters.get("charges_by_rank")
+	var cooldown_multiplier_by_rank: Variant = parameters.get("cooldown_multiplier_by_rank")
+	if not (charges_by_rank is Array) or not (cooldown_multiplier_by_rank is Array):
+		return false
+	if charges_by_rank.size() != 5 or cooldown_multiplier_by_rank.size() != 5:
+		return false
+	var previous_charges := 0
+	for index in 5:
+		var charges := int(charges_by_rank[index])
+		var multiplier := float(cooldown_multiplier_by_rank[index])
+		if charges < previous_charges or charges < 1 or not is_finite(multiplier) or multiplier <= 0.0:
+			return false
+		previous_charges = charges
+	return true
 
 
 func _get_positive_number(parameters: Dictionary, key: String) -> float:

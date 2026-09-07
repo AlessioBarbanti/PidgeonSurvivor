@@ -11,6 +11,10 @@ signal definition_changed(definition: AbilityDefinition)
 ## Rilancio del tell di Cosplay: l'estrazione anticipata puo' cambiare anche
 ## quando la ricarica non emette nulla (per esempio all'avvio della run).
 signal pending_cosplay_changed(ability_id: StringName)
+## PS-094: cariche disponibili sull'abilità attiva, per l'indicatore HUD a
+## pallini. Affianca cooldown_changed/readiness_changed invece di sostituirli:
+## quei due restano il "prossimo rilancio", questo copre "quante copie ho".
+signal charges_changed(available_charges: int, max_charges: int)
 
 @export var ability_definition: AbilityDefinition
 
@@ -18,13 +22,16 @@ var _run_controller: RunController
 var _input_router: InputRouter
 var _effect_registry: AbilityEffectRegistry
 var _source: Node2D
-var _cooldown_remaining := 0.0
 var _ready_state := true
 var _debug_cooldown_override := 0.0
 var _activation_definition: AbilityDefinition
 var _ability_rank := 1
-var _active_cooldown_total := 0.0
 var _upgrade_cooldown_multiplier := 1.0
+var _max_charges := 1
+var _available_charges := 1
+var _charge_cooldown_multiplier := 1.0
+var _charge_timer_remaining: Array[float] = []
+var _charge_timer_total: Array[float] = []
 
 
 func _exit_tree() -> void:
@@ -33,16 +40,30 @@ func _exit_tree() -> void:
 
 func _process(delta: float) -> void:
 	if (
-		_cooldown_remaining <= 0.0
+		_charge_timer_remaining.is_empty()
 		or not is_instance_valid(_run_controller)
 		or not _run_controller.is_running()
 	):
 		return
 
-	var previous_remaining := _cooldown_remaining
-	_cooldown_remaining = maxf(_cooldown_remaining - maxf(delta, 0.0), 0.0)
-	if not is_equal_approx(previous_remaining, _cooldown_remaining):
-		cooldown_changed.emit(_cooldown_remaining, get_cooldown_total())
+	var previous_remaining := get_cooldown_remaining()
+	var safe_delta := maxf(delta, 0.0)
+	var recharged_count := 0
+	var index := 0
+	while index < _charge_timer_remaining.size():
+		_charge_timer_remaining[index] = maxf(_charge_timer_remaining[index] - safe_delta, 0.0)
+		if _charge_timer_remaining[index] <= 0.0:
+			_charge_timer_remaining.remove_at(index)
+			_charge_timer_total.remove_at(index)
+			recharged_count += 1
+		else:
+			index += 1
+	if recharged_count > 0:
+		_available_charges = mini(_available_charges + recharged_count, _max_charges)
+		charges_changed.emit(_available_charges, _max_charges)
+	var next_remaining := get_cooldown_remaining()
+	if not is_equal_approx(previous_remaining, next_remaining):
+		cooldown_changed.emit(next_remaining, get_cooldown_total())
 	_update_ready_state()
 
 
@@ -76,7 +97,7 @@ func try_activate() -> bool:
 	if (
 		not _has_valid_dependencies()
 		or not _run_controller.is_running()
-		or _cooldown_remaining > 0.0
+		or _available_charges <= 0
 		or _activation_definition == null
 		or not _effect_registry.can_execute(_activation_definition)
 	):
@@ -89,12 +110,19 @@ func try_activate() -> bool:
 	if effect == null:
 		return false
 
-	_active_cooldown_total = _resolve_ready_cooldown_total()
-	_cooldown_remaining = _active_cooldown_total
-	cooldown_changed.emit(_cooldown_remaining, _active_cooldown_total)
-	_update_ready_state()
+	_consume_charge()
 	ability_activated.emit(activation_snapshot)
 	return true
+
+
+func _consume_charge() -> void:
+	_available_charges -= 1
+	var charge_cooldown_total := _resolve_ready_cooldown_total()
+	_charge_timer_remaining.append(charge_cooldown_total)
+	_charge_timer_total.append(charge_cooldown_total)
+	cooldown_changed.emit(get_cooldown_remaining(), get_cooldown_total())
+	charges_changed.emit(_available_charges, _max_charges)
+	_update_ready_state()
 
 
 func equip_definition(definition: AbilityDefinition) -> bool:
@@ -115,7 +143,7 @@ func apply_rank(rank: int) -> bool:
 		return false
 	if not _apply_rank_snapshot(rank):
 		return false
-	cooldown_changed.emit(_cooldown_remaining, get_cooldown_total())
+	cooldown_changed.emit(get_cooldown_remaining(), get_cooldown_total())
 	definition_changed.emit(ability_definition)
 	return true
 
@@ -131,10 +159,12 @@ func reset_rank_for_run() -> bool:
 func reset_for_run() -> void:
 	_prepare_pending_cosplay()
 	var was_ready := _ready_state
-	_cooldown_remaining = 0.0
-	_active_cooldown_total = 0.0
+	_charge_timer_remaining.clear()
+	_charge_timer_total.clear()
+	_available_charges = _max_charges
 	_ready_state = true
-	cooldown_changed.emit(_cooldown_remaining, get_cooldown_total())
+	cooldown_changed.emit(get_cooldown_remaining(), get_cooldown_total())
+	charges_changed.emit(_available_charges, _max_charges)
 	if not was_ready:
 		readiness_changed.emit(true)
 
@@ -195,15 +225,25 @@ func get_source() -> Node2D:
 
 
 func get_cooldown_remaining() -> float:
-	return _cooldown_remaining
+	var index := _index_of_soonest_charge()
+	return _charge_timer_remaining[index] if index >= 0 else 0.0
 
 
 func get_cooldown_total() -> float:
-	return _active_cooldown_total if _cooldown_remaining > 0.0 else _resolve_ready_cooldown_total()
+	var index := _index_of_soonest_charge()
+	return _charge_timer_total[index] if index >= 0 else _resolve_ready_cooldown_total()
 
 
 func is_cooldown_ready() -> bool:
-	return _cooldown_remaining <= 0.0
+	return _available_charges > 0
+
+
+func get_available_charges() -> int:
+	return _available_charges
+
+
+func get_max_charges() -> int:
+	return _max_charges
 
 
 func set_upgrade_cooldown_multiplier(multiplier: float) -> bool:
@@ -219,6 +259,27 @@ func reset_upgrade_cooldown_multiplier() -> void:
 
 func get_upgrade_cooldown_multiplier() -> float:
 	return _upgrade_cooldown_multiplier
+
+
+## PS-094: configura il modello a cariche multiple della Specialità di Barb.
+## Le cariche già in ricarica non cambiano durata a ritroso: la nuova
+## velocità vale solo per i consumi successivi, come già fa il moltiplicatore
+## di ricarica ordinario. Se il personaggio era a cariche piene, il nuovo
+## tetto viene concesso subito pieno; se era a metà ricarica, il tetto sale
+## ma la carica in corso continua senza scorciatoie.
+func set_charge_configuration(max_charges: int, cooldown_multiplier: float) -> bool:
+	if max_charges < 1 or not is_finite(cooldown_multiplier) or cooldown_multiplier <= 0.0:
+		return false
+	var was_full := _available_charges >= _max_charges
+	_max_charges = max_charges
+	_charge_cooldown_multiplier = cooldown_multiplier
+	_available_charges = _max_charges if was_full else mini(_available_charges, _max_charges)
+	charges_changed.emit(_available_charges, _max_charges)
+	return true
+
+
+func reset_charge_configuration() -> void:
+	set_charge_configuration(1, 1.0)
 
 
 func _has_valid_dependencies() -> bool:
@@ -297,7 +358,19 @@ func _resolve_ready_cooldown_total() -> float:
 	if _debug_cooldown_override > 0.0:
 		return _debug_cooldown_override
 	return (
-		_activation_definition.cooldown_seconds * _upgrade_cooldown_multiplier
+		_activation_definition.cooldown_seconds
+		* _upgrade_cooldown_multiplier
+		* _charge_cooldown_multiplier
 		if _activation_definition != null
 		else 0.0
 	)
+
+
+func _index_of_soonest_charge() -> int:
+	var best_index := -1
+	var best_remaining := INF
+	for index in _charge_timer_remaining.size():
+		if _charge_timer_remaining[index] < best_remaining:
+			best_remaining = _charge_timer_remaining[index]
+			best_index = index
+	return best_index

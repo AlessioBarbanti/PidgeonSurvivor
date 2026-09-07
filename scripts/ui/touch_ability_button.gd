@@ -12,12 +12,21 @@ const COOLDOWN_TEXT_COLOR := Palette.CREAM
 const COOLDOWN_FONT_SIZE := 36
 const BASE_TARGET_SIZE := 128.0
 const BASE_ICON_WIDTH := 84.0
+## PS-094: numero di cariche disponibili, disegnato solo quando max_charges >
+## 1 (nessuna Specialità di cariche multiple equipaggiata: aspetto identico a
+## oggi). Mostra solo il valore corrente (1, 2, 3...), mai il tetto massimo.
+const CHARGE_COUNT_FONT_SIZE := 30
+const CHARGE_COUNT_INSET := 8.0
+const CHARGE_COUNT_COLOR := Palette.GOLD
+const CHARGE_COUNT_SHADOW_COLOR := Color(0.02, 0.024, 0.043, 0.9)
 
 var _direct_touch_sequence_active := false
 var _cooldown_remaining := 0.0
 var _cooldown_total := 1.0
 var _action_available := false
 var _control_scale := 1.0
+var _available_charges := 1
+var _max_charges := 1
 
 
 func _ready() -> void:
@@ -46,6 +55,20 @@ func set_ability_visual(
 
 func get_ability_icon() -> Texture2D:
 	return icon
+
+
+func set_charge_state(available_charges: int, max_charges: int) -> void:
+	_available_charges = clampi(available_charges, 0, maxi(max_charges, 1))
+	_max_charges = maxi(max_charges, 1)
+	queue_redraw()
+
+
+func get_available_charges() -> int:
+	return _available_charges
+
+
+func get_max_charges() -> int:
+	return _max_charges
 
 
 func set_control_scale(value: float) -> void:
@@ -117,6 +140,7 @@ func _draw() -> void:
 			3.0,
 			true
 		)
+	_draw_charge_count()
 
 
 func _draw_cooldown_sector(center: Vector2, radius: float, fraction: float) -> void:
@@ -144,6 +168,28 @@ func _draw_cooldown_text(center: Vector2) -> void:
 		size.x,
 		_get_cooldown_font_size(),
 		COOLDOWN_TEXT_COLOR
+	)
+
+
+## PS-094: numero decentrato nell'angolo in basso a destra, fuori dal cerchio
+## di cooldown e dal testo centrale, cosi' non si sovrappone a nessuno dei
+## due. Mostra solo le cariche disponibili adesso, mai il tetto massimo.
+## Nessun disegno quando la Specialità non è equipaggiata (max_charges <= 1).
+func _draw_charge_count() -> void:
+	if _max_charges <= 1:
+		return
+	var font := get_theme_font(&"font", &"HudTimer")
+	var font_size := _get_charge_count_font_size()
+	var inset := CHARGE_COUNT_INSET * _control_scale
+	var text := str(_available_charges)
+	var baseline := Vector2(0.0, size.y - inset)
+	var width := size.x - inset
+	draw_string(
+		font, baseline + Vector2(1.0, 1.0), text, HORIZONTAL_ALIGNMENT_RIGHT, width, font_size,
+		CHARGE_COUNT_SHADOW_COLOR
+	)
+	draw_string(
+		font, baseline, text, HORIZONTAL_ALIGNMENT_RIGHT, width, font_size, CHARGE_COUNT_COLOR
 	)
 
 
@@ -182,3 +228,7 @@ func _apply_control_scale() -> void:
 
 func _get_cooldown_font_size() -> int:
 	return maxi(roundi(COOLDOWN_FONT_SIZE * _control_scale), COOLDOWN_FONT_SIZE)
+
+
+func _get_charge_count_font_size() -> int:
+	return maxi(roundi(CHARGE_COUNT_FONT_SIZE * _control_scale), CHARGE_COUNT_FONT_SIZE)
