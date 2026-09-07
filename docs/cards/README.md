@@ -224,3 +224,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-120](./4_to_test/PS-120-fix-ricarica-cariche-abilita-e-indicatore-hud.md) | Correggi il tetto di ricarica delle cariche abilità e distingui l'indicatore HUD di ricarica in background | fix | gameplay | IN VERIFICA | alta | PS-094 |
 | [PS-121](./4_to_test/PS-121-carte-ripetibili-sature-escono-dal-pool.md) | Le carte ripetibili che hanno raggiunto il proprio tetto runtime escono dal pool di scelta | fix | gameplay | IN VERIFICA | alta | — |
 | [PS-122](./4_to_test/PS-122-contorno-ricarica-riparte-da-capo.md) | Il contorno di ricarica in background deve sempre ripartire da un cerchio pieno | fix | gameplay | IN VERIFICA | media | PS-120 |
+| [PS-123](./4_to_test/PS-123-ricalibra-hp-danno-archetipi-nemici-post-ps076.md) | Ricalibra HP e danno degli archetipi nemici dopo la densificazione di PS-076 | fix | gameplay | IN VERIFICA | alta | — |
+| [PS-124](./4_to_test/PS-124-eventi-ondata-che-riducono-la-pressione.md) | Correggi gli eventi d'ondata che riducono la pressione invece di aumentarla | fix | gameplay | IN VERIFICA | alta | — |
+| [PS-125](./6_rejected/PS-125-scala-xp-costante-lungo-la-curva-late-run.md) | Rendi costante la scala XP/kill lungo la curva late-run | fix | gameplay | SCARTATA | alta | — |
+| [PS-126](./4_to_test/PS-126-nessuna-scala-difficolta-oltre-5-minuti.md) | Introduci una curva di pressione oltre il minuto 5 (Boss ricorrente trivializzato) | feat | gameplay | IN VERIFICA | alta | PS-055 |

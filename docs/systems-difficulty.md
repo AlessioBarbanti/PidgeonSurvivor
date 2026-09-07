@@ -124,6 +124,46 @@ soglie e scheduling dei Boss, non la UI (contratto già in `CLAUDE.md`):
   (`EnemySpawner.set_ordinary_spawn_suspended(true)`, B53) e impedisce
   l'avvio di nuovi eventi d'ondata.
 
+**PS-126 — pressione oltre il minuto 5 (run endless, PS-055).** Nessuna
+curva di questa sezione o della precedente continua a crescere oltre
+`late_run_curve_full_seconds` (300s): pesi, intervallo di spawn e cap sono
+già al loro estremo, mentre la build del giocatore continua a scalare
+(carte ripetibili senza tetto di rango). Due leve indipendenti tengono viva
+la pressione oltre quel punto:
+
+- `EnemySpawnProfile.get_post_curve_pressure_multiplier(run_time)`
+  (`enemy_spawn_profile.gd`): `1.0` fino a `late_run_curve_full_seconds`,
+  poi cresce linearmente di `post_curve_growth_per_minute` (default `0.15`,
+  cioè `+15%` ogni minuto oltre la soglia) ogni minuto successivo. Applicato
+  a HP e danno da contatto di ogni nemico spawnato (piccione base incluso)
+  in `EnemySpawner._finalize_spawned_enemy`, mai alla cadenza o ai pesi. Il
+  valore risultante è anche assegnato a `BaseEnemy.pressure_multiplier`, che
+  `RangedEnemy` legge per scalare il danno del proprio proiettile
+  (`ranged_projectile_damage`) allo sparo: senza questo, il tiratore —
+  l'archetipo più pesato in late run — sarebbe rimasto piatto mentre gli
+  altri diventavano più duri.
+- `GameDirectorProfile.get_boss_recurrence_multiplier(schedule_index)`
+  (`game_director_profile.gd`): `1.0` alla prima occorrenza, poi cresce di
+  `boss_recurrence_growth_per_occurrence` (default `1.2`) per ogni
+  ricorrenza successiva. Applicato in
+  `BossEncounter._apply_recurrence_scaling`, dopo `configure_signature()`,
+  a: HP e danno da contatto del Boss; danno della raffica radiale e del
+  colpo mirato (`FirstBoss._spawn_radial_volley`/`_execute_targeted_blast`,
+  via `pressure_multiplier`); danno di ogni Signature Evil, composto con
+  l'eventuale carica del Tuono di Evil Zat invece di sostituirla
+  (`FirstBoss._spawn_signature_area`, `damage_scale *= pressure_multiplier`).
+  Non tocca `resolve_variant()` né l'identità delle Signature. Estendere la
+  scala alle Signature ha anche corretto un'applicazione parziale
+  preesistente di `BossSignatureArea._damage_scale`: prima veniva letto solo
+  da `_apply_instant_burst` (Tuono di Zat), non dagli altri tre modi
+  (fronte, periodico, due fasi), quindi la stessa leva sarebbe rimasta
+  inerte per 5 Signature su 6.
+
+Entrambi i tassi di crescita sono un punto di partenza numerico dichiarato
+nella card, non un valore tarato percettivamente: il gate manuale resta
+aperto finché non viene giocata una run reale abbastanza lunga da
+attraversarli.
+
 Per il sistema Boss/Evil/Signature vero e proprio vedi
 [`enemies-bosses.md`](./enemies-bosses.md).
 
@@ -140,7 +180,14 @@ Curva XP lineare in `ExperienceCurve` (righe 13-30, dati
 La ricompensa XP per kill non è fissa: segue la stessa scala già descritta
 in `prd.md` per la **Densità B28** (`1,50 × intervallo_corrente /
 intervallo_riferimento`), con il credito frazionario accumulato in
-`ExperienceSystem` ed erogato solo come XP intero.
+`ExperienceSystem` ed erogato solo come XP intero. Il reddito XP al secondo
+che ne risulta (`xp_per_evento × 1,5 / intervallo_riferimento(t)`) è già
+monotono crescente per costruzione, indipendentemente dalla curva di spawn
+reale: PS-125 aveva proposto di "correggere" un presunto crollo del valore
+per-kill, ma quel valore è una quantità diversa dal reddito XP/s ed è
+scartata come card (vedi `docs/cards/6_rejected/PS-125-*.md`) dopo una
+riverifica che ha mostrato come il fix avrebbe alterato il pacing reale
+invece di ripararne uno rotto.
 
 **Scelta upgrade.** `UpgradeService`
 ([scripts/progression/upgrade_service.gd](../scripts/progression/upgrade_service.gd))

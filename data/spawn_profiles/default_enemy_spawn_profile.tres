@@ -25,5 +25,6 @@ late_run_sector_spike_chance = 0.25
 late_run_ranged_guarantee_start_seconds = 180.0
 late_run_ranged_max_gap_seconds = 4.0
 late_run_ranged_archetype_id = &"ranged"
+post_curve_growth_per_minute = 0.15
 cleanup_interval = 1.0
 despawn_margin = 320.0

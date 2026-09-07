@@ -58,7 +58,8 @@
         "tests/unit/test_ps026_boss_baseline_display_name.gd",
         "tests/unit/test_ps051_boss_intro_identity.gd",
         "tests/unit/test_ps101_evil_hunger_narrative.gd",
-        "tests/unit/test_ps103_boss_intro_frame_wiring.gd"
+        "tests/unit/test_ps103_boss_intro_frame_wiring.gd",
+        "tests/unit/test_ps126_post_curve_pressure.gd"
       ]
     },
     {
@@ -72,13 +73,16 @@
         "tests/unit/test_b15_boss_encounter.gd",
         "tests/unit/test_b16_complete_run.gd",
         "tests/unit/test_b33_recurring_boss.gd",
-        "tests/unit/test_ps005_boss_warning.gd"
+        "tests/unit/test_ps005_boss_warning.gd",
+        "tests/unit/test_ps126_post_curve_pressure.gd"
       ]
     },
     {
       "patterns": [
         "scripts/actors/base_enemy.gd",
         "scenes/actors/base_enemy.tscn",
+        "scripts/actors/ranged_enemy.gd",
+        "scenes/actors/ranged_enemy.tscn",
         "scripts/game/enemy_spawner.gd",
         "scripts/game/enemy_spawn_profile.gd",
         "scripts/game/enemy_archetype_definition.gd",
@@ -95,7 +99,9 @@
         "tests/unit/test_b38_arena_world.gd",
         "tests/unit/test_ps007_late_run_pressure.gd",
         "tests/unit/test_ps008_wave_events.gd",
-        "tests/unit/test_ps076_enemy_density_rebalance.gd"
+        "tests/unit/test_ps076_enemy_density_rebalance.gd",
+        "tests/unit/test_ps123_archetype_hp_rescale.gd",
+        "tests/unit/test_ps126_post_curve_pressure.gd"
       ]
     },
     {
@@ -120,7 +126,8 @@
         "tests/unit/test_b14_game_director.gd",
         "tests/unit/test_b53_boss_horde_pause.gd",
         "tests/unit/test_ps005_boss_warning.gd",
-        "tests/unit/test_ps007_late_run_pressure.gd"
+        "tests/unit/test_ps007_late_run_pressure.gd",
+        "tests/unit/test_ps124_wave_event_pressure.gd"
       ]
     },
     {

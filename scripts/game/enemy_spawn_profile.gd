@@ -141,6 +141,17 @@ const MINIMUM_INTERVAL_SECONDS := 0.01
 
 @export var late_run_ranged_archetype_id: StringName = &"ranged"
 
+@export_group("Post Curve Pressure")
+## PS-126: oltre late_run_curve_full_seconds nessuna curva di questa risorsa
+## continua a crescere (pesi, spawn interval e cap sono gia' al loro
+## estremo). Questo moltiplicatore lineare su HP/danno di ogni nemico
+## spawnato (piccione base incluso) tiene viva la pressione per le run che
+## proseguono oltre i 5 minuti (endless, PS-055): a 0.0 il comportamento
+## resta identico a prima di PS-126.
+@export_range(0.0, 4.0, 0.01, "or_greater") var post_curve_growth_per_minute := 0.15:
+	set(value):
+		post_curve_growth_per_minute = maxf(value, 0.0) if is_finite(value) else 0.0
+
 @export_group("Cleanup")
 @export_range(0.01, 60.0, 0.01, "or_greater") var cleanup_interval := 1.0:
 	set(value):
@@ -248,3 +259,13 @@ func get_effective_despawn_margin() -> float:
 
 func get_effective_cleanup_interval() -> float:
 	return maxf(cleanup_interval, MINIMUM_INTERVAL_SECONDS)
+
+
+## PS-126: 1.0 fino a late_run_curve_full_seconds, poi cresce linearmente di
+## post_curve_growth_per_minute ogni minuto oltre quella soglia. Si applica a
+## HP/danno di ogni nemico spawnato, non alla cadenza o ai pesi (gia'
+## governati da get_effective_* sopra).
+func get_post_curve_pressure_multiplier(run_time: float) -> float:
+	var sanitized_run_time := maxf(run_time, 0.0) if is_finite(run_time) else 0.0
+	var elapsed_past_curve := maxf(sanitized_run_time - late_run_curve_full_seconds, 0.0)
+	return 1.0 + (elapsed_past_curve / 60.0) * post_curve_growth_per_minute

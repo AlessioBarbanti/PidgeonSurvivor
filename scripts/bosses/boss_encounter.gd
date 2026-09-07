@@ -333,6 +333,7 @@ func _spawn_boss(schedule_index: int) -> FirstBoss:
 		_targeting_system,
 		_enemy_parent
 	)
+	_apply_recurrence_scaling(boss, schedule_index)
 
 	var spawn_position := calculate_spawn_position(
 		get_visible_reference_rect(),
@@ -362,6 +363,28 @@ func _spawn_boss(schedule_index: int) -> FirstBoss:
 	boss_spawned.emit(_active_boss, schedule_index)
 	boss_intro_started.emit(_active_boss, schedule_index)
 	return _active_boss
+
+
+## PS-126: scala HP/danno del Boss con le ricorrenze (schedule_index 0-based,
+## la prima resta invariata) cosi' non diventi trivialmente debole rispetto a
+## una build che continua a crescere in una run endless (PS-055). Non tocca
+## identita'/Signature (resolve_variant) ne' i pattern d'attacco.
+func _apply_recurrence_scaling(boss: FirstBoss, schedule_index: int) -> void:
+	if not is_instance_valid(_game_director) or _game_director.profile == null:
+		return
+	var multiplier := _game_director.profile.get_boss_recurrence_multiplier(schedule_index)
+	# Letto da first_boss.gd per scalare anche i pattern d'attacco (raffica
+	# radiale, colpo mirato) e le Signature, non solo HP/contatto sotto.
+	boss.pressure_multiplier = multiplier
+	if is_equal_approx(multiplier, 1.0):
+		return
+	var health_component := boss.get_health_component()
+	if health_component != null:
+		health_component.set_health_max(health_component.health_max * multiplier)
+		health_component.reset_to_max()
+	var contact_damage_component := boss.get_contact_damage()
+	if contact_damage_component != null:
+		contact_damage_component.damage *= multiplier
 
 
 func _clear_active_boss(queue_for_deletion: bool) -> void:

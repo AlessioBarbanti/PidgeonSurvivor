@@ -210,7 +210,7 @@ func _advance_expanding_front(delta: float) -> void:
 		return
 	_front_hit_player = true
 	var direction := offset.normalized() if not offset.is_zero_approx() else Vector2.RIGHT
-	_damage_player(_definition.damage)
+	_damage_player(_definition.damage * _damage_scale)
 	var knockback_force := _definition.get_effect_float(&"knockback_force", 0.0, 0.0)
 	if knockback_force <= 0.0:
 		return
@@ -232,7 +232,7 @@ func _advance_periodic_damage(delta: float, player_is_inside: bool) -> void:
 		return
 	_tick_remaining = _tick_interval
 	if player_is_inside:
-		_damage_player(_definition.damage)
+		_damage_player(_definition.damage * _damage_scale)
 
 
 ## Freddo poi caldo sulla stessa area: il rallentamento non impedisce di
@@ -247,7 +247,7 @@ func _advance_two_phase(delta: float) -> void:
 	_detonated = true
 	_sync_player_slow(false)
 	if _is_player_inside_radius():
-		_damage_player(_definition.damage)
+		_damage_player(_definition.damage * _damage_scale)
 
 
 func _follow_source() -> void:

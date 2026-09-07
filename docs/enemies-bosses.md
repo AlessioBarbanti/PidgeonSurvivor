@@ -20,11 +20,17 @@ curva in `EnemySpawnProfile` (dettagli in
 | Archetipo | HP | Velocità | Danno contatto | XP | Ruolo |
 |---|---|---|---|---|---|
 | Piccione base | 10.0 | 140.0 | 12.0 | — | Riempimento, peso dominante nei primi minuti |
-| `swarmer` | 9.0 | 210.0 | 12.0 | 1 | Sciamatore, spawna in gruppi di 3 |
-| `ranged` | 16.0 | 110.0 | 12.0 | 2 | Tiratore a distanza, telegrafa e spara |
-| `armored` | 54.0 | 70.0 | 26.0 | 3 | Corazzato, lento e con HP alto |
-| `splitter` | 26.0 | 130.0 | 18.0 | 2 | Divisore, genera 2 frammenti alla morte |
-| `splitter_fragment` | 7.0 | 160.0 | 10.0 | 1 | Solo prodotto dalla morte di `splitter`, mai spawnato ordinariamente |
+| `swarmer` | 5.0 | 210.0 | 7.0 | 1 | Sciamatore, spawna in gruppi di 3 |
+| `ranged` | 9.0 | 110.0 | 7.0 | 2 | Tiratore a distanza, telegrafa e spara |
+| `armored` | 31.0 | 70.0 | 15.0 | 3 | Corazzato, lento e con HP alto |
+| `splitter` | 15.0 | 130.0 | 10.0 | 2 | Divisore, genera 2 frammenti alla morte |
+| `splitter_fragment` | 4.0 | 160.0 | 6.0 | 1 | Solo prodotto dalla morte di `splitter`, mai spawnato ordinariamente |
+
+**PS-123 (2026-09-07).** PS-076 aveva ricalibrato in proporzione (fattore
+7/12) solo il piccione base dopo aver infittito lo spawn; questi cinque
+valori sono stati ricalibrati con lo stesso fattore, arrotondato all'intero
+più vicino (per difetto sui multipli esatti di 0.5, come già fatto per il
+piccione: `18→10`, non `18→11`).
 
 Fonti: `scenes/actors/base_enemy.tscn` (piccione base, righe 65-116),
 `data/enemies/enemy_archetype_swarmer.tres`,
@@ -218,14 +224,26 @@ tre eventi baseline (`data/wave_events/*.tres`):
 
 | Evento | Durata | Telegraph | Formazione | Effetto sullo spawn ordinario |
 |---|---|---|---|---|
-| Accerchiamento | 10s | 2.5s (richiesto) | 8 `swarmer`, uno ogni 0.35s | Sostituito |
-| Stormo laterale | 8s | Nessuno | 10 `swarmer`, uno ogni 0.25s | Ridotto (×1.5 intervallo) |
+| Accerchiamento | 10s | 2.5s (richiesto) | 100 `swarmer`, uno ogni 0.1s | Ridotto (×1.15 intervallo) |
+| Stormo laterale | 8s | Nessuno | 60 `swarmer`, uno ogni 0.1s | Ridotto (×1.1 intervallo) |
 | Nido di tiratori | 14s | Nessuno (ogni tiratore mantiene il proprio) | Peso `ranged` ×4 nel pool esistente | Invariato |
 
-Card: [docs/cards/4_to_test/PS-008-eventi-di-ondata.md](./cards/4_to_test/PS-008-eventi-di-ondata.md),
-`IN VERIFICA` — i valori sopra sono quelli correnti nel codice/dati, ma la
-loro validità di design (leggibilità percettiva) non è ancora confermata dal
-proprietario.
+**PS-124 (2026-09-07).** I valori originali di Accerchiamento (`ordinary_spawn_mode`
+*Sostituito*, 8 `swarmer` ogni 0.35s) e Stormo laterale (10 `swarmer` ogni
+0.25s, ×1.5 intervallo) generavano meno nemici, nella propria finestra, di
+quanti ne avrebbe generati lo spawn ordinario sostituito: un evento
+telegrafato come minaccia si leggeva come una pausa. I nuovi valori
+generano deliberatamente più corpi del riferimento ordinario equivalente
+(margine ~1.3-1.5×, verificato da
+[tests/unit/test_ps124_wave_event_pressure.gd](../tests/unit/test_ps124_wave_event_pressure.gd)).
+Nido di tiratori non è cambiato: cambiava già solo la qualità della
+minaccia, non la quantità.
+
+Card: [docs/cards/5_completed/PS-008-eventi-di-ondata.md](./cards/5_completed/PS-008-eventi-di-ondata.md),
+`COMPLETATO`; il ribilanciamento quantitativo di Accerchiamento e Stormo
+laterale è tracciato separatamente in
+[docs/cards/4_to_test/PS-124-eventi-ondata-che-riducono-la-pressione.md](./cards/4_to_test/PS-124-eventi-ondata-che-riducono-la-pressione.md).
+Il gate percettivo su questi due eventi resta aperto lì.
 
 ## Ricompensa della sconfitta del Boss
 

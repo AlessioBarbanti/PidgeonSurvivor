@@ -9,3 +9,4 @@ enemy_spawn_profile = ExtResource("2_enemy_spawn_profile")
 boss_thresholds_seconds = PackedFloat32Array(120)
 boss_warning_lead_seconds = 15.0
 boss_countdown_seconds = 5.0
+boss_recurrence_growth_per_occurrence = 1.2

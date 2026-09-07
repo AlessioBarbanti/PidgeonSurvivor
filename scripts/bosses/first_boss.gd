@@ -607,6 +607,11 @@ func _spawn_signature_area(mode: BossSignatureRegistry.AreaMode) -> BossSignatur
 			source = self
 		BossSignatureRegistry.AreaMode.INSTANT_BURST:
 			damage_scale = _get_thunder_damage_scale()
+	# PS-126: la carica del Tuono (thunder_damage_scale) e la pressione di
+	# ricorrenza sono due leve indipendenti che si compongono, non si
+	# sostituiscono: entrambe finiscono nello stesso _damage_scale che
+	# BossSignatureArea applica gia' in ogni modalita'.
+	damage_scale *= pressure_multiplier
 
 	var area := BossSignatureArea.new()
 	area.name = "BossSignatureArea_%s" % _announced_signature.id
@@ -794,7 +799,7 @@ func _spawn_radial_volley() -> int:
 		var angle := TAU * float(projectile_index) / float(definition.radial_projectile_count)
 		if not projectile.initialize(
 			Vector2.RIGHT.rotated(angle),
-			definition.radial_projectile_damage,
+			definition.radial_projectile_damage * pressure_multiplier,
 			definition.radial_projectile_speed,
 			definition.radial_projectile_lifetime,
 			definition.radial_projectile_radius,
@@ -825,7 +830,7 @@ func _execute_targeted_blast() -> int:
 	var effective_radius := definition.targeted_blast_radius + player.collision_radius
 	if player.global_position.distance_squared_to(_targeted_position) > effective_radius * effective_radius:
 		return 0
-	return 1 if player.take_contact_damage(definition.targeted_blast_damage, _targeted_position) else 0
+	return 1 if player.take_contact_damage(definition.targeted_blast_damage * pressure_multiplier, _targeted_position) else 0
 
 
 func _draw_active_telegraph() -> void:

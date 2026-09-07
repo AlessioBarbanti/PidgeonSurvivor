@@ -159,7 +159,7 @@ func _fire_projectile(target: Node2D) -> void:
 		direction = Vector2.RIGHT
 	if not projectile.initialize(
 		direction.normalized(),
-		_definition.ranged_projectile_damage,
+		_definition.ranged_projectile_damage * pressure_multiplier,
 		_definition.ranged_projectile_speed,
 		_definition.ranged_projectile_lifetime,
 		_definition.ranged_projectile_radius,

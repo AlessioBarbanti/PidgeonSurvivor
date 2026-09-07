@@ -13,6 +13,14 @@ const MAXIMUM_WARNING_SECONDS := 120.0
 @export_range(0.0, MAXIMUM_WARNING_SECONDS, 1.0, "suffix:s") var boss_countdown_seconds := 5.0:
 	set(value):
 		boss_countdown_seconds = _sanitize_warning_seconds(value)
+## PS-126: HP/danno del Boss crescono di questa frazione per ogni ricorrenza
+## successiva alla prima (schedule_index 0-based: 0 = invariato). Tiene il
+## Boss ricorrente una minaccia reale nelle run endless invece di diventare
+## trivialmente debole rispetto a una build che continua a crescere. A 0.0 il
+## comportamento resta identico a prima di PS-126.
+@export_range(0.0, 4.0, 0.01, "or_greater") var boss_recurrence_growth_per_occurrence := 1.2:
+	set(value):
+		boss_recurrence_growth_per_occurrence = maxf(value, 0.0) if is_finite(value) else 0.0
 
 
 func get_effective_boss_thresholds() -> PackedFloat32Array:
@@ -60,6 +68,13 @@ func is_valid() -> bool:
 		and not get_effective_boss_thresholds().is_empty()
 		and get_effective_recurring_boss_window() > 0.0
 	)
+
+
+## PS-126: 1.0 alla prima occorrenza (schedule_index 0), cresce linearmente
+## con le ricorrenze successive di boss_recurrence_growth_per_occurrence.
+func get_boss_recurrence_multiplier(schedule_index: int) -> float:
+	var sanitized_index := maxi(schedule_index, 0)
+	return 1.0 + float(sanitized_index) * boss_recurrence_growth_per_occurrence
 
 
 static func _sanitize_warning_seconds(value: float) -> float:

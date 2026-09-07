@@ -424,6 +424,7 @@ func _finalize_spawned_enemy(
 	if archetype != null and not enemy.apply_archetype_definition(archetype):
 		enemy.queue_free()
 		return false
+	_apply_post_curve_pressure(enemy)
 	enemy.set_target(_target)
 	enemy.set_pursuit_offset(_sample_pursuit_offset())
 	enemy.set_run_controller(_run_controller)
@@ -440,6 +441,27 @@ func _finalize_spawned_enemy(
 	)
 	enemy_spawned.emit(enemy)
 	return true
+
+
+## PS-126: applica il moltiplicatore di pressione oltre
+## late_run_curve_full_seconds a ogni nemico spawnato (piccione base incluso,
+## non solo gli archetipi). A moltiplicatore 1.0 (prima della soglia, o con
+## post_curve_growth_per_minute a 0.0) e' un no-op sostanziale, ma il campo
+## pubblico viene comunque assegnato: le sottoclassi con un danno a distanza
+## proprio (RangedEnemy) lo leggono al momento di sparare, cosi' anche quello
+## scala invece di restare piatto per sempre.
+func _apply_post_curve_pressure(enemy: BaseEnemy) -> void:
+	var multiplier := spawn_profile.get_post_curve_pressure_multiplier(_run_controller.get_run_time())
+	enemy.pressure_multiplier = multiplier
+	if is_equal_approx(multiplier, 1.0):
+		return
+	var health_component := enemy.get_health_component()
+	if health_component != null:
+		health_component.set_health_max(health_component.health_max * multiplier)
+		health_component.reset_to_max()
+	var contact_damage_component := enemy.get_contact_damage()
+	if contact_damage_component != null:
+		contact_damage_component.damage *= multiplier
 
 
 func _configure_archetype_behavior(

@@ -20,6 +20,15 @@ signal damage_taken_modifiers_changed(enemy: BaseEnemy, effective_multiplier: fl
 	set(value):
 		experience_reward_scale = maxf(value, 0.0) if is_finite(value) else 0.0
 
+## PS-126: moltiplicatore di pressione oltre late_run_curve_full_seconds,
+## assegnato dallo spawn ordinario insieme a experience_reward_scale. Gia'
+## applicato a HP/danno da contatto al momento dello spawn; le sottoclassi
+## con un danno a distanza proprio (RangedEnemy) lo leggono qui per scalare
+## anche quello, invece di restare piatte per sempre.
+@export_range(0.0, 16.0, 0.001, "or_greater") var pressure_multiplier := 1.0:
+	set(value):
+		pressure_multiplier = maxf(value, 0.0) if is_finite(value) else 1.0
+
 @export_range(1.0, 128.0, 0.5) var collision_radius: float = 20.0:
 	set(value):
 		collision_radius = maxf(value, 1.0)
