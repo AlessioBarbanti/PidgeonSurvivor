@@ -313,25 +313,58 @@ due silhouette non si sovrappongono più nemmeno a colpo d'occhio a 128px.
 |---|---|---|---|---|
 | Punto di Cottura | `hd/upgrade_cooking_point_crit.png` (`1254×1254`) | `generated/cooking_point_crit.png` (`128×128`) | `D3D6ECE6067D288831E531DA77047EA8324778E6E475E60773540DBDA743BAA6` | `451EA2A9C00E090D252FDAE509EB3CDF068823C3C781A71FB7C96BA0445723E6` |
 
-## PS-094 — Placeholder icona per la nona Specialità (cariche multiple abilità attiva)
+## PS-118 — Pancetta, Specialità delle cariche multiple
 
-- Data integrazione: 7 settembre 2026.
-- Contesto: [PS-094](../../../../docs/cards/3_in_sprint/PS-094-specialita-cariche-abilita-attiva.md)
-  introduce una nona Specialità di Barb (cariche multiple sull'abilità
-  attiva). Per contratto PS-090 questa card non produce icone: nome e icona
-  definitivi restano materia della card `tipo: art` aperta in handoff
-  ([PS-118](../../../../docs/cards/2_to_do/PS-118-nome-e-icona-nona-specialita-cariche-abilita.md)).
-  Il gioco non deve però referenziare un'icona nulla nel frattempo.
-- Origine: nessuna sintesi. Placeholder deterministico generato con
-  `tools/generate-art-placeholder.ps1` (PS-110), stessa geometria
-  `128×128` delle altre icone upgrade. Non è arte finale: il pixel `(0,0)`
-  resta la firma magenta piena (`255,0,255,255`) finché PS-118 non sostituisce
-  i byte del file.
-- Trasformazione: `generate-art-placeholder.ps1 -OutputPath generated/ability_charge_stacking.png -Width 128 -Height 128 -Label 'PS-094'` (nessun master HD: non c'è nulla da derivare finché l'icona reale non esiste).
-- Runtime: `data/upgrades/specialities/ability_charge_stacking.tres` referenzia
-  già questo percorso `generated/`; PS-118 sostituirà solo i byte del file,
-  nessun cambio di wiring.
+- Data produzione e integrazione: 7 settembre 2026.
+- Contesto: [PS-094](../../../../docs/cards/4_to_test/PS-094-specialita-cariche-abilita-attiva.md)
+  aveva predisposto il percorso runtime definitivo con un placeholder
+  deterministico. PS-118 lo sostituisce in place con l'icona reale e rinomina
+  il titolo di lavoro in `Pancetta`, senza cambiare wiring o meccanica.
+- Origine: OpenAI ImageGen built-in. Autore: progetto IL GIOCO con assistenza
+  OpenAI ImageGen; licenza: Licenza del progetto. Nessuna immagine è stata
+  usata come edit target; `generated/costine.png`, `generated/tagliata.png` e
+  `generated/salsiccia.png` sono stati ispezionati soltanto per ricostruire
+  palette, peso del contorno e silhouette da non duplicare.
+- Direzione: tre strisce spesse di pancetta grigliata, separate e sfalsate a
+  ventaglio in un unico cluster. La ripetizione comunica una riserva di
+  cariche senza numeri, badge o frecce; gli strati carne/grasso e l'assenza di
+  ossa distinguono il soggetto da Costine, Tagliata e Salsiccia.
+- Prompt effettivo: "Use case: stylized-concept. Asset type: square HD master
+  for a Pidgeon Survivor arcade upgrade icon. Primary request: create a
+  definitive icon for the speciality named Pancetta, visually communicating a
+  reserve of multiple ability charges through repeated portions of the same
+  grilled cut. Scene/backdrop: genuinely transparent background with real
+  alpha; no baked checkerboard. Subject: one compact central cluster of four
+  thick grilled pork-belly strips, each clearly a separate portion with
+  visible alternating meat-and-fat layers, staggered and fanned from a shared
+  lower-left origin toward slightly different upper-right directions like a
+  ready reserve. Keep small gaps so the repeated pieces remain individually
+  countable at a glance, but make the whole cluster read as one icon. Deep
+  diagonal grill marks and crisp charred edges. A few tiny amber ember flecks
+  tucked close to the meat only. Style/medium: handcrafted chunky pixel-art
+  arcade icon matching an established barbecue family; thick dark plum-brown
+  outline; flat cel-shading; restrained pixel clusters; no soft gradients;
+  warm charred umber, brick red, roasted orange, golden fat and amber palette.
+  Composition/framing: centered square composition, uniform generous
+  transparent margin, strong simple silhouette that remains legible at
+  128x128 and 48x48. Constraints: the subject must unmistakably be thick
+  pork-belly strips, not a rack of ribs and not sliced steak. The visual
+  message is multiple stored portions / repeated use, expressed only by
+  repetition and staggered arrangement. Avoid: text, letters, numbers, badges,
+  arrows, chevrons, circular UI frame, plate, cutlery, sauce bowl, person,
+  pigeon, firearm, exposed bone, chicken drumstick, sausage links, rib bones,
+  a single steak sliced into a fan, photorealism, ant-sized detail, watermark."
+- Trasformazione: `tools/process-upgrade-icon.ps1`, bounds alpha con soglia
+  `8`, padding quadrato `12`, riduzione nearest-neighbor a `128×128` RGBA.
+- Art review: master e derivato hanno alfa reale e quattro angoli trasparenti;
+  il cluster resta riconoscibile a `128×128` e nel downscale di controllo
+  `48×48`. La generazione ha reso tre strisce invece delle quattro richieste:
+  accettate perché comunicano pluralità senza associare l'icona a un tetto
+  fisso di cariche. Il pixel `(0,0)` del derivato è `0,0,0,0`, non più la
+  firma placeholder.
+- Runtime: soltanto `generated/ability_charge_stacking.png` è referenziato
+  dalla `UpgradeDefinition`; il master resta escluso da import ed export.
 
 | Carta | Master HD escluso | Derivato runtime | SHA-256 master | SHA-256 runtime |
 |---|---|---|---|---|
-| *(nome di lavoro, vedi PS-118)* — placeholder | — | `generated/ability_charge_stacking.png` (`128×128`) | — | `C1D862377E4F07F3ECD3C1EB98627245DC7FF041331659230595A3772CFB5818` |
+| Pancetta | `hd/upgrade_speciality_pancetta.png` (`1254×1254`) | `generated/ability_charge_stacking.png` (`128×128`) | `401612A5014BEB2C7BDE951E5B3C3680F75875B306EEE656FC496DE7981CD4BC` | `313707D888E4701E151537D7BE484722B5E9247E1BDDE66BDCA8BC0A1BF71962` |

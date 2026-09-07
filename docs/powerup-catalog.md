@@ -21,9 +21,10 @@ il contrasto fra i due è deliberato: è quello che fa leggere una Specialità c
   Barb ha il tempo di cucinare, e quello che consegna alla fine è un pezzo di
   carne, la sua specialità.
 
-I sette nomi sono stati approvati dal proprietario il 5 settembre 2026
-(PS-078), su un registro "menù secco": il nome è il solo taglio, una parola,
-senza aggettivi, come una lavagna del grigliatore. Il vincolo è più stretto di
+I primi sette nomi sono stati approvati dal proprietario il 5 settembre 2026
+(PS-078); `Pancetta` è stata prodotta il 7 settembre con PS-118. Il registro è
+un "menù secco": il nome è il solo taglio, una parola, senza aggettivi, come
+una lavagna del grigliatore. Il vincolo è più stretto di
 "carne": deve essere una cottura **alla griglia**, motivo per cui candidati
 come straccetti, polpette e stracotto sono stati scartati.
 
@@ -36,6 +37,7 @@ come straccetti, polpette e stracotto sono stati scartati.
 | **Tagliata** | `double_barrel` | proiettili aggiuntivi a ventaglio | è il pezzo che arriva già diviso in fette |
 | **Salsiccia** | `gossip_projectiles` | rimbalzi in catena fra nemici | la salsiccia a nodi è una catena: il colpo passa di anello in anello |
 | **Arrosticini** | `piercing_rounds` | il colpo attraversa più bersagli | uno stecco che infilza bocconi in fila |
+| **Pancetta** | `ability_charge_stacking` | più cariche dell'abilità attiva | più strisce dello stesso taglio formano una riserva pronta all'uso |
 
 Con un nome di una parola sola il titolo non basta più a comunicare l'effetto:
 `description` ed `effect_summary` restano l'unico veicolo testuale e non vanno
@@ -45,19 +47,18 @@ accorciati per ragioni estetiche.
 [PS-100](./cards/4_to_test/PS-100-rimuovi-ansia-dalle-specialita-di-barb.md):
 non è più offerta né dalla ricompensa di Barb né dal level-up ordinario.
 
-Un'ottava Specialità reale, `ability_charge_stacking` (cariche multiple
+L'ottava Specialità reale, `ability_charge_stacking` (cariche multiple
 sull'abilità attiva), è entrata col catalogo di run con
-[PS-094](./cards/4_to_test/PS-094-specialita-cariche-abilita-attiva.md):
-resta fuori dal registro "menù secco" qui sopra finché nome e icona
-definitivi non arrivano con
-[PS-118](./cards/2_to_do/PS-118-nome-e-icona-nona-specialita-cariche-abilita.md)
-(titolo di lavoro provvisorio: "Bis alla Griglia").
+[PS-094](./cards/4_to_test/PS-094-specialita-cariche-abilita-attiva.md) ed è
+stata tematizzata da
+[PS-118](./cards/4_to_test/PS-118-nome-e-icona-nona-specialita-cariche-abilita.md)
+come `Pancetta`.
 
 Due conseguenze operative sulla separazione fra i registri:
 
 - `tests/unit/test_ps089_ordinary_catalog_meat_audit.gd` fallisce se una carta
   ordinaria nomina un taglio di carne. La sua lista di parole vietate include
-  i sette tagli qui sopra e va estesa se una nuova Specialità ne introduce
+  gli otto tagli qui sopra e va estesa se una nuova Specialità ne introduce
   altri, altrimenti il catalogo ordinario potrebbe riprenderseli.
 - Le proposte non ancora implementate `Pancetta Croccante` e `Spiedo Passante`
   violano la regola: sono letteralmente carne alla griglia in un registro che

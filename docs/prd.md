@@ -123,10 +123,9 @@ alla griglia: è il registro riservato che le distingue a colpo d'occhio dal
 catalogo statistico ordinario, che resta su utensili, pirofile, brace e
 condimenti (PS-078, PS-089). `L'Ansia` (`anxiety_signature`) è uscita dal
 gioco con PS-100: non è mai più offerta, né da Barb né dal level-up. Un'ottava
-Specialità reale, cariche multiple sull'abilità attiva
-(`ability_charge_stacking`, PS-094), è entrata nel catalogo di run ma resta
-fuori dal registro "menù secco" finché nome e icona definitivi non arrivano
-con PS-118 (titolo di lavoro: "Bis alla Griglia"); a differenza delle altre,
+Specialità reale, `Pancetta`, porta le cariche multiple sull'abilità attiva
+(`ability_charge_stacking`, PS-094/PS-118) nel medesimo registro; a differenza
+delle altre,
 la sua progressione è una sequenza fissa di cinque rank non ripetibile (più
 cariche disponibili sull'abilità attiva e velocità di ricarica per carica
 variabile per rango), non un moltiplicatore lineare. Non compaiono nel pool di

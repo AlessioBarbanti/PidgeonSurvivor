@@ -6,7 +6,7 @@
 [resource]
 script = ExtResource("1_definition")
 id = &"ability_charge_stacking"
-title = "Bis alla Griglia"
+title = "Pancetta"
 description = "Accumula più cariche per l'abilità attiva invece di una sola, con una velocità di ricarica per carica che cambia salendo di rango."
 effect_summary = "FINO A 4 CARICHE ABILITÀ ATTIVA"
 icon = ExtResource("2_icon")

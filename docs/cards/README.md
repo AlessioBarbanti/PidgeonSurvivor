@@ -219,7 +219,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-115](./2_to_do/PS-115-modalita-risparmio-energetico-profilo-mobile-low.md) | Aggiungi una Modalità risparmio energetico con profilo mobile_low | feat | piattaforma | BLOCCATO | media | PS-113, PS-117 |
 | [PS-116](./4_to_test/PS-116-aumenta-risoluzione-sprite-gameplay-cast.md) | Aumenta la risoluzione nativa dello sprite di gameplay del cast a 64×64 | fix | arte | IN VERIFICA | media | — |
 | [PS-117](./2_to_do/PS-117-subviewport-mondo-di-gioco-per-render-scale.md) | Sposta il mondo di gioco in un SubViewport dedicato per abilitare render_scale | perf | piattaforma | PRONTO | media | — |
-| [PS-118](./2_to_do/PS-118-nome-e-icona-nona-specialita-cariche-abilita.md) | Genera nome e icona definitivi per la nona Specialità (cariche multiple abilità attiva) | art | arte | PRONTO | bassa | — |
+| [PS-118](./4_to_test/PS-118-nome-e-icona-nona-specialita-cariche-abilita.md) | Genera nome e icona definitivi per la nona Specialità (cariche multiple abilità attiva) | art | arte | IN VERIFICA | bassa | — |
 | [PS-119](./4_to_test/PS-119-fix-spawn-non-sospeso-boss-ricorrente-con-evento-attivo.md) | Correggi lo spawn ordinario che non si sospende durante un Boss se un evento d'ondata è già maturato | fix | gameplay | IN VERIFICA | alta | — |
 | [PS-120](./4_to_test/PS-120-fix-ricarica-cariche-abilita-e-indicatore-hud.md) | Correggi il tetto di ricarica delle cariche abilità e distingui l'indicatore HUD di ricarica in background | fix | gameplay | IN VERIFICA | alta | PS-094 |
 | [PS-121](./4_to_test/PS-121-carte-ripetibili-sature-escono-dal-pool.md) | Le carte ripetibili che hanno raggiunto il proprio tetto runtime escono dal pool di scelta | fix | gameplay | IN VERIFICA | alta | — |
