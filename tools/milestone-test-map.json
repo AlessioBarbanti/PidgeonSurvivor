@@ -273,6 +273,7 @@
         "tests/unit/test_ps053_run_summary.gd",
         "tests/unit/test_ps072_bea_dodge_audio.gd",
         "tests/unit/test_ps073_boss_dedicated_music.gd",
+        "tests/unit/test_ps080_end_run_music.gd",
         "tests/unit/test_ps082_camera_recenter_on_restart.gd",
         "tests/unit/test_ps093_extended_base_stats.gd",
         "tests/unit/test_ps085_manual_fire_mode.gd",
@@ -410,7 +411,8 @@
         "tests/unit/test_b29_background_music.gd",
         "tests/unit/test_menu_music.gd",
         "tests/unit/test_ps072_bea_dodge_audio.gd",
-        "tests/unit/test_ps073_boss_dedicated_music.gd"
+        "tests/unit/test_ps073_boss_dedicated_music.gd",
+        "tests/unit/test_ps080_end_run_music.gd"
       ]
     },
     {

@@ -16,6 +16,8 @@ const MENU_MUSIC_VOLUME_DB := -9.0
 ## un'intensificazione, non come un cambio a parita' di energia.
 const BOSS_MUSIC_VOLUME_DB := -5.0
 const MUSIC_CROSSFADE_SILENCE_DB := -80.0
+## PS-080: musica dedicata di fine run, un solo colpo, non in loop.
+const END_RUN_MUSIC_VOLUME_DB := -4.0
 
 const SHOT := &"shot"
 const HIT := &"hit"
@@ -67,6 +69,14 @@ const DEFEAT := &"defeat"
 ## fra le due tracce sul bus Music. Si ripete identica a ogni ricorrenza.
 @export var boss_music_stream: AudioStream
 
+@export_group("End run music")
+## PS-080: breve traccia trionfale riprodotta una sola volta alla VICTORY,
+## distinta dal cue SFX `VICTORY` esistente.
+@export var victory_music_stream: AudioStream
+## PS-080: breve traccia dimessa riprodotta una sola volta alla DEFEAT,
+## distinta dal cue SFX `DEFEAT` esistente.
+@export var defeat_music_stream: AudioStream
+
 @export_group("Diagnostics")
 ## Il driver headless non produce audio udibile e può trattenere playback OGG
 ## fino allo shutdown. Gli smoke verificano mapping e segnali senza allocarlo.
@@ -78,6 +88,7 @@ var _players: Array[AudioStreamPlayer] = []
 var _background_music_player: AudioStreamPlayer
 var _menu_music_player: AudioStreamPlayer
 var _boss_music_player: AudioStreamPlayer
+var _end_run_music_player: AudioStreamPlayer
 var _next_player_index := 0
 var _last_cue_ticks: Dictionary = {}
 var _ability_cooldown_armed := false
@@ -86,6 +97,7 @@ var _background_music_active := false
 var _background_music_resume_position := 0.0
 var _menu_music_active := false
 var _boss_music_active := false
+var _end_run_music_active := false
 var _music_crossfade_tween: Tween
 
 var _run_controller: RunController
@@ -108,6 +120,7 @@ func _ready() -> void:
 	_build_background_music_player()
 	_build_menu_music_player()
 	_build_boss_music_player()
+	_build_end_run_music_player()
 	_load_settings()
 	_apply_settings()
 
@@ -217,6 +230,7 @@ func stop_all() -> void:
 	stop_background_music()
 	stop_boss_music()
 	stop_menu_music()
+	stop_end_run_music()
 
 
 func has_complete_cue_set() -> bool:
@@ -294,6 +308,22 @@ func is_boss_music_looping() -> bool:
 
 func get_boss_music_player() -> AudioStreamPlayer:
 	return _boss_music_player
+
+
+func has_victory_music() -> bool:
+	return victory_music_stream != null
+
+
+func has_defeat_music() -> bool:
+	return defeat_music_stream != null
+
+
+func is_end_run_music_active() -> bool:
+	return _end_run_music_active
+
+
+func get_end_run_music_player() -> AudioStreamPlayer:
+	return _end_run_music_player
 
 
 func get_stream_for_cue(cue_id: StringName) -> AudioStream:
@@ -432,6 +462,17 @@ func _build_boss_music_player() -> void:
 	add_child(_boss_music_player)
 
 
+func _build_end_run_music_player() -> void:
+	if is_instance_valid(_end_run_music_player):
+		return
+	_end_run_music_player = AudioStreamPlayer.new()
+	_end_run_music_player.name = "EndRunMusicPlayer"
+	_end_run_music_player.bus = MUSIC_BUS_NAME
+	_end_run_music_player.volume_db = END_RUN_MUSIC_VOLUME_DB
+	_end_run_music_player.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(_end_run_music_player)
+
+
 func _acquire_player() -> AudioStreamPlayer:
 	for offset in _players.size():
 		var index := (_next_player_index + offset) % _players.size()
@@ -516,15 +557,18 @@ func _on_run_state_changed(previous_state: RunController.RunState, current_state
 func _on_run_ended(final_state: RunController.RunState, _run_time: float) -> void:
 	stop_background_music()
 	stop_boss_music()
+	stop_menu_music()
 	if final_state == RunController.RunState.VICTORY:
 		play_cue(VICTORY, -1.0)
 	elif final_state == RunController.RunState.DEFEAT:
 		play_cue(DEFEAT, -1.0)
+	start_end_run_music(final_state)
 
 
 func _on_restart_prepared() -> void:
 	stop_background_music()
 	stop_boss_music()
+	stop_end_run_music()
 	_ability_cooldown_armed = false
 	_last_cue_ticks.clear()
 
@@ -703,6 +747,36 @@ func stop_boss_music() -> void:
 		_boss_music_player.stream = null
 		_boss_music_player.volume_db = MUSIC_CROSSFADE_SILENCE_DB
 	_boss_music_active = false
+
+
+## PS-080: avvia la musica dedicata di fine run (vittoria o sconfitta), un
+## solo colpo non in loop. Il chiamante deve aver gia' interrotto qualunque
+## altra musica (run, Boss, menu) prima di invocarla, cosi' le due non si
+## sovrappongono mai.
+func start_end_run_music(final_state: RunController.RunState) -> bool:
+	var stream: AudioStream
+	if final_state == RunController.RunState.VICTORY:
+		stream = victory_music_stream
+	elif final_state == RunController.RunState.DEFEAT:
+		stream = defeat_music_stream
+	if stream == null:
+		return false
+	_end_run_music_active = true
+	if signal_only_in_headless and DisplayServer.get_name() == "headless":
+		return true
+	if not is_instance_valid(_end_run_music_player):
+		return false
+	_end_run_music_player.stream = stream
+	_end_run_music_player.play()
+	return true
+
+
+## PS-080: interrompe la musica di fine run, usata da restart e shutdown.
+func stop_end_run_music() -> void:
+	if is_instance_valid(_end_run_music_player):
+		_end_run_music_player.stop()
+		_end_run_music_player.stream = null
+	_end_run_music_active = false
 
 
 ## PS-073: sfuma solo la traccia Boss senza toccare quella di run, per il caso

@@ -145,8 +145,9 @@ Gestore unico e scene-local: `GameAudio`
 ([scripts/audio/game_audio.gd](../scripts/audio/game_audio.gd)), istanziato
 in `scenes/game/movement_slice.tscn`, nessun autoload. Bus `SFX` e `Music`,
 pool di 12 `AudioStreamPlayer` per gli SFX, un player dedicato per la
-musica di run, uno per quella di menu e uno per la traccia Boss (PS-073),
-persistenza volume/mute su `user://audio_settings.cfg`.
+musica di run, uno per quella di menu, uno per la traccia Boss (PS-073) e uno
+per la musica dedicata di fine run (PS-080), persistenza volume/mute su
+`user://audio_settings.cfg`.
 
 15 cue dichiarati: `SHOT`, `HIT`, `PLAYER_DAMAGE`, `PICKUP`, `LEVEL_UP`,
 `ABILITY_ACTIVATE`, `ABILITY_READY`, `BOSS_WARNING`, `BOSS_ATTACK`, `DODGE`,
@@ -164,10 +165,18 @@ musica di run `super_wreck_roadway_loop.ogg` (Umplix, CC0); musica menu
 `boss_music_loop.mp3`, "Vilified" di Matthew Pablo, CC-BY 3.0 — l'unico asset
 audio del progetto con attribuzione obbligatoria invece che volontaria
 ([matthewpablo_vilified/ASSET-MANIFEST.md](../assets/audio/third_party/matthewpablo_vilified/ASSET-MANIFEST.md)).
+Musica dedicata di fine run (PS-080), un solo colpo non in loop, distinta dai
+cue SFX `VICTORY`/`DEFEAT` esistenti (entrambi restano attivi insieme alla
+nuova musica, non sostituiti): `victory_music.wav`, "Victory Fanfare Short" di
+cynicmusic, CC0
+([cynicmusic_victory_fanfare/ASSET-MANIFEST.md](../assets/audio/third_party/cynicmusic_victory_fanfare/ASSET-MANIFEST.md));
+`defeat_music.wav`, "Sad game over" di Emma_MA, CC0
+([emma_ma_sad_game_over/ASSET-MANIFEST.md](../assets/audio/third_party/emma_ma_sad_game_over/ASSET-MANIFEST.md)).
 Un asset musicale superato resta in `congusbongus_b29/`
 (`head_in_the_sand.ogg`), dichiarato non referenziato nel proprio manifest.
 Loop musicale impostato a runtime (`AudioStreamOggVorbis.loop`/
-`AudioStreamMP3.loop = true`), non nel file sorgente. Dall'ingresso
+`AudioStreamMP3.loop = true`), non nel file sorgente — le due tracce di fine
+run non sono mai messe in loop. Dall'ingresso
 dell'intro Boss (`boss_intro_started`) alla sconfitta (`boss_defeated`) la
 musica di run e quella Boss si scambiano con un crossfade di
 `PresentationTimings.BOSS_MUSIC_CROSSFADE_SECONDS` (1.5s) sul bus `Music`; la

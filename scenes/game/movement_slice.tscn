@@ -1,4 +1,4 @@
-[gd_scene load_steps=119 format=3]
+[gd_scene load_steps=121 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -124,6 +124,8 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/tutorial_screen.tscn" id="118_tutorial_screen"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/menu_music_wipics/menu_music_loop.ogg" id="119_menu_music"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/matthewpablo_vilified/boss_music_loop.mp3" id="125_boss_music"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/cynicmusic_victory_fanfare/victory_music.wav" id="129_victory_music"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/emma_ma_sad_game_over/defeat_music.wav" id="130_defeat_music"]
 
 [node name="MovementSlice" type="Control"]
 layout_mode = 3
@@ -271,6 +273,8 @@ dodge_stream = ExtResource("124_dodge")
 background_music_stream = ExtResource("95_background_music")
 menu_music_stream = ExtResource("119_menu_music")
 boss_music_stream = ExtResource("125_boss_music")
+victory_music_stream = ExtResource("129_victory_music")
+defeat_music_stream = ExtResource("130_defeat_music")
 
 [node name="World" type="Node2D" parent="."]
 

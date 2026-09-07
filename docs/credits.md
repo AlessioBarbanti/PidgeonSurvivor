@@ -21,6 +21,14 @@
   artist alongside Matthew Pablo; the OpenGameArt license page names only
   Matthew Pablo. Source, license note and file hash:
   `assets/audio/third_party/matthewpablo_vilified/ASSET-MANIFEST.md`.
+- **Victory Fanfare Short** — cynicmusic, CC0 1.0 Universal, from
+  OpenGameArt. Used as the dedicated end-run victory music (PS-080), played
+  once when the run ends in victory. Source, license copy and file hash:
+  `assets/audio/third_party/cynicmusic_victory_fanfare/ASSET-MANIFEST.md`.
+- **Sad game over** — Emma_MA, CC0 1.0 Universal, from OpenGameArt. Used as
+  the dedicated end-run defeat music (PS-080), played once when the run ends
+  in defeat. Source, license copy and file hash:
+  `assets/audio/third_party/emma_ma_sad_game_over/ASSET-MANIFEST.md`.
 
 ## Fonts
 
