@@ -173,12 +173,16 @@ guardia oltre alla safe area di sistema già applicata da `SafeAreaRoot`.
   su `VICTORY`/`DEFEAT`. Pulsanti "RIPROVA/NUOVA RUN"
   (`restart_requested`) e "Cambia personaggio" (`change_character_requested`).
 
-**Nota.** `RunController.request_victory()` è definito e collegato (EndScreen,
-HUD, audio), ma nessun punto del codice lo invoca oggi: l'unico terminale
-raggiungibile in pratica è `request_defeat()`, cablato in
-`_on_player_died` (`movement_slice.gd:1742-1747`). Coerente con B33
-("la morte di un Boss non chiude la run: i Boss ricorrono"), ma il ramo
-`VICTORY` resta stato/UI dormiente nel codice attuale.
+**Decisione (PS-055, 2026-09-07).** Sopravvivenza è endless: lo scopo è
+sopravvivere il più a lungo possibile, non "vincere". `RunController
+.request_victory()` è definito e collegato (EndScreen, HUD, audio), ma
+nessun punto del codice lo invoca: l'unico terminale raggiungibile in
+pratica è `request_defeat()`, cablato in `_on_player_died`
+(`movement_slice.gd:1742-1747`). Coerente con B33 ("la morte di un Boss non
+chiude la run: i Boss ricorrono"). Il ramo `VICTORY` resta stato/UI
+dormiente per scelta, non per lacuna: sarà riservato a una futura modalità
+con una condizione di vittoria propria (Difesa Grigliata, §3.5A del PRD),
+non a Sopravvivenza.
 
 ## `InputRouter` — input unificato
 

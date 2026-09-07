@@ -330,10 +330,17 @@ parametri dati; raggi e velocità sono unità logiche del mondo Godot, non pixel
 fisici del display.
 
 La morte atomica del Boss assegna la ricompensa Barb (§3.3) come unica
-ricompensa e richiede `VICTORY`, che blocca clock, danni, spawn e
-progressione. La schermata finale mostra Boss, tempo e ricompensa e consente
-una nuova run in-place. Il restart elimina Boss, proiettili, offerte, XP,
-cooldown ed effetti appartenenti alla run precedente.
+ricompensa e **non chiude la run**: i Boss ricorrono a intervalli successivi
+(B33). Sopravvivenza è una modalità endless — una caccia al record, non una
+partita vincibile — e resta tale finché il proprietario non introdurrà una
+modalità con una condizione di vittoria propria (PS-055, decisione
+2026-09-07). `RunController.request_victory()`/lo stato `VICTORY` restano
+definiti e cablati in EndScreen/HUD/audio ma dormienti: l'unico terminale
+raggiungibile oggi in Sopravvivenza è `DEFEAT`, quando la vita del Player
+raggiunge zero. La schermata finale mostra tempo di sopravvivenza e
+riepilogo della run e consente una nuova run in-place. Il restart elimina
+Boss, proiettili, offerte, XP, cooldown ed effetti appartenenti alla run
+precedente.
 
 ### 3.5A. Evoluzioni prima del packaging finale: Boss Evil e Difesa Grigliata
 

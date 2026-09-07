@@ -3,12 +3,12 @@ id: PS-055
 titolo: Decidere la filosofia della vittoria fra Survival e Difesa Grigliata
 tipo: chore
 area: gameplay
-stato: DA DEFINIRE
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-08-31
-aggiornato: 2026-08-31
+aggiornato: 2026-09-07
 ---
 
 # PS-055 — Decidere la filosofia della vittoria fra Survival e Difesa Grigliata
@@ -53,16 +53,19 @@ non può accadere.
 
 ## Criteri di accettazione
 
-- [ ] La filosofia della vittoria è dichiarata esplicitamente in
+- [x] La filosofia della vittoria è dichiarata esplicitamente in
       `docs/ui-ux-flow.md` e, se è un contratto di prodotto, in `docs/prd.md`.
-- [ ] Lo stato `VICTORY` è coerente con la decisione: raggiungibile e
+- [x] Lo stato `VICTORY` è coerente con la decisione: raggiungibile e
       documentato, oppure esplicitamente dichiarato dormiente con la modalità
       che lo attiverà.
-- [ ] Nessuna schermata terminale annuncia una vittoria che la modalità
-      corrente non può produrre.
-- [ ] Se la scelta introduce una condizione di vittoria, esiste uno smoke
-      deterministico che la raggiunge.
-- [ ] La decisione è registrata in questa card con data e motivazione.
+- [x] Nessuna schermata terminale annuncia una vittoria che la modalità
+      corrente non può produrre (`scripts/ui/end_screen.gd` non contiene
+      alcun testo specifico su `VICTORY`: nessuna falsa promessa da
+      correggere).
+- [x] Se la scelta introduce una condizione di vittoria, esiste uno smoke
+      deterministico che la raggiunge — non pertinente: la scelta (opzione 1)
+      non introduce una condizione di vittoria in Sopravvivenza.
+- [x] La decisione è registrata in questa card con data e motivazione.
 
 ## Ambito
 
@@ -98,6 +101,17 @@ Non toccare:
   proprietario, non un'implementazione: la domanda è nella sezione dedicata.
 - **Raccomandazione della review, non ancora decisione:** Survival come caccia
   al record, vittoria formale riservata a Difesa Grigliata.
+- **2026-09-07 — Decisione presa: opzione 1.** Le run di Sopravvivenza sono
+  endless: lo scopo è sopravvivere il più a lungo possibile, per ora senza
+  vittoria. `VICTORY` resta stato/UI dormiente, riservato a una futura
+  modalità con una condizione di vittoria propria (Difesa Grigliata). Nessun
+  cambiamento runtime necessario: il comportamento attuale
+  (`request_victory()` mai invocato in produzione, coerente con B33) già
+  corrisponde alla decisione. Aggiornati solo `docs/ui-ux-flow.md` e
+  `docs/prd.md` (§3.5) per dichiararlo come scelta esplicita invece che come
+  semplice osservazione dello stato attuale. Questa decisione sblocca anche
+  [PS-126](../4_to_test/PS-126-nessuna-scala-difficolta-oltre-5-minuti.md),
+  che dipendeva dalla stessa domanda.
 
 ## Documenti sincronizzati
 

@@ -3,7 +3,7 @@ id: PS-075
 titolo: Aggiungi un SFX alla morte dei nemici
 tipo: feat
 area: audio
-stato: PRONTO
+stato: SCARTATA
 priorita: media
 dipende_da: []
 origine:
@@ -87,6 +87,12 @@ Non toccare:
 
 ## Decisioni
 
+- **2026-09-07 — Scartata.** Il proprietario ha espresso dubbi sul fatto che
+  un SFX a ogni morte nemico, con centinaia di nemici a schermo, diventi
+  rumore di fondo fastidioso invece di un feedback leggibile. La card
+  prevedeva già un limite di frequenza/polifonia per mitigarlo, ma il
+  proprietario ha preferito non perseguire l'idea piuttosto che affidarsi a
+  quella mitigazione. Un ripensamento apre una nuova card.
 - **2026-09-02 — Distinto da `HIT`.** `HIT` resta il feedback dell'impatto;
   questo cue è specificamente il feedback della morte, altrimenti i due
   eventi restano indistinguibili all'orecchio.
