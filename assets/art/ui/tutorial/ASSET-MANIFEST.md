@@ -32,7 +32,7 @@ content is introduced.
 |---|---|---|
 | `generated/tutorial_objective.png` | Survive the horde | `1811E97686A759B0F9570386FD783AC440135D12BDA317A79549CCAF87C9ADB1` |
 | `generated/tutorial_movement.png` | Move and auto-fire | `2049839CF681C90D20A5604793C1063DB920067287CF7D8CBDE20EEC48F66914` |
-| `generated/tutorial_boss.png` | Read the Boss telegraph | `C83D23FCBB80F9C9E8512063CAE1EF26A6F9E6DF0020CEA69DF34A5E0E5C2347` |
+| `generated/tutorial_boss.png` *(removed, see PS-049 note below)* | Read the Boss telegraph | `C83D23FCBB80F9C9E8512063CAE1EF26A6F9E6DF0020CEA69DF34A5E0E5C2347` |
 
 The remaining B54 lessons intentionally reuse existing approved runtime icons:
 ability icons under `assets/art/icons/abilities/generated/`, upgrade icons under
@@ -42,7 +42,11 @@ ability icons under `assets/art/icons/abilities/generated/`, upgrade icons under
 ## PS-049 — `tutorial_ability_button.png`, `tutorial_pickups.png`, `tutorial_telegraphs.png`
 
 Replaces the three `fake_tutorial_*.png` placeholders wired by PS-048 (removed
-from `generated/`, never referenced again) with definitive illustrations. Each
+from `generated/`, never referenced again) with definitive illustrations.
+`tutorial_telegraphs.png` also replaced `tutorial_boss.png` (B54) as the Boss
+lesson's illustration; the older file was left on disk unreferenced until this
+audit removed it (`generated/tutorial_boss.png`, no `hd/` master ever existed
+for it). Each
 file is a **composite**, not a single AI generation: an ambient background
 generated with ImageGen (via Codex CLI's built-in `gpt-image` tool, MCP
 `imagegen` plugin), with the gameplay-accurate elements — the ones the

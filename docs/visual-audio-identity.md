@@ -160,7 +160,9 @@ File audio runtime: 14 SFX Kenney CC0
 mappati 1:1 sui cue di combattimento/interfaccia; `DODGE` usa
 `dodge.ogg`, un take del CC0 Swishes Sound Pack di artisticdude
 ([artisticdude_swishes/ASSET-MANIFEST.md](../assets/audio/third_party/artisticdude_swishes/ASSET-MANIFEST.md));
-musica di run `super_wreck_roadway_loop.ogg` (Umplix, CC0); musica menu
+musica di run `super_wreck_roadway_loop.ogg` (Umplix, CC0)
+([super_wreck_roadway_loop/ASSET-MANIFEST.md](../assets/audio/third_party/super_wreck_roadway_loop/ASSET-MANIFEST.md));
+musica menu
 `menu_music_loop.ogg` (wipics, CC0); musica Boss dedicata (PS-073)
 `boss_music_loop.mp3`, "Vilified" di Matthew Pablo, CC-BY 3.0 — l'unico asset
 audio del progetto con attribuzione obbligatoria invece che volontaria

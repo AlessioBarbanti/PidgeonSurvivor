@@ -42,7 +42,7 @@ func test_background_music_follows_run_state_transitions() -> void:
 		"B29 richiede la copia della licenza CC0."
 	)
 	assert_true(
-		FileAccess.file_exists("res://assets/audio/third_party/super_wreck_roadway_loop.MANIFEST.md"),
+		FileAccess.file_exists("res://assets/audio/third_party/super_wreck_roadway_loop/ASSET-MANIFEST.md"),
 		"B29 richiede il manifest di provenienza."
 	)
 
