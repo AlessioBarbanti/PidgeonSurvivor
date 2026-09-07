@@ -193,7 +193,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-089](./5_completed/PS-089-elimina-sovrapposizioni-tema-carne-powerup.md) | Elimina le sovrapposizioni fra il tema carne delle Specialità e il catalogo powerup ordinario | chore | arte | COMPLETATO | media | — |
 | [PS-090](./5_completed/PS-090-separa-generazione-integrazione-card-art.md) | Separa generazione asset e integrazione nel workflow delle card tipo art | chore | tooling | COMPLETATO | media | — |
 | [PS-091](./6_rejected/PS-091-genera-placeholder-powerup-nuove-statistiche.md) | Genera i placeholder icona per i powerup di eventuali nuove statistiche | art | arte | SCARTATA | bassa | PS-087, PS-090 |
-| [PS-092](./2_to_do/PS-092-nuova-icona-ravviva-la-brace.md) | Genera una nuova icona per Ravviva la Brace! (ex Bis di Salsiccia) | art | arte | PRONTO | bassa | — |
+| [PS-092](./4_to_test/PS-092-nuova-icona-ravviva-la-brace.md) | Genera una nuova icona per Ravviva la Brace! (ex Bis di Salsiccia) | art | arte | IN VERIFICA | bassa | — |
 | [PS-093](./4_to_test/PS-093-nuovi-assi-scarto-base-personaggi.md) | Introduci cinque nuovi assi di scarto base per personaggio | feat | gameplay | IN VERIFICA | media | PS-087 |
 | [PS-094](./4_to_test/PS-094-specialita-cariche-abilita-attiva.md) | Introduci una Specialità di Barb per cariche multiple dell'abilità attiva | feat | gameplay | IN VERIFICA | media | — |
 | [PS-095](./4_to_test/PS-095-audita-spawn-nemici-sempre-fuori-vista.md) | Audita e correggi lo spawn nemici che compare dentro l'area visibile | fix | gameplay | IN VERIFICA | media | — |

@@ -134,7 +134,7 @@ Non toccare:
   scartata: PS-087 non ha raccomandato un nuovo asse statistico, quindi
   PS-091 non ha mai prodotto asset — non invalida comunque l'osservazione
   sulla sua forma.)
-- **2026-09-04 — Anche [PS-092](../2_to_do/PS-092-nuova-icona-ravviva-la-brace.md)
+- **2026-09-04 — Anche [PS-092](../4_to_test/PS-092-nuova-icona-ravviva-la-brace.md)
   segue la nuova regola.** Aperta durante PS-089 per la nuova icona di
   `Ravviva la Brace!` (titolo corretto lo stesso giorno, era `Bis di
   Brace`): card `art` di sola generazione, senza criteri di wiring oltre

@@ -119,7 +119,7 @@ Non toccare:
   all'agente Game Art Designer secondo la regola di board — non generata
   dentro questa card.
 - **2026-09-04 — Confermato: l'icona ritrae letteralmente una salsiccia.**
-  Aperta [PS-092](../2_to_do/PS-092-nuova-icona-ravviva-la-brace.md) per la
+  Aperta [PS-092](../4_to_test/PS-092-nuova-icona-ravviva-la-brace.md) per la
   nuova icona, con un possibile prompt di generazione già proposto in nota;
   resta `PRONTO` in `2_to_do/`, non implementata in questa sessione.
 - **2026-09-04 — Primo tentativo di titolo: `Bis di Brace`.** Restava nel

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d3tfjavt5ka0m"
-path="res://.godot/imported/bis_di_salsiccia.png-693d95048b8a3e90deeebe6fa9d6fff0.ctex"
+uid="uid://ddppm30xfy2ok"
+path="res://.godot/imported/ravviva_la_brace.png-ae8ef26c82514fd971a4c0f92cf1f66a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/icons/upgrades/generated/bis_di_salsiccia.png"
-dest_files=["res://.godot/imported/bis_di_salsiccia.png-693d95048b8a3e90deeebe6fa9d6fff0.ctex"]
+source_file="res://assets/art/icons/upgrades/generated/ravviva_la_brace.png"
+dest_files=["res://.godot/imported/ravviva_la_brace.png-ae8ef26c82514fd971a4c0f92cf1f66a.ctex"]
 
 [params]
 

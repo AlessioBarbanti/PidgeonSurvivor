@@ -22,7 +22,6 @@
 | Via dalla Griglia! | `hd/upgrade_via_dalla_griglia.png` (`1536×1024`) | `generated/via_dalla_griglia.png` (`128×128`) | `34B1BA47CF7A77420BB8D234E1EDFA90CE515FAD2C971078E8C16BC42B816A7F` | `5E0DFAC171B055D44585369710AC062DCC2386D488C1BC3FC41BCA6759E30A9D` |
 | Pirofila Rinforzata | `hd/upgrade_pirofila_rinforzata.png` (`1536×1024`) | `generated/pirofila_rinforzata.png` (`128×128`) | `BB901AE4F937B915000CF84B55D95ACCCA1C384EDE83B1BDEC4AA6FDECC267FF` | `7CAFFC2C6B5508AB15188AF475EA7AFE24A81B2E696189D815000EB312CA7C0B` |
 | Il condimento di Barb | `hd/upgrade_condimento_di_barb.png` (`1254×1254`) | `generated/condimento_di_barb.png` (`128×128`) | `D44E4CD8BCDECBAD002CADC75709AB0812607FBC453BE7BB045FB30D055FA3C0` | `9ED19225F4EA8F431BE4853E1193F71CE95FA41D1850F76245B2A958D2611E26` |
-| Bis di Salsiccia | `hd/upgrade_bis_di_salsiccia.png` (`1254×1254`) | `generated/bis_di_salsiccia.png` (`128×128`) | `5DF4E4F86A2261AC344508820CBEBDBCAB2F8187E85C1286C5B2BD850E9D92DF` | `44BCF523C7B388C3555E7BA09E416A216017E517DADF957D20F598C8044E88F4` |
 
 ## B41 — Forme d'attacco con tagli di carne
 
@@ -368,3 +367,59 @@ due silhouette non si sovrappongono più nemmeno a colpo d'occhio a 128px.
 | Carta | Master HD escluso | Derivato runtime | SHA-256 master | SHA-256 runtime |
 |---|---|---|---|---|
 | Pancetta | `hd/upgrade_speciality_pancetta.png` (`1254×1254`) | `generated/ability_charge_stacking.png` (`128×128`) | `401612A5014BEB2C7BDE951E5B3C3680F75875B306EEE656FC496DE7981CD4BC` | `313707D888E4701E151537D7BE484722B5E9247E1BDDE66BDCA8BC0A1BF71962` |
+
+## PS-092 — Ravviva la Brace!
+
+- Data produzione e integrazione: 7 settembre 2026.
+- Origine: OpenAI ImageGen built-in. Autore: progetto IL GIOCO con assistenza
+  OpenAI ImageGen; licenza: Licenza del progetto. Nessuna immagine usata come
+  edit target; `generated/a_tutta_brace.png`,
+  `generated/meat_fork_damage.png`, `generated/pinza_lunga.png` e
+  `generated/cooking_point_crit.png` sono stati ispezionati soltanto per
+  ricostruire palette, peso del contorno, densità e silhouette da non
+  duplicare.
+- Direzione: un unico braciere circolare compatto con carboni che passano da
+  scuri a incandescenti. Una sola scia curva organica di scintille termina in
+  un flare sopra la brace viva e comunica «pronta di nuovo più rapidamente»
+  senza usare testo, numeri, orologi o una freccia UI. La composizione resta
+  distinta dalla griglia affollata e dal burst caotico di `A Tutta Brace!`.
+- Prompt effettivo: "Use case: stylized-concept. Asset type: square HD master
+  for a Pidgeon Survivor arcade upgrade-card icon. Primary request: create the
+  definitive icon for the ordinary upgrade ‘Ravviva la Brace!’, communicating
+  that the active ability recharges and becomes ready again faster.
+  Scene/backdrop: genuinely transparent background with real alpha; no baked
+  checkerboard, no colored square, no environment. Subject: ONE compact
+  centered circular charcoal brazier viewed at a slight three-quarter angle.
+  Inside it, several chunky dark charcoal briquettes visibly reignite from
+  left to right: some remain near-black with dull red cracks while the leading
+  briquettes glow bright orange-gold. Wrap one short curved comet-like trail of
+  amber sparks around the brazier, beginning dim and ending in a crisp bright
+  flare directly above the newly glowing coals; this curved progression is the
+  only visual cue for ‘ready again faster’. Keep the trail organic and made of
+  sparks/embers, not a clean UI arrow. Style/medium: handcrafted chunky
+  pixel-art arcade icon matching an established barbecue upgrade family;
+  thick dark plum-brown outline, restrained visible pixel clusters, flat
+  cel-shading, no soft gradients, warm charred umber, brick red, roasted
+  orange and golden amber palette. Composition/framing: single compact visual
+  nucleus, centered, uniform generous transparent margin, simple silhouette
+  that remains immediately readable at 128x128 and 48x48. The brazier rim and
+  the dark-to-bright coal progression must survive downscaling. Constraints:
+  ordinary grill-master catalog icon, not a speciality; no meat of any kind.
+  Must be visually distinct from a crowded grill or a chaotic full flame
+  explosion. No text, letters, numbers, badges, circular UI frame, clock,
+  stopwatch, lightning bolt, plate, food, sausage, steak, chicken, person,
+  pigeon, firearm, watermark. No extra detached objects. Real transparent
+  pixels at all four corners."
+- Trasformazione: `tools/process-upgrade-icon.ps1`, bounds alpha con soglia
+  `8`, padding quadrato `12`, riduzione nearest-neighbor a `128×128` RGBA.
+- Art review: master e derivato hanno alfa reale; gli angoli del master hanno
+  alfa `0,0,1,0` (tutti sotto la soglia visibile `8`) e quelli del derivato
+  runtime `0,0,0,0`. Il braciere, la progressione dei carboni e il flare
+  restano distinti nel controllo nearest-neighbor a `48×48`. Nessun soggetto
+  di carne o piccione.
+- Runtime: `ability_cooldown.tres` referenzia soltanto il derivato; il master
+  resta escluso da import ed export tramite `hd/.gdignore` e i tre preset.
+
+| Carta | Master HD escluso | Derivato runtime | SHA-256 master | SHA-256 runtime |
+|---|---|---|---|---|
+| Ravviva la Brace! | `hd/upgrade_ravviva_la_brace.png` (`1254×1254`) | `generated/ravviva_la_brace.png` (`128×128`) | `42DA5E5DB0A0C0E1ED4DC0E02E2847E24DA632CA8715DF7E75997896650F9531` | `C1F2E924F43E2CC727D7E1AD5DD535CB9A7E7253441EB774D2D96ADA5F61C3DF` |

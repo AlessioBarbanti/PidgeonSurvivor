@@ -3,12 +3,12 @@ id: PS-092
 titolo: Genera una nuova icona per Ravviva la Brace! (ex Bis di Salsiccia)
 tipo: art
 area: arte
-stato: PRONTO
+stato: IN VERIFICA
 priorita: bassa
 dipende_da: []
 origine: PS-089
 creato: 2026-09-04
-aggiornato: 2026-09-04
+aggiornato: 2026-09-07
 ---
 
 # PS-092 — Genera una nuova icona per Ravviva la Brace! (ex Bis di Salsiccia)
@@ -19,13 +19,12 @@ aggiornato: 2026-09-04
 rinominato `ability_cooldown` (`data/upgrades/ability_cooldown.tres`) da
 `Bis di Salsiccia` a `Ravviva la Brace!`, perché un pezzo di carne è ora un
 soggetto riservato alle otto Specialità di Barb
-([PS-078](../3_in_sprint/PS-078-tematizza-catalogo-specialita-barb.md)). Quella
+([PS-078](../4_to_test/PS-078-tematizza-catalogo-specialita-barb.md)). Quella
 card ha toccato solo `title`/`description`/`effect_summary`: l'icona runtime
-resta `assets/art/icons/upgrades/generated/bis_di_salsiccia.png`, derivata da
-`assets/art/icons/upgrades/hd/upgrade_bis_di_salsiccia.png`, e ritrae
-letteralmente una salsiccia — un'incoerenza fra testo e immagine che PS-089
-ha dichiarato esplicitamente fuori dal proprio ambito (generare arte non
-richiesta non è compito di una card `chore`).
+era ancora `assets/art/icons/upgrades/generated/bis_di_salsiccia.png`, derivata
+da `assets/art/icons/upgrades/hd/upgrade_bis_di_salsiccia.png`, e ritraeva
+letteralmente una salsiccia — l'incoerenza fra testo e immagine che questa card
+ha ora sostituito.
 
 ## Comportamento atteso
 
@@ -37,20 +36,20 @@ carne.
 
 ## Criteri di accettazione
 
-- [ ] Nuovo master HD in `assets/art/icons/upgrades/hd/` e derivato
+- [x] Nuovo master HD in `assets/art/icons/upgrades/hd/` e derivato
       `128×128` in `assets/art/icons/upgrades/generated/` che sostituiscono
       `upgrade_bis_di_salsiccia.png`/`bis_di_salsiccia.png`, con riga
       aggiornata in `assets/art/icons/upgrades/ASSET-MANIFEST.md` (origine,
       autore/licenza, trasformazioni, hash SHA-256).
-- [ ] Il soggetto raffigurato non è un taglio, un pezzo o un piatto di carne:
+- [x] Il soggetto raffigurato non è un taglio, un pezzo o un piatto di carne:
       resta nel registro utensili/brace/cottura già stabilito per il
       catalogo ordinario, mai carne (riservata alle Specialità, PS-078).
-- [ ] L'icona comunica a colpo d'occhio "ricarica più rapida dell'abilità
+- [x] L'icona comunica a colpo d'occhio "ricarica più rapida dell'abilità
       attiva" (es. brace che si riaccende, un secondo giro di cottura),
       leggibile a dimensione carta reale.
-- [ ] Nessun piccione come soggetto principale, coerente con la direzione
+- [x] Nessun piccione come soggetto principale, coerente con la direzione
       visiva dichiarata in `docs/powerup-catalog.md`.
-- [ ] Nessuna modifica a `title`, `description`, `effect_summary`,
+- [x] Nessuna modifica a `title`, `description`, `effect_summary`,
       `effect_id`, `effect_parameters`, `weight`, `max_rank`: questa card
       cambia solo l'icona.
 
@@ -73,7 +72,7 @@ Card `tipo: art` che richiede una nuova generazione: per contratto di board
 riferimento `icon = ExtResource(...)` in `ability_cooldown.tres` verso il
 nuovo derivato è lo scambio di un `ext_resource` già esistente sulla stessa
 riga, non un nuovo wiring: resta dentro questa card invece di aprire una
-card di integrazione separata (vedi [PS-090](../3_in_sprint/PS-090-separa-generazione-integrazione-card-art.md),
+card di integrazione separata (vedi [PS-090](../5_completed/PS-090-separa-generazione-integrazione-card-art.md),
 che comunque non era ancora chiusa quando questa card è stata scritta).
 
 ## Verifica
@@ -84,6 +83,11 @@ che comunque non era ancora chiusa quando questa card è stata scritta).
   per un cambio di solo asset.
 - Profilo minimo prima della chiusura: `Focused` sulla suite upgrade
   esistente, per confermare che il nuovo riferimento icona non rompa nulla.
+- `run-milestone-checks.ps1 -Milestone PS-092 -Profile Focused
+  -FocusedSmoke tests/unit/test_powerup_first_wave.gd -RefreshEditor` → PASS:
+  refresh editor riuscito, GUT `1/1`, JUnit `failures="0"`, 38 assert e nessun
+  `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL` o `CONTRACT_FAIL`. Evidenze
+  in `%LOCALAPPDATA%/Temp/il-gioco-verification/20260907-235713-PS-092/`.
 
 ## Gate manuali
 
@@ -96,6 +100,33 @@ che comunque non era ancora chiusa quando questa card è stata scritta).
       icone del catalogo ordinario
 
 ## Decisioni
+
+- **2026-09-07 — Produzione e art review concluse.** OpenAI ImageGen built-in
+  ha prodotto il master RGBA `1254×1254`; il derivato `128×128` è stato creato
+  con `tools/process-upgrade-icon.ps1` (soglia alfa `8`, padding `12`,
+  nearest-neighbor). Master e runtime hanno alfa reale: gli angoli del master
+  sono `0,0,1,0`, tutti sotto la soglia visibile `8`, e quelli del derivato
+  sono `0,0,0,0`. Nel controllo isolato a `128×128` e `48×48` restano leggibili
+  il braciere, la progressione scuro→incandescente e il flare; il candidato è
+  stato accettato senza rigenerazione. Prompt, riferimenti osservati, licenza,
+  trasformazione e SHA-256 sono nel manifest locale.
+- **2026-09-07 — Contratti asset verificati.** Il controllo mirato ha prodotto
+  `PS092_ART_ASSET_CHECK` con dimensioni corrette, hash manifest corrispondenti,
+  nuovo riferimento runtime valido e vecchi asset rimossi. I tre preset
+  contengono ancora l'esclusione `assets/art/icons/upgrades/hd/**`.
+- **2026-09-07 — Sostituzione, non accumulo storico nel runtime.** I vecchi
+  file `upgrade_bis_di_salsiccia.png` e `bis_di_salsiccia.png` sono rimossi;
+  `ability_cooldown.tres` cambia esclusivamente il path dell'`ExtResource`
+  icona in `ravviva_la_brace.png`. Gli altri campi restano invariati.
+
+- **2026-09-07 — Direzione di produzione.** L'icona usa un unico braciere
+  circolare compatto con carboni scuri che tornano incandescenti e una scia
+  curva di riaccensione integrata nelle scintille. Outline scuro spesso,
+  cel-shading piatto e palette ambra/arancio la mantengono nella famiglia
+  upgrade; la composizione a un solo nucleo evita di duplicare la griglia
+  affollata e il burst caotico di `A Tutta Brace!`. Il soggetto resta senza
+  carne, testo, numeri o piccioni e deve reggere anche nel controllo a
+  `48×48`.
 
 - **2026-09-04 — Aperta da PS-089, non generata dentro quella card.** PS-089
   è una card `chore` di rinomina testuale; generare una nuova icona è lavoro
@@ -114,23 +145,13 @@ che comunque non era ancora chiusa quando questa card è stata scritta).
 
 ## Documenti sincronizzati
 
-- [ ] `assets/art/icons/upgrades/ASSET-MANIFEST.md`: nuova riga per il
+- [x] `assets/art/icons/upgrades/ASSET-MANIFEST.md`: nuova sezione e riga per il
       derivato che sostituisce `bis_di_salsiccia`.
+- [x] `docs/powerup-catalog.md`: rimossa la nota ormai superata sulla
+      salsiccia runtime e registrato il soggetto definitivo.
 
 ## Note
 
-Possibile prompt di generazione (da adattare in fase di implementazione
-contro lo stile pixel-art già stabilito nel resto del catalogo, vedi le
-icone vicine in `assets/art/icons/upgrades/generated/`):
-
-> Pixel-art icon, 128×128, game upgrade card icon for a backyard-grill
-> survivor game. Subject: a pair of glowing charcoal embers/briquettes with
-> small motion lines suggesting them flaring up a second time, as if
-> quickly reignited — communicates "ability cooldown reduced, ready again
-> faster". Warm orange-red glow against dark charcoal, small spark
-> particles. No sausage, no meat, no cut of any kind. No pigeons. Clean
-> readable silhouette at small size, thick outline, flat cel-shaded pixel
-> art matching a barbecue/grill-master visual theme (tongs, seasoning,
-> roasting trays, embers — utensils and cooking, not food). Centered
-> composition, transparent background.
-
+La produzione automatica è completa. Restano aperti l'accettazione percettiva
+del proprietario nel layout reale e i gate Windows, APK e Pixel 9 dichiarati
+sopra; per questo la card resta `IN VERIFICA`.

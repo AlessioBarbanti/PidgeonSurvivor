@@ -151,11 +151,11 @@ comunicare rapidità senza introdurre razzi, motori o tecnologia fuori tema.
 
 Rinominata da `Bis di Salsiccia` il 4 settembre 2026 (PS-089, poi corretta
 in `Ravviva la Brace!` lo stesso giorno su richiesta del proprietario): un
-pezzo di carne è ora un soggetto riservato alle Specialità di Barb. L'icona
-runtime attuale (`bis_di_salsiccia.png`) ritrae ancora letteralmente una
-salsiccia e resta fuori dall'ambito di questa rinomina testuale; una nuova
-icona è materia di una card `tipo: art` dedicata (vedi Decisioni di PS-089,
-card PS-092).
+pezzo di carne è ora un soggetto riservato alle Specialità di Barb. PS-092 ha
+sostituito la vecchia salsiccia con `ravviva_la_brace.png`: un braciere i cui
+carboni passano da scuri a incandescenti, con una scia curva di scintille che
+comunica la riaccensione rapida senza invadere il registro di carne riservato
+alle Specialità.
 
 **Effetto proposto:** `active_ability_cooldown_multiplier`  
 **Ruolo:** frequenza d'uso dell'abilità attiva
