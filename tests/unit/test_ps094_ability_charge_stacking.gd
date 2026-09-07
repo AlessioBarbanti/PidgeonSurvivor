@@ -70,6 +70,12 @@ func test_ability_charge_stacking() -> void:
 	assert_true(ability.try_activate(), "La carica unica deve attivarsi.")
 	assert_eq(ability.get_available_charges(), 0, "L'uso deve consumare l'unica carica.")
 	assert_false(ability.try_activate(), "Senza cariche extra un secondo uso immediato deve fallire.")
+	if button != null:
+		assert_true(button.has_circular_cooldown(), "A zero cariche il pulsante deve mostrare il cooldown.")
+		assert_false(
+			button.is_recharging_extra_capacity(),
+			"PS-119: a zero cariche deve restare la maschera piena, non il solo contorno."
+		)
 	ability._process(base_cooldown + 0.01)
 	assert_eq(ability.get_available_charges(), 1, "La ricarica singola deve restituire l'unica carica.")
 	assert_true(ability.is_cooldown_ready(), "Dopo la ricarica l'abilità deve tornare pronta.")
@@ -114,6 +120,15 @@ func test_ability_charge_stacking() -> void:
 		"Solo la prima carica (partita prima) deve essere già tornata disponibile."
 	)
 	assert_true(ability.is_cooldown_ready(), "Con una carica pronta il pulsante deve tornare attivabile.")
+	if button != null:
+		assert_true(
+			button.is_recharging_extra_capacity(),
+			"PS-119: con una carica pronta e un'altra in ricarica deve mostrarsi solo il contorno."
+		)
+		assert_false(
+			button.disabled,
+			"PS-119: con almeno una carica disponibile il pulsante deve restare premibile."
+		)
 	ability._process(half_gap)
 	assert_eq(ability.get_available_charges(), 2, "Anche la seconda carica deve tornare, senza essere rimasta bloccata.")
 
@@ -143,6 +158,109 @@ func test_ability_charge_stacking() -> void:
 	assert_eq(ability.get_available_charges(), 1, "Il restart deve ripartire con l'unica carica di base disponibile.")
 
 	print("ABILITY_CHARGE_STACKING_SMOKE_OK")
+
+
+## PS-119: salire di rango (più capacità di cariche) mentre non si è a
+## cariche piene apriva una carica "fantasma" senza alcun timer di ricarica
+## proprio: le cariche disponibili non potevano mai superare il valore che
+## avevano nel momento esatto dello sblocco/rango, per tutto il resto della
+## run. Riproduce esattamente lo scenario: consuma una carica, lasciala a
+## metà ricarica, sali di rango due volte (una senza variare il tetto, una
+## che lo alza), e verifica che la nuova capacità arrivi comunque a piena
+## ricarica.
+func test_charge_capacity_growth_while_recharging_still_reaches_new_maximum() -> void:
+	var movement_slice := await instantiate_movement_slice()
+
+	var controller := movement_slice.get_run_controller() as RunController
+	var experience := movement_slice.get_experience_system() as ExperienceSystem
+	var service := movement_slice.get_upgrade_service() as UpgradeService
+	var catalog := movement_slice.get_upgrade_registry() as UpgradeRegistry
+	var effects := movement_slice.get_upgrade_effect_registry() as UpgradeEffectRegistry
+	var player := movement_slice.get_player() as Player
+	var spawner := movement_slice.get_enemy_spawner() as EnemySpawner
+	var weapon := movement_slice.get_weapon_controller() as WeaponController
+	assert_true(
+		controller != null and experience != null and service != null and catalog != null
+		and effects != null and player != null and spawner != null and weapon != null,
+		"PS-119 richiede la scena gameplay composta con i registry upgrade."
+	)
+	if (
+		controller == null
+		or experience == null
+		or service == null
+		or catalog == null
+		or effects == null
+		or player == null
+		or spawner == null
+		or weapon == null
+	):
+		return
+
+	controller.set_process(false)
+	spawner.set_process(false)
+	player.set_physics_process(false)
+	weapon.set_process(false)
+	effects.set_process(false)
+	var ability := player.get_ability_controller()
+	assert_not_null(ability, "PS-119 richiede l'AbilityController del Player.")
+	if ability == null:
+		return
+	ability.set_process(false)
+
+	var base_cooldown := ability.get_activation_definition().cooldown_seconds
+
+	catalog.definitions = [CHARGE_STACKING, SWIFT_STEPS, RAPID_FIRE, WIDE_MAGNET, MEAT_FORK_DAMAGE]
+	assert_true(catalog.rebuild_registry(), "Il catalogo isolato PS-119 deve essere valido.")
+	service.reset_for_run(controller.get_seed())
+	assert_true(effects.recalculate_effects(), "Il registry deve accettare Bis alla Griglia.")
+
+	service.queue_barb_reward()
+	var barb_offer := service.get_current_barb_offer_ids()
+	assert_true(CHARGE_STACKING.id in barb_offer, "Bis alla Griglia deve comparire nell'offerta Boss isolata.")
+	assert_true(service.select_barb_speciality(CHARGE_STACKING.id), "Lo sblocco Boss deve accettare la carta.")
+	assert_eq(ability.get_max_charges(), 2, "Il rango 1 deve dare due cariche.")
+	ability._process(9999.0)
+	assert_eq(ability.get_available_charges(), 2, "La fixture deve poter portare le cariche a piena capacità.")
+
+	# Consuma una carica e lasciala a meta' ricarica, non piena, proprio nel
+	# momento in cui si sale di rango.
+	assert_true(ability.try_activate(), "La fixture deve poter consumare una carica prima del rango successivo.")
+	assert_eq(ability.get_available_charges(), 1, "Il consumo deve lasciare esattamente una carica disponibile.")
+	ability._process(base_cooldown * 0.5)
+
+	assert_true(
+		_grant_and_select(experience, service, CHARGE_STACKING.id),
+		"Bis alla Griglia deve essere selezionabile al rango 2."
+	)
+	assert_eq(service.get_rank(CHARGE_STACKING.id), 2, "Il rango deve avanzare a 2.")
+	assert_eq(ability.get_max_charges(), 2, "Il rango 2 non deve cambiare il tetto di cariche (dati: 2, 2, 3, 3, 4).")
+	assert_eq(
+		ability.get_available_charges(), 1,
+		"Salire di rango senza cambiare il tetto non deve alterare le cariche disponibili."
+	)
+
+	assert_true(
+		_grant_and_select(experience, service, CHARGE_STACKING.id),
+		"Bis alla Griglia deve essere selezionabile al rango 3."
+	)
+	assert_eq(service.get_rank(CHARGE_STACKING.id), 3, "Il rango deve avanzare a 3.")
+	assert_eq(ability.get_max_charges(), 3, "Il rango 3 deve alzare il tetto a tre cariche.")
+	assert_eq(
+		ability.get_available_charges(), 1,
+		"Salire di rango senza essere a cariche piene non deve regalare né sottrarre cariche disponibili."
+	)
+
+	# La capacità aggiunta al rango 3 deve avere un proprio timer di ricarica:
+	# senza il fix restava bloccata per sempre al valore che aveva al momento
+	# del rango, anche aspettando indefinitamente.
+	ability._process(9999.0)
+	assert_eq(
+		ability.get_available_charges(), 3,
+		"PS-119: la capacità aggiunta mentre non si era a cariche piene deve comunque ricaricarsi fino al nuovo tetto."
+	)
+
+	controller.prepare_restart()
+	print("ABILITY_CHARGE_CAPACITY_GROWTH_SMOKE_OK")
 
 
 func _assert_rank_configuration(ability: AbilityController, base_cooldown: float, rank: int) -> void:

@@ -261,19 +261,33 @@ func get_upgrade_cooldown_multiplier() -> float:
 	return _upgrade_cooldown_multiplier
 
 
-## PS-094: configura il modello a cariche multiple della Specialità di Barb.
-## Le cariche già in ricarica non cambiano durata a ritroso: la nuova
+## PS-094/PS-119: configura il modello a cariche multiple della Specialità di
+## Barb. Le cariche già in ricarica non cambiano durata a ritroso: la nuova
 ## velocità vale solo per i consumi successivi, come già fa il moltiplicatore
 ## di ricarica ordinario. Se il personaggio era a cariche piene, il nuovo
 ## tetto viene concesso subito pieno; se era a metà ricarica, il tetto sale
-## ma la carica in corso continua senza scorciatoie.
+## ma la carica in corso continua senza scorciatoie — e ogni nuovo slot di
+## capacità aggiunto (quando non si era pieni) apre un proprio timer di
+## ricarica, altrimenti resterebbe una carica "fantasma" che nessun codice
+## farebbe mai avanzare: senza questo, le cariche disponibili non potevano
+## mai superare il valore che avevano nel momento esatto dello sblocco/rango.
 func set_charge_configuration(max_charges: int, cooldown_multiplier: float) -> bool:
 	if max_charges < 1 or not is_finite(cooldown_multiplier) or cooldown_multiplier <= 0.0:
 		return false
 	var was_full := _available_charges >= _max_charges
+	var previous_max_charges := _max_charges
 	_max_charges = max_charges
 	_charge_cooldown_multiplier = cooldown_multiplier
-	_available_charges = _max_charges if was_full else mini(_available_charges, _max_charges)
+	if was_full:
+		_available_charges = _max_charges
+	else:
+		_available_charges = mini(_available_charges, _max_charges)
+		var added_capacity := max_charges - previous_max_charges
+		if added_capacity > 0:
+			var charge_cooldown_total := _resolve_ready_cooldown_total()
+			for _new_slot in added_capacity:
+				_charge_timer_remaining.append(charge_cooldown_total)
+				_charge_timer_total.append(charge_cooldown_total)
 	charges_changed.emit(_available_charges, _max_charges)
 	return true
 

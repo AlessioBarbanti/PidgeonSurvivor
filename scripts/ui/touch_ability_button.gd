@@ -19,6 +19,13 @@ const CHARGE_COUNT_FONT_SIZE := 30
 const CHARGE_COUNT_INSET := 8.0
 const CHARGE_COUNT_COLOR := Palette.GOLD
 const CHARGE_COUNT_SHADOW_COLOR := Color(0.02, 0.024, 0.043, 0.9)
+## PS-119: quando è disponibile almeno una carica ma un'altra sta ancora
+## ricaricando in background, l'abilità resta lanciabile: la maschera scura +
+## conto alla rovescia (sotto) deve restare riservata al solo caso "zero
+## cariche, non posso lanciare". Qui si mostra solo un contorno sottile, senza
+## coprire l'icona né bloccarne la lettura.
+const CHARGING_OUTLINE_COLOR := Palette.CYAN
+const CHARGING_OUTLINE_BACKDROP_COLOR := Color(1.0, 1.0, 1.0, 0.16)
 
 var _direct_touch_sequence_active := false
 var _cooldown_remaining := 0.0
@@ -110,13 +117,20 @@ func is_ready_visual() -> bool:
 	return _action_available and not has_circular_cooldown()
 
 
+## PS-119: vero solo quando l'abilità è lanciabile adesso (>=1 carica) ma
+## un'altra carica sta ancora ricaricando in background — lo stato che deve
+## mostrare il solo contorno, non la maschera scura di blocco.
+func is_recharging_extra_capacity() -> bool:
+	return has_circular_cooldown() and _available_charges > 0
+
+
 func _draw() -> void:
 	var radius := maxf(minf(size.x, size.y) * 0.5 - 4.0, 0.0)
 	if radius <= 0.0:
 		return
 	var center := size * 0.5
 	var cooldown_fraction := get_cooldown_fraction()
-	if cooldown_fraction > 0.0:
+	if cooldown_fraction > 0.0 and _available_charges <= 0:
 		_draw_cooldown_sector(center, radius, cooldown_fraction)
 		draw_arc(
 			center,
@@ -129,6 +143,8 @@ func _draw() -> void:
 			true
 		)
 		_draw_cooldown_text(center)
+	elif cooldown_fraction > 0.0 and _available_charges > 0:
+		_draw_recharge_outline(center, radius, cooldown_fraction)
 	elif _action_available:
 		draw_arc(
 			center,
@@ -154,6 +170,21 @@ func _draw_cooldown_sector(center: Vector2, radius: float, fraction: float) -> v
 		var angle := -PI * 0.5 + TAU * fraction * progress
 		points.append(center + Vector2.from_angle(angle) * radius)
 	draw_colored_polygon(points, COOLDOWN_OVERLAY_COLOR)
+
+
+## PS-119: stesso senso di avanzamento di _draw_cooldown_sector (l'arco si
+## restringe verso lo zero mano a mano che la ricarica avanza), ma come solo
+## contorno sottile su un backdrop quasi invisibile, cosi' l'icona resta
+## interamente leggibile e il pulsante resta chiaramente attivabile.
+func _draw_recharge_outline(center: Vector2, radius: float, fraction: float) -> void:
+	draw_arc(
+		center, radius, -PI * 0.5, PI * 1.5, RADIAL_SEGMENTS, CHARGING_OUTLINE_BACKDROP_COLOR, 2.0, true
+	)
+	if fraction > 0.001:
+		draw_arc(
+			center, radius, -PI * 0.5, -PI * 0.5 + TAU * fraction, RADIAL_SEGMENTS,
+			CHARGING_OUTLINE_COLOR, 3.0, true
+		)
 
 
 func _draw_cooldown_text(center: Vector2) -> void:
