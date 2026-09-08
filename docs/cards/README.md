@@ -231,3 +231,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-127](./4_to_test/PS-127-piccione-malvagio-boss-raro-e-piu-difficile-degli-evil.md) | Rendi il Piccione Malvagio un boss raro e più difficile di ogni Evil | feat | gameplay | IN VERIFICA | alta | — |
 | [PS-128](./5_completed/PS-128-genera-ritratto-definitivo-piccione-malvagio.md) | Genera un ritratto definitivo per il Piccione Malvagio | art | arte | COMPLETATO | media | — |
 | [PS-129](./5_completed/PS-129-integra-ritratto-piccione-malvagio-boss-intro.md) | Integra il ritratto definitivo del Piccione Malvagio nella Boss intro | fix | UI | COMPLETATO | media | PS-128 |
+| [PS-130](./2_to_do/PS-130-rigenera-otto-icone-passive-cast.md) | Rigenera come candidati le otto icone passive del cast | art | arte | PRONTO | media | PS-105 |
