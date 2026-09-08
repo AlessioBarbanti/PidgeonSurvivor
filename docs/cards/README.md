@@ -232,3 +232,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-128](./5_completed/PS-128-genera-ritratto-definitivo-piccione-malvagio.md) | Genera un ritratto definitivo per il Piccione Malvagio | art | arte | COMPLETATO | media | — |
 | [PS-129](./5_completed/PS-129-integra-ritratto-piccione-malvagio-boss-intro.md) | Integra il ritratto definitivo del Piccione Malvagio nella Boss intro | fix | UI | COMPLETATO | media | PS-128 |
 | [PS-130](./1_idea/PS-130-rigenera-otto-icone-passive-cast.md) | Rigenera come candidati le otto icone passive del cast | art | arte | DA DEFINIRE | media | PS-105 |
+| [PS-132](./2_to_do/PS-132-derivazione-sprite-sfarina-alea-e-zat.md) | Correggi la derivazione degli sprite di gameplay che sfarina Alea e Zat | fix | arte | PRONTO | media | PS-116 |
