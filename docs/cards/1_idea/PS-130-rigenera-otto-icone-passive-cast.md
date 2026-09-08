@@ -3,7 +3,7 @@ id: PS-130
 titolo: Rigenera come candidati le otto icone passive del cast
 tipo: art
 area: arte
-stato: PRONTO
+stato: DA DEFINIRE
 priorita: media
 dipende_da: [PS-105]
 origine:
@@ -30,6 +30,13 @@ In parallelo, `alea_eagle_never_misses` è tematicamente disallineata: la
 passiva di Alea è passata da "L'Aquila Non Sbaglia Mai" a "Due Dita e Parto"
 (tema vino/sobrietà, [PS-105](../4_to_test/PS-105-nuova-passiva-alea-due-dita-e-parto.md)),
 e l'aquila non comunica più nulla di pertinente.
+
+**Card parcheggiata il 2026-09-08** (vedi Decisioni): il proprietario l'ha
+riportata a `DA DEFINIRE` e ha estratto da qui il solo caso Aleo, che passa a
+[PS-131](../2_to_do/PS-131-normalizza-icona-passiva-aleo.md) con una direzione
+**opposta** a quella scritta più sotto. Il resto della card resta come
+redatto, ma non è più eseguibile così com'è finché il proprietario non
+risponde alla domanda aperta.
 
 Il proprietario ha deciso di andare oltre la sola correzione mirata: vuole
 rigenerare tutte e otto le icone come candidati da confrontare contro le
@@ -203,6 +210,26 @@ Non toccare:
 
 ## Decisioni
 
+- **2026-09-08 — Card riportata a `DA DEFINIRE` e spostata in `1_idea`.**
+  Decisione del proprietario. Il giro completo sulle otto icone non è più
+  lavoro immediato: resta un'idea da riprendere, non una card pescabile.
+- **2026-09-08 — Il caso Aleo esce da qui e cambia direzione.** La richiesta
+  successiva del proprietario («normalizza l'icona della passiva di Aleo allo
+  stile delle altre») **contraddice** il criterio "Aleo — stessa composizione
+  a split, bar alta" scritto in questa card: là il candidato doveva mantenere
+  lo split caldo/freddo come eccezione già conforme, qui si chiede invece di
+  portarlo nella famiglia degli altri sette. Il caso Aleo è quindi estratto in
+  [PS-131](../2_to_do/PS-131-normalizza-icona-passiva-aleo.md), che
+  **sostituisce** il blocco di criteri "Aleo" di questa card. Se PS-130 venisse
+  ripresa, quel blocco va riscritto o rimosso, non eseguito.
+- **Domanda aperta che sblocca la card:** una volta chiusa PS-131, il
+  proprietario vuole ancora rigenerare come candidati anche le altre sette
+  icone (Bea/Lollo/Migi per la violazione accertata della regola del ciano,
+  Magno/Marghe/Zat come ridipintura libera, Alea per il cambio di soggetto a
+  tema vino), o l'unica icona che gli dava davvero fastidio era Aleo e il resto
+  del set resta com'è? In alternativa: limitare il giro alle sole tre in
+  violazione (Bea, Lollo, Migi) più Alea, che è tematicamente disallineata
+  dopo PS-105, e lasciare stare Magno/Marghe/Zat che sono già conformi.
 - **2026-09-08 — Rigenerazione completa delle otto icone, non solo delle tre
   in violazione.** Il proprietario ha confermato di voler confrontare
   vecchio e nuovo su tutto il set, non solo su Bea/Lollo/Migi, con
