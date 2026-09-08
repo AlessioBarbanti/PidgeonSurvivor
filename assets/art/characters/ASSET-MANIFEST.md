@@ -256,6 +256,41 @@ Alea e Aleo hanno richiesto un passaggio correttivo `background-extraction`:
 rimuovere soltanto il checkerboard chiaro incorporato, preservando soggetto,
 pixel-art, colori, effetti e inquadratura, e produrre alfa reale senza ridisegno.
 
+### Correzione Evil Magno (PS-135, 8 settembre 2026)
+
+Il master Evil di Magno è stato corretto tramite OpenAI ImageGen built-in per
+ripristinare gli accessori identitari già presenti nei master Player, senza
+modificare il percorso consumato dal runtime.
+
+- Origine: edit del master esistente `magno/hd/evil_portrait.png`.
+- Autore: progetto IL GIOCO con assistenza OpenAI ImageGen.
+- Licenza: Licenza del progetto.
+- Input ImageGen effettivi del primo edit: il vecchio Evil come `edit target`;
+  `magno/hd/portrait.png` e `magno/hd/poses.png` come reference di soggetto,
+  costume e accessori; `alea/hd/evil_portrait.png` come reference di stile per
+  la sola grammatica normal-to-Evil.
+- Correzione selezionata: corona con due corna d'avorio e gemma turchese;
+  spallaccio bovino con esattamente due corna d'avorio e gemma turchese in
+  castone dorato; collana ad artiglio rimossa. Capelli lunghi, barba, canotta
+  nera, emblema bovino, fumo prugna, occhio magenta, crepe e rim light ambra
+  sono stati preservati.
+- Traccia output selezionati: `exec-a924d2dd-e49e-4f1f-8a51-f3adae6e9982.png`
+  (edit accessori) -> `exec-4d8894d3-ef07-4938-8874-836bbe0d2f2c.png`
+  (`background-extraction`, rimozione del solo checkerboard incorporato).
+
+Prompt finale normalizzato:
+
+```text
+Use case: precise-object-edit seguito da background-extraction.
+Correggere soltanto gli accessori mancanti del master Evil di Magno: mantenere
+identità, posa, corporatura, capelli lunghi, barba, canotta nera, emblema
+bovino e grammatica Evil; ripristinare la corona cornuta con gemma turchese e
+lo spallaccio con esattamente due corna d'avorio e gemma in castone dorato;
+rimuovere completamente la collana ad artiglio. Preservare composizione,
+pixel-art arcade, crop quadrato e margini. Nel passaggio finale rimuovere solo
+il checkerboard incorporato e produrre alfa reale senza ridisegno o aloni.
+```
+
 ### Trasformazione deterministica
 
 I derivati sono ottenuti con:
@@ -278,7 +313,7 @@ destinato al runtime futuro.
 | Aleo | `aleo/hd/evil_portrait.png` (`1239x1270`) | `615835723D6DFE04EFDF58021765937CBF401693354E4553C7154D19F9538B03` | `aleo/generated/evil_portrait.png` (`256x256`) | `F5A25E8B53E17BD4B1D9D4CCA35176EA6B399D3C39795DDB70CCC789A91DAEF2` |
 | Bea | `bea/hd/evil_portrait.png` (`1254x1254`) | `D010B56345970E3D45DFDDDF23F4CC698F3DDE70981C290B87CEC80A2790F18F` | `bea/generated/evil_portrait.png` (`256x256`) | `81AEF0A3B73D1C102FAB653BC151AF33A42EA9082A35422E559294F61C8CCE8E` |
 | Lollo | `lollo/hd/evil_portrait.png` (`1254x1254`) | `009820FFB0BF06C639EEFEF83BD4561DF9AA70A0B4200B61C96899D2C1749FA5` | `lollo/generated/evil_portrait.png` (`256x256`) | `21A4B9A35F38614F2C4DCDE502CBD004FCD65F2764EB0C68B06219115B8D914B` |
-| Magno | `magno/hd/evil_portrait.png` (`1254x1254`) | `BDC3FF4097E0220928FAFA2C24E7C0C6EB9FE8DFE2FAF55A7C4F3FC2D6A8EFBC` | `magno/generated/evil_portrait.png` (`256x256`) | `D55F715224C99EE59EAB98B95E135C64B4B07105845390F57DA5095197CBF6F1` |
+| Magno | `magno/hd/evil_portrait.png` (`1254x1254`) | `DD729B392C959404089177E8489C135436BC1D02076A0B0EDDC266E78EF8365D` | `magno/generated/evil_portrait.png` (`256x256`) | `49DE75C71232CCD7FBCF5A54711A761022365612110AA07BF549FAD9EA7C68F5` |
 | Marghe | `marghe/hd/evil_portrait.png` (`1254x1254`) | `A5B56E0568578E6ACC9A49FD75966D792EB1ED68D4F3C6BB3AC643FB6A075504` | `marghe/generated/evil_portrait.png` (`256x256`) | `9C3818FA2B550E49DA73FEA0051AD87479D15BC97A3A9D1422D35B1BF90B18E3` |
 | Migi | `migi/hd/evil_portrait.png` (`1254x1254`) | `1C4605A9C582DF2582BFA5241FE96ABC89B83F944F64B816BE439000BA7D3904` | `migi/generated/evil_portrait.png` (`256x256`) | `9818F360B1A24562DB3E4CE0FEFC4173EDC34F9F16A802F073D0AA19C1A25573` |
 | Zat | `zat/hd/evil_portrait.png` (`1254x1254`) | `334B650872FB8201E1B4B8E4D1FE9174998155658A2D91DCCCD0A6C7C74D15B4` | `zat/generated/evil_portrait.png` (`256x256`) | `AAD26DFA34729C379CE24F735F2DF569C315D6F9A2CAF2371D6CA64EA2257F00` |
