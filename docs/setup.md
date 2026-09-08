@@ -70,6 +70,9 @@ pagina) e pubblica l'APK di debug come asset della Release
 `workflow_dispatch`. Non sostituisce il percorso locale sotto: resta l'unico
 modo per i gate manuali di `gate-piattaforme` (Windows, device fisico).
 
+Non è la build pubblica: quella è di release, firmata e versionata, e nasce dal
+merge su `main` — vedi "Flusso di branch e rilascio".
+
 Chiudere eventuali altre istanze dell'editor sullo stesso progetto prima di un
 export CLI: la build riesce anche con l'editor aperto, ma su Windows la console
 può restare agganciata all'istanza già attiva.
@@ -221,22 +224,87 @@ adb devices -l
 adb install -r exports\android\pidgeon-survivor-debug.apk
 ```
 
-## Firma release e Google Play futuro
+## Flusso di branch e rilascio
 
-Il debug usa il keystore locale di Godot. Il keystore release non deve mai
-entrare nel repository. Quando verrà creato, passare firma e credenziali tramite:
+Due branch a lungo termine, con significati distinti (PS-133):
+
+| Branch | Ruolo |
+|---|---|
+| `develop` | Branch di default. Riceve tutto il lavoro quotidiano: da qui nascono e qui rientrano i branch di card |
+| `main` | Branch di rilascio. Ci si arriva **solo** per merge da `develop`, e quel merge significa "questa versione si può dare alla gente" |
+
+Un push su `main` fa partire
+[`.github/workflows/android-release.yml`](../.github/workflows/android-release.yml)
+(PS-134), che pubblica l'APK di release firmato come GitHub Release. Non
+lavorare mai direttamente su `main`: un commit diretto lì è indistinguibile da
+un rilascio e fa partire una build pubblica.
+
+La versione ha **una sola fonte di verità**: `config/version` in
+`project.godot`. Per pubblicare si alza quel valore su `develop` e si merga su
+`main`; il workflow lo propaga a `version/name` del preset Android, ne deriva il
+`versionCode` (`major*10000 + minor*100 + patch`) e tagga la Release `v<versione>`.
+Se la versione non è stata alzata la build fallisce sul tag già esistente,
+invece di sovrascrivere una Release che qualcuno potrebbe aver già scaricato.
+
+Le due build automatiche non vanno confuse:
+
+| Workflow | Quando | Cosa produce |
+|---|---|---|
+| `android-debug-release.yml` (PS-060) | a mano, `workflow_dispatch` | APK **di debug**, firma di debug, prerelease sul tag mobile `android-debug-latest`. Uso interno |
+| `android-release.yml` (PS-134) | push su `main` | APK **di release** firmato e versionato, Release pubblica taggata `v<versione>` |
+
+## Firma release
+
+Il debug usa il keystore locale di Godot. Il keystore release **non deve mai
+entrare nel repository**: chi lo possiede è, per Android, l'autore dell'app, e
+perderlo significa non poter più aggiornare l'app già installata sui telefoni
+di chi l'ha scaricata. Va tenuto in un backup sicuro fuori dal progetto.
+
+Godot legge firma e credenziali da tre variabili d'ambiente:
 
 - `GODOT_ANDROID_KEYSTORE_RELEASE_PATH`;
-- `GODOT_ANDROID_KEYSTORE_RELEASE_USER`;
+- `GODOT_ANDROID_KEYSTORE_RELEASE_USER` (l'alias della chiave);
 - `GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD`.
+
+Poiché la password è una sola, keystore e chiave devono averla identica.
+
+Creazione, una volta sola, in locale:
+
+```powershell
+keytool -genkeypair -v `
+  -keystore pidgeon-survivor-release.jks `
+  -alias pidgeon-survivor `
+  -keyalg RSA -keysize 2048 -validity 10000
+```
+
+In CI il keystore arriva dai GitHub Secrets, che
+`android-release.yml` decodifica nel runner per la sola durata del job:
+
+| Secret | Contenuto |
+|---|---|
+| `ANDROID_KEYSTORE_BASE64` | il `.jks` codificato base64 |
+| `ANDROID_KEYSTORE_PASSWORD` | la password del keystore e della chiave |
+| `ANDROID_KEY_ALIAS` | l'alias, per esempio `pidgeon-survivor` |
+
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("pidgeon-survivor-release.jks")) `
+  | Set-Content pidgeon-survivor-release.jks.b64
+```
+
+Se un secret manca, il workflow si ferma al primo step con l'elenco di quelli
+mancanti invece di produrre un APK non installabile. L'ispezione statica
+verifica poi sull'artefatto — non sui flag di export — che l'APK non sia
+debuggabile e che non sia firmato con la chiave di debug di Android.
+
+## Google Play futuro
 
 Il preset AAB serve soltanto a verificare che la pipeline sia predisposta: non
 effettua upload, non richiede oggi un account Google Play e non sostituisce il
-backup sicuro del futuro keystore.
+backup sicuro del keystore.
 
 L'AAB debug può risultare non firmato: è sufficiente per questo smoke test
 strutturale. Una build release destinata allo store dovrà invece essere firmata
-con il keystore esterno configurato tramite le variabili sopra.
+con lo stesso keystore configurato sopra.
 
 Godot è bloccato localmente alla versione 4.7.1 con un pin WinGet. Quando si
 deciderà esplicitamente una migrazione, il pin può essere rimosso con:

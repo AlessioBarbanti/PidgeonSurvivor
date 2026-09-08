@@ -1,0 +1,315 @@
+name: Android release APK → GitHub Release
+
+# PS-134: build pubblica di Pidgeon Survivor. Scatta quando develop viene
+# mergiato su main (PS-133), esporta il preset "Android APK" in release —
+# senza debugger — lo firma col keystore di release conservato nei secret e
+# pubblica una GitHub Release scaricabile, taggata con la versione del gioco.
+#
+# Non confondere con android-debug-release.yml (PS-060), che resta la build
+# interna a richiesta: quella è di debug, prerelease, sul tag mobile
+# "android-debug-latest". Le due non si sovrascrivono perché usano tag diversi.
+#
+# La versione ha una sola fonte di verità: config/version in project.godot.
+# Per pubblicare si alza quel valore su develop e si merga su main; se non lo
+# si alza la build fallisce sul tag già esistente, invece di sovrascrivere la
+# Release precedente.
+#
+# Le versioni della toolchain devono restare allineate a docs/setup.md.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+env:
+  GODOT_VERSION: "4.7.1-stable"
+  JAVA_VERSION: "17"
+  ANDROID_BUILD_TOOLS: "36.1.0"
+  ANDROID_PLATFORM: "android-36"
+  ANDROID_NDK_VERSION: "29.0.14206865"
+  ANDROID_CMAKE_VERSION: "3.10.2.4988404"
+  APK_PATH: "exports/android/pidgeon-survivor.apk"
+  PACKAGE_ID: "com.ilgioco.pidgeonsurvivor"
+
+jobs:
+  build-android-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Prima di qualunque lavoro costoso: senza keystore la build non può
+      # produrre un APK installabile, quindi si ferma subito dicendo cosa
+      # manca invece di fallire dopo trenta minuti di toolchain.
+      - name: Check release keystore secrets
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          missing=""
+          [ -n "${KEYSTORE_BASE64}" ] || missing="${missing} ANDROID_KEYSTORE_BASE64"
+          [ -n "${KEYSTORE_PASSWORD}" ] || missing="${missing} ANDROID_KEYSTORE_PASSWORD"
+          [ -n "${KEY_ALIAS}" ] || missing="${missing} ANDROID_KEY_ALIAS"
+          if [ -n "${missing}" ]; then
+            echo "Secret mancanti:${missing}" >&2
+            echo "Creare il keystore di release e caricare i secret come descritto" >&2
+            echo "in docs/setup.md, sezione 'Firma release'. Senza di essi l'APK" >&2
+            echo "non sarebbe installabile: la build si ferma qui di proposito." >&2
+            exit 1
+          fi
+
+      # config/version in project.godot è l'unica fonte di verità della
+      # versione. version_code deve essere un intero crescente per Android:
+      # major*10000 + minor*100 + patch è monotono finché minor e patch
+      # restano sotto 100, vincolo verificato qui sotto.
+      - name: Resolve version from project.godot
+        id: version
+        run: |
+          set -euo pipefail
+          version="$(sed -nE 's/^config\/version="([^"]+)".*/\1/p' project.godot | head -n1)"
+          if [ -z "${version}" ]; then
+            echo "config/version non trovata in project.godot." >&2
+            exit 1
+          fi
+          if ! printf '%s' "${version}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "config/version '${version}' non è nella forma major.minor.patch." >&2
+            exit 1
+          fi
+
+          major="${version%%.*}"
+          rest="${version#*.}"
+          minor="${rest%%.*}"
+          patch="${rest#*.}"
+
+          if [ "${minor}" -ge 100 ] || [ "${patch}" -ge 100 ]; then
+            echo "minor o patch >= 100: la formula del versionCode non sarebbe" >&2
+            echo "più monotona. Rivedere lo schema di versione prima di rilasciare." >&2
+            exit 1
+          fi
+
+          version_code=$(( (major * 10000) + (minor * 100) + patch ))
+
+          echo "version=${version}" >> "${GITHUB_OUTPUT}"
+          echo "version_code=${version_code}" >> "${GITHUB_OUTPUT}"
+          echo "tag=v${version}" >> "${GITHUB_OUTPUT}"
+          echo "Versione ${version} → versionCode ${version_code}, tag v${version}"
+
+      # Ripubblicare la stessa versione sarebbe una sovrascrittura silenziosa
+      # di una Release già scaricata da qualcuno: meglio fallire e chiedere di
+      # alzare config/version.
+      - name: Refuse to republish an existing version
+        run: |
+          set -euo pipefail
+          tag="${{ steps.version.outputs.tag }}"
+          if git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null 2>&1; then
+            echo "Il tag ${tag} esiste già sul remoto: quella versione è stata" >&2
+            echo "pubblicata. Alzare config/version in project.godot prima di" >&2
+            echo "mergiare di nuovo su main." >&2
+            exit 1
+          fi
+
+      - name: Setup JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Setup Android SDK cmdline-tools
+        uses: android-actions/setup-android@v3
+
+      - name: Install pinned Android SDK/NDK packages
+        run: |
+          set -euo pipefail
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager \
+            "platforms;${ANDROID_PLATFORM}" \
+            "build-tools;${ANDROID_BUILD_TOOLS}" \
+            "ndk;${ANDROID_NDK_VERSION}" \
+            "cmake;${ANDROID_CMAKE_VERSION}"
+
+      - name: Install Godot ${{ env.GODOT_VERSION }} (headless) and export templates
+        run: |
+          set -euo pipefail
+          curl -fsSL -o godot.zip \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          unzip -q godot.zip -d godot_bin
+          sudo install -m 0755 "godot_bin/Godot_v${GODOT_VERSION}_linux.x86_64" /usr/local/bin/godot
+
+          curl -fsSL -o export_templates.tpz \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz"
+          template_dir="${HOME}/.local/share/godot/export_templates/${GODOT_VERSION/-/.}"
+          mkdir -p "${template_dir}"
+          unzip -q export_templates.tpz -d /tmp/godot_templates
+          mv /tmp/godot_templates/templates/* "${template_dir}/"
+
+          godot --version
+
+      - name: Configure Godot editor settings for Java/Android SDK
+        run: |
+          set -euo pipefail
+          mkdir -p "${HOME}/.config/godot"
+          cat > "${HOME}/.config/godot/editor_settings-4.tres" <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/java_sdk_path = "${JAVA_HOME}"
+          export/android/android_sdk_path = "${ANDROID_HOME}"
+          EOF
+
+      # Il keystore vive solo nel runner, per la durata del job. Il file non
+      # finisce fra gli artefatti e la sua password non viene mai stampata.
+      - name: Materialize release keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          set -euo pipefail
+          keystore_dir="${RUNNER_TEMP}/keystore"
+          mkdir -p "${keystore_dir}"
+          printf '%s' "${KEYSTORE_BASE64}" | base64 -d > "${keystore_dir}/release.jks"
+          test -s "${keystore_dir}/release.jks" \
+            || { echo "Keystore vuoto dopo la decodifica base64." >&2; exit 1; }
+          echo "GODOT_ANDROID_KEYSTORE_RELEASE_PATH=${keystore_dir}/release.jks" >> "${GITHUB_ENV}"
+
+      # export_presets.cfg non porta la versione (version/name vuoto,
+      # version/code fisso a 1). La si scrive qui, solo nella copia di lavoro
+      # del runner: il file in repository non viene mai modificato.
+      - name: Stamp version into export presets
+        run: |
+          set -euo pipefail
+          version="${{ steps.version.outputs.version }}"
+          version_code="${{ steps.version.outputs.version_code }}"
+
+          sed -i -E "s|^version/name=\".*\"$|version/name=\"${version}\"|" export_presets.cfg
+          sed -i -E "s|^version/code=[0-9]+$|version/code=${version_code}|" export_presets.cfg
+
+          grep -q "version/name=\"${version}\"" export_presets.cfg \
+            || { echo "version/name non scritta nel preset." >&2; exit 1; }
+          grep -q "version/code=${version_code}" export_presets.cfg \
+            || { echo "version/code non scritta nel preset." >&2; exit 1; }
+
+      - name: Export "Android APK" preset (release)
+        env:
+          GODOT_ANDROID_KEYSTORE_RELEASE_USER: ${{ secrets.ANDROID_KEY_ALIAS }}
+          GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "${APK_PATH}")"
+
+          godot --headless --path . \
+            --install-android-build-template \
+            --export-release "Android APK" "${APK_PATH}" 2>&1 | tee export.log &
+          export_pid=$!
+
+          marker_seen=false
+          for _ in $(seq 1 180); do
+            # Godot colora l'output con codici ANSI anche in modalità
+            # headless: il marker reale è tipo "\x1b[92m[ DONE ]\x1b[39m
+            # \x1b[1mexport\x1b[22m", non testo semplice.
+            if sed -E 's/\x1b\[[0-9;]*m//g' export.log | grep -qE '^\[ DONE \]\s+export\b'; then
+              marker_seen=true
+              break
+            fi
+            if ! kill -0 "${export_pid}" 2>/dev/null; then
+              break
+            fi
+            sleep 5
+          done
+
+          # Il processo Godot headless può restare aperto dopo il marker su
+          # alcune build (vedi docs/setup.md): concedere una breve grazia poi
+          # terminarlo esplicitamente, l'esito lo decide solo l'APK prodotto.
+          sleep 2
+          if kill -0 "${export_pid}" 2>/dev/null; then
+            kill "${export_pid}" 2>/dev/null || true
+            sleep 2
+            kill -9 "${export_pid}" 2>/dev/null || true
+          fi
+          wait "${export_pid}" 2>/dev/null || true
+
+          if [ "${marker_seen}" != "true" ]; then
+            echo "Marker '[ DONE ] export' non visto nel log: vedi export.log per la diagnosi." >&2
+          fi
+          test -s "${APK_PATH}" || { echo "APK non prodotto in ${APK_PATH}." >&2; exit 1; }
+
+      # I flag di export non dimostrano niente: che l'APK non sia debuggabile e
+      # che sia firmato col keystore vero si verifica sull'artefatto prodotto.
+      - name: Static APK inspection
+        run: |
+          set -euo pipefail
+          version="${{ steps.version.outputs.version }}"
+          version_code="${{ steps.version.outputs.version_code }}"
+          build_tools="${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS}"
+          badging="$("${build_tools}/aapt2" dump badging "${APK_PATH}")"
+          echo "${badging}"
+
+          echo "${badging}" | grep -q "package: name='${PACKAGE_ID}'" \
+            || { echo "Package id inatteso." >&2; exit 1; }
+          echo "${badging}" | grep -q "versionCode='${version_code}'" \
+            || { echo "versionCode inatteso: atteso ${version_code}." >&2; exit 1; }
+          echo "${badging}" | grep -q "versionName='${version}'" \
+            || { echo "versionName inatteso: atteso ${version}." >&2; exit 1; }
+          echo "${badging}" | grep -q "minSdkVersion:'31'" \
+            || { echo "minSdk inatteso." >&2; exit 1; }
+          echo "${badging}" | grep -q "targetSdkVersion:'36'" \
+            || { echo "targetSdk inatteso." >&2; exit 1; }
+          echo "${badging}" | grep -q "native-code: 'arm64-v8a'" \
+            || { echo "ABI nativa inattesa." >&2; exit 1; }
+
+          # "Senza debugger": aapt2 espone application-debuggable solo quando
+          # il manifest porta android:debuggable="true".
+          if echo "${badging}" | grep -q "application-debuggable"; then
+            echo "L'APK è debuggabile: non è una build di release." >&2
+            exit 1
+          fi
+
+          certs="$("${build_tools}/apksigner" verify --verbose --print-certs "${APK_PATH}")"
+          echo "${certs}"
+
+          # Se Godot non avesse trovato il keystore di release ripiegherebbe
+          # sulla chiave di debug di Android: quella firma non deve mai
+          # raggiungere una Release pubblica.
+          if echo "${certs}" | grep -qi "CN=Android Debug"; then
+            echo "APK firmato con la chiave di debug di Android." >&2
+            exit 1
+          fi
+
+          # Solo librerie native arm64-v8a nello zip, come da docs/setup.md.
+          if unzip -l "${APK_PATH}" | awk '{print $4}' | grep '^lib/' | grep -qv '^lib/arm64-v8a/'; then
+            echo "Trovate librerie native fuori da lib/arm64-v8a/." >&2
+            exit 1
+          fi
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pidgeon-survivor-${{ steps.version.outputs.tag }}-apk
+          path: ${{ env.APK_PATH }}
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: "Pidgeon Survivor ${{ steps.version.outputs.tag }}"
+          body: |
+            **Pidgeon Survivor ${{ steps.version.outputs.tag }}** — It's grilling time!
+
+            APK Android da scaricare e installare. Build di release firmata,
+            senza debugger, prodotta automaticamente dal merge su `main`
+            (commit ${{ github.sha }}).
+
+            - Android 12–16 (API 31–36), ARM64, landscape
+            - `versionName` ${{ steps.version.outputs.version }} ·
+              `versionCode` ${{ steps.version.outputs.version_code }}
+
+            Per installarla può servire autorizzare il proprio browser o file
+            manager a installare app da origini sconosciute.
+          prerelease: false
+          fail_on_unmatched_files: true
+          files: ${{ env.APK_PATH }}
