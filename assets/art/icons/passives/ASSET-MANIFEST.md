@@ -49,9 +49,59 @@ stato necessario rimuovere il chroma key. Il derivato runtime è prodotto da
 | Profilo | Master HD escluso | Runtime | SHA-256 master | SHA-256 runtime |
 |---|---|---|---|---|
 | Alea | `hd/alea_eagle_never_misses_source.png` (`1254×1254`) | `generated/alea_eagle_never_misses.png` (`128×128`) | `533CD2551F29B4B6FE4797A97DB324D723969992B550F42FD98166B2F9111349` | `3C64311DEC722D8AF0DF3F8D85A33F43747546E01B2383FD894BBD1625F1CCD2` |
-| Aleo | `hd/aleo_internal_thermostat_source.png` (`1254×1254`) | `generated/aleo_internal_thermostat.png` (`128×128`) | `3A55A0C42E02CA561E3720087DC0DC7B76AE50C8821EF94DBFE7F8534EE65B2A` | `94C5CD6FA834AFAB03A31A961FC031F007B92EF31C2508E2617E4951624BE84D` |
+| Aleo | `hd/aleo_internal_thermostat_source.png` (`1254×1254`) | `generated/aleo_internal_thermostat.png` (`128×128`) | `DE7C74482368403EEDAFB78B37DDE60184AA856C8244A1CC1A54797BF7FDE009` | `4682CAE23E55D5D4CBDBF884A84C3C3E49CC1B35252C8AEC0B8B77246A9FDE74` |
 | Bea | `hd/bea_sixth_sense_source.png` (`1254×1254`) | `generated/bea_sixth_sense.png` (`128×128`) | `79FC97FB593043622D05797CABA8CED7751BC02658AE2D8E9BB5EED67D66A1C4` | `8F288AAA5A41EA862A2BCA9D78D735CCC7327804FFF2BAA432D016833B2F7D63` |
 | Lollo | `hd/lollo_hyperactivity_source.png` (`1312×1199`) | `generated/lollo_hyperactivity.png` (`128×128`) | `766D6C8BD9B6D1A0BD466AE4C9E9EE15895AA489AEF2AC667D22F46B6E6F1B28` | `3045EC926EF1449A50CF7AA9F2F759D7F28B4C79426D5928039A469B1A0C1A12` |
 | Marghe | `hd/marghe_contagious_smile_source.png` (`1312×1199`) | `generated/marghe_contagious_smile.png` (`128×128`) | `DD63AEEA2FC3227E22598E55720AAD444A653D63C6D4586F1F17009522AF7D35` | `9096F0357DC024DAA6EAE631C93D67138DD5B49D9BF907448D23E79AB087A997` |
 | Migi | `hd/migi_turtle_shell_source.png` (`1292×1218`) | `generated/migi_turtle_shell.png` (`128×128`) | `953FFD30A11D1DCCB9A4A284C45B912CA6D22760A130ABD469842430B6356CF9` | `CC1F750FB6D12EF05B725A1B56E490CBADC06D23B2F6F68E7612E9731D63B030` |
 | Zat | `hd/zat_delayed_healing_source.png` (`1166×1349`) | `generated/zat_delayed_healing.png` (`128×128`) | `AA44B43329B729A3B73EAD63B38816CA5C85B7FA4AEB3CB0EEF16B994F4C903D` | `E292289E75B4E2BBFEF226F1548EC9625F9D17F24207F50DBF968213ACDEE163` |
+
+## Candidato — normalizzazione Aleo (approvato e promosso)
+
+- Data produzione: 2026-09-08.
+- Origine e generatore: OpenAI ImageGen built-in; generazione iniziale guidata
+  da `generated/magno_aerodynamic_flow.png` come sola reference di stile e
+  composizione, poi edit del soggetto secondo la direzione approvata in
+  PS-131.
+- Autore: progetto IL GIOCO con assistenza OpenAI ImageGen.
+- Licenza: Licenza del progetto.
+- Output selezionato: `exec-6346a973-ba75-4d7a-9f5b-1fdd64c6414f.png`.
+- Estrazione alpha: rimozione deterministica del chroma verde dal master
+  selezionato; un pixel è reso trasparente quando `G > 90`, `G > R + 30` e
+  `G > B + 30`. Verifica successiva: nessun pixel visibile resta
+  verde-dominante e i quattro angoli hanno alpha `0`.
+- Derivazione: `tools/process-passive-icon.ps1 -Size 128
+  -VisibleAlphaThreshold 8 -Padding 12`.
+- Approvazione: il proprietario ha approvato esplicitamente il candidato con
+  «Promosso!» l'8 settembre 2026.
+- Promozione: gli stessi byte sono stati copiati nei percorsi canonici
+  `hd/aleo_internal_thermostat_source.png` e
+  `generated/aleo_internal_thermostat.png`; `data/friends/aleo.tres` continua a
+  referenziare il derivato allo stesso percorso, senza modifiche al wiring.
+- I file sotto `_review/aleo_normalize/` restano come evidenza non importata e
+  non esportata della variante approvata.
+
+### Prompt finale
+
+```text
+Use case: precise-object-edit
+Asset type: high-resolution square master for Aleo's passive ability icon in
+Pidgeon Survivor
+Primary request: turn one ember coal into a cohesive object with an
+approximately 50/50 material split; keep one half as living red-orange-gold
+ember and freeze the other half under an attached pale-cyan and ice-white
+frost crust.
+Style/medium: polished 32-bit fantasy arcade pixel art, crisp chunky clusters,
+stepped edges, limited palette and dark-plum outline, readable at 72x72.
+Composition/framing: one centered irregular coal silhouette with generous
+padding; the warm and frozen regions each occupy roughly half the same mass.
+Scene/backdrop: flat pure #00FF00 chroma key for deterministic removal.
+Constraints: one continuous object; no ring, bezel, card, inner background,
+thermometer, gauge, snowflake symbol, detached spiral, separate ice crystals,
+explosion, radial crystal crown, text, logo, watermark, shadow or second icon.
+```
+
+| Percorso candidato | Dimensioni | Byte | SHA-256 |
+|---|---:|---:|---|
+| `_review/aleo_normalize/aleo_internal_thermostat_v2_source.png` | `1254×1254` RGBA | `1566731` | `DE7C74482368403EEDAFB78B37DDE60184AA856C8244A1CC1A54797BF7FDE009` |
+| `_review/aleo_normalize/aleo_internal_thermostat_v2.png` | `128×128` RGBA | `30740` | `4682CAE23E55D5D4CBDBF884A84C3C3E49CC1B35252C8AEC0B8B77246A9FDE74` |

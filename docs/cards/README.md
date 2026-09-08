@@ -232,7 +232,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-128](./5_completed/PS-128-genera-ritratto-definitivo-piccione-malvagio.md) | Genera un ritratto definitivo per il Piccione Malvagio | art | arte | COMPLETATO | media | — |
 | [PS-129](./5_completed/PS-129-integra-ritratto-piccione-malvagio-boss-intro.md) | Integra il ritratto definitivo del Piccione Malvagio nella Boss intro | fix | UI | COMPLETATO | media | PS-128 |
 | [PS-130](./1_idea/PS-130-rigenera-otto-icone-passive-cast.md) | Rigenera come candidati le otto icone passive del cast | art | arte | DA DEFINIRE | media | PS-105 |
-| [PS-131](./2_to_do/PS-131-normalizza-icona-passiva-aleo.md) | Normalizza l'icona della passiva di Aleo allo stile delle altre sette | art | arte | PRONTO | media | — |
+| [PS-131](./5_completed/PS-131-normalizza-icona-passiva-aleo.md) | Normalizza l'icona della passiva di Aleo allo stile delle altre sette | art | arte | COMPLETATO | media | — |
 | [PS-132](./4_to_test/PS-132-derivazione-sprite-sfarina-alea-e-zat.md) | Correggi la derivazione degli sprite di gameplay che sfarina Alea e Zat | fix | arte | IN VERIFICA | media | PS-116 |
 | [PS-133](./3_in_sprint/PS-133-develop-per-lo-sviluppo-main-per-il-rilascio.md) | Adotta develop come branch di sviluppo e main come branch di rilascio | chore | tooling | IN CORSO | alta | — |
 | [PS-134](./3_in_sprint/PS-134-apk-di-release-firmato-e-versionato-al-merge-su-main.md) | Pubblica un APK di release firmato e versionato al merge su main | chore | tooling | IN CORSO | alta | PS-133 |
