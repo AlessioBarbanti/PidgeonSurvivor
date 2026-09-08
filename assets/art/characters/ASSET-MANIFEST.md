@@ -148,6 +148,24 @@ Causa: gap di definizione percepito fra il personaggio giocabile (nativo
 la card PS-116 per l'analisi completa. Nessun master toccato: stesso
 `hd/poses.png` di ciascun personaggio, gia' approvato.
 
+**Trattamento di leggibilita opt-in, solo alea e zat (PS-132, dall'8 settembre
+2026):** aggiunge `-ReadabilityTreatment -PaletteColors 16
+-FinalAlphaThreshold 140 -OutlineDarkenFactor 0.2 -OutlineThickness 2` al
+comando corrente. Causa meccanica accertata: con area utile `56px` e figura
+sorgente alta ~950px, il campionamento nearest-neighbor secco scarta quasi
+tutti i pixel sorgente (~1 ogni 17x17) e frammenta le strutture sottili (gambe
+filiformi di Alea, arti di Zat) — l'aumento di risoluzione PS-116 non poteva
+correggerlo perche' agisce sul canvas, non sul metodo di campionamento. Il
+trattamento sostituisce, solo per i due derivati in ambito: downscale che
+conserva la massa (media d'area pesata sull'alfa, non piu' nearest-neighbor),
+soglia alfa finale che ripristina bordi netti, quantizzazione palette
+median-cut e contorno scuro (derivato e scurito dal colore dominante del
+frame) fatto crescere per due anelli di dilatazione a 8 connessioni. Nessun
+ritocco di costume, posa o palette d'identita': la quantizzazione media solo
+colori gia' presenti nel master. Opt-in: senza `-ReadabilityTreatment` lo
+script produce lo stesso output byte-a-byte di prima (verificato sugli otto
+personaggi). Gli altri sei derivati del cast restano quindi invariati.
+
 Le sorgenti selezionate dopo la rimozione del chroma sono conservate come PNG
 RGBA HD `1536x1024` in `<id>/hd/`, su richiesta del proprietario, per riusi
 artistici futuri. La presenza di `<id>/hd/.gdignore` e gli exclude filter dei
@@ -158,14 +176,15 @@ nearest.
 ### File e integrita
 
 Byte/hash "runtime" aggiornati al 7 settembre 2026 (PS-116, derivato `192x64`);
-il master HD e il suo hash sono invariati.
+alea e zat aggiornati all'8 settembre 2026 (PS-132, trattamento di
+leggibilita). Il master HD e il suo hash sono invariati per tutti e otto.
 
 | File runtime | Byte master HD | SHA-256 master HD | Byte runtime | SHA-256 runtime |
 |---|---:|---|---:|---|
 | `magno/generated/sprite.png` | `1060810` | `2EA717859B91B420B97F8D9975D67A3C827BA94CC4355739A4DB4FE370F836A5` | `11399` | `6D38CF835DBA9ECDA91A46BF57BAA5F07D7EA3DB9D5B1E85705498DCF4634F92` |
 | `bea/generated/sprite.png` | `953157` | `3C6B26826B9A6B5708174AE6EDB42F1F652A120DE0B17C3405DCAB8CB756059D` | `10550` | `0268364C47C4F21983DB54DA0A18BBA2D97C957A6712041B2DE9B42A0D871D52` |
-| `zat/generated/sprite.png` | `810909` | `DD1EB3F249F37426E9573DE02C2E0292F32A932A0C2059F82325D1F92919780B` | `8584` | `98BB6BFEA0E0144923D7A233AD96BC91695ACBD55D9352F79E04251214C5E1F0` |
-| `alea/generated/sprite.png` | `829661` | `61C760FA609852BA31F5C24CE43626EA41228AAC6DFC9371D78D83F65408FEA5` | `6260` | `5E4A2CFED4B2DB4E749EF87F1801AB7D835F9C736405E7EEA9B4D5EDA0493F26` |
+| `zat/generated/sprite.png` (PS-132) | `810909` | `DD1EB3F249F37426E9573DE02C2E0292F32A932A0C2059F82325D1F92919780B` | `3334` | `3537C676B36A1A23A82557372649C120E7F9948F39024EC1BCDB62D31661545A` |
+| `alea/generated/sprite.png` (PS-132) | `829661` | `61C760FA609852BA31F5C24CE43626EA41228AAC6DFC9371D78D83F65408FEA5` | `2891` | `27804630606B02B10A9DA1B0976CCD87D32573355856F27F9B2480B2B3CABDCA` |
 | `aleo/generated/sprite.png` | `980832` | `53999B4B51D97A918B5AC8F68444417E07B8B17EA4837C239173C5DEF4C787DE` | `9905` | `DC7069EF10B070072337822386A14DE4CA52E7EB412464F08D70D5A32DCC438E` |
 | `lollo/generated/sprite.png` | `862437` | `CA66A174E501BEAB30CA3076F3682CCE955E488EC6EB8BBFC3C7734FDC1CF424` | `9311` | `85CCFA620E98B9B4167C4F06B195228EDB0DCDE4EC91BC79E8834A04B8644872` |
 | `migi/generated/sprite.png` | `810304` | `04EDEE8F99B5849384D268BD35CB4E498EA80BEA1FA961A67BD19B8D1DC75499` | `10130` | `DACE18ACE1A38858B80EF2D4475B2A4ECB4E1EFEEB59D75EE6AF56ECE17DC56E` |
@@ -256,6 +275,41 @@ Alea e Aleo hanno richiesto un passaggio correttivo `background-extraction`:
 rimuovere soltanto il checkerboard chiaro incorporato, preservando soggetto,
 pixel-art, colori, effetti e inquadratura, e produrre alfa reale senza ridisegno.
 
+### Correzione Evil Magno (PS-135, 8 settembre 2026)
+
+Il master Evil di Magno è stato corretto tramite OpenAI ImageGen built-in per
+ripristinare gli accessori identitari già presenti nei master Player, senza
+modificare il percorso consumato dal runtime.
+
+- Origine: edit del master esistente `magno/hd/evil_portrait.png`.
+- Autore: progetto IL GIOCO con assistenza OpenAI ImageGen.
+- Licenza: Licenza del progetto.
+- Input ImageGen effettivi del primo edit: il vecchio Evil come `edit target`;
+  `magno/hd/portrait.png` e `magno/hd/poses.png` come reference di soggetto,
+  costume e accessori; `alea/hd/evil_portrait.png` come reference di stile per
+  la sola grammatica normal-to-Evil.
+- Correzione selezionata: corona con due corna d'avorio e gemma turchese;
+  spallaccio bovino con esattamente due corna d'avorio e gemma turchese in
+  castone dorato; collana ad artiglio rimossa. Capelli lunghi, barba, canotta
+  nera, emblema bovino, fumo prugna, occhio magenta, crepe e rim light ambra
+  sono stati preservati.
+- Traccia output selezionati: `exec-a924d2dd-e49e-4f1f-8a51-f3adae6e9982.png`
+  (edit accessori) -> `exec-4d8894d3-ef07-4938-8874-836bbe0d2f2c.png`
+  (`background-extraction`, rimozione del solo checkerboard incorporato).
+
+Prompt finale normalizzato:
+
+```text
+Use case: precise-object-edit seguito da background-extraction.
+Correggere soltanto gli accessori mancanti del master Evil di Magno: mantenere
+identità, posa, corporatura, capelli lunghi, barba, canotta nera, emblema
+bovino e grammatica Evil; ripristinare la corona cornuta con gemma turchese e
+lo spallaccio con esattamente due corna d'avorio e gemma in castone dorato;
+rimuovere completamente la collana ad artiglio. Preservare composizione,
+pixel-art arcade, crop quadrato e margini. Nel passaggio finale rimuovere solo
+il checkerboard incorporato e produrre alfa reale senza ridisegno o aloni.
+```
+
 ### Trasformazione deterministica
 
 I derivati sono ottenuti con:
@@ -278,7 +332,7 @@ destinato al runtime futuro.
 | Aleo | `aleo/hd/evil_portrait.png` (`1239x1270`) | `615835723D6DFE04EFDF58021765937CBF401693354E4553C7154D19F9538B03` | `aleo/generated/evil_portrait.png` (`256x256`) | `F5A25E8B53E17BD4B1D9D4CCA35176EA6B399D3C39795DDB70CCC789A91DAEF2` |
 | Bea | `bea/hd/evil_portrait.png` (`1254x1254`) | `D010B56345970E3D45DFDDDF23F4CC698F3DDE70981C290B87CEC80A2790F18F` | `bea/generated/evil_portrait.png` (`256x256`) | `81AEF0A3B73D1C102FAB653BC151AF33A42EA9082A35422E559294F61C8CCE8E` |
 | Lollo | `lollo/hd/evil_portrait.png` (`1254x1254`) | `009820FFB0BF06C639EEFEF83BD4561DF9AA70A0B4200B61C96899D2C1749FA5` | `lollo/generated/evil_portrait.png` (`256x256`) | `21A4B9A35F38614F2C4DCDE502CBD004FCD65F2764EB0C68B06219115B8D914B` |
-| Magno | `magno/hd/evil_portrait.png` (`1254x1254`) | `BDC3FF4097E0220928FAFA2C24E7C0C6EB9FE8DFE2FAF55A7C4F3FC2D6A8EFBC` | `magno/generated/evil_portrait.png` (`256x256`) | `D55F715224C99EE59EAB98B95E135C64B4B07105845390F57DA5095197CBF6F1` |
+| Magno | `magno/hd/evil_portrait.png` (`1254x1254`) | `DD729B392C959404089177E8489C135436BC1D02076A0B0EDDC266E78EF8365D` | `magno/generated/evil_portrait.png` (`256x256`) | `49DE75C71232CCD7FBCF5A54711A761022365612110AA07BF549FAD9EA7C68F5` |
 | Marghe | `marghe/hd/evil_portrait.png` (`1254x1254`) | `A5B56E0568578E6ACC9A49FD75966D792EB1ED68D4F3C6BB3AC643FB6A075504` | `marghe/generated/evil_portrait.png` (`256x256`) | `9C3818FA2B550E49DA73FEA0051AD87479D15BC97A3A9D1422D35B1BF90B18E3` |
 | Migi | `migi/hd/evil_portrait.png` (`1254x1254`) | `1C4605A9C582DF2582BFA5241FE96ABC89B83F944F64B816BE439000BA7D3904` | `migi/generated/evil_portrait.png` (`256x256`) | `9818F360B1A24562DB3E4CE0FEFC4173EDC34F9F16A802F073D0AA19C1A25573` |
 | Zat | `zat/hd/evil_portrait.png` (`1254x1254`) | `334B650872FB8201E1B4B8E4D1FE9174998155658A2D91DCCCD0A6C7C74D15B4` | `zat/generated/evil_portrait.png` (`256x256`) | `AAD26DFA34729C379CE24F735F2DF569C315D6F9A2CAF2371D6CA64EA2257F00` |

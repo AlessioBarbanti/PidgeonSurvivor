@@ -61,9 +61,17 @@ Player.
 | `assets/art/characters/aleo/hd/portrait.png` | master HD Player, busto approvato PS-068 (escluso da import/export) |
 | `assets/art/characters/aleo/generated/portrait.png` | ritratto Player runtime 256×256 approvato PS-068 |
 | `assets/art/characters/aleo/generated/evil_portrait.png` | ritratto Evil runtime 256×256 |
+| `assets/art/icons/passives/hd/aleo_internal_thermostat_source.png` | master HD dell'icona Termostato Interno, escluso da import/export |
+| `assets/art/icons/passives/generated/aleo_internal_thermostat.png` | icona passiva runtime 128×128 approvata PS-131 |
 
 Busto Player dedicato (`portrait.png`, analogo a `evil_portrait.png`): master
 e derivato approvati esplicitamente dal proprietario e integrati da PS-068 il
 3 settembre 2026. `data/friends/aleo.tres` usa il derivato definitivo sia per
 `portrait` sia per `portrait_placeholder` e dichiara
 `portraits_are_placeholders = false`.
+
+L'icona di `Termostato Interno`, approvata con PS-131 l'8 settembre 2026, è un
+singolo tizzone a silhouette libera: metà brace arancio-oro e metà carbone
+congelato bianco-ghiaccio/ciano. Lo split materiale circa 50/50 sostituisce il
+precedente quadrante con bezel e fondo opaco, senza cambiare il percorso
+referenziato da `data/friends/aleo.tres`.

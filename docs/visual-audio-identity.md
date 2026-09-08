@@ -90,6 +90,18 @@ la stessa texture (`BossDefinition.get_visual_texture()` →
 automaticamente di un fattore di ingrandimento dimezzato
 (`target_diameter / texture_size`, indipendente dal cambio).
 
+Dall'8 settembre 2026 (PS-132) i soli derivati di **alea** e **zat** usano un
+trattamento di leggibilita opt-in dello stesso script
+(`-ReadabilityTreatment -PaletteColors 16 -FinalAlphaThreshold 140
+-OutlineDarkenFactor 0.2 -OutlineThickness 2`): downscale che conserva la
+massa al posto del nearest-neighbor secco (che a fattore di scala ~17x
+scartava quasi tutti i pixel sorgente e frammentava gli arti sottili),
+soglia alfa finale per bordi netti, quantizzazione palette median-cut e
+contorno scuro derivato dal colore dominante di ciascun frame. Canvas,
+region atlas e hitbox restano quelli di PS-116; gli altri sei personaggi
+sono byte-identici a prima (trattamento opt-in, non nuovo default). Dettagli
+e soglie di verifica nella card PS-132.
+
 ### Ritratti busto Player (PS-068)
 
 Dal 3 settembre 2026 ogni `data/friends/*.tres` usa come `portrait` e
