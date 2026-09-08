@@ -60,35 +60,35 @@ usano tag di Release diversi.
 
 ## Criteri di accettazione
 
-- [ ] Esiste `.github/workflows/android-release.yml` che scatta su `push` verso
+- [x] Esiste `.github/workflows/android-release.yml` che scatta su `push` verso
       `main` e, in aggiunta, a mano da `workflow_dispatch`.
-- [ ] Il workflow di debug `android-debug-release.yml` conserva il trigger
+- [x] Il workflow di debug `android-debug-release.yml` conserva il trigger
       `workflow_dispatch` e il tag `android-debug-latest`: le due build non si
       contendono la stessa Release.
-- [ ] L'export usa `--export-release`, non `--export-debug`.
-- [ ] L'ispezione statica dell'APK prodotto **fallisce** la build se
+- [x] L'export usa `--export-release`, non `--export-debug`.
+- [x] L'ispezione statica dell'APK prodotto **fallisce** la build se
       `aapt2 dump badging` riporta `application-debuggable`: è la verifica
       osservabile di «senza debugger», non un'assunzione basata sul flag di
       export.
-- [ ] L'ispezione statica **fallisce** la build se il certificato riportato da
+- [x] L'ispezione statica **fallisce** la build se il certificato riportato da
       `apksigner verify --print-certs` è quello di debug di Android
       (`CN=Android Debug`): garantisce che sia stato usato il keystore vero e
       non un fallback silenzioso.
-- [ ] `aapt2 dump badging` riporta `versionName` uguale a `config/version` di
+- [x] `aapt2 dump badging` riporta `versionName` uguale a `config/version` di
       `project.godot` e `versionCode` uguale al valore derivato; se non
       coincidono la build fallisce.
-- [ ] Il workflow fallisce con un messaggio esplicito, prima di iniziare
+- [x] Il workflow fallisce con un messaggio esplicito, prima di iniziare
       l'export, se manca uno dei secret del keystore: nessun tentativo di
       proseguire producendo un artefatto inutilizzabile.
-- [ ] Il workflow fallisce se esiste già un tag per la versione corrente:
+- [x] Il workflow fallisce se esiste già un tag per la versione corrente:
       pubblicare due volte la stessa versione richiede di alzare
       `config/version`, non di sovrascrivere una Release esistente.
-- [ ] La GitHub Release prodotta ha `prerelease: false`, tag `v<versione>`, e
+- [x] La GitHub Release prodotta ha `prerelease: false`, tag `v<versione>`, e
       l'APK come asset scaricabile.
-- [ ] `export_presets.cfg` **non** viene modificato nel repository: la
+- [x] `export_presets.cfg` **non** viene modificato nel repository: la
       valorizzazione di `version/name` e `version/code` avviene solo nella copia
       di lavoro della CI.
-- [ ] Restano invariati package id, `minSdk` 31, `targetSdk` 36 e la sola ABI
+- [x] Restano invariati package id, `minSdk` 31, `targetSdk` 36 e la sola ABI
       `arm64-v8a`, verificati come già fa il workflow di debug.
 
 ## Ambito
@@ -116,9 +116,12 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] **Creazione del keystore di release e caricamento dei secret** — la deve
-      eseguire il proprietario: questa sessione non ha accesso ai secret del
-      repository. Comandi e nomi esatti in Note.
+- [x] **Creazione del keystore di release e caricamento dei secret** — fatto
+      dal proprietario il 2026-09-08: keystore generato in locale con
+      `keytool` (alias `pidgeon-survivor`), mai committato; i tre secret
+      (`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEY_ALIAS`,
+      `ANDROID_KEYSTORE_PASSWORD`) sono stati caricati su GitHub via `gh
+      secret set`, verificati presenti con `gh secret list`.
 - [ ] Prima esecuzione del workflow su `main` conclusa verde, con la Release
       pubblicata e l'APK presente fra gli asset.
 - [ ] Runtime fisico Pixel 9: l'APK **di release** scaricato dalla Release va
@@ -166,10 +169,30 @@ gioco).
   debuggabile, e configurare un keystore non dimostra che sia stato usato:
   entrambe le proprietà sono verificate sull'artefatto prodotto, coerentemente
   con la regola di progetto per cui l'exit code non basta.
+- **2026-09-08 — Criteri di accettazione spuntati per ispezione del codice, non
+  per esecuzione reale.** Il workflow (commit `f4c0600`) e la sezione «Flusso
+  di branch e rilascio» / «Firma release» di `docs/setup.md` erano già stati
+  scritti da un'altra sessione in parallelo; questa sessione ha riletto
+  `android-release.yml` riga per riga contro ciascun criterio (trigger, flag di
+  export, gate di ispezione statica, gestione tag duplicato, non modifica di
+  `export_presets.cfg` in repository) e li ha trovati tutti implementati
+  correttamente. Non sostituisce la prova reale: il proprietario ha scelto
+  esplicitamente di non forzare un run di prova ora (avrebbe pubblicato una
+  Release pubblica `v0.1.0` prima del previsto) e di aspettare il primo merge
+  vero `develop` → `main`. I due gate manuali legati all'esecuzione restano
+  aperti per questo.
+- **2026-09-08 — Secret del keystore caricati in questa sessione.** Il
+  proprietario ha generato `pidgeon-survivor-release.jks` in locale (alias
+  `pidgeon-survivor`) e fornito il file e una password isolata in un file a
+  parte; la sessione ha codificato il keystore in base64 e caricato i tre
+  secret con `gh secret set` (mai stampando password o base64 a video),
+  ripulendo poi i file intermedi generati. Verificato con
+  `gh secret list --repo AlessioBarbanti/PidgeonSurvivor`: i tre nomi attesi
+  sono presenti.
 
 ## Documenti sincronizzati
 
-- [ ] [docs/setup.md](../../../docs/setup.md): sezione «Firma release e Google
+- [x] [docs/setup.md](../../../docs/setup.md): sezione «Firma release e Google
       Play futuro» aggiornata con procedura, nomi dei secret e rimando al
       workflow; sezione CI con la distinzione fra build di debug e build
       pubblica.
