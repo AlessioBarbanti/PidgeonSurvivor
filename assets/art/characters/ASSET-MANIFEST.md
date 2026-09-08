@@ -148,6 +148,24 @@ Causa: gap di definizione percepito fra il personaggio giocabile (nativo
 la card PS-116 per l'analisi completa. Nessun master toccato: stesso
 `hd/poses.png` di ciascun personaggio, gia' approvato.
 
+**Trattamento di leggibilita opt-in, solo alea e zat (PS-132, dall'8 settembre
+2026):** aggiunge `-ReadabilityTreatment -PaletteColors 16
+-FinalAlphaThreshold 140 -OutlineDarkenFactor 0.2 -OutlineThickness 2` al
+comando corrente. Causa meccanica accertata: con area utile `56px` e figura
+sorgente alta ~950px, il campionamento nearest-neighbor secco scarta quasi
+tutti i pixel sorgente (~1 ogni 17x17) e frammenta le strutture sottili (gambe
+filiformi di Alea, arti di Zat) — l'aumento di risoluzione PS-116 non poteva
+correggerlo perche' agisce sul canvas, non sul metodo di campionamento. Il
+trattamento sostituisce, solo per i due derivati in ambito: downscale che
+conserva la massa (media d'area pesata sull'alfa, non piu' nearest-neighbor),
+soglia alfa finale che ripristina bordi netti, quantizzazione palette
+median-cut e contorno scuro (derivato e scurito dal colore dominante del
+frame) fatto crescere per due anelli di dilatazione a 8 connessioni. Nessun
+ritocco di costume, posa o palette d'identita': la quantizzazione media solo
+colori gia' presenti nel master. Opt-in: senza `-ReadabilityTreatment` lo
+script produce lo stesso output byte-a-byte di prima (verificato sugli otto
+personaggi). Gli altri sei derivati del cast restano quindi invariati.
+
 Le sorgenti selezionate dopo la rimozione del chroma sono conservate come PNG
 RGBA HD `1536x1024` in `<id>/hd/`, su richiesta del proprietario, per riusi
 artistici futuri. La presenza di `<id>/hd/.gdignore` e gli exclude filter dei
@@ -158,14 +176,15 @@ nearest.
 ### File e integrita
 
 Byte/hash "runtime" aggiornati al 7 settembre 2026 (PS-116, derivato `192x64`);
-il master HD e il suo hash sono invariati.
+alea e zat aggiornati all'8 settembre 2026 (PS-132, trattamento di
+leggibilita). Il master HD e il suo hash sono invariati per tutti e otto.
 
 | File runtime | Byte master HD | SHA-256 master HD | Byte runtime | SHA-256 runtime |
 |---|---:|---|---:|---|
 | `magno/generated/sprite.png` | `1060810` | `2EA717859B91B420B97F8D9975D67A3C827BA94CC4355739A4DB4FE370F836A5` | `11399` | `6D38CF835DBA9ECDA91A46BF57BAA5F07D7EA3DB9D5B1E85705498DCF4634F92` |
 | `bea/generated/sprite.png` | `953157` | `3C6B26826B9A6B5708174AE6EDB42F1F652A120DE0B17C3405DCAB8CB756059D` | `10550` | `0268364C47C4F21983DB54DA0A18BBA2D97C957A6712041B2DE9B42A0D871D52` |
-| `zat/generated/sprite.png` | `810909` | `DD1EB3F249F37426E9573DE02C2E0292F32A932A0C2059F82325D1F92919780B` | `8584` | `98BB6BFEA0E0144923D7A233AD96BC91695ACBD55D9352F79E04251214C5E1F0` |
-| `alea/generated/sprite.png` | `829661` | `61C760FA609852BA31F5C24CE43626EA41228AAC6DFC9371D78D83F65408FEA5` | `6260` | `5E4A2CFED4B2DB4E749EF87F1801AB7D835F9C736405E7EEA9B4D5EDA0493F26` |
+| `zat/generated/sprite.png` (PS-132) | `810909` | `DD1EB3F249F37426E9573DE02C2E0292F32A932A0C2059F82325D1F92919780B` | `3334` | `3537C676B36A1A23A82557372649C120E7F9948F39024EC1BCDB62D31661545A` |
+| `alea/generated/sprite.png` (PS-132) | `829661` | `61C760FA609852BA31F5C24CE43626EA41228AAC6DFC9371D78D83F65408FEA5` | `2891` | `27804630606B02B10A9DA1B0976CCD87D32573355856F27F9B2480B2B3CABDCA` |
 | `aleo/generated/sprite.png` | `980832` | `53999B4B51D97A918B5AC8F68444417E07B8B17EA4837C239173C5DEF4C787DE` | `9905` | `DC7069EF10B070072337822386A14DE4CA52E7EB412464F08D70D5A32DCC438E` |
 | `lollo/generated/sprite.png` | `862437` | `CA66A174E501BEAB30CA3076F3682CCE955E488EC6EB8BBFC3C7734FDC1CF424` | `9311` | `85CCFA620E98B9B4167C4F06B195228EDB0DCDE4EC91BC79E8834A04B8644872` |
 | `migi/generated/sprite.png` | `810304` | `04EDEE8F99B5849384D268BD35CB4E498EA80BEA1FA961A67BD19B8D1DC75499` | `10130` | `DACE18ACE1A38858B80EF2D4475B2A4ECB4E1EFEEB59D75EE6AF56ECE17DC56E` |

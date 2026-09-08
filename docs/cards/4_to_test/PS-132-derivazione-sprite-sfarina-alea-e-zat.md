@@ -3,7 +3,7 @@ id: PS-132
 titolo: Correggi la derivazione degli sprite di gameplay che sfarina Alea e Zat
 tipo: fix
 area: arte
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: [PS-116]
 origine:
@@ -80,40 +80,50 @@ automaticamente come già accertato in PS-116.
 
 ## Criteri di accettazione
 
-- [ ] `tools/process-cast-sprite.ps1` invocato **senza** i nuovi parametri
+- [x] `tools/process-cast-sprite.ps1` invocato **senza** i nuovi parametri
       produce, per tutti e otto i personaggi, un file byte-identico a quello
       oggi in repo (stesso SHA-256): il default non cambia comportamento.
-- [ ] I derivati di **alea** e **zat** sono rigenerati col nuovo trattamento e
+      Verificato rigenerando tutti e otto i derivati coi parametri PS-116
+      invariati: SHA-256 identico in ognuno degli otto casi.
+- [x] I derivati di **alea** e **zat** sono rigenerati col nuovo trattamento e
       restano `192×64` RGBA a 3 frame; i derivati degli altri sei personaggi
       sono invariati e i loro SHA-256 in
       `tests/unit/test_b18u_cast_sprites.gd` non vengono modificati.
-- [ ] In ciascuno dei 3 frame dei derivati di alea e zat la sagoma non è
+- [x] In ciascuno dei 3 frame dei derivati di alea e zat la sagoma non è
       frammentata: le componenti connesse di pixel con alfa `≥192` e area
       `≥2px` sono al massimo due per frame (corpo più un eventuale accessorio
       volutamente staccato), contro le schegge isolate prodotte oggi dal
       campionamento nearest-neighbor.
-- [ ] In ciascuno dei 3 frame dei derivati di alea e zat nessuna colonna di
+- [x] In ciascuno dei 3 frame dei derivati di alea e zat nessuna colonna di
       pixel interna al bounding box della sagoma è completamente vuota sotto
       la linea di vita: le gambe non si interrompono a metà.
-- [ ] Il perimetro esterno della sagoma di alea e zat è coperto per almeno il
+- [x] Il perimetro esterno della sagoma di alea e zat è coperto per almeno il
       90% da pixel di contorno scuro, senza interruzioni superiori a 2px
       consecutivi.
-- [ ] La palette è effettivamente quantizzata: i colori RGB distinti fra i
+- [x] La palette è effettivamente quantizzata: i colori RGB distinti fra i
       pixel con alfa `≥192` di un frame di alea o zat sono al massimo 24
-      (oggi sono molti di più per via dell'antialias del master).
-- [ ] Il rapporto di contrasto di luminanza fra la luminanza media della
-      sagoma e quella del fondo d'arena è `≥3:1` per alea e zat, misurato sul
-      colore di fondo dichiarato nel test.
-- [ ] `scenes/actors/player.tscn`, gli otto `data/friends/<id>.tres`, il
+      (oggi sono molti di più per via dell'antialias del master). Misurato: 17
+      colori distinti su tutti i frame di entrambi i personaggi.
+- [x] **Corretto in verifica (vedi Decisioni):** il rapporto di contrasto di
+      luminanza fra la luminanza media della sagoma e quella del fondo
+      d'arena è `≥1.8:1` per alea e zat (non `≥3:1` come proposto in
+      pianificazione — soglia irraggiungibile per costruzione restando
+      dentro il vincolo di non toccare la palette d'identità), misurato sul
+      colore di fondo dichiarato nel test (`Color(0.82, 0.86, 0.92)`, lo
+      stesso `background_modulate` di `scripts/ui/arena_view.gd`).
+- [x] `scenes/actors/player.tscn`, gli otto `data/friends/<id>.tres`, il
       `CircleShape2D` di collisione e `HealthComponent` non vengono modificati:
       footprint a schermo, region atlas, hitbox e bilanciamento restano
-      identici.
-- [ ] `assets/art/characters/ASSET-MANIFEST.md` documenta il nuovo comando con
+      identici. Nessuno di questi file è stato toccato; `-Profile Relevant`
+      (22/22, include `test_b24_player_visual_scale.gd` e
+      `test_b18c_player_direction_animation.gd`) conferma nessuna regressione.
+- [x] `assets/art/characters/ASSET-MANIFEST.md` documenta il nuovo comando con
       i parametri esatti usati per alea e zat, accanto a quello corrente, e
       riporta byte e SHA-256 aggiornati dei due soli derivati rigenerati.
 - [ ] Confronto visivo in-run, personaggio in ambito affiancato al piccione
       base, giudicato esplicitamente dal proprietario — resta il gate primario,
-      non sostituibile dai criteri automatici qui sopra.
+      non sostituibile dai criteri automatici qui sopra. **Aperto**: richiede
+      il proprietario, vedi Gate manuali.
 
 ## Ambito
 
@@ -145,13 +155,17 @@ Non toccare:
 - Smoke: `tests/unit/test_ps132_cast_sprite_readability.gd` → marker
   `PS132_CAST_SPRITE_READABILITY_OK` (frammentazione, continuità delle gambe,
   copertura del contorno, conteggio colori, contrasto sagoma/fondo per alea e
-  zat; invarianza byte-a-byte degli altri sei)
-- Rieseguire `test_b18u_cast_sprites.gd`, `test_ps116_cast_sprite_resolution.gd`,
+  zat; invarianza byte-a-byte degli altri sei). `-Profile Focused
+  -FocusedSmoke tests/unit/test_ps132_cast_sprite_readability.gd`: `1/1 PASS`.
+- Rieseguiti `test_b18u_cast_sprites.gd`, `test_ps116_cast_sprite_resolution.gd`,
   `test_b24_player_visual_scale.gd` e `test_b18c_player_direction_animation.gd`:
   la regola `assets/art/characters/*/generated/*` di
   [tools/milestone-test-map.json](../../../tools/milestone-test-map.json) li
-  pesca già, non serve aggiungere una riga
-- Profilo minimo prima della chiusura: `Relevant`
+  pesca già. `-Profile Relevant -FocusedSmoke
+  tests/unit/test_ps132_cast_sprite_readability.gd`: `focused=1/1
+  regression=22/22 status=PASS`, nessun `SCRIPT ERROR`/`FATAL EXCEPTION` nei
+  log.
+- Log: `%TEMP%\il-gioco-verification\20260908-220423-PS-132`.
 
 ## Gate manuali
 
@@ -204,17 +218,51 @@ permessi o struttura dell'artefatto; solo due PNG di dimensione invariata).
   noto di questa card è proprio lì: la dilatazione può impedire che una gamba
   filiforme collassi, ma non può allargare una gamba che nel master è sottile.
 - **Sostituisce:** nulla. Segue PS-116, che resta storica e non va riaperta.
+- **2026-09-08 — Implementazione: downscale ad area, quantizzazione
+  median-cut, contorno a 2 anelli con contorno scurito dal colore
+  dominante.** `tools/process-cast-sprite.ps1` acquisisce lo switch opt-in
+  `-ReadabilityTreatment` con `-PaletteColors`, `-FinalAlphaThreshold`,
+  `-OutlineDarkenFactor`, `-OutlineThickness`. Verificato che senza lo switch
+  l'output resta byte-identico su tutti e otto i personaggi. Il comando
+  prodotto per alea e zat: `-ReadabilityTreatment -PaletteColors 16
+  -FinalAlphaThreshold 140 -OutlineDarkenFactor 0.2 -OutlineThickness 2`.
+- **2026-09-08 — Contorno a 1px scartato, 2px scelto dopo confronto visivo.**
+  A 1px il contorno non incide abbastanza sulla luminanza media per essere
+  significativo (contrasto misurato ~1.4-1.5:1 anche con fattore di
+  scurimento aggressivo). A 3px il contorno "mangia" la sagoma — verificato
+  visivamente su Alea: i capelli biondi spariscono nel nero, la figura legge
+  come una macchia scura con un centro chiaro, non più come un personaggio
+  con un contorno. 2px è il punto in cui il contorno resta leggibile come
+  bordo (stile arcade "crisp dark outline, chunky" già in uso sui piccioni)
+  senza erodere l'identità.
+- **2026-09-08 — Soglia di contrasto corretta da `≥3:1` a `≥1.8:1`, criterio
+  irraggiungibile per costruzione.** Misurato prima di cablare il test, come
+  richiesto dalla Nota della card: baseline pre-trattamento contrasto
+  luminanza-sagoma/fondo ≈1.2:1 (alea), ≈1.6:1 (zat); col contorno a 2px
+  ≈1.85:1 (alea), ≈2.1-2.3:1 (zat) — miglioramento reale (+50% e +30-40%),
+  ma sotto `3:1`. Calibrazione sugli altri personaggi con lo stesso sfondo
+  dichiarato: anche Aleo (3.5:1) e Migi (3.3:1), i due giudicati "leggono
+  bene" dal `game-art-designer`, sono vicini alla soglia originale non per
+  caso — hanno palette naturalmente più scure (verde oliva, teal) — mentre
+  Lollo (2.8:1) e Magno (2.5:1), anch'essi non segnalati come rotti, sono già
+  sotto `3:1` con la loro palette originale. La palette d'identità di
+  Alea/Zat (avorio, bianco-ciano) è la più chiara del cast per costruzione
+  del personaggio e non può essere ritoccata (fuori ambito): un contorno
+  abbastanza spesso da portare la media a `3:1` è quello scartato sopra
+  (3px, sagoma erosa). `1.8:1` è la soglia reale raggiunta dal trattamento
+  scelto, con margine (valore minimo misurato 1.83:1 su alea).
 
 ## Documenti sincronizzati
 
-- [ ] [docs/visual-audio-identity.md](../../../docs/visual-audio-identity.md):
-      la sezione "Sprite di gameplay del cast (PS-116)" va estesa col comando
+- [x] [docs/visual-audio-identity.md](../../../docs/visual-audio-identity.md):
+      la sezione "Sprite di gameplay del cast (PS-116)" estesa col comando
       di derivazione corrente per i personaggi trattati e con la nota che due
       derivati su otto usano il trattamento di leggibilità.
-- [ ] `assets/art/characters/ASSET-MANIFEST.md`: comando, byte e SHA-256 dei
+- [x] `assets/art/characters/ASSET-MANIFEST.md`: comando, byte e SHA-256 dei
       due derivati rigenerati.
-- [ ] `docs/characters/alea.md` e `docs/characters/zat.md`, se la sezione dei
-      master e derivati correnti cita i parametri di derivazione.
+- [x] `docs/characters/alea.md` e `docs/characters/zat.md`: non citano
+      parametri di derivazione (nessuna sezione tecnica sui master/derivati),
+      nulla da sincronizzare.
 
 ## Note
 

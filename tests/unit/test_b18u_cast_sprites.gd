@@ -15,13 +15,13 @@ const EXPECTED_CAST := {
 	},
 	&"zat": {
 		"path": "res://assets/art/characters/zat/generated/sprite.png",
-		"sha256": "98BB6BFEA0E0144923D7A233AD96BC91695ACBD55D9352F79E04251214C5E1F0",
+		"sha256": "3537C676B36A1A23A82557372649C120E7F9948F39024EC1BCDB62D31661545A",
 		"passive": &"zat_delayed_healing",
 		"ability": &"zat_lightning_storm",
 	},
 	&"alea": {
 		"path": "res://assets/art/characters/alea/generated/sprite.png",
-		"sha256": "5E4A2CFED4B2DB4E749EF87F1801AB7D835F9C736405E7EEA9B4D5EDA0493F26",
+		"sha256": "27804630606B02B10A9DA1B0976CCD87D32573355856F27F9B2480B2B3CABDCA",
 		"passive": &"alea_two_fingers_and_go",
 		"ability": &"alea_grand_spin",
 	},
