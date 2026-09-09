@@ -72,6 +72,13 @@ intervallo di spawn, accelerazione, scala del budget XP, evoluzione dei pesi
 per archetipo fra `01:00` e `05:00` e garanzia tiratore da `03:00`. Non
 duplicato qui.
 
+**PS-081 — la musica di run segue la stessa curva.** `late_run_curve_start_seconds`/
+`late_run_curve_full_seconds` guidano anche `GameAudio` (non solo lo spawn):
+fra le due soglie la musica di run accelera gradualmente fino a
+`+MUSIC_LATE_RUN_MAX_PITCH_SCALE_OFFSET`, restando al massimo oltre la
+soglia finale — stesse costanti, nessuna soglia audio duplicata. Dettagli
+del meccanismo in `docs/visual-audio-identity.md`.
+
 Quattro archetipi correnti (`data/enemies/enemy_archetype_*.tres`, selezione
 pesata in `enemy_spawner.gd:_pick_archetype`, righe 316-342):
 

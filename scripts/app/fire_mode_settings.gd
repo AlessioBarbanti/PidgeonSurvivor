@@ -2,8 +2,9 @@ class_name FireModeSettings
 extends Node
 
 ## PS-085: modalita' di sparo persistente (Automatico/Manuale), stesso
-## pattern di TouchControlSettings — impostazione condivisa fra welcome e
-## pausa (PS-050), non un toggle in-run ne' una scelta per personaggio.
+## pattern di TouchControlSettings — impostazione condivisa nell'overlay
+## impostazioni (PS-050, poi PS-137), non un toggle in-run ne' una scelta
+## per personaggio.
 signal settings_changed(manual_enabled: bool)
 
 const DEFAULT_SETTINGS_PATH := "user://fire_mode_settings.cfg"
@@ -14,8 +15,7 @@ const DEFAULT_MANUAL_ENABLED := false
 @export_file("*.cfg") var settings_path := DEFAULT_SETTINGS_PATH
 
 var _manual_enabled := DEFAULT_MANUAL_ENABLED
-var _welcome_screen: WelcomeScreen
-var _pause_overlay: PauseOverlay
+var _settings_overlay: SettingsOverlay
 
 
 func _ready() -> void:
@@ -26,18 +26,15 @@ func _exit_tree() -> void:
 	_disconnect_controls()
 
 
-func configure(
-	welcome_screen: WelcomeScreen,
-	pause_overlay: PauseOverlay
-) -> bool:
+## PS-137: un solo overlay condiviso al posto dei due nodi (welcome + pausa)
+## sincronizzati a mano da PS-050 in avanti.
+func configure(settings_overlay: SettingsOverlay) -> bool:
 	_disconnect_controls()
-	_welcome_screen = welcome_screen
-	_pause_overlay = pause_overlay
-	if not is_instance_valid(_welcome_screen) or not is_instance_valid(_pause_overlay):
+	_settings_overlay = settings_overlay
+	if not is_instance_valid(_settings_overlay):
 		_disconnect_controls()
 		return false
-	_welcome_screen.fire_mode_toggled.connect(_on_fire_mode_toggled)
-	_pause_overlay.fire_mode_toggled.connect(_on_fire_mode_toggled)
+	_settings_overlay.fire_mode_toggled.connect(_on_fire_mode_toggled)
 	_sync_controls()
 	return true
 
@@ -89,21 +86,15 @@ func _save_settings() -> void:
 
 
 func _sync_controls() -> void:
-	if is_instance_valid(_welcome_screen):
-		_welcome_screen.set_manual_fire_mode(_manual_enabled)
-	if is_instance_valid(_pause_overlay):
-		_pause_overlay.set_manual_fire_mode(_manual_enabled)
+	if is_instance_valid(_settings_overlay):
+		_settings_overlay.set_manual_fire_mode(_manual_enabled)
 
 
 func _disconnect_controls() -> void:
-	if is_instance_valid(_welcome_screen):
-		if _welcome_screen.fire_mode_toggled.is_connected(_on_fire_mode_toggled):
-			_welcome_screen.fire_mode_toggled.disconnect(_on_fire_mode_toggled)
-	if is_instance_valid(_pause_overlay):
-		if _pause_overlay.fire_mode_toggled.is_connected(_on_fire_mode_toggled):
-			_pause_overlay.fire_mode_toggled.disconnect(_on_fire_mode_toggled)
-	_welcome_screen = null
-	_pause_overlay = null
+	if is_instance_valid(_settings_overlay):
+		if _settings_overlay.fire_mode_toggled.is_connected(_on_fire_mode_toggled):
+			_settings_overlay.fire_mode_toggled.disconnect(_on_fire_mode_toggled)
+	_settings_overlay = null
 
 
 func _on_fire_mode_toggled(manual_enabled: bool) -> void:

@@ -18,6 +18,15 @@ const BOSS_MUSIC_VOLUME_DB := -5.0
 const MUSIC_CROSSFADE_SILENCE_DB := -80.0
 ## PS-080: musica dedicata di fine run, un solo colpo, non in loop.
 const END_RUN_MUSIC_VOLUME_DB := -4.0
+## PS-056: quanto la musica di run scende sotto il proprio volume di base nei
+## momenti chiave (countdown Boss, level-up, ricompensa Barb). Applicato come
+## bersaglio assoluto, non cumulativo: più momenti sovrapposti restano allo
+## stesso livello invece di sommarsi.
+const MUSIC_DUCK_OFFSET_DB := -8.0
+## PS-081: quanto più veloce (e quindi più acuta) suona la musica di run al
+## culmine della curva late-run rispetto alla velocità normale (1.0). Tarabile
+## dopo l'ascolto reale, come ogni altra costante di presentazione audio.
+const MUSIC_LATE_RUN_MAX_PITCH_SCALE_OFFSET := 0.12
 
 const SHOT := &"shot"
 const HIT := &"hit"
@@ -38,6 +47,19 @@ const PAUSE := &"pause"
 const RESUME := &"resume"
 const VICTORY := &"victory"
 const DEFEAT := &"defeat"
+## PS-074: click generico dei bottoni UI senza un cue già dedicato (Gioca,
+## Tutorial, Impostazioni, Precedente/Successivo, Indietro, Continua Boss,
+## Riprova/Cambia personaggio...). Non sostituisce `UI_CONFIRM`/`PAUSE`/
+## `RESUME`, che restano sui propri bottoni.
+const UI_CLICK := &"ui_click"
+
+## PS-056: chiavi dei momenti che chiedono un ducking della musica di run.
+## Un Dictionary-as-set (`_music_duck_reasons`) permette a più momenti di
+## sovrapporsi senza sommare l'abbassamento e senza ripristinare il volume
+## finché anche solo uno resta attivo.
+const DUCK_REASON_BOSS_WARNING := &"boss_warning"
+const DUCK_REASON_LEVEL_UP := &"level_up"
+const DUCK_REASON_BARB_REWARD := &"barb_reward"
 
 @export_range(0.0, 1.0, 0.05) var default_effects_volume := 0.8
 @export_file("*.cfg") var settings_path := DEFAULT_SETTINGS_PATH
@@ -57,6 +79,7 @@ const DEFEAT := &"defeat"
 
 @export_group("Interface")
 @export var ui_confirm_stream: AudioStream
+@export var ui_click_stream: AudioStream
 @export var pause_stream: AudioStream
 @export var resume_stream: AudioStream
 @export var victory_stream: AudioStream
@@ -103,8 +126,12 @@ var _menu_music_active := false
 var _boss_music_active := false
 var _end_run_music_active := false
 var _music_crossfade_tween: Tween
+var _music_duck_reasons: Dictionary = {}
+var _music_duck_tween: Tween
+var _last_boss_warning_phase: GameDirector.BossWarningPhase = GameDirector.BossWarningPhase.HIDDEN
 
 var _run_controller: RunController
+var _game_director: GameDirector
 var _player: Player
 var _weapon_controller: WeaponController
 var _ability_controller: AbilityController
@@ -114,6 +141,13 @@ var _upgrade_overlay: UpgradeOverlay
 var _barb_reward_overlay: BarbRewardOverlay
 var _character_select_overlay: CharacterSelectOverlay
 var _pause_overlay: PauseOverlay
+var _welcome_screen: WelcomeScreen
+var _tutorial_screen: TutorialScreen
+var _end_screen: EndScreen
+var _boss_ui: BossUI
+## PS-137: sostituisce `_pause_overlay` come sorgente di `audio_volume_changed`/
+## `audio_mute_toggled` — un solo overlay condiviso invece di due nodi.
+var _settings_overlay: SettingsOverlay
 
 
 func _ready() -> void:
@@ -143,7 +177,13 @@ func configure(
 	upgrade_overlay: UpgradeOverlay,
 	barb_reward_overlay: BarbRewardOverlay,
 	character_select_overlay: CharacterSelectOverlay,
-	pause_overlay: PauseOverlay
+	pause_overlay: PauseOverlay,
+	game_director: GameDirector,
+	welcome_screen: WelcomeScreen,
+	tutorial_screen: TutorialScreen,
+	end_screen: EndScreen,
+	boss_ui: BossUI,
+	settings_overlay: SettingsOverlay
 ) -> bool:
 	if (
 		not is_instance_valid(run_controller)
@@ -156,6 +196,12 @@ func configure(
 		or not is_instance_valid(barb_reward_overlay)
 		or not is_instance_valid(character_select_overlay)
 		or not is_instance_valid(pause_overlay)
+		or not is_instance_valid(game_director)
+		or not is_instance_valid(welcome_screen)
+		or not is_instance_valid(tutorial_screen)
+		or not is_instance_valid(end_screen)
+		or not is_instance_valid(boss_ui)
+		or not is_instance_valid(settings_overlay)
 	):
 		return false
 
@@ -169,8 +215,16 @@ func configure(
 	_barb_reward_overlay = barb_reward_overlay
 	_character_select_overlay = character_select_overlay
 	_pause_overlay = pause_overlay
+	_game_director = game_director
+	_welcome_screen = welcome_screen
+	_tutorial_screen = tutorial_screen
+	_end_screen = end_screen
+	_boss_ui = boss_ui
+	_settings_overlay = settings_overlay
 
 	_connect_once(_run_controller.state_changed, _on_run_state_changed)
+	_connect_once(_game_director.boss_warning_changed, _on_boss_warning_changed)
+	_connect_once(_run_controller.run_time_changed, _on_run_time_changed)
 	_connect_once(_run_controller.run_ended, _on_run_ended)
 	_connect_once(_run_controller.restart_prepared, _on_restart_prepared)
 	_connect_once(_player.damaged, _on_player_damaged)
@@ -185,9 +239,16 @@ func configure(
 	_connect_once(_upgrade_overlay.selection_submitted, _on_upgrade_submitted)
 	_connect_once(_barb_reward_overlay.selection_submitted, _on_upgrade_submitted)
 	_connect_once(_character_select_overlay.friend_confirmed, _on_friend_confirmed)
-	_connect_once(_pause_overlay.audio_volume_changed, _on_audio_volume_changed)
-	_connect_once(_pause_overlay.audio_mute_toggled, _on_audio_mute_toggled)
-	_pause_overlay.set_audio_settings(_effects_volume, _muted)
+	_connect_once(_settings_overlay.audio_volume_changed, _on_audio_volume_changed)
+	_connect_once(_settings_overlay.audio_mute_toggled, _on_audio_mute_toggled)
+	_settings_overlay.set_audio_settings(_effects_volume, _muted)
+	_connect_once(_pause_overlay.ui_click_requested, _on_ui_click_requested)
+	_connect_once(_character_select_overlay.ui_click_requested, _on_ui_click_requested)
+	_connect_once(_welcome_screen.ui_click_requested, _on_ui_click_requested)
+	_connect_once(_tutorial_screen.ui_click_requested, _on_ui_click_requested)
+	_connect_once(_end_screen.ui_click_requested, _on_ui_click_requested)
+	_connect_once(_boss_ui.ui_click_requested, _on_ui_click_requested)
+	_connect_once(_settings_overlay.ui_click_requested, _on_ui_click_requested)
 	_configured = true
 	return true
 
@@ -251,6 +312,7 @@ func has_complete_cue_set() -> bool:
 		BOSS_VICTORY,
 		DODGE,
 		UI_CONFIRM,
+		UI_CLICK,
 		PAUSE,
 		RESUME,
 		VICTORY,
@@ -357,6 +419,8 @@ func get_stream_for_cue(cue_id: StringName) -> AudioStream:
 			return dodge_stream
 		UI_CONFIRM:
 			return ui_confirm_stream
+		UI_CLICK:
+			return ui_click_stream
 		PAUSE:
 			return pause_stream
 		RESUME:
@@ -501,8 +565,8 @@ func _apply_settings() -> void:
 			linear_to_db(maxf(_effects_volume, MINIMUM_LINEAR_VOLUME))
 		)
 		AudioServer.set_bus_mute(bus_index, _muted or _effects_volume <= 0.0)
-	if is_instance_valid(_pause_overlay):
-		_pause_overlay.set_audio_settings(_effects_volume, _muted)
+	if is_instance_valid(_settings_overlay):
+		_settings_overlay.set_audio_settings(_effects_volume, _muted)
 	settings_changed.emit(_effects_volume, _muted)
 
 
@@ -538,14 +602,25 @@ func _connect_once(source_signal: Signal, callable: Callable) -> void:
 		source_signal.connect(callable)
 
 
+## PS-056: LEVEL_UP e BARB_REWARD non fermano piu' la musica di run come gli
+## altri modal (MANUAL_PAUSE la ferma ancora, invariato) — la abbassano
+## (ducking) lasciandola udibile sotto lo stinger, poi la restituiscono al
+## volume di partenza alla chiusura.
 func _on_run_state_changed(previous_state: RunController.RunState, current_state: RunController.RunState) -> void:
 	if current_state == RunController.RunState.RUNNING:
-		if not _boss_music_active:
+		if not _boss_music_active and not _background_music_active:
 			start_background_music()
+		_clear_music_duck(DUCK_REASON_LEVEL_UP)
+		_clear_music_duck(DUCK_REASON_BARB_REWARD)
 	elif current_state == RunController.RunState.BOSS_INTRO and has_boss_music():
 		# PS-073 possiede in esclusiva questa transizione: il crossfade verso
 		# la traccia Boss parte da _on_boss_intro_started, non da qui.
 		pass
+	elif current_state == RunController.RunState.LEVEL_UP:
+		_apply_music_duck(DUCK_REASON_LEVEL_UP)
+	elif current_state == RunController.RunState.BARB_REWARD:
+		_apply_music_duck(DUCK_REASON_BARB_REWARD)
+		play_cue(LEVEL_UP, -1.0)
 	elif previous_state == RunController.RunState.RUNNING:
 		pause_background_music()
 	elif current_state == RunController.RunState.BOOT or current_state in [
@@ -559,6 +634,29 @@ func _on_run_state_changed(previous_state: RunController.RunState, current_state
 		play_cue(PAUSE, -2.0)
 	elif previous_state == RunController.RunState.MANUAL_PAUSE and current_state == RunController.RunState.RUNNING:
 		play_cue(RESUME, -2.0)
+
+
+## PS-081: accelera la musica di run (mai la traccia Boss dedicata, PS-073)
+## fra le soglie late-run già dichiarate da `EnemySpawnProfile`, invece di un
+## secondo layer sincronizzato. `run_time_changed` emette solo mentre
+## `RunController.is_running()`, quindi la velocità resta ferma da sola
+## durante LEVEL_UP/BARB_REWARD/BOSS_INTRO e riprende da dove era senza
+## bisogno di uno stato salvato a parte.
+func _on_run_time_changed(run_time: float) -> void:
+	if not is_instance_valid(_background_music_player):
+		return
+	var spawner := _game_director.get_enemy_spawner() if is_instance_valid(_game_director) else null
+	var profile: EnemySpawnProfile = spawner.spawn_profile if is_instance_valid(spawner) else null
+	if profile == null:
+		return
+	var start_seconds := profile.late_run_curve_start_seconds
+	var full_seconds := profile.late_run_curve_full_seconds
+	var progress := 0.0
+	if full_seconds > start_seconds:
+		progress = clampf((run_time - start_seconds) / (full_seconds - start_seconds), 0.0, 1.0)
+	elif run_time >= start_seconds:
+		progress = 1.0
+	_background_music_player.pitch_scale = 1.0 + MUSIC_LATE_RUN_MAX_PITCH_SCALE_OFFSET * progress
 
 
 func _on_run_ended(final_state: RunController.RunState, _run_time: float) -> void:
@@ -641,10 +739,12 @@ func stop_menu_music() -> void:
 
 func stop_background_music() -> void:
 	_kill_music_crossfade_tween()
+	_reset_music_duck_state()
 	if is_instance_valid(_background_music_player):
 		_background_music_player.stop()
 		_background_music_player.stream = null
 		_background_music_player.volume_db = BACKGROUND_MUSIC_VOLUME_DB
+		_background_music_player.pitch_scale = 1.0
 	_background_music_active = false
 	_background_music_resume_position = 0.0
 
@@ -658,6 +758,7 @@ func start_boss_music() -> bool:
 	if not has_boss_music():
 		return false
 	_boss_music_active = true
+	_reset_music_duck_state()
 	_enable_stream_loop(boss_music_stream)
 	if signal_only_in_headless and DisplayServer.get_name() == "headless":
 		if _background_music_active:
@@ -706,6 +807,7 @@ func end_boss_music() -> void:
 	if not _boss_music_active:
 		return
 	_boss_music_active = false
+	_reset_music_duck_state()
 	var can_resume_run_music := (
 		is_instance_valid(_run_controller)
 		and _run_controller.get_state() == RunController.RunState.RUNNING
@@ -749,6 +851,7 @@ func end_boss_music() -> void:
 ## tracce deve restare attiva in sottofondo.
 func stop_boss_music() -> void:
 	_kill_music_crossfade_tween()
+	_reset_music_duck_state()
 	if is_instance_valid(_boss_music_player):
 		_boss_music_player.stop()
 		_boss_music_player.stream = null
@@ -811,6 +914,71 @@ func _kill_music_crossfade_tween() -> void:
 	_music_crossfade_tween = null
 
 
+## PS-056: vero se almeno un momento chiave sta abbassando la musica di run.
+func is_music_ducked() -> bool:
+	return not _music_duck_reasons.is_empty()
+
+
+## PS-056: aggiunge `reason` all'insieme dei momenti attivi e riporta la
+## musica di run al bersaglio ducked (idempotente: un secondo momento che si
+## sovrappone non abbassa ulteriormente).
+func _apply_music_duck(reason: StringName) -> void:
+	_music_duck_reasons[reason] = true
+	_update_music_duck(PresentationTimings.MUSIC_DUCK_DOWN_SECONDS)
+
+
+## PS-056: rimuove `reason`; la musica risale al volume di base solo quando
+## nessun altro momento resta attivo.
+func _clear_music_duck(reason: StringName) -> void:
+	if not _music_duck_reasons.erase(reason):
+		return
+	_update_music_duck(PresentationTimings.MUSIC_DUCK_UP_SECONDS)
+
+
+## PS-056: azzera l'insieme dei momenti attivi senza animare il ritorno —
+## usata dalle transizioni della traccia Boss e di fine run, che governano
+## già loro stesse il volume del player e non devono contendersi il tween.
+func _reset_music_duck_state() -> void:
+	_music_duck_reasons.clear()
+	_kill_music_duck_tween()
+
+
+func _update_music_duck(duration_seconds: float) -> void:
+	var player := _get_active_run_music_player()
+	if not is_instance_valid(player):
+		return
+	var base_db := _get_base_volume_db_for_player(player)
+	var target_db := base_db
+	if not _music_duck_reasons.is_empty():
+		target_db += MUSIC_DUCK_OFFSET_DB
+	_kill_music_duck_tween()
+	if signal_only_in_headless and DisplayServer.get_name() == "headless":
+		player.volume_db = target_db
+		return
+	_music_duck_tween = create_tween()
+	_music_duck_tween.tween_property(player, "volume_db", target_db, duration_seconds)
+
+
+func _kill_music_duck_tween() -> void:
+	if is_instance_valid(_music_duck_tween):
+		_music_duck_tween.kill()
+	_music_duck_tween = null
+
+
+func _get_active_run_music_player() -> AudioStreamPlayer:
+	if _boss_music_active and is_instance_valid(_boss_music_player):
+		return _boss_music_player
+	if _background_music_active and is_instance_valid(_background_music_player):
+		return _background_music_player
+	return null
+
+
+func _get_base_volume_db_for_player(player: AudioStreamPlayer) -> float:
+	if player == _boss_music_player:
+		return BOSS_MUSIC_VOLUME_DB
+	return BACKGROUND_MUSIC_VOLUME_DB
+
+
 func _enable_stream_loop(stream: AudioStream) -> void:
 	if stream is AudioStreamOggVorbis:
 		(stream as AudioStreamOggVorbis).loop = true
@@ -868,6 +1036,28 @@ func _on_boss_spawned(boss: FirstBoss, _schedule_index: int) -> void:
 	_connect_once(boss.attack_executed, _on_boss_attack_executed)
 
 
+## PS-056: `boss_warning_changed` copre l'avvertimento HUD (PS-005) che
+## precede `BOSS_INTRO` a run ancora RUNNING — distinto dal cue BOSS_WARNING
+## già suonato da `_on_boss_intro_started`/`_on_boss_attack_telegraphed`, che
+## restano di competenza di PS-073 e non di questa card. Il ducking scatta
+## solo all'ingresso in COUNTDOWN (non su APPROACHING, troppo anticipato per
+## uno stinger) e si ritira quando la fase lascia COUNTDOWN.
+func _on_boss_warning_changed(
+	_schedule_index: int,
+	phase: GameDirector.BossWarningPhase,
+	_seconds_remaining: int
+) -> void:
+	if phase == _last_boss_warning_phase:
+		return
+	var was_countdown := _last_boss_warning_phase == GameDirector.BossWarningPhase.COUNTDOWN
+	_last_boss_warning_phase = phase
+	if phase == GameDirector.BossWarningPhase.COUNTDOWN:
+		play_cue(BOSS_WARNING, -4.0, 250)
+		_apply_music_duck(DUCK_REASON_BOSS_WARNING)
+	elif was_countdown:
+		_clear_music_duck(DUCK_REASON_BOSS_WARNING)
+
+
 func _on_boss_intro_started(_boss: FirstBoss, _schedule_index: int) -> void:
 	play_cue(BOSS_WARNING, -1.0, 250)
 	start_boss_music()
@@ -900,6 +1090,14 @@ func _on_upgrade_submitted(_upgrade_id: StringName) -> void:
 
 func _on_friend_confirmed(_friend_id: StringName) -> void:
 	play_cue(UI_CONFIRM, -3.0)
+
+
+## PS-074: emesso da `ui_click_requested` di ciascun overlay/schermata, un
+## solo handler condiviso. Il debounce (`minimum_interval_msec`) copre
+## pressioni ravvicinate sullo stesso bottone (es. Precedente/Successivo
+## tenuti premuti) senza introdurre logica specifica per overlay.
+func _on_ui_click_requested() -> void:
+	play_cue(UI_CLICK, -5.0, 80)
 
 
 func _on_audio_volume_changed(value: float) -> void:

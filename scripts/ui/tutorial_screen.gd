@@ -3,6 +3,9 @@ extends Control
 
 signal close_requested()
 signal play_requested()
+## PS-074: Precedente/Successivo — non sull'ultima pagina, dove "Successivo"
+## diventa "GIOCA" e riusa UI_CONFIRM (vedi `_on_next_pressed`).
+signal ui_click_requested()
 
 ## Dimensione desiderata del pannello: viene ridotta quando la safe area del
 ## dispositivo non la contiene, cosi copy e controlli restano sempre protetti.
@@ -249,6 +252,7 @@ func simulate_swipe(start: Vector2, finish: Vector2) -> bool:
 func _on_previous_pressed() -> void:
 	if not visible:
 		return
+	ui_click_requested.emit()
 	if _current_page_index == 0:
 		handle_back_requested()
 		return
@@ -259,8 +263,13 @@ func _on_next_pressed() -> void:
 	if not visible:
 		return
 	if _current_page_index >= pages.size() - 1:
+		# PS-074: nessun ui_click_requested qui — sull'ultima pagina il bottone
+		# diventa "GIOCA" e play_requested fa gia' suonare UI_CONFIRM
+		# (movement_slice.gd:_on_tutorial_play_requested). Un click in piu'
+		# raddoppierebbe il suono sulla stessa pressione.
 		play_requested.emit()
 		return
+	ui_click_requested.emit()
 	show_page(_current_page_index + 1)
 
 

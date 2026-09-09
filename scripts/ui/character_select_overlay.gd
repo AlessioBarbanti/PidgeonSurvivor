@@ -3,6 +3,11 @@ extends Control
 
 signal friend_confirmed(friend_id: StringName)
 signal back_requested()
+## PS-074: solo dai bottoni Precedente/Successivo/Indietro — il bottone di
+## conferma resta coperto da `friend_confirmed` (UI_CONFIRM), senza doppio
+## suono. Non emesso da `navigate_previous()`/`navigate_next()` quando
+## invocati da swipe o scorciatoia, solo dalla pressione del bottone.
+signal ui_click_requested()
 
 const TRANSITION_DURATION := 0.14
 const SWIPE_DISTANCE := 56.0
@@ -128,8 +133,8 @@ var _preview_focus_style: StyleBoxFlat
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_build_card_styles()
-	_previous_button.pressed.connect(navigate_previous)
-	_next_button.pressed.connect(navigate_next)
+	_previous_button.pressed.connect(_on_previous_button_pressed)
+	_next_button.pressed.connect(_on_next_button_pressed)
 	_carousel_viewport.resized.connect(_on_carousel_resized)
 	_portrait_stage.resized.connect(_on_portrait_stage_resized)
 	resized.connect(_on_overlay_resized)
@@ -377,6 +382,16 @@ func navigate_previous() -> void:
 
 func navigate_next() -> void:
 	_navigate(1)
+
+
+func _on_previous_button_pressed() -> void:
+	ui_click_requested.emit()
+	navigate_previous()
+
+
+func _on_next_button_pressed() -> void:
+	ui_click_requested.emit()
+	navigate_next()
 
 
 func handle_touch_event_for_test(event: InputEvent) -> bool:
@@ -898,6 +913,7 @@ func _on_confirm_pressed() -> void:
 
 
 func _on_back_pressed() -> void:
+	ui_click_requested.emit()
 	_emit_back_requested()
 
 

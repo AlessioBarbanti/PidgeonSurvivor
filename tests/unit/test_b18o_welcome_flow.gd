@@ -38,6 +38,7 @@ func test_welcome_flow_contract() -> void:
 	var lifecycle := movement_slice.get_platform_lifecycle() as PlatformLifecycle
 	var audio := movement_slice.get_game_audio() as GameAudio
 	var visual_settings := movement_slice.get_visual_accessibility_settings() as VisualAccessibilitySettings
+	var settings_overlay := movement_slice.get_settings_overlay() as SettingsOverlay
 	var spawner := movement_slice.get_enemy_spawner() as EnemySpawner
 	var router := movement_slice.get_node("InputRouter") as InputRouter
 	var joystick := movement_slice.get_node("UI/SafeAreaRoot/TouchJoystick") as TouchJoystick
@@ -66,12 +67,12 @@ func test_welcome_flow_contract() -> void:
 
 	var play_button := welcome.get_play_button()
 	var settings_button := welcome.get_settings_button()
-	var close_settings_button := welcome.get_close_settings_button()
 	assert_true(
-		play_button != null and settings_button != null,
-		"La welcome deve esporre GIOCA e l'ingranaggio impostazioni."
+		play_button != null and settings_button != null and settings_overlay != null,
+		"La welcome deve esporre GIOCA, l'ingranaggio impostazioni e l'overlay condiviso."
 	)
-	assert_not_null(close_settings_button, "Le impostazioni devono esporre INDIETRO.")
+	var close_settings_button := settings_overlay.get_close_button() if settings_overlay != null else null
+	assert_not_null(close_settings_button, "L'overlay impostazioni deve esporre CHIUDI.")
 	if play_button == null or settings_button == null or close_settings_button == null:
 		return
 	for button in [play_button, settings_button, close_settings_button]:
@@ -106,15 +107,19 @@ func test_welcome_flow_contract() -> void:
 
 	settings_button.pressed.emit()
 	await wait_process_frames(2)
-	assert_true(welcome.is_settings_visible(), "IMPOSTAZIONI deve aprire i controlli persistenti.")
+	assert_true(settings_overlay.is_open(), "IMPOSTAZIONI deve aprire l'overlay condiviso.")
+	assert_eq(
+		settings_overlay.get_active_tab(), SettingsOverlay.Tab.AUDIO,
+		"L'overlay deve aprirsi sempre sulla tab AUDIO."
+	)
 	assert_false(
 		welcome.is_title_plaque_visible(),
 		"Le impostazioni devono liberare lo spazio dell'insegna per non coprire il cast."
 	)
-	assert_true(lifecycle.request_back(), "Back deve chiudere le impostazioni della welcome.")
+	assert_true(lifecycle.request_back(), "Back deve chiudere l'overlay impostazioni aperto dalla welcome.")
 	await wait_process_frames(2)
 	assert_true(
-		not welcome.is_settings_visible() and welcome.visible, "Back dalle impostazioni deve tornare alla welcome."
+		not settings_overlay.is_open() and welcome.visible, "Back dalle impostazioni deve tornare alla welcome."
 	)
 	assert_true(
 		welcome.is_title_plaque_visible(), "Back dalle impostazioni deve ripristinare l'insegna principale."
@@ -128,22 +133,14 @@ func test_welcome_flow_contract() -> void:
 	var original_reduced_flashes := visual_settings.is_reduced_flashes_enabled()
 	settings_button.pressed.emit()
 	await wait_process_frames(1)
-	welcome.get_volume_slider().value = 0.35
-	welcome.get_mute_check_button().button_pressed = true
-	welcome.get_reduced_flashes_check_button().button_pressed = true
+	settings_overlay.get_volume_slider().value = 0.35
+	settings_overlay.get_mute_check_button().button_pressed = true
+	settings_overlay.get_reduced_flashes_check_button().button_pressed = true
 	await wait_process_frames(1)
 	assert_true(is_equal_approx(audio.get_effects_volume(), 0.35), "Il volume welcome deve usare GameAudio.")
 	assert_true(audio.is_muted(), "Il mute welcome deve usare GameAudio.")
 	assert_true(
 		visual_settings.is_reduced_flashes_enabled(), "Flash ridotti deve usare l'autorita persistente."
-	)
-	assert_true(
-		is_equal_approx(movement_slice.get_pause_overlay().get_audio_volume(), 0.35),
-		"Welcome e pausa devono restare sincronizzate."
-	)
-	assert_true(
-		movement_slice.get_pause_overlay().is_reduced_flashes_enabled(),
-		"L'accessibilita deve restare sincronizzata con la pausa."
 	)
 	audio.set_effects_volume(original_volume)
 	audio.set_muted(original_muted)

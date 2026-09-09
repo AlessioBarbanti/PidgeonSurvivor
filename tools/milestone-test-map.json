@@ -76,7 +76,8 @@
         "tests/unit/test_b16_complete_run.gd",
         "tests/unit/test_b33_recurring_boss.gd",
         "tests/unit/test_ps005_boss_warning.gd",
-        "tests/unit/test_ps126_post_curve_pressure.gd"
+        "tests/unit/test_ps126_post_curve_pressure.gd",
+        "tests/unit/test_ps056_audio_ducking.gd"
       ]
     },
     {
@@ -352,7 +353,6 @@
         "tests/unit/test_b18o_welcome_flow.gd",
         "tests/unit/test_b54_tutorial_flow.gd",
         "tests/unit/test_ps048_tutorial_runtime_fidelity.gd",
-        "tests/unit/test_ps050_welcome_settings_system.gd",
         "tests/unit/test_ps053_run_summary.gd",
         "tests/unit/test_typography.gd",
         "tests/unit/test_ps005_boss_warning.gd",
@@ -367,7 +367,9 @@
         "tests/unit/test_ps085_manual_fire_mode.gd",
         "tests/unit/test_ps103_boss_intro_frame_wiring.gd",
         "tests/unit/test_ps106_alea_sobriety_hud.gd",
-        "tests/unit/test_ps094_ability_charge_stacking.gd"
+        "tests/unit/test_ps094_ability_charge_stacking.gd",
+        "tests/unit/test_ps074_ui_click_feedback.gd",
+        "tests/unit/test_ps137_shared_settings_overlay.gd"
       ]
     },
     {
@@ -388,7 +390,8 @@
         "tests/unit/test_b18o_welcome_flow.gd",
         "tests/unit/test_b18n_pause_change_character.gd",
         "tests/unit/test_b18p_touch_control_settings.gd",
-        "tests/unit/test_ps085_manual_fire_mode.gd"
+        "tests/unit/test_ps085_manual_fire_mode.gd",
+        "tests/unit/test_ps137_shared_settings_overlay.gd"
       ]
     },
     {
@@ -407,7 +410,8 @@
         "tests/unit/test_ps099_state_tell_aura.gd",
         "tests/unit/test_b44_state_tells.gd",
         "tests/unit/test_ps029_state_tell_visibility.gd",
-        "tests/unit/test_ps079_state_tell_particles.gd"
+        "tests/unit/test_ps079_state_tell_particles.gd",
+        "tests/unit/test_ps056_audio_ducking.gd"
       ]
     },
     {
@@ -422,7 +426,11 @@
         "tests/unit/test_ps072_bea_dodge_audio.gd",
         "tests/unit/test_ps073_boss_dedicated_music.gd",
         "tests/unit/test_ps080_end_run_music.gd",
-        "tests/unit/test_ps136_boss_victory_fanfare.gd"
+        "tests/unit/test_ps136_boss_victory_fanfare.gd",
+        "tests/unit/test_ps056_audio_ducking.gd",
+        "tests/unit/test_ps081_late_run_music_intensity.gd",
+        "tests/unit/test_ps074_ui_click_feedback.gd",
+        "tests/unit/test_ps137_shared_settings_overlay.gd"
       ]
     },
     {

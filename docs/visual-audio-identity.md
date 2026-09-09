@@ -161,15 +161,27 @@ musica di run, uno per quella di menu, uno per la traccia Boss (PS-073) e uno
 per la musica dedicata di fine run (PS-080), persistenza volume/mute su
 `user://audio_settings.cfg`.
 
-16 cue dichiarati: `SHOT`, `HIT`, `PLAYER_DAMAGE`, `PICKUP`, `LEVEL_UP`,
+17 cue dichiarati: `SHOT`, `HIT`, `PLAYER_DAMAGE`, `PICKUP`, `LEVEL_UP`,
 `ABILITY_ACTIVATE`, `ABILITY_READY`, `BOSS_WARNING`, `BOSS_ATTACK`,
-`BOSS_VICTORY`, `DODGE`, `UI_CONFIRM`, `PAUSE`, `RESUME`, `VICTORY`,
-`DEFEAT`. `has_complete_cue_set()` li verifica tutti e **16** (PS-136 ha
-aggiunto `BOSS_VICTORY`, una fanfara puntuale a ogni sconfitta di Boss —
-inclusa ogni ricorrenza nella stessa run — distinta dal cue `VICTORY` di fine
-run).
+`BOSS_VICTORY`, `DODGE`, `UI_CONFIRM`, `UI_CLICK`, `PAUSE`, `RESUME`,
+`VICTORY`, `DEFEAT`. `has_complete_cue_set()` li verifica tutti e **17**
+(PS-136 ha aggiunto `BOSS_VICTORY`, una fanfara puntuale a ogni sconfitta di
+Boss — inclusa ogni ricorrenza nella stessa run — distinta dal cue `VICTORY`
+di fine run; PS-074 ha aggiunto `UI_CLICK`, il click generico dei bottoni UI
+che non avevano già un cue dedicato).
 
-File audio runtime: 15 SFX Kenney CC0
+PS-074 — `UI_CLICK`: ogni overlay/schermata con bottoni prima silenziosi
+(`PauseOverlay`, `CharacterSelectOverlay`, `WelcomeScreen`, `TutorialScreen`,
+`EndScreen`, `BossUI`) espone un segnale `ui_click_requested()`, emesso solo
+dai bottoni **senza** un cue già dedicato — mai da quelli che causano già
+`UI_CONFIRM`/`PAUSE`/`RESUME` (es. Gioca e Tutorial della welcome, o
+"Successivo" quando diventa "GIOCA" sull'ultima pagina del tutorial, restano
+sul solo `UI_CONFIRM` esistente). `GameAudio._on_ui_click_requested()` è
+l'unico handler condiviso, con un debounce di 80ms sullo stesso cue per
+evitare accumulo su pressioni ravvicinate (es. Precedente/Successivo tenuti
+premuti).
+
+File audio runtime: 16 SFX Kenney CC0
 ([kenney_b18/ASSET-MANIFEST.md](../assets/audio/third_party/kenney_b18/ASSET-MANIFEST.md))
 mappati 1:1 sui cue di combattimento/interfaccia; `DODGE` usa
 `dodge.ogg`, un take del CC0 Swishes Sound Pack di artisticdude
@@ -197,6 +209,34 @@ dell'intro Boss (`boss_intro_started`) alla sconfitta (`boss_defeated`) la
 musica di run e quella Boss si scambiano con un crossfade di
 `PresentationTimings.BOSS_MUSIC_CROSSFADE_SECONDS` (1.5s) sul bus `Music`; la
 musica di run riprende dalla posizione lasciata, non da capo.
+
+Ducking nei momenti chiave (PS-056): il countdown dell'avvertimento Boss
+(`GameDirector.BossWarningPhase.COUNTDOWN`, non l'`APPROACHING` più
+anticipato), `LEVEL_UP` e `BARB_REWARD` abbassano la musica di run di
+`GameAudio.MUSIC_DUCK_OFFSET_DB` (-8 dB) invece di fermarla — a differenza di
+`MANUAL_PAUSE`, che resta un'interruzione netta. La discesa
+(`PresentationTimings.MUSIC_DUCK_DOWN_SECONDS`, 0.25s) è più rapida della
+risalita (`MUSIC_DUCK_UP_SECONDS`, 0.6s); più momenti sovrapposti restano a
+un solo livello, non si sommano, e la musica risale solo quando l'ultimo si
+chiude. Il countdown Boss riusa il cue `BOSS_WARNING` come stinger; la
+ricompensa Barb riusa `LEVEL_UP`, che nel level-up stesso è già lo stinger
+esistente.
+
+Accelerazione late-run (PS-081): fra `late_run_curve_start_seconds` e
+`late_run_curve_full_seconds` (le stesse soglie della curva di difficoltà,
+`EnemySpawnProfile`, `docs/systems-difficulty.md`) la musica di run accelera
+gradualmente fino a `pitch_scale = 1.0 + GameAudio.MUSIC_LATE_RUN_MAX_PITCH_SCALE_OFFSET`
+(+12%, tarabile dopo l'ascolto reale), restando a quel valore oltre la
+soglia finale. Nessun nuovo asset: stessa traccia, solo velocità di
+riproduzione (e quindi anche intonazione) più alta — non un secondo layer da
+sincronizzare in fase. La traccia Boss dedicata (PS-073) non è mai toccata.
+Il valore deriva in continuo dal tempo di run corrente
+(`RunController.run_time_changed`), quindi resta fermo da solo nei modal che
+sospendono il clock di run (`LEVEL_UP`, `BARB_REWARD`, `MANUAL_PAUSE`,
+`BOSS_INTRO`) e riprende dal punto corretto senza stato salvato a parte;
+resta indipendente dal ducking di PS-056, che agisce sul volume dello stesso
+player.
+
 `docs/credits.md` riepiloga le attribuzioni.
 
 ## `PerformanceProfile`

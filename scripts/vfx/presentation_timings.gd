@@ -35,6 +35,14 @@ const BOSS_MUSIC_CROSSFADE_SECONDS := 1.5
 ## questo e' solo il preavviso del passaggio.
 const THERMAL_TRANSITION_ANNOUNCE_SECONDS := 1.4
 
+## PS-056: durate del ducking musicale nei momenti chiave (countdown Boss,
+## level-up, ricompensa Barb). Stesse durate per tutti i momenti cosi' il
+## sistema si legge come un'unica dinamica invece di tre effetti scollegati;
+## la discesa e' piu' rapida della risalita cosi' lo stinger si sente subito
+## e il ritorno resta morbido.
+const MUSIC_DUCK_DOWN_SECONDS := 0.25
+const MUSIC_DUCK_UP_SECONDS := 0.6
+
 
 static func is_valid() -> bool:
 	return (
@@ -59,6 +67,8 @@ static func is_valid() -> bool:
 		and BOSS_MUSIC_CROSSFADE_SECONDS > 0.8
 		and BOSS_MUSIC_CROSSFADE_SECONDS < 4.0
 		and THERMAL_TRANSITION_ANNOUNCE_SECONDS > ONE_SHOT_ENTRY_SECONDS + ONE_SHOT_EXIT_SECONDS
+		and MUSIC_DUCK_DOWN_SECONDS > 0.0
+		and MUSIC_DUCK_UP_SECONDS > MUSIC_DUCK_DOWN_SECONDS
 	)
 
 

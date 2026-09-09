@@ -22,8 +22,7 @@ func test_manual_fire_mode() -> void:
 	var player: Player = context["player"]
 	var weapon: WeaponController = context["weapon"]
 	var settings: FireModeSettings = context["settings"]
-	var welcome: WelcomeScreen = context["welcome"]
-	var pause_overlay: PauseOverlay = context["pause_overlay"]
+	var settings_overlay: SettingsOverlay = context["settings_overlay"]
 
 	assert_false(settings.is_manual_fire_enabled(), "PS-085: il default deve restare Automatico.")
 	assert_false(weapon.is_manual_fire_enabled(), "WeaponController deve partire in Automatico.")
@@ -56,14 +55,10 @@ func test_manual_fire_mode() -> void:
 		)
 		automatic_projectile.expire()
 
-	# --- Il Manuale si attiva dal toggle condiviso welcome/pausa, non da un setter interno ---
-	welcome.get_manual_fire_check_button().button_pressed = true
-	assert_true(settings.is_manual_fire_enabled(), "Il toggle SPARO MANUALE della welcome deve attivare il Manuale.")
+	# --- Il Manuale si attiva dal toggle dell'overlay condiviso (PS-137), non da un setter interno ---
+	settings_overlay.get_manual_fire_check_button().button_pressed = true
+	assert_true(settings.is_manual_fire_enabled(), "Il toggle SPARO MANUALE dell'overlay deve attivare il Manuale.")
 	assert_true(weapon.is_manual_fire_enabled(), "WeaponController deve riflettere subito la modalita' Manuale.")
-	assert_true(
-		pause_overlay.get_manual_fire_check_button().button_pressed,
-		"Welcome e pausa devono restare sincronizzate sulla modalita' di sparo."
-	)
 
 	# --- Manuale, a riposo: nessun colpo anche con bersaglio a portata e cooldown pronto ---
 	weapon.reset_for_run(false)
@@ -175,8 +170,8 @@ func test_manual_fire_mode() -> void:
 	add_child_autofree(reloaded)
 	assert_true(reloaded.is_manual_fire_enabled(), "La modalita' Manuale deve sopravvivere a una nuova istanza.")
 
-	# --- Il toggle pausa riporta in Automatico e si propaga subito ---
-	pause_overlay.get_manual_fire_check_button().button_pressed = false
+	# --- Il toggle dell'overlay riporta in Automatico e si propaga subito ---
+	settings_overlay.get_manual_fire_check_button().button_pressed = false
 	assert_false(settings.is_manual_fire_enabled(), "Il toggle pausa deve poter tornare in Automatico.")
 	assert_false(weapon.is_manual_fire_enabled(), "WeaponController deve tornare in Automatico con la pausa.")
 
@@ -213,16 +208,15 @@ func _build_context() -> Dictionary:
 	var targeting := movement_slice.get_node_or_null("TargetingSystem") as TargetingSystem
 	var player := movement_slice.get_player() as Player
 	var weapon := movement_slice.get_weapon_controller() as WeaponController
-	var welcome := movement_slice.get_welcome_screen() as WelcomeScreen
-	var pause_overlay := movement_slice.get_pause_overlay() as PauseOverlay
+	var settings_overlay := movement_slice.get_settings_overlay() as SettingsOverlay
 	assert_true(
 		controller != null and spawner != null and targeting != null and player != null
-		and weapon != null and welcome != null and pause_overlay != null,
+		and weapon != null and settings_overlay != null,
 		"PS-085 richiede tutte le dipendenze della scena composta."
 	)
 	if (
 		controller == null or spawner == null or targeting == null or player == null
-		or weapon == null or welcome == null or pause_overlay == null
+		or weapon == null or settings_overlay == null
 	):
 		return {}
 	assert_true(controller.is_running(), "La fixture PS-085 deve avviare la run.")
@@ -236,8 +230,7 @@ func _build_context() -> Dictionary:
 		"player": player,
 		"weapon": weapon,
 		"settings": settings,
-		"welcome": welcome,
-		"pause_overlay": pause_overlay,
+		"settings_overlay": settings_overlay,
 	}
 
 

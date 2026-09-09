@@ -10,7 +10,7 @@ const REDUCED_FLASHES_KEY := "reduced_flashes"
 @export_file("*.cfg") var settings_path := DEFAULT_SETTINGS_PATH
 
 var _reduced_flashes := false
-var _pause_overlay: PauseOverlay
+var _settings_overlay: SettingsOverlay
 
 
 func _ready() -> void:
@@ -18,25 +18,28 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
-	_disconnect_pause_overlay()
+	_disconnect_settings_overlay()
 
 
-func configure(pause_overlay: PauseOverlay) -> bool:
-	_disconnect_pause_overlay()
-	_pause_overlay = pause_overlay
-	if not is_instance_valid(_pause_overlay):
+## PS-137: un solo overlay condiviso (era `PauseOverlay`, unico target da
+## PS-050 in avanti; la welcome aveva sempre avuto un percorso diretto
+## separato in `movement_slice.gd`, ora consolidato anche lì).
+func configure(settings_overlay: SettingsOverlay) -> bool:
+	_disconnect_settings_overlay()
+	_settings_overlay = settings_overlay
+	if not is_instance_valid(_settings_overlay):
 		return false
-	if not _pause_overlay.reduced_flashes_toggled.is_connected(_on_reduced_flashes_toggled):
-		_pause_overlay.reduced_flashes_toggled.connect(_on_reduced_flashes_toggled)
-	_pause_overlay.set_reduced_flashes(_reduced_flashes)
+	if not _settings_overlay.reduced_flashes_toggled.is_connected(_on_reduced_flashes_toggled):
+		_settings_overlay.reduced_flashes_toggled.connect(_on_reduced_flashes_toggled)
+	_settings_overlay.set_reduced_flashes(_reduced_flashes)
 	return true
 
 
 func set_reduced_flashes(value: bool, persist: bool = true) -> void:
 	var changed := _reduced_flashes != value
 	_reduced_flashes = value
-	if is_instance_valid(_pause_overlay):
-		_pause_overlay.set_reduced_flashes(_reduced_flashes)
+	if is_instance_valid(_settings_overlay):
+		_settings_overlay.set_reduced_flashes(_reduced_flashes)
 	if persist:
 		_save_settings()
 	if changed:
@@ -49,8 +52,8 @@ func is_reduced_flashes_enabled() -> bool:
 
 func reload() -> void:
 	_load_settings()
-	if is_instance_valid(_pause_overlay):
-		_pause_overlay.set_reduced_flashes(_reduced_flashes)
+	if is_instance_valid(_settings_overlay):
+		_settings_overlay.set_reduced_flashes(_reduced_flashes)
 	settings_changed.emit(_reduced_flashes)
 
 
@@ -77,13 +80,13 @@ func _save_settings() -> void:
 		)
 
 
-func _disconnect_pause_overlay() -> void:
-	if not is_instance_valid(_pause_overlay):
-		_pause_overlay = null
+func _disconnect_settings_overlay() -> void:
+	if not is_instance_valid(_settings_overlay):
+		_settings_overlay = null
 		return
-	if _pause_overlay.reduced_flashes_toggled.is_connected(_on_reduced_flashes_toggled):
-		_pause_overlay.reduced_flashes_toggled.disconnect(_on_reduced_flashes_toggled)
-	_pause_overlay = null
+	if _settings_overlay.reduced_flashes_toggled.is_connected(_on_reduced_flashes_toggled):
+		_settings_overlay.reduced_flashes_toggled.disconnect(_on_reduced_flashes_toggled)
+	_settings_overlay = null
 
 
 func _on_reduced_flashes_toggled(value: bool) -> void:

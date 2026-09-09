@@ -3,27 +3,17 @@ extends Control
 
 signal resume_requested()
 signal change_character_requested()
-signal audio_volume_changed(value: float)
-signal audio_mute_toggled(muted: bool)
-signal reduced_flashes_toggled(enabled: bool)
-signal touch_control_scale_changed(control_id: StringName, value: float)
-signal fire_mode_toggled(manual_enabled: bool)
+## PS-074: bottoni senza un cue dedicato (il resume esistente segue lo stato
+## RunController, non questo segnale).
+signal ui_click_requested()
 
 @onready var _resume_button: Button = %ResumeButton
 @onready var _change_character_button: Button = %ChangeCharacterButton
+@onready var _settings_button: Button = %SettingsButton
 @onready var _pause_center: CenterContainer = %PauseCenter
 @onready var _confirmation_center: CenterContainer = %ConfirmationCenter
 @onready var _cancel_change_button: Button = %CancelChangeButton
 @onready var _confirm_change_button: Button = %ConfirmChangeButton
-@onready var _volume_slider: HSlider = %VolumeSlider
-@onready var _volume_value_label: Label = %VolumeValueLabel
-@onready var _mute_check_button: CheckButton = %MuteCheckButton
-@onready var _reduced_flashes_check_button: CheckButton = %ReducedFlashesCheckButton
-@onready var _manual_fire_check_button: CheckButton = %ManualFireCheckButton
-@onready var _ability_size_slider: HSlider = %AbilitySizeSlider
-@onready var _ability_size_value_label: Label = %AbilitySizeValueLabel
-@onready var _joystick_size_slider: HSlider = %JoystickSizeSlider
-@onready var _joystick_size_value_label: Label = %JoystickSizeValueLabel
 @onready var _pause_scroll: ScrollContainer = %PauseScroll
 @onready var _pause_vbox: VBoxContainer = %VBox
 
@@ -33,41 +23,44 @@ signal fire_mode_toggled(manual_enabled: bool)
 const PAUSE_SCROLL_SAFETY_MARGIN := 24.0
 
 var _accepting_resume := false
-var _syncing_audio_controls := false
-var _syncing_accessibility_controls := false
-var _syncing_touch_controls := false
-var _syncing_fire_mode_controls := false
+
+## PS-137: overlay impostazioni condiviso con la welcome, istanza unica
+## posseduta da `movement_slice.gd` — vedi `configure_settings_overlay()`.
+var _settings_overlay: SettingsOverlay
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_resume_button.pressed.connect(_on_resume_button_pressed)
 	_change_character_button.pressed.connect(_on_change_character_button_pressed)
+	_settings_button.pressed.connect(_on_settings_button_pressed)
 	_cancel_change_button.pressed.connect(_on_cancel_change_button_pressed)
 	_confirm_change_button.pressed.connect(_on_confirm_change_button_pressed)
-	_volume_slider.value_changed.connect(_on_volume_slider_value_changed)
-	_mute_check_button.toggled.connect(_on_mute_check_button_toggled)
-	_reduced_flashes_check_button.toggled.connect(_on_reduced_flashes_toggled)
-	_manual_fire_check_button.toggled.connect(_on_manual_fire_toggled)
-	_ability_size_slider.value_changed.connect(_on_ability_size_changed)
-	_joystick_size_slider.value_changed.connect(_on_joystick_size_changed)
-	_refresh_volume_label(_volume_slider.value)
-	_refresh_scale_label(_ability_size_value_label, _ability_size_slider.value)
-	_refresh_scale_label(_joystick_size_value_label, _joystick_size_slider.value)
 	get_viewport().size_changed.connect(_clamp_pause_scroll_height)
 	_clamp_pause_scroll_height()
 	hide_pause()
 
 
+## PS-137: chiamata una sola volta da `movement_slice.gd` dopo aver
+## istanziato l'overlay condiviso.
+func configure_settings_overlay(overlay: SettingsOverlay) -> bool:
+	if not is_instance_valid(overlay):
+		return false
+	_settings_overlay = overlay
+	if not _settings_overlay.closed.is_connected(_on_settings_overlay_closed):
+		_settings_overlay.closed.connect(_on_settings_overlay_closed)
+	return true
+
+
+## PS-137: l'overlay impostazioni ha sempre precedenza — se è aperto, `ui_cancel`
+## deve chiuderlo, non la conferma di cambio personaggio sottostante.
 func _unhandled_input(event: InputEvent) -> void:
-	if (
-		event.is_echo()
-		or not is_change_confirmation_visible()
-		or not event.is_action_pressed(&"ui_cancel")
-	):
+	if event.is_echo() or not event.is_action_pressed(&"ui_cancel"):
+		return
+	if not (is_instance_valid(_settings_overlay) and _settings_overlay.is_open()) and not is_change_confirmation_visible():
 		return
 	get_viewport().set_input_as_handled()
-	_cancel_change_character()
+	handle_back_requested()
 
 
 func show_pause() -> void:
@@ -81,10 +74,17 @@ func show_pause() -> void:
 func hide_pause() -> void:
 	_accepting_resume = false
 	visible = false
+	# Difesa contro un overlay rimasto aperto se la pausa si chiude per una via
+	# diversa dal bottone Riprendi (es. la run finisce mentre l'overlay è
+	# aperto): evita un modal orfano sopra il nulla.
+	if is_instance_valid(_settings_overlay) and _settings_overlay.is_open():
+		_settings_overlay.close()
 	if is_instance_valid(_resume_button):
 		_resume_button.disabled = true
 	if is_instance_valid(_change_character_button):
 		_change_character_button.disabled = true
+	if is_instance_valid(_settings_button):
+		_settings_button.disabled = true
 	if is_instance_valid(_pause_center):
 		_pause_center.visible = true
 	if is_instance_valid(_confirmation_center):
@@ -104,6 +104,10 @@ func get_change_character_button() -> Button:
 	return _change_character_button if is_instance_valid(_change_character_button) else null
 
 
+func get_settings_button() -> Button:
+	return _settings_button if is_instance_valid(_settings_button) else null
+
+
 func get_cancel_change_button() -> Button:
 	return _cancel_change_button if is_instance_valid(_cancel_change_button) else null
 
@@ -120,96 +124,16 @@ func is_change_confirmation_visible() -> bool:
 	)
 
 
+## PS-137: l'overlay impostazioni ha sempre priorità su Back — se è aperto,
+## Back lo chiude e basta, senza toccare la conferma di cambio personaggio
+## sottostante (mai entrambe visibili insieme, ma l'ordine resta esplicito).
 func handle_back_requested() -> bool:
+	if is_instance_valid(_settings_overlay) and _settings_overlay.handle_back_requested():
+		return true
 	if not is_change_confirmation_visible():
 		return false
 	_cancel_change_character()
 	return true
-
-
-func set_audio_settings(volume: float, muted: bool) -> void:
-	_syncing_audio_controls = true
-	_volume_slider.value = clampf(volume, 0.0, 1.0)
-	_mute_check_button.button_pressed = muted
-	_syncing_audio_controls = false
-	_refresh_volume_label(_volume_slider.value)
-
-
-func get_audio_volume() -> float:
-	return float(_volume_slider.value) if is_instance_valid(_volume_slider) else 0.0
-
-
-func is_audio_muted() -> bool:
-	return _mute_check_button.button_pressed if is_instance_valid(_mute_check_button) else false
-
-
-func get_volume_slider() -> HSlider:
-	return _volume_slider if is_instance_valid(_volume_slider) else null
-
-
-func get_mute_check_button() -> CheckButton:
-	return _mute_check_button if is_instance_valid(_mute_check_button) else null
-
-
-func set_reduced_flashes(enabled: bool) -> void:
-	_syncing_accessibility_controls = true
-	_reduced_flashes_check_button.button_pressed = enabled
-	_syncing_accessibility_controls = false
-
-
-func is_reduced_flashes_enabled() -> bool:
-	return (
-		_reduced_flashes_check_button.button_pressed
-		if is_instance_valid(_reduced_flashes_check_button)
-		else false
-	)
-
-
-func get_reduced_flashes_check_button() -> CheckButton:
-	return (
-		_reduced_flashes_check_button
-		if is_instance_valid(_reduced_flashes_check_button)
-		else null
-	)
-
-
-func set_manual_fire_mode(enabled: bool) -> void:
-	_syncing_fire_mode_controls = true
-	_manual_fire_check_button.button_pressed = enabled
-	_syncing_fire_mode_controls = false
-
-
-func is_manual_fire_mode_enabled() -> bool:
-	return (
-		_manual_fire_check_button.button_pressed
-		if is_instance_valid(_manual_fire_check_button)
-		else false
-	)
-
-
-func get_manual_fire_check_button() -> CheckButton:
-	return (
-		_manual_fire_check_button
-		if is_instance_valid(_manual_fire_check_button)
-		else null
-	)
-
-
-func set_touch_control_scales(ability_scale: float, joystick_scale: float) -> void:
-	_syncing_touch_controls = true
-	_ability_size_slider.value = TouchControlSettings.sanitize_ability_scale(ability_scale)
-	_joystick_size_slider.value = TouchControlSettings.sanitize_joystick_scale(joystick_scale)
-	_syncing_touch_controls = false
-	_refresh_scale_label(_ability_size_value_label, _ability_size_slider.value)
-	_refresh_scale_label(_joystick_size_value_label, _joystick_size_slider.value)
-
-
-func get_ability_size_slider() -> HSlider:
-	return _ability_size_slider if is_instance_valid(_ability_size_slider) else null
-
-
-func get_joystick_size_slider() -> HSlider:
-	return _joystick_size_slider if is_instance_valid(_joystick_size_slider) else null
 
 
 func get_pause_panel_rect() -> Rect2:
@@ -219,12 +143,12 @@ func get_pause_panel_rect() -> Rect2:
 	return panel.get_global_rect() if is_instance_valid(panel) else Rect2()
 
 
-## PS-085: come WelcomeScreen._clamp_settings_scroll_height(), la riga SPARO
-## MANUALE ha eroso l'ultimo margine libero del pannello pausa nel viewport
-## 16:9. PauseCenter (CenterContainer) non clippa ne' scorre da solo: senza
+## PS-085: PauseCenter (CenterContainer) non clippa ne' scorre da solo: senza
 ## questo clamp il pannello sforerebbe semplicemente il viewport invece di
 ## restare centrato. Sui profili con margine sufficiente il risultato resta
-## identico a prima (nessuno scroll).
+## identico a prima (nessuno scroll). Il pannello è più corto da PS-137 (solo
+## titolo + Riprendi + Cambia personaggio): il clamp resta comunque un tetto,
+## non un pavimento, per coerenza con lo stesso principio ovunque applicato.
 func _clamp_pause_scroll_height() -> void:
 	if (
 		not is_instance_valid(_pause_scroll)
@@ -254,23 +178,50 @@ func _on_resume_button_pressed() -> void:
 func _on_change_character_button_pressed() -> void:
 	if not is_accepting_resume() or is_change_confirmation_visible():
 		return
+	ui_click_requested.emit()
 	_pause_center.visible = false
 	_confirmation_center.visible = true
 	_resume_button.disabled = true
 	_change_character_button.disabled = true
+	_settings_button.disabled = true
 	_set_confirmation_buttons_disabled(false)
 	_cancel_change_button.call_deferred("grab_focus")
+
+
+## PS-137: apre l'overlay condiviso. Riprendi/Cambia personaggio/Impostazioni
+## restano disabilitati finché l'overlay non si chiude
+## (`_on_settings_overlay_closed`), cosi' il focus non può finire su un
+## bottone coperto dal modal.
+func _on_settings_button_pressed() -> void:
+	if not is_accepting_resume() or is_change_confirmation_visible() or not is_instance_valid(_settings_overlay):
+		return
+	ui_click_requested.emit()
+	_resume_button.disabled = true
+	_change_character_button.disabled = true
+	_settings_button.disabled = true
+	_settings_overlay.open()
+
+
+func _on_settings_overlay_closed() -> void:
+	if not is_accepting_resume() or is_change_confirmation_visible():
+		return
+	_resume_button.disabled = false
+	_change_character_button.disabled = false
+	_settings_button.disabled = false
+	_settings_button.call_deferred("grab_focus")
 
 
 func _on_cancel_change_button_pressed() -> void:
 	if not is_change_confirmation_visible():
 		return
+	ui_click_requested.emit()
 	_cancel_change_character()
 
 
 func _on_confirm_change_button_pressed() -> void:
 	if not is_change_confirmation_visible() or _confirm_change_button.disabled:
 		return
+	ui_click_requested.emit()
 	_accepting_resume = false
 	_set_confirmation_buttons_disabled(true)
 	change_character_requested.emit()
@@ -286,6 +237,7 @@ func _show_pause_controls() -> void:
 	_confirmation_center.visible = false
 	_resume_button.disabled = false
 	_change_character_button.disabled = false
+	_settings_button.disabled = false
 	_set_confirmation_buttons_disabled(true)
 
 
@@ -294,46 +246,3 @@ func _set_confirmation_buttons_disabled(disabled: bool) -> void:
 		_cancel_change_button.disabled = disabled
 	if is_instance_valid(_confirm_change_button):
 		_confirm_change_button.disabled = disabled
-
-
-func _on_volume_slider_value_changed(value: float) -> void:
-	_refresh_volume_label(value)
-	if not _syncing_audio_controls:
-		audio_volume_changed.emit(clampf(value, 0.0, 1.0))
-
-
-func _on_mute_check_button_toggled(muted: bool) -> void:
-	if not _syncing_audio_controls:
-		audio_mute_toggled.emit(muted)
-
-
-func _on_reduced_flashes_toggled(enabled: bool) -> void:
-	if not _syncing_accessibility_controls:
-		reduced_flashes_toggled.emit(enabled)
-
-
-func _on_manual_fire_toggled(enabled: bool) -> void:
-	if not _syncing_fire_mode_controls:
-		fire_mode_toggled.emit(enabled)
-
-
-func _on_ability_size_changed(value: float) -> void:
-	_refresh_scale_label(_ability_size_value_label, value)
-	if not _syncing_touch_controls:
-		touch_control_scale_changed.emit(&"ability", value)
-
-
-func _on_joystick_size_changed(value: float) -> void:
-	_refresh_scale_label(_joystick_size_value_label, value)
-	if not _syncing_touch_controls:
-		touch_control_scale_changed.emit(&"joystick", value)
-
-
-func _refresh_volume_label(value: float) -> void:
-	if is_instance_valid(_volume_value_label):
-		_volume_value_label.text = "%d%%" % roundi(clampf(value, 0.0, 1.0) * 100.0)
-
-
-func _refresh_scale_label(label: Label, value: float) -> void:
-	if is_instance_valid(label):
-		label.text = "%d%%" % roundi(value * 100.0)

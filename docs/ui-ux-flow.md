@@ -14,7 +14,11 @@ orchestrate da
 (`scripts/ui/tutorial_screen.gd`), `CharacterSelectOverlay`
 (`scripts/ui/character_select_overlay.gd`), la HUD di run (`scripts/ui/hud.gd`,
 `GameHud`), `PauseOverlay` (`scripts/ui/pause_overlay.gd`) ed `EndScreen`
-(`scripts/ui/end_screen.gd`).
+(`scripts/ui/end_screen.gd`). `SettingsOverlay`
+(`scripts/ui/settings_overlay.gd`, PS-137) è un'istanza unica separata,
+apribile dal tasto ingranaggio sia della welcome sia della pausa: non fa
+parte della sequenza sopra, resta un layer puramente visivo sopra lo stato
+attivo (`BOOT` o `MANUAL_PAUSE`).
 
 Transizioni (tutte in `movement_slice.gd`):
 
@@ -45,14 +49,16 @@ finché il giocatore non preme "GIOCA con `<Nome>`" nel selettore
 ([scripts/input/platform_lifecycle.gd:66-91](../scripts/input/platform_lifecycle.gd)),
 che smista in base allo stato di `RunController`:
 
-- `BOOT` → `_on_boot_back_requested` (`movement_slice.gd:1861-1869`): prima
+- `BOOT` → `_on_boot_back_requested` (`movement_slice.gd:2216`): prima
   `TutorialScreen.handle_back_requested()` se visibile, poi
   `CharacterSelectOverlay` (torna a Welcome), poi
-  `WelcomeScreen.handle_back_requested()` (chiude solo il pannello
-  impostazioni se aperto).
+  `WelcomeScreen.handle_back_requested()` — che (PS-137) delega prima
+  all'overlay impostazioni condiviso se aperto (`SettingsOverlay.handle_back_requested()`),
+  altrimenti non ha più nulla da chiudere localmente.
 - `RUNNING` → apre la pausa (`request_manual_pause()`).
-- `MANUAL_PAUSE` → prima `PauseOverlay.handle_back_requested()` (chiude solo
-  la sotto-conferma "cambia personaggio" se visibile), altrimenti
+- `MANUAL_PAUSE` → `PauseOverlay.handle_back_requested()`, che (PS-137)
+  controlla prima l'overlay impostazioni condiviso (se aperto lo chiude e
+  basta), poi la sotto-conferma "cambia personaggio" se visibile, altrimenti
   `request_resume()`.
 - **Ogni altro stato** (`LEVEL_UP`, `BOSS_INTRO`, `BARB_REWARD`, `VICTORY`,
   `DEFEAT`) → il Back sospende solo l'input e non fa altro (righe 88-90): è

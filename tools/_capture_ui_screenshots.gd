@@ -111,12 +111,16 @@ func _capture_profile(viewport_size: Vector2i) -> void:
 
 	await _shot("01_welcome", RunController.RunState.BOOT)
 
+	# PS-137: le impostazioni vivono ora nell'overlay condiviso, non più in
+	# un pannello locale della welcome — stessa istanza apribile anche dalla
+	# pausa (vedi _capture_pause).
+	var settings_overlay := _slice.get_settings_overlay() as SettingsOverlay
 	if welcome != null and welcome.get_settings_button() != null:
 		welcome.get_settings_button().emit_signal("pressed")
 		await _frames(12)
 		await _shot("02_welcome_settings", RunController.RunState.BOOT)
-		if welcome.get_close_settings_button() != null:
-			welcome.get_close_settings_button().emit_signal("pressed")
+		if settings_overlay != null and settings_overlay.get_close_button() != null:
+			settings_overlay.get_close_button().emit_signal("pressed")
 			await _frames(12)
 
 	if welcome != null and welcome.get_tutorial_button() != null:
