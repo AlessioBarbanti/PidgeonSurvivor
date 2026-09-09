@@ -8,7 +8,7 @@ priorita: media
 dipende_da: [PS-106]
 origine:
 creato: 2026-09-09
-aggiornato: 2026-09-09
+aggiornato: 2026-09-10
 ---
 
 # PS-138 — Ridisegna l'indicatore HUD della passiva di Alea con anello di carica e glow Brilla
@@ -251,6 +251,36 @@ Non toccare:
   disegnare glow *dietro* al vetro (l'ordine di disegno fra `_draw()` custom
   e il rendering interno del nodo built-in non è garantito) — un `Control`
   puro dà controllo esplicito sull'ordine: glow → vetro → vino → anello.
+- **2026-09-10 — Feedback dal vivo sul Pixel 9: dimensione e posizione
+  riviste in tre passaggi.** Il proprietario ha visto la prima build
+  installata (32×32, `SobrietySlot` incollato subito sotto `HealthPanel`) e
+  segnalato: icona troppo piccola e "sospesa nel nulla" sopra le barre.
+  Applicato in sequenza, ciascuno riverificato con `Relevant` + cattura
+  Windows ingrandita prima del successivo:
+  1. Dimensione raddoppiata da 32×32 a 48×48 (1,5×, valore confermato
+     esplicitamente dal proprietario, "non deve diventare grosso come
+     l'abilità a destra" — resta ben sotto i 128px+ di `TouchAbilityButton`).
+  2. Prima riposizionato come badge indipendente nell'angolo, poi corretto
+     su richiesta esplicita: allineato al **bordo sinistro reale** di
+     `HealthPanel`/`ExperiencePanel`. Scoperta empirica non ovvia dalla sola
+     lettura del `.tscn`: `HealthPanel` non ha `offset_left` esplicito (quindi
+     sembrerebbe 0, cioè il bordo di `TopBand`), ma il suo
+     `get_global_rect()` reale restituisce x=64 — verificato stampando
+     `get_top_band_rect()` (x=20) accanto a `get_health_panel_rect()` (x=64)
+     nello stesso frame. Usato il valore empirico (offset locale 44, non 0)
+     invece di fidarsi della sola lettura statica del file.
+  3. Margine verticale sotto `HealthPanel` regolato da 8px a 20px su
+     ulteriore richiesta ("più in basso").
+  Geometria finale `SobrietySlot`: `offset_left=44, offset_top=58,
+  offset_right=92, offset_bottom=106` (48×48, allineato a x=64 globale,
+  ~20px sotto il bordo inferiore di `HealthPanel`). Nessuna riga di
+  `_draw()` toccata in `alea_sobriety_indicator.gd`: la geometria
+  dell'anello è già espressa in frazioni di `size`, si riscala da sola.
+  Rieseguito `Relevant` dopo ogni passaggio (27/27 verde ogni volta,
+  incluso il test di non sovrapposizione). Nuova APK compilata e installata
+  sul Pixel 9 con la geometria finale: **il proprietario non ha ancora
+  confermato dal vivo questa versione** — gate percettivo e runtime fisico
+  restano aperti finché non lo fa.
 
 ## Documenti sincronizzati
 
