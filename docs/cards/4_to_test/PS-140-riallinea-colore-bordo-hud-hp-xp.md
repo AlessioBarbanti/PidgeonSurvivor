@@ -3,7 +3,7 @@ id: PS-140
 titolo: Riallinea il colore del bordo HP/XP alla palette oro esistente
 tipo: fix
 area: ui
-stato: PRONTO
+stato: IN VERIFICA
 priorita: bassa
 dipende_da: []
 origine:
@@ -35,16 +35,18 @@ tinta scollegata.
 
 ## Criteri di accettazione
 
-- [ ] `border_color` di `StyleBoxFlat_bar_background` (barre HP e XP) non è
+- [x] `border_color` di `StyleBoxFlat_bar_background` (barre HP e XP) non è
       più `Color(0.49, 0.39, 0.24, 1)`: il nuovo valore è percepibilmente
       nella stessa famiglia oro del bordo del bottone pausa
       (`Color(0.72, 0.52, 0.24, 1)`) o del bronzo già documentato per
       l'indicatore Alea in `docs/visual-audio-identity.md`.
-- [ ] Il bordo resta uno `StyleBoxFlat` piatto (nessuna cornice a rivetti o
-      texture aggiunta): la forma non cambia, solo il colore.
+- [x] Il bordo resta uno `StyleBoxFlat` piatto (nessuna cornice a rivetti o
+      texture aggiunta): la forma non cambia, solo il colore — nessun'altra
+      proprietà di `StyleBoxFlat_bar_background` è stata toccata.
 - [ ] Il contrasto fra il bordo e il riempimento delle barre (blu XP, rosso
       HP) resta leggibile quanto oggi a colpo d'occhio durante il gameplay
-      attivo.
+      attivo. Non automatizzabile: resta il gate percettivo dedicato più
+      sotto (screenshot `04_gameplay_hud.png` prima/dopo).
 
 ## Ambito
 
@@ -80,10 +82,11 @@ tinta scollegata.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/visual-audio-identity.md` — il direttore-artistico propone di
-      fissare esplicitamente la regola "HUD permanente = bordo piatto,
-      overlay/modali = cornice a rivetti", oggi solo implicita nel codice.
-      Sincronizzare insieme a PS-139 se entrambe confermano la stessa regola.
+- [ ] `docs/visual-audio-identity.md` — non sincronizzato in questa card:
+      PS-139 non è stata risolta in questa stessa sessione, quindi la regola
+      "HUD permanente = bordo piatto, overlay/modali = cornice a rivetti"
+      resta da fissare quando entrambe le card avranno confermato la stessa
+      regola, come indicato dal direttore-artistico.
 
 ## Note
 
@@ -91,3 +94,21 @@ Valore di riferimento indicato dal direttore-artistico:
 `Color(0.72, 0.52, 0.24, 1)` (bottone pausa) o il bronzo `#A67B35` già
 documentato per l'anello Alea — la scelta esatta fra i due resta a
 `card-risolvi` in base a quale risulta più leggibile in gioco.
+
+**Scelto `Color(0.72, 0.52, 0.24, 1)`** (bottone pausa): stesso valore già
+in uso nello stesso HUD (`StyleBoxFlat_pause_normal`), riuso diretto invece
+di introdurre una terza variante cromatica della stessa famiglia.
+
+Verifica automatica eseguita:
+
+```powershell
+.\tools\run-milestone-checks.ps1 -Milestone PS-140 -Profile Focused `
+  -FocusedSmoke tests/unit/test_ps140_hud_bar_border_color.gd -NoCache
+.\tools\run-milestone-checks.ps1 -Milestone PS-140 -Profile Relevant `
+  -FocusedSmoke tests/unit/test_ps140_hud_bar_border_color.gd -NoCache
+```
+
+`Focused`: 1/1 verde (marker `PS140_HUD_BAR_BORDER_OK` stampato).
+`Relevant`: 1/1 focused + 29/29 regressioni verdi. Gate manuali
+(Windows/APK/Pixel 9/percettivo) non eseguiti in questa sessione: restano
+aperti.

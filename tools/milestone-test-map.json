@@ -372,7 +372,8 @@
         "tests/unit/test_ps137_shared_settings_overlay.gd",
         "tests/unit/test_ps138_alea_ring_glow.gd",
         "tests/unit/test_ps142_pause_panel_height_clamp.gd",
-        "tests/unit/test_ps143_pause_settings_button.gd"
+        "tests/unit/test_ps143_pause_settings_button.gd",
+        "tests/unit/test_ps140_hud_bar_border_color.gd"
       ]
     },
     {
