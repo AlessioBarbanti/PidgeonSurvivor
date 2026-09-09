@@ -483,6 +483,15 @@ func set_bar_horizontal_offsets(left_offset: float, right_offset: float) -> void
 			var label_width := label.offset_right - label.offset_left
 			label.offset_left = safe_left + BAR_LABEL_INSET
 			label.offset_right = label.offset_left + label_width
+	# PS-138: l'indicatore Sobrietà di Alea si allinea allo stesso bordo
+	# sinistro dinamico delle barre — non un offset statico calibrato su un
+	# solo profilo (bug scoperto su device: l'inset di safe area del notch
+	# Android differisce troppo da quello desktop perché un valore fisso
+	# regga su entrambi). Larghezza preservata, solo il bordo sinistro segue.
+	if is_instance_valid(_sobriety_slot):
+		var sobriety_width := _sobriety_slot.offset_right - _sobriety_slot.offset_left
+		_sobriety_slot.offset_left = safe_left
+		_sobriety_slot.offset_right = safe_left + sobriety_width
 
 
 func set_pause_edge_padding(edge_padding: Vector2) -> void:

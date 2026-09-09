@@ -281,6 +281,29 @@ Non toccare:
   sul Pixel 9 con la geometria finale: **il proprietario non ha ancora
   confermato dal vivo questa versione** — gate percettivo e runtime fisico
   restano aperti finché non lo fa.
+- **2026-09-10 — Corregge la decisione precedente: l'offset locale "44"
+  era calibrato su un solo profilo, non una costante valida.** Il
+  proprietario ha visto la build con `offset_left=44` sul Pixel 9 e
+  l'icona restava comunque disallineata dalla barra HP. Causa reale, trovata
+  leggendo `hud.gd::set_bar_horizontal_offsets()` e
+  `movement_slice.gd::_apply_bar_horizontal_margins()`: `HealthPanel`/
+  `ExperiencePanel` non hanno una posizione fissa — ogni frame di resize
+  ricevono `offset_left = viewport.position.x + viewport.size.x * 0.05 -
+  safe_area.position.x`, calcolato apposta per uscire dalla safe area e
+  restare ancorato al bordo del viewport (commento in codice: "le barre
+  XP/HP escono dalla safe area... le ancoriamo invece al viewport con
+  margini simmetrici percentuali"). Su Windows 1280×720 questo dava 44
+  (coincidenza, non causalità: `0 + 64 - 20`); sull'inset del notch Android
+  (`safe_area.x≈135` contro margine `≈81` su un viewport ≈1616 largo) il
+  valore reale è **negativo** (`≈-54`), completamente diverso. Nessun
+  valore statico può reggere su entrambi i profili contemporaneamente.
+  Fix strutturale: `set_bar_horizontal_offsets()` ora riposiziona anche
+  `_sobriety_slot` con lo stesso `safe_left` usato per le barre (larghezza
+  48px preservata, solo il bordo sinistro segue) — corretto per costruzione
+  su qualunque device, non ricalibrato a mano per il prossimo. Verificato
+  su Windows (x=64 invariato, stessa cifra di prima perché la formula
+  produce lo stesso risultato su quel profilo) e da rivedere sul Pixel 9
+  alla prossima installazione.
 
 ## Documenti sincronizzati
 
