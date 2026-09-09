@@ -3,12 +3,12 @@ id: PS-134
 titolo: Pubblica un APK di release firmato e versionato al merge su main
 tipo: chore
 area: tooling
-stato: IN CORSO
+stato: IN VERIFICA
 priorita: alta
 dipende_da: [PS-133]
 origine:
 creato: 2026-09-08
-aggiornato: 2026-09-08
+aggiornato: 2026-09-09
 ---
 
 # PS-134 — Pubblica un APK di release firmato e versionato al merge su main
@@ -122,12 +122,18 @@ Non toccare:
       (`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEY_ALIAS`,
       `ANDROID_KEYSTORE_PASSWORD`) sono stati caricati su GitHub via `gh
       secret set`, verificati presenti con `gh secret list`.
-- [ ] Prima esecuzione del workflow su `main` conclusa verde, con la Release
-      pubblicata e l'APK presente fra gli asset.
+- [x] Prima esecuzione del workflow su `main` conclusa verde, con la Release
+      pubblicata e l'APK presente fra gli asset. Confermato: run
+      `34287138282` (push del merge PR #12 `develop` → `main`) concluso
+      `success` in 2m46s; release GitHub `v0.1.0`, `isPrerelease: false`,
+      asset `pidgeon-survivor.apk` (120511556 byte) presente e scaricabile.
 - [ ] Runtime fisico Pixel 9: l'APK **di release** scaricato dalla Release va
       installato su device e il gioco avviato almeno fino a una run. Una build
       release non è mai stata provata su device: cambia il livello di
       ottimizzazione e la firma, quindi il gate di PS-060 non vale per questa.
+      **Aperto**: nessun device collegato in questa sessione (`adb devices`
+      vuoto). Non blocca l'implementazione, ma il gate resta dichiarato
+      aperto, non assunto.
 
 Non pertinenti: controllo percettivo, runtime Windows (nessuna modifica al
 gioco).
@@ -189,6 +195,16 @@ gioco).
   ripulendo poi i file intermedi generati. Verificato con
   `gh secret list --repo AlessioBarbanti/PidgeonSurvivor`: i tre nomi attesi
   sono presenti.
+- **2026-09-09 — Prima esecuzione verificata, card spostata a `IN VERIFICA`.**
+  Il push del merge PR #12 `develop` → `main` (PS-133) ha fatto scattare
+  `android-release.yml` (run `34287138282`), concluso `success`: la Release
+  `v0.1.0` è pubblica (`isPrerelease: false`), taggata correttamente e porta
+  l'APK come asset. Tutti i criteri di accettazione e i gate automatici sono
+  quindi confermati sull'artefatto reale, non solo per ispezione del codice.
+  Resta aperto un solo gate: il runtime fisico su Pixel 9 dell'APK di
+  release, non eseguibile in questa sessione (nessun device collegato). La
+  card non può quindi raggiungere `COMPLETATO` finché quel gate non viene
+  chiuso dal proprietario.
 
 ## Documenti sincronizzati
 

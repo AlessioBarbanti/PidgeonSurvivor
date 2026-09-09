@@ -3,12 +3,12 @@ id: PS-133
 titolo: Adotta develop come branch di sviluppo e main come branch di rilascio
 tipo: chore
 area: tooling
-stato: IN CORSO
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine:
 creato: 2026-09-08
-aggiornato: 2026-09-08
+aggiornato: 2026-09-09
 ---
 
 # PS-133 — Adotta develop come branch di sviluppo e main come branch di rilascio
@@ -47,20 +47,20 @@ una sessione futura non debba dedurlo dalla forma dei branch.
 
 ## Criteri di accettazione
 
-- [ ] Il branch di default del repository su GitHub è `develop` e contiene la
+- [x] Il branch di default del repository su GitHub è `develop` e contiene la
       stessa storia che aveva `main` (nessun commit perso, nessun rebase).
-- [ ] Esiste il branch `main` sul remoto, allineato a `develop` al momento
+- [x] Esiste il branch `main` sul remoto, allineato a `develop` al momento
       della separazione.
-- [ ] La copia locale ha `develop` che traccia `origin/develop`, e
+- [x] La copia locale ha `develop` che traccia `origin/develop`, e
       `git remote show origin` riporta `develop` come HEAD.
-- [ ] `docs/setup.md` contiene una sezione che descrive il flusso
+- [x] `docs/setup.md` contiene una sezione che descrive il flusso
       `develop → main`, quale branch riceve il lavoro, cosa significa un merge
       su `main` e quale workflow ne scatta.
-- [ ] Nessun riferimento residuo a `main` come branch di sviluppo nei documenti
+- [x] Nessun riferimento residuo a `main` come branch di sviluppo nei documenti
       durevoli: la frase in `docs/powerup-catalog.md` che dice «implementato e
       mergiato in `main`» è storica e va lasciata com'è, ma nessun documento
       deve istruire a lavorare su `main`.
-- [ ] Nessun workflow CI resta agganciato a un nome di branch inesistente
+- [x] Nessun workflow CI resta agganciato a un nome di branch inesistente
       (verifica esplicita: entrambi i workflow attuali usano solo
       `workflow_dispatch` e non vanno toccati da questa card).
 
@@ -86,11 +86,10 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] **Rinomina su GitHub** — la deve eseguire il proprietario: nessuno
-      strumento di questa sessione può rinominare un branch né cambiare il
-      branch di default (l'MCP GitHub disponibile espone `create_branch`, non
-      la rinomina né le impostazioni del repository). Procedura in Note.
-- [ ] Riallineamento della copia locale del proprietario dopo la rinomina.
+- [x] **Rinomina su GitHub** — eseguita dal proprietario: `develop` è il
+      branch di default remoto, `main` esiste allineato. Procedura in Note.
+- [x] Riallineamento della copia locale del proprietario dopo la rinomina:
+      `develop` locale traccia `origin/develop`.
 
 Non pertinenti: runtime Windows, validazione statica dell'APK, runtime fisico
 Pixel 9, controllo percettivo — nessuna modifica al gioco.
@@ -111,10 +110,21 @@ Pixel 9, controllo percettivo — nessuna modifica al gioco.
 - **2026-09-08 — Il branch di default diventa `develop`.** È il branch su cui
   si lavora, quindi è quello che deve accogliere per default una nuova sessione
   o un clone. `main` resta un branch normale, di sola destinazione.
+- **2026-09-09 — Verificato e chiuso.** Confermato via `gh api` che
+  `default_branch` del repository è `develop`; `git remote show origin`
+  riporta `develop` come HEAD; `main` esiste sul remoto (allineato al momento
+  della separazione, poi avanzato per merge da `develop` come da disegno,
+  incluso il primo merge che ha fatto scattare PS-134). `git branch -u
+  origin/develop develop` già in vigore in locale. `docs/setup.md` contiene la
+  sezione «Flusso di branch e rilascio». Nessun riferimento residuo a `main`
+  come branch di sviluppo nei documenti durevoli (unica menzione storica
+  invariata in `docs/powerup-catalog.md`). Nessuno dei due workflow esistenti
+  (`android-debug-release.yml`, `ui-screenshots.yml`) è stato toccato. Tutti i
+  criteri e i gate manuali sono soddisfatti: card completata.
 
 ## Documenti sincronizzati
 
-- [ ] [docs/setup.md](../../../docs/setup.md): sezione «Flusso di branch e
+- [x] [docs/setup.md](../../../docs/setup.md): sezione «Flusso di branch e
       rilascio».
 
 ## Note

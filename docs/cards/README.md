@@ -234,8 +234,8 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-130](./1_idea/PS-130-rigenera-otto-icone-passive-cast.md) | Rigenera come candidati le otto icone passive del cast | art | arte | DA DEFINIRE | media | PS-105 |
 | [PS-131](./5_completed/PS-131-normalizza-icona-passiva-aleo.md) | Normalizza l'icona della passiva di Aleo allo stile delle altre sette | art | arte | COMPLETATO | media | — |
 | [PS-132](./4_to_test/PS-132-derivazione-sprite-sfarina-alea-e-zat.md) | Correggi la derivazione degli sprite di gameplay che sfarina Alea e Zat | fix | arte | IN VERIFICA | media | PS-116 |
-| [PS-133](./3_in_sprint/PS-133-develop-per-lo-sviluppo-main-per-il-rilascio.md) | Adotta develop come branch di sviluppo e main come branch di rilascio | chore | tooling | IN CORSO | alta | — |
-| [PS-134](./3_in_sprint/PS-134-apk-di-release-firmato-e-versionato-al-merge-su-main.md) | Pubblica un APK di release firmato e versionato al merge su main | chore | tooling | IN CORSO | alta | PS-133 |
+| [PS-133](./5_completed/PS-133-develop-per-lo-sviluppo-main-per-il-rilascio.md) | Adotta develop come branch di sviluppo e main come branch di rilascio | chore | tooling | COMPLETATO | alta | — |
+| [PS-134](./4_to_test/PS-134-apk-di-release-firmato-e-versionato-al-merge-su-main.md) | Pubblica un APK di release firmato e versionato al merge su main | chore | tooling | IN VERIFICA | alta | PS-133 |
 | [PS-135](./5_completed/PS-135-correggi-evil-portrait-magno-accessori-persi.md) | Correggi evil_portrait.png di Magno per ripristinare gli accessori identitari | art | arte | COMPLETATO | media | — |
 | [PS-136](./4_to_test/PS-136-fanfara-vittoria-sconfitta-boss.md) | Aggiungi una fanfara di vittoria alla sconfitta del Boss | feat | audio | IN VERIFICA | media | — |
 | [PS-137](./4_to_test/PS-137-overlay-impostazioni-condiviso-e-paginato.md) | Overlay impostazioni condiviso, più grande e paginato per categoria | ux | ui | IN VERIFICA | media | — |
