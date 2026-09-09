@@ -28,6 +28,9 @@ const ABILITY_ACTIVATE := &"ability_activate"
 const ABILITY_READY := &"ability_ready"
 const BOSS_WARNING := &"boss_warning"
 const BOSS_ATTACK := &"boss_attack"
+## PS-136: fanfara puntuale a ogni sconfitta di Boss, distinta da VICTORY
+## (musica/cue di fine run) perche' un Boss puo' ricorrere nella stessa run.
+const BOSS_VICTORY := &"boss_victory"
 ## Sesto Senso Equino di Bea (B45, asset integrato in PS-072).
 const DODGE := &"dodge"
 const UI_CONFIRM := &"ui_confirm"
@@ -49,6 +52,7 @@ const DEFEAT := &"defeat"
 @export var ability_ready_stream: AudioStream
 @export var boss_warning_stream: AudioStream
 @export var boss_attack_stream: AudioStream
+@export var boss_victory_stream: AudioStream
 @export var dodge_stream: AudioStream
 
 @export_group("Interface")
@@ -244,6 +248,7 @@ func has_complete_cue_set() -> bool:
 		ABILITY_READY,
 		BOSS_WARNING,
 		BOSS_ATTACK,
+		BOSS_VICTORY,
 		DODGE,
 		UI_CONFIRM,
 		PAUSE,
@@ -346,6 +351,8 @@ func get_stream_for_cue(cue_id: StringName) -> AudioStream:
 			return boss_warning_stream
 		BOSS_ATTACK:
 			return boss_attack_stream
+		BOSS_VICTORY:
+			return boss_victory_stream
 		DODGE:
 			return dodge_stream
 		UI_CONFIRM:
@@ -867,6 +874,7 @@ func _on_boss_intro_started(_boss: FirstBoss, _schedule_index: int) -> void:
 
 
 func _on_boss_defeated(_boss: FirstBoss) -> void:
+	play_cue(BOSS_VICTORY, -1.0)
 	end_boss_music()
 
 

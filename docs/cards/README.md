@@ -237,3 +237,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-133](./3_in_sprint/PS-133-develop-per-lo-sviluppo-main-per-il-rilascio.md) | Adotta develop come branch di sviluppo e main come branch di rilascio | chore | tooling | IN CORSO | alta | — |
 | [PS-134](./3_in_sprint/PS-134-apk-di-release-firmato-e-versionato-al-merge-su-main.md) | Pubblica un APK di release firmato e versionato al merge su main | chore | tooling | IN CORSO | alta | PS-133 |
 | [PS-135](./5_completed/PS-135-correggi-evil-portrait-magno-accessori-persi.md) | Correggi evil_portrait.png di Magno per ripristinare gli accessori identitari | art | arte | COMPLETATO | media | — |
+| [PS-136](./4_to_test/PS-136-fanfara-vittoria-sconfitta-boss.md) | Aggiungi una fanfara di vittoria alla sconfitta del Boss | feat | audio | IN VERIFICA | media | — |

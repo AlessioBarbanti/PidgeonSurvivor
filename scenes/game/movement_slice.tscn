@@ -69,6 +69,7 @@
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/ability_ready.ogg" id="68_ability_ready"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/boss_warning.ogg" id="69_boss_warning"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/boss_attack.ogg" id="70_boss_attack"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/boss_victory.ogg" id="70b_boss_victory"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/ui_confirm.ogg" id="71_ui_confirm"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/pause.ogg" id="72_pause"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/resume.ogg" id="73_resume"]
@@ -264,6 +265,7 @@ ability_activate_stream = ExtResource("67_ability_activate")
 ability_ready_stream = ExtResource("68_ability_ready")
 boss_warning_stream = ExtResource("69_boss_warning")
 boss_attack_stream = ExtResource("70_boss_attack")
+boss_victory_stream = ExtResource("70b_boss_victory")
 ui_confirm_stream = ExtResource("71_ui_confirm")
 pause_stream = ExtResource("72_pause")
 resume_stream = ExtResource("73_resume")

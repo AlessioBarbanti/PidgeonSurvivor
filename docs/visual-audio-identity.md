@@ -161,13 +161,15 @@ musica di run, uno per quella di menu, uno per la traccia Boss (PS-073) e uno
 per la musica dedicata di fine run (PS-080), persistenza volume/mute su
 `user://audio_settings.cfg`.
 
-15 cue dichiarati: `SHOT`, `HIT`, `PLAYER_DAMAGE`, `PICKUP`, `LEVEL_UP`,
-`ABILITY_ACTIVATE`, `ABILITY_READY`, `BOSS_WARNING`, `BOSS_ATTACK`, `DODGE`,
-`UI_CONFIRM`, `PAUSE`, `RESUME`, `VICTORY`, `DEFEAT`.
-`has_complete_cue_set()` li verifica tutti e **15** (PS-072 ha chiuso
-`DODGE`, l'ultima mancanza dichiarata direttamente nel codice).
+16 cue dichiarati: `SHOT`, `HIT`, `PLAYER_DAMAGE`, `PICKUP`, `LEVEL_UP`,
+`ABILITY_ACTIVATE`, `ABILITY_READY`, `BOSS_WARNING`, `BOSS_ATTACK`,
+`BOSS_VICTORY`, `DODGE`, `UI_CONFIRM`, `PAUSE`, `RESUME`, `VICTORY`,
+`DEFEAT`. `has_complete_cue_set()` li verifica tutti e **16** (PS-136 ha
+aggiunto `BOSS_VICTORY`, una fanfara puntuale a ogni sconfitta di Boss —
+inclusa ogni ricorrenza nella stessa run — distinta dal cue `VICTORY` di fine
+run).
 
-File audio runtime: 14 SFX Kenney CC0
+File audio runtime: 15 SFX Kenney CC0
 ([kenney_b18/ASSET-MANIFEST.md](../assets/audio/third_party/kenney_b18/ASSET-MANIFEST.md))
 mappati 1:1 sui cue di combattimento/interfaccia; `DODGE` usa
 `dodge.ogg`, un take del CC0 Swishes Sound Pack di artisticdude

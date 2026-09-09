@@ -60,7 +60,8 @@
         "tests/unit/test_ps101_evil_hunger_narrative.gd",
         "tests/unit/test_ps103_boss_intro_frame_wiring.gd",
         "tests/unit/test_ps126_post_curve_pressure.gd",
-        "tests/unit/test_ps127_piccione_malvagio_hard_rare.gd"
+        "tests/unit/test_ps127_piccione_malvagio_hard_rare.gd",
+        "tests/unit/test_ps136_boss_victory_fanfare.gd"
       ]
     },
     {
@@ -420,7 +421,8 @@
         "tests/unit/test_menu_music.gd",
         "tests/unit/test_ps072_bea_dodge_audio.gd",
         "tests/unit/test_ps073_boss_dedicated_music.gd",
-        "tests/unit/test_ps080_end_run_music.gd"
+        "tests/unit/test_ps080_end_run_music.gd",
+        "tests/unit/test_ps136_boss_victory_fanfare.gd"
       ]
     },
     {
