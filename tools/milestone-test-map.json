@@ -369,7 +369,8 @@
         "tests/unit/test_ps106_alea_sobriety_hud.gd",
         "tests/unit/test_ps094_ability_charge_stacking.gd",
         "tests/unit/test_ps074_ui_click_feedback.gd",
-        "tests/unit/test_ps137_shared_settings_overlay.gd"
+        "tests/unit/test_ps137_shared_settings_overlay.gd",
+        "tests/unit/test_ps138_alea_ring_glow.gd"
       ]
     },
     {
@@ -469,7 +470,8 @@
         "tests/unit/test_ps105_alea_sobriety_cycle.gd",
         "tests/unit/test_ps093_extended_base_stats.gd",
         "tests/unit/test_ps106_alea_sobriety_hud.gd",
-        "tests/unit/test_ps099_state_tell_aura.gd"
+        "tests/unit/test_ps099_state_tell_aura.gd",
+        "tests/unit/test_ps138_alea_ring_glow.gd"
       ]
     },
     {
@@ -477,7 +479,8 @@
         "assets/art/icons/hud/*"
       ],
       "smokes": [
-        "tests/unit/test_ps106_alea_sobriety_hud.gd"
+        "tests/unit/test_ps106_alea_sobriety_hud.gd",
+        "tests/unit/test_ps138_alea_ring_glow.gd"
       ]
     },
     {

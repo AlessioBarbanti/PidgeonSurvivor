@@ -42,7 +42,7 @@ const WAVE_EVENT_TELEGRAPH_COLOR := Color("6ee7ff")
 @onready var _ability_panel: Control = %AbilityPanel
 @onready var _active_ability_button: TouchAbilityButton = %ActiveAbilityButton
 @onready var _sobriety_slot: Control = %SobrietySlot
-@onready var _sobriety_icon: TextureProgressBar = %SobrietyIcon
+@onready var _sobriety_icon: AleaSobrietyIndicator = %SobrietyIcon
 
 var _run_controller: RunController
 var _health_component: HealthComponent
@@ -128,7 +128,9 @@ func configure(
 	_experience_system.progression_changed.connect(_on_progression_changed)
 	if is_instance_valid(_friend_passive_controller):
 		_friend_passive_controller.alea_sobriety_changed.connect(_on_alea_sobriety_changed)
+		_friend_passive_controller.alea_brilla_active_changed.connect(_on_alea_brilla_active_changed)
 		_on_alea_sobriety_changed(_friend_passive_controller.get_alea_sobriety_ratio())
+		_on_alea_brilla_active_changed(_friend_passive_controller.is_alea_brilla_active())
 	if is_instance_valid(_ability_controller):
 		_ability_controller.cooldown_changed.connect(_on_ability_cooldown_changed)
 		_ability_controller.readiness_changed.connect(_on_ability_readiness_changed)
@@ -193,11 +195,19 @@ func _refresh_sobriety_visibility() -> void:
 	)
 	_sobriety_slot.visible = is_alea
 	if not is_alea:
-		_sobriety_icon.value = 0.0
+		_sobriety_icon.set_charge_ratio(0.0)
+		_sobriety_icon.set_brilla_active(false)
 
 
 func _on_alea_sobriety_changed(fill_ratio: float) -> void:
-	_sobriety_icon.value = clampf(fill_ratio, 0.0, 1.0)
+	_sobriety_icon.set_charge_ratio(fill_ratio)
+
+
+## PS-138: il calice intero (non solo il vino) mostra un glow quando la
+## passiva di Alea è in stato Brilla — segnale separato dall'anello di
+## carica, che resta il segnale primario del "quanto manca".
+func _on_alea_brilla_active_changed(active: bool) -> void:
+	_sobriety_icon.set_brilla_active(active)
 
 
 func is_sobriety_icon_visible() -> bool:
@@ -205,7 +215,11 @@ func is_sobriety_icon_visible() -> bool:
 
 
 func get_sobriety_fill_ratio() -> float:
-	return _sobriety_icon.value if is_instance_valid(_sobriety_icon) else 0.0
+	return _sobriety_icon.get_charge_ratio() if is_instance_valid(_sobriety_icon) else 0.0
+
+
+func is_sobriety_brilla_active() -> bool:
+	return _sobriety_icon.is_brilla_active() if is_instance_valid(_sobriety_icon) else false
 
 
 func get_sobriety_icon_rect() -> Rect2:
@@ -572,6 +586,7 @@ func _show_default_values() -> void:
 	_hide_boss_warning()
 	_hide_wave_event_telegraph()
 	_on_alea_sobriety_changed(0.0)
+	_on_alea_brilla_active_changed(false)
 
 
 func _disconnect_sources() -> void:
@@ -627,6 +642,15 @@ func _disconnect_sources() -> void:
 		)
 	):
 		_friend_passive_controller.alea_sobriety_changed.disconnect(_on_alea_sobriety_changed)
+	if (
+		is_instance_valid(_friend_passive_controller)
+		and _friend_passive_controller.alea_brilla_active_changed.is_connected(
+			_on_alea_brilla_active_changed
+		)
+	):
+		_friend_passive_controller.alea_brilla_active_changed.disconnect(
+			_on_alea_brilla_active_changed
+		)
 	if (
 		is_instance_valid(_game_director)
 		and _game_director.boss_warning_changed.is_connected(_on_boss_warning_changed)

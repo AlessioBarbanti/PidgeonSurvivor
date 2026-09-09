@@ -20,7 +20,15 @@ del documento architetturale, non una lacuna di questo file.
   il calice Sobrietà è una coppia di layer pixel-art allineati, con vetro
   freddo/ornamenti oro statici e vino borgogna isolato; il riempimento verticale
   progressivo comunica lo stato anche attraverso la massa del liquido, non il
-  solo colore.
+  solo colore. Un anello di carica procedurale (PS-138,
+  [scripts/ui/alea_sobriety_indicator.gd](../scripts/ui/alea_sobriety_indicator.gd))
+  avvolge la sola coppa e scalda colore da bronzo (`#A67B35`, lo stesso già
+  presente nel master) a oro vivo (`#F4BC55`) seguendo `charge_ratio`: è il
+  segnale primario del "quanto manca", il vino resta secondario. Un alone
+  luminoso attorno al vetro segnala lo stato Brilla — nessuno shader,
+  nessun nuovo asset: stessa tecnica di disegno procedurale già in uso per
+  l'anello di ricarica di `TouchAbilityButton` (PS-120/PS-122) e per la
+  cornice di `PixelArcadeMedallion`.
 - **Cast giocabile** ([characters.md](./characters.md), righe 111-124): gli
   otto profili (Zat, Bea, Aleo, Alea, Lollo, Migi, Marghe, Magno, con le
   rispettive Evil) seguono la direzione presentazionale approvata per il
