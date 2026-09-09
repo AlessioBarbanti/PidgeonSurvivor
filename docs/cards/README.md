@@ -239,3 +239,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-135](./5_completed/PS-135-correggi-evil-portrait-magno-accessori-persi.md) | Correggi evil_portrait.png di Magno per ripristinare gli accessori identitari | art | arte | COMPLETATO | media | — |
 | [PS-136](./4_to_test/PS-136-fanfara-vittoria-sconfitta-boss.md) | Aggiungi una fanfara di vittoria alla sconfitta del Boss | feat | audio | IN VERIFICA | media | — |
 | [PS-137](./4_to_test/PS-137-overlay-impostazioni-condiviso-e-paginato.md) | Overlay impostazioni condiviso, più grande e paginato per categoria | ux | ui | IN VERIFICA | media | — |
+| [PS-138](./2_to_do/PS-138-anello-carica-e-glow-brilla-indicatore-alea.md) | Ridisegna l'indicatore HUD della passiva di Alea con anello di carica e glow Brilla | ux | ui | PRONTO | media | PS-106 |
