@@ -240,3 +240,9 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-136](./4_to_test/PS-136-fanfara-vittoria-sconfitta-boss.md) | Aggiungi una fanfara di vittoria alla sconfitta del Boss | feat | audio | IN VERIFICA | media | — |
 | [PS-137](./4_to_test/PS-137-overlay-impostazioni-condiviso-e-paginato.md) | Overlay impostazioni condiviso, più grande e paginato per categoria | ux | ui | IN VERIFICA | media | — |
 | [PS-138](./4_to_test/PS-138-anello-carica-e-glow-brilla-indicatore-alea.md) | Ridisegna l'indicatore HUD della passiva di Alea con anello di carica e glow Brilla | ux | ui | IN VERIFICA | media | PS-106 |
+| [PS-139](./2_to_do/PS-139-cornice-asset-carte-upgrade.md) | Applica la cornice asset esistente alle carte upgrade | ux | ui | PRONTO | bassa | — |
+| [PS-140](./2_to_do/PS-140-riallinea-colore-bordo-hud-hp-xp.md) | Riallinea il colore del bordo HP/XP alla palette oro esistente | fix | ui | PRONTO | bassa | — |
+| [PS-141](./2_to_do/PS-141-arricchisci-telegraph-attacchi-boss.md) | Arricchisci i telegraph d'attacco del Boss per non sembrare debug | ux | arte | PRONTO | media | — |
+| [PS-142](./2_to_do/PS-142-correggi-clamp-altezza-pannello-pausa.md) | Correggi il clamp dell'altezza del pannello pausa | fix | ui | PRONTO | media | — |
+| [PS-143](./2_to_do/PS-143-sostituisci-icona-ingranaggio-pausa-con-bottone.md) | Sostituisci l'icona ingranaggio della pausa con un bottone IMPOSTAZIONI | ux | ui | PRONTO | media | PS-137 |
+| [PS-144](./1_idea/PS-144-arte-dedicata-vfx-attacchi-boss.md) | Valuta arte dedicata per le VFX degli attacchi Boss (oltre il telegraph) | art | arte | DA DEFINIRE | bassa | PS-141 |

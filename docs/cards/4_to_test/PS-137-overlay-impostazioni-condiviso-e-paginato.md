@@ -8,7 +8,7 @@ priorita: media
 dipende_da: []
 origine:
 creato: 2026-09-09
-aggiornato: 2026-09-09
+aggiornato: 2026-09-10
 ---
 
 # PS-137 — Overlay impostazioni condiviso, più grande e paginato per categoria
@@ -63,7 +63,12 @@ ingranaggio della welcome, per aprire l'overlay condiviso.
 - [x] Il pannello di pausa mostra solo Resume e Cambia personaggio in
       colonna; l'icona ingranaggio per le impostazioni è fluttuante fuori
       da quella colonna, nella stessa posizione/stile del tasto ingranaggio
-      della welcome.
+      della welcome. **Corretto da PS-143**: il proprietario ha chiarito che
+      il vincolo reale era la destinazione condivisa (stessa istanza
+      dell'overlay), non lo stile identico del tasto d'ingresso — vedi
+      Decisioni 2026-09-10. Il tasto ingranaggio della pausa diventa un
+      bottone "IMPOSTAZIONI" in colonna con Resume/Cambia personaggio; la
+      welcome resta invariata con la propria icona.
 - [x] Back/`ui_cancel` chiude solo l'overlay impostazioni quando è aperto,
       senza chiudere welcome o pausa sottostante; se l'overlay non è
       aperto, Back si comporta come oggi in welcome/pausa.
@@ -163,6 +168,24 @@ Non toccare:
 - **2026-09-09 — Tasto pausa: icona ingranaggio fluttuante** che replica
   posizione e stile del gear button della welcome, fuori dalla colonna
   Resume/Cambia personaggio. La colonna pausa si riduce a due soli bottoni.
+  **Corretta da PS-143 (2026-09-10):** vedi voce sotto.
+- **2026-09-10 — Corregge la decisione precedente sul tasto pausa: il
+  proprietario chiarisce di aver inteso "stessa pagina", non "stesso
+  stile".** L'icona ingranaggio fluttuante della pausa risultava illeggibile
+  dal vivo (glifo Unicode "⚙" a stroke sottile su sfondo scuro, non un
+  problema di solo colore — verificato dal direttore-artistico confrontando
+  con "II" del pausa-HUD, stesso font/stile ma glifo diverso). Consultato di
+  nuovo, il direttore-artistico ha verificato che il criterio di parità
+  visiva con la welcome non era mai un vincolo espresso dal proprietario per
+  sé, ma una lettura estensiva della richiesta "stessa istanza dell'overlay"
+  di questa card. Il proprietario conferma: la welcome resta invariata (icona
+  ingranaggio così com'è), solo la pausa sostituisce l'icona con un bottone
+  "IMPOSTAZIONI" a piena larghezza nella colonna Resume/Cambia personaggio
+  (stile `StyleBoxTexture_secondary_*`, coerente con "CAMBIA PERSONAGGIO").
+  Lavoro spostato in [PS-143](../2_to_do/PS-143-sostituisci-icona-ingranaggio-pausa-con-bottone.md).
+  La catena `focus_neighbor` dell'icona pausa verificata da
+  `test_ps137_shared_settings_overlay.gd` andrà aggiornata da PS-143 per il
+  nuovo bottone, non più per un'icona fluttuante.
 - **2026-09-09 — La paginazione riparte sempre dalla tab AUDIO a ogni
   apertura**, non ricorda l'ultima categoria vista. Scelta per
   comportamento deterministico e testabile, e perché lo stesso overlay ora
