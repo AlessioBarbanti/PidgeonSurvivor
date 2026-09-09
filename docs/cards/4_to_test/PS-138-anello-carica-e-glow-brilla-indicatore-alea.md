@@ -304,6 +304,20 @@ Non toccare:
   su Windows (x=64 invariato, stessa cifra di prima perché la formula
   produce lo stesso risultato su quel profilo) e da rivedere sul Pixel 9
   alla prossima installazione.
+- **2026-09-10 — Dimensione portata da 48×48 a 144×144 (3×), su richiesta
+  esplicita del proprietario dopo il primo test dal vivo sul device**
+  ("deve essere almeno triplicata se non quadruplicata... leggibile con la
+  visione periferica"). Confermato con cattura Windows: alla nuova
+  dimensione l'icona è paragonabile a `TouchAbilityButton` (128px base),
+  non più marcatamente più piccola — il proprietario aveva inizialmente
+  escluso questo, ma lo ha poi richiesto esplicitamente vedendo il
+  risultato a 48px in game reale, quindi la precedente decisione "resta ben
+  sotto i 128px+ dell'abilità" è superata da questa. Nessuna modifica di
+  logica: `offset_right`/`offset_bottom` di `SobrietySlot` aggiornati nel
+  `.tscn`, l'allineamento dinamico e la geometria dell'anello (frazioni di
+  `size`) si riscalano da soli. Relevant 27/27 verde. Nuova APK compilata,
+  installata e rilanciata pulita (force-stop + monkey) sul Pixel 9;
+  conferma dal vivo del proprietario ancora attesa.
 
 ## Documenti sincronizzati
 
