@@ -36,7 +36,7 @@ apre sia dal tasto ingranaggio della welcome sia da un nuovo tasto
 ingranaggio nella pausa. Il modal è dimensionato a un target fisso più
 grande di quello attuale, restando dentro la safe area su 16:9, 20:9 e 4:3.
 Il contenuto è diviso in tre tab orizzontali testuali — AUDIO,
-ACCESSIBILITÀ, CONTROLLI TOUCH — che mostrano una categoria alla volta;
+ACCESSIBILITÀ, CONTROLLI — che mostrano una categoria alla volta;
 ogni apertura riparte sempre dalla tab AUDIO. Il pannello di pausa si
 riduce a Resume e Cambia personaggio in colonna, con l'icona ingranaggio
 fluttuante fuori da quella colonna, nella stessa posizione/stile del tasto
@@ -52,7 +52,7 @@ ingranaggio della welcome, per aprire l'overlay condiviso.
       attuale della welcome/pausa, e resta interamente dentro la safe area
       su 16:9, 20:9 e 4:3.
 - [x] Il contenuto è diviso in tre tab orizzontali testuali — AUDIO,
-      ACCESSIBILITÀ, CONTROLLI TOUCH — che mostrano una categoria alla
+      ACCESSIBILITÀ, CONTROLLI — che mostrano una categoria alla
       volta; nessuno scroll verticale che le mescoli tutte e tre.
 - [x] Ogni apertura dell'overlay mostra sempre la tab AUDIO per prima,
       indipendentemente da quale tab fosse attiva all'ultima chiusura.
@@ -114,15 +114,28 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: apri l'overlay dalla welcome, cambia un
-      valore, apri l'overlay dalla pausa e verifica lo stesso valore; naviga
-      le tre tab a touch
-- [ ] Controllo percettivo richiesto: sì — verificare che
-      `pause_panel_frame.png` non risulti sfocato/tirato alla dimensione
-      ingrandita su 16:9, 20:9 e 4:3; se sfocato, aprire una card separata
-      `tipo: art` per un master a risoluzione maggiore dello stesso frame
+- [ ] Runtime Windows interattivo — **parziale**: la geometria del nuovo
+      layout (area contenuto fissa, nessuno scroll su CONTROLLI, tab
+      allo stesso posto su tutte e tre) è stata verificata con rendering
+      reale via uno script di cattura headless ad-hoc a 1280×720 e 960×720
+      (non committato, vive solo nello scratchpad di sessione), non con una
+      sessione interattiva. Resta da fare un passaggio interattivo vero.
+- [x] Validazione statica APK — `android-static: PASS` (ispezione
+      `inspect-android-artifact.ps1` via runner, sessione 2026-09-09).
+- [ ] Runtime fisico Pixel 9 — **parziale**: il fix dell'invisibilità del
+      testo delle tab (StyleBoxTexture/content_margin) è stato verificato
+      dal vivo sul Pixel 9 con screenshot prima/dopo. Il giro successivo
+      (redesign tab piatte, spaziature strette, area contenuto a
+      `CONTENT_AREA_HEIGHT` fissa) è stato implementato **dopo** che il
+      proprietario ha scollegato il device: verificato solo via il capture
+      script su Windows, non ancora sul Pixel 9 fisico. Riaprire questo
+      gate al prossimo collegamento del device prima di chiudere la card.
+- [ ] Controllo percettivo — **parziale**: il layout (tab/area
+      contenuto/footer) è stato controllato a fondo (device + script di
+      cattura Windows) e approvato in questa sessione dopo tre giri di
+      correzione col proprietario. Resta aperta la verifica originaria non
+      correlata: se `pause_panel_frame.png` risulti sfocato/tirato alla
+      dimensione ingrandita su 16:9, 20:9 e 4:3.
 
 ## Decisioni
 
@@ -206,6 +219,73 @@ Non toccare:
   solo il modale in cima, mai la run") copre già il comportamento
   dell'overlay condiviso senza bisogno di una voce dedicata — resta un
   dettaglio di implementazione UI, non un nuovo contratto architetturale.
+- **2026-09-09 — Corregge la decisione precedente su `clip_text`: sul
+  Pixel 9 fisico il testo delle tab non era "leggibile sui profili più
+  larghi" come assunto, era **completamente invisibile** su tutti e tre i
+  bottoni, `AUDIO` incluso.** Causa: `StyleBoxTexture_secondary_*` non
+  dichiarava `content_margin_*`, quindi Godot usa `texture_margin_*` (102px
+  per lato) anche come margine di contenuto. Su un bottone largo ~454px
+  (`CHIUDI`, `CAMBIA PERSONAGGIO` in `pause_overlay.tscn`, unico posto dove
+  questo stile era usato finora) restano ~250px di contenuto, ma sulle tre
+  tab affiancate (~158px l'una, dentro il pannello da 640px) l'area di
+  contenuto risultava **negativa** (158 − 102 − 102), collassando
+  l'etichetta a zero. Nessun test GUT lo copriva (i test verificano solo il
+  wiring funzionale, non il rendering). Scoperto e verificato dal
+  proprietario con screenshot reali sul device, non da questa sessione in
+  autonomia — l'esatta ragione per cui il gate di runtime fisico non va mai
+  dato per scontato dall'ispezione del codice.
+- **2026-09-09 — Tab ridisegnate su richiesta esplicita del proprietario:
+  niente più sfondo a diamante (`StyleBoxTexture_secondary_*`), solo testo
+  piccolo in stile scheda.** `theme_type_variation` passato da
+  `ButtonStandard` a `ButtonCompact` (già usata in HUD/selettore
+  personaggi), sfondo `StyleBoxEmpty` su tutti gli stati, colori
+  `font_color` desaturato (`Color(0.5, 0.53, 0.58, 1)`) per le tab inattive
+  e `font_pressed_color` oro (`Color(1, 0.85, 0.32, 1)`, già in uso) per
+  quella attiva. Terza tab rinominata da "CONTROLLI TOUCH" a "CONTROLLI"
+  (il proprietario ha indicato esplicitamente questi tre nomi). Verificato
+  su Pixel 9 con screenshot per ciascuna delle tre tab, sia in stato
+  "appena toccato" (font_hover_color) sia a riposo (font_pressed_color).
+  `content_margin_*` aggiunto per il fix precedente è stato rimosso insieme
+  al resto dello stile texture-based ormai non più usato dalle tab (resta
+  solo su `CloseButton`, dove non serviva comunque).
+- **2026-09-09 — Margini/spaziature stretti su richiesta del proprietario**
+  ("troppa roba... poco succo... sbilanciata"): `content_margin_*` del
+  pannello (72/64/72/60 → 56/40/56/36) e separazione della `VBox`
+  (20 → 12); larghezza pannello riportata a 640 (il tentativo intermedio a
+  760px per dare respiro alle vecchie tab a diamante non serve più col
+  redesign a testo piatto).
+- **2026-09-09 — Bug strutturale trovato e corretto: l'altezza minima
+  dell'area contenuto restava agganciata al contenuto della tab AUDIO
+  (quella di default all'apertura), non a un bersaglio condiviso.**
+  `_clamp_panel_height()` calcolava `natural_content` da
+  `_page_stack.get_combined_minimum_size().y`, ma veniva richiamata solo in
+  `_ready()`/`open()`/al resize del viewport — mai da `_select_tab()`.
+  Risultato osservato dal proprietario: CONTROLLI (3 righe, la tab più
+  "pesante") veniva compresso nello spazio dimensionato per AUDIO (2 righe)
+  e mostrava uno scrollbar inutile con righe quasi tagliate vicino a
+  `CHIUDI`, mentre AUDIO/ACCESSIBILITÀ mostravano un vuoto fisso ma privo di
+  intenzione. Corretto sostituendo `natural_content` con una costante
+  condivisa `CONTENT_AREA_HEIGHT := 240.0` (~4 righe standard da 44px +
+  10px di separazione) in
+  [scripts/ui/settings_overlay.gd](../../../scripts/ui/settings_overlay.gd):
+  testa (titolo/tab/separatore) e piede (`CHIUDI`) restano quindi a
+  un'altezza fissa indipendente dalla tab attiva, l'area contenuto resta
+  l'unico elemento elastico (tetto fisso, non pavimento: si restringe solo
+  sotto la clamp di sicurezza `available` per i profili molto compatti),
+  mentre le righe di ciascuna pagina restano impacchettate in alto perché
+  nessun nodo fra `PageStack` e le singole pagine ha `size_flags_vertical`
+  di espansione. `PageScroll.custom_minimum_size` statico rimosso dalla
+  scena (era 210, un placeholder che confondeva la lettura): ora
+  `_page_scroll.size_flags_vertical = 3` e l'altezza è interamente
+  calcolata a runtime. Nessuna feature nuova introdotta (l'ipotesi "Limite
+  FPS" del proprietario è rimasta solo un caso di prova, non implementata).
+  Verificato con GUT `Relevant` (29/29, incluso il test di safe area su
+  16:9/20:9/4:3) e con uno script di cattura headless ad-hoc (non
+  committato) su 1280×720 e 960×720: pannello a identica altezza/posizione
+  su tutte e tre le tab, nessuno scroll su CONTROLLI, righe raccolte in alto
+  su AUDIO/ACCESSIBILITÀ con lo spazio restante libero. Non ancora
+  riverificato sul Pixel 9 fisico (device scollegato a metà sessione, vedi
+  Gate manuali).
 
 ## Documenti sincronizzati
 

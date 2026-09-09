@@ -25,6 +25,17 @@ const DEFAULT_TAB := Tab.AUDIO
 ## Respiro minimo fra il pannello e i bordi del viewport, stesso valore di
 ## PauseOverlay.PAUSE_SCROLL_SAFETY_MARGIN: stessa grammatica di sicurezza.
 const SAFETY_MARGIN := 24.0
+## Altezza target dell'area contenuto (lo `ScrollContainer` fra separatore e
+## bottone Chiudi), condivisa da tutte e tre le tab. Non deriva dal contenuto
+## della tab attiva — a differenza di "tetto = min(naturale, disponibile)"
+## usato in precedenza, che teneva la tab AUDIO (la più corta) come misura e
+## faceva comparire uno scroll indesiderato su CONTROLLI — ma da uno spazio
+## pensato per ~4 righe standard (44px + 10px di separazione) a piena
+## risoluzione, in modo che testa/piede restino stabili al cambio tab e le
+## categorie più povere (AUDIO, ACCESSIBILITÀ) mostrino le proprie righe
+## raccolte in alto con lo spazio restante semplicemente libero, non
+## ridistribuito.
+const CONTENT_AREA_HEIGHT := 240.0
 
 @onready var _center: CenterContainer = %Center
 @onready var _panel: PanelContainer = %Panel
@@ -33,7 +44,6 @@ const SAFETY_MARGIN := 24.0
 @onready var _accessibility_tab_button: Button = %AccessibilityTabButton
 @onready var _controls_tab_button: Button = %ControlsTabButton
 @onready var _page_scroll: ScrollContainer = %PageScroll
-@onready var _page_stack: VBoxContainer = %PageStack
 @onready var _audio_page: VBoxContainer = %AudioPage
 @onready var _accessibility_page: VBoxContainer = %AccessibilityPage
 @onready var _controls_page: VBoxContainer = %ControlsPage
@@ -342,16 +352,19 @@ func _refresh_scale_label(label: Label, value: float) -> void:
 		label.text = "%d%%" % roundi(value * 100.0)
 
 
-## Stesso principio di WelcomeScreen._clamp_settings_scroll_height()/
-## PauseOverlay._clamp_pause_scroll_height(): una sola pagina alla volta è
-## già più corta del vecchio pannello a scroll unico, ma il target resta
-## comunque un tetto (`min(naturale, disponibile)`), mai un pavimento — sui
-## profili larghi il risultato è identico al contenuto naturale, su quello
-## compatto (960×720, PS-085) scorre internamente invece di sforare.
+## L'area contenuto è l'unico elemento elastico: testa (titolo/tab/
+## separatore) e piede (bottone Chiudi) restano alla propria altezza naturale
+## e non cambiano mai al variare della tab attiva — `CONTENT_AREA_HEIGHT` è
+## un tetto fisso, condiviso da AUDIO/ACCESSIBILITÀ/CONTROLLI, non ricavato
+## dal contenuto della tab aperta al momento (quello causava lo scroll
+## indesiderato su CONTROLLI quando l'apertura misurava AUDIO, più corta).
+## Resta comunque un tetto (`min(target, disponibile)`), mai un pavimento:
+## sui profili larghi il risultato è `CONTENT_AREA_HEIGHT`, su quello
+## compatto (960×720, PS-085) scende per restare dentro il viewport, e in tal
+## caso una tab con molte righe scorre internamente invece di sforare.
 func _clamp_panel_height() -> void:
-	if not is_instance_valid(_page_scroll) or not is_instance_valid(_page_stack) or not is_inside_tree():
+	if not is_instance_valid(_page_scroll) or not is_inside_tree():
 		return
-	var natural_content := _page_stack.get_combined_minimum_size().y
 	var viewport_height := get_viewport().get_visible_rect().size.y
 	var available := maxf(viewport_height - _chrome_height - SAFETY_MARGIN, 0.0)
-	_page_scroll.custom_minimum_size.y = minf(natural_content, available)
+	_page_scroll.custom_minimum_size.y = minf(CONTENT_AREA_HEIGHT, available)
