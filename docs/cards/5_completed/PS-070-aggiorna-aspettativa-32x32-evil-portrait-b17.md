@@ -3,12 +3,12 @@ id: PS-070
 titolo: Aggiorna l'aspettativa 32x32 su evil_portrait in test_b17_friend_content
 tipo: fix
 area: tooling
-stato: PRONTO
+stato: COMPLETATO
 priorita: bassa
 dipende_da: []
 origine: B17
 creato: 2026-09-02
-aggiornato: 2026-09-02
+aggiornato: 2026-09-09
 ---
 
 # PS-070 — Aggiorna l'aspettativa 32x32 su evil_portrait in test_b17_friend_content
@@ -50,15 +50,15 @@ lavoro prima di procedere.
 
 ## Criteri di accettazione
 
-- [ ] `test_catalog_and_approvals` non assume più che `evil_portrait` sia
+- [x] `test_catalog_and_approvals` non assume più che `evil_portrait` sia
       `32x32`; l'asserzione su `portrait` (ritaglio placeholder) resta
       invariata.
-- [ ] Il test verifica comunque che `get_public_evil_portrait()` non sia
+- [x] Il test verifica comunque che `get_public_evil_portrait()` non sia
       nullo per tutti e otto i friend.
-- [ ] Nessuna modifica a `scripts/content/friend_definition.gd`, a
+- [x] Nessuna modifica a `scripts/content/friend_definition.gd`, a
       `data/friends/*.tres` o a qualunque valore di gameplay: la card
       corregge solo l'aspettativa del test.
-- [ ] `tests/unit/test_b17_friend_content.gd` passa senza fallimenti residui
+- [x] `tests/unit/test_b17_friend_content.gd` passa senza fallimenti residui
       sui restanti criteri della stessa funzione.
 
 ## Ambito
@@ -101,6 +101,19 @@ Non toccare:
   `portrait` con un busto definitivo. Il proprietario ha scelto che sia
   PS-068 ad aggiornare quella parte quando arriva, non questa card in
   anticipo su un asset che non esiste ancora.
+- **2026-09-09 — Card già risolta da PS-068 (commit `040ebca`), nessuna
+  modifica necessaria.** Rileggendo `test_b17_friend_content.gd`
+  (`test_catalog_and_approvals`), l'asserzione `32x32` su
+  `get_public_evil_portrait()` non esiste più: quando PS-068 ha riscritto il
+  blocco per introdurre l'aspettativa `256x256`/`PS-068` sul lato
+  `portrait`, ha sostituito l'intera asserzione a coppia con un controllo di
+  non-nullità sui due ritratti (righe 72-76 attuali) più un controllo di
+  dimensione solo su `get_public_portrait()` (righe 77-81) — esattamente il
+  contratto che questa card chiedeva, ottenuto come effetto collaterale
+  invece che come suo obiettivo diretto. Verificato con `-Profile Relevant`:
+  47/47 step verdi (`test_b17_friend_content.gd` 5/5, 101 assert; 46 smoke di
+  regressione), nessun `SCRIPT ERROR`/`FATAL EXCEPTION`. Chiusa senza toccare
+  codice o dati.
 
 ## Documenti sincronizzati
 

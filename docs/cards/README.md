@@ -171,7 +171,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-067](./5_completed/PS-067-carte-upgrade-e-barb-escono-di-6px-dalla-safe-area.md) | Le carte upgrade e Barb escono di 6px dalla safe area | fix | ui | COMPLETATO | alta | — |
 | [PS-068](./5_completed/PS-068-genera-ritratti-busto-cast-giocabile.md) | Generare i ritratti busto definitivi del cast giocabile | art | arte | COMPLETATO | media | — |
 | [PS-069](./5_completed/PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md) | Ridisegnare il selettore personaggi attorno ai ritratti busto | ux | ui | COMPLETATO | media | PS-068 |
-| [PS-070](./2_to_do/PS-070-aggiorna-aspettativa-32x32-evil-portrait-b17.md) | Aggiorna l'aspettativa 32x32 su evil_portrait in test_b17_friend_content | fix | tooling | PRONTO | bassa | — |
+| [PS-070](./5_completed/PS-070-aggiorna-aspettativa-32x32-evil-portrait-b17.md) | Aggiorna l'aspettativa 32x32 su evil_portrait in test_b17_friend_content | fix | tooling | COMPLETATO | bassa | — |
 | [PS-071](./5_completed/PS-071-pannello-boss-intro-esce-dalla-safe-area.md) | Il pannello della Boss Intro esce dalla safe area | fix | ui | COMPLETATO | media | — |
 | [PS-072](./5_completed/PS-072-audio-schivata-sesto-senso-equino-bea.md) | Dai un audio alla schivata Sesto Senso Equino di Bea | feat | audio | COMPLETATO | media | — |
 | [PS-073](./5_completed/PS-073-musica-boss-dedicata.md) | Introduci una musica Boss dedicata | feat | audio | COMPLETATO | media | — |
