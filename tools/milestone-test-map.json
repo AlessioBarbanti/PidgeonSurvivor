@@ -370,7 +370,8 @@
         "tests/unit/test_ps094_ability_charge_stacking.gd",
         "tests/unit/test_ps074_ui_click_feedback.gd",
         "tests/unit/test_ps137_shared_settings_overlay.gd",
-        "tests/unit/test_ps138_alea_ring_glow.gd"
+        "tests/unit/test_ps138_alea_ring_glow.gd",
+        "tests/unit/test_ps142_pause_panel_height_clamp.gd"
       ]
     },
     {

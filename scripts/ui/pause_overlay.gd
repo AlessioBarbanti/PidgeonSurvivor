@@ -37,8 +37,8 @@ func _ready() -> void:
 	_cancel_change_button.pressed.connect(_on_cancel_change_button_pressed)
 	_confirm_change_button.pressed.connect(_on_confirm_change_button_pressed)
 	get_viewport().size_changed.connect(_clamp_pause_scroll_height)
-	_clamp_pause_scroll_height()
 	hide_pause()
+	_request_pause_scroll_height_refresh()
 
 
 ## PS-137: chiamata una sola volta da `movement_slice.gd` dopo aver
@@ -66,7 +66,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func show_pause() -> void:
 	_accepting_resume = true
 	visible = true
-	_clamp_pause_scroll_height()
+	_request_pause_scroll_height_refresh()
 	_show_pause_controls()
 	_resume_button.call_deferred("grab_focus")
 
@@ -136,11 +136,50 @@ func handle_back_requested() -> bool:
 	return true
 
 
+## PS-142: espone il valore assegnato dal clamp per la verifica di
+## regressione (mai un pavimento più grande dell'altezza naturale del VBox).
+func get_pause_scroll_min_height() -> float:
+	return _pause_scroll.custom_minimum_size.y if is_instance_valid(_pause_scroll) else 0.0
+
+
+## PS-142: altezza naturale corrente del contenuto (titolo + bottoni),
+## letta a fresco per confrontarla con `get_pause_scroll_min_height()`.
+func get_pause_content_natural_height() -> float:
+	return _pause_vbox.get_combined_minimum_size().y if is_instance_valid(_pause_vbox) else 0.0
+
+
 func get_pause_panel_rect() -> Rect2:
 	if not is_instance_valid(_pause_center) or _pause_center.get_child_count() == 0:
 		return Rect2()
 	var panel := _pause_center.get_child(0) as Control
 	return panel.get_global_rect() if is_instance_valid(panel) else Rect2()
+
+
+## PS-142: quando il pannello passa da nascosto a visibile, Godot rimanda al
+## prossimo frame di idle la sort dei container che assegna a `_pause_vbox`
+## la larghezza reale su cui misura la propria altezza minima. Leggere
+## `get_combined_minimum_size()` nello stesso istante sincrono di
+## `visible = true` restituisce quindi un valore stale (misurato mentre il
+## pannello era ancora nascosto), che il clamp applicherebbe come un
+## pavimento invece che come un tetto — il bug osservato da questa card.
+## Una connessione one-shot a `process_frame`, invece di
+## `await get_tree().process_frame` (stesso schema di PS-096/PS-097 in
+## `upgrade_card.gd`/`upgrade_overlay.gd`), evita l'errore motore "Resumed
+## function ... after await, but class instance is gone" se l'overlay viene
+## liberato (fine test, restart) mentre l'attesa è sospesa: la connessione si
+## scioglie da sola senza invocare nulla.
+func _request_pause_scroll_height_refresh() -> void:
+	if not is_inside_tree():
+		return
+	var frame_signal := get_tree().process_frame
+	if not frame_signal.is_connected(_on_pause_scroll_height_frame_elapsed):
+		frame_signal.connect(_on_pause_scroll_height_frame_elapsed, CONNECT_ONE_SHOT)
+
+
+func _on_pause_scroll_height_frame_elapsed() -> void:
+	if not is_instance_valid(self) or not is_inside_tree():
+		return
+	_clamp_pause_scroll_height()
 
 
 ## PS-085: PauseCenter (CenterContainer) non clippa ne' scorre da solo: senza

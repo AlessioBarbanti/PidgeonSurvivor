@@ -3,7 +3,7 @@ id: PS-142
 titolo: Correggi il clamp dell'altezza del pannello pausa
 tipo: fix
 area: ui
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
@@ -44,17 +44,21 @@ entra comodamente nello schermo disponibile.
 
 ## Criteri di accettazione
 
-- [ ] A parità di viewport, l'altezza renderizzata del pannello pausa
+- [x] A parità di viewport, l'altezza renderizzata del pannello pausa
       corrisponde all'altezza naturale minima del suo `VBoxContainer`
       (più il chrome della cornice), non a un valore residuo/stale
       calcolato prima che il layout fosse pronto.
 - [ ] Nessuna scrollbar verticale è visibile nel pannello pausa quando il
       contenuto (titolo + bottoni) entra nello spazio disponibile del
-      viewport, su 16:9, 20:9 e 4:3.
-- [ ] Su un viewport compatto dove il contenuto NON entrerebbe comodamente,
+      viewport, su 16:9, 20:9 e 4:3. Confermato indirettamente su 16:9/20:9
+      dal test automatico (assegnato == naturale, quindi nessuno spazio in
+      eccesso da cui nascerebbe scroll); non confermato a livello percettivo
+      di pixel/scrollbar su 4:3 né con screenshot reale — resta il gate
+      manuale dedicato più sotto.
+- [x] Su un viewport compatto dove il contenuto NON entrerebbe comodamente,
       il clamp continua a funzionare come tetto di sicurezza (comportamento
       PS-085 preesistente, non regredito).
-- [ ] Il comportamento resta corretto anche dopo un ridimensionamento del
+- [x] Il comportamento resta corretto anche dopo un ridimensionamento del
       viewport a runtime (`get_viewport().size_changed`), non solo alla
       prima apertura.
 
@@ -97,6 +101,32 @@ entra comodamente nello schermo disponibile.
   `pause_panel_frame.png` regge già un pannello compatto (vedi
   `ConfirmationCenter/Panel` nello stesso file), quindi nessuna nuova arte è
   richiesta.
+- **2026-09-10 — Causa reale confermata empiricamente, non solo per
+  ipotesi.** Scritto prima il test di regressione e fatto girare contro il
+  codice non modificato: l'altezza assegnata allo scroll (`202px`, letta in
+  modo sincrono nello stesso istante di `visible = true`) risultava
+  stabilmente inferiore all'altezza naturale del `VBox` letta un frame dopo
+  (`232px`), su entrambi i profili 16:9/20:9 — prova diretta che la sort dei
+  container (che il `VBox` nascosto rimanda al prossimo frame di idle) non è
+  ancora avvenuta nell'istante in cui `_clamp_pause_scroll_height()` veniva
+  chiamato da `show_pause()`/`_ready()`.
+- **2026-09-10 — Fix: `_clamp_pause_scroll_height()` non viene più chiamato
+  in modo sincrono da `_ready()`/`show_pause()`, ma tramite una connessione
+  one-shot a `process_frame`** (`_request_pause_scroll_height_refresh()` /
+  `_on_pause_scroll_height_frame_elapsed()`), stesso schema già in uso in
+  `upgrade_card.gd`/`upgrade_overlay.gd` (PS-096/PS-097) invece di
+  `await get_tree().process_frame` diretto, per evitare l'errore motore
+  "Resumed function ... after await, but class instance is gone" se
+  l'overlay viene liberato (fine test, restart) mentre l'attesa è sospesa.
+  Il resize a runtime (`size_changed`) resta collegato direttamente, senza
+  frame di attesa: non comporta una transizione nascosto→visibile, quindi
+  la lettura è già attendibile nello stesso istante (confermato dal test di
+  resize).
+- **2026-09-10 — `PauseScroll` (`ScrollContainer`) mantenuto, non rimosso.**
+  Valutata l'opzione in "Ambito": PS-143 aggiunge un terzo bottone alla
+  stessa colonna nello stesso ciclo di lavoro, quindi lo scroll di sicurezza
+  resta utile per profili futuri più stretti; il fix di timing risolve il
+  comportamento a pavimento indipendentemente dal contenitore.
 
 ## Documenti sincronizzati
 
@@ -109,3 +139,17 @@ Questa card è indipendente da PS-143 (sostituzione dell'icona ingranaggio
 con un bottone IMPOSTAZIONI nella stessa colonna): possono essere risolte in
 qualunque ordine, ma toccano lo stesso file e lo stesso pannello — verificare
 insieme con uno screenshot finale se risolte in sequenza ravvicinata.
+
+Verifica automatica eseguita:
+
+```powershell
+.\tools\run-milestone-checks.ps1 -Milestone PS-142 -Profile Focused `
+  -FocusedSmoke tests/unit/test_ps142_pause_panel_height_clamp.gd -NoCache
+.\tools\run-milestone-checks.ps1 -Milestone PS-142 -Profile Relevant `
+  -FocusedSmoke tests/unit/test_ps142_pause_panel_height_clamp.gd -NoCache
+```
+
+`Focused`: 1/1 verde (marker `PS142_PAUSE_PANEL_HEIGHT_OK` stampato).
+`Relevant`: 1/1 focused + 27/27 regressioni verdi (nessuna regressione dal
+fix di timing). Gate manuali (Windows/APK/Pixel 9/percettivo) non eseguiti
+in questa sessione: restano aperti.
