@@ -161,7 +161,11 @@ func test_back_closes_only_the_overlay_from_pause() -> void:
 	_teardown_fixture(built)
 
 
-func test_pause_gear_focus_chain() -> void:
+## PS-143: l'icona ingranaggio fluttuante è stata sostituita da un terzo
+## bottone testuale "IMPOSTAZIONI" nella stessa colonna di RIPRENDI/CAMBIA
+## PERSONAGGIO: la catena a tre elementi resta la stessa (a giro chiuso), solo
+## il nodo che la chiude non è più un'icona fuori colonna.
+func test_pause_settings_button_focus_chain() -> void:
 	var built := await _build_fixture(137006)
 	if built.is_empty():
 		return
@@ -169,29 +173,29 @@ func test_pause_gear_focus_chain() -> void:
 
 	var resume_button := pause_overlay.get_resume_button()
 	var change_button := pause_overlay.get_change_character_button()
-	var gear_button := pause_overlay.get_settings_button()
+	var settings_button := pause_overlay.get_settings_button()
 	assert_true(
-		resume_button != null and change_button != null and gear_button != null,
-		"La pausa deve esporre Riprendi, Cambia personaggio e l'ingranaggio."
+		resume_button != null and change_button != null and settings_button != null,
+		"La pausa deve esporre RIPRENDI, CAMBIA PERSONAGGIO e IMPOSTAZIONI."
 	)
-	if resume_button == null or change_button == null or gear_button == null:
+	if resume_button == null or change_button == null or settings_button == null:
 		return
 
 	assert_eq(
-		gear_button.get_node(gear_button.focus_neighbor_top), change_button,
-		"Da Cambia personaggio l'ingranaggio deve essere raggiungibile in giù."
+		settings_button.get_node(settings_button.focus_neighbor_top), change_button,
+		"Da CAMBIA PERSONAGGIO, IMPOSTAZIONI deve essere raggiungibile in giù."
 	)
 	assert_eq(
-		gear_button.get_node(gear_button.focus_neighbor_bottom), resume_button,
-		"Dall'ingranaggio deve tornarsi a Riprendi proseguendo in giù."
+		settings_button.get_node(settings_button.focus_neighbor_bottom), resume_button,
+		"Da IMPOSTAZIONI deve tornarsi a RIPRENDI proseguendo in giù."
 	)
 	assert_eq(
-		change_button.get_node(change_button.focus_neighbor_bottom), gear_button,
-		"Da Cambia personaggio, in giù, si deve raggiungere l'ingranaggio."
+		change_button.get_node(change_button.focus_neighbor_bottom), settings_button,
+		"Da CAMBIA PERSONAGGIO, in giù, si deve raggiungere IMPOSTAZIONI."
 	)
 	assert_eq(
-		resume_button.get_node(resume_button.focus_neighbor_top), gear_button,
-		"Da Riprendi, in su, si deve raggiungere l'ingranaggio (catena a tre elementi)."
+		resume_button.get_node(resume_button.focus_neighbor_top), settings_button,
+		"Da RIPRENDI, in su, si deve raggiungere IMPOSTAZIONI (catena a tre elementi)."
 	)
 
 	_teardown_fixture(built)

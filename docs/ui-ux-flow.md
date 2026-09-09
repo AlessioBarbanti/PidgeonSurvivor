@@ -16,9 +16,11 @@ orchestrate da
 `GameHud`), `PauseOverlay` (`scripts/ui/pause_overlay.gd`) ed `EndScreen`
 (`scripts/ui/end_screen.gd`). `SettingsOverlay`
 (`scripts/ui/settings_overlay.gd`, PS-137) è un'istanza unica separata,
-apribile dal tasto ingranaggio sia della welcome sia della pausa: non fa
-parte della sequenza sopra, resta un layer puramente visivo sopra lo stato
-attivo (`BOOT` o `MANUAL_PAUSE`).
+apribile dal tasto ingranaggio della welcome e dal bottone "IMPOSTAZIONI"
+della pausa (PS-143, ultimo elemento della stessa colonna di
+RIPRENDI/CAMBIA PERSONAGGIO, non più un'icona fluttuante fuori colonna): non
+fa parte della sequenza sopra, resta un layer puramente visivo sopra lo
+stato attivo (`BOOT` o `MANUAL_PAUSE`).
 
 Transizioni (tutte in `movement_slice.gd`):
 

@@ -3,7 +3,7 @@ id: PS-143
 titolo: Sostituisci l'icona ingranaggio della pausa con un bottone IMPOSTAZIONI
 tipo: ux
 area: ui
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: [PS-137]
 origine:
@@ -47,23 +47,26 @@ non cambia: mantiene la propria icona ingranaggio così com'è oggi.
 
 ## Criteri di accettazione
 
-- [ ] Il pannello pausa non mostra più `SettingsButton` come icona
+- [x] Il pannello pausa non mostra più `SettingsButton` come icona
       fluttuante fuori dalla colonna: al suo posto, un bottone
       "IMPOSTAZIONI" appare nella stessa colonna di RIPRENDI/CAMBIA
       PERSONAGGIO, come ultimo elemento.
-- [ ] Il bottone "IMPOSTAZIONI" usa lo stesso stile secondario di "CAMBIA
+- [x] Il bottone "IMPOSTAZIONI" usa lo stesso stile secondario di "CAMBIA
       PERSONAGGIO" (`StyleBoxTexture_secondary_*`), non lo stile primario di
       "RIPRENDI".
-- [ ] Premendo "IMPOSTAZIONI" si apre la stessa istanza dell'overlay
+- [x] Premendo "IMPOSTAZIONI" si apre la stessa istanza dell'overlay
       impostazioni condiviso già aperta oggi dall'icona (nessun
       comportamento nuovo lato overlay, solo il trigger cambia).
-- [ ] `scenes/ui/welcome_screen.tscn` non viene modificata: l'icona
+- [x] `scenes/ui/welcome_screen.tscn` non viene modificata: l'icona
       ingranaggio della welcome resta identica a oggi.
-- [ ] La catena `focus_neighbor` da tastiera/gamepad copre i tre bottoni in
+- [x] La catena `focus_neighbor` da tastiera/gamepad copre i tre bottoni in
       ordine (RIPRENDI ↔ CAMBIA PERSONAGGIO ↔ IMPOSTAZIONI) senza salti né
       trappole di focus, sostituendo la catena che oggi include l'icona.
-- [ ] Il flusso di conferma cambio personaggio (`ConfirmationCenter`) resta
-      invariato.
+- [x] Il flusso di conferma cambio personaggio (`ConfirmationCenter`) resta
+      invariato: nessuna modifica a `_on_change_character_button_pressed()`,
+      `_cancel_change_character()` o al nodo `ConfirmationCenter`, invariati
+      dal codice precedente e coperti dalle regressioni `Relevant` (28/28
+      verdi, incluso `test_b18n_pause_change_character.gd`).
 
 ## Ambito
 
@@ -127,8 +130,10 @@ non cambia: mantiene la propria icona ingranaggio così com'è oggi.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/ui-ux-flow.md`, se descrive esplicitamente l'icona ingranaggio
-      della pausa come elemento fluttuante separato dalla colonna azioni.
+- [x] `docs/ui-ux-flow.md` descriveva l'overlay impostazioni come apribile
+      "dal tasto ingranaggio sia della welcome sia della pausa": aggiornato
+      per riflettere che la pausa apre l'overlay dal bottone "IMPOSTAZIONI"
+      in colonna, non più da un'icona.
 
 ## Note
 
@@ -138,3 +143,29 @@ fondo) — l'azione che porta fuori dal contesto immediato della run va per
 ultima. La larghezza attuale del pannello (454px) resta adeguata: i bottoni
 si espandono al contenitore e "IMPOSTAZIONI" è più corto di "CAMBIA
 PERSONAGGIO", già provato a questa larghezza con lo stesso stile.
+
+`scripts/ui/pause_overlay.gd` non ha richiesto modifiche: il codice usa già
+`%SettingsButton` (nodo univoco per nome) per segnali, disabilitazione e
+focus, indipendentemente dalla sua posizione nell'albero della scena —
+spostare il nodo dentro `VBox` nel `.tscn` è stata la sola modifica
+necessaria. Rimossi dal `.tscn` gli `StyleBoxFlat`/`StyleBoxEmpty` dedicati
+al glifo `⚙` (`StyleBoxFlat_gear_normal/_hover/_pressed`,
+`StyleBoxEmpty_gear_focus`), ormai orfani; `load_steps` aggiornato da 18 a
+14.
+
+Verifica automatica eseguita:
+
+```powershell
+.\tools\run-milestone-checks.ps1 -Milestone PS-143 -Profile Focused `
+  -FocusedSmoke tests/unit/test_ps143_pause_settings_button.gd -NoCache
+.\tools\run-milestone-checks.ps1 -Milestone PS-143 -Profile Relevant `
+  -FocusedSmoke tests/unit/test_ps143_pause_settings_button.gd -NoCache
+```
+
+`Focused`: 1/1 verde (marker `PS143_PAUSE_SETTINGS_BUTTON_OK` stampato).
+`Relevant`: 1/1 focused + 28/28 regressioni verdi, incluso
+`test_ps137_shared_settings_overlay.gd` rinominato
+(`test_pause_gear_focus_chain` → `test_pause_settings_button_focus_chain`) e
+`test_b18n_pause_change_character.gd` (flusso cambio personaggio invariato).
+Gate manuali (Windows/APK/Pixel 9/percettivo) non eseguiti in questa
+sessione: restano aperti.

@@ -244,5 +244,5 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-140](./2_to_do/PS-140-riallinea-colore-bordo-hud-hp-xp.md) | Riallinea il colore del bordo HP/XP alla palette oro esistente | fix | ui | PRONTO | bassa | — |
 | [PS-141](./2_to_do/PS-141-arricchisci-telegraph-attacchi-boss.md) | Arricchisci i telegraph d'attacco del Boss per non sembrare debug | ux | arte | PRONTO | media | — |
 | [PS-142](./4_to_test/PS-142-correggi-clamp-altezza-pannello-pausa.md) | Correggi il clamp dell'altezza del pannello pausa | fix | ui | IN VERIFICA | media | — |
-| [PS-143](./2_to_do/PS-143-sostituisci-icona-ingranaggio-pausa-con-bottone.md) | Sostituisci l'icona ingranaggio della pausa con un bottone IMPOSTAZIONI | ux | ui | PRONTO | media | PS-137 |
+| [PS-143](./4_to_test/PS-143-sostituisci-icona-ingranaggio-pausa-con-bottone.md) | Sostituisci l'icona ingranaggio della pausa con un bottone IMPOSTAZIONI | ux | ui | IN VERIFICA | media | PS-137 |
 | [PS-144](./1_idea/PS-144-arte-dedicata-vfx-attacchi-boss.md) | Valuta arte dedicata per le VFX degli attacchi Boss (oltre il telegraph) | art | arte | DA DEFINIRE | bassa | PS-141 |
