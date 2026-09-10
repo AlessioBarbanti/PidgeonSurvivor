@@ -46,10 +46,11 @@ func test_ps143_pause_settings_button_replaces_floating_gear_icon() -> void:
 	)
 	assert_eq(settings_button.text, "IMPOSTAZIONI", "Il bottone deve mostrare testo, non un glifo icona.")
 
-	# Stile secondario come CAMBIA PERSONAGGIO, non primario come RIPRENDI.
-	assert_eq(
+	# PS-145: stile dedicato (stessa sagoma/texture, tonalita' propria), non
+	# piu' identico a CAMBIA PERSONAGGIO ne' uguale al primario di RIPRENDI.
+	assert_ne(
 		settings_button.get_theme_stylebox(&"normal"), change_button.get_theme_stylebox(&"normal"),
-		"IMPOSTAZIONI deve condividere lo stile secondario di CAMBIA PERSONAGGIO."
+		"IMPOSTAZIONI deve avere un oggetto stile diverso da CAMBIA PERSONAGGIO (PS-145)."
 	)
 	assert_ne(
 		settings_button.get_theme_stylebox(&"normal"), resume_button.get_theme_stylebox(&"normal"),
@@ -64,7 +65,10 @@ func test_ps143_pause_settings_button_replaces_floating_gear_icon() -> void:
 	settings_overlay.close()
 	await wait_process_frames(1)
 
-	# Catena focus_neighbor a tre elementi (RIPRENDI <-> CAMBIA PERSONAGGIO <-> IMPOSTAZIONI).
+	# Segmenti di catena focus_neighbor (RIPRENDI <-> CAMBIA PERSONAGGIO <-> IMPOSTAZIONI).
+	# PS-147 aggiunge ESCI in coda: la chiusura del loop verso RIPRENDI passa
+	# da ESCI, non piu' direttamente da IMPOSTAZIONI (verificata da
+	# tests/unit/test_ps147_pause_exit_button.gd).
 	assert_eq(
 		resume_button.get_node(resume_button.focus_neighbor_bottom), change_button,
 		"Da RIPRENDI, in giù, si deve raggiungere CAMBIA PERSONAGGIO."
@@ -80,14 +84,6 @@ func test_ps143_pause_settings_button_replaces_floating_gear_icon() -> void:
 	assert_eq(
 		settings_button.get_node(settings_button.focus_neighbor_top), change_button,
 		"Da IMPOSTAZIONI, in su, si deve raggiungere CAMBIA PERSONAGGIO."
-	)
-	assert_eq(
-		settings_button.get_node(settings_button.focus_neighbor_bottom), resume_button,
-		"Da IMPOSTAZIONI, in giù, si deve tornare a RIPRENDI (catena chiusa a tre elementi)."
-	)
-	assert_eq(
-		resume_button.get_node(resume_button.focus_neighbor_top), settings_button,
-		"Da RIPRENDI, in su, si deve raggiungere IMPOSTAZIONI."
 	)
 
 	controller.request_defeat()

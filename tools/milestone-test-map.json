@@ -291,7 +291,8 @@
         "tests/unit/test_ps094_ability_charge_stacking.gd",
         "tests/unit/test_ps100_anxiety_removal.gd",
         "tests/unit/test_b13_signature_upgrades.gd",
-        "tests/unit/test_b18j_summer_grill.gd"
+        "tests/unit/test_b18j_summer_grill.gd",
+        "tests/unit/test_ps147_pause_exit_button.gd"
       ]
     },
     {
@@ -373,6 +374,9 @@
         "tests/unit/test_ps138_alea_ring_glow.gd",
         "tests/unit/test_ps142_pause_panel_height_clamp.gd",
         "tests/unit/test_ps143_pause_settings_button.gd",
+        "tests/unit/test_ps145_pause_buttons_distinct_and_spaced.gd",
+        "tests/unit/test_ps146_hud_bars_floating.gd",
+        "tests/unit/test_ps147_pause_exit_button.gd",
         "tests/unit/test_ps140_hud_bar_border_color.gd"
       ]
     },

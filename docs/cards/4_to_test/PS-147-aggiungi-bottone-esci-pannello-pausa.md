@@ -3,7 +3,7 @@ id: PS-147
 titolo: Aggiungi bottone ESCI al pannello pausa
 tipo: feat
 area: ui
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: [PS-145]
 origine:
@@ -65,41 +65,46 @@ PERSONAGGIO/IMPOSTAZIONI/ESCI di nuovo attivi.
 
 ## Criteri di accettazione
 
-- [ ] `scenes/ui/pause_overlay.tscn`: nuovo nodo `ExitButton` (`Button`,
+- [x] `scenes/ui/pause_overlay.tscn`: nuovo nodo `ExitButton` (`Button`,
       `unique_name_in_owner`) nel `VBox` della colonna pausa, dopo
       `SettingsButton`, testo `"ESCI"`, stessa sagoma/altezza (64px) dei
       bottoni secondari.
-- [ ] Fra `SettingsButton` ed `ExitButton` è inserito un `Control`
+- [x] Fra `SettingsButton` ed `ExitButton` è inserito un `Control`
       spaziatore dedicato (`custom_minimum_size = Vector2(0, 24)`), in
       aggiunta alla `separation = 16` del `VBox`: il vuoto percepito prima
       di ESCI è quindi maggiore di quello fra gli altri bottoni.
-- [ ] `ExitButton` usa tre nuovi `StyleBoxTexture` dedicati (stessa
+- [x] `ExitButton` usa tre nuovi `StyleBoxTexture` dedicati (stessa
       `AtlasTexture_secondary_cta`, stessi `texture_margin_*`/
       `expand_margin_*` dei cloni già introdotti da PS-145) con
       `modulate_color`: `normal = Color(0.5, 0.5, 0.58, 1)`,
       `hover = Color(0.7, 0.68, 0.74, 1)`, `pressed = Color(0.34, 0.34, 0.4, 1)`;
       `focus` riusa lo stato `hover`. Il risultato è più scuro sia di
       CAMBIA PERSONAGGIO sia di IMPOSTAZIONI in ogni stato.
-- [ ] `ExitButton` ha `font_color = Color(0.95, 0.72, 0.7, 1)` (corallo
+- [x] `ExitButton` ha `font_color = Color(0.95, 0.72, 0.7, 1)` (corallo
       tenue); RIPRENDI/CAMBIA PERSONAGGIO/IMPOSTAZIONI non cambiano
       `font_color`.
-- [ ] Premere `ExitButton` mostra lo stesso `ConfirmationCenter` già usato
-      da CAMBIA PERSONAGGIO, con `TitleLabel.text = "USCIRE DALLA
-      PARTITA?"` e `SummaryLabel.text` che comunica l'abbandono della run
-      corrente (es. "Abbandonerai la run corrente e tornerai al menu.") —
-      non un secondo pannello duplicato.
-- [ ] Confermare l'uscita: `RunController.prepare_restart()` viene
+- [x] Premere `ExitButton` mostra lo stesso `ConfirmationCenter` già usato
+      da CAMBIA PERSONAGGIO, con testo `"USCIRE DALLA PARTITA?"` e un
+      riepilogo che comunica l'abbandono della run corrente — non un
+      secondo pannello duplicato. I nodi label sono stati rinominati
+      `ConfirmationTitleLabel`/`ConfirmationSummaryLabel` (non più
+      `TitleLabel`/`SummaryLabel`, testo letterale del criterio) perché
+      `unique_name_in_owner` richiede un nome univoco nell'intera scena e
+      collideva con l'omonimo `TitleLabel` della colonna pausa — vedi
+      Decisioni.
+- [x] Confermare l'uscita: `RunController.prepare_restart()` viene
       chiamato e il gioco mostra la welcome screen (`_show_welcome_screen()`
       o equivalente), non la selezione personaggio e non l'end screen.
       Annullare l'uscita torna al pannello pausa con tutti e quattro i
       bottoni riabilitati, senza toccare lo stato `MANUAL_PAUSE`.
-- [ ] La catena `focus_neighbor` copre i quattro elementi della colonna
+- [x] La catena `focus_neighbor` copre i quattro elementi della colonna
       pausa (RIPRENDI ↔ CAMBIA PERSONAGGIO ↔ IMPOSTAZIONI ↔ ESCI) più il
       loop Annulla ↔ Conferma nella conferma, coerente con l'uso duale
       (CAMBIA PERSONAGGIO/ESCI) del `ConfirmationCenter`.
-- [ ] A parità di viewport, l'altezza naturale del `VBox` (con il quarto
+- [x] A parità di viewport, l'altezza naturale del `VBox` (con il quarto
       bottone e lo spaziatore) resta un tetto per il clamp di PS-142, non
-      un pavimento: nessuna scrollbar visibile su 16:9/20:9.
+      un pavimento: nessuna scrollbar visibile su 16:9/20:9 (confermato dal
+      pacchetto di catture UI rigenerato su entrambi i profili).
 
 ## Ambito
 
@@ -139,12 +144,17 @@ PERSONAGGIO/IMPOSTAZIONI/ESCI di nuovo attivi.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
+- [x] Runtime Windows — pacchetto di catture UI rigenerato, percorso reale
+      welcome→...→run→pausa→terminale completato senza `SCRIPT
+      ERROR`/`FATAL EXCEPTION`, marker `CAPTURE_DONE`.
+- [ ] Validazione statica APK — non eseguita in questa sessione.
 - [ ] Runtime fisico Pixel 9 (percorso: pausa → ESCI → conferma → welcome;
-      pausa → ESCI → annulla → pausa)
-- [ ] Controllo percettivo richiesto: sì — confronto screenshot
-      prima/dopo con il proprietario, stessa evidenza di PS-145
+      pausa → ESCI → annulla → pausa) — nessun device collegato in questa
+      sessione (`adb devices` vuoto); gate lasciato aperto, non blocca
+      l'implementazione.
+- [x] Controllo percettivo richiesto: sì — `07_pause_overlay.png`
+      rigenerato e ispezionato: ESCI visibile in fondo alla colonna,
+      isolato dallo spaziatore, testo corallo tenue riconoscibile.
 
 ## Decisioni
 
@@ -169,15 +179,36 @@ PERSONAGGIO/IMPOSTAZIONI/ESCI di nuovo attivi.
   altri due, azione diversa dalle reversibili sopra), `font_color` corallo
   come unico vero accento di tinta, preso in prestito dalla famiglia
   cromatica di "GAME OVER" in `end_screen.tscn` ma desaturato.
+- **2026-09-10 — Nodi della conferma rinominati.** `unique_name_in_owner`
+  richiede un nome univoco nell'intera scena, non solo nel proprio ramo:
+  `TitleLabel`/`SummaryLabel` sotto `ConfirmationCenter/Panel/VBox`
+  collidevano con l'omonimo `TitleLabel` della colonna pausa. Rinominati in
+  `ConfirmationTitleLabel`/`ConfirmationSummaryLabel` — nessun altro file
+  li referenziava per nome (verificato con una ricerca nel repository)
+  prima della modifica.
+- **2026-09-10 — Chiusura.** `test_ps145_pause_buttons_distinct_and_spaced.gd`
+  e due test pre-esistenti (`test_ps143_pause_settings_button.gd`,
+  `test_ps137_shared_settings_overlay.gd`) assumevano un loop
+  `focus_neighbor` chiuso a tre elementi (IMPOSTAZIONI → RIPRENDI
+  direttamente): con ESCI in coda il loop passa a quattro elementi e quella
+  chiusura diretta non è più vera. Rimosse le sole asserzioni di chiusura
+  del loop nei tre file, mantenendo i segmenti invarianti
+  (RIPRENDI↔CAMBIA PERSONAGGIO↔IMPOSTAZIONI): la catena a quattro elementi
+  completa è verificata da questa card
+  (`test_ps147_pause_exit_button.gd:test_ps147_pause_focus_chain_four_elements`).
+  Verifica automatica verde a `Relevant` e a `Full` (137/137, nessun
+  `SCRIPT ERROR`/`FATAL EXCEPTION`). Nessun device Android collegato in
+  questa sessione: gate fisico e validazione statica APK restano aperti,
+  dichiarati sopra. Stato → `IN VERIFICA`.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/visual-audio-identity.md`: aggiungere la regola emersa dal
+- [x] `docs/visual-audio-identity.md`: aggiunta la regola emersa dal
       direttore-artistico — quando più bottoni condividono una nine-slice
       a canale rosso nullo, la differenziazione va costruita su
       luminosità (`modulate_color`) + spaziatura di gruppo + `font_color`
       (mai un hue-shift via `modulate_color`, che la texture non regge).
-- [ ] `docs/ui-ux-flow.md`: documentare il nuovo percorso pausa → ESCI →
+- [x] `docs/ui-ux-flow.md`: documentato il nuovo percorso pausa → ESCI →
       conferma → welcome come uscita esplicita dalla run, distinta da
       vittoria/sconfitta.
 

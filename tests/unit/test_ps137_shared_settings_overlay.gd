@@ -163,8 +163,10 @@ func test_back_closes_only_the_overlay_from_pause() -> void:
 
 ## PS-143: l'icona ingranaggio fluttuante è stata sostituita da un terzo
 ## bottone testuale "IMPOSTAZIONI" nella stessa colonna di RIPRENDI/CAMBIA
-## PERSONAGGIO: la catena a tre elementi resta la stessa (a giro chiuso), solo
-## il nodo che la chiude non è più un'icona fuori colonna.
+## PERSONAGGIO. PS-147 aggiunge poi un quarto bottone ESCI in coda: il loop
+## si chiude ora passando da ESCI (verificato da
+## tests/unit/test_ps147_pause_exit_button.gd), non più direttamente da
+## IMPOSTAZIONI a RIPRENDI — qui restano solo i segmenti invarianti.
 func test_pause_settings_button_focus_chain() -> void:
 	var built := await _build_fixture(137006)
 	if built.is_empty():
@@ -186,16 +188,8 @@ func test_pause_settings_button_focus_chain() -> void:
 		"Da CAMBIA PERSONAGGIO, IMPOSTAZIONI deve essere raggiungibile in giù."
 	)
 	assert_eq(
-		settings_button.get_node(settings_button.focus_neighbor_bottom), resume_button,
-		"Da IMPOSTAZIONI deve tornarsi a RIPRENDI proseguendo in giù."
-	)
-	assert_eq(
 		change_button.get_node(change_button.focus_neighbor_bottom), settings_button,
 		"Da CAMBIA PERSONAGGIO, in giù, si deve raggiungere IMPOSTAZIONI."
-	)
-	assert_eq(
-		resume_button.get_node(resume_button.focus_neighbor_top), settings_button,
-		"Da RIPRENDI, in su, si deve raggiungere IMPOSTAZIONI (catena a tre elementi)."
 	)
 
 	_teardown_fixture(built)

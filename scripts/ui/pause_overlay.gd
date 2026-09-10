@@ -3,6 +3,9 @@ extends Control
 
 signal resume_requested()
 signal change_character_requested()
+## PS-147: abbandono esplicito della run corrente verso la welcome, distinto
+## da CAMBIA PERSONAGGIO (che porta alla selezione).
+signal exit_requested()
 ## PS-074: bottoni senza un cue dedicato (il resume esistente segue lo stato
 ## RunController, non questo segnale).
 signal ui_click_requested()
@@ -10,8 +13,11 @@ signal ui_click_requested()
 @onready var _resume_button: Button = %ResumeButton
 @onready var _change_character_button: Button = %ChangeCharacterButton
 @onready var _settings_button: Button = %SettingsButton
+@onready var _exit_button: Button = %ExitButton
 @onready var _pause_center: CenterContainer = %PauseCenter
 @onready var _confirmation_center: CenterContainer = %ConfirmationCenter
+@onready var _confirmation_title_label: Label = %ConfirmationTitleLabel
+@onready var _confirmation_summary_label: Label = %ConfirmationSummaryLabel
 @onready var _cancel_change_button: Button = %CancelChangeButton
 @onready var _confirm_change_button: Button = %ConfirmChangeButton
 @onready var _pause_scroll: ScrollContainer = %PauseScroll
@@ -22,7 +28,18 @@ signal ui_click_requested()
 ## quando e' clampato al massimo consentito.
 const PAUSE_SCROLL_SAFETY_MARGIN := 24.0
 
+## PS-147: `ConfirmationCenter` serve due scopi (CAMBIA PERSONAGGIO ed ESCI);
+## questi valori distinguono quale testo mostrare e quale segnale emettere
+## alla conferma, invece di duplicare il pannello.
+enum ConfirmationAction { CHANGE_CHARACTER, EXIT }
+
+const CHANGE_CHARACTER_TITLE := "CAMBIA PERSONAGGIO?"
+const CHANGE_CHARACTER_SUMMARY := "I progressi della run corrente saranno azzerati."
+const EXIT_TITLE := "USCIRE DALLA PARTITA?"
+const EXIT_SUMMARY := "Abbandonerai la run corrente e tornerai al menu."
+
 var _accepting_resume := false
+var _pending_confirmation_action: ConfirmationAction = ConfirmationAction.CHANGE_CHARACTER
 
 ## PS-137: overlay impostazioni condiviso con la welcome, istanza unica
 ## posseduta da `movement_slice.gd` — vedi `configure_settings_overlay()`.
@@ -34,6 +51,7 @@ func _ready() -> void:
 	_resume_button.pressed.connect(_on_resume_button_pressed)
 	_change_character_button.pressed.connect(_on_change_character_button_pressed)
 	_settings_button.pressed.connect(_on_settings_button_pressed)
+	_exit_button.pressed.connect(_on_exit_button_pressed)
 	_cancel_change_button.pressed.connect(_on_cancel_change_button_pressed)
 	_confirm_change_button.pressed.connect(_on_confirm_change_button_pressed)
 	get_viewport().size_changed.connect(_clamp_pause_scroll_height)
@@ -85,6 +103,8 @@ func hide_pause() -> void:
 		_change_character_button.disabled = true
 	if is_instance_valid(_settings_button):
 		_settings_button.disabled = true
+	if is_instance_valid(_exit_button):
+		_exit_button.disabled = true
 	if is_instance_valid(_pause_center):
 		_pause_center.visible = true
 	if is_instance_valid(_confirmation_center):
@@ -106,6 +126,10 @@ func get_change_character_button() -> Button:
 
 func get_settings_button() -> Button:
 	return _settings_button if is_instance_valid(_settings_button) else null
+
+
+func get_exit_button() -> Button:
+	return _exit_button if is_instance_valid(_exit_button) else null
 
 
 func get_cancel_change_button() -> Button:
@@ -132,7 +156,7 @@ func handle_back_requested() -> bool:
 		return true
 	if not is_change_confirmation_visible():
 		return false
-	_cancel_change_character()
+	_cancel_confirmation()
 	return true
 
 
@@ -218,11 +242,15 @@ func _on_change_character_button_pressed() -> void:
 	if not is_accepting_resume() or is_change_confirmation_visible():
 		return
 	ui_click_requested.emit()
+	_pending_confirmation_action = ConfirmationAction.CHANGE_CHARACTER
+	_confirmation_title_label.text = CHANGE_CHARACTER_TITLE
+	_confirmation_summary_label.text = CHANGE_CHARACTER_SUMMARY
 	_pause_center.visible = false
 	_confirmation_center.visible = true
 	_resume_button.disabled = true
 	_change_character_button.disabled = true
 	_settings_button.disabled = true
+	_exit_button.disabled = true
 	_set_confirmation_buttons_disabled(false)
 	_cancel_change_button.call_deferred("grab_focus")
 
@@ -238,6 +266,7 @@ func _on_settings_button_pressed() -> void:
 	_resume_button.disabled = true
 	_change_character_button.disabled = true
 	_settings_button.disabled = true
+	_exit_button.disabled = true
 	_settings_overlay.open()
 
 
@@ -247,14 +276,34 @@ func _on_settings_overlay_closed() -> void:
 	_resume_button.disabled = false
 	_change_character_button.disabled = false
 	_settings_button.disabled = false
+	_exit_button.disabled = false
 	_settings_button.call_deferred("grab_focus")
+
+
+## PS-147: apre la stessa conferma di CAMBIA PERSONAGGIO con testo dedicato
+## all'abbandono della run, invece di duplicare il pannello.
+func _on_exit_button_pressed() -> void:
+	if not is_accepting_resume() or is_change_confirmation_visible():
+		return
+	ui_click_requested.emit()
+	_pending_confirmation_action = ConfirmationAction.EXIT
+	_confirmation_title_label.text = EXIT_TITLE
+	_confirmation_summary_label.text = EXIT_SUMMARY
+	_pause_center.visible = false
+	_confirmation_center.visible = true
+	_resume_button.disabled = true
+	_change_character_button.disabled = true
+	_settings_button.disabled = true
+	_exit_button.disabled = true
+	_set_confirmation_buttons_disabled(false)
+	_cancel_change_button.call_deferred("grab_focus")
 
 
 func _on_cancel_change_button_pressed() -> void:
 	if not is_change_confirmation_visible():
 		return
 	ui_click_requested.emit()
-	_cancel_change_character()
+	_cancel_confirmation()
 
 
 func _on_confirm_change_button_pressed() -> void:
@@ -263,12 +312,16 @@ func _on_confirm_change_button_pressed() -> void:
 	ui_click_requested.emit()
 	_accepting_resume = false
 	_set_confirmation_buttons_disabled(true)
-	change_character_requested.emit()
+	if _pending_confirmation_action == ConfirmationAction.EXIT:
+		exit_requested.emit()
+	else:
+		change_character_requested.emit()
 
 
-func _cancel_change_character() -> void:
+func _cancel_confirmation() -> void:
 	_show_pause_controls()
-	_change_character_button.call_deferred("grab_focus")
+	var focus_target := _exit_button if _pending_confirmation_action == ConfirmationAction.EXIT else _change_character_button
+	focus_target.call_deferred("grab_focus")
 
 
 func _show_pause_controls() -> void:
@@ -277,6 +330,7 @@ func _show_pause_controls() -> void:
 	_resume_button.disabled = false
 	_change_character_button.disabled = false
 	_settings_button.disabled = false
+	_exit_button.disabled = false
 	_set_confirmation_buttons_disabled(true)
 
 

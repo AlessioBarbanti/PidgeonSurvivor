@@ -133,14 +133,19 @@ func test_responsive_layouts_across_aspect_ratios() -> void:
 		assert_rect_inside(
 			ability_button_rect, safe_rect, "%s: il touch abilita deve restare nella safe area." % profile_name, LAYOUT_TOLERANCE
 		)
+		# PS-146: la barra XP e' "sospesa", non piu' a piena larghezza safe area:
+		# margine laterale di 20px per lato, stesso valore gia' in uso nell'HUD.
 		assert_almost_eq(
 			xp_rect.position.x,
-			safe_rect.position.x,
+			safe_rect.position.x + 20.0,
 			LAYOUT_TOLERANCE,
-			"%s: la barra XP deve partire dall'inizio della safe area." % profile_name
+			"%s: la barra XP deve partire a 20px dall'inizio della safe area." % profile_name
 		)
 		assert_almost_eq(
-			xp_rect.size.x, safe_rect.size.x, LAYOUT_TOLERANCE, "%s: la barra XP deve occupare tutta la larghezza utile." % profile_name
+			xp_rect.size.x,
+			safe_rect.size.x - 40.0,
+			LAYOUT_TOLERANCE,
+			"%s: la barra XP deve occupare la larghezza utile meno il margine laterale di 20px per lato." % profile_name
 		)
 		assert_almost_eq(
 			timer_rect.get_center().x, safe_rect.get_center().x, LAYOUT_TOLERANCE, "%s: il timer deve restare centrato." % profile_name
@@ -152,17 +157,17 @@ func test_responsive_layouts_across_aspect_ratios() -> void:
 			"%s: la fascia HUD deve dichiarare l'intero inset gameplay." % profile_name
 		)
 		assert_true(
-			xp_rect.position.distance_to(safe_rect.position) <= LAYOUT_TOLERANCE,
-			"%s: la barra XP deve essere il primo elemento della fascia." % profile_name
+			xp_rect.position.distance_to(safe_rect.position + Vector2(20.0, 0.0)) <= LAYOUT_TOLERANCE,
+			"%s: la barra XP deve essere il primo elemento della fascia, a 20px dal bordo." % profile_name
 		)
 		assert_true(
 			absf(xp_rect.size.y - 18.0) <= LAYOUT_TOLERANCE, "%s: la barra XP deve essere alta 18 unita logiche." % profile_name
 		)
 		assert_true(
 			absf(health_rect.position.y - xp_rect.end.y) <= LAYOUT_TOLERANCE
-			and absf(health_rect.position.x - safe_rect.position.x) <= LAYOUT_TOLERANCE
-			and absf(health_rect.size.x - safe_rect.size.x) <= LAYOUT_TOLERANCE,
-			"%s: la vita deve seguire XP e usare tutta la larghezza." % profile_name
+			and absf(health_rect.position.x - (safe_rect.position.x + 20.0)) <= LAYOUT_TOLERANCE
+			and absf(health_rect.size.x - (safe_rect.size.x - 40.0)) <= LAYOUT_TOLERANCE,
+			"%s: la vita deve seguire XP e usare la stessa larghezza sospesa." % profile_name
 		)
 		assert_true(
 			absf(health_rect.size.y - 20.0) <= LAYOUT_TOLERANCE, "%s: la barra HP deve essere alta 20 unita logiche." % profile_name

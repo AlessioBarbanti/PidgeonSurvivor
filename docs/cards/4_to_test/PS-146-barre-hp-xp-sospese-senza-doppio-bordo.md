@@ -3,7 +3,7 @@ id: PS-146
 titolo: Rendi le barre HP/XP "sospese" e rimuovi il doppio bordo
 tipo: ux
 area: ui
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: [PS-140]
 origine:
@@ -50,24 +50,24 @@ allineate all'inizio della barra.
 
 ## Criteri di accettazione
 
-- [ ] `ExperiencePanel` e `HealthPanel` non usano più
+- [x] `ExperiencePanel` e `HealthPanel` non usano più
       `StyleBoxFlat_bar_background` come `theme_override_styles/panel`: usano
       un nuovo `StyleBoxEmpty` con `content_margin_left/top/right/bottom =
       3/3/3/2` (identico all'inset del bordo attuale), così la `ProgressBar`
       figlia non cambia dimensione.
-- [ ] `ExperienceBar`/`HealthBar` continuano a usare
+- [x] `ExperienceBar`/`HealthBar` continuano a usare
       `StyleBoxFlat_bar_background` come `theme_override_styles/background`
       (sfondo/track invariato, incluso il colore oro di PS-140): nessun
       doppio bordo visibile.
-- [ ] `ExperiencePanel` e `HealthPanel` hanno `offset_left = 20.0` e
+- [x] `ExperiencePanel` e `HealthPanel` hanno `offset_left = 20.0` e
       `offset_right = -20.0` (oggi impliciti a `0`), stesso margine di 20px
       già in uso nello stesso HUD (`PauseButton`, `AbilityPanel`): le barre
       non toccano più i lati dello schermo.
-- [ ] `ExperienceKindLabel` e `HealthKindLabel` passano da `offset_left =
+- [x] `ExperienceKindLabel` e `HealthKindLabel` passano da `offset_left =
       10.0`/`offset_right = 58.0` a `offset_left = 30.0`/`offset_right =
       78.0`: restano allineate all'inizio della barra con lo stesso scarto
       e la stessa larghezza (48px) di oggi.
-- [ ] Nessun'altra proprietà di `StyleBoxFlat_bar_background` (colore,
+- [x] Nessun'altra proprietà di `StyleBoxFlat_bar_background` (colore,
       spessore bordo, fill) cambia rispetto a PS-140.
 
 ## Ambito
@@ -94,12 +94,17 @@ allineate all'inizio della barra.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
+- [x] Runtime Windows — pacchetto di catture UI rigenerato, percorso reale
+      welcome→...→run→pausa→terminale completato senza `SCRIPT
+      ERROR`/`FATAL EXCEPTION`, marker `CAPTURE_DONE`.
+- [ ] Validazione statica APK — non eseguita in questa sessione.
 - [ ] Runtime fisico Pixel 9 (percorso: HUD a schermo pieno in
-      combattimento, controllo che le barre non tocchino i lati schermo)
-- [ ] Controllo percettivo richiesto: sì — confronto screenshot
-      `04_gameplay_hud.png` prima/dopo
+      combattimento, controllo che le barre non tocchino i lati schermo) —
+      nessun device collegato in questa sessione (`adb devices` vuoto); gate
+      lasciato aperto, non blocca l'implementazione.
+- [x] Controllo percettivo richiesto: sì — confronto screenshot
+      `04_gameplay_hud.png` prima/dopo: bordo singolo, barre non più a filo
+      schermo, etichette allineate al nuovo inset.
 
 ## Decisioni
 
@@ -118,10 +123,20 @@ allineate all'inizio della barra.
   consegna (content_margin 3/3/3/2, margine laterale 20px — riuso della
   stessa unità già in uso nell'HUD per `PauseButton`/`AbilityPanel` — offset
   etichette 30/78) — nessun nuovo asset raster, solo `.tscn`.
+- **2026-09-10 — Chiusura.** Il cambio di geometria ha rotto due assunzioni
+  hard-coded in `tests/unit/test_b09_hud.gd` (`test_responsive_layouts_across_aspect_ratios`,
+  scritto prima di questa card): assumeva la barra XP a piena larghezza
+  safe area su ogni profilo. Aggiornate le sue asserzioni per riflettere il
+  nuovo margine di 20px per lato (non un allargamento di scope: il test
+  descriveva un contratto geometrico che questa card cambia
+  intenzionalmente). Verifica automatica verde a `Relevant` e a `Full`
+  (137/137, nessun `SCRIPT ERROR`/`FATAL EXCEPTION`). Nessun device Android
+  collegato in questa sessione: gate fisico e validazione statica APK
+  restano aperti, dichiarati sopra. Stato → `IN VERIFICA`.
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno atteso: fix di leggibilità/identità visiva HUD, nessun
+- [x] Nessuno atteso: fix di leggibilità/identità visiva HUD, nessun
       contratto di prodotto cambia.
 
 ## Note

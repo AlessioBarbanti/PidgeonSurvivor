@@ -246,6 +246,6 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-142](./4_to_test/PS-142-correggi-clamp-altezza-pannello-pausa.md) | Correggi il clamp dell'altezza del pannello pausa | fix | ui | IN VERIFICA | media | — |
 | [PS-143](./4_to_test/PS-143-sostituisci-icona-ingranaggio-pausa-con-bottone.md) | Sostituisci l'icona ingranaggio della pausa con un bottone IMPOSTAZIONI | ux | ui | IN VERIFICA | media | PS-137 |
 | [PS-144](./1_idea/PS-144-arte-dedicata-vfx-attacchi-boss.md) | Valuta arte dedicata per le VFX degli attacchi Boss (oltre il telegraph) | art | arte | DA DEFINIRE | bassa | PS-141 |
-| [PS-145](./2_to_do/PS-145-distingui-e-distanzia-bottoni-secondari-pausa.md) | Distingui e distanzia CAMBIA PERSONAGGIO da IMPOSTAZIONI nel pannello pausa | ux | ui | PRONTO | media | PS-142, PS-143 |
-| [PS-146](./2_to_do/PS-146-barre-hp-xp-sospese-senza-doppio-bordo.md) | Rendi le barre HP/XP "sospese" e rimuovi il doppio bordo | ux | ui | PRONTO | media | PS-140 |
-| [PS-147](./2_to_do/PS-147-aggiungi-bottone-esci-pannello-pausa.md) | Aggiungi bottone ESCI al pannello pausa | feat | ui | PRONTO | media | PS-145 |
+| [PS-145](./4_to_test/PS-145-distingui-e-distanzia-bottoni-secondari-pausa.md) | Distingui e distanzia CAMBIA PERSONAGGIO da IMPOSTAZIONI nel pannello pausa | ux | ui | IN VERIFICA | media | PS-142, PS-143 |
+| [PS-146](./4_to_test/PS-146-barre-hp-xp-sospese-senza-doppio-bordo.md) | Rendi le barre HP/XP "sospese" e rimuovi il doppio bordo | ux | ui | IN VERIFICA | media | PS-140 |
+| [PS-147](./4_to_test/PS-147-aggiungi-bottone-esci-pannello-pausa.md) | Aggiungi bottone ESCI al pannello pausa | feat | ui | IN VERIFICA | media | PS-145 |

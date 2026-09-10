@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/pause_overlay.gd" id="1_pause"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/character_select/character_select_cta_base.png" id="4_primary_cta"]
@@ -94,6 +94,78 @@ expand_margin_right = 3.0
 expand_margin_bottom = 2.0
 modulate_color = Color(0.72, 0.72, 0.72, 1.0)
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_settings_normal"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 20.0
+texture_margin_right = 102.0
+texture_margin_bottom = 20.0
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
+modulate_color = Color(0.72, 0.8, 0.92, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_settings_hover"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 20.0
+texture_margin_right = 102.0
+texture_margin_bottom = 20.0
+expand_margin_left = 6.0
+expand_margin_top = 6.0
+expand_margin_right = 6.0
+expand_margin_bottom = 6.0
+modulate_color = Color(0.88, 0.94, 1.0, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_settings_pressed"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 20.0
+texture_margin_right = 102.0
+texture_margin_bottom = 20.0
+expand_margin_left = 3.0
+expand_margin_top = 5.0
+expand_margin_right = 3.0
+expand_margin_bottom = 2.0
+modulate_color = Color(0.6, 0.68, 0.78, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_exit_normal"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 20.0
+texture_margin_right = 102.0
+texture_margin_bottom = 20.0
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
+modulate_color = Color(0.5, 0.5, 0.58, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_exit_hover"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 20.0
+texture_margin_right = 102.0
+texture_margin_bottom = 20.0
+expand_margin_left = 6.0
+expand_margin_top = 6.0
+expand_margin_right = 6.0
+expand_margin_bottom = 6.0
+modulate_color = Color(0.7, 0.68, 0.74, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_exit_pressed"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 20.0
+texture_margin_right = 102.0
+texture_margin_bottom = 20.0
+expand_margin_left = 3.0
+expand_margin_top = 5.0
+expand_margin_right = 3.0
+expand_margin_bottom = 2.0
+modulate_color = Color(0.34, 0.34, 0.4, 1)
+
 [node name="PauseOverlay" type="Control"]
 process_mode = 3
 visible = false
@@ -142,7 +214,7 @@ horizontal_scroll_mode = 0
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 6
+theme_override_constants/separation = 16
 
 [node name="TitleLabel" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox"]
 layout_mode = 2
@@ -157,7 +229,7 @@ horizontal_alignment = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
-focus_neighbor_top = NodePath("../SettingsButton")
+focus_neighbor_top = NodePath("../ExitButton")
 focus_neighbor_bottom = NodePath("../ChangeCharacterButton")
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_type_variation = &"ButtonStandard"
@@ -186,14 +258,33 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 focus_neighbor_top = NodePath("../ChangeCharacterButton")
-focus_neighbor_bottom = NodePath("../ResumeButton")
+focus_neighbor_bottom = NodePath("../ExitButton")
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_type_variation = &"ButtonStandard"
-theme_override_styles/normal = SubResource("StyleBoxTexture_secondary_normal")
-theme_override_styles/hover = SubResource("StyleBoxTexture_secondary_hover")
-theme_override_styles/pressed = SubResource("StyleBoxTexture_secondary_pressed")
-theme_override_styles/focus = SubResource("StyleBoxTexture_secondary_hover")
+theme_override_styles/normal = SubResource("StyleBoxTexture_settings_normal")
+theme_override_styles/hover = SubResource("StyleBoxTexture_settings_hover")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_settings_pressed")
+theme_override_styles/focus = SubResource("StyleBoxTexture_settings_hover")
 text = "IMPOSTAZIONI"
+
+[node name="ExitSpacer" type="Control" parent="PauseCenter/Panel/PauseScroll/VBox"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ExitButton" type="Button" parent="PauseCenter/Panel/PauseScroll/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+focus_neighbor_top = NodePath("../SettingsButton")
+focus_neighbor_bottom = NodePath("../ResumeButton")
+theme_override_colors/font_color = Color(0.95, 0.72, 0.7, 1)
+theme_type_variation = &"ButtonStandard"
+theme_override_styles/normal = SubResource("StyleBoxTexture_exit_normal")
+theme_override_styles/hover = SubResource("StyleBoxTexture_exit_hover")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_exit_pressed")
+theme_override_styles/focus = SubResource("StyleBoxTexture_exit_hover")
+text = "ESCI"
 
 [node name="ConfirmationCenter" type="CenterContainer" parent="."]
 unique_name_in_owner = true
@@ -215,7 +306,8 @@ theme_override_styles/panel = SubResource("StyleBoxTexture_pause_panel")
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="TitleLabel" type="Label" parent="ConfirmationCenter/Panel/VBox"]
+[node name="ConfirmationTitleLabel" type="Label" parent="ConfirmationCenter/Panel/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
 theme_override_colors/font_outline_color = Color(0.09, 0.055, 0.02, 1)
@@ -224,7 +316,8 @@ theme_type_variation = &"TitleL"
 text = "CAMBIA PERSONAGGIO?"
 horizontal_alignment = 1
 
-[node name="SummaryLabel" type="Label" parent="ConfirmationCenter/Panel/VBox"]
+[node name="ConfirmationSummaryLabel" type="Label" parent="ConfirmationCenter/Panel/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_type_variation = &"BodyL"

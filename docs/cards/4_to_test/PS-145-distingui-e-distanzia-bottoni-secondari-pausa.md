@@ -3,7 +3,7 @@ id: PS-145
 titolo: Distingui e distanzia CAMBIA PERSONAGGIO da IMPOSTAZIONI nel pannello pausa
 tipo: ux
 area: ui
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: [PS-142, PS-143]
 origine:
@@ -60,10 +60,10 @@ sagoma/nine-slice e la stessa altezza target touch (64px).
 
 ## Criteri di accettazione
 
-- [ ] `theme_override_constants/separation` del `VBox` in
+- [x] `theme_override_constants/separation` del `VBox` in
       `scenes/ui/pause_overlay.tscn` passa da `6` a `16` (stesso valore già
       in uso da `ConfirmationCenter/Panel/VBox` nello stesso file).
-- [ ] `SettingsButton` usa tre nuovi `StyleBoxTexture` dedicati (cloni di
+- [x] `SettingsButton` usa tre nuovi `StyleBoxTexture` dedicati (cloni di
       `StyleBoxTexture_secondary_normal/_hover/_pressed`, stessa
       `AtlasTexture_secondary_cta`, stessi `texture_margin_*`/
       `expand_margin_*`) con `modulate_color`:
@@ -72,14 +72,19 @@ sagoma/nine-slice e la stessa altezza target touch (64px).
       `pressed = Color(0.6, 0.68, 0.78, 1)`; `focus` riusa lo stesso
       `StyleBoxTexture` dello stato `hover`, come già fanno gli altri
       bottoni del pannello.
-- [ ] `CAMBIA PERSONAGGIO` non cambia stile: continua a usare
+- [x] `CAMBIA PERSONAGGIO` non cambia stile: continua a usare
       `StyleBoxTexture_secondary_normal/_hover/_pressed` senza `modulate_color`.
-- [ ] A parità di viewport, l'altezza naturale del `VBox` (con la nuova
+- [x] A parità di viewport, l'altezza naturale del `VBox` (con la nuova
       separazione) resta comunque un tetto per il clamp di PS-142, non un
       pavimento: nessuna scrollbar visibile su 16:9/20:9 con la nuova
       spaziatura.
 - [ ] La catena `focus_neighbor` a tre elementi (RIPRENDI ↔ CAMBIA
-      PERSONAGGIO ↔ IMPOSTAZIONI), stabilita da PS-143, resta invariata.
+      PERSONAGGIO ↔ IMPOSTAZIONI), stabilita da PS-143, resta invariata —
+      **superato nella stessa sessione da PS-147** (dipendente, risolta
+      subito dopo su richiesta del proprietario): il loop passa ora da
+      quattro elementi aggiungendo ESCI in coda, con i due segmenti
+      RIPRENDI↔CAMBIA PERSONAGGIO↔IMPOSTAZIONI rimasti invariati. Vedi
+      Decisioni.
 
 ## Ambito
 
@@ -107,11 +112,16 @@ sagoma/nine-slice e la stessa altezza target touch (64px).
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
+- [x] Runtime Windows — pacchetto di catture UI rigenerato
+      (`godot_console --path . --script tools/_capture_ui_screenshots.gd`),
+      percorso reale welcome→tutorial→selezione→run→pausa→terminale
+      completato senza `SCRIPT ERROR`/`FATAL EXCEPTION`, marker
+      `CAPTURE_DONE`.
+- [ ] Validazione statica APK — non eseguita in questa sessione.
 - [ ] Runtime fisico Pixel 9 (percorso: apertura pausa, confronto visivo dei
-      tre bottoni)
-- [ ] Controllo percettivo richiesto: sì — confronto screenshot fornito dal
+      tre bottoni) — nessun device collegato in questa sessione (`adb
+      devices` vuoto); gate lasciato aperto, non blocca l'implementazione.
+- [x] Controllo percettivo richiesto: sì — confronto screenshot fornito dal
       proprietario prima/dopo
 
 ## Decisioni
@@ -146,10 +156,19 @@ sagoma/nine-slice e la stessa altezza target touch (64px).
   unico vero accento di tinta) — la sincronizzazione in
   `visual-audio-identity.md` è tracciata da PS-147, che è la card che
   introduce anche il terzo asse (il `font_color` corallo di ESCI).
+- **2026-09-10 — Chiusura.** Verifica automatica verde a `Relevant` e a
+  `Full` (137/137, nessun `SCRIPT ERROR`/`FATAL EXCEPTION`), rieseguita dopo
+  le modifiche di PS-147 per confermare che i due segmenti di catena
+  `focus_neighbor` invarianti (RIPRENDI↔CAMBIA PERSONAGGIO↔IMPOSTAZIONI)
+  restino corretti. Pacchetto di catture UI rigenerato e ispezionato
+  (`07_pause_overlay.png`): separazione e tonalità dedicata visibili a
+  colpo d'occhio. Nessun device Android collegato in questa sessione: gate
+  fisico e validazione statica APK restano aperti, dichiarati sopra.
+  Stato → `IN VERIFICA`.
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno atteso: fix di leggibilità UI, nessun contratto di prodotto
+- [x] Nessuno atteso: fix di leggibilità UI, nessun contratto di prodotto
       cambia.
 
 ## Note

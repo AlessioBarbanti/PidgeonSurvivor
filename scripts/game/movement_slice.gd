@@ -119,6 +119,7 @@ func _ready() -> void:
 	_end_screen.restart_requested.connect(_on_restart_requested)
 	_end_screen.change_character_requested.connect(_on_change_character_requested)
 	_pause_overlay.change_character_requested.connect(_on_change_character_requested)
+	_pause_overlay.exit_requested.connect(_on_exit_requested)
 	_welcome_screen.play_requested.connect(_on_welcome_play_requested)
 	_welcome_screen.tutorial_requested.connect(_on_welcome_tutorial_requested)
 	_tutorial_screen.close_requested.connect(_on_tutorial_close_requested)
@@ -1342,6 +1343,8 @@ func _validate_current_contract() -> bool:
 			or _pause_overlay.get_confirm_change_button() == null
 		):
 			failures.append("PauseOverlay B18N privo della conferma di abbandono run.")
+		if _pause_overlay.get_exit_button() == null:
+			failures.append("PauseOverlay PS-147 privo del bottone ESCI.")
 	if _welcome_screen == null:
 		failures.append("WelcomeScreen B18O non presente.")
 	else:
@@ -2170,6 +2173,17 @@ func _on_change_character_requested() -> void:
 	_end_screen.hide_end_screen()
 	_run_controller.prepare_restart()
 	_show_character_selection()
+
+
+## PS-147: ESCI abbandona la run corrente e torna alla welcome, a differenza
+## di CAMBIA PERSONAGGIO che porta alla selezione.
+func _on_exit_requested() -> void:
+	if _run_controller.get_state() != RunController.RunState.MANUAL_PAUSE:
+		return
+	_input_router.suspend_input()
+	_player.clear_movement_input()
+	_run_controller.prepare_restart()
+	_show_welcome_screen()
 
 
 func _on_friend_confirmed(friend_id: StringName) -> void:

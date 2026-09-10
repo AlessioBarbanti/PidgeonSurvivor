@@ -42,6 +42,19 @@ del documento architetturale, non una lacuna di questo file.
   dichiaratamente ispirato ai tratti di una persona reale con consenso
   esplicito documentato oltre alla semplice reference. L'intero cast di
   sprite è stato rigenerato in un passaggio di identità unico il 28/08/2026.
+- **Bottoni secondari del pannello pausa** ([pause_overlay.tscn](../scenes/ui/pause_overlay.tscn)):
+  CAMBIA PERSONAGGIO, IMPOSTAZIONI ed ESCI condividono la stessa texture
+  nine-slice (`secondary_button_cta_base.png`), il cui canale rosso è ≈0 —
+  `modulate_color` può quindi solo scurire/schiarire lungo il blu esistente
+  (una rampa di *valore*), mai produrre un vero hue-shift. Quando più bottoni
+  condividono una nine-slice a canale rosso nullo, la differenziazione va
+  costruita su tre assi indipendenti, non su uno solo: luminosità
+  (`modulate_color`, PS-145/PS-147: CAMBIA PERSONAGGIO base, IMPOSTAZIONI
+  chiaro, ESCI il più scuro dei tre), spaziatura di gruppo (uno spaziatore
+  extra isola le azioni distruttive, come ESCI, da quelle reversibili) e
+  `font_color` come unico vero accento di tinta (il corallo tenue di ESCI,
+  preso in prestito dalla famiglia cromatica di "GAME OVER" in
+  `end_screen.tscn` ma desaturato).
 - **Stile pixel-art**: confermato in modo ricorrente nei manifest di
   cartella, per esempio `assets/art/arena/ASSET-MANIFEST.md` ("caricatured
   pixel-art arcade... polished hand-crafted pixel art, restrained chunky
