@@ -8,6 +8,10 @@ signal thunder_charge_tier_changed(tier: int)
 signal shield_changed(active: bool, remaining: float)
 ## Due Dita e Parto (PS-105): 0.0 (vuota) a 1.0 (piena, entra in Brilla).
 signal alea_sobriety_changed(fill_ratio: float)
+## PS-138: stato Brilla esposto all'HUD (prima era leggibile solo da
+## `is_alea_brilla_active()`, mai osservato via segnale). Emesso solo ai
+## bordi (inizio/fine), non ad ogni frame.
+signal alea_brilla_active_changed(active: bool)
 signal thermal_mode_changed(hot: bool)
 signal hyperfocus_changed(focused: bool, phase_duration: float)
 signal marked_targets_changed(marked_count: int)
@@ -430,6 +434,7 @@ func _start_alea_brilla() -> void:
 	_alea_drift_pulse_remaining = 0.0
 	_apply_character_multipliers()
 	_refresh_passive_state_tell()
+	alea_brilla_active_changed.emit(true)
 
 
 func _advance_alea_brilla(delta: float) -> void:
@@ -448,6 +453,7 @@ func _end_alea_brilla() -> void:
 	_apply_character_multipliers()
 	_refresh_passive_state_tell()
 	alea_sobriety_changed.emit(_alea_sobriety_ratio)
+	alea_brilla_active_changed.emit(false)
 
 
 ## La deriva devia per un istante la direzione effettiva di movimento (non
@@ -974,6 +980,7 @@ func _reset_runtime(seed_value: int) -> void:
 	delayed_healing_changed.emit(0.0)
 	shield_changed.emit(false, 0.0)
 	alea_sobriety_changed.emit(_alea_sobriety_ratio)
+	alea_brilla_active_changed.emit(false)
 
 
 func _has_valid_dependencies() -> bool:

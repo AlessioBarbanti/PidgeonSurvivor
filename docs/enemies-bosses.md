@@ -202,7 +202,7 @@ premio lo sfama e lo fa tornare come prima.
   lo mostra in una riga sempre **positiva verso Barb**, mai un ammonimento
   sulla fame: "`<Nome>` è tornato tra noi, grazie a Barb!" quando un amico è
   stato redento, altrimenti la riga generica
-  `BarbRewardOverlay.BARB_GENERIC_REWARD_LINE` ("Con Barb ai fornelli, va
+  `BarbRewardOverlay.BARB_GENERIC_REWARD_LINE` ("Con Barb alla griglia, va
   sempre a finire bene!").
 
 ### Signature Ability per profilo

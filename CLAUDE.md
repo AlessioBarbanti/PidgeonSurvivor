@@ -126,5 +126,6 @@ disponibile non blocca l'implementazione: lascia il gate **aperto** e dichiaralo
   stage.
 - Nuovi file grafici o audio richiedono una riga nel `ASSET-MANIFEST.md` della
   cartella, con percorso, origine, autore, licenza, trasformazioni e SHA-256.
-- Commit solo su richiesta esplicita, focalizzati, in italiano, nella forma
-  `feat(PS-010): ...` / `fix(PS-010): ...`. Non fare push se non richiesto.
+- Commit a fine modifica/card senza bisogno di richiesta esplicita ogni
+  volta, focalizzati, in italiano, nella forma `feat(PS-010): ...` /
+  `fix(PS-010): ...`. Non fare push se non richiesto.

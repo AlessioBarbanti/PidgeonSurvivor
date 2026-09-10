@@ -111,12 +111,16 @@ func _capture_profile(viewport_size: Vector2i) -> void:
 
 	await _shot("01_welcome", RunController.RunState.BOOT)
 
+	# PS-137: le impostazioni vivono ora nell'overlay condiviso, non più in
+	# un pannello locale della welcome — stessa istanza apribile anche dalla
+	# pausa (vedi _capture_pause).
+	var settings_overlay := _slice.get_settings_overlay() as SettingsOverlay
 	if welcome != null and welcome.get_settings_button() != null:
 		welcome.get_settings_button().emit_signal("pressed")
 		await _frames(12)
 		await _shot("02_welcome_settings", RunController.RunState.BOOT)
-		if welcome.get_close_settings_button() != null:
-			welcome.get_close_settings_button().emit_signal("pressed")
+		if settings_overlay != null and settings_overlay.get_close_button() != null:
+			settings_overlay.get_close_button().emit_signal("pressed")
 			await _frames(12)
 
 	if welcome != null and welcome.get_tutorial_button() != null:
@@ -376,6 +380,16 @@ func _capture_pause(
 		var cancel_button := _pause_overlay.get_cancel_change_button()
 		if cancel_button != null:
 			cancel_button.emit_signal("pressed")
+			await _frames(12)
+
+	var settings_button := _pause_overlay.get_settings_button()
+	if settings_button != null:
+		settings_button.emit_signal("pressed")
+		await _frames(16)
+		await _shot("07c_pause_settings", RunController.RunState.MANUAL_PAUSE)
+		var settings_overlay := _slice.get_settings_overlay() as SettingsOverlay
+		if settings_overlay != null and settings_overlay.get_close_button() != null:
+			settings_overlay.get_close_button().emit_signal("pressed")
 			await _frames(12)
 
 	if not lifecycle.request_resume():

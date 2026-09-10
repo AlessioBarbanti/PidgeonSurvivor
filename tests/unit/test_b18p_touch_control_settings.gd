@@ -28,17 +28,22 @@ func test_touch_control_settings() -> void:
 	var controller := movement_slice.get_run_controller() as RunController
 	var welcome := movement_slice.get_welcome_screen() as WelcomeScreen
 	var pause_overlay := movement_slice.get_pause_overlay() as PauseOverlay
+	var settings_overlay := movement_slice.get_settings_overlay() as SettingsOverlay
 	var hud := movement_slice.get_hud() as GameHud
 	var joystick := movement_slice.get_node("UI/SafeAreaRoot/TouchJoystick") as TouchJoystick
 	var ability := movement_slice.get_ability_controller() as AbilityController
 	assert_true(settings != null, "B18P richiede TouchControlSettings.")
-	assert_true(welcome != null and pause_overlay != null, "B18P richiede impostazioni da welcome e pausa.")
+	assert_true(
+		welcome != null and pause_overlay != null and settings_overlay != null,
+		"B18P richiede welcome, pausa e l'overlay impostazioni condiviso (PS-137)."
+	)
 	assert_true(hud != null and joystick != null and ability != null, "B18P richiede entrambi i controlli runtime.")
 	if (
 		settings == null
 		or controller == null
 		or welcome == null
 		or pause_overlay == null
+		or settings_overlay == null
 		or hud == null
 		or joystick == null
 		or ability == null
@@ -47,7 +52,7 @@ func test_touch_control_settings() -> void:
 		return
 
 	_assert_loaded_clamp(settings, hud, joystick)
-	await _assert_welcome_preview(welcome, pause_overlay, settings, hud, joystick)
+	await _assert_welcome_preview(welcome, pause_overlay, settings_overlay, settings, hud, joystick)
 	await _assert_layout_profiles(movement_slice, welcome, hud, joystick, settings)
 
 	assert_true(movement_slice.select_friend_for_next_run(&"magno"), "La fixture B18P deve selezionare Magno.")
@@ -66,7 +71,7 @@ func test_touch_control_settings() -> void:
 		weapon.set_process(false)
 
 	await _assert_supported_multitouch_scales(movement_slice, settings, hud, joystick, ability)
-	await _assert_pause_preview(controller, pause_overlay, settings, hud, joystick)
+	await _assert_pause_preview(controller, pause_overlay, settings_overlay, settings, hud, joystick)
 	_assert_persistence(settings)
 
 	if is_instance_valid(controller):
@@ -103,8 +108,17 @@ func _assert_loaded_clamp(settings: TouchControlSettings, hud: GameHud, joystick
 	_assert_joystick_geometry(joystick, TouchControlSettings.MIN_JOYSTICK_SCALE)
 
 
+## PS-137: welcome e pausa aprono la stessa istanza di SettingsOverlay — non
+## più due pannelli da sincronizzare, un solo slider da leggere due volte
+## (prima dalla welcome, poi di nuovo dopo la riapertura dalla pausa in
+## _assert_pause_preview, a riprova che è davvero la stessa istanza).
 func _assert_welcome_preview(
-	welcome: WelcomeScreen, pause_overlay: PauseOverlay, settings: TouchControlSettings, hud: GameHud, joystick: TouchJoystick
+	welcome: WelcomeScreen,
+	pause_overlay: PauseOverlay,
+	settings_overlay: SettingsOverlay,
+	settings: TouchControlSettings,
+	hud: GameHud,
+	joystick: TouchJoystick
 ) -> void:
 	var settings_button := welcome.get_settings_button()
 	assert_true(settings_button != null, "La welcome B18P deve esporre IMPOSTAZIONI.")
@@ -112,11 +126,15 @@ func _assert_welcome_preview(
 		return
 	settings_button.pressed.emit()
 	await wait_process_frames(2)
-	var ability_slider := welcome.get_ability_size_slider()
-	var joystick_slider := welcome.get_joystick_size_slider()
-	assert_true(ability_slider != null and joystick_slider != null, "La welcome deve esporre due scale indipendenti.")
+	assert_true(settings_overlay.is_open(), "IMPOSTAZIONI dalla welcome deve aprire l'overlay condiviso.")
+	var ability_slider := settings_overlay.get_ability_size_slider()
+	var joystick_slider := settings_overlay.get_joystick_size_slider()
+	assert_true(ability_slider != null and joystick_slider != null, "L'overlay deve esporre due scale indipendenti.")
 	if ability_slider == null or joystick_slider == null:
 		return
+	# Le scale touch vivono nella tab CONTROLLI TOUCH, non in quella di default (AUDIO).
+	settings_overlay.get_controls_tab_button().pressed.emit()
+	await wait_process_frames(1)
 	ability_slider.value = TouchControlSettings.MIN_ABILITY_SCALE
 	joystick_slider.value = TouchControlSettings.MAX_JOYSTICK_SCALE
 	await wait_process_frames(2)
@@ -131,14 +149,10 @@ func _assert_welcome_preview(
 		"La preview welcome deve aggiornare il target raddoppiato."
 	)
 	_assert_joystick_geometry(joystick, 1.15)
-	assert_almost_eq(
-		pause_overlay.get_ability_size_slider().value, 1.0, TOUCH_SETTINGS_FLOAT_TOLERANCE,
-		"Welcome e pausa devono restare sincronizzate."
-	)
-	assert_almost_eq(
-		pause_overlay.get_joystick_size_slider().value, 1.15, TOUCH_SETTINGS_FLOAT_TOLERANCE,
-		"La scala joystick deve sincronizzarsi con la pausa."
-	)
+	settings_overlay.get_close_button().pressed.emit()
+	await wait_process_frames(2)
+	assert_false(settings_overlay.is_open(), "Chiudere l'overlay dalla welcome non deve lasciarlo aperto.")
+	assert_false(pause_overlay.visible, "Aprire l'overlay dalla welcome non deve mostrare la pausa.")
 
 
 func _assert_layout_profiles(
@@ -231,13 +245,27 @@ func _assert_supported_multitouch_scales(
 
 
 func _assert_pause_preview(
-	controller: RunController, pause_overlay: PauseOverlay, settings: TouchControlSettings, hud: GameHud, joystick: TouchJoystick
+	controller: RunController,
+	pause_overlay: PauseOverlay,
+	settings_overlay: SettingsOverlay,
+	settings: TouchControlSettings,
+	hud: GameHud,
+	joystick: TouchJoystick
 ) -> void:
 	assert_true(controller.request_manual_pause(), "B18P deve aprire la pausa manuale.")
 	await wait_process_frames(2)
 	assert_true(pause_overlay.visible, "Le impostazioni B18P devono essere raggiungibili dalla pausa.")
-	pause_overlay.get_ability_size_slider().value = TouchControlSettings.DEFAULT_ABILITY_SCALE
-	pause_overlay.get_joystick_size_slider().value = TouchControlSettings.DEFAULT_JOYSTICK_SCALE
+	var pause_settings_button := pause_overlay.get_settings_button()
+	assert_true(pause_settings_button != null, "La pausa PS-137 deve esporre l'ingranaggio impostazioni.")
+	if pause_settings_button == null:
+		return
+	pause_settings_button.pressed.emit()
+	await wait_process_frames(2)
+	assert_true(settings_overlay.is_open(), "L'ingranaggio della pausa deve aprire lo stesso overlay condiviso.")
+	settings_overlay.get_controls_tab_button().pressed.emit()
+	await wait_process_frames(1)
+	settings_overlay.get_ability_size_slider().value = TouchControlSettings.DEFAULT_ABILITY_SCALE
+	settings_overlay.get_joystick_size_slider().value = TouchControlSettings.DEFAULT_JOYSTICK_SCALE
 	await wait_process_frames(2)
 	assert_true(controller.get_state() == RunController.RunState.MANUAL_PAUSE, "Cambiare scala non deve riprendere la run.")
 	assert_almost_eq(

@@ -29,6 +29,20 @@ their runtime cue while this table preserves the source mapping and SHA-256.
 | `shot.ogg` | `Audio/impactGeneric_light_003.ogg` | Impact Sounds | `0e8896706130f6bc88cdf1f0157aaacdbe88dce86cf0330f9136e44eb1209e81` |
 | `defeat.ogg` | `Audio/8-Bit jingles/jingles_NES11.ogg` | Music Jingles | `ee06814cd4e703bdd501b8035d143061b7fa21cf3b5ab2d0cb4e014dabf1054a` |
 | `victory.ogg` | `Audio/8-Bit jingles/jingles_NES02.ogg` | Music Jingles | `2c0b9dcc14bdae6d66ecb40d0351e61b4b2fc570e7b13821974e2057f07c93e7` |
+| `boss_victory.ogg` | `Audio/maximize_005.ogg` | Interface Sounds | `0ee06fc3ee494723fc95b2224f9dc0af857f2903e7f94d5d33d8e67f454b3cf7` |
+| `ui_click.ogg` | `Audio/click_001.ogg` | Interface Sounds | `ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9` |
 
 The SVG ability and upgrade icons under `assets/art/icons/` were created for
 this project during B18 and do not derive from the Kenney packs.
+
+`boss_victory.ogg` was added on 2026-09-09 for PS-136 (fanfara alla sconfitta
+del Boss), re-downloaded from the same official Interface Sounds 1.0 page
+listed above (`kenney.nl/assets/interface-sounds`, CC0). It is the same
+unmodified file as `Audio/maximize_005.ogg`, only renamed to its runtime cue,
+same as every other row in this table.
+
+`ui_click.ogg` was added on 2026-09-09 for PS-074 (click generico sui bottoni
+UI oggi silenziosi), downloaded from the same official Interface Sounds 1.0
+page (CC0). Five candidates from the same pack's `click_*.ogg` series were
+sent to the proprietario for audition; `Audio/click_001.ogg` was approved.
+Unmodified file, only renamed to its runtime cue.

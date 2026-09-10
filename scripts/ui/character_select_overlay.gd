@@ -3,6 +3,11 @@ extends Control
 
 signal friend_confirmed(friend_id: StringName)
 signal back_requested()
+## PS-074: solo dai bottoni Precedente/Successivo/Indietro — il bottone di
+## conferma resta coperto da `friend_confirmed` (UI_CONFIRM), senza doppio
+## suono. Non emesso da `navigate_previous()`/`navigate_next()` quando
+## invocati da swipe o scorciatoia, solo dalla pressione del bottone.
+signal ui_click_requested()
 
 const TRANSITION_DURATION := 0.14
 const SWIPE_DISTANCE := 56.0
@@ -65,13 +70,35 @@ const IDENTITY_BACKDROP_BLEND_ABOVE := 36.0
 ## Friend diametralmente opposto resta fuori finche' non ruota dentro.
 const ROSTER_VISIBLE_SLOTS := 7
 const ROSTER_CARD_GAP := 6.0
-const ROSTER_PREVIEW_INSET := Vector2(10.0, 14.0)
-## Tinta piena, non trasparenza: il busto sconfina dietro la fascia e con un
-## alpha < 1 traspariva attraverso le miniature.
-const ROSTER_PREVIEW_MODULATE := Color(0.66, 0.7, 0.74, 1.0)
-const ROSTER_SELECTED_ICON_PADDING := 16.0
-const ROSTER_PREVIEW_ICON_PADDING := 22.0
+## PS-154: solo inset orizzontale. Un inset verticale centrava le card preview
+## (piu' basse) e quella selezionata (piu' alta) sullo stesso asse, lasciando
+## quella selezionata sporgere sia sopra che sotto le vicine di meta' della
+## differenza (7px) — con la cornice-asset ora su tutte le card (non solo la
+## selezionata) il bordo inferiore disallineato tra selezionata e vicine
+## diventava visibile e stonato. Stessa altezza per tutte: i bordi inferiori
+## restano allineati, la larghezza resta l'unico residuo di differenza
+## dimensionale fra selezionato e preview.
+const ROSTER_PREVIEW_INSET := Vector2(10.0, 0.0)
+## PS-154: la cornice-asset e' su ogni card (non solo la selezionata), col
+## ritaglio nine-slice ridotto a 32/28 (vedi `_make_roster_card_style`) per
+## non sovradimensionare l'angolo dorato rispetto al piccolo slot roster.
+## Il padding qui sotto non tocca quel ritaglio (le dimensioni x/y del
+## riquadro d'angolo restano quelle): controlla solo quanto il ritratto si
+## estende sopra la cornice, cioe' quanto spessore del bordo dorato resta
+## visibile. Un padding piu' piccolo fa crescere il ritratto verso il bordo,
+## coprendo piu' cornice e lasciandone visibile solo una fetta sottile —
+## richiesto esplicitamente dal proprietario (~1/3 dello spessore precedente)
+## dopo revisione degli screenshot reali.
+const ROSTER_SELECTED_ICON_PADDING := 9.0
+const ROSTER_PREVIEW_ICON_PADDING := 11.0
 const ROSTER_MIN_ICON_WIDTH := 24
+## PS-154: la gerarchia selezionato/non-selezionato la comunica la
+## desaturazione, non piu' un `modulate` grigio-azzurro ne' l'assenza della
+## cornice. Quasi scala di grigi, non un'attenuazione leggera (scelta
+## esplicita del proprietario).
+const DESATURATE_SHADER := preload("res://assets/shaders/desaturate.gdshader")
+const ROSTER_PREVIEW_SATURATION := 0.12
+const ROSTER_SELECTED_SATURATION := 1.0
 ## Ritaglio headshot della fascia roster: una sola regione per tutti e otto i
 ## busti, senza adattamenti per-personaggio (vincolo PS-069). A ~70px di lato
 ## un volto resta riconoscibile dove un busto intero non lo sarebbe.
@@ -121,15 +148,15 @@ var _navigation_lock_until_msec := 0
 var _controller_axis_direction := 0
 var _center_style: StyleBoxTexture
 var _center_focus_style: StyleBoxTexture
-var _preview_style: StyleBoxFlat
-var _preview_focus_style: StyleBoxFlat
+var _preview_style: StyleBoxTexture
+var _preview_focus_style: StyleBoxTexture
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_build_card_styles()
-	_previous_button.pressed.connect(navigate_previous)
-	_next_button.pressed.connect(navigate_next)
+	_previous_button.pressed.connect(_on_previous_button_pressed)
+	_next_button.pressed.connect(_on_next_button_pressed)
 	_carousel_viewport.resized.connect(_on_carousel_resized)
 	_portrait_stage.resized.connect(_on_portrait_stage_resized)
 	resized.connect(_on_overlay_resized)
@@ -379,6 +406,16 @@ func navigate_next() -> void:
 	_navigate(1)
 
 
+func _on_previous_button_pressed() -> void:
+	ui_click_requested.emit()
+	navigate_previous()
+
+
+func _on_next_button_pressed() -> void:
+	ui_click_requested.emit()
+	navigate_next()
+
+
 func handle_touch_event_for_test(event: InputEvent) -> bool:
 	return _process_touch_event(event)
 
@@ -404,6 +441,10 @@ func _rebuild_buttons() -> void:
 		button.mouse_filter = Control.MOUSE_FILTER_STOP
 		button.tooltip_text = "Seleziona %s" % definition.get_public_display_name()
 		button.pressed.connect(_on_card_pressed.bind(definition))
+		var saturation_material := ShaderMaterial.new()
+		saturation_material.shader = DESATURATE_SHADER
+		saturation_material.set_shader_parameter("saturation", ROSTER_PREVIEW_SATURATION)
+		button.material = saturation_material
 		_carousel_viewport.add_child(button)
 		_buttons_by_id[definition.id] = button
 
@@ -671,7 +712,14 @@ func _layout_cards(animate: bool) -> void:
 			slot_center - target_size.x * 0.5,
 			(viewport_size.y - target_size.y) * 0.5
 		)
-		var target_modulate := Color.WHITE if is_current else ROSTER_PREVIEW_MODULATE
+		# PS-154: nessuna tinta separata per i non selezionati, la gerarchia
+		# la comunica solo la desaturazione (vedi sotto); il modulate resta
+		# bianco pieno per tutti, l'alpha continua a gestire il fade-in.
+		var target_modulate := Color.WHITE
+		var target_saturation := (
+			ROSTER_SELECTED_SATURATION if is_current else ROSTER_PREVIEW_SATURATION
+		)
+		var saturation_material := button.material as ShaderMaterial
 		var was_visible := button.visible
 		button.visible = true
 		button.z_index = 2 if is_current else 1
@@ -689,14 +737,30 @@ func _layout_cards(animate: bool) -> void:
 				button.position = target_position
 				button.size = target_size
 				button.modulate = Color(target_modulate.r, target_modulate.g, target_modulate.b, 0.0)
+				if saturation_material != null:
+					saturation_material.set_shader_parameter("saturation", target_saturation)
 			tween.tween_property(button, "position", target_position, TRANSITION_DURATION).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 			tween.tween_property(button, "size", target_size, TRANSITION_DURATION).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 			tween.tween_property(button, "modulate", target_modulate, TRANSITION_DURATION).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+			if saturation_material != null and was_visible:
+				var current_saturation: float = saturation_material.get_shader_parameter("saturation")
+				tween.tween_method(
+					_set_button_saturation.bind(saturation_material),
+					current_saturation,
+					target_saturation,
+					TRANSITION_DURATION
+				).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		else:
 			button.position = target_position
 			button.size = target_size
 			button.modulate = target_modulate
+			if saturation_material != null:
+				saturation_material.set_shader_parameter("saturation", target_saturation)
 	_update_focus_neighbors()
+
+
+func _set_button_saturation(value: float, material: ShaderMaterial) -> void:
+	material.set_shader_parameter("saturation", value)
 
 
 func _apply_card_role(button: Button, is_current: bool) -> void:
@@ -706,44 +770,38 @@ func _apply_card_role(button: Button, is_current: bool) -> void:
 	button.add_theme_stylebox_override("focus", _center_focus_style if is_current else _preview_focus_style)
 
 
+## PS-154: selezionato e non selezionato usano la stessa cornice-asset (la
+## gerarchia la comunica solo la desaturazione, non piu' la presenza/assenza
+## della cornice ne' una dimensione diversa dei margini).
 func _build_card_styles() -> void:
-	_center_style = _make_selected_card_style(Color.WHITE)
-	_center_focus_style = _make_selected_card_style(Color(1.0, 0.96, 0.78, 1.0))
-	_preview_style = _make_card_style(Color(0.02, 0.032, 0.046, 1.0), Color(0.2, 0.24, 0.28, 1.0), 3)
-	_preview_focus_style = _make_card_style(Color(0.045, 0.05, 0.058, 1.0), Color(0.78, 0.58, 0.27, 1.0), 3)
+	_center_style = _make_roster_card_style(Color.WHITE)
+	_center_focus_style = _make_roster_card_style(Color(1.0, 0.96, 0.78, 1.0))
+	_preview_style = _make_roster_card_style(Color.WHITE)
+	_preview_focus_style = _make_roster_card_style(Color(1.0, 0.96, 0.78, 1.0))
 
 
-## Stessa cornice della pausa, ma il 9-slice va ritarato: nella fascia roster la
-## card selezionata e' larga ~90-130px, non ~350px come nel vecchio carosello.
-func _make_selected_card_style(tint: Color) -> StyleBoxTexture:
+## Stessa texture della pausa (`pause_panel_frame.png`), ma con un ritaglio
+## nine-slice piu' piccolo del vero margine dell'asset (`56`/`52`, quello di
+## `pause_overlay.tscn`): a quel margine pieno il rivetto d'angolo risultava
+## sovradimensionato rispetto allo slot compatto del roster (PS-154). Un
+## margine minore ritaglia solo la porzione interna del motivo invece di
+## scalare l'intero rivetto — compromesso esplicitamente scelto dal
+## proprietario rispetto a generare un derivato dedicato piu' piccolo.
+func _make_roster_card_style(tint: Color) -> StyleBoxTexture:
 	var style := StyleBoxTexture.new()
 	style.texture = SELECTED_CARD_FRAME
-	style.texture_margin_left = 22.0
-	style.texture_margin_top = 22.0
-	style.texture_margin_right = 22.0
-	style.texture_margin_bottom = 22.0
-	style.content_margin_left = 6.0
-	style.content_margin_top = 6.0
-	style.content_margin_right = 6.0
-	style.content_margin_bottom = 6.0
+	style.texture_margin_left = 32.0
+	style.texture_margin_top = 28.0
+	style.texture_margin_right = 32.0
+	style.texture_margin_bottom = 28.0
+	# Piccolo di proposito: e' ROSTER_*_ICON_PADDING sopra a decidere quanto
+	# spessore di cornice resta visibile, non questo margine — deve solo
+	# restare sotto quel valore per non diventare lui il vincolo dominante.
+	style.content_margin_left = 4.0
+	style.content_margin_top = 4.0
+	style.content_margin_right = 4.0
+	style.content_margin_bottom = 4.0
 	style.modulate_color = tint
-	return style
-
-
-func _make_card_style(background: Color, border: Color, width: int) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = background
-	style.border_color = border
-	style.set_border_width_all(width)
-	style.set_corner_radius_all(2)
-	style.anti_aliasing = false
-	style.shadow_color = Color(0.0, 0.0, 0.0, 0.78)
-	style.shadow_size = 5
-	style.shadow_offset = Vector2(0.0, 3.0)
-	style.content_margin_left = 6.0
-	style.content_margin_top = 6.0
-	style.content_margin_right = 6.0
-	style.content_margin_bottom = 6.0
 	return style
 
 
@@ -898,6 +956,7 @@ func _on_confirm_pressed() -> void:
 
 
 func _on_back_pressed() -> void:
+	ui_click_requested.emit()
 	_emit_back_requested()
 
 

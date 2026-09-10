@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/barb_reward_overlay.gd" id="1_overlay"]
 [ext_resource type="PackedScene" path="res://scenes/ui/upgrade_card.tscn" id="2_card"]
@@ -17,22 +17,6 @@ corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
 shadow_color = Color(0.02, 0.005, 0.002, 0.8)
 shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mode"]
-bg_color = Color(0.25, 0.065, 0.02, 0.96)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.96, 0.55, 0.12, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-content_margin_left = 12.0
-content_margin_top = 3.0
-content_margin_right = 12.0
-content_margin_bottom = 3.0
 
 [node name="BarbRewardOverlay" type="Control"]
 process_mode = 3
@@ -116,21 +100,6 @@ mouse_filter = 2
 theme_override_constants/separation = 2
 alignment = 1
 
-[node name="ModeCenter" type="CenterContainer" parent="SafeMargins/Layout/HeaderPanel/HeaderContent/TextMargins/HeaderText"]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="ModeLabel" type="Label" parent="SafeMargins/Layout/HeaderPanel/HeaderContent/TextMargins/HeaderText/ModeCenter"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.72, 0.24, 1)
-theme_override_styles/normal = SubResource("StyleBoxFlat_mode")
-theme_type_variation = &"TitleXS"
-text = "NUOVA SPECIALITÀ"
-horizontal_alignment = 1
-vertical_alignment = 1
-
 [node name="TitleLabel" type="Label" parent="SafeMargins/Layout/HeaderPanel/HeaderContent/TextMargins/HeaderText"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 42)
@@ -147,8 +116,8 @@ unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.72, 1)
-theme_type_variation = &"BodyS"
-text = "Con Barb ai fornelli, va sempre a finire bene!"
+theme_type_variation = &"BodyM"
+text = "Con Barb alla griglia, va sempre a finire bene!"
 horizontal_alignment = 1
 clip_text = true
 text_overrun_behavior = 3

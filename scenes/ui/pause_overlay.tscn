@@ -1,8 +1,6 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/pause_overlay.gd" id="1_pause"]
-[ext_resource type="Script" path="res://scripts/ui/pixel_arcade_slider.gd" id="2_slider"]
-[ext_resource type="Script" path="res://scripts/ui/pixel_arcade_toggle.gd" id="3_toggle"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/character_select/character_select_cta_base.png" id="4_primary_cta"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/character_select/secondary_button_cta_base.png" id="5_secondary_cta"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/pause/pause_panel_frame.png" id="6_pause_frame"]
@@ -18,21 +16,18 @@ content_margin_top = 48.0
 content_margin_right = 58.0
 content_margin_bottom = 46.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_separator"]
-bg_color = Color(0.345, 0.294, 0.204, 0.72)
-content_margin_top = 1.0
-content_margin_bottom = 1.0
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_primary_cta"]
 atlas = ExtResource("4_primary_cta")
-region = Rect2(0, 0, 754, 181)
+region = Rect2(0, 0, 760, 149)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_primary_normal"]
 texture = SubResource("AtlasTexture_primary_cta")
 texture_margin_left = 88.0
-texture_margin_top = 24.0
+texture_margin_top = 20.0
 texture_margin_right = 88.0
-texture_margin_bottom = 24.0
+texture_margin_bottom = 20.0
+content_margin_top = 26.0
+content_margin_bottom = 14.0
 expand_margin_left = 6.0
 expand_margin_top = 6.0
 expand_margin_right = 6.0
@@ -41,9 +36,11 @@ expand_margin_bottom = 6.0
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_primary_hover"]
 texture = SubResource("AtlasTexture_primary_cta")
 texture_margin_left = 88.0
-texture_margin_top = 24.0
+texture_margin_top = 20.0
 texture_margin_right = 88.0
-texture_margin_bottom = 24.0
+texture_margin_bottom = 20.0
+content_margin_top = 26.0
+content_margin_bottom = 14.0
 expand_margin_left = 8.0
 expand_margin_top = 8.0
 expand_margin_right = 8.0
@@ -53,9 +50,11 @@ modulate_color = Color(1, 1, 0.86, 1)
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_primary_pressed"]
 texture = SubResource("AtlasTexture_primary_cta")
 texture_margin_left = 88.0
-texture_margin_top = 24.0
+texture_margin_top = 20.0
 texture_margin_right = 88.0
-texture_margin_bottom = 24.0
+texture_margin_bottom = 20.0
+content_margin_top = 26.0
+content_margin_bottom = 14.0
 expand_margin_left = 4.0
 expand_margin_top = 4.0
 expand_margin_right = 4.0
@@ -100,6 +99,78 @@ expand_margin_top = 5.0
 expand_margin_right = 3.0
 expand_margin_bottom = 2.0
 modulate_color = Color(0.72, 0.72, 0.72, 1.0)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_settings_normal"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 20.0
+texture_margin_right = 102.0
+texture_margin_bottom = 20.0
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
+modulate_color = Color(1.15, 1.2, 1.3, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_settings_hover"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 20.0
+texture_margin_right = 102.0
+texture_margin_bottom = 20.0
+expand_margin_left = 6.0
+expand_margin_top = 6.0
+expand_margin_right = 6.0
+expand_margin_bottom = 6.0
+modulate_color = Color(1.31, 1.34, 1.38, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_settings_pressed"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 20.0
+texture_margin_right = 102.0
+texture_margin_bottom = 20.0
+expand_margin_left = 3.0
+expand_margin_top = 5.0
+expand_margin_right = 3.0
+expand_margin_bottom = 2.0
+modulate_color = Color(1.03, 1.08, 1.16, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_exit_normal"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 20.0
+texture_margin_right = 102.0
+texture_margin_bottom = 20.0
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
+modulate_color = Color(0.38, 0.38, 0.44, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_exit_hover"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 20.0
+texture_margin_right = 102.0
+texture_margin_bottom = 20.0
+expand_margin_left = 6.0
+expand_margin_top = 6.0
+expand_margin_right = 6.0
+expand_margin_bottom = 6.0
+modulate_color = Color(0.58, 0.56, 0.6, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_exit_pressed"]
+texture = SubResource("AtlasTexture_secondary_cta")
+texture_margin_left = 102.0
+texture_margin_top = 20.0
+texture_margin_right = 102.0
+texture_margin_bottom = 20.0
+expand_margin_left = 3.0
+expand_margin_top = 5.0
+expand_margin_right = 3.0
+expand_margin_bottom = 2.0
+modulate_color = Color(0.22, 0.22, 0.26, 1)
 
 [node name="PauseOverlay" type="Control"]
 process_mode = 3
@@ -149,7 +220,7 @@ horizontal_scroll_mode = 0
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 6
+theme_override_constants/separation = 16
 
 [node name="TitleLabel" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox"]
 layout_mode = 2
@@ -160,170 +231,11 @@ theme_type_variation = &"TitleXL"
 text = "IN PAUSA"
 horizontal_alignment = 1
 
-[node name="AudioSeparator" type="HSeparator" parent="PauseCenter/Panel/PauseScroll/VBox"]
-layout_mode = 2
-theme_override_styles/separator = SubResource("StyleBoxFlat_separator")
-
-[node name="AudioTitle" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
-theme_override_colors/font_outline_color = Color(0.09, 0.055, 0.02, 1)
-theme_override_constants/outline_size = 2
-theme_type_variation = &"TitleXS"
-text = "AUDIO"
-
-[node name="VolumeRow" type="HBoxContainer" parent="PauseCenter/Panel/PauseScroll/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="VolumeCaption" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox/VolumeRow"]
-custom_minimum_size = Vector2(142, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
-theme_type_variation = &"BodyM"
-text = "Volume audio"
-
-[node name="VolumeSlider" type="HSlider" parent="PauseCenter/Panel/PauseScroll/VBox/VolumeRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(180, 44)
-layout_mode = 2
-size_flags_horizontal = 3
-min_value = 0.0
-max_value = 1.0
-step = 0.05
-value = 0.8
-script = ExtResource("2_slider")
-
-[node name="VolumeValueLabel" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox/VolumeRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(52, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
-theme_type_variation = &"ValueNumeric"
-text = "80%"
-horizontal_alignment = 2
-
-[node name="MuteCheckButton" type="CheckButton" parent="PauseCenter/Panel/PauseScroll/VBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 44)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
-theme_type_variation = &"CheckLabel"
-text = "AUDIO DISATTIVATO"
-script = ExtResource("3_toggle")
-
-[node name="AccessibilitySeparator" type="HSeparator" parent="PauseCenter/Panel/PauseScroll/VBox"]
-layout_mode = 2
-theme_override_styles/separator = SubResource("StyleBoxFlat_separator")
-
-[node name="AccessibilityTitle" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
-theme_override_colors/font_outline_color = Color(0.09, 0.055, 0.02, 1)
-theme_override_constants/outline_size = 2
-theme_type_variation = &"TitleXS"
-text = "ACCESSIBILITÀ"
-
-[node name="ReducedFlashesCheckButton" type="CheckButton" parent="PauseCenter/Panel/PauseScroll/VBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 44)
-layout_mode = 2
-focus_neighbor_bottom = NodePath("../ManualFireCheckButton")
-theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
-theme_type_variation = &"CheckLabel"
-text = "FLASH RIDOTTI"
-script = ExtResource("3_toggle")
-
-[node name="ControlsTitle" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
-theme_override_colors/font_outline_color = Color(0.09, 0.055, 0.02, 1)
-theme_override_constants/outline_size = 2
-theme_type_variation = &"TitleXS"
-text = "CONTROLLI TOUCH"
-
-[node name="ManualFireCheckButton" type="CheckButton" parent="PauseCenter/Panel/PauseScroll/VBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 44)
-layout_mode = 2
-focus_neighbor_top = NodePath("../ReducedFlashesCheckButton")
-focus_neighbor_bottom = NodePath("../AbilitySizeRow/AbilitySizeSlider")
-theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
-theme_type_variation = &"CheckLabel"
-text = "SPARO MANUALE"
-script = ExtResource("3_toggle")
-
-[node name="AbilitySizeRow" type="HBoxContainer" parent="PauseCenter/Panel/PauseScroll/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="Caption" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox/AbilitySizeRow"]
-custom_minimum_size = Vector2(142, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
-theme_type_variation = &"BodyM"
-text = "Icona abilità"
-
-[node name="AbilitySizeSlider" type="HSlider" parent="PauseCenter/Panel/PauseScroll/VBox/AbilitySizeRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(180, 42)
-layout_mode = 2
-size_flags_horizontal = 3
-min_value = 1.0
-max_value = 1.5
-step = 0.25
-value = 1.25
-focus_neighbor_top = NodePath("../../ManualFireCheckButton")
-focus_neighbor_bottom = NodePath("../../JoystickSizeRow/JoystickSizeSlider")
-script = ExtResource("2_slider")
-
-[node name="AbilitySizeValueLabel" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox/AbilitySizeRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(52, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
-theme_type_variation = &"ValueNumeric"
-text = "125%"
-horizontal_alignment = 2
-
-[node name="JoystickSizeRow" type="HBoxContainer" parent="PauseCenter/Panel/PauseScroll/VBox"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="Caption" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox/JoystickSizeRow"]
-custom_minimum_size = Vector2(142, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
-theme_type_variation = &"BodyM"
-text = "Joystick"
-
-[node name="JoystickSizeSlider" type="HSlider" parent="PauseCenter/Panel/PauseScroll/VBox/JoystickSizeRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(180, 42)
-layout_mode = 2
-size_flags_horizontal = 3
-min_value = 0.85
-max_value = 1.15
-step = 0.15
-value = 1.0
-focus_neighbor_top = NodePath("../../AbilitySizeRow/AbilitySizeSlider")
-focus_neighbor_bottom = NodePath("../../ResumeButton")
-script = ExtResource("2_slider")
-
-[node name="JoystickSizeValueLabel" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox/JoystickSizeRow"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(52, 0)
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
-theme_type_variation = &"ValueNumeric"
-text = "100%"
-horizontal_alignment = 2
-
 [node name="ResumeButton" type="Button" parent="PauseCenter/Panel/PauseScroll/VBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
-focus_neighbor_top = NodePath("../JoystickSizeRow/JoystickSizeSlider")
+focus_neighbor_top = NodePath("../ExitButton")
 focus_neighbor_bottom = NodePath("../ChangeCharacterButton")
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_type_variation = &"ButtonStandard"
@@ -338,7 +250,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 focus_neighbor_top = NodePath("../ResumeButton")
-focus_neighbor_bottom = NodePath(".")
+focus_neighbor_bottom = NodePath("../SettingsButton")
 theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
 theme_type_variation = &"ButtonStandard"
 theme_override_styles/normal = SubResource("StyleBoxTexture_secondary_normal")
@@ -346,6 +258,39 @@ theme_override_styles/hover = SubResource("StyleBoxTexture_secondary_hover")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_secondary_pressed")
 theme_override_styles/focus = SubResource("StyleBoxTexture_secondary_hover")
 text = "CAMBIA PERSONAGGIO"
+
+[node name="SettingsButton" type="Button" parent="PauseCenter/Panel/PauseScroll/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+focus_neighbor_top = NodePath("../ChangeCharacterButton")
+focus_neighbor_bottom = NodePath("../ExitButton")
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
+theme_type_variation = &"ButtonStandard"
+theme_override_styles/normal = SubResource("StyleBoxTexture_settings_normal")
+theme_override_styles/hover = SubResource("StyleBoxTexture_settings_hover")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_settings_pressed")
+theme_override_styles/focus = SubResource("StyleBoxTexture_settings_hover")
+text = "IMPOSTAZIONI"
+
+[node name="ExitSpacer" type="Control" parent="PauseCenter/Panel/PauseScroll/VBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ExitButton" type="Button" parent="PauseCenter/Panel/PauseScroll/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+focus_neighbor_top = NodePath("../SettingsButton")
+focus_neighbor_bottom = NodePath("../ResumeButton")
+theme_override_colors/font_color = Color(0.98, 0.55, 0.5, 1)
+theme_type_variation = &"ButtonStandard"
+theme_override_styles/normal = SubResource("StyleBoxTexture_exit_normal")
+theme_override_styles/hover = SubResource("StyleBoxTexture_exit_hover")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_exit_pressed")
+theme_override_styles/focus = SubResource("StyleBoxTexture_exit_hover")
+text = "ESCI"
 
 [node name="ConfirmationCenter" type="CenterContainer" parent="."]
 unique_name_in_owner = true
@@ -367,7 +312,8 @@ theme_override_styles/panel = SubResource("StyleBoxTexture_pause_panel")
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="TitleLabel" type="Label" parent="ConfirmationCenter/Panel/VBox"]
+[node name="ConfirmationTitleLabel" type="Label" parent="ConfirmationCenter/Panel/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
 theme_override_colors/font_outline_color = Color(0.09, 0.055, 0.02, 1)
@@ -376,7 +322,8 @@ theme_type_variation = &"TitleL"
 text = "CAMBIA PERSONAGGIO?"
 horizontal_alignment = 1
 
-[node name="SummaryLabel" type="Label" parent="ConfirmationCenter/Panel/VBox"]
+[node name="ConfirmationSummaryLabel" type="Label" parent="ConfirmationCenter/Panel/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
 theme_type_variation = &"BodyL"

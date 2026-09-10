@@ -12,6 +12,7 @@ func test_composed_feedback_contract() -> void:
 
 	var audio := movement_slice.get_game_audio() as GameAudio
 	var pause_overlay := movement_slice.get_pause_overlay() as PauseOverlay
+	var settings_overlay := movement_slice.get_settings_overlay() as SettingsOverlay
 	var ability_registry := movement_slice.get_ability_effect_registry() as AbilityEffectRegistry
 	var upgrade_registry := movement_slice.get_upgrade_registry() as UpgradeRegistry
 	var effects := movement_slice.get_ability_effect_parent() as Node2D
@@ -22,7 +23,8 @@ func test_composed_feedback_contract() -> void:
 	var hud := movement_slice.get_hud() as GameHud
 
 	assert_not_null(audio, "B18 richiede un GameAudio scene-local.")
-	assert_not_null(pause_overlay, "B18 richiede i controlli audio nella pausa.")
+	assert_not_null(pause_overlay, "B18 richiede la pausa.")
+	assert_not_null(settings_overlay, "B18/PS-137 richiede l'overlay impostazioni condiviso.")
 	assert_not_null(ability_registry, "B18 richiede il catalogo abilita per le icone.")
 	assert_not_null(upgrade_registry, "B18 richiede il catalogo upgrade per le icone.")
 	assert_not_null(effects, "B18 richiede un layer VFX esplicito.")
@@ -42,6 +44,7 @@ func test_composed_feedback_contract() -> void:
 		or projectiles == null
 		or boss_projectiles == null
 		or hud == null
+		or settings_overlay == null
 	):
 		return
 
@@ -85,17 +88,17 @@ func test_composed_feedback_contract() -> void:
 		audio.get_effects_volume(), 0.35, AUDIO_FLOAT_TOLERANCE, "GameAudio deve conservare il volume lineare."
 	)
 	assert_almost_eq(
-		pause_overlay.get_audio_volume(), 0.35, AUDIO_FLOAT_TOLERANCE, "Lo slider deve seguire GameAudio."
+		settings_overlay.get_audio_volume(), 0.35, AUDIO_FLOAT_TOLERANCE, "Lo slider deve seguire GameAudio."
 	)
 	audio.set_muted(false, false)
-	assert_false(pause_overlay.is_audio_muted(), "Il controllo mute deve seguire GameAudio.")
+	assert_false(settings_overlay.is_audio_muted(), "Il controllo mute deve seguire GameAudio.")
 	if not audio.cue_played.is_connected(_on_cue_played):
 		audio.cue_played.connect(_on_cue_played)
 	assert_true(audio.play_cue(GameAudio.UI_CONFIRM), "Un cue valido deve essere riproducibile.")
 	assert_eq(_cue_count, 1, "La riproduzione deve emettere un solo evento diagnostico.")
 	audio.stop_all()
 	audio.set_muted(true, false)
-	assert_true(pause_overlay.is_audio_muted(), "Il mute deve aggiornare la UI.")
+	assert_true(settings_overlay.is_audio_muted(), "Il mute deve aggiornare la UI.")
 	assert_false(audio.play_cue(GameAudio.LEVEL_UP), "Il mute deve bloccare nuovi cue.")
 	audio.set_effects_volume(initial_volume, false)
 	audio.set_muted(initial_muted, false)
@@ -133,11 +136,11 @@ func test_composed_feedback_contract() -> void:
 		"Il cronometro HUD deve superare 4.5:1, ottenuto %.2f:1." % timer_contrast
 	)
 	assert_true(
-		pause_overlay.get_volume_slider().custom_minimum_size.y >= 44.0,
+		settings_overlay.get_volume_slider().custom_minimum_size.y >= 44.0,
 		"Lo slider volume deve restare un target touch ampio."
 	)
 	assert_true(
-		pause_overlay.get_mute_check_button().custom_minimum_size.y >= 44.0,
+		settings_overlay.get_mute_check_button().custom_minimum_size.y >= 44.0,
 		"Il mute deve restare un target touch ampio."
 	)
 	assert_true(

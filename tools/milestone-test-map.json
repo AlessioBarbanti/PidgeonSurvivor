@@ -60,7 +60,9 @@
         "tests/unit/test_ps101_evil_hunger_narrative.gd",
         "tests/unit/test_ps103_boss_intro_frame_wiring.gd",
         "tests/unit/test_ps126_post_curve_pressure.gd",
-        "tests/unit/test_ps127_piccione_malvagio_hard_rare.gd"
+        "tests/unit/test_ps127_piccione_malvagio_hard_rare.gd",
+        "tests/unit/test_ps136_boss_victory_fanfare.gd",
+        "tests/unit/test_ps148_boss_baseline_gameplay_sprite.gd"
       ]
     },
     {
@@ -75,7 +77,8 @@
         "tests/unit/test_b16_complete_run.gd",
         "tests/unit/test_b33_recurring_boss.gd",
         "tests/unit/test_ps005_boss_warning.gd",
-        "tests/unit/test_ps126_post_curve_pressure.gd"
+        "tests/unit/test_ps126_post_curve_pressure.gd",
+        "tests/unit/test_ps056_audio_ducking.gd"
       ]
     },
     {
@@ -289,7 +292,8 @@
         "tests/unit/test_ps094_ability_charge_stacking.gd",
         "tests/unit/test_ps100_anxiety_removal.gd",
         "tests/unit/test_b13_signature_upgrades.gd",
-        "tests/unit/test_b18j_summer_grill.gd"
+        "tests/unit/test_b18j_summer_grill.gd",
+        "tests/unit/test_ps147_pause_exit_button.gd"
       ]
     },
     {
@@ -322,15 +326,18 @@
       "patterns": [
         "scripts/ui/barb_reward_overlay.gd",
         "scripts/ui/upgrade_card.gd",
+        "scenes/ui/upgrade_card.tscn",
         "scenes/ui/barb_reward_overlay.tscn",
-        "assets/art/ui/barb_reward/*"
+        "assets/art/ui/barb_reward/*",
+        "assets/art/ui/upgrade_card/*"
       ],
       "smokes": [
         "tests/unit/test_ps036_barb_reward_visual_identity.gd",
         "tests/unit/test_ps046_level_up_modal_isolation.gd",
         "tests/unit/test_ps047_upgrade_card_hierarchy.gd",
         "tests/unit/test_ps059_upgrade_modal_contrast.gd",
-        "tests/unit/test_ps101_evil_hunger_narrative.gd"
+        "tests/unit/test_ps101_evil_hunger_narrative.gd",
+        "tests/unit/test_ps139_upgrade_card_frame.gd"
       ]
     },
     {
@@ -339,7 +346,8 @@
         "scenes/ui/*",
         "assets/art/ui/*",
         "assets/fonts/*",
-        "assets/themes/*"
+        "assets/themes/*",
+        "assets/shaders/*"
       ],
       "smokes": [
         "tests/unit/test_b09_hud.gd",
@@ -348,10 +356,10 @@
         "tests/unit/test_b18t_character_carousel.gd",
         "tests/unit/test_b18w_character_select_refinement.gd",
         "tests/unit/test_ps069_character_select_bust_portrait.gd",
+        "tests/unit/test_ps154_roster_frame_and_saturation.gd",
         "tests/unit/test_b18o_welcome_flow.gd",
         "tests/unit/test_b54_tutorial_flow.gd",
         "tests/unit/test_ps048_tutorial_runtime_fidelity.gd",
-        "tests/unit/test_ps050_welcome_settings_system.gd",
         "tests/unit/test_ps053_run_summary.gd",
         "tests/unit/test_typography.gd",
         "tests/unit/test_ps005_boss_warning.gd",
@@ -366,7 +374,16 @@
         "tests/unit/test_ps085_manual_fire_mode.gd",
         "tests/unit/test_ps103_boss_intro_frame_wiring.gd",
         "tests/unit/test_ps106_alea_sobriety_hud.gd",
-        "tests/unit/test_ps094_ability_charge_stacking.gd"
+        "tests/unit/test_ps094_ability_charge_stacking.gd",
+        "tests/unit/test_ps074_ui_click_feedback.gd",
+        "tests/unit/test_ps137_shared_settings_overlay.gd",
+        "tests/unit/test_ps138_alea_ring_glow.gd",
+        "tests/unit/test_ps142_pause_panel_height_clamp.gd",
+        "tests/unit/test_ps143_pause_settings_button.gd",
+        "tests/unit/test_ps145_pause_buttons_distinct_and_spaced.gd",
+        "tests/unit/test_ps146_hud_bars_floating.gd",
+        "tests/unit/test_ps147_pause_exit_button.gd",
+        "tests/unit/test_ps140_hud_bar_border_color.gd"
       ]
     },
     {
@@ -387,7 +404,8 @@
         "tests/unit/test_b18o_welcome_flow.gd",
         "tests/unit/test_b18n_pause_change_character.gd",
         "tests/unit/test_b18p_touch_control_settings.gd",
-        "tests/unit/test_ps085_manual_fire_mode.gd"
+        "tests/unit/test_ps085_manual_fire_mode.gd",
+        "tests/unit/test_ps137_shared_settings_overlay.gd"
       ]
     },
     {
@@ -406,7 +424,8 @@
         "tests/unit/test_ps099_state_tell_aura.gd",
         "tests/unit/test_b44_state_tells.gd",
         "tests/unit/test_ps029_state_tell_visibility.gd",
-        "tests/unit/test_ps079_state_tell_particles.gd"
+        "tests/unit/test_ps079_state_tell_particles.gd",
+        "tests/unit/test_ps056_audio_ducking.gd"
       ]
     },
     {
@@ -420,7 +439,12 @@
         "tests/unit/test_menu_music.gd",
         "tests/unit/test_ps072_bea_dodge_audio.gd",
         "tests/unit/test_ps073_boss_dedicated_music.gd",
-        "tests/unit/test_ps080_end_run_music.gd"
+        "tests/unit/test_ps080_end_run_music.gd",
+        "tests/unit/test_ps136_boss_victory_fanfare.gd",
+        "tests/unit/test_ps056_audio_ducking.gd",
+        "tests/unit/test_ps081_late_run_music_intensity.gd",
+        "tests/unit/test_ps074_ui_click_feedback.gd",
+        "tests/unit/test_ps137_shared_settings_overlay.gd"
       ]
     },
     {
@@ -459,7 +483,8 @@
         "tests/unit/test_ps105_alea_sobriety_cycle.gd",
         "tests/unit/test_ps093_extended_base_stats.gd",
         "tests/unit/test_ps106_alea_sobriety_hud.gd",
-        "tests/unit/test_ps099_state_tell_aura.gd"
+        "tests/unit/test_ps099_state_tell_aura.gd",
+        "tests/unit/test_ps138_alea_ring_glow.gd"
       ]
     },
     {
@@ -467,7 +492,8 @@
         "assets/art/icons/hud/*"
       ],
       "smokes": [
-        "tests/unit/test_ps106_alea_sobriety_hud.gd"
+        "tests/unit/test_ps106_alea_sobriety_hud.gd",
+        "tests/unit/test_ps138_alea_ring_glow.gd"
       ]
     },
     {

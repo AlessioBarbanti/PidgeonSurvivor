@@ -63,10 +63,15 @@ func test_background_music_follows_run_state_transitions() -> void:
 
 	assert_true(controller.request_level_up(), "Il modal level-up deve essere accettato.")
 	await wait_process_frames(2)
-	assert_false(audio.is_background_music_active(), "La musica deve fermarsi nei modal della run.")
+	assert_true(
+		audio.is_background_music_active(),
+		"PS-056: il modal level-up abbassa la musica (ducking), non la ferma piu'."
+	)
+	assert_true(audio.is_music_ducked(), "PS-056: il modal level-up deve attivare il ducking.")
 	assert_true(controller.complete_level_up(), "Il modal level-up deve chiudersi.")
 	await wait_process_frames(2)
-	assert_true(audio.is_background_music_active(), "La musica deve riprendere dopo il modal.")
+	assert_true(audio.is_background_music_active(), "La musica deve restare attiva dopo il modal.")
+	assert_false(audio.is_music_ducked(), "PS-056: il ducking deve ritirarsi alla chiusura del modal.")
 
 	audio.set_muted(true, false)
 	assert_true(audio.is_background_music_active(), "Il mute deve silenziare il bus senza perdere lo stato del loop.")

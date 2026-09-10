@@ -1,4 +1,4 @@
-[gd_scene load_steps=121 format=3]
+[gd_scene load_steps=123 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -69,11 +69,13 @@
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/ability_ready.ogg" id="68_ability_ready"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/boss_warning.ogg" id="69_boss_warning"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/boss_attack.ogg" id="70_boss_attack"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/boss_victory.ogg" id="70b_boss_victory"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/ui_confirm.ogg" id="71_ui_confirm"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/pause.ogg" id="72_pause"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/resume.ogg" id="73_resume"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/victory.ogg" id="74_victory"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/defeat.ogg" id="75_defeat"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/kenney_b18/ui_click.ogg" id="75b_ui_click"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/artisticdude_swishes/dodge.ogg" id="124_dodge"]
 [ext_resource type="Script" path="res://scripts/vfx/combat_feedback.gd" id="76_feedback"]
 [ext_resource type="Script" path="res://scripts/app/visual_accessibility_settings.gd" id="77_accessibility"]
@@ -122,6 +124,7 @@
 [ext_resource type="Resource" path="res://data/upgrades/specialities/double_barrel.tres" id="116_double_barrel"]
 [ext_resource type="Resource" path="res://data/upgrades/specialities/death_burst.tres" id="117_death_burst"]
 [ext_resource type="PackedScene" path="res://scenes/ui/tutorial_screen.tscn" id="118_tutorial_screen"]
+[ext_resource type="PackedScene" path="res://scenes/ui/settings_overlay.tscn" id="131_settings_overlay"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/menu_music_wipics/menu_music_loop.ogg" id="119_menu_music"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/matthewpablo_vilified/boss_music_loop.mp3" id="125_boss_music"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/cynicmusic_victory_fanfare/victory_music.wav" id="129_victory_music"]
@@ -264,7 +267,9 @@ ability_activate_stream = ExtResource("67_ability_activate")
 ability_ready_stream = ExtResource("68_ability_ready")
 boss_warning_stream = ExtResource("69_boss_warning")
 boss_attack_stream = ExtResource("70_boss_attack")
+boss_victory_stream = ExtResource("70b_boss_victory")
 ui_confirm_stream = ExtResource("71_ui_confirm")
+ui_click_stream = ExtResource("75b_ui_click")
 pause_stream = ExtResource("72_pause")
 resume_stream = ExtResource("73_resume")
 victory_stream = ExtResource("74_victory")
@@ -469,4 +474,7 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 
 [node name="EndScreen" parent="UI" instance=ExtResource("12_end_screen")]
+unique_name_in_owner = true
+
+[node name="SettingsOverlay" parent="UI" instance=ExtResource("131_settings_overlay")]
 unique_name_in_owner = true

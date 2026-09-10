@@ -22,8 +22,7 @@ const JOYSTICK_SCALE_STEP := 0.15
 
 var _ability_scale := DEFAULT_ABILITY_SCALE
 var _joystick_scale := DEFAULT_JOYSTICK_SCALE
-var _welcome_screen: WelcomeScreen
-var _pause_overlay: PauseOverlay
+var _settings_overlay: SettingsOverlay
 
 
 func _ready() -> void:
@@ -34,20 +33,15 @@ func _exit_tree() -> void:
 	_disconnect_controls()
 
 
-func configure(
-	welcome_screen: WelcomeScreen,
-	pause_overlay: PauseOverlay
-) -> bool:
+## PS-137: un solo overlay condiviso al posto dei due nodi (welcome + pausa)
+## sincronizzati a mano da PS-050 in avanti.
+func configure(settings_overlay: SettingsOverlay) -> bool:
 	_disconnect_controls()
-	_welcome_screen = welcome_screen
-	_pause_overlay = pause_overlay
-	if not is_instance_valid(_welcome_screen) or not is_instance_valid(_pause_overlay):
+	_settings_overlay = settings_overlay
+	if not is_instance_valid(_settings_overlay):
 		_disconnect_controls()
 		return false
-	_welcome_screen.touch_control_scale_changed.connect(
-		_on_touch_control_scale_changed
-	)
-	_pause_overlay.touch_control_scale_changed.connect(
+	_settings_overlay.touch_control_scale_changed.connect(
 		_on_touch_control_scale_changed
 	)
 	_sync_controls()
@@ -146,29 +140,19 @@ func _save_settings() -> void:
 
 
 func _sync_controls() -> void:
-	if is_instance_valid(_welcome_screen):
-		_welcome_screen.set_touch_control_scales(_ability_scale, _joystick_scale)
-	if is_instance_valid(_pause_overlay):
-		_pause_overlay.set_touch_control_scales(_ability_scale, _joystick_scale)
+	if is_instance_valid(_settings_overlay):
+		_settings_overlay.set_touch_control_scales(_ability_scale, _joystick_scale)
 
 
 func _disconnect_controls() -> void:
-	if is_instance_valid(_welcome_screen):
-		if _welcome_screen.touch_control_scale_changed.is_connected(
+	if is_instance_valid(_settings_overlay):
+		if _settings_overlay.touch_control_scale_changed.is_connected(
 			_on_touch_control_scale_changed
 		):
-			_welcome_screen.touch_control_scale_changed.disconnect(
+			_settings_overlay.touch_control_scale_changed.disconnect(
 				_on_touch_control_scale_changed
 			)
-	if is_instance_valid(_pause_overlay):
-		if _pause_overlay.touch_control_scale_changed.is_connected(
-			_on_touch_control_scale_changed
-		):
-			_pause_overlay.touch_control_scale_changed.disconnect(
-				_on_touch_control_scale_changed
-			)
-	_welcome_screen = null
-	_pause_overlay = null
+	_settings_overlay = null
 
 
 func _on_touch_control_scale_changed(control_id: StringName, value: float) -> void:

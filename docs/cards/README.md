@@ -157,7 +157,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-052](./5_completed/PS-052-genera-ritratti-evil-e-icone-signature.md) | Generare i ritratti Evil e le icone Signature definitivi | art | arte | COMPLETATO | media | PS-051 |
 | [PS-053](./5_completed/PS-053-riepilogo-finale-della-run.md) | Trasformare la schermata finale in un riepilogo della run | feat | ui | COMPLETATO | media | — |
 | [PS-055](./5_completed/PS-055-filosofia-della-vittoria.md) | Decidere la filosofia della vittoria fra Survival e Difesa Grigliata | chore | gameplay | COMPLETATO | media | — |
-| [PS-056](./2_to_do/PS-056-ducking-e-stinger-nei-momenti-chiave.md) | Aggiungere ducking e stinger su avvertimento Boss, level-up e ricompensa Barb | feat | audio | PRONTO | bassa | — |
+| [PS-056](./4_to_test/PS-056-ducking-e-stinger-nei-momenti-chiave.md) | Aggiungere ducking e stinger su avvertimento Boss, level-up e ricompensa Barb | feat | audio | IN VERIFICA | bassa | — |
 | [PS-057](./5_completed/PS-057-errori-fisica-su-split-del-piccione-viola.md) | Eliminare gli errori di fisica quando il piccione viola si sdoppia | fix | gameplay | COMPLETATO | media | — |
 | [PS-058](./5_completed/PS-058-genera-arte-nuovi-prop-arena.md) | Generare l'arte definitiva dei nuovi prop dell'arena | art | arte | COMPLETATO | media | PS-045 |
 | [PS-059](./5_completed/PS-059-schiarisci-contrasto-modal-level-up.md) | Schiarire il contrasto fra velo e carte nei modal di scelta | fix | ui | COMPLETATO | alta | PS-046, PS-047 |
@@ -171,18 +171,18 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-067](./5_completed/PS-067-carte-upgrade-e-barb-escono-di-6px-dalla-safe-area.md) | Le carte upgrade e Barb escono di 6px dalla safe area | fix | ui | COMPLETATO | alta | — |
 | [PS-068](./5_completed/PS-068-genera-ritratti-busto-cast-giocabile.md) | Generare i ritratti busto definitivi del cast giocabile | art | arte | COMPLETATO | media | — |
 | [PS-069](./5_completed/PS-069-ridisegna-selettore-personaggi-per-ritratti-busto.md) | Ridisegnare il selettore personaggi attorno ai ritratti busto | ux | ui | COMPLETATO | media | PS-068 |
-| [PS-070](./2_to_do/PS-070-aggiorna-aspettativa-32x32-evil-portrait-b17.md) | Aggiorna l'aspettativa 32x32 su evil_portrait in test_b17_friend_content | fix | tooling | PRONTO | bassa | — |
+| [PS-070](./5_completed/PS-070-aggiorna-aspettativa-32x32-evil-portrait-b17.md) | Aggiorna l'aspettativa 32x32 su evil_portrait in test_b17_friend_content | fix | tooling | COMPLETATO | bassa | — |
 | [PS-071](./5_completed/PS-071-pannello-boss-intro-esce-dalla-safe-area.md) | Il pannello della Boss Intro esce dalla safe area | fix | ui | COMPLETATO | media | — |
 | [PS-072](./5_completed/PS-072-audio-schivata-sesto-senso-equino-bea.md) | Dai un audio alla schivata Sesto Senso Equino di Bea | feat | audio | COMPLETATO | media | — |
 | [PS-073](./5_completed/PS-073-musica-boss-dedicata.md) | Introduci una musica Boss dedicata | feat | audio | COMPLETATO | media | — |
-| [PS-074](./2_to_do/PS-074-suono-click-generico-bottoni-ui.md) | Aggiungi un suono di click ai bottoni UI oggi silenziosi | ux | audio | PRONTO | bassa | — |
+| [PS-074](./4_to_test/PS-074-suono-click-generico-bottoni-ui.md) | Aggiungi un suono di click ai bottoni UI oggi silenziosi | ux | audio | IN VERIFICA | bassa | — |
 | [PS-075](./6_rejected/PS-075-sfx-morte-nemico.md) | Aggiungi un SFX alla morte dei nemici | feat | audio | SCARTATA | media | — |
 | [PS-076](./5_completed/PS-076-aumenta-densita-nemica-a-schermo.md) | Aumenta la densità nemica a schermo a parità di rischio e progressione | chore | gameplay | COMPLETATO | alta | — |
 | [PS-077](./5_completed/PS-077-espandi-pool-specialita-barb.md) | Espandi il pool delle Specialità di Barb con le carte signature rimaste | feat | gameplay | COMPLETATO | media | PS-012 |
 | [PS-078](./4_to_test/PS-078-tematizza-catalogo-specialita-barb.md) | Tematizza le Specialità di Barb come pezzi di carne alla griglia | art | arte | IN VERIFICA | media | PS-077 |
 | [PS-079](./5_completed/PS-079-particellare-tell-stato-personaggi.md) | Sostituisci il contorno bocciato con un particellare non aderente | ux | arte | COMPLETATO | alta | — |
 | [PS-080](./4_to_test/PS-080-musica-vittoria-sconfitta.md) | Aggiungi una musica dedicata a vittoria e sconfitta | feat | audio | IN VERIFICA | media | — |
-| [PS-081](./2_to_do/PS-081-layer-musicale-intensita-late-run.md) | Aggiungi un layer musicale di intensità crescente late-run | feat | audio | PRONTO | media | — |
+| [PS-081](./4_to_test/PS-081-layer-musicale-intensita-late-run.md) | Accelera la musica di run nella curva di intensità late-run | feat | audio | IN VERIFICA | media | PS-056 |
 | [PS-082](./4_to_test/PS-082-camera-non-centrata-su-restart.md) | Ricentra davvero la camera sul personaggio al restart | fix | gameplay | IN VERIFICA | media | — |
 | [PS-083](./5_completed/PS-083-storicizza-prompt-e-reference-generazione.md) | Storicizzare prompt e reference di generazione | chore | arte | COMPLETATO | bassa | — |
 | [PS-084](./5_completed/PS-084-direzione-visuale-per-personaggio-e-reference-cast.md) | Documentare la direzione visuale per personaggio e collegarla agli agenti art | chore | arte | COMPLETATO | media | — |
@@ -234,6 +234,26 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-130](./1_idea/PS-130-rigenera-otto-icone-passive-cast.md) | Rigenera come candidati le otto icone passive del cast | art | arte | DA DEFINIRE | media | PS-105 |
 | [PS-131](./5_completed/PS-131-normalizza-icona-passiva-aleo.md) | Normalizza l'icona della passiva di Aleo allo stile delle altre sette | art | arte | COMPLETATO | media | — |
 | [PS-132](./4_to_test/PS-132-derivazione-sprite-sfarina-alea-e-zat.md) | Correggi la derivazione degli sprite di gameplay che sfarina Alea e Zat | fix | arte | IN VERIFICA | media | PS-116 |
-| [PS-133](./3_in_sprint/PS-133-develop-per-lo-sviluppo-main-per-il-rilascio.md) | Adotta develop come branch di sviluppo e main come branch di rilascio | chore | tooling | IN CORSO | alta | — |
-| [PS-134](./3_in_sprint/PS-134-apk-di-release-firmato-e-versionato-al-merge-su-main.md) | Pubblica un APK di release firmato e versionato al merge su main | chore | tooling | IN CORSO | alta | PS-133 |
+| [PS-133](./5_completed/PS-133-develop-per-lo-sviluppo-main-per-il-rilascio.md) | Adotta develop come branch di sviluppo e main come branch di rilascio | chore | tooling | COMPLETATO | alta | — |
+| [PS-134](./4_to_test/PS-134-apk-di-release-firmato-e-versionato-al-merge-su-main.md) | Pubblica un APK di release firmato e versionato al merge su main | chore | tooling | IN VERIFICA | alta | PS-133 |
 | [PS-135](./5_completed/PS-135-correggi-evil-portrait-magno-accessori-persi.md) | Correggi evil_portrait.png di Magno per ripristinare gli accessori identitari | art | arte | COMPLETATO | media | — |
+| [PS-136](./4_to_test/PS-136-fanfara-vittoria-sconfitta-boss.md) | Aggiungi una fanfara di vittoria alla sconfitta del Boss | feat | audio | IN VERIFICA | media | — |
+| [PS-137](./4_to_test/PS-137-overlay-impostazioni-condiviso-e-paginato.md) | Overlay impostazioni condiviso, più grande e paginato per categoria | ux | ui | IN VERIFICA | media | — |
+| [PS-138](./4_to_test/PS-138-anello-carica-e-glow-brilla-indicatore-alea.md) | Ridisegna l'indicatore HUD della passiva di Alea con anello di carica e glow Brilla | ux | ui | IN VERIFICA | media | PS-106 |
+| [PS-139](./4_to_test/PS-139-cornice-asset-carte-upgrade.md) | Applica la cornice asset esistente alle carte upgrade | ux | ui | IN VERIFICA | bassa | PS-152 |
+| [PS-140](./4_to_test/PS-140-riallinea-colore-bordo-hud-hp-xp.md) | Riallinea il colore del bordo HP/XP alla palette oro esistente | fix | ui | IN VERIFICA | bassa | — |
+| [PS-141](./2_to_do/PS-141-arricchisci-telegraph-attacchi-boss.md) | Arricchisci i telegraph d'attacco del Boss per non sembrare debug | ux | arte | PRONTO | media | — |
+| [PS-142](./4_to_test/PS-142-correggi-clamp-altezza-pannello-pausa.md) | Correggi il clamp dell'altezza del pannello pausa | fix | ui | IN VERIFICA | media | — |
+| [PS-143](./4_to_test/PS-143-sostituisci-icona-ingranaggio-pausa-con-bottone.md) | Sostituisci l'icona ingranaggio della pausa con un bottone IMPOSTAZIONI | ux | ui | IN VERIFICA | media | PS-137 |
+| [PS-144](./1_idea/PS-144-arte-dedicata-vfx-attacchi-boss.md) | Valuta arte dedicata per le VFX degli attacchi Boss (oltre il telegraph) | art | arte | DA DEFINIRE | bassa | PS-141 |
+| [PS-145](./4_to_test/PS-145-distingui-e-distanzia-bottoni-secondari-pausa.md) | Distingui e distanzia CAMBIA PERSONAGGIO da IMPOSTAZIONI nel pannello pausa | ux | ui | IN VERIFICA | media | PS-142, PS-143 |
+| [PS-146](./4_to_test/PS-146-barre-hp-xp-sospese-senza-doppio-bordo.md) | Rendi le barre HP/XP "sospese" e rimuovi il doppio bordo | ux | ui | IN VERIFICA | media | PS-140 |
+| [PS-147](./4_to_test/PS-147-aggiungi-bottone-esci-pannello-pausa.md) | Aggiungi bottone ESCI al pannello pausa | feat | ui | IN VERIFICA | media | PS-145 |
+| [PS-148](./4_to_test/PS-148-correggi-sprite-gameplay-piccione-malvagio.md) | Correggi lo sprite di gameplay del Piccione Malvagio che mostra il ritratto | fix | gameplay | IN VERIFICA | alta | — |
+| [PS-149](./5_completed/PS-149-genera-icona-passiva-alea-calice-vino.md) | Genera la nuova icona della passiva di Alea — calice di vino brilla | art | arte | COMPLETATO | media | — |
+| [PS-150](./4_to_test/PS-150-integra-icona-passiva-alea-calice-vino.md) | Integra la nuova icona della passiva di Alea al posto dell'aquila | chore | arte | IN VERIFICA | media | PS-149 |
+| [PS-151](./4_to_test/PS-151-rimuovi-evil-portrait-placeholder-e-eldiran.md) | Rimuovi il fallback evil_portrait_placeholder e la dipendenza da eldiran_rpg_characters | chore | gameplay | IN VERIFICA | media | — |
+| [PS-152](./5_completed/PS-152-rivetto-angolo-carte-upgrade.md) | Genera il rivetto d'angolo isolato per le carte upgrade | art | arte | COMPLETATO | media | — |
+| [PS-153](./4_to_test/PS-153-rimuovi-badge-modalita-barb-e-ingrandisci-riga-redenzione.md) | Rimuovi il badge di modalità dalla ricompensa di Barb e ingrandisci la riga di redenzione | ux | ui | IN VERIFICA | bassa | — |
+| [PS-154](./3_in_sprint/PS-154-correggi-cornice-roster-e-desatura-non-selezionati.md) | Correggi la cornice del roster nel selettore personaggi e desatura i non selezionati | fix | ui | IN CORSO | media | — |
+| [PS-155](./4_to_test/PS-155-correggi-altezza-e-centratura-testo-cta-arancione.md) | Correggi altezza e centratura del testo sul CTA arancione | fix | ui | IN VERIFICA | alta | — |

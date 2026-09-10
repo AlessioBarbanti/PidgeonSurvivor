@@ -3,6 +3,8 @@ extends Control
 
 signal restart_requested()
 signal change_character_requested()
+## PS-074: Riprova/Nuova run e Cambia personaggio.
+signal ui_click_requested()
 
 ## Dimensione dell'icona upgrade nella riga di riepilogo (PS-053).
 const UPGRADE_CHIP_ICON_SIZE := Vector2(48, 48)
@@ -133,12 +135,14 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_restart_button_pressed() -> void:
+	ui_click_requested.emit()
 	_emit_restart_requested()
 
 
 func _on_change_character_button_pressed() -> void:
 	if not is_accepting_restart():
 		return
+	ui_click_requested.emit()
 	_accepting_restart = false
 	_restart_button.disabled = true
 	_change_character_button.disabled = true

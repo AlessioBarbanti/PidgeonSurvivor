@@ -7,7 +7,7 @@ const EXPECTED_PASSIVE_ICON_PATHS := {
 	&"magno": "res://assets/art/icons/passives/generated/magno_aerodynamic_flow.png",
 	&"bea": "res://assets/art/icons/passives/generated/bea_sixth_sense.png",
 	&"zat": "res://assets/art/icons/passives/generated/zat_delayed_healing.png",
-	&"alea": "res://assets/art/icons/passives/generated/alea_eagle_never_misses.png",
+	&"alea": "res://assets/art/icons/passives/generated/alea_two_fingers_and_go.png",
 	&"aleo": "res://assets/art/icons/passives/generated/aleo_internal_thermostat.png",
 	&"lollo": "res://assets/art/icons/passives/generated/lollo_hyperactivity.png",
 	&"migi": "res://assets/art/icons/passives/generated/migi_turtle_shell.png",

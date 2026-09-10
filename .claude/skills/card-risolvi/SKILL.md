@@ -125,7 +125,8 @@ piattaforma applica `gate-piattaforme`.
 7. Se cambia la verità corrente, propaga il solo contratto risultante in
    `prd.md`, `CLAUDE.md`, cataloghi o `setup.md` e spunta
    `Documenti sincronizzati`. La motivazione resta nella card.
-8. Commit solo su richiesta: `feat(PS-007): ...` o `fix(PS-007): ...`, in
-   italiano, focalizzato. Nessun push se non richiesto.
+8. Commit a fine card senza bisogno di richiesta esplicita: `feat(PS-007): ...`
+   o `fix(PS-007): ...`, in italiano, focalizzato. Nessun push se non
+   richiesto.
 9. Riporta: cosa è cambiato, criteri chiusi e criteri lasciati aperti, risultati
    Windows/Android separati, gate ancora aperti.

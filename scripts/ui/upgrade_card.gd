@@ -8,6 +8,9 @@ signal upgrade_chosen(upgrade_id: StringName)
 @onready var _description_label: Label = %DescriptionLabel
 @onready var _effect_summary_label: Label = %EffectSummaryLabel
 @onready var _rank_label: Label = %RankLabel
+@onready var _corner_ornaments: Array[TextureRect] = [
+	%CornerTopLeft, %CornerTopRight, %CornerBottomLeft, %CornerBottomRight,
+]
 
 var _definition: UpgradeDefinition
 var _offer_index := -1
@@ -197,6 +200,9 @@ func _cache_base_styles() -> void:
 
 
 func _apply_visual_treatment() -> void:
+	for corner in _corner_ornaments:
+		corner.visible = not _speciality_treatment
+
 	if not _speciality_treatment:
 		for style_name in _base_styles:
 			add_theme_stylebox_override(style_name, _base_styles[style_name])

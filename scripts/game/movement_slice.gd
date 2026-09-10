@@ -79,6 +79,8 @@ var gut_test_run_seed_override := 0
 @onready var _character_select_overlay: CharacterSelectOverlay = %CharacterSelectOverlay
 @onready var _pause_overlay: PauseOverlay = %PauseOverlay
 @onready var _end_screen: EndScreen = %EndScreen
+## PS-137: overlay impostazioni condiviso fra welcome e pausa, istanza unica.
+@onready var _settings_overlay: SettingsOverlay = %SettingsOverlay
 
 var _last_logged_safe_area := Rect2()
 var _last_logged_joystick_rect := Rect2()
@@ -117,11 +119,9 @@ func _ready() -> void:
 	_end_screen.restart_requested.connect(_on_restart_requested)
 	_end_screen.change_character_requested.connect(_on_change_character_requested)
 	_pause_overlay.change_character_requested.connect(_on_change_character_requested)
+	_pause_overlay.exit_requested.connect(_on_exit_requested)
 	_welcome_screen.play_requested.connect(_on_welcome_play_requested)
 	_welcome_screen.tutorial_requested.connect(_on_welcome_tutorial_requested)
-	_welcome_screen.audio_volume_changed.connect(_on_welcome_audio_volume_changed)
-	_welcome_screen.audio_mute_toggled.connect(_on_welcome_audio_mute_toggled)
-	_welcome_screen.reduced_flashes_toggled.connect(_on_welcome_reduced_flashes_toggled)
 	_tutorial_screen.close_requested.connect(_on_tutorial_close_requested)
 	_tutorial_screen.play_requested.connect(_on_tutorial_play_requested)
 	_character_select_overlay.friend_confirmed.connect(_on_friend_confirmed)
@@ -132,10 +132,12 @@ func _ready() -> void:
 		_pause_overlay
 	)
 	_platform_lifecycle.set_boot_back_handler(_on_boot_back_requested)
-	_visual_accessibility_settings.configure(_pause_overlay)
-	_touch_control_settings.configure(_welcome_screen, _pause_overlay)
+	_welcome_screen.configure_settings_overlay(_settings_overlay)
+	_pause_overlay.configure_settings_overlay(_settings_overlay)
+	_visual_accessibility_settings.configure(_settings_overlay)
+	_touch_control_settings.configure(_settings_overlay)
 	_touch_control_settings.settings_changed.connect(_on_touch_control_settings_changed)
-	_fire_mode_settings.configure(_welcome_screen, _pause_overlay)
+	_fire_mode_settings.configure(_settings_overlay)
 	_fire_mode_settings.settings_changed.connect(_on_fire_mode_settings_changed)
 
 	_arena_layout.set_top_reserved_height(_hud.get_gameplay_top_inset())
@@ -278,20 +280,26 @@ func _ready() -> void:
 		_upgrade_overlay,
 		_barb_reward_overlay,
 		_character_select_overlay,
-		_pause_overlay
+		_pause_overlay,
+		_game_director,
+		_welcome_screen,
+		_tutorial_screen,
+		_end_screen,
+		_boss_ui,
+		_settings_overlay
 	)
-	_game_audio.settings_changed.connect(_welcome_screen.set_audio_settings)
+	_game_audio.settings_changed.connect(_settings_overlay.set_audio_settings)
 	_visual_accessibility_settings.settings_changed.connect(
-		_welcome_screen.set_reduced_flashes
+		_settings_overlay.set_reduced_flashes
 	)
 	_visual_accessibility_settings.settings_changed.connect(
 		_tutorial_screen.set_reduced_flashes
 	)
-	_welcome_screen.set_audio_settings(
+	_settings_overlay.set_audio_settings(
 		_game_audio.get_effects_volume(),
 		_game_audio.is_muted()
 	)
-	_welcome_screen.set_reduced_flashes(
+	_settings_overlay.set_reduced_flashes(
 		_visual_accessibility_settings.is_reduced_flashes_enabled()
 	)
 	_tutorial_screen.set_reduced_flashes(
@@ -860,6 +868,10 @@ func get_pause_overlay() -> PauseOverlay:
 	return _pause_overlay
 
 
+func get_settings_overlay() -> SettingsOverlay:
+	return _settings_overlay
+
+
 func restart_run(seed_value: int = 0) -> bool:
 	if not _run_controller.is_terminal():
 		return false
@@ -1322,17 +1334,8 @@ func _validate_current_contract() -> bool:
 	elif _pause_overlay.visible:
 		failures.append("PauseOverlay deve essere nascosto durante la run.")
 	else:
-		if _pause_overlay.get_volume_slider() == null:
-			failures.append("PauseOverlay B18 privo del controllo volume.")
-		if _pause_overlay.get_mute_check_button() == null:
-			failures.append("PauseOverlay B18 privo del controllo mute.")
-		if _pause_overlay.get_reduced_flashes_check_button() == null:
-			failures.append("PauseOverlay B18E privo dell'opzione Flash ridotti.")
-		if (
-			_pause_overlay.get_ability_size_slider() == null
-			or _pause_overlay.get_joystick_size_slider() == null
-		):
-			failures.append("PauseOverlay B18P privo delle scale touch.")
+		if _pause_overlay.get_settings_button() == null:
+			failures.append("PauseOverlay PS-137 privo dell'ingranaggio impostazioni.")
 		if _pause_overlay.get_change_character_button() == null:
 			failures.append("PauseOverlay B18N privo di Cambia personaggio.")
 		if (
@@ -1340,6 +1343,8 @@ func _validate_current_contract() -> bool:
 			or _pause_overlay.get_confirm_change_button() == null
 		):
 			failures.append("PauseOverlay B18N privo della conferma di abbandono run.")
+		if _pause_overlay.get_exit_button() == null:
+			failures.append("PauseOverlay PS-147 privo del bottone ESCI.")
 	if _welcome_screen == null:
 		failures.append("WelcomeScreen B18O non presente.")
 	else:
@@ -1349,17 +1354,27 @@ func _validate_current_contract() -> bool:
 			failures.append("WelcomeScreen B54 priva di TUTORIAL.")
 		if _welcome_screen.get_settings_button() == null:
 			failures.append("WelcomeScreen B18O priva di IMPOSTAZIONI.")
+	if _settings_overlay == null:
+		failures.append("SettingsOverlay PS-137 non presente.")
+	else:
 		if (
-			_welcome_screen.get_ability_size_slider() == null
-			or _welcome_screen.get_joystick_size_slider() == null
+			_settings_overlay.get_ability_size_slider() == null
+			or _settings_overlay.get_joystick_size_slider() == null
 		):
-			failures.append("WelcomeScreen B18P priva delle scale touch.")
+			failures.append("SettingsOverlay PS-137 privo delle scale touch.")
 		if (
-			_welcome_screen.get_volume_slider() == null
-			or _welcome_screen.get_mute_check_button() == null
-			or _welcome_screen.get_reduced_flashes_check_button() == null
+			_settings_overlay.get_volume_slider() == null
+			or _settings_overlay.get_mute_check_button() == null
+			or _settings_overlay.get_reduced_flashes_check_button() == null
+			or _settings_overlay.get_manual_fire_check_button() == null
 		):
-			failures.append("WelcomeScreen B18O priva delle impostazioni correnti.")
+			failures.append("SettingsOverlay PS-137 priva delle impostazioni correnti.")
+		if (
+			_settings_overlay.get_audio_tab_button() == null
+			or _settings_overlay.get_accessibility_tab_button() == null
+			or _settings_overlay.get_controls_tab_button() == null
+		):
+			failures.append("SettingsOverlay PS-137 priva delle tre tab.")
 	if _tutorial_screen == null:
 		failures.append("TutorialScreen B54 non presente.")
 	elif (
@@ -2160,6 +2175,17 @@ func _on_change_character_requested() -> void:
 	_show_character_selection()
 
 
+## PS-147: ESCI abbandona la run corrente e torna alla welcome, a differenza
+## di CAMBIA PERSONAGGIO che porta alla selezione.
+func _on_exit_requested() -> void:
+	if _run_controller.get_state() != RunController.RunState.MANUAL_PAUSE:
+		return
+	_input_router.suspend_input()
+	_player.clear_movement_input()
+	_run_controller.prepare_restart()
+	_show_welcome_screen()
+
+
 func _on_friend_confirmed(friend_id: StringName) -> void:
 	if not select_friend_for_next_run(friend_id):
 		_character_select_overlay.show_selection(friend_id)
@@ -2210,18 +2236,6 @@ func _on_boot_back_requested() -> bool:
 	if _welcome_screen.visible:
 		return _welcome_screen.handle_back_requested()
 	return false
-
-
-func _on_welcome_audio_volume_changed(value: float) -> void:
-	_game_audio.set_effects_volume(value)
-
-
-func _on_welcome_audio_mute_toggled(muted: bool) -> void:
-	_game_audio.set_muted(muted)
-
-
-func _on_welcome_reduced_flashes_toggled(enabled: bool) -> void:
-	_visual_accessibility_settings.set_reduced_flashes(enabled)
 
 
 func _on_touch_control_settings_changed(

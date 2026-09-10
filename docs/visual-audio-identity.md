@@ -20,7 +20,15 @@ del documento architetturale, non una lacuna di questo file.
   il calice Sobrietà è una coppia di layer pixel-art allineati, con vetro
   freddo/ornamenti oro statici e vino borgogna isolato; il riempimento verticale
   progressivo comunica lo stato anche attraverso la massa del liquido, non il
-  solo colore.
+  solo colore. Un anello di carica procedurale (PS-138,
+  [scripts/ui/alea_sobriety_indicator.gd](../scripts/ui/alea_sobriety_indicator.gd))
+  avvolge la sola coppa e scalda colore da bronzo (`#A67B35`, lo stesso già
+  presente nel master) a oro vivo (`#F4BC55`) seguendo `charge_ratio`: è il
+  segnale primario del "quanto manca", il vino resta secondario. Un alone
+  luminoso attorno al vetro segnala lo stato Brilla — nessuno shader,
+  nessun nuovo asset: stessa tecnica di disegno procedurale già in uso per
+  l'anello di ricarica di `TouchAbilityButton` (PS-120/PS-122) e per la
+  cornice di `PixelArcadeMedallion`.
 - **Cast giocabile** ([characters.md](./characters.md), righe 111-124): gli
   otto profili (Zat, Bea, Aleo, Alea, Lollo, Migi, Marghe, Magno, con le
   rispettive Evil) seguono la direzione presentazionale approvata per il
@@ -34,6 +42,62 @@ del documento architetturale, non una lacuna di questo file.
   dichiaratamente ispirato ai tratti di una persona reale con consenso
   esplicito documentato oltre alla semplice reference. L'intero cast di
   sprite è stato rigenerato in un passaggio di identità unico il 28/08/2026.
+- **Bottoni secondari del pannello pausa** ([pause_overlay.tscn](../scenes/ui/pause_overlay.tscn)):
+  CAMBIA PERSONAGGIO, IMPOSTAZIONI ed ESCI condividono la stessa texture
+  nine-slice (`secondary_button_cta_base.png`), il cui canale rosso è ≈0 —
+  `modulate_color` può quindi solo scurire/schiarire lungo il blu esistente
+  (una rampa di *valore*), mai produrre un vero hue-shift. Quando più bottoni
+  condividono una nine-slice a canale rosso nullo, la differenziazione va
+  costruita su tre assi indipendenti, non su uno solo: luminosità
+  (`modulate_color`, PS-145/PS-147: CAMBIA PERSONAGGIO base senza modulate,
+  IMPOSTAZIONI chiaro con moltiplicatore `>1` per garantire uno schiarimento
+  percepibile a prescindere dal valore nativo della texture, ESCI il più
+  scuro dei tre con moltiplicatore `<1`), spaziatura di gruppo (uno
+  spaziatore doppio isola le azioni distruttive, come ESCI, da quelle
+  reversibili) e `font_color` come unico vero accento di tinta (il corallo
+  di ESCI, preso in prestito dalla famiglia cromatica di "GAME OVER" in
+  `end_screen.tscn` ma desaturato — non troppo, o si legge come rosa tenue
+  invece che come segnale d'allerta).
+  **Validazione obbligatoria sul rendering, non sui soli valori pianificati:**
+  la prima versione di questa rampa (PS-147, valori entro ±0.15-0.2 fra
+  gradini contigui) era corretta sulla carta ma indistinguibile a colpo
+  d'occhio nello screenshot renderizzato — il delta minimo percepibile su
+  questa texture, dentro la cornice scura del pannello, è risultato più
+  vicino a ±0.3-0.4. La revisione va sempre chiesta sull'artefatto finale
+  (`direttore-artistico` sullo screenshot in
+  `exports/ui-screenshots/07_pause_overlay.png`, non sui numeri nel
+  `.tscn`), prima di considerare il gate percettivo di una card chiuso.
+- **Ornamenti d'angolo delle carte upgrade**
+  ([manifest](../assets/art/ui/upgrade_card/ASSET-MANIFEST.md)): per gli usi a
+  clip, il medaglione/rivetto esiste come asset autonomo con alpha reale e
+  margini progettati per il box finale; non si ritaglia direttamente una
+  cornice intera opaca, perché il suo bezel incorporato non coincide col fondo
+  della carta. Un solo master non direzionale viene riusato sui quattro angoli
+  tramite `flip_h`/`flip_v`.
+- **Nine-slice di `pause_panel_frame.png` su box piccoli (PS-154)**: il
+  `texture_margin` va sempre impostato alla dimensione reale del motivo
+  dorato del corner nel file sorgente (`56` orizzontale, `52` verticale,
+  stessi valori di `pause_overlay.tscn`), mai ridotto per "adattarlo" a una
+  card più piccola — un margine più stretto non scala il motivo, lo tronca
+  (il motivo non parte da (0,0), vedi manifest di `ui/pause`). Godot scala
+  proporzionalmente i margini da solo quando il box è più stretto della somma
+  dei due margini: è quel comportamento nativo a fare il lavoro, non un
+  valore diverso a mano. Quando più card della stessa fascia condividono la
+  cornice a dimensioni diverse (roster del selettore personaggi:
+  selezionato più grande, vicini più piccoli), usare la stessa altezza per
+  tutte se i bordi devono restare allineati fra loro — un inset applicato
+  solo a una dimensione (es. larghezza) e non all'altra crea un
+  disallineamento sull'asse non scalato, invisibile con un bordo piatto ma
+  evidente con una cornice-asset.
+- **Gerarchia selezionato/non-selezionato via desaturazione**
+  (`CharacterSelectOverlay`, PS-154): quando più elementi condividono lo
+  stesso trattamento visivo (stessa cornice-asset) e la gerarchia va
+  comunicata altrimenti, si usa un `ShaderMaterial` per nodo
+  (`assets/shaders/desaturate.gdshader`, parametro `saturation` animato in
+  tween) applicato al bottone/`Control` intero — non un `modulate` grigio
+  (che attenua senza desaturare davvero) né una dimensione diversa della
+  cornice. Il materiale è per-nodo (non condiviso) proprio per poter animare
+  ogni card in transizione indipendentemente dalle altre.
 - **Stile pixel-art**: confermato in modo ricorrente nei manifest di
   cartella, per esempio `assets/art/arena/ASSET-MANIFEST.md` ("caricatured
   pixel-art arcade... polished hand-crafted pixel art, restrained chunky
@@ -66,11 +130,10 @@ del documento architetturale, non una lacuna di questo file.
 | `ui/welcome` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/welcome/ASSET-MANIFEST.md) | Fondale welcome B18O |
 | `ui/barb_reward` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/barb_reward/ASSET-MANIFEST.md) | Caricatura Barb (PS-036), da foto personale non conservata nel repo |
 | `ui/pause` | 2 | [ASSET-MANIFEST.md](../assets/art/ui/pause/ASSET-MANIFEST.md) | Cornice riusata da pausa, cambio personaggio, tutorial, terminale, intro Boss |
+| `ui/upgrade_card` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/upgrade_card/ASSET-MANIFEST.md) | Rivetto d'angolo PS-152: master, copia review e derivato runtime |
 | `ui/boss` | 4 | [ASSET-MANIFEST.md](../assets/art/ui/boss/ASSET-MANIFEST.md) | Plancia CTA "AFFRONTA" e cornice Boss Intro PS-102 (in attesa di wiring PS-103) |
 | `pickups` | 2 | [ASSET-MANIFEST.md](../assets/art/pickups/ASSET-MANIFEST.md) | Coscia di piccione, pickup cura |
 | `branding` | 3 | [ASSET-MANIFEST.md](../assets/art/branding/ASSET-MANIFEST.md) | Icona app e adaptive icon Android |
-| `third_party/eldiran_rpg_characters` | 2 | `LICENSE.md` | Sprite RPG 32×32 CC0, vedi nota sotto |
-| `third_party/pinhead_inline_skate` | 1 | `LICENSE.md` | Provenienza storica, sostituito da `icons/abilities/generated/powerslide.png` |
 
 ### Sprite di gameplay del cast (PS-116)
 
@@ -125,9 +188,13 @@ PS-051 ha dato identità individuale alla Boss Intro degli Evil. PS-052 ha
 prodotto e integrato gli asset definitivi: ogni `data/friends/*.tres`
 valorizza `evil_portrait` con il busto dedicato del personaggio
 (`assets/art/characters/<id>/generated/evil_portrait.png`), distinto dal
-precedente ritaglio condiviso del foglio CC0 di terze parti
-(`assets/art/third_party/eldiran_rpg_characters/…png`), che resta solo come
-`evil_portrait_placeholder` di fallback. Ogni `data/bosses/signatures/*.tres`
+precedente ritaglio condiviso del foglio CC0 di terze parti. Il fallback
+`evil_portrait_placeholder` (e la dipendenza da
+`assets/art/third_party/eldiran_rpg_characters/`) sono stati rimossi: gli
+otto profili hanno `evil_portrait` e `portraits_approved = true` da PS-052,
+quindi il fallback non veniva più esercitato a runtime. `FriendDefinition.
+get_public_evil_portrait()` ora ritorna `evil_portrait` (o `null` se non
+approvato), senza placeholder. Ogni `data/bosses/signatures/*.tres`
 espone inoltre un'icona dedicata
 (`assets/art/icons/signatures/generated/evil_<signature_id>.png`) tramite il
 campo `BossSignatureDefinition.icon`. I sedici segnaposto `fake_*.png`
@@ -161,13 +228,27 @@ musica di run, uno per quella di menu, uno per la traccia Boss (PS-073) e uno
 per la musica dedicata di fine run (PS-080), persistenza volume/mute su
 `user://audio_settings.cfg`.
 
-15 cue dichiarati: `SHOT`, `HIT`, `PLAYER_DAMAGE`, `PICKUP`, `LEVEL_UP`,
-`ABILITY_ACTIVATE`, `ABILITY_READY`, `BOSS_WARNING`, `BOSS_ATTACK`, `DODGE`,
-`UI_CONFIRM`, `PAUSE`, `RESUME`, `VICTORY`, `DEFEAT`.
-`has_complete_cue_set()` li verifica tutti e **15** (PS-072 ha chiuso
-`DODGE`, l'ultima mancanza dichiarata direttamente nel codice).
+17 cue dichiarati: `SHOT`, `HIT`, `PLAYER_DAMAGE`, `PICKUP`, `LEVEL_UP`,
+`ABILITY_ACTIVATE`, `ABILITY_READY`, `BOSS_WARNING`, `BOSS_ATTACK`,
+`BOSS_VICTORY`, `DODGE`, `UI_CONFIRM`, `UI_CLICK`, `PAUSE`, `RESUME`,
+`VICTORY`, `DEFEAT`. `has_complete_cue_set()` li verifica tutti e **17**
+(PS-136 ha aggiunto `BOSS_VICTORY`, una fanfara puntuale a ogni sconfitta di
+Boss — inclusa ogni ricorrenza nella stessa run — distinta dal cue `VICTORY`
+di fine run; PS-074 ha aggiunto `UI_CLICK`, il click generico dei bottoni UI
+che non avevano già un cue dedicato).
 
-File audio runtime: 14 SFX Kenney CC0
+PS-074 — `UI_CLICK`: ogni overlay/schermata con bottoni prima silenziosi
+(`PauseOverlay`, `CharacterSelectOverlay`, `WelcomeScreen`, `TutorialScreen`,
+`EndScreen`, `BossUI`) espone un segnale `ui_click_requested()`, emesso solo
+dai bottoni **senza** un cue già dedicato — mai da quelli che causano già
+`UI_CONFIRM`/`PAUSE`/`RESUME` (es. Gioca e Tutorial della welcome, o
+"Successivo" quando diventa "GIOCA" sull'ultima pagina del tutorial, restano
+sul solo `UI_CONFIRM` esistente). `GameAudio._on_ui_click_requested()` è
+l'unico handler condiviso, con un debounce di 80ms sullo stesso cue per
+evitare accumulo su pressioni ravvicinate (es. Precedente/Successivo tenuti
+premuti).
+
+File audio runtime: 16 SFX Kenney CC0
 ([kenney_b18/ASSET-MANIFEST.md](../assets/audio/third_party/kenney_b18/ASSET-MANIFEST.md))
 mappati 1:1 sui cue di combattimento/interfaccia; `DODGE` usa
 `dodge.ogg`, un take del CC0 Swishes Sound Pack di artisticdude
@@ -195,6 +276,34 @@ dell'intro Boss (`boss_intro_started`) alla sconfitta (`boss_defeated`) la
 musica di run e quella Boss si scambiano con un crossfade di
 `PresentationTimings.BOSS_MUSIC_CROSSFADE_SECONDS` (1.5s) sul bus `Music`; la
 musica di run riprende dalla posizione lasciata, non da capo.
+
+Ducking nei momenti chiave (PS-056): il countdown dell'avvertimento Boss
+(`GameDirector.BossWarningPhase.COUNTDOWN`, non l'`APPROACHING` più
+anticipato), `LEVEL_UP` e `BARB_REWARD` abbassano la musica di run di
+`GameAudio.MUSIC_DUCK_OFFSET_DB` (-8 dB) invece di fermarla — a differenza di
+`MANUAL_PAUSE`, che resta un'interruzione netta. La discesa
+(`PresentationTimings.MUSIC_DUCK_DOWN_SECONDS`, 0.25s) è più rapida della
+risalita (`MUSIC_DUCK_UP_SECONDS`, 0.6s); più momenti sovrapposti restano a
+un solo livello, non si sommano, e la musica risale solo quando l'ultimo si
+chiude. Il countdown Boss riusa il cue `BOSS_WARNING` come stinger; la
+ricompensa Barb riusa `LEVEL_UP`, che nel level-up stesso è già lo stinger
+esistente.
+
+Accelerazione late-run (PS-081): fra `late_run_curve_start_seconds` e
+`late_run_curve_full_seconds` (le stesse soglie della curva di difficoltà,
+`EnemySpawnProfile`, `docs/systems-difficulty.md`) la musica di run accelera
+gradualmente fino a `pitch_scale = 1.0 + GameAudio.MUSIC_LATE_RUN_MAX_PITCH_SCALE_OFFSET`
+(+12%, tarabile dopo l'ascolto reale), restando a quel valore oltre la
+soglia finale. Nessun nuovo asset: stessa traccia, solo velocità di
+riproduzione (e quindi anche intonazione) più alta — non un secondo layer da
+sincronizzare in fase. La traccia Boss dedicata (PS-073) non è mai toccata.
+Il valore deriva in continuo dal tempo di run corrente
+(`RunController.run_time_changed`), quindi resta fermo da solo nei modal che
+sospendono il clock di run (`LEVEL_UP`, `BARB_REWARD`, `MANUAL_PAUSE`,
+`BOSS_INTRO`) e riprende dal punto corretto senza stato salvato a parte;
+resta indipendente dal ducking di PS-056, che agisce sul volume dello stesso
+player.
+
 `docs/credits.md` riepiloga le attribuzioni.
 
 ## `PerformanceProfile`

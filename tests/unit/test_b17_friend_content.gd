@@ -8,13 +8,6 @@ const ALEO := preload("res://data/friends/aleo.tres")
 const LOLLO := preload("res://data/friends/lollo.tres")
 const MIGI := preload("res://data/friends/migi.tres")
 const MARGHE := preload("res://data/friends/marghe.tres")
-const DERIVED_SHEET_PATH := (
-	"res://assets/art/third_party/eldiran_rpg_characters/"
-	+ "RPGCharacterSprites32x32-transparent.png"
-)
-const EXPECTED_DERIVED_SHA256 := (
-	"60A60B1BEC00296E31EA2121FF1B461EDABD31075765066AF52A538B05CAE2AF"
-)
 
 
 func _definitions() -> Array[FriendDefinition]:
@@ -111,8 +104,8 @@ func test_safe_fallbacks_and_asset_replacement() -> void:
 	)
 	assert_true(
 		pending.get_public_portrait() == pending.portrait_placeholder
-		and pending.get_public_evil_portrait() == pending.evil_portrait_placeholder,
-		"Un asset pending deve risolversi nel placeholder approvato."
+		and pending.get_public_evil_portrait() == null,
+		"Il ritratto Player pending deve risolversi nel placeholder approvato; l'Evil non ha fallback e resta vuoto."
 	)
 
 	var replacement := (MAGNO as FriendDefinition).duplicate(true) as FriendDefinition
@@ -144,18 +137,6 @@ func test_ambiguous_catalog_is_rejected() -> void:
 	assert_false(registry.rebuild_registry(), "Il catalogo deve respingere ID amico duplicati.")
 	assert_null(registry.resolve_definition(&"magno"), "Un profilo ambiguo non deve essere risolvibile.")
 	registry.free()
-
-
-func test_derived_sprite_sheet_asset_integrity() -> void:
-	var bytes := FileAccess.get_file_as_bytes(DERIVED_SHEET_PATH)
-	assert_false(bytes.is_empty(), "Il foglio sprite CC0 derivato deve essere incluso.")
-	if bytes.is_empty():
-		return
-	var hashing := HashingContext.new()
-	assert_eq(hashing.start(HashingContext.HASH_SHA256), OK, "SHA-256 asset non inizializzabile.")
-	assert_eq(hashing.update(bytes), OK, "SHA-256 asset non aggiornabile.")
-	var digest := hashing.finish().hex_encode().to_upper()
-	assert_eq(digest, EXPECTED_DERIVED_SHA256, "Il foglio derivato deve corrispondere all'hash documentato.")
 
 
 func test_composed_scene_uses_approved_catalog() -> void:

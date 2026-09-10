@@ -6,6 +6,8 @@ extends Control
 ## Piccione Malvagio non ha Signature e resta sul trattamento neutro.
 
 signal intro_continue_requested()
+## PS-074: bottone Continua della Boss intro.
+signal ui_click_requested()
 
 const DEFAULT_TITLE_COLOR := Color(0.92, 0.76, 1, 1)
 const DEFAULT_PANEL_MODULATE := Color(1, 1, 1, 1)
@@ -221,6 +223,10 @@ func get_intro_frame_modulate() -> Color:
 	return _base_panel_style.modulate_color if _base_panel_style != null else DEFAULT_PANEL_MODULATE
 
 
+func get_continue_button() -> Button:
+	return _continue_button if is_instance_valid(_continue_button) else null
+
+
 func get_continue_button_style(state_name: StringName) -> StyleBox:
 	return _continue_button.get_theme_stylebox(state_name) if is_instance_valid(_continue_button) else null
 
@@ -228,6 +234,7 @@ func get_continue_button_style(state_name: StringName) -> StyleBox:
 func _on_continue_button_pressed() -> void:
 	if not is_accepting_continue():
 		return
+	ui_click_requested.emit()
 	_accepting_continue = false
 	_continue_button.disabled = true
 	intro_continue_requested.emit()

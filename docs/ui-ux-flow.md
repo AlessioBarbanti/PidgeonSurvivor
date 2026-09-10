@@ -14,7 +14,14 @@ orchestrate da
 (`scripts/ui/tutorial_screen.gd`), `CharacterSelectOverlay`
 (`scripts/ui/character_select_overlay.gd`), la HUD di run (`scripts/ui/hud.gd`,
 `GameHud`), `PauseOverlay` (`scripts/ui/pause_overlay.gd`) ed `EndScreen`
-(`scripts/ui/end_screen.gd`).
+(`scripts/ui/end_screen.gd`). `SettingsOverlay`
+(`scripts/ui/settings_overlay.gd`, PS-137) è un'istanza unica separata,
+apribile dal tasto ingranaggio della welcome e dal bottone "IMPOSTAZIONI"
+della pausa (PS-143, terzo elemento della stessa colonna di
+RIPRENDI/CAMBIA PERSONAGGIO/ESCI — PS-147 aggiunge ESCI in coda — non più
+un'icona fluttuante fuori colonna): non fa parte della sequenza sopra,
+resta un layer puramente visivo sopra lo stato attivo (`BOOT` o
+`MANUAL_PAUSE`).
 
 Transizioni (tutte in `movement_slice.gd`):
 
@@ -45,15 +52,17 @@ finché il giocatore non preme "GIOCA con `<Nome>`" nel selettore
 ([scripts/input/platform_lifecycle.gd:66-91](../scripts/input/platform_lifecycle.gd)),
 che smista in base allo stato di `RunController`:
 
-- `BOOT` → `_on_boot_back_requested` (`movement_slice.gd:1861-1869`): prima
+- `BOOT` → `_on_boot_back_requested` (`movement_slice.gd:2216`): prima
   `TutorialScreen.handle_back_requested()` se visibile, poi
   `CharacterSelectOverlay` (torna a Welcome), poi
-  `WelcomeScreen.handle_back_requested()` (chiude solo il pannello
-  impostazioni se aperto).
+  `WelcomeScreen.handle_back_requested()` — che (PS-137) delega prima
+  all'overlay impostazioni condiviso se aperto (`SettingsOverlay.handle_back_requested()`),
+  altrimenti non ha più nulla da chiudere localmente.
 - `RUNNING` → apre la pausa (`request_manual_pause()`).
-- `MANUAL_PAUSE` → prima `PauseOverlay.handle_back_requested()` (chiude solo
-  la sotto-conferma "cambia personaggio" se visibile), altrimenti
-  `request_resume()`.
+- `MANUAL_PAUSE` → `PauseOverlay.handle_back_requested()`, che (PS-137)
+  controlla prima l'overlay impostazioni condiviso (se aperto lo chiude e
+  basta), poi la conferma condivisa (PS-147: usata sia da CAMBIA
+  PERSONAGGIO sia da ESCI) se visibile, altrimenti `request_resume()`.
 - **Ogni altro stato** (`LEVEL_UP`, `BOSS_INTRO`, `BARB_REWARD`, `VICTORY`,
   `DEFEAT`) → il Back sospende solo l'input e non fa altro (righe 88-90): è
   inerte durante questi modali, non può mai chiuderli né uscire dalla run.
@@ -61,6 +70,22 @@ che smista in base allo stato di `RunController`:
 L'esclusività dei modali è garantita a monte dall'enum di stato di
 `RunController`: essendo `_state` un singolo valore, `LEVEL_UP`,
 `BOSS_INTRO`, `BARB_REWARD` e `MANUAL_PAUSE` non possono mai coesistere.
+
+### Abbandono esplicito della run: pausa → ESCI → conferma → welcome (PS-147)
+
+Il pannello pausa ha un quarto bottone, "ESCI", che riusa la stessa
+conferma già introdotta per CAMBIA PERSONAGGIO
+(`PauseOverlay._confirmation_center`, titolo/riepilogo cambiati in base a
+quale bottone l'ha aperta invece di duplicare il pannello). A differenza di
+CAMBIA PERSONAGGIO (che porta a `_show_character_selection()`), confermare
+ESCI chiama `RunController.prepare_restart()` e poi
+`_show_welcome_screen()` (`movement_slice.gd:_on_exit_requested`): la run
+corrente viene abbandonata (seed e tempo azzerati) senza mostrare vittoria o
+sconfitta, e il gioco torna alla welcome, non alla selezione personaggio.
+Annullare la conferma non tocca lo stato `MANUAL_PAUSE` e riattiva tutti e
+quattro i bottoni della colonna. Non introduce un `RunState` dedicato: resta
+un uso di `prepare_restart()` identico a quello già in atto per CAMBIA
+PERSONAGGIO.
 
 ### Composizione del selettore personaggi
 
