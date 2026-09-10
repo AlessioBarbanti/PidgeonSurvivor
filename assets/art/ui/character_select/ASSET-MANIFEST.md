@@ -82,3 +82,31 @@ Constraints: no text, no letters, no numbers, no logo, no character, no icon oth
 | `assets/art/ui/character_select/character_select_cta_base.png` | Derivazione deterministica | `754x181` RGBA PNG | Bounds alpha con soglia `8`, padding `4`, scala `35%` nearest-neighbor tramite `tools/process-character-select-cta.ps1`; il testo dinamico non e incorporato | `03AA00A7C86264DDEEB4FE681C1F5268216B7602CFBF89BA7C35F723B0F7D43D` |
 | `assets/art/ui/character_select/hd/secondary_button_cta_source.png` | Fornito dal proprietario | `2172x724` RGBA PNG | Master originale, escluso da import ed export con `.gdignore` e preset; placca blu e oro senza testo | `753C48D69DE071E2640B7807C75C5994FD846D5B982B07A87BB46CD53A85DFD1` |
 | `assets/art/ui/character_select/secondary_button_cta_base.png` | Derivazione deterministica | `667x127` RGBA PNG | Bounds alpha con soglia `8`, padding `4`, scala `35%` nearest-neighbor tramite `tools/process-character-select-cta.ps1`; il testo dinamico non e incorporato | `ADECF80340F2808442B9CF3400EDD3283FADEA4603E7B610B569691DE6A48971` |
+
+## Base CTA arancione — proporzioni corrette (PS-155)
+
+L'11 settembre 2026 il proprietario ha rigenerato personalmente il master HD
+della placca arancione (`character_select_cta_source.png`, sostituito
+in-place; la versione precedente resta come `character_select_cta_source_OLD.png`,
+fuori da import/export) perche' i due grandi ornamenti a diamante ai lati
+comprimevano otticamente l'altezza percepita della placca, rendendo il
+pulsante "RIPRENDI" (arancione) visibilmente piu' alto del pulsante blu
+affiancato nel menu di pausa a parita' di `custom_minimum_size`. Origine:
+proprietario; licenza: Licenza del progetto.
+
+| Percorso | Dimensioni | Trasformazioni | SHA-256 |
+|---|---:|---|---|
+| `assets/art/ui/character_select/hd/character_select_cta_source.png` | `2172x724` RGBA PNG (stesso canvas, contenuto visibile piu' basso) | Master fornito dal proprietario, escluso da import/export con `.gdignore` | `A70B6AE208F373832D9C3F7098500E957C7709001F89A95A88B5D15F6ECA17C1` |
+| `assets/art/ui/character_select/character_select_cta_base.png` | `760x149` RGBA PNG (era `754x181`) | Bounds alpha soglia `8`, padding `4`, scala `35%` nearest-neighbor tramite `tools/process-character-select-cta.ps1` (stesso comando, nuovo master in input) | `D02E96381CC870C0BD0CDAB2294481B417FC6F597A9F545BCCA0255BD9132B13` |
+
+Aggiornati di conseguenza, nelle 5 scene che riusano questo derivato
+(`pause_overlay.tscn`, `welcome_screen.tscn`, `character_select_overlay.tscn`,
+`tutorial_screen.tscn`, `end_screen.tscn`): la regione `AtlasTexture` da
+`Rect2(0,0,754,181)` a `Rect2(0,0,760,149)`, e `texture_margin_top/bottom`
+scalato in proporzione (era `34`→`28` dove il CTA e' quello principale delle
+schermate welcome/selettore/tutorial, `24`→`20` dove e' quello piu' compatto
+di pausa/fine partita). In `pause_overlay.tscn`, dove il problema era piu'
+visibile, aggiunto anche un `content_margin_top`/`content_margin_bottom`
+esplicito (`26`/`14`, non piu' il default implicito allineato al
+`texture_margin`) per ricentrare il testo tutto-maiuscolo (senza discendenti)
+rispetto alla placca piu' bassa.

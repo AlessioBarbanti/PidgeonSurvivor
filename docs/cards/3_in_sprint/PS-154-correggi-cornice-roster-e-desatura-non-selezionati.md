@@ -3,7 +3,7 @@ id: PS-154
 titolo: Correggi la cornice del roster nel selettore personaggi e desatura i non selezionati
 tipo: fix
 area: ui
-stato: IN VERIFICA
+stato: IN CORSO
 priorita: media
 dipende_da: []
 origine:
@@ -183,6 +183,37 @@ Non toccare:
   (6→20px) e i padding icona `ROSTER_SELECTED_ICON_PADDING`/
   `ROSTER_PREVIEW_ICON_PADDING` (16/22→48/54px) cosi' il ritratto rende
   visibile l'anello della cornice invece di sovrapporlo.
+- **2026-09-11 — Riaperta dopo revisione screenshot: gli angoli a margine
+  pieno (56/52) risultavano sovradimensionati rispetto al piccolo slot
+  roster.** Il proprietario ha scelto esplicitamente un ritaglio nine-slice
+  più piccolo dello stesso motivo (non un derivato dedicato): `texture_margin`
+  di `_make_roster_card_style()` ridotto a `32`/`28`. `content_margin` e
+  `ROSTER_SELECTED_ICON_PADDING`/`ROSTER_PREVIEW_ICON_PADDING` scalati di
+  conseguenza (20→4, 48/54→28/32) per tenere il ritratto contenuto nel
+  ritaglio più piccolo.
+- **2026-09-11 — Ulteriore richiesta: assottigliare lo spessore visibile
+  della cornice a ~1/3, mantenendo invariate le dimensioni x/y dell'angolo.**
+  Il `texture_margin` (32/28, la dimensione strutturale del riquadro
+  d'angolo) non è la leva giusta per questo: è il padding dell'icona
+  (`ROSTER_SELECTED_ICON_PADDING`/`ROSTER_PREVIEW_ICON_PADDING`, che
+  controlla quanto il ritratto si estende verso il bordo) a determinare
+  quanto spessore di cornice resta visibile — un padding minore fa crescere
+  il ritratto, coprendo più cornice. Ridotti a `9`/`11` (da `28`/`32`) e
+  `content_margin` a `4` (da `20`) perché non diventi lui il vincolo
+  dominante. Verificato via screenshot reali (confronto prima/dopo
+  ravvicinato sulla card selezionata): spessore visibile ridotto, angoli
+  laterali invariati. **Il proprietario ha chiesto di lasciare la card
+  `IN CORSO` per ora e di non rieseguire la verifica automatica in questa
+  sessione**: Focused/Relevant/Full precedenti (righe sopra) restano relativi
+  allo stato *prima* di queste due ultime modifiche, non ancora
+  ri-verificato.
+- **2026-09-11 — Nota, senza chiudere la card:** il profilo `Full` rieseguito
+  per [PS-155](../4_to_test/PS-155-correggi-altezza-e-centratura-testo-cta-arancione.md)
+  (139/139 regressioni, nessun `SCRIPT ERROR`/`FATAL EXCEPTION`) copre anche
+  `scripts/ui/character_select_overlay.gd` nel suo stato attuale (margine
+  32/28, spessore cornice ridotto) e non ha rilevato regressioni. Lo stato
+  resta `IN CORSO` come richiesto dal proprietario: e' solo evidenza di
+  non-regressione raccolta di passaggio, non una chiusura della card.
 
 ## Documenti sincronizzati
 

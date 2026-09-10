@@ -1,15 +1,22 @@
 extends GutGameplayTest
 
 ## PS-154: verifica che tutte le card del roster (selezionata e non) usino la
-## stessa cornice-asset di `pause_panel_frame.png` con il margine corretto
-## (56/52, non piu' 22 — quel valore troncava il motivo dorato, vedi
-## Decisioni della card) e che la gerarchia selezionato/non-selezionato sia
-## comunicata da un `ShaderMaterial` di desaturazione per bottone, non da uno
-## `StyleBoxFlat` piatto ne' da un `modulate` grigio. La resa percettiva
-## finale (motivo non troncato a schermo, intensita' del grigio) resta un
-## controllo manuale, non automatizzabile in modo affidabile via smoke.
+## stessa cornice-asset di `pause_panel_frame.png` e che la gerarchia
+## selezionato/non-selezionato sia comunicata da un `ShaderMaterial` di
+## desaturazione per bottone, non da uno `StyleBoxFlat` piatto ne' da un
+## `modulate` grigio. Il margine nine-slice e' stato ridotto da 56/52 (il
+## margine reale dell'asset, corretto ma sovradimensionato per lo slot
+## compatto del roster) a 32/28 dopo revisione del proprietario sugli
+## screenshot reali: un ritaglio piu' piccolo dello stesso motivo, non un
+## nuovo asset dedicato — vedi Decisioni della card. Questo test verifica solo
+## che la soglia non regredisca al vecchio valore troncante (22); la resa
+## percettiva finale (motivo non troncato a schermo, intensita' del grigio)
+## resta un controllo manuale, non automatizzabile in modo affidabile via
+## smoke.
 
 const EXPECTED_FRAME_PATH := "res://assets/art/ui/pause/pause_panel_frame.png"
+const MIN_ACCEPTABLE_FRAME_MARGIN_LEFT := 28.0
+const MIN_ACCEPTABLE_FRAME_MARGIN_TOP := 24.0
 const FULL_SATURATION := 1.0
 const LOW_SATURATION_CEILING := 0.2
 
@@ -42,9 +49,10 @@ func test_ps154_all_roster_cards_share_the_correct_frame_asset() -> void:
 		if style == null:
 			continue
 		assert_true(
-			style.texture_margin_left >= 56.0 and style.texture_margin_top >= 52.0,
+			style.texture_margin_left >= MIN_ACCEPTABLE_FRAME_MARGIN_LEFT
+			and style.texture_margin_top >= MIN_ACCEPTABLE_FRAME_MARGIN_TOP,
 			(
-				"%s: il margine deve catturare il motivo dorato intero (>=56/52), non troncarlo come il vecchio 22."
+				"%s: il margine e' stato ridotto deliberatamente (32/28), ma non deve tornare al vecchio 22 troncante."
 				% friend_id
 			)
 		)

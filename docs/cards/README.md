@@ -255,4 +255,5 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-151](./4_to_test/PS-151-rimuovi-evil-portrait-placeholder-e-eldiran.md) | Rimuovi il fallback evil_portrait_placeholder e la dipendenza da eldiran_rpg_characters | chore | gameplay | IN VERIFICA | media | — |
 | [PS-152](./5_completed/PS-152-rivetto-angolo-carte-upgrade.md) | Genera il rivetto d'angolo isolato per le carte upgrade | art | arte | COMPLETATO | media | — |
 | [PS-153](./4_to_test/PS-153-rimuovi-badge-modalita-barb-e-ingrandisci-riga-redenzione.md) | Rimuovi il badge di modalità dalla ricompensa di Barb e ingrandisci la riga di redenzione | ux | ui | IN VERIFICA | bassa | — |
-| [PS-154](./4_to_test/PS-154-correggi-cornice-roster-e-desatura-non-selezionati.md) | Correggi la cornice del roster nel selettore personaggi e desatura i non selezionati | fix | ui | IN VERIFICA | media | — |
+| [PS-154](./3_in_sprint/PS-154-correggi-cornice-roster-e-desatura-non-selezionati.md) | Correggi la cornice del roster nel selettore personaggi e desatura i non selezionati | fix | ui | IN CORSO | media | — |
+| [PS-155](./4_to_test/PS-155-correggi-altezza-e-centratura-testo-cta-arancione.md) | Correggi altezza e centratura del testo sul CTA arancione | fix | ui | IN VERIFICA | alta | — |

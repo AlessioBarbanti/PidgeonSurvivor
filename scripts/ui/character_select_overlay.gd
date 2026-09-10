@@ -79,14 +79,18 @@ const ROSTER_CARD_GAP := 6.0
 ## restano allineati, la larghezza resta l'unico residuo di differenza
 ## dimensionale fra selezionato e preview.
 const ROSTER_PREVIEW_INSET := Vector2(10.0, 0.0)
-## PS-154: la cornice-asset ora e' su ogni card (non solo la selezionata) con
-## angoli molto piu' grandi (margine 56/52 contro il vecchio 22, vedi
-## `_make_roster_card_style`): un padding di 16-22px lasciava il ritratto
-## quasi a filo del bordo, sopra gli angoli dorati invece che contenuto
-## dentro la cornice. Aumentato perche' il ritratto resti chiaramente dentro
-## l'anello della cornice, non sovrapposto agli angoli.
-const ROSTER_SELECTED_ICON_PADDING := 48.0
-const ROSTER_PREVIEW_ICON_PADDING := 54.0
+## PS-154: la cornice-asset e' su ogni card (non solo la selezionata), col
+## ritaglio nine-slice ridotto a 32/28 (vedi `_make_roster_card_style`) per
+## non sovradimensionare l'angolo dorato rispetto al piccolo slot roster.
+## Il padding qui sotto non tocca quel ritaglio (le dimensioni x/y del
+## riquadro d'angolo restano quelle): controlla solo quanto il ritratto si
+## estende sopra la cornice, cioe' quanto spessore del bordo dorato resta
+## visibile. Un padding piu' piccolo fa crescere il ritratto verso il bordo,
+## coprendo piu' cornice e lasciandone visibile solo una fetta sottile —
+## richiesto esplicitamente dal proprietario (~1/3 dello spessore precedente)
+## dopo revisione degli screenshot reali.
+const ROSTER_SELECTED_ICON_PADDING := 9.0
+const ROSTER_PREVIEW_ICON_PADDING := 11.0
 const ROSTER_MIN_ICON_WIDTH := 24
 ## PS-154: la gerarchia selezionato/non-selezionato la comunica la
 ## desaturazione, non piu' un `modulate` grigio-azzurro ne' l'assenza della
@@ -776,26 +780,27 @@ func _build_card_styles() -> void:
 	_preview_focus_style = _make_roster_card_style(Color(1.0, 0.96, 0.78, 1.0))
 
 
-## Stessa cornice della pausa: margini identici a quelli di
-## `pause_overlay.tscn` (`56`/`52`) cosi' il ritaglio nine-slice cattura il
-## motivo dorato intero invece di troncarlo (era `22`, che tagliava via quasi
-## tutto il rivetto — vedi Decisioni PS-154). Su una card piu' stretta della
-## somma dei due margini, Godot scala i margini proporzionalmente da solo:
-## non serve un valore diverso per le card piu' piccole del roster.
+## Stessa texture della pausa (`pause_panel_frame.png`), ma con un ritaglio
+## nine-slice piu' piccolo del vero margine dell'asset (`56`/`52`, quello di
+## `pause_overlay.tscn`): a quel margine pieno il rivetto d'angolo risultava
+## sovradimensionato rispetto allo slot compatto del roster (PS-154). Un
+## margine minore ritaglia solo la porzione interna del motivo invece di
+## scalare l'intero rivetto — compromesso esplicitamente scelto dal
+## proprietario rispetto a generare un derivato dedicato piu' piccolo.
 func _make_roster_card_style(tint: Color) -> StyleBoxTexture:
 	var style := StyleBoxTexture.new()
 	style.texture = SELECTED_CARD_FRAME
-	style.texture_margin_left = 56.0
-	style.texture_margin_top = 52.0
-	style.texture_margin_right = 56.0
-	style.texture_margin_bottom = 52.0
-	# Il ritratto deve restare dentro l'anello della cornice, non sopra gli
-	# angoli dorati: un content_margin piccolo (era 6) lasciava il bottone
-	# libero di disegnare l'icona fin quasi al bordo fisico della card.
-	style.content_margin_left = 20.0
-	style.content_margin_top = 20.0
-	style.content_margin_right = 20.0
-	style.content_margin_bottom = 20.0
+	style.texture_margin_left = 32.0
+	style.texture_margin_top = 28.0
+	style.texture_margin_right = 32.0
+	style.texture_margin_bottom = 28.0
+	# Piccolo di proposito: e' ROSTER_*_ICON_PADDING sopra a decidere quanto
+	# spessore di cornice resta visibile, non questo margine — deve solo
+	# restare sotto quel valore per non diventare lui il vincolo dominante.
+	style.content_margin_left = 4.0
+	style.content_margin_top = 4.0
+	style.content_margin_right = 4.0
+	style.content_margin_bottom = 4.0
 	style.modulate_color = tint
 	return style
 
