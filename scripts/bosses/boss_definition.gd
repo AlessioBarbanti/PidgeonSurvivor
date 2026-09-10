@@ -78,6 +78,10 @@ enum VisualKind {
 @export_group("Visual")
 @export var visual_kind := VisualKind.SPECIAL_PIGEON
 @export var portrait: Texture2D
+## PS-148: texture mostrata sul campo dal Boss baseline (non-Evil). Distinta
+## da `portrait`, riservato alla Boss intro: prima di PS-129 i due usi
+## condividevano lo stesso campo per coincidenza, non per contratto.
+@export var sprite: Texture2D
 @export var sprite_modulate := Color.WHITE
 @export var body_color := Color(0.55, 0.17, 0.92, 1.0)
 @export var outline_color := Color(0.08, 0.015, 0.16, 1.0)
@@ -107,7 +111,7 @@ func get_safe_portrait() -> Texture2D:
 func get_visual_texture() -> Texture2D:
 	if is_evil_variant() and friend_profile != null and friend_profile.is_valid():
 		return friend_profile.get_gameplay_idle_right()
-	return portrait
+	return sprite
 
 
 func is_evil_variant() -> bool:

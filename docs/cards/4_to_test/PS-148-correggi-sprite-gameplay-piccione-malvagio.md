@@ -3,7 +3,7 @@ id: PS-148
 titolo: Correggi lo sprite di gameplay del Piccione Malvagio che mostra il ritratto
 tipo: fix
 area: gameplay
-stato: PRONTO
+stato: IN VERIFICA
 priorita: alta
 dipende_da: []
 origine:
@@ -46,21 +46,24 @@ PS-128/PS-129, invariato.
 
 ## Criteri di accettazione
 
-- [ ] `BossDefinition` espone un campo `Texture2D` dedicato allo sprite di
+- [x] `BossDefinition` espone un campo `Texture2D` dedicato allo sprite di
       gameplay, distinto da `portrait`.
-- [ ] `data/bosses/first_boss.tres` valorizza quel campo con l'`AtlasTexture`
+- [x] `data/bosses/first_boss.tres` valorizza quel campo con l'`AtlasTexture`
       preesistente (`region = Rect2(0, 0, 48, 48)` su
       `assets/art/enemies/pigeons/pigeon_special.png`), la stessa in uso
       prima di PS-129.
-- [ ] `BossDefinition.get_visual_texture()` per un Boss con
+- [x] `BossDefinition.get_visual_texture()` per un Boss con
       `visual_kind != EVIL_FRIEND` ritorna il nuovo campo, non `portrait`;
       il ramo Evil (`friend_profile.get_gameplay_idle_right()`) resta
-      invariato.
-- [ ] `BossDefinition.get_safe_portrait()` e la Boss intro continuano a
+      invariato — verificato da
+      `test_ps148_boss_baseline_gameplay_sprite.gd`.
+- [x] `BossDefinition.get_safe_portrait()` e la Boss intro continuano a
       risolvere `portrait` (il busto 256×256): nessuna regressione su
-      `tests/unit/test_ps051_boss_intro_identity.gd`.
-- [ ] HP, danno, velocità, pattern, colori e ogni altro dato del Boss
-      baseline restano invariati.
+      `tests/unit/test_ps051_boss_intro_identity.gd` (profilo `Relevant`,
+      14/14 regressioni verdi).
+- [x] HP, danno, velocità, pattern, colori e ogni altro dato del Boss
+      baseline restano invariati: nessun campo dati toccato in
+      `first_boss.tres` oltre a `sprite`.
 
 ## Ambito
 
@@ -80,11 +83,21 @@ Non toccare:
 
 ## Verifica
 
-- Smoke: nuova asserzione in `tests/unit/test_ps051_boss_intro_identity.gd`
-  (o test dedicato `test_ps148_boss_baseline_gameplay_sprite.gd`) → verifica
-  che `get_visual_texture()` del Boss baseline non risolva
-  `get_safe_portrait()`/il busto 256×256, ma la texture di gameplay attesa.
-- Profilo minimo prima della chiusura: `Relevant`.
+- Smoke: nuovo `tests/unit/test_ps148_boss_baseline_gameplay_sprite.gd` →
+  marker `PS148_BASELINE_GAMEPLAY_SPRITE_SMOKE_OK`; verifica che
+  `get_visual_texture()`/il nodo `BossSprite` del baseline risolvano
+  `definition.sprite` e non `get_safe_portrait()`, e che il ramo Evil resti
+  sullo sprite idle del friend. Registrato in
+  `tools/milestone-test-map.json` sotto `scripts/bosses/*`/`data/bosses/*`.
+- Focused: `1/1` file, 2 test, 0 failure, nessun `SCRIPT ERROR`/
+  `FATAL EXCEPTION`.
+- Relevant: `1/1` focused, `14/14` regressioni (incluso
+  `test_ps051_boss_intro_identity.gd`), 15/15 step, nessun `SCRIPT ERROR`/
+  `FATAL EXCEPTION`.
+- Full: `1/1` focused, `136/136` regressioni (425 asserzioni, 0 fallite),
+  toolchain PASS, 138/138 step, nessun `SCRIPT ERROR`/`FATAL EXCEPTION` nei
+  log. `first_boss.tres` viene caricato ed esercitato da tutta la suite Boss
+  senza errori di parsing o risoluzione risorse.
 
 ## Gate manuali
 
@@ -100,6 +113,14 @@ Non toccare:
 - **2026-09-10 — Regressione di PS-129, non nuova produzione artistica.**
   Segnalato dal proprietario in game. Nessun nuovo asset richiesto: fix di
   wiring che ripristina un riferimento già esistente.
+- **2026-09-10 — Automatici verdi, gate manuali lasciati aperti per
+  onestà.** Il profilo `Full` (toolchain + 136/136 regressioni via GUT, che
+  carica ed esercita `first_boss.tres` dentro il motore Godot reale) dà alta
+  confidenza che il file `.tres` sia corretto e privo di errori di
+  risoluzione risorse, ma non equivale a un export/avvio Windows reale né a
+  un'ispezione statica dell'APK: quei gate, insieme al percorso fisico
+  Pixel 9 e al confronto percettivo del proprietario, restano non eseguiti
+  e quindi non spuntati.
 
 ## Documenti sincronizzati
 

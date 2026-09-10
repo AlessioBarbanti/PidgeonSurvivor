@@ -249,6 +249,6 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-145](./4_to_test/PS-145-distingui-e-distanzia-bottoni-secondari-pausa.md) | Distingui e distanzia CAMBIA PERSONAGGIO da IMPOSTAZIONI nel pannello pausa | ux | ui | IN VERIFICA | media | PS-142, PS-143 |
 | [PS-146](./4_to_test/PS-146-barre-hp-xp-sospese-senza-doppio-bordo.md) | Rendi le barre HP/XP "sospese" e rimuovi il doppio bordo | ux | ui | IN VERIFICA | media | PS-140 |
 | [PS-147](./4_to_test/PS-147-aggiungi-bottone-esci-pannello-pausa.md) | Aggiungi bottone ESCI al pannello pausa | feat | ui | IN VERIFICA | media | PS-145 |
-| [PS-148](./2_to_do/PS-148-correggi-sprite-gameplay-piccione-malvagio.md) | Correggi lo sprite di gameplay del Piccione Malvagio che mostra il ritratto | fix | gameplay | PRONTO | alta | — |
-| [PS-149](./2_to_do/PS-149-genera-icona-passiva-alea-bottiglia-vino.md) | Genera la nuova icona della passiva di Alea — bottiglia di vino in movimento | art | arte | PRONTO | media | — |
-| [PS-150](./2_to_do/PS-150-integra-icona-passiva-alea-bottiglia-vino.md) | Integra la nuova icona della passiva di Alea al posto dell'aquila | chore | arte | BLOCCATO | media | PS-149 |
+| [PS-148](./4_to_test/PS-148-correggi-sprite-gameplay-piccione-malvagio.md) | Correggi lo sprite di gameplay del Piccione Malvagio che mostra il ritratto | fix | gameplay | IN VERIFICA | alta | — |
+| [PS-149](./4_to_test/PS-149-genera-icona-passiva-alea-calice-vino.md) | Genera la nuova icona della passiva di Alea — calice di vino brilla | art | arte | IN VERIFICA | media | — |
+| [PS-150](./2_to_do/PS-150-integra-icona-passiva-alea-calice-vino.md) | Integra la nuova icona della passiva di Alea al posto dell'aquila | chore | arte | BLOCCATO | media | PS-149 |
