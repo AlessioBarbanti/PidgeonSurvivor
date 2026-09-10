@@ -326,15 +326,18 @@
       "patterns": [
         "scripts/ui/barb_reward_overlay.gd",
         "scripts/ui/upgrade_card.gd",
+        "scenes/ui/upgrade_card.tscn",
         "scenes/ui/barb_reward_overlay.tscn",
-        "assets/art/ui/barb_reward/*"
+        "assets/art/ui/barb_reward/*",
+        "assets/art/ui/upgrade_card/*"
       ],
       "smokes": [
         "tests/unit/test_ps036_barb_reward_visual_identity.gd",
         "tests/unit/test_ps046_level_up_modal_isolation.gd",
         "tests/unit/test_ps047_upgrade_card_hierarchy.gd",
         "tests/unit/test_ps059_upgrade_modal_contrast.gd",
-        "tests/unit/test_ps101_evil_hunger_narrative.gd"
+        "tests/unit/test_ps101_evil_hunger_narrative.gd",
+        "tests/unit/test_ps139_upgrade_card_frame.gd"
       ]
     },
     {

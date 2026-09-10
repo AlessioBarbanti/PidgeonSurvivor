@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/upgrade_card.gd" id="1_card"]
+[ext_resource type="Texture2D" path="res://assets/art/ui/upgrade_card/upgrade_card_corner.png" id="2_corner"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_normal"]
 bg_color = Color(0.11, 0.16, 0.22, 0.98)
@@ -8,11 +9,11 @@ border_width_left = 3
 border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
-border_color = Color(0.19, 0.48, 0.68, 0.9)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
+border_color = Color(0.32, 0.56, 0.74, 0.92)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pressed"]
 bg_color = Color(0.16, 0.22, 0.3, 1)
@@ -21,10 +22,10 @@ border_width_top = 4
 border_width_right = 4
 border_width_bottom = 4
 border_color = Color(1, 0.82, 0.28, 1)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_focus"]
 draw_center = false
@@ -33,10 +34,10 @@ border_width_top = 5
 border_width_right = 5
 border_width_bottom = 5
 border_color = Color(1, 0.84, 0.25, 1)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_disabled"]
 bg_color = Color(0.075, 0.105, 0.14, 0.96)
@@ -45,10 +46,10 @@ border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
 border_color = Color(0.18, 0.25, 0.32, 0.8)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_meta_panel"]
 bg_color = Color(0.055, 0.09, 0.145, 0.85)
@@ -161,3 +162,67 @@ theme_type_variation = &"BodyM"
 text = "RANGO 0  >  1"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="CornerTopLeft" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 0
+offset_right = 32.0
+offset_bottom = 30.0
+mouse_filter = 2
+texture = ExtResource("2_corner")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="CornerTopRight" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -32.0
+offset_right = 0.0
+offset_bottom = 30.0
+grow_horizontal = 0
+mouse_filter = 2
+texture = ExtResource("2_corner")
+flip_h = true
+expand_mode = 3
+stretch_mode = 5
+
+[node name="CornerBottomLeft" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+offset_right = 32.0
+offset_bottom = 0.0
+grow_vertical = 0
+mouse_filter = 2
+texture = ExtResource("2_corner")
+flip_v = true
+expand_mode = 3
+stretch_mode = 5
+
+[node name="CornerBottomRight" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -32.0
+offset_top = -30.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+texture = ExtResource("2_corner")
+flip_h = true
+flip_v = true
+expand_mode = 3
+stretch_mode = 5
