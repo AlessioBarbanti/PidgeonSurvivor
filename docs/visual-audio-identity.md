@@ -74,6 +74,30 @@ del documento architetturale, non una lacuna di questo file.
   cornice intera opaca, perché il suo bezel incorporato non coincide col fondo
   della carta. Un solo master non direzionale viene riusato sui quattro angoli
   tramite `flip_h`/`flip_v`.
+- **Nine-slice di `pause_panel_frame.png` su box piccoli (PS-154)**: il
+  `texture_margin` va sempre impostato alla dimensione reale del motivo
+  dorato del corner nel file sorgente (`56` orizzontale, `52` verticale,
+  stessi valori di `pause_overlay.tscn`), mai ridotto per "adattarlo" a una
+  card più piccola — un margine più stretto non scala il motivo, lo tronca
+  (il motivo non parte da (0,0), vedi manifest di `ui/pause`). Godot scala
+  proporzionalmente i margini da solo quando il box è più stretto della somma
+  dei due margini: è quel comportamento nativo a fare il lavoro, non un
+  valore diverso a mano. Quando più card della stessa fascia condividono la
+  cornice a dimensioni diverse (roster del selettore personaggi:
+  selezionato più grande, vicini più piccoli), usare la stessa altezza per
+  tutte se i bordi devono restare allineati fra loro — un inset applicato
+  solo a una dimensione (es. larghezza) e non all'altra crea un
+  disallineamento sull'asse non scalato, invisibile con un bordo piatto ma
+  evidente con una cornice-asset.
+- **Gerarchia selezionato/non-selezionato via desaturazione**
+  (`CharacterSelectOverlay`, PS-154): quando più elementi condividono lo
+  stesso trattamento visivo (stessa cornice-asset) e la gerarchia va
+  comunicata altrimenti, si usa un `ShaderMaterial` per nodo
+  (`assets/shaders/desaturate.gdshader`, parametro `saturation` animato in
+  tween) applicato al bottone/`Control` intero — non un `modulate` grigio
+  (che attenua senza desaturare davvero) né una dimensione diversa della
+  cornice. Il materiale è per-nodo (non condiviso) proprio per poter animare
+  ogni card in transizione indipendentemente dalle altre.
 - **Stile pixel-art**: confermato in modo ricorrente nei manifest di
   cartella, per esempio `assets/art/arena/ASSET-MANIFEST.md` ("caricatured
   pixel-art arcade... polished hand-crafted pixel art, restrained chunky
