@@ -250,5 +250,6 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-146](./4_to_test/PS-146-barre-hp-xp-sospese-senza-doppio-bordo.md) | Rendi le barre HP/XP "sospese" e rimuovi il doppio bordo | ux | ui | IN VERIFICA | media | PS-140 |
 | [PS-147](./4_to_test/PS-147-aggiungi-bottone-esci-pannello-pausa.md) | Aggiungi bottone ESCI al pannello pausa | feat | ui | IN VERIFICA | media | PS-145 |
 | [PS-148](./4_to_test/PS-148-correggi-sprite-gameplay-piccione-malvagio.md) | Correggi lo sprite di gameplay del Piccione Malvagio che mostra il ritratto | fix | gameplay | IN VERIFICA | alta | — |
-| [PS-149](./4_to_test/PS-149-genera-icona-passiva-alea-calice-vino.md) | Genera la nuova icona della passiva di Alea — calice di vino brilla | art | arte | IN VERIFICA | media | — |
-| [PS-150](./2_to_do/PS-150-integra-icona-passiva-alea-calice-vino.md) | Integra la nuova icona della passiva di Alea al posto dell'aquila | chore | arte | BLOCCATO | media | PS-149 |
+| [PS-149](./5_completed/PS-149-genera-icona-passiva-alea-calice-vino.md) | Genera la nuova icona della passiva di Alea — calice di vino brilla | art | arte | COMPLETATO | media | — |
+| [PS-150](./4_to_test/PS-150-integra-icona-passiva-alea-calice-vino.md) | Integra la nuova icona della passiva di Alea al posto dell'aquila | chore | arte | IN VERIFICA | media | PS-149 |
+| [PS-151](./4_to_test/PS-151-rimuovi-evil-portrait-placeholder-e-eldiran.md) | Rimuovi il fallback evil_portrait_placeholder e la dipendenza da eldiran_rpg_characters | chore | gameplay | IN VERIFICA | media | — |

@@ -102,8 +102,6 @@ del documento architetturale, non una lacuna di questo file.
 | `ui/boss` | 4 | [ASSET-MANIFEST.md](../assets/art/ui/boss/ASSET-MANIFEST.md) | Plancia CTA "AFFRONTA" e cornice Boss Intro PS-102 (in attesa di wiring PS-103) |
 | `pickups` | 2 | [ASSET-MANIFEST.md](../assets/art/pickups/ASSET-MANIFEST.md) | Coscia di piccione, pickup cura |
 | `branding` | 3 | [ASSET-MANIFEST.md](../assets/art/branding/ASSET-MANIFEST.md) | Icona app e adaptive icon Android |
-| `third_party/eldiran_rpg_characters` | 2 | `LICENSE.md` | Sprite RPG 32×32 CC0, vedi nota sotto |
-| `third_party/pinhead_inline_skate` | 1 | `LICENSE.md` | Provenienza storica, sostituito da `icons/abilities/generated/powerslide.png` |
 
 ### Sprite di gameplay del cast (PS-116)
 
@@ -158,9 +156,13 @@ PS-051 ha dato identità individuale alla Boss Intro degli Evil. PS-052 ha
 prodotto e integrato gli asset definitivi: ogni `data/friends/*.tres`
 valorizza `evil_portrait` con il busto dedicato del personaggio
 (`assets/art/characters/<id>/generated/evil_portrait.png`), distinto dal
-precedente ritaglio condiviso del foglio CC0 di terze parti
-(`assets/art/third_party/eldiran_rpg_characters/…png`), che resta solo come
-`evil_portrait_placeholder` di fallback. Ogni `data/bosses/signatures/*.tres`
+precedente ritaglio condiviso del foglio CC0 di terze parti. Il fallback
+`evil_portrait_placeholder` (e la dipendenza da
+`assets/art/third_party/eldiran_rpg_characters/`) sono stati rimossi: gli
+otto profili hanno `evil_portrait` e `portraits_approved = true` da PS-052,
+quindi il fallback non veniva più esercitato a runtime. `FriendDefinition.
+get_public_evil_portrait()` ora ritorna `evil_portrait` (o `null` se non
+approvato), senza placeholder. Ogni `data/bosses/signatures/*.tres`
 espone inoltre un'icona dedicata
 (`assets/art/icons/signatures/generated/evil_<signature_id>.png`) tramite il
 campo `BossSignatureDefinition.icon`. I sedici segnaposto `fake_*.png`

@@ -1,16 +1,11 @@
-[gd_resource type="Resource" script_class="FriendDefinition" load_steps=12 format=3]
+[gd_resource type="Resource" script_class="FriendDefinition" load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/content/friend_definition.gd" id="1_definition"]
-[ext_resource type="Texture2D" path="res://assets/art/third_party/eldiran_rpg_characters/RPGCharacterSprites32x32-transparent.png" id="2_sheet"]
 [ext_resource type="Texture2D" path="res://assets/art/characters/migi/generated/sprite.png" id="3_gameplay"]
 [ext_resource type="Texture2D" path="res://assets/art/characters/migi/generated/carousel.png" id="4_selection"]
 [ext_resource type="Texture2D" path="res://assets/art/icons/passives/generated/migi_turtle_shell.png" id="5_passive"]
 [ext_resource type="Texture2D" path="res://assets/art/characters/migi/generated/evil_portrait.png" id="6_evil_portrait"]
 [ext_resource type="Texture2D" path="res://assets/art/characters/migi/generated/portrait.png" id="7_portrait"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_evil"]
-atlas = ExtResource("2_sheet")
-region = Rect2(32, 480, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gameplay_walk_a"]
 atlas = ExtResource("3_gameplay")
@@ -56,7 +51,6 @@ evil_display_name = "Evil Migi"
 portrait = ExtResource("7_portrait")
 evil_portrait = ExtResource("6_evil_portrait")
 portrait_placeholder = ExtResource("7_portrait")
-evil_portrait_placeholder = SubResource("AtlasTexture_evil")
 portrait_source = "PS-068, OpenAI ImageGen built-in, Licenza del progetto"
 portraits_are_placeholders = false
 selection_portrait = ExtResource("4_selection")

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cc7wd5jn1owgl"
-path="res://.godot/imported/inline_skate.svg-08543b0963962b00f0b950c246f0dd70.ctex"
+uid="uid://wtmqe2yvf0pe"
+path="res://.godot/imported/alea_two_fingers_and_go.png-a1b7235bf1a8c5b3de47746dec3e95ae.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/third_party/pinhead_inline_skate/inline_skate.svg"
-dest_files=["res://.godot/imported/inline_skate.svg-08543b0963962b00f0b950c246f0dd70.ctex"]
+source_file="res://assets/art/icons/passives/generated/alea_two_fingers_and_go.png"
+dest_files=["res://.godot/imported/alea_two_fingers_and_go.png-a1b7235bf1a8c5b3de47746dec3e95ae.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

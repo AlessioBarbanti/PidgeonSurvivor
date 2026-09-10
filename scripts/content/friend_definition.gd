@@ -81,7 +81,6 @@ const MAXIMUM_BASE_STAT_MULTIPLIER := 2.0
 @export var portrait: Texture2D
 @export var evil_portrait: Texture2D
 @export var portrait_placeholder: Texture2D
-@export var evil_portrait_placeholder: Texture2D
 @export var portrait_source := ""
 @export var portraits_are_placeholders := true
 @export var voice_clip: AudioStream
@@ -133,7 +132,6 @@ func is_valid() -> bool:
 		or safe_active_ability_description.strip_edges().is_empty()
 		or safe_evil_display_name.strip_edges().is_empty()
 		or portrait_placeholder == null
-		or evil_portrait_placeholder == null
 	):
 		return false
 
@@ -320,11 +318,7 @@ func get_public_passive_icon() -> Texture2D:
 
 
 func get_public_evil_portrait() -> Texture2D:
-	return (
-		evil_portrait
-		if portraits_approved and evil_portrait != null
-		else evil_portrait_placeholder
-	)
+	return evil_portrait if portraits_approved else null
 
 
 func get_public_voice_clip() -> AudioStream:
