@@ -66,12 +66,17 @@ sagoma/nine-slice e la stessa altezza target touch (64px).
 - [x] `SettingsButton` usa tre nuovi `StyleBoxTexture` dedicati (cloni di
       `StyleBoxTexture_secondary_normal/_hover/_pressed`, stessa
       `AtlasTexture_secondary_cta`, stessi `texture_margin_*`/
-      `expand_margin_*`) con `modulate_color`:
-      `normal = Color(0.72, 0.8, 0.92, 1)`,
-      `hover = Color(0.88, 0.94, 1.0, 1)`,
-      `pressed = Color(0.6, 0.68, 0.78, 1)`; `focus` riusa lo stesso
-      `StyleBoxTexture` dello stato `hover`, come già fanno gli altri
-      bottoni del pannello.
+      `expand_margin_*`) con `modulate_color`. **Valori rivisti dopo una
+      revisione `direttore-artistico` richiesta durante PS-147** (vedi
+      Decisioni di quella card): i valori iniziali qui sotto risultavano
+      indistinguibili da CAMBIA PERSONAGGIO nel render — attuali:
+      `normal = Color(1.15, 1.2, 1.3, 1)`,
+      `hover = Color(1.31, 1.34, 1.38, 1)`,
+      `pressed = Color(1.03, 1.08, 1.16, 1)` (un moltiplicatore `>1`, non
+      i `0.72/0.88/0.6` pianificati inizialmente, per garantire uno
+      schiarimento percepibile indipendente dal valore nativo della
+      texture); `focus` riusa lo stesso `StyleBoxTexture` dello stato
+      `hover`, come già fanno gli altri bottoni del pannello.
 - [x] `CAMBIA PERSONAGGIO` non cambia stile: continua a usare
       `StyleBoxTexture_secondary_normal/_hover/_pressed` senza `modulate_color`.
 - [x] A parità di viewport, l'altezza naturale del `VBox` (con la nuova
@@ -122,7 +127,10 @@ sagoma/nine-slice e la stessa altezza target touch (64px).
       tre bottoni) — nessun device collegato in questa sessione (`adb
       devices` vuoto); gate lasciato aperto, non blocca l'implementazione.
 - [x] Controllo percettivo richiesto: sì — confronto screenshot fornito dal
-      proprietario prima/dopo
+      proprietario prima/dopo, **e** revisione `direttore-artistico`
+      sull'artefatto renderizzato finale (richiesta esplicitamente durante
+      PS-147, dopo una prima chiusura prematura basata solo su
+      un'ispezione mia): **Approvato**, vedi Decisioni.
 
 ## Decisioni
 
@@ -160,11 +168,22 @@ sagoma/nine-slice e la stessa altezza target touch (64px).
   `Full` (137/137, nessun `SCRIPT ERROR`/`FATAL EXCEPTION`), rieseguita dopo
   le modifiche di PS-147 per confermare che i due segmenti di catena
   `focus_neighbor` invarianti (RIPRENDI↔CAMBIA PERSONAGGIO↔IMPOSTAZIONI)
-  restino corretti. Pacchetto di catture UI rigenerato e ispezionato
-  (`07_pause_overlay.png`): separazione e tonalità dedicata visibili a
-  colpo d'occhio. Nessun device Android collegato in questa sessione: gate
-  fisico e validazione statica APK restano aperti, dichiarati sopra.
+  restino corretti. Nessun device Android collegato in questa sessione:
+  gate fisico e validazione statica APK restano aperti, dichiarati sopra.
   Stato → `IN VERIFICA`.
+- **2026-09-10 — Correzione dopo revisione `direttore-artistico`.** Il
+  controllo percettivo segnato sopra come fatto era una mia ispezione
+  diretta dello screenshot, non una revisione dell'agente
+  `direttore-artistico` — ha marcato come "visibile a colpo d'occhio" una
+  tonalità che l'agente, interpellato in seguito su richiesta del
+  proprietario durante PS-147, ha giudicato indistinguibile da CAMBIA
+  PERSONAGGIO nel render reale. Valori di `modulate_color` di
+  `SettingsButton` rivisti (vedi Criteri di accettazione e
+  [PS-147](PS-147-aggiungi-bottone-esci-pannello-pausa.md) Decisioni per il
+  dettaglio completo della revisione); dopo il fix l'agente ha approvato il
+  risultato. Lezione tenuta a mente per le prossime card: il gate
+  percettivo va chiuso solo dopo una revisione `direttore-artistico`
+  sull'artefatto renderizzato, non dopo un'ispezione visiva propria.
 
 ## Documenti sincronizzati
 

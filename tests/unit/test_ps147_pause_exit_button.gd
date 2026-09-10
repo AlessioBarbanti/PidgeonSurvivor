@@ -60,10 +60,10 @@ func test_ps147_pause_exit_button_style_and_confirmation() -> void:
 			"ESCI deve avere uno StyleBoxTexture %s diverso da IMPOSTAZIONI." % state_name
 		)
 
-	# font_color corallo tenue, non condiviso dagli altri bottoni secondari.
+	# font_color corallo (accento di allerta), non condiviso dagli altri bottoni secondari.
 	assert_eq(
-		exit_button.get_theme_color(&"font_color"), Color(0.95, 0.72, 0.7, 1),
-		"ESCI deve usare il font_color corallo tenue."
+		exit_button.get_theme_color(&"font_color"), Color(0.98, 0.55, 0.5, 1),
+		"ESCI deve usare il font_color corallo (accento di allerta)."
 	)
 	assert_ne(
 		exit_button.get_theme_color(&"font_color"), change_button.get_theme_color(&"font_color"),

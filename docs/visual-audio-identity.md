@@ -49,12 +49,24 @@ del documento architetturale, non una lacuna di questo file.
   (una rampa di *valore*), mai produrre un vero hue-shift. Quando più bottoni
   condividono una nine-slice a canale rosso nullo, la differenziazione va
   costruita su tre assi indipendenti, non su uno solo: luminosità
-  (`modulate_color`, PS-145/PS-147: CAMBIA PERSONAGGIO base, IMPOSTAZIONI
-  chiaro, ESCI il più scuro dei tre), spaziatura di gruppo (uno spaziatore
-  extra isola le azioni distruttive, come ESCI, da quelle reversibili) e
-  `font_color` come unico vero accento di tinta (il corallo tenue di ESCI,
-  preso in prestito dalla famiglia cromatica di "GAME OVER" in
-  `end_screen.tscn` ma desaturato).
+  (`modulate_color`, PS-145/PS-147: CAMBIA PERSONAGGIO base senza modulate,
+  IMPOSTAZIONI chiaro con moltiplicatore `>1` per garantire uno schiarimento
+  percepibile a prescindere dal valore nativo della texture, ESCI il più
+  scuro dei tre con moltiplicatore `<1`), spaziatura di gruppo (uno
+  spaziatore doppio isola le azioni distruttive, come ESCI, da quelle
+  reversibili) e `font_color` come unico vero accento di tinta (il corallo
+  di ESCI, preso in prestito dalla famiglia cromatica di "GAME OVER" in
+  `end_screen.tscn` ma desaturato — non troppo, o si legge come rosa tenue
+  invece che come segnale d'allerta).
+  **Validazione obbligatoria sul rendering, non sui soli valori pianificati:**
+  la prima versione di questa rampa (PS-147, valori entro ±0.15-0.2 fra
+  gradini contigui) era corretta sulla carta ma indistinguibile a colpo
+  d'occhio nello screenshot renderizzato — il delta minimo percepibile su
+  questa texture, dentro la cornice scura del pannello, è risultato più
+  vicino a ±0.3-0.4. La revisione va sempre chiesta sull'artefatto finale
+  (`direttore-artistico` sullo screenshot in
+  `exports/ui-screenshots/07_pause_overlay.png`, non sui numeri nel
+  `.tscn`), prima di considerare il gate percettivo di una card chiuso.
 - **Stile pixel-art**: confermato in modo ricorrente nei manifest di
   cartella, per esempio `assets/art/arena/ASSET-MANIFEST.md` ("caricatured
   pixel-art arcade... polished hand-crafted pixel art, restrained chunky

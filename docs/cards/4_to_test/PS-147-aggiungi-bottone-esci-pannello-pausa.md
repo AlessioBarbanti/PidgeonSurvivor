@@ -70,18 +70,25 @@ PERSONAGGIO/IMPOSTAZIONI/ESCI di nuovo attivi.
       `SettingsButton`, testo `"ESCI"`, stessa sagoma/altezza (64px) dei
       bottoni secondari.
 - [x] Fra `SettingsButton` ed `ExitButton` è inserito un `Control`
-      spaziatore dedicato (`custom_minimum_size = Vector2(0, 24)`), in
-      aggiunta alla `separation = 16` del `VBox`: il vuoto percepito prima
-      di ESCI è quindi maggiore di quello fra gli altri bottoni.
+      spaziatore dedicato (`custom_minimum_size = Vector2(0, 48)` — **48px,
+      non i 24px pianificati inizialmente**: raddoppiato dopo la revisione
+      del direttore-artistico sul render, vedi Decisioni), in aggiunta alla
+      `separation = 16` del `VBox`: il vuoto percepito prima di ESCI è
+      quindi maggiore di quello fra gli altri bottoni.
 - [x] `ExitButton` usa tre nuovi `StyleBoxTexture` dedicati (stessa
       `AtlasTexture_secondary_cta`, stessi `texture_margin_*`/
       `expand_margin_*` dei cloni già introdotti da PS-145) con
-      `modulate_color`: `normal = Color(0.5, 0.5, 0.58, 1)`,
-      `hover = Color(0.7, 0.68, 0.74, 1)`, `pressed = Color(0.34, 0.34, 0.4, 1)`;
+      `modulate_color`: **valori rivisti dopo la revisione del
+      direttore-artistico sul render** (vedi Decisioni) —
+      `normal = Color(0.38, 0.38, 0.44, 1)`,
+      `hover = Color(0.58, 0.56, 0.6, 1)`, `pressed = Color(0.22, 0.22, 0.26, 1)`;
       `focus` riusa lo stato `hover`. Il risultato è più scuro sia di
-      CAMBIA PERSONAGGIO sia di IMPOSTAZIONI in ogni stato.
-- [x] `ExitButton` ha `font_color = Color(0.95, 0.72, 0.7, 1)` (corallo
-      tenue); RIPRENDI/CAMBIA PERSONAGGIO/IMPOSTAZIONI non cambiano
+      CAMBIA PERSONAGGIO sia di IMPOSTAZIONI in ogni stato, e ora
+      distinguibile a colpo d'occhio (non solo sulla carta).
+- [x] `ExitButton` ha `font_color = Color(0.98, 0.55, 0.5, 1)` (corallo,
+      **rivisto** da `Color(0.95, 0.72, 0.7, 1)` dopo la revisione — il
+      valore iniziale si leggeva come rosa tenue, non come accento
+      d'allerta); RIPRENDI/CAMBIA PERSONAGGIO/IMPOSTAZIONI non cambiano
       `font_color`.
 - [x] Premere `ExitButton` mostra lo stesso `ConfirmationCenter` già usato
       da CAMBIA PERSONAGGIO, con testo `"USCIRE DALLA PARTITA?"` e un
@@ -152,9 +159,14 @@ PERSONAGGIO/IMPOSTAZIONI/ESCI di nuovo attivi.
       pausa → ESCI → annulla → pausa) — nessun device collegato in questa
       sessione (`adb devices` vuoto); gate lasciato aperto, non blocca
       l'implementazione.
-- [x] Controllo percettivo richiesto: sì — `07_pause_overlay.png`
-      rigenerato e ispezionato: ESCI visibile in fondo alla colonna,
-      isolato dallo spaziatore, testo corallo tenue riconoscibile.
+- [x] Controllo percettivo richiesto: sì — **fatto correttamente solo alla
+      seconda passata**: la prima ispezione era stata solo mia (non
+      dell'agente `direttore-artistico`), e ha marcato come valido un
+      risultato che l'agente ha poi bocciato su richiesta esplicita del
+      proprietario. `direttore-artistico` ha rivisto
+      `07_pause_overlay.png` due volte (prima della correzione: 4 problemi
+      reali; dopo: **Approvato**, con una nota minore non bloccante — vedi
+      Decisioni).
 
 ## Decisioni
 
@@ -200,6 +212,34 @@ PERSONAGGIO/IMPOSTAZIONI/ESCI di nuovo attivi.
   `SCRIPT ERROR`/`FATAL EXCEPTION`). Nessun device Android collegato in
   questa sessione: gate fisico e validazione statica APK restano aperti,
   dichiarati sopra. Stato → `IN VERIFICA`.
+- **2026-09-10 — Revisione `direttore-artistico` sul render finale,
+  richiesta esplicitamente dal proprietario dopo la chiusura.** Prima
+  passata (screenshot con i valori iniziali di questa card): 4 problemi
+  reali, non solo teorici — (1) rampa di luminosità CAMBIA
+  PERSONAGGIO/IMPOSTAZIONI/ESCI indistinguibile a colpo d'occhio (delta
+  pianificato troppo piccolo per la texture, sotto la cornice scura del
+  pannello); (2) `font_color` di ESCI (`0.95, 0.72, 0.7`) leggibile ma
+  percepito come "rosa tenue", non come accento d'allerta; (3) lo
+  spaziatore da 24px non si distingueva a occhio dalla `separation = 16`
+  degli altri bottoni; (4) la gerarchia a tre livelli (RIPRENDI >
+  reversibili > distruttivo) collassava a due (RIPRENDI vs tutto il
+  resto). Fix applicati nei limiti noti (nessun nuovo asset, canale rosso
+  texture ≈0): IMPOSTAZIONI passata a moltiplicatore `>1`
+  (`Color(1.15, 1.2, 1.3, 1)` e stati derivati) per uno schiarimento
+  garantito indipendente dal valore nativo della texture; ESCI scurito a
+  `Color(0.38, 0.38, 0.44, 1)` e stati derivati; `font_color` di ESCI
+  scaldato a `Color(0.98, 0.55, 0.5, 1)`; spaziatore raddoppiato a 48px.
+  Seconda passata (screenshot rigenerato): **Approvato** — tre gradini di
+  luminosità distinti a colpo d'occhio, accento coreale leggibile,
+  spaziatore percepibile (~1.7x), gerarchia a tre livelli ripristinata.
+  Nota minore non bloccante lasciata dall'agente: IMPOSTAZIONI ora "spicca"
+  più di CAMBIA PERSONAGGIO pur restando sotto RIPRENDI e sopra ESCI —
+  accettabile oggi, da tenere stretto se in futuro si aggiungono altri
+  bottoni reversibili alla stessa colonna. Regola durevole sincronizzata in
+  `visual-audio-identity.md`: la revisione artistica va sempre fatta
+  sull'artefatto renderizzato, non sui soli valori pianificati nel
+  `.tscn` — un delta corretto sulla carta può risultare impercettibile a
+  schermo.
 
 ## Documenti sincronizzati
 
