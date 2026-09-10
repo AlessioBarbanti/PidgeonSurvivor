@@ -34,6 +34,22 @@ diversa": più respiro fra i tre bottoni e una tonalità propria per
 IMPOSTAZIONI, riusando la stessa texture nine-slice via `modulate_color`
 (nessun nuovo asset).
 
+**Aggiornamento 2026-09-10 (revisione dopo screenshot aggiornato):** il
+proprietario ha rivisto lo screenshot Pixel 9 rigenerato (pacchetto UI, vedi
+Verifica) e confermato che il problema segnalato riguarda proprio CAMBIA
+PERSONAGGIO/IMPOSTAZIONI in questa card. Ha inoltre chiesto un quarto
+bottone ESCI (abbandona la run, torna al menu) nella stessa colonna: quella
+richiesta **non è ambito di questa card** — è tracciata separatamente da
+[PS-147](../2_to_do/PS-147-aggiungi-bottone-esci-pannello-pausa.md), che
+dipende da questa per ereditare la spaziatura/rampa di luminosità di
+base prima di aggiungere il proprio bottone e il proprio livello di tinta.
+Il direttore-artistico, consultato di nuovo con il quarto bottone in mente
+(vedi Decisioni), ha confermato che i valori già pianificati qui per
+CAMBIA PERSONAGGIO (nessun `modulate_color`, tono "base") e IMPOSTAZIONI
+(`modulate_color` chiaro, tono "chiaro") restano corretti e diventano i primi
+due gradini di una rampa di luminosità a tre livelli che PS-147 completa con
+un terzo gradino scuro per ESCI.
+
 ## Comportamento atteso
 
 Nel pannello "IN PAUSA", i tre bottoni (RIPRENDI, CAMBIA PERSONAGGIO,
@@ -114,6 +130,22 @@ sagoma/nine-slice e la stessa altezza target touch (64px).
 - **Sostituisce:** il criterio "stesso stile secondario di CAMBIA
   PERSONAGGIO" di
   [PS-143](../4_to_test/PS-143-sostituisci-icona-ingranaggio-pausa-con-bottone.md).
+- **2026-09-10 — Consultato di nuovo il direttore-artistico (modalità
+  pianificazione), con lo screenshot Pixel 9 rigenerato e l'aggiunta di un
+  quarto bottone ESCI in mente.** Ha campionato i pixel della texture
+  `secondary_button_cta_base.png`: il canale rosso è ≈0 ovunque, quindi
+  `modulate_color` può solo scurire/schiarire lungo il blu esistente (una
+  rampa di *valore*), mai produrre una tinta realmente diversa (hue-shift).
+  Confermati come corretti e non discussi ulteriormente: nessuna
+  `modulate_color` su CAMBIA PERSONAGGIO (tono "base"), `modulate_color`
+  chiaro su IMPOSTAZIONI (tono "chiaro") — questa card non cambia i valori
+  già scritti nei Criteri di accettazione. Ha proposto una regola stilistica
+  durevole (quando più bottoni condividono una nine-slice a canale rosso
+  nullo, la differenziazione va costruita su tre assi indipendenti:
+  luminosità via `modulate_color`, spaziatura di gruppo, `font_color` come
+  unico vero accento di tinta) — la sincronizzazione in
+  `visual-audio-identity.md` è tracciata da PS-147, che è la card che
+  introduce anche il terzo asse (il `font_color` corallo di ESCI).
 
 ## Documenti sincronizzati
 
@@ -126,3 +158,9 @@ Alternative scartate dal direttore-artistico: separatore ornamentale a
 diamante (avrebbe richiesto un nuovo asset derivato senza risolvere la
 somiglianza texture-su-texture); solo spazio o solo tinta (avrebbero
 risolto un solo sintomo dei due riportati dal proprietario).
+
+`tools/_capture_ui_screenshots.gd` ora cattura anche `07c_pause_settings`
+(overlay impostazioni aperto dalla pausa), oltre a `07_pause_overlay` e
+`07b_pause_change_confirmation` già esistenti: il pacchetto di evidenze
+copre così tutte le superfici raggiungibili dalla colonna della pausa, non
+solo quella toccata da questa card.

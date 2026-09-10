@@ -382,6 +382,16 @@ func _capture_pause(
 			cancel_button.emit_signal("pressed")
 			await _frames(12)
 
+	var settings_button := _pause_overlay.get_settings_button()
+	if settings_button != null:
+		settings_button.emit_signal("pressed")
+		await _frames(16)
+		await _shot("07c_pause_settings", RunController.RunState.MANUAL_PAUSE)
+		var settings_overlay := _slice.get_settings_overlay() as SettingsOverlay
+		if settings_overlay != null and settings_overlay.get_close_button() != null:
+			settings_overlay.get_close_button().emit_signal("pressed")
+			await _frames(12)
+
 	if not lifecycle.request_resume():
 		_controller.resume_run()
 	await _frames(12)

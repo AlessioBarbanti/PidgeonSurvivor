@@ -248,3 +248,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-144](./1_idea/PS-144-arte-dedicata-vfx-attacchi-boss.md) | Valuta arte dedicata per le VFX degli attacchi Boss (oltre il telegraph) | art | arte | DA DEFINIRE | bassa | PS-141 |
 | [PS-145](./2_to_do/PS-145-distingui-e-distanzia-bottoni-secondari-pausa.md) | Distingui e distanzia CAMBIA PERSONAGGIO da IMPOSTAZIONI nel pannello pausa | ux | ui | PRONTO | media | PS-142, PS-143 |
 | [PS-146](./2_to_do/PS-146-barre-hp-xp-sospese-senza-doppio-bordo.md) | Rendi le barre HP/XP "sospese" e rimuovi il doppio bordo | ux | ui | PRONTO | media | PS-140 |
+| [PS-147](./2_to_do/PS-147-aggiungi-bottone-esci-pannello-pausa.md) | Aggiungi bottone ESCI al pannello pausa | feat | ui | PRONTO | media | PS-145 |
