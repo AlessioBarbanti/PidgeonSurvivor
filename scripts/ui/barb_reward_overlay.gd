@@ -14,13 +14,12 @@ const CONTENT_TOP_MARGIN := GameHud.GAMEPLAY_TOP_INSET + TOP_BAND_CLEARANCE
 # PS-101: riga mostrata quando il Boss appena sconfitto era il Piccione
 # Malvagio baseline (nessun amico da nominare). Barb resta una figura
 # positiva: mai un tono ammonitore, solo il calore della sua cucina.
-const BARB_GENERIC_REWARD_LINE := "Con Barb ai fornelli, va sempre a finire bene!"
+const BARB_GENERIC_REWARD_LINE := "Con Barb alla griglia, va sempre a finire bene!"
 
 @onready var _safe_margins: MarginContainer = %SafeMargins
 @onready var _layout: VBoxContainer = %Layout
 @onready var _dimmer: ColorRect = $Dimmer
 @onready var _title_label: Label = %TitleLabel
-@onready var _mode_label: Label = %ModeLabel
 @onready var _portrait: TextureRect = %BarbPortrait
 @onready var _redemption_label: Label = %RedemptionLabel
 @onready var _cards: Array[UpgradeCard] = [
@@ -256,10 +255,6 @@ func get_dimmer_z_index() -> int:
 	return _dimmer.z_index if is_instance_valid(_dimmer) else -9999
 
 
-func get_mode_text() -> String:
-	return _mode_label.text if is_instance_valid(_mode_label) else ""
-
-
 func get_portrait_texture() -> Texture2D:
 	return _portrait.texture if is_instance_valid(_portrait) else null
 
@@ -359,11 +354,6 @@ func _show_offer(
 
 	_active_card_count = offers.size()
 	_is_bonus_mode = is_bonus
-	_mode_label.text = "RICOMPENSA BONUS" if is_bonus else "NUOVA SPECIALITÀ"
-	_mode_label.add_theme_color_override(
-		&"font_color",
-		Color(0.76, 0.84, 0.92, 1.0) if is_bonus else Color(1.0, 0.72, 0.24, 1.0)
-	)
 	_title_label.text = "IL PREMIO DI BARB" if is_bonus else "LE SPECIALITÀ DI BARB"
 	_redemption_label.text = (
 		"%s è tornato tra noi, grazie a Barb!" % _redeemed_friend_name

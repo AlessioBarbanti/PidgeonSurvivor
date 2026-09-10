@@ -32,7 +32,10 @@ func test_speciality_mode_has_warm_identity_and_responsive_header() -> void:
 		await wait_process_frames(2)
 		assert_true(overlay.visible and not overlay.is_bonus_mode(), "%s: deve aprirsi lo sblocco." % profile_name)
 		assert_eq(overlay.get_title_text(), "LE SPECIALITÀ DI BARB", "%s: titolo dedicato errato." % profile_name)
-		assert_eq(overlay.get_mode_text(), "NUOVA SPECIALITÀ", "%s: badge modalita errato." % profile_name)
+		assert_null(
+			overlay.find_child("ModeLabel", true, false),
+			"%s: PS-153 rimuove il badge di modalita, non deve ricomparire." % profile_name
+		)
 		assert_null(
 			overlay.find_child("SubtitleLabel", true, false),
 			"%s: l'header non deve mostrare un sottotitolo." % profile_name
@@ -103,7 +106,10 @@ func test_bonus_mode_keeps_barb_but_restores_normal_cards_and_input_contract() -
 
 	assert_true(overlay.visible and overlay.is_bonus_mode(), "Il catalogo esaurito deve aprire il premio bonus.")
 	assert_eq(overlay.get_title_text(), "IL PREMIO DI BARB", "Il fallback non deve fingere un nuovo sblocco.")
-	assert_eq(overlay.get_mode_text(), "RICOMPENSA BONUS", "Il badge deve distinguere il fallback.")
+	assert_null(
+		overlay.find_child("ModeLabel", true, false),
+		"PS-153 rimuove il badge di modalita anche nel premio bonus."
+	)
 	assert_null(overlay.find_child("SubtitleLabel", true, false), "Il premio bonus non deve mostrare un sottotitolo.")
 	assert_eq(overlay.get_portrait_texture(), BARB_PORTRAIT, "La caricatura deve restare anche nel premio bonus.")
 	var bonus_portrait := overlay.find_child("BarbPortrait", true, false) as TextureRect

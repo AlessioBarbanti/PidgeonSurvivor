@@ -254,3 +254,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-150](./4_to_test/PS-150-integra-icona-passiva-alea-calice-vino.md) | Integra la nuova icona della passiva di Alea al posto dell'aquila | chore | arte | IN VERIFICA | media | PS-149 |
 | [PS-151](./4_to_test/PS-151-rimuovi-evil-portrait-placeholder-e-eldiran.md) | Rimuovi il fallback evil_portrait_placeholder e la dipendenza da eldiran_rpg_characters | chore | gameplay | IN VERIFICA | media | — |
 | [PS-152](./5_completed/PS-152-rivetto-angolo-carte-upgrade.md) | Genera il rivetto d'angolo isolato per le carte upgrade | art | arte | COMPLETATO | media | — |
+| [PS-153](./4_to_test/PS-153-rimuovi-badge-modalita-barb-e-ingrandisci-riga-redenzione.md) | Rimuovi il badge di modalità dalla ricompensa di Barb e ingrandisci la riga di redenzione | ux | ui | IN VERIFICA | bassa | — |
