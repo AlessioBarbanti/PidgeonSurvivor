@@ -3,7 +3,7 @@ id: PS-152
 titolo: Genera il rivetto d'angolo isolato per le carte upgrade
 tipo: art
 area: arte
-stato: PRONTO
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
@@ -15,7 +15,7 @@ aggiornato: 2026-09-10
 
 ## Contesto
 
-[PS-139](../3_in_sprint/PS-139-cornice-asset-carte-upgrade.md) doveva applicare
+[PS-139](../4_to_test/PS-139-cornice-asset-carte-upgrade.md) doveva applicare
 alle tre carte upgrade (`scenes/ui/upgrade_card.tscn`) un trattamento coerente
 con la cornice dorata a rivetti già usata in pausa/selettore/boss intro
 (`assets/art/ui/pause/pause_panel_frame.png`). Il nine-slice pieno di
@@ -63,30 +63,30 @@ coincidere con lo spigolo reale della carta.
 
 ## Criteri di accettazione
 
-- [ ] Esiste un master HD del solo motivo "medaglione/rivetto d'angolo"
+- [x] Esiste un master HD del solo motivo "medaglione/rivetto d'angolo"
       (nessun tratto di bordo che ne esce, per decisione del proprietario),
       alla stessa palette e livello di dettaglio di
       `assets/art/ui/pause/pause_panel_frame.png` — confrontato affiancato
       in art review, non lasciato al giudizio implicito di chi genera.
-- [ ] Il derivato runtime ha alpha reale (trasparente, non un rettangolo
+- [x] Il derivato runtime ha alpha reale (trasparente, non un rettangolo
       pieno) attorno alla silhouette del motivo: canvas `128×128` RGBA, motivo
       ancorato esattamente all'angolo (0,0) del canvas (zero margine in alto
       e a sinistra, così l'ornamento copre interamente
       `corner_radius = 12` della carta senza lasciarlo intravedere), margine
       trasparente ~19% a destra e in basso per non tagliare bordi/ombre
       morbide.
-- [ ] Un solo file basta per tutti e quattro gli angoli della carta: nessuna
+- [x] Un solo file basta per tutti e quattro gli angoli della carta: nessuna
       asimmetria o dettaglio direzionale (fonte di luce marcata, testo) che
       impedirebbe di riusarlo via `flip_h`/`flip_v` su Godot per gli altri
       tre angoli.
-- [ ] Prominenza/scala pensate per la stessa resa proporzionale già vista nello
+- [x] Prominenza/scala pensate per la stessa resa proporzionale già vista nello
       screenshot approvato di PS-139 (`~32×30` a schermo su carte
       `250×392`), non un motivo ingrandito o ricontrastato per compensare
       l'assenza delle linee di bordo connesse.
-- [ ] Il derivato esiste in `assets/art/ui/upgrade_card/` con una riga
+- [x] Il derivato esiste in `assets/art/ui/upgrade_card/` con una riga
       nell'`ASSET-MANIFEST.md` pertinente: origine, autore/licenza,
       trasformazioni, hash SHA-256.
-- [ ] PS-152 non modifica scene o script: il file sostituisce il placeholder
+- [x] PS-152 non modifica scene o script: il file sostituisce il placeholder
       allo stesso percorso già referenziato da PS-139
       (`assets/art/ui/upgrade_card/upgrade_card_corner.png`).
 
@@ -112,12 +112,12 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows: non pertinente a PS-152, appartiene a PS-139 e va
+- [x] Runtime Windows: non pertinente a PS-152, appartiene a PS-139 e va
       rieseguito con il derivato reale
-- [ ] Validazione statica APK: non pertinente a PS-152, appartiene a PS-139
-- [ ] Runtime fisico Pixel 9: non pertinente a PS-152 (nessun wiring); resta
+- [x] Validazione statica APK: non pertinente a PS-152, appartiene a PS-139
+- [x] Runtime fisico Pixel 9: non pertinente a PS-152 (nessun wiring); resta
       un gate di PS-139
-- [ ] Controllo percettivo: confronto affiancato col motivo d'angolo di
+- [x] Controllo percettivo: confronto affiancato col motivo d'angolo di
       `pause_panel_frame.png` (coerenza palette/stile) e review isolata a
       `128×128` su fondo navy scuro (coerenza col contesto reale della
       carta) — non sostituisce la review in runtime di PS-139 con le tre
@@ -160,10 +160,17 @@ Non toccare:
   della carta); zero margine su alto/sinistra perché quel bordo deve
   coincidere esattamente con lo spigolo della carta, coprendo
   `corner_radius = 12` dello `StyleBoxFlat` sottostante.
+- **2026-09-10 — Candidato promosso dal proprietario.** La review interna ha
+  scartato il primo tentativo perché introduceva una staffa a L e tratti di
+  bordo vietati. Il candidato selezionato è una placca compatta bronzo/oro con
+  rivetto centrale; dopo il confronto su fondo navy e col frame pausa, il
+  proprietario ha risposto «Promosso!». Il derivato approvato sostituisce il
+  placeholder allo stesso percorso già cablato da PS-139; scene e script
+  restano invariati.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/visual-audio-identity.md`: nuova riga per l'ornamento d'angolo
+- [x] `docs/visual-audio-identity.md`: nuova riga per l'ornamento d'angolo
       delle carte upgrade, con la regola "gli ornamenti d'angolo derivati per
       usi a clip devono esistere come asset a sé con alpha trasparente, non
       come crop diretti di un frame intero" (raccomandazione del
@@ -172,5 +179,11 @@ Non toccare:
 
 ## Note
 
-Card gemella di [PS-139](../3_in_sprint/PS-139-cornice-asset-carte-upgrade.md),
-che possiede il cablaggio in scena, il placeholder e i suoi gate runtime.
+Card gemella di [PS-139](../4_to_test/PS-139-cornice-asset-carte-upgrade.md),
+che possiede il cablaggio in scena e i gate runtime sul derivato promosso.
+
+Evidenza 2026-09-10: master `512×512` e derivato `128×128` aperti alla
+dimensione reale; bounds alpha del derivato `0,0..103,103`, margine destro e
+inferiore `24 px` (18,75%), pixel `(0,0)` trasparente, nessuna alpha parziale.
+Confronto affiancato con `pause_panel_frame.png` e composizione su fondo navy
+`RGB(28,41,56)` superati; approvazione finale del proprietario: «Promosso!».

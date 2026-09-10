@@ -67,6 +67,13 @@ del documento architetturale, non una lacuna di questo file.
   (`direttore-artistico` sullo screenshot in
   `exports/ui-screenshots/07_pause_overlay.png`, non sui numeri nel
   `.tscn`), prima di considerare il gate percettivo di una card chiuso.
+- **Ornamenti d'angolo delle carte upgrade**
+  ([manifest](../assets/art/ui/upgrade_card/ASSET-MANIFEST.md)): per gli usi a
+  clip, il medaglione/rivetto esiste come asset autonomo con alpha reale e
+  margini progettati per il box finale; non si ritaglia direttamente una
+  cornice intera opaca, perché il suo bezel incorporato non coincide col fondo
+  della carta. Un solo master non direzionale viene riusato sui quattro angoli
+  tramite `flip_h`/`flip_v`.
 - **Stile pixel-art**: confermato in modo ricorrente nei manifest di
   cartella, per esempio `assets/art/arena/ASSET-MANIFEST.md` ("caricatured
   pixel-art arcade... polished hand-crafted pixel art, restrained chunky
@@ -99,6 +106,7 @@ del documento architetturale, non una lacuna di questo file.
 | `ui/welcome` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/welcome/ASSET-MANIFEST.md) | Fondale welcome B18O |
 | `ui/barb_reward` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/barb_reward/ASSET-MANIFEST.md) | Caricatura Barb (PS-036), da foto personale non conservata nel repo |
 | `ui/pause` | 2 | [ASSET-MANIFEST.md](../assets/art/ui/pause/ASSET-MANIFEST.md) | Cornice riusata da pausa, cambio personaggio, tutorial, terminale, intro Boss |
+| `ui/upgrade_card` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/upgrade_card/ASSET-MANIFEST.md) | Rivetto d'angolo PS-152: master, copia review e derivato runtime |
 | `ui/boss` | 4 | [ASSET-MANIFEST.md](../assets/art/ui/boss/ASSET-MANIFEST.md) | Plancia CTA "AFFRONTA" e cornice Boss Intro PS-102 (in attesa di wiring PS-103) |
 | `pickups` | 2 | [ASSET-MANIFEST.md](../assets/art/pickups/ASSET-MANIFEST.md) | Coscia di piccione, pickup cura |
 | `branding` | 3 | [ASSET-MANIFEST.md](../assets/art/branding/ASSET-MANIFEST.md) | Icona app e adaptive icon Android |

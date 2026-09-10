@@ -3,7 +3,7 @@ id: PS-139
 titolo: Applica la cornice asset esistente alle carte upgrade
 tipo: ux
 area: ui
-stato: IN ATTESA ASSET
+stato: IN VERIFICA
 priorita: bassa
 dipende_da: [PS-152]
 origine:
@@ -34,7 +34,7 @@ bocciato in art review: `pause_panel_frame.png` è completamente opaco (senza
 alpha) e il motivo dorato dentro ciascun ritaglio 56×52 non parte
 dall'angolo — il bezel quasi-nero risultante non coincide col navy della
 carta e a schermo appare come una toppa scura scollegata dal vero spigolo.
-[PS-152](../2_to_do/PS-152-rivetto-angolo-carte-upgrade.md) produce l'asset
+[PS-152](../5_completed/PS-152-rivetto-angolo-carte-upgrade.md) produce l'asset
 dedicato con alpha reale che risolve il problema; questa card procede nel
 frattempo con un placeholder deterministico allo stesso percorso (PS-110),
 invece di restare `BLOCCATO`.
@@ -59,10 +59,9 @@ ripetitive quando tre carte sono affiancate.
       (`exports/ui-screenshots/05_upgrade_overlay.png` e la variante
       Pixel 9): l'ornamento è ai soli quattro angoli, il crest del frame
       pieno non compare mai.
-- [ ] L'ornamento d'angolo si aggancia pulito allo spigolo della carta, senza
-      bezel/toppa scura visibile: **bloccato sul placeholder di PS-152**, non
-      verificabile con l'asset reale finché non sostituisce il placeholder
-      (vedi Decisioni).
+- [x] L'ornamento d'angolo si aggancia pulito allo spigolo della carta, senza
+      bezel/toppa scura visibile: asset reale di PS-152, verificato con
+      screenshot reali e confermato dal direttore-artistico (vedi Decisioni).
 - [x] Gli stati `hover`, `pressed`, `focus` e `disabled` restano leggibili e
       distinguibili fra loro quanto lo erano prima (nessuna regressione di
       feedback di interazione) — invariati rispetto alla card, non toccati.
@@ -77,10 +76,11 @@ ripetitive quando tre carte sono affiancate.
       quel contratto, scoperto durante l'implementazione (non era un
       criterio esplicito della card originale, aggiunto qui perché ha
       vincolato la soluzione finale).
-- [ ] L'output è stato validato dal direttore-artistico con l'asset reale
-      (la prima revisione, sul placeholder concettuale del solo crop
-      geometrico, ha bocciato quel tentativo — vedi Decisioni; la revisione
-      va ripetuta quando PS-152 sostituisce il placeholder).
+- [x] L'output è stato validato dal direttore-artistico con l'asset reale:
+      "Approvato" — aggancio pulito, coerenza di famiglia con
+      `pause_panel_frame.png`, nessuna ripetizione pesante a tre carte,
+      nessun drift fra gli stati level-up/bonus (freddo) e Speciality di
+      Barb (caldo) (vedi Decisioni).
 
 ## Ambito
 
@@ -105,14 +105,14 @@ ripetitive quando tre carte sono affiancate.
   sovrapposizione con icona/titolo reali. Non verifica la resa pixel-perfetta
   dell'aggancio allo spigolo (quello è un controllo percettivo, non
   automatizzabile in modo affidabile).
-- Focused (`-RefreshEditor`): 5/5 verdi, nessun `SCRIPT ERROR`/
-  `FATAL EXCEPTION`.
-- Relevant: 1/1 focused, 34/34 regressioni, 35/35 step, nessun
-  `SCRIPT ERROR`/`FATAL EXCEPTION`.
-- Full: 137/137 regressioni, toolchain PASS, 139/139 step, nessun
-  `SCRIPT ERROR`/`FATAL EXCEPTION`.
-- Da rieseguire (Focused + Relevant minimo) quando PS-152 sostituisce il
-  placeholder, prima di chiudere questa card.
+- Focused (`-RefreshEditor`), Relevant e Full rieseguiti con l'asset reale di
+  PS-152 (non più il placeholder): Focused 5/5, Relevant 35/35 step
+  (1/1 focused, 34/34 regressioni), Full 139/139 step (137/137 regressioni,
+  toolchain PASS) — nessun `SCRIPT ERROR`/`FATAL EXCEPTION` in nessuno dei
+  tre profili.
+- Screenshot reali rigenerati con l'asset definitivo
+  (`exports/ui-screenshots/05_upgrade_overlay.png` e la variante Pixel 9) e
+  sottoposti al direttore-artistico: approvato (vedi Decisioni).
 
 ## Gate manuali
 
@@ -120,10 +120,10 @@ ripetitive quando tre carte sono affiancate.
 - [ ] Validazione statica APK
 - [ ] Runtime fisico Pixel 9 (percorso: verifica percettiva della leggibilità
       delle tre carte affiancate su schermo compatto)
-- [ ] Controllo percettivo richiesto: sì — confronto screenshot
-      `05_upgrade_overlay.png` prima/dopo, ripetuto con l'asset reale di
-      PS-152 (la prima revisione sul crop geometrico ha bocciato quel
-      tentativo)
+- [x] Controllo percettivo richiesto: sì — fatto. Confronto screenshot
+      `05_upgrade_overlay.png` prima/dopo con l'asset reale di PS-152,
+      validato dal direttore-artistico: "Approvato" (la prima revisione sul
+      crop geometrico aveva bocciato quel tentativo, vedi Decisioni).
 
 ## Decisioni
 
@@ -171,10 +171,34 @@ ripetitive quando tre carte sono affiancate.
   e cablato in scena (un solo `Texture2D`, non più quattro `AtlasTexture`
   indipendenti, coerente con la decisione "un solo master" di PS-152). Stato
   portato a `IN ATTESA ASSET`.
+- **2026-09-10 — Asset reale ricevuto da PS-152.** Il proprietario ha promosso
+  il rivetto dedicato e il placeholder è stato sostituito in-place; la card non
+  è più `IN ATTESA ASSET` e torna `IN CORSO`. Restano da rieseguire le sue
+  verifiche e i gate runtime con le tre carte affiancate.
+- **2026-09-10 — Focused/Relevant/Full rilanciati con l'asset reale: tutti
+  verdi, nessuna regressione.** Rigenerati anche gli screenshot ufficiali
+  (16:9 e Pixel 9 20:9) con `tools/_capture_ui_screenshots.gd`.
+- **2026-09-10 — Seconda revisione del direttore-artistico: "Approvato".**
+  Verificato su crop pixel-level dei tre angoli campionati: nessun
+  bezel/toppa scura residua, il rivetto si aggancia esattamente
+  all'intersezione dei bordi blu della carta in entrambe le risoluzioni.
+  Palette/stile coerenti con `pause_panel_frame.png` come "fratello
+  visivo" credibile, pur essendo una sintesi bespoke dichiarata (facet a X
+  vs sfera dorata in sede ottagonale — famiglia cromatica coerente, non un
+  retread letterale). Nessuna ripetizione pesante a tre carte affiancate;
+  il confine identitario level-up/bonus (freddo+oro) vs Speciality di Barb
+  (caldo, staffa arancione senza rivetto) resta rispettato in entrambe le
+  direzioni (`05b_barb_speciality.png`, `05c_barb_bonus.png`). Contenuto
+  (icona/titolo/descrizione/MetaPanel) confermato leggibile e non tagliato.
+  Nessuna modifica richiesta; nessuna nuova regola da fissare in
+  `visual-audio-identity.md` (la convenzione sull'ornamento a sé con alpha
+  reale è già registrata da PS-152). Card portata a `IN VERIFICA`: restano
+  aperti solo i gate manuali su device/piattaforma, non eseguibili da
+  questa sessione.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/visual-audio-identity.md`: la regola sugli ornamenti d'angolo a
+- [x] `docs/visual-audio-identity.md`: la regola sugli ornamenti d'angolo a
       clip (asset a sé con alpha, non crop di un frame intero) è registrata
       in PS-152, che la propaga quando consegna l'asset reale.
 

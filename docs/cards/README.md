@@ -240,7 +240,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-136](./4_to_test/PS-136-fanfara-vittoria-sconfitta-boss.md) | Aggiungi una fanfara di vittoria alla sconfitta del Boss | feat | audio | IN VERIFICA | media | — |
 | [PS-137](./4_to_test/PS-137-overlay-impostazioni-condiviso-e-paginato.md) | Overlay impostazioni condiviso, più grande e paginato per categoria | ux | ui | IN VERIFICA | media | — |
 | [PS-138](./4_to_test/PS-138-anello-carica-e-glow-brilla-indicatore-alea.md) | Ridisegna l'indicatore HUD della passiva di Alea con anello di carica e glow Brilla | ux | ui | IN VERIFICA | media | PS-106 |
-| [PS-139](./3_in_sprint/PS-139-cornice-asset-carte-upgrade.md) | Applica la cornice asset esistente alle carte upgrade | ux | ui | IN ATTESA ASSET | bassa | PS-152 |
+| [PS-139](./4_to_test/PS-139-cornice-asset-carte-upgrade.md) | Applica la cornice asset esistente alle carte upgrade | ux | ui | IN VERIFICA | bassa | PS-152 |
 | [PS-140](./4_to_test/PS-140-riallinea-colore-bordo-hud-hp-xp.md) | Riallinea il colore del bordo HP/XP alla palette oro esistente | fix | ui | IN VERIFICA | bassa | — |
 | [PS-141](./2_to_do/PS-141-arricchisci-telegraph-attacchi-boss.md) | Arricchisci i telegraph d'attacco del Boss per non sembrare debug | ux | arte | PRONTO | media | — |
 | [PS-142](./4_to_test/PS-142-correggi-clamp-altezza-pannello-pausa.md) | Correggi il clamp dell'altezza del pannello pausa | fix | ui | IN VERIFICA | media | — |
@@ -253,4 +253,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-149](./5_completed/PS-149-genera-icona-passiva-alea-calice-vino.md) | Genera la nuova icona della passiva di Alea — calice di vino brilla | art | arte | COMPLETATO | media | — |
 | [PS-150](./4_to_test/PS-150-integra-icona-passiva-alea-calice-vino.md) | Integra la nuova icona della passiva di Alea al posto dell'aquila | chore | arte | IN VERIFICA | media | PS-149 |
 | [PS-151](./4_to_test/PS-151-rimuovi-evil-portrait-placeholder-e-eldiran.md) | Rimuovi il fallback evil_portrait_placeholder e la dipendenza da eldiran_rpg_characters | chore | gameplay | IN VERIFICA | media | — |
-| [PS-152](./2_to_do/PS-152-rivetto-angolo-carte-upgrade.md) | Genera il rivetto d'angolo isolato per le carte upgrade | art | arte | PRONTO | media | — |
+| [PS-152](./5_completed/PS-152-rivetto-angolo-carte-upgrade.md) | Genera il rivetto d'angolo isolato per le carte upgrade | art | arte | COMPLETATO | media | — |
