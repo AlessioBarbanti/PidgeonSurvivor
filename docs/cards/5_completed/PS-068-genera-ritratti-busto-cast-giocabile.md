@@ -123,9 +123,9 @@ Non toccare:
   proprietario ha approvato esplicitamente i candidati ImageGen
   `exec-42e07cf9-a7ca-434a-abb7-c0d1c273572e.png` (Alea) e
   `exec-bb092209-0081-4a9d-921d-a81674bd766d.png` (Aleo). `poses.png` resta
-  dominante per stile, costume e proporzioni; le fotografie personali
-  autorizzate forniscono soltanto citazioni fisionomiche semplificate, non una
-  copia fotorealistica. Dopo il solo passaggio `background-extraction`, i
+  dominante per stile, costume e proporzioni; le reference visive riservate
+  hanno un ruolo secondario di continuità del soggetto. Dopo il solo passaggio
+  `background-extraction`, i
   master trasparenti sono stati promossi come `<id>/hd/portrait.png` e
   derivati a `256x256` come `<id>/generated/portrait.png`.
 - **2026-09-02 — Nessuna integrazione parziale dei dati.** I due asset

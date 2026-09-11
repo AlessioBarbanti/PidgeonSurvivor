@@ -4,10 +4,9 @@ Fondale della schermata iniziale di Pidgeon Survivor, prodotto con la modalità
 built-in di OpenAI ImageGen. La versione runtime corrente è il refresh identità
 del cast del 28 agosto 2026: usa come edit target la reference pixel-art
 approvata e come riferimenti di identità gli otto master del proprietario in
-`assets/art/characters/<id>/hd/poses.png`. I riferimenti derivano da fotografie di
-persone reali fornite e autorizzate esplicitamente dal proprietario; il
-risultato resta una caricatura pixel-art non fotorealistica. Il runtime non
-dipende dal servizio di generazione.
+`assets/art/characters/<id>/hd/poses.png`. Il risultato resta una caricatura
+pixel-art coerente con la direzione approvata. Il runtime non dipende dal
+servizio di generazione.
 
 Origine: OpenAI ImageGen built-in.  
 Autore: progetto IL GIOCO con assistenza OpenAI ImageGen.  
@@ -63,7 +62,7 @@ Use case: stylized-concept
 Asset type: 16:9 game title-screen background for a Windows and Android friendship-survival arcade game
 Primary request: create an original, polished pixel-art splash background that feels playful, warm, chaotic, and unmistakably like a real game menu rather than a debug screen
 Scene/backdrop: a whimsical night-time outdoor survival arena inspired by an Italian summer party, with warm string lights, a few picnic tables and barbecue glow in the far background, subtle city silhouettes and an energetic flock of pigeons swooping around the outer edges
-Subject: a small ensemble of eight distinct, silly chibi adventurer friends gathered along the lower left and lower right edges, ready for absurd action; readable as a friendly ensemble but not based on real people
+Subject: a small ensemble of eight distinct, silly chibi adventurers gathered along the lower left and lower right edges, ready for absurd action; readable as a cohesive fictional cast
 Style/medium: professional hand-crafted 2D pixel-art arcade illustration, crisp clustered pixels, chunky silhouettes, limited but rich palette, playful caricature, not photorealistic, not painterly, not cyber-tech
 Composition/framing: wide landscape 16:9; keep the central 45% of the canvas visually quiet, dark, and low-detail as protected negative space for a title and menu panel; place characters, pigeons, props, sparks, confetti, and brighter accents mainly around the left/right edges and lower corners; support safe cropping to 20:9 and 4:3
 Lighting/mood: deep navy twilight, warm amber barbecue and string-light highlights, cyan moonlight accents, small magenta details; cheerful and adventurous with gentle depth

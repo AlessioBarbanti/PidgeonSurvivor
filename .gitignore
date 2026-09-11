@@ -24,7 +24,7 @@ local.properties
 Thumbs.db
 
 #Private
-# Fotografie originali del cast (mai asset runtime, mai da pushare): ignora
+# Reference visive riservate del cast (mai asset runtime, mai da pushare): ignora
 # ogni cartella per personaggio e qualunque file al suo interno, cosicche'
 # nuove reference non richiedano una riga dedicata. README.md e .gdignore
 # restano tracciati perche' vivono direttamente in references/, non in una

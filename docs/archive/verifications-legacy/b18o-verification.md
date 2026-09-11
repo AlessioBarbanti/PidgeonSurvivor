@@ -36,8 +36,8 @@ restano energumeno tellurico bovino, pattinatrice in viola senza casco e dai
 capelli lunghi ricci, infermiera elettrica con caschetto e divisa bianco-ciano,
 ballerina, muratore, cosplayer sopravvissuto dai capelli scuri, donna zen con
 occhiali e ballerina reggaeton dai capelli neri molto lunghi. Piccioni,
-grigliata e luci da festa restano ai bordi; nessuna fotografia o persona reale è
-stata usata.
+grigliata e luci da festa restano ai bordi; tutti i personaggi sono archetipi
+fittizi originali.
 
 Il logo RGBA `1536×1024` fornito e poi aggiornato dal proprietario è mostrato al
 centro senza trasformazioni locali, in un `TextureRect` proporzionale separato

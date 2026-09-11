@@ -191,7 +191,7 @@ permessi o struttura dell'artefatto; solo due PNG di dimensione invariata).
   non il nuovo master.** Fra le tre direzioni proposte (nuovo master dedicato
   chunky, ritocco della derivazione, ulteriore aumento di canvas) il
   proprietario ha scelto il ritocco: costo medio-basso, nessuna nuova sintesi,
-  **zero rischio di deriva d'identità** dai riferimenti fotografici autorizzati
+  **zero rischio di deriva d'identità** dai master approvati
   del 28/08/2026, ed è un asse realmente non ancora tentato — PS-116 aveva
   toccato solo la risoluzione, mai palette, contorno o metodo di
   ricampionamento.

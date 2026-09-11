@@ -157,11 +157,9 @@ Scarti estesi (PS-093): danno `×0,95`, avidità `×1,03`, raggio pickup `×1,02
 Questi archetipi originali sono la direzione presentazionale approvata per il
 fondale della welcome B18O. Traducono passive e abilità in silhouette
 immediatamente riconoscibili e non modificano i contratti gameplay dei profili.
-Le fotografie personali autorizzate in `docs/characters/references/<id>/`
-forniscono soltanto citazioni fisionomiche semplificate: i profili non sono
-ritratti realistici né copie delle persone fotografate. Aleo conserva inoltre
-il consenso esplicito già registrato per il rework del 28 agosto 2026; anche la
-sua resa resta una caricatura pixel-art.
+Le reference visive riservate in `docs/characters/references/<id>/` sono
+materiale sorgente fuori da import ed export; i master `poses.png` restano la
+fonte dominante per identità di gioco, proporzioni e stile.
 
 Il 28 agosto 2026 tutte e otto le strisce sprite sono state rigenerate dal
 proprietario in un passaggio di identità, insieme alle due icone di Aleo. La
