@@ -16,23 +16,21 @@ assets/art/characters/<id>/
 
 I master `hd/` restano esclusi dall'import Godot (`.gdignore` per ciascun
 `<id>/hd/`) e dagli export (`assets/art/characters/*/hd/**` nei preset). Le
-reference fotografiche autorizzate vivono invece in
-`docs/characters/references/<id>/` — materiale di documentazione e
-provenienza, non un asset da derivare — anch'esse protette da `.gdignore` ed
-escluse dai preset (`docs/characters/references/**`). Il documento di
+reference visive riservate vivono invece in
+`docs/characters/references/<id>/` — materiale sorgente e di provenienza, non
+un asset da derivare — anch'esse protette da `.gdignore` ed escluse dai preset
+(`docs/characters/references/**`). Il documento di
 direzione visuale di ciascun personaggio è in `docs/characters/<id>.md`. Solo
 `generated/` è consumato dal runtime.
 
 ## Parte 1 — Strisce Player (B18U)
 
 Le otto strisce Player sono asset raster originali prodotti il 25 agosto 2026
-con OpenAI ImageGen built-in per il progetto IL GIOCO. La baseline iniziale non
-usava fotografie o persone reali; l'identity pass del 28 agosto 2026 la supera
-per tutti gli otto profili usando riferimenti fotografici forniti e autorizzati
-esplicitamente dal proprietario. I risultati restano caricature pixel-art e non
-contengono marche, loghi o personaggi di terzi. Il registro dei prompt
-disponibili (inclusi i due originali recuperati per Aleo e Magno) e delle
-reference fotografiche archiviate è in
+con OpenAI ImageGen built-in per il progetto IL GIOCO. L'identity pass del 28
+agosto 2026 ha riallineato tutti gli otto profili alla direzione visiva
+approvata. I risultati restano caricature pixel-art e non contengono marche,
+loghi o personaggi di terzi. Il registro dei prompt disponibili e delle
+reference visive riservate è in
 `docs/archive/generation-prompts-and-references.md`.
 Origine: progetto IL GIOCO; autore: progetto IL GIOCO con assistenza OpenAI
 ImageGen; licenza: Licenza del progetto.
@@ -45,16 +43,15 @@ Player e nessuna UI o scena della welcome entra nelle texture runtime.
 
 ### Identity pass del 28 agosto 2026
 
-### Reference fotografiche archiviate il 2 settembre 2026, spostate sotto `docs/` il 2 settembre 2026 (PS-084)
+### Reference visive riservate spostate sotto `docs/` il 2 settembre 2026 (PS-084)
 
-Le fotografie originali autorizzate dal proprietario sono conservate in
-`docs/characters/references/<id>/source-XX.png` (spostate da
-`assets/art/characters/references/<id>/` senza alterare i byte), tutte fuori da
-import ed export. Origine: asset del progetto forniti dal proprietario; autore
-e licenza: non applicabili a una reference privata del proprietario.
-Trasformazione: nessuna (solo normalizzazione deterministica dei nomi in
-minuscolo al momento dell'archiviazione). Ruolo: `subject reference` per
-future generazioni in caricatura pixel-art, mai runtime.
+I file sorgente riservati sono conservati in
+`docs/characters/references/<id>/source-XX.png` (spostati da
+`assets/art/characters/references/<id>/` senza alterare i byte), tutti fuori da
+import ed export. Trasformazione: nessuna, salvo la normalizzazione
+deterministica dei nomi in minuscolo al momento dell'archiviazione. Ruolo:
+`subject reference` per future generazioni in caricatura pixel-art, mai
+runtime.
 
 La tabella completa con dimensioni e SHA-256 è nel registro storico
 `docs/archive/generation-prompts-and-references.md`; non duplicarla qui per
@@ -101,7 +98,7 @@ Primary request: create one original fictional character in exactly three regist
 Scene/backdrop: perfectly flat uniform chroma-key background everywhere
 Style/medium: polished caricatural arcade pixel art matching the approved welcome cast; crisp dark outline, limited palette, chunky readable pixel clusters
 Composition/framing: exactly three equal-width cells, full body visible, identical scale, baseline, center and proportions, generous padding, no dividers
-Constraints: fictional human archetype only; faces right; no real person, logo, trademark, text, watermark, shadows, gradient, scenery, floor or gameplay VFX; crisp edges suitable for deterministic downscale to 32x32 per frame
+Constraints: single fictional game character only; faces right; no logo, trademark, text, watermark, shadows, gradient, scenery, floor or gameplay VFX; crisp edges suitable for deterministic downscale to 32x32 per frame
 ```
 
 ImageGen ha usato la striscia Magno corretta come riferimento di stile,
@@ -114,11 +111,11 @@ preservare tre pose, baseline, scala, pixel-art e chroma.
 
 | ID | Soggetto e locomozione richiesti | Correzione finale rispetto al primo output |
 |---|---|---|
-| `magno` | Uomo energumeno tellurico, molto largo e muscoloso, outfit terra, piccoli richiami bovini, passo pesante | Rimossa ogni anatomia animale del primo output: Magno resta umano come nella welcome, con soli motivi a corna/emblema bovino. Il successivo identity pass ha un prompt integrale recuperato nel [registro storico](../../../docs/archive/generation-prompts-and-references.md#magno--originale-recuperato) |
+| `magno` | Uomo energumeno tellurico, molto largo e muscoloso, outfit terra, piccoli richiami bovini, passo pesante | Rimossa ogni anatomia animale del primo output: Magno resta umano come nella welcome, con soli motivi a corna/emblema bovino. Il successivo identity pass ha un prompt riutilizzabile nel [registro storico](../../../docs/archive/generation-prompts-and-references.md#magno--prompt-riutilizzabile) |
 | `bea` | Pattinatrice agile senza casco, capelli scuri lunghi e ricci, giacca viola, protezioni e roller, falcata da skating | Nessuna correzione: confronto diretto con Bea B18O positivo; scia e Powerslide restano VFX separati |
 | `zat` | Infermiera elettrica in bianco-ciano, simbolo medico generico a cuore, caschetto, passo rapido | Rimosso completamente il copricapo generato; caschetto teal e divisa sono allineati alla welcome, senza Croce Rossa |
 | `alea` | Ballerina classica, tutu leggibile, passi eleganti | Capelli portati al biondo caldo e costume a bianco-avorio con oro come nella welcome; nastro e aquila restano VFX separati |
-| `aleo` | Muratore con casco, cazzuola, piccolo secchio e stivali, passo robusto | Reso giovane e senza barba; gilet arancio sostituito da abito da lavoro verde oliva e giallo coerente con la welcome. **Da rigenerare**: il rework del 28 agosto 2026 trasforma Aleo in un termotecnico; prompt aggiornato nel [registro storico](../../../docs/archive/generation-prompts-and-references.md#aleo--originale-recuperato) |
+| `aleo` | Muratore con casco, cazzuola, piccolo secchio e stivali, passo robusto | Reso giovane e senza barba; gilet arancio sostituito da abito da lavoro verde oliva e giallo coerente con la welcome. **Da rigenerare**: il rework del 28 agosto 2026 trasforma Aleo in un termotecnico; prompt aggiornato nel [registro storico](../../../docs/archive/generation-prompts-and-references.md#aleo--prompt-riutilizzabile) |
 | `lollo` | Cosplayer iperattivo con capelli scuri, tuta blu, dettagli gialli, goggles e accessori wasteland originali | Nessuna correzione: confronto diretto con Lollo B18O positivo; nessun numero, marchio o costume riconoscibile |
 | `migi` | Donna calma con capelli neri e occhiali, outfit teal, scudo a guscio compatto, passo deliberato | Nessuna correzione: confronto diretto con Migi B18O positivo; cupola e onde rallentanti restano VFX separati |
 | `marghe` | Ballerina reggaeton con capelli neri molto lunghi, magenta-oro e passo ritmico | Corporatura resa piu morbida e piena e palette spostata al viola, magenta e oro come nella welcome; clone d'ombra resta VFX separato |
@@ -342,17 +339,16 @@ destinato al runtime futuro.
 ### Produzione approvata il 3 settembre 2026
 
 - Origine: OpenAI ImageGen built-in, generazione guidata dai master Player
-  `poses.png` e da fotografie personali autorizzate del cast.
+  `poses.png` e dalle reference visive riservate del cast.
 - Autore: progetto IL GIOCO con assistenza OpenAI ImageGen.
 - Licenza: Licenza del progetto.
 - Approvazione: il proprietario ha approvato esplicitamente gli otto busti.
   Per Marghe ha richiesto un'unica correzione: capelli neri; il resto del
   candidato è rimasto invariato.
 - Ruolo dei riferimenti: `poses.png` è dominante per design, costume,
-  proporzioni e grammatica pixel-art; le fotografie in
-  `docs/characters/references/<id>/` sono `subject reference` usate soltanto
-  per citazioni fisionomiche semplificate, mai come edit target o copie
-  fotorealistiche.
+  proporzioni e grammatica pixel-art; i file in
+  `docs/characters/references/<id>/` sono `subject reference` secondarie, mai
+  edit target.
 
 Prompt finale condiviso normalizzato:
 
@@ -360,11 +356,10 @@ Prompt finale condiviso normalizzato:
 Creare il ritratto busto Player nella stessa famiglia pixel-art arcade dei
 master poses.png: cluster visibili, bordi a gradini, palette limitata, due o tre
 fasce d'ombra, lineamenti semplificati e outline prugna scuro. Conservare design,
-costume e proporzioni del personaggio di gioco; trasferire dalle fotografie solo
-pochi tratti-citazione riconoscibili, senza riprodurre geometria facciale,
-texture o illuminazione fotografica. Inquadratura quadrata coerente, dal punto
-vita verso l'alto, sfondo trasparente; niente fotorealismo, 3D, stile chibi,
-effetti Evil, testo, logo o watermark.
+costume e proporzioni del personaggio di gioco; usare le reference secondarie
+solo per continuità del soggetto. Inquadratura quadrata coerente, dal punto vita
+verso l'alto, sfondo trasparente; niente 3D, stile chibi, effetti Evil, testo,
+logo o watermark.
 ```
 
 Specifiche applicate:

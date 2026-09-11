@@ -37,15 +37,13 @@ testo, sfondi o dettagli estranei. Nel manifest registra il prompt finale e i
 riferimenti di progetto materialmente usati, specificandone il ruolo. Non
 inventare licenze o provenienze non dimostrate.
 
-## Reference fotografiche del cast
+## Reference visive riservate del cast
 
-Le fotografie personali autorizzate dal proprietario come `subject reference`
-per le caricature pixel-art del cast vivono in
+Le reference visive riservate per le caricature pixel-art del cast vivono in
 `docs/characters/references/<id>/`, mai in un percorso runtime. Il documento
-`docs/characters/<id>.md`, quando esiste, riassume quale reference è
-associata a ciascun personaggio e il suo ruolo dichiarato. Usale solo come
-`subject`, mai come `edit target` per un output fotorealistico, e solo se la
-card autorizza esplicitamente un soggetto reale (vedi i confini in
-`.agents/skills/game-art-designer/SKILL.md`).
+`docs/characters/<id>.md`, quando esiste, riassume quale reference è associata
+a ciascun personaggio e il suo ruolo dichiarato. Usale solo come `subject`, mai
+come `edit target`, e soltanto quando la card le include esplicitamente nel
+proprio ambito (vedi i confini in `.agents/skills/game-art-designer/SKILL.md`).
 
 Riferimento: <https://learn.chatgpt.com/docs/image-generation>

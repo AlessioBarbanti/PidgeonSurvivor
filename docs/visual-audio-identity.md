@@ -32,16 +32,11 @@ del documento architetturale, non una lacuna di questo file.
 - **Cast giocabile** ([characters.md](./characters.md), righe 111-124): gli
   otto profili (Zat, Bea, Aleo, Alea, Lollo, Migi, Marghe, Magno, con le
   rispettive Evil) seguono la direzione presentazionale approvata per il
-  fondale della welcome screen, tradotta in silhouette leggibili. Nessun
-  profilo è una somiglianza fotografica: tutti restano caricature pixel-art.
-  L'identity pass del 28/08/2026 ha però superato la baseline iniziale (senza
-  fotografie) per tutti e otto i profili, usando riferimenti fotografici
-  forniti e autorizzati esplicitamente dal proprietario come `subject
-  reference` (dettaglio per personaggio in `docs/characters/<id>.md`, foto in
-  `docs/characters/references/<id>/`); Aleo resta il solo rework
-  dichiaratamente ispirato ai tratti di una persona reale con consenso
-  esplicito documentato oltre alla semplice reference. L'intero cast di
-  sprite è stato rigenerato in un passaggio di identità unico il 28/08/2026.
+  fondale della welcome screen, tradotta in silhouette leggibili e caricature
+  pixel-art. L'identity pass del 28/08/2026 ha uniformato tutti e otto i
+  profili alla direzione approvata; i dettagli per personaggio sono in
+  `docs/characters/<id>.md` e le reference visive riservate restano fuori da
+  import ed export in `docs/characters/references/<id>/`.
 - **Bottoni secondari del pannello pausa** ([pause_overlay.tscn](../scenes/ui/pause_overlay.tscn)):
   CAMBIA PERSONAGGIO, IMPOSTAZIONI ed ESCI condividono la stessa texture
   nine-slice (`secondary_button_cta_base.png`), il cui canale rosso è ≈0 —
@@ -128,7 +123,7 @@ del documento architetturale, non una lacuna di questo file.
 | `vfx/projectiles` | 4 | in `vfx/ASSET-MANIFEST.md` | |
 | `ui/tutorial` | 10 | [ASSET-MANIFEST.md](../assets/art/ui/tutorial/ASSET-MANIFEST.md) | PS-049: ability/pickups/telegraphs, sfondo ImageGen + composizione deterministica di elementi runtime reali |
 | `ui/welcome` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/welcome/ASSET-MANIFEST.md) | Fondale welcome B18O |
-| `ui/barb_reward` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/barb_reward/ASSET-MANIFEST.md) | Caricatura Barb (PS-036), da foto personale non conservata nel repo |
+| `ui/barb_reward` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/barb_reward/ASSET-MANIFEST.md) | Caricatura dedicata di Barb (PS-036) |
 | `ui/pause` | 2 | [ASSET-MANIFEST.md](../assets/art/ui/pause/ASSET-MANIFEST.md) | Cornice riusata da pausa, cambio personaggio, tutorial, terminale, intro Boss |
 | `ui/upgrade_card` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/upgrade_card/ASSET-MANIFEST.md) | Rivetto d'angolo PS-152: master, copia review e derivato runtime |
 | `ui/boss` | 4 | [ASSET-MANIFEST.md](../assets/art/ui/boss/ASSET-MANIFEST.md) | Plancia CTA "AFFRONTA" e cornice Boss Intro PS-102 (in attesa di wiring PS-103) |
@@ -176,11 +171,10 @@ CC0 Eldiran non è più il fallback dei busti Player. I master restano in
 
 La grammatica condivisa è pixel-art arcade a cluster visibili, outline scuro,
 ombre a fasce e inquadratura coerente dalla vita verso l'alto. `poses.png`
-domina design, costume e proporzioni; le fotografie personali autorizzate
-forniscono solo citazioni fisionomiche semplificate, mai una copia
-fotorealistica. L'accettazione percettiva del proprietario copre tutti gli otto
-busti; Marghe è stata accettata dopo la correzione dei capelli da castani a
-neri.
+domina design, costume e proporzioni; le reference visive riservate hanno ruolo
+secondario di continuità del soggetto. L'accettazione percettiva del
+proprietario copre tutti gli otto busti; Marghe è stata accettata dopo la
+correzione dei capelli da castani a neri.
 
 ### Stato dei ritratti Evil nella Boss Intro (PS-051, integrato da PS-052)
 

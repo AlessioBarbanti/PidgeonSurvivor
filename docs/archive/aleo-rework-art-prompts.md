@@ -5,11 +5,8 @@ termotecnico: passiva **Termostato Interno**, attiva **Shock Termico**. Questo
 file raccoglie i prompt riproducibili usati per rigenerare l'arte, nello stile
 già adottato per il resto del cast. Lo stato di integrazione è in fondo.
 
-Origine dichiarata: la direzione visuale di Aleo è ispirata ai tratti di una
-persona reale, con consenso esplicito dichiarato dal proprietario del progetto.
-Il risultato resta una caricatura pixel-art e non una somiglianza fotografica.
-Per questo i prompt sostituiscono la clausola «no real person» usata per il
-resto del cast con «caricature only, never a photographic likeness».
+La direzione visuale di Aleo segue il rework approvato del 28 agosto 2026 e la
+grammatica caricaturale pixel-art condivisa con il resto del cast.
 
 I manifest dedicati (`assets/art/characters/players/ASSET-MANIFEST.md`,
 `assets/art/icons/passives/ASSET-MANIFEST.md`, `assets/art/vfx/ASSET-MANIFEST.md`)

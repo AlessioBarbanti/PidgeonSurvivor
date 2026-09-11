@@ -2,18 +2,16 @@
 
 ## Caricatura di Barb (PS-036)
 
-Integrata il 31 agosto 2026. Origine: progetto IL GIOCO, generata a partire
-dalla fotografia personale fornita dal proprietario in chat e non conservata
-nel repository. Autore: progetto IL GIOCO con assistenza OpenAI ImageGen
-built-in. Licenza: Licenza del progetto. Il proprietario ha richiesto
-esplicitamente la caricatura e ne ha autorizzato l'uso nella card PS-036.
+Integrata il 31 agosto 2026. Origine: progetto IL GIOCO, generata secondo la
+direzione approvata nella card PS-036. Autore: progetto IL GIOCO con assistenza
+OpenAI ImageGen built-in. Licenza: Licenza del progetto.
 
 ### Prompt finale
 
 ```text
 Use case: precise-object-edit
 Asset type: decorative character portrait for a Godot 4 pixel-art survivor game's special reward header
-Input images: Image 1 is the exact current pixel-art portrait to edit; Image 2 is the original identity reference for Barb.
+Input images: Image 1 is the exact current pixel-art portrait to edit; Image 2 is the approved character reference for Barb.
 Primary request: simplify the current seasoned "Maestro della griglia" portrait with three precise changes while preserving identity and grill-master wear.
 Change 1 — remove the lower hand: completely remove the gloved hand resting across Barb's belly/apron. Reconstruct the apron front and pocket naturally where that hand was. No hand or fingers may rest on the torso. Keep only the raised thumbs-up hand as an active visible hand. To preserve the idea of a matching pair of grill gloves, one empty spare leather glove may be neatly tucked partly into the apron pocket, clearly limp and unoccupied, but it must not look like a hand pressing against the body.
 Change 2 — chunkier pixel art: make the entire portrait visibly more pixelated and game-sprite-like, with larger deliberate square pixel clusters, fewer tiny dither details, sharper stepped contours, simplified shading bands, and a lower-resolution 16-bit/32-bit arcade portrait feel. Keep it polished and readable, not blurry, noisy, smooth-painted, or photorealistic.

@@ -39,7 +39,7 @@ stato necessario rimuovere il chroma key. Il derivato runtime è prodotto da
   l'integrazione nel roster; i prompt riproducibili sono in
   [`GENERATION-PROMPTS.md`](./GENERATION-PROMPTS.md).
 - Licenza: materiale conferito dal proprietario per l'uso nel progetto; nessuna
-  fonte terza, marchio o persona reale è dichiarata nel manifest.
+  fonte terza o marchio è dichiarato nel manifest.
 - Trasformazione: `tools/process-passive-icon.ps1` con soglia alpha `8`, padding
   `12` e riduzione nearest-neighbor a `128×128`.
 - Verifica: sorgenti e runtime sono PNG RGBA; gli angoli runtime hanno alpha

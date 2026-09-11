@@ -4,7 +4,7 @@ Riferimento sintetico per la famiglia visiva di Magno, pensato come aiuto per
 `.agents/skills/game-art-designer/SKILL.md` (Claude:
 `.claude/agents/game-art-designer.md`; Codex:
 `.codex/agents/game-art-designer.toml`). Non sostituisce l'ispezione dei
-fratelli visivi reali: in caso di conflitto con i master o con
+fratelli visivi correnti: in caso di conflitto con i master o con
 `assets/art/characters/ASSET-MANIFEST.md`, questi ultimi restano autorevoli.
 Ruolo gameplay, passiva e abilità attiva restano in
 [`docs/characters.md`](../characters.md), non duplicati qui.
@@ -23,7 +23,7 @@ introduceva corna e tratti animali sul corpo, rimossi nella correzione finale
 perché Magno resta umano (`assets/art/characters/ASSET-MANIFEST.md`, tabella
 prompt B18U). Il prompt completo dell'identity pass recuperato da
 `img_char_prompts.md` è archiviato in
-[`docs/archive/generation-prompts-and-references.md`](../archive/generation-prompts-and-references.md#magno--originale-recuperato).
+[`docs/archive/generation-prompts-and-references.md`](../archive/generation-prompts-and-references.md#magno--prompt-riutilizzabile).
 
 ## Variante Evil
 
@@ -35,11 +35,10 @@ magenta-viola luminoso, poche crepe energetiche e rim light personale;
 preserva acconciatura, corporatura, colori dell'abito e accessori del
 Player.
 
-## Reference fotografica
+## Reference visive riservate
 
 - `docs/characters/references/magno/source-01.png` — 1 file, ruolo `subject
-  reference`, non editing target, mai output fotorealistico; autorizzata dal
-  proprietario, archiviata il 2 settembre 2026.
+  reference`, fuori da import/export.
 
 ## Master e derivati correnti
 

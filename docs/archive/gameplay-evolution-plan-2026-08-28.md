@@ -731,7 +731,7 @@ restano da fare.
 Stato: `RIFIUTATO`.
 
 **Obiettivo.** Dare un motivo di rigiocare senza introdurre potere persistente.
-In un gioco che è una presa in giro degli amici del proprietario, la classifica
+In un gioco costruito attorno a un cast satirico, la classifica
 **è** la battuta.
 
 Contratti:

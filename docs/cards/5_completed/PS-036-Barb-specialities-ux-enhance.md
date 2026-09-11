@@ -20,7 +20,7 @@ PS-012 ha introdotto `BarbRewardOverlay` come schermata dedicata alla ricompensa
 
 Dallo screenshot della selezione attuale, il layout a tre carte è già leggibile e funzionale: tre pannelli grandi, sfondo scuro, bordo blu e carta selezionata evidenziata. Il problema non è la struttura, ma il fatto che la schermata Barb non venga percepita come un momento speciale e separato dal normale level-up.
 
-Inoltre il proprietario ha richiesto che durante questa schermata sia presente una **caricatura di Barb**, basata sulla foto fornita.
+Inoltre il proprietario ha richiesto che durante questa schermata sia presente una **caricatura dedicata di Barb**.
 
 ## Comportamento atteso
 
@@ -53,7 +53,7 @@ L’header deve avere maggiore personalità visiva rispetto alla schermata norma
 
 ### Caricatura di Barb
 
-La schermata include una **caricatura di Barb** ricavata dalla foto di riferimento fornita dal proprietario.
+La schermata include una **caricatura di Barb** coerente con la direzione visiva approvata.
 
 La caricatura deve essere:
 
@@ -123,7 +123,7 @@ Non devono essere introdotti effetti visivi invasivi o animazioni che rallentano
 - [x] `BarbRewardOverlay` è percepibile come distinta dal normale upgrade overlay.
 - [x] Il layout a tre carte resta invariato nella sua struttura principale.
 - [x] La schermata mostra un titolo dedicato a Barb e non il normale titolo `LIVELLO X`.
-- [x] La schermata include una caricatura visibile di Barb basata sulla foto di riferimento.
+- [x] La schermata include una caricatura visibile di Barb coerente con la direzione approvata.
 - [x] La caricatura è stilizzata e coerente con il linguaggio visivo del gioco.
 - [x] La caricatura mantiene almeno barba, capelli corti e piercing al sopracciglio come tratti riconoscibili.
 - [x] La caricatura non copre né rende illeggibili le tre carte.
@@ -179,7 +179,7 @@ Non toccare:
   presentativo di questa card.
 - **2026-08-31 — La schermata Barb mantiene il layout base della selezione upgrade.** Non viene creato un secondo paradigma UI.
 - **2026-08-31 — La distinzione avviene tramite header, palette, cornice e presenza della caricatura di Barb.** Questo rende la ricompensa Boss immediatamente riconoscibile.
-- **2026-08-31 — La schermata deve includere una caricatura del proprietario.** La caricatura è decorativa, coerente con il gioco e basata sulla foto fornita.
+- **2026-08-31 — La schermata deve includere una caricatura dedicata di Barb.** La caricatura è decorativa e coerente con il gioco.
 - **2026-08-31 — La modalità fallback conserva la scena Barb ma non deve fingere di sbloccare nuove Specialità.**
 - **2026-08-31 — L'header non usa sottotitoli esplicativi.** Su richiesta del
   proprietario vengono rimossi sia “Barb sblocca una nuova meccanica per questa
@@ -189,10 +189,9 @@ Non toccare:
   ritratto finale usa grembiule annerito, guanto in pelle consumato, secondo
   guanto riposto, fuliggine/unto, occhi blu scuri e pixel cluster più grandi;
   resta visibile una sola mano attiva con pollice di proporzioni naturali.
-- **2026-08-31 — La fotografia resta fuori dal repository.** Il proprietario
-  l'ha fornita e ha richiesto esplicitamente la caricatura; master ImageGen,
-  derivato runtime, prompt, trasformazioni, licenza e hash sono registrati nel
-  manifest locale dell'asset.
+- **2026-08-31 — La provenienza tecnica resta nel manifest locale.** Master
+  ImageGen, derivato runtime, prompt, trasformazioni, licenza e hash sono
+  registrati senza dettagli personali.
 - **Sostituisce:** la direzione precedente “da definire” della schermata Barb.
 
 ## Documenti sincronizzati
@@ -213,7 +212,7 @@ Direzione sintetica:
 - **Specialità di Barb** = caldo, speciale, premio, sblocco;
 - **premio bonus di Barb** = identità Barb, ma carte più vicine al normale upgrade.
 
-La caricatura di Barb deve essere trattata come asset UI dedicato e non come semplice foto incollata.
+La caricatura di Barb deve essere trattata come asset UI dedicato e coerente con la famiglia visiva del gioco.
 
 ### Evidenze 2026-08-31
 
