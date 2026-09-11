@@ -44,14 +44,29 @@ Godot:
 
 Lo smoke test deve stampare `SMOKE_OK` e terminare con codice `0`.
 
-### Manifest degli asset grafici
+### Manifest degli asset grafici e audio
 
-Quando una slice aggiunge o modifica file grafici, icone o sorgenti VFX
+Quando una slice aggiunge o modifica file grafici, audio, icone o sorgenti VFX
 procedurali, aggiornare il relativo `ASSET-MANIFEST.md` con percorso, origine,
 autore, licenza, trasformazioni e SHA-256. Per calcolare l'hash dalla root:
 
 ```powershell
 (Get-FileHash -Algorithm SHA256 '<percorso>').Hash.ToLowerInvariant()
+```
+
+Le musiche runtime vengono derivate in Ogg Vorbis con
+[`tools/process-music-track.ps1`](../tools/process-music-track.ps1). Il master
+resta in una cartella `hd/` con `.gdignore`, esclusa da tutti i preset; lo
+script non sovrascrive mai il master e valida codec, durata, canali, sample
+rate, riduzione di peso e SHA-256 del derivato.
+
+Richiede `ffmpeg` e `ffprobe` nel `PATH`. Esempio:
+
+```powershell
+.\tools\process-music-track.ps1 `
+  -InputPath assets\audio\third_party\matthewpablo_vilified\hd\boss_music_loop_source.mp3 `
+  -OutputPath assets\audio\third_party\matthewpablo_vilified\boss_music_loop.ogg `
+  -BitrateKbps 112
 ```
 
 Il manifest è documentazione di sorgente e non deve diventare una dipendenza
@@ -252,6 +267,13 @@ Le due build automatiche non vanno confuse:
 |---|---|---|
 | `android-debug-release.yml` (PS-060) | a mano, `workflow_dispatch` | APK **di debug**, firma di debug, prerelease sul tag mobile `android-debug-latest`. Uso interno |
 | `android-release.yml` (PS-134) | push su `main` | APK **di release** firmato e versionato, Release pubblica taggata `v<versione>` |
+
+Il preset `Android APK`, distribuito direttamente da GitHub, comprime le
+librerie native (`gradle_build/compress_native_libraries=true`) per ridurre il
+download. Android deve estrarle prima dell'uso, quindi installazione o primo
+avvio possono richiedere più tempo. Il preset `Android AAB (future)` mantiene
+la compressione disattivata: l'eventuale distribuzione tramite Play Store
+gestirà il packaging per dispositivo.
 
 ## Firma release
 

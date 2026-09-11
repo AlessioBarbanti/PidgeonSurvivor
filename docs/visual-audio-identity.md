@@ -251,7 +251,7 @@ musica di run `super_wreck_roadway_loop.ogg` (Umplix, CC0)
 ([super_wreck_roadway_loop/ASSET-MANIFEST.md](../assets/audio/third_party/super_wreck_roadway_loop/ASSET-MANIFEST.md));
 musica menu
 `menu_music_loop.ogg` (wipics, CC0); musica Boss dedicata (PS-073)
-`boss_music_loop.mp3`, "Vilified" di Matthew Pablo, CC-BY 3.0 — l'unico asset
+`boss_music_loop.ogg`, "Vilified" di Matthew Pablo, CC-BY 3.0 — l'unico asset
 audio del progetto con attribuzione obbligatoria invece che volontaria
 ([matthewpablo_vilified/ASSET-MANIFEST.md](../assets/audio/third_party/matthewpablo_vilified/ASSET-MANIFEST.md)).
 Musica dedicata di fine run (PS-080), un solo colpo non in loop, distinta dai

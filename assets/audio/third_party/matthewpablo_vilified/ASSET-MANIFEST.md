@@ -1,6 +1,6 @@
 # Boss music (PS-073)
 
-`boss_music_loop.mp3` is the `GameAudio` boss track: it replaces the run
+`boss_music_loop.ogg` is the `GameAudio` boss track: it replaces the run
 background music for the duration of `BOSS_INTRO` and the boss fight, and the
 run music resumes from where it was interrupted once the Boss is defeated.
 
@@ -8,16 +8,21 @@ run music resumes from where it was interrupted once the Boss is defeated.
 
 | Field | Value |
 |---|---|
-| Runtime file | `boss_music_loop.mp3` |
+| Runtime file | `boss_music_loop.ogg` |
+| Repository master | `hd/boss_music_loop_source.mp3` (excluded from Godot import and every export preset) |
 | Official original | `Vilified (2012)_0.mp3` |
 | Author | Matthew Pablo |
 | Official source | https://opengameart.org/content/vilified |
 | Direct official download | https://opengameart.org/sites/default/files/Vilified%20%282012%29_0.mp3 |
 | License | Creative Commons Attribution 3.0 (CC-BY 3.0) — **attribution required**, unlike every other audio asset integrated so far in this project |
 | Acquired | 4 September 2026 |
-| Transformation | Downloaded from the official OpenGameArt file URL; renamed only for the runtime convention. No re-encoding: the runtime file is byte-identical to the download. ffmpeg is not available in this environment and the project already has precedent (`../artisticdude_swishes/ASSET-MANIFEST.md`) for keeping a delivered file in its original format when Godot imports it natively — Godot 4 imports MP3 natively as `AudioStreamMP3`, which exposes the same `loop` property as `AudioStreamOggVorbis`. `GameAudio` enables looping on the boss stream the same way it already does for the run/menu OGG streams. |
-| Format | MP3, 320 kbps CBR, 5:16 | 
-| SHA-256 | `59BE12C712BC9E67E8DF323CAA926F77839B7C2299AE11E5E8049628F20D8DBB` |
+| Transformation | The official MP3 is retained byte-identical as the repository master. `tools/process-music-track.ps1` selects the first audio stream, removes the embedded 1600×1200 cover and metadata, and encodes the runtime derivative as deterministic Ogg Vorbis at 112 kbps, stereo, 44100 Hz. Duration drift: 0.006 ms; size reduction: 69.35%. |
+| Master format | MP3, 320 kbps CBR, stereo, 44100 Hz, 5:16.839 |
+| Runtime format | Ogg Vorbis, target 112 kbps, stereo, 44100 Hz, 5:16.839 |
+| Master size | 14,734,430 bytes |
+| Runtime size | 4,516,812 bytes (−69.35%) |
+| Master SHA-256 | `59BE12C712BC9E67E8DF323CAA926F77839B7C2299AE11E5E8049628F20D8DBB` |
+| Runtime SHA-256 | `09E189CF473A9F6D1E489A1B66ACE3D5FB32CE99FBDF1329249D9C2C5F169D59` |
 
 The OpenGameArt page credits only Matthew Pablo and describes the piece as
 "an epic orchestral-rock track with a very electronic feel towards the end".

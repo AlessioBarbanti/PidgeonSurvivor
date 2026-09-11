@@ -45,7 +45,7 @@ in scena come Boss con attacchi telegrafati e pattern distintivi.
 
 ## Scarica e gioca
 
-La versione corrente del progetto è **v0.2.1**. Scarica
+La versione corrente del progetto è **v0.2.2**. Scarica
 [`pidgeon-survivor.apk`](https://github.com/AlessioBarbanti/PidgeonSurvivor/releases/latest/download/pidgeon-survivor.apk)
 e aprilo sul telefono per installarlo. Poiché l'APK è distribuito direttamente
 da GitHub e non tramite uno store, Android potrebbe chiederti di autorizzare
