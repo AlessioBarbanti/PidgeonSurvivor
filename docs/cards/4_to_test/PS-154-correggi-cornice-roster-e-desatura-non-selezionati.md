@@ -3,12 +3,12 @@ id: PS-154
 titolo: Correggi la cornice del roster nel selettore personaggi e desatura i non selezionati
 tipo: fix
 area: ui
-stato: IN CORSO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-09-10
-aggiornato: 2026-09-11
+aggiornato: 2026-09-13
 ---
 
 # PS-154 — Correggi la cornice del roster nel selettore personaggi e desatura i non selezionati
@@ -214,6 +214,16 @@ Non toccare:
   32/28, spessore cornice ridotto) e non ha rilevato regressioni. Lo stato
   resta `IN CORSO` come richiesto dal proprietario: e' solo evidenza di
   non-regressione raccolta di passaggio, non una chiusura della card.
+- **2026-09-13 — Il proprietario ha chiesto di spostare la card in
+  verifica (`IN VERIFICA`) cosi' com'e', senza rieseguire Focused/Relevant in
+  questa sessione.** Le uniche evidenze automatiche disponibili restano
+  quelle di riga sopra: il Focused/Relevant registrato in "Verifica" riflette
+  lo stato *prima* delle ultime due tarature (margine 32/28, poi padding
+  icona 9/11); la sola evidenza successiva a quelle tarature e' il Full
+  incidentale di PS-155 (139/139, nessuna regressione su questo file). Prima
+  di poter chiudere questa card a `COMPLETATO` restera' comunque necessario
+  eseguire almeno un `Relevant` dedicato sullo stato finale, oltre ai gate
+  manuali/percettivi ancora aperti sotto.
 
 ## Documenti sincronizzati
 
