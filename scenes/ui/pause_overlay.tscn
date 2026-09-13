@@ -1,9 +1,14 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/pause_overlay.gd" id="1_pause"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/character_select/character_select_cta_base.png" id="4_primary_cta"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/character_select/secondary_button_cta_base.png" id="5_secondary_cta"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/pause/pause_panel_frame.png" id="6_pause_frame"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_build_summary_separator"]
+bg_color = Color(0.345, 0.294, 0.204, 0.72)
+content_margin_top = 1.0
+content_margin_bottom = 1.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_pause_panel"]
 texture = ExtResource("6_pause_frame")
@@ -291,6 +296,24 @@ theme_override_styles/hover = SubResource("StyleBoxTexture_exit_hover")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_exit_pressed")
 theme_override_styles/focus = SubResource("StyleBoxTexture_exit_hover")
 text = "ESCI"
+
+[node name="BuildSummarySeparator" type="HSeparator" parent="PauseCenter/Panel/PauseScroll/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxFlat_build_summary_separator")
+
+[node name="BuildSummaryTitle" type="Label" parent="PauseCenter/Panel/PauseScroll/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.91, 0.7, 1)
+theme_type_variation = &"TitleXS"
+text = "LA TUA BUILD"
+horizontal_alignment = 1
+
+[node name="BuildSummaryList" type="VBoxContainer" parent="PauseCenter/Panel/PauseScroll/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="ConfirmationCenter" type="CenterContainer" parent="."]
 unique_name_in_owner = true

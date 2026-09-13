@@ -67,6 +67,19 @@ del documento architetturale, non una lacuna di questo file.
   (`direttore-artistico` sullo screenshot in
   `exports/ui-screenshots/07_pause_overlay.png`, non sui numeri nel
   `.tscn`), prima di considerare il gate percettivo di una card chiuso.
+- **Specialità di Barb: due trattamenti distinti a seconda del contesto,
+  mai un terzo** (PS-164, confermato da `direttore-artistico` sul render
+  finale): su una card grande cliccabile (`UpgradeCard`, ricompensa di Barb),
+  bordo+sfondo ambra dedicati (`upgrade_card.gd:_apply_visual_treatment`); su
+  una riga di riepilogo read-only (`PauseOverlay`, riepilogo build in pausa),
+  solo il `font_color` del titolo passa all'oro già in uso nel pannello per
+  `ConfirmationTitleLabel` (`Color(1, 0.85, 0.32, 1)`), mai un bordo/sfondo —
+  quel trattamento resta riservato alle card cliccabili. Misurato sui pixel
+  reali di `exports/ui-screenshots/07_pause_overlay.png`: lo scarto di
+  tinta fra crema (`Color(1, 0.91, 0.7, 1)`) e oro è ≈0.34 sul canale blu,
+  ben oltre la soglia ±0.3-0.4 già stabilita per questo pannello scuro (vedi
+  voce sui bottoni secondari sopra) — un solo canale di distinzione basta,
+  non serve un secondo segnale (peso del font, tag testuale, icona).
 - **Ornamenti d'angolo delle carte upgrade**
   ([manifest](../assets/art/ui/upgrade_card/ASSET-MANIFEST.md)): per gli usi a
   clip, il medaglione/rivetto esiste come asset autonomo con alpha reale e

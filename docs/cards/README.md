@@ -265,7 +265,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-161](./4_to_test/PS-161-rendi-incisiva-progressione-abilita-attive.md) | Rendi incisiva la progressione delle abilità attive | chore | gameplay | IN VERIFICA | alta | — |
 | [PS-162](./4_to_test/PS-162-evita-ripetizioni-ravvicinate-boss.md) | Evita ripetizioni ravvicinate nella selezione dei Boss | fix | gameplay | IN VERIFICA | media | PS-127 |
 | [PS-163](./1_idea/PS-163-fai-reagire-boss-al-personaggio-giocato.md) | Fai reagire il Boss al personaggio giocato | feat | gameplay | DA DEFINIRE | bassa | — |
-| [PS-164](./2_to_do/PS-164-mostra-build-corrente-in-pausa.md) | Mostra la build corrente nel pannello pausa | ux | ui | PRONTO | media | PS-142, PS-145, PS-147 |
+| [PS-164](./4_to_test/PS-164-mostra-build-corrente-in-pausa.md) | Mostra la build corrente nel pannello pausa | ux | ui | IN VERIFICA | media | PS-142, PS-145, PS-147 |
 | [PS-165](./4_to_test/PS-165-rendi-leggibili-scorrevoli-collisioni-prop.md) | Rendi leggibili e scorrevoli le collisioni con i prop | fix | gameplay | IN VERIFICA | alta | PS-159 |
 | [PS-166](./4_to_test/PS-166-correggi-concordanze-testi-dinamici.md) | Correggi le concordanze nei testi dinamici | fix | ui | IN VERIFICA | media | PS-101 |
 | [PS-167](./1_idea/PS-167-elimina-dominante-gialla-artwork.md) | Elimina la dominante gialla dagli artwork | art | arte | DA DEFINIRE | bassa | PS-084 |
