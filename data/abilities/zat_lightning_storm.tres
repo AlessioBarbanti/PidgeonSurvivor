@@ -16,37 +16,37 @@ effect_parameters = {"tier_multiplier_high": 3.0, "tier_multiplier_low": 1.0, "t
 [sub_resource type="Resource" id="Rank_2"]
 script = ExtResource("3_rank")
 rank = 2
-cooldown_seconds = 60.0
+cooldown_seconds = 56.0
 duration_seconds = 0.85
 area_radius = 150.0
-damage = 16.0
+damage = 20.0
 effect_parameters = {"tier_multiplier_high": 3.0, "tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "warning_seconds": 0.35}
 
 [sub_resource type="Resource" id="Rank_3"]
 script = ExtResource("3_rank")
 rank = 3
-cooldown_seconds = 55.0
+cooldown_seconds = 50.0
 duration_seconds = 0.9
 area_radius = 170.0
-damage = 20.0
+damage = 32.0
 effect_parameters = {"tier_multiplier_high": 3.0, "tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "warning_seconds": 0.35}
 
 [sub_resource type="Resource" id="Rank_4"]
 script = ExtResource("3_rank")
 rank = 4
-cooldown_seconds = 55.0
+cooldown_seconds = 42.0
 duration_seconds = 0.9
 area_radius = 170.0
-damage = 25.0
+damage = 46.0
 effect_parameters = {"tier_multiplier_high": 3.0, "tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "warning_seconds": 0.35}
 
 [sub_resource type="Resource" id="Rank_5"]
 script = ExtResource("3_rank")
 rank = 5
-cooldown_seconds = 50.0
+cooldown_seconds = 34.0
 duration_seconds = 0.95
 area_radius = 190.0
-damage = 30.0
+damage = 64.0
 effect_parameters = {"tier_multiplier_high": 3.0, "tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "warning_seconds": 0.35}
 
 [resource]

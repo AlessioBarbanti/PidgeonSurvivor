@@ -303,9 +303,10 @@ progressioni sono: danno/raggio/knockback per Magno; danno/distanza/scia per Bea
 percentuali e cooldown per Zat; danno/durata/raggio/frequenza per Alea;
 danno/durata/raggio/sbalzo per Aleo; rank copiato, cooldown e anti-ripetizione per
 Lollo; durata/raggio/slow per Migi; durata e cooldown del clone per Marghe.
-Cosplay non trasferisce rank: risolve temporaneamente il profilo copiato al rank
-`1`, `2` o `3` previsto dal proprio rank, con filtri anti-ricorsione e di
-compatibilità invariati.
+Cosplay non trasferisce rank: risolve temporaneamente il profilo copiato al
+rank (da `1` a `5`) previsto dal proprio rank — PS-161 ha esteso la
+progressione fino a copiare un'abilità al proprio rank massimo — con filtri
+anti-ricorsione e di compatibilità invariati.
 
 ### 3.5. Boss, vittoria e chiusura della run
 

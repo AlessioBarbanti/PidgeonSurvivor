@@ -17,37 +17,37 @@ effect_parameters = {"bloom_seconds": 0.35, "shock_multiplier": 2.0, "slow_facto
 script = ExtResource("3_rank")
 rank = 2
 cooldown_seconds = 12.0
-duration_seconds = 1.2
-area_radius = 200.0
-damage = 18.0
-effect_parameters = {"bloom_seconds": 0.35, "shock_multiplier": 2.0, "slow_factor": 0.45}
+duration_seconds = 1.3
+area_radius = 240.0
+damage = 20.0
+effect_parameters = {"bloom_seconds": 0.35, "shock_multiplier": 2.2, "slow_factor": 0.4}
 
 [sub_resource type="Resource" id="Rank_3"]
 script = ExtResource("3_rank")
 rank = 3
-cooldown_seconds = 12.0
+cooldown_seconds = 11.0
 duration_seconds = 1.4
-area_radius = 230.0
-damage = 18.0
-effect_parameters = {"bloom_seconds": 0.35, "shock_multiplier": 2.0, "slow_factor": 0.45}
+area_radius = 290.0
+damage = 28.0
+effect_parameters = {"bloom_seconds": 0.35, "shock_multiplier": 2.5, "slow_factor": 0.33}
 
 [sub_resource type="Resource" id="Rank_4"]
 script = ExtResource("3_rank")
 rank = 4
-cooldown_seconds = 11.0
-duration_seconds = 1.4
-area_radius = 230.0
-damage = 18.0
-effect_parameters = {"bloom_seconds": 0.35, "shock_multiplier": 2.2, "slow_factor": 0.35}
+cooldown_seconds = 10.0
+duration_seconds = 1.5
+area_radius = 350.0
+damage = 38.0
+effect_parameters = {"bloom_seconds": 0.35, "shock_multiplier": 2.8, "slow_factor": 0.25}
 
 [sub_resource type="Resource" id="Rank_5"]
 script = ExtResource("3_rank")
 rank = 5
-cooldown_seconds = 11.0
-duration_seconds = 1.6
-area_radius = 250.0
-damage = 26.0
-effect_parameters = {"bloom_seconds": 0.35, "shock_multiplier": 2.5, "slow_factor": 0.35}
+cooldown_seconds = 9.0
+duration_seconds = 1.7
+area_radius = 420.0
+damage = 52.0
+effect_parameters = {"bloom_seconds": 0.35, "shock_multiplier": 3.2, "slow_factor": 0.15}
 
 [resource]
 script = ExtResource("1_definition")
