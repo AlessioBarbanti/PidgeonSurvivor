@@ -261,7 +261,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-157](./2_to_do/PS-157-ricalibra-difficolta-primi-cinque-minuti.md) | Ricalibra la difficoltà dei primi cinque minuti | chore | gameplay | BLOCCATO | alta | PS-123, PS-124, PS-159, PS-160, PS-161, PS-165 |
 | [PS-158](./2_to_do/PS-158-impedisci-build-offensive-mature-di-rendere-run-afk.md) | Impedisci alle build offensive mature di rendere la run AFK | fix | gameplay | BLOCCATO | alta | PS-126, PS-157 |
 | [PS-159](./4_to_test/PS-159-riduci-velocita-base-player.md) | Riduci la velocità base del Player | fix | gameplay | IN VERIFICA | alta | PS-087 |
-| [PS-160](./2_to_do/PS-160-rendi-competitivi-upgrade-velocita.md) | Rendi competitivi gli upgrade di velocità | chore | gameplay | PRONTO | alta | PS-159 |
+| [PS-160](./4_to_test/PS-160-rendi-competitivi-upgrade-velocita.md) | Rendi competitivi gli upgrade di velocità | chore | gameplay | IN VERIFICA | alta | PS-159 |
 | [PS-161](./2_to_do/PS-161-rendi-incisiva-progressione-abilita-attive.md) | Rendi incisiva la progressione delle abilità attive | chore | gameplay | PRONTO | alta | — |
 | [PS-162](./2_to_do/PS-162-evita-ripetizioni-ravvicinate-boss.md) | Evita ripetizioni ravvicinate nella selezione dei Boss | fix | gameplay | PRONTO | media | PS-127 |
 | [PS-163](./1_idea/PS-163-fai-reagire-boss-al-personaggio-giocato.md) | Fai reagire il Boss al personaggio giocato | feat | gameplay | DA DEFINIRE | bassa | — |

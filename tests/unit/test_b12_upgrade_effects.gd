@@ -118,12 +118,15 @@ func test_composed_upgrade_effects() -> void:
 			rank_guard += 1
 		assert_true(rank_guard < 100, "L'upgrade %s deve raggiungere il rank massimo entro il guard." % upgrade_id)
 
-	var expected_move_multiplier := pow(1.1, 5)
+	# PS-160: Dai che si fredda! e' passata da +10%/rank a +15%/rank; a rank 5
+	# (pow(1.15, 5) ~= 2.011) supera il cap max_move_speed_multiplier (2.0),
+	# quindi l'attesa deve tenerne conto invece di assumere solo la potenza.
+	var expected_move_multiplier := minf(pow(1.15, 5), registry.max_move_speed_multiplier)
 	var expected_fire_multiplier := pow(1.1, 5)
 	var expected_pickup_multiplier := pow(1.15, 5)
 	assert_almost_eq(
 		player.move_speed, base_move_speed * expected_move_multiplier, FLOAT_TOLERANCE,
-		"Passo Leggero deve comporre cinque rank moltiplicativi."
+		"Dai che si fredda! deve comporre cinque rank moltiplicativi (con cap PS-160)."
 	)
 	assert_almost_eq(
 		weapon.get_effective_shots_per_second(), base_fire_rate * expected_fire_multiplier, FLOAT_TOLERANCE,

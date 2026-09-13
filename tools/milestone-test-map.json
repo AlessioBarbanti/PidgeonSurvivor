@@ -193,7 +193,8 @@
         "tests/unit/test_ps089_ordinary_catalog_meat_audit.gd",
         "tests/unit/test_ps108_cooking_point_catalog_wiring.gd",
         "tests/unit/test_ps094_ability_charge_stacking.gd",
-        "tests/unit/test_ps100_anxiety_removal.gd"
+        "tests/unit/test_ps100_anxiety_removal.gd",
+        "tests/unit/test_ps160_speed_upgrade_value.gd"
       ]
     },
     {
@@ -216,7 +217,8 @@
         "tests/unit/test_ps093_extended_base_stats.gd",
         "tests/unit/test_ps108_cooking_point_catalog_wiring.gd",
         "tests/unit/test_ps094_ability_charge_stacking.gd",
-        "tests/unit/test_ps100_anxiety_removal.gd"
+        "tests/unit/test_ps100_anxiety_removal.gd",
+        "tests/unit/test_ps160_speed_upgrade_value.gd"
       ]
     },
     {
