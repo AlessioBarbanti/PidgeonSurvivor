@@ -23,6 +23,16 @@ const COPY_COMPATIBLE := &"copy_compatible"
 const DEFAULT_WAVE_DURATION := 0.35
 const ABILITY_ICON_BURST_SCRIPT := preload("res://scripts/abilities/ability_icon_burst.gd")
 
+## PS-173: il clone di Marghe spara proiettili alleati "leggeri", riusando la
+## pipeline Projectile esistente invece di un canale di danno dedicato. Velocita'/
+## lifetime/raggio restano fissi (non scalano per rango: solo danno e cadenza lo
+## fanno, dai dati), volutamente piu' lenti e meno pericolosi di un vero colpo
+## d'arma cosicche' il clone resti un aiuto secondario, non un secondo Player.
+const SHADOW_DECEPTION_PROJECTILE_SCENE := preload("res://scenes/combat/projectile.tscn")
+const SHADOW_DECEPTION_PROJECTILE_SPEED := 420.0
+const SHADOW_DECEPTION_PROJECTILE_LIFETIME := 1.4
+const SHADOW_DECEPTION_PROJECTILE_RADIUS := 6.0
+
 @export var definitions: Array[AbilityDefinition] = []
 
 var _definitions_by_id: Dictionary = {}
@@ -522,6 +532,7 @@ func _execute_shadow_deception(
 	illusion.name = "IllusionDecoy"
 	_effect_parent.add_child(illusion)
 	illusion.targets_affected.connect(_on_targets_affected)
+	illusion.attack_ready.connect(_on_illusion_attack_ready)
 	if not illusion.initialize(
 		source,
 		definition,
@@ -532,6 +543,51 @@ func _execute_shadow_deception(
 		return null
 	_track_effect(illusion)
 	return illusion
+
+
+## PS-173: spawna il colpo del clone come un Projectile alleato qualunque,
+## cosicche' i nemici colpiti reagiscano esattamente come a un colpo del
+## Player (stessa Hurtbox/gruppo). Tracciato con _track_effect() come ogni
+## altro effetto attivo: clear_active_effects() lo ripulisce automaticamente
+## a restart/fine effetto senza bisogno di una pipeline di pulizia dedicata.
+func _on_illusion_attack_ready(
+	source: IllusionDecoy,
+	target: BaseEnemy,
+	damage: float
+) -> void:
+	if (
+		not is_instance_valid(source)
+		or not is_instance_valid(target)
+		or not target.is_alive()
+		or not is_finite(damage)
+		or damage <= 0.0
+		or not is_instance_valid(_run_controller)
+		or not _run_controller.is_running()
+		or not is_instance_valid(_effect_parent)
+	):
+		return
+	var direction := target.global_position - source.global_position
+	if direction.is_zero_approx():
+		direction = Vector2.RIGHT
+	var instance := SHADOW_DECEPTION_PROJECTILE_SCENE.instantiate()
+	if not instance is Projectile:
+		if is_instance_valid(instance):
+			instance.free()
+		return
+	var projectile := instance as Projectile
+	_effect_parent.add_child(projectile)
+	projectile.global_position = source.global_position
+	if not projectile.initialize(
+		direction.normalized(),
+		damage,
+		SHADOW_DECEPTION_PROJECTILE_SPEED,
+		SHADOW_DECEPTION_PROJECTILE_LIFETIME,
+		SHADOW_DECEPTION_PROJECTILE_RADIUS,
+		_run_controller
+	):
+		projectile.queue_free()
+		return
+	_track_effect(projectile)
 
 
 ## Lo slancio di Magno (B45) scala danno e knockback fra il valore dichiarato

@@ -55,11 +55,11 @@ const EXPECTED_RANKS: Dictionary = {
 		[9.0, 6.5, 560.0, 0.0, {"slow_factor": 0.15}],
 	],
 	&"marghe_shadow_deception": [
-		[13.0, 3.0, 0.0, 0.0, {"illusion_lifetime_on_death": true}],
-		[12.0, 4.2, 0.0, 0.0, {"illusion_lifetime_on_death": true}],
-		[11.0, 5.4, 0.0, 0.0, {"illusion_lifetime_on_death": true}],
-		[10.0, 6.6, 0.0, 0.0, {"illusion_lifetime_on_death": true}],
-		[8.0, 8.5, 0.0, 0.0, {"illusion_lifetime_on_death": true}],
+		[13.0, 3.0, 0.0, 0.0, {"illusion_lifetime_on_death": true, "clone_attack_damage": 2.0, "clone_attack_interval": 1.6}],
+		[12.0, 4.2, 0.0, 0.0, {"illusion_lifetime_on_death": true, "clone_attack_damage": 2.5, "clone_attack_interval": 1.45}],
+		[11.0, 5.4, 0.0, 0.0, {"illusion_lifetime_on_death": true, "clone_attack_damage": 3.0, "clone_attack_interval": 1.3}],
+		[10.0, 6.6, 0.0, 0.0, {"illusion_lifetime_on_death": true, "clone_attack_damage": 4.0, "clone_attack_interval": 1.1}],
+		[8.0, 8.5, 0.0, 0.0, {"illusion_lifetime_on_death": true, "clone_attack_damage": 5.0, "clone_attack_interval": 0.9}],
 	],
 }
 

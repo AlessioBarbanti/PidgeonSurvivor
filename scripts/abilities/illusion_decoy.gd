@@ -3,6 +3,11 @@ extends Node2D
 
 signal finished(effect: IllusionDecoy)
 signal targets_affected(count: int)
+## PS-173: emesso quando il clone deve sparare al nemico vivo piu' vicino.
+## Lo spawn/la configurazione del proiettile restano fuori da questa
+## classe (vedi AbilityEffectRegistry): l'illusione decide solo quando e
+## contro chi attaccare.
+signal attack_ready(source: IllusionDecoy, target: BaseEnemy, damage: float)
 
 const VISUAL_FAMILY_ID := &"reggeton_clone_speaker_and_notes"
 const VISUAL_PARTICLE_COUNT := 6
@@ -21,6 +26,13 @@ var _duration_total := 0.0
 var _duration_remaining := 0.0
 var _previous_targets: Dictionary = {}
 var _finished := false
+## PS-173: il clone attacca i nemici finche' resta in vita, fin dal rango 1
+## (non solo al rango massimo). Danno e cadenza vengono dai due nuovi
+## effect_parameters dell'AbilityDefinition; un intervallo <= 0 disattiva
+## l'attacco (fallback sicuro per dati privi dei parametri).
+var _attack_damage := 0.0
+var _attack_interval := 0.0
+var _attack_cooldown_remaining := 0.0
 
 
 func initialize(
@@ -46,6 +58,9 @@ func initialize(
 	global_position = source.global_position
 	_duration_total = definition.duration_seconds
 	_duration_remaining = _duration_total
+	_attack_damage = definition.get_effect_float(&"clone_attack_damage", 0.0, 0.0)
+	_attack_interval = definition.get_effect_float(&"clone_attack_interval", 0.0, 0.0)
+	_attack_cooldown_remaining = _attack_interval
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_redirect_targets()
 	queue_redraw()
@@ -55,14 +70,27 @@ func initialize(
 func _process(delta: float) -> void:
 	if _finished or not is_instance_valid(_run_controller) or not _run_controller.is_running():
 		return
+	var safe_delta := maxf(delta, 0.0) if is_finite(delta) else 0.0
 	_redirect_targets()
-	_duration_remaining = maxf(
-		_duration_remaining - (maxf(delta, 0.0) if is_finite(delta) else 0.0),
-		0.0
-	)
+	_advance_attack_cycle(safe_delta)
+	_duration_remaining = maxf(_duration_remaining - safe_delta, 0.0)
 	queue_redraw()
 	if _duration_remaining <= 0.0:
 		_finish()
+
+
+func _advance_attack_cycle(delta: float) -> void:
+	if _attack_interval <= 0.0:
+		return
+	_attack_cooldown_remaining -= delta
+	if _attack_cooldown_remaining > 0.0:
+		return
+	_attack_cooldown_remaining += _attack_interval
+	if not is_instance_valid(_targeting_system):
+		return
+	var target := _targeting_system.get_nearest_alive(global_position)
+	if target != null:
+		attack_ready.emit(self, target, _attack_damage)
 
 
 func _draw() -> void:

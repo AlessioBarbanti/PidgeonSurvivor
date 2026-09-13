@@ -170,7 +170,8 @@
         "tests/unit/test_ps027_bea_powerslide_visual_cleanup.gd",
         "tests/unit/test_ps040_bea_powerslide_landing_iframe.gd",
         "tests/unit/test_ps042_bea_powerslide_spark_subordination.gd",
-        "tests/unit/test_ps094_ability_charge_stacking.gd"
+        "tests/unit/test_ps094_ability_charge_stacking.gd",
+        "tests/unit/test_ps173_marghe_clone_attacks.gd"
       ]
     },
     {
