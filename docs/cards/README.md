@@ -258,3 +258,18 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-154](./3_in_sprint/PS-154-correggi-cornice-roster-e-desatura-non-selezionati.md) | Correggi la cornice del roster nel selettore personaggi e desatura i non selezionati | fix | ui | IN CORSO | media | — |
 | [PS-155](./4_to_test/PS-155-correggi-altezza-e-centratura-testo-cta-arancione.md) | Correggi altezza e centratura del testo sul CTA arancione | fix | ui | IN VERIFICA | alta | — |
 | [PS-156](./4_to_test/PS-156-riduci-peso-apk-android.md) | Riduci il peso dell'APK Android | perf | piattaforma | IN VERIFICA | alta | — |
+| [PS-157](./2_to_do/PS-157-ricalibra-difficolta-primi-cinque-minuti.md) | Ricalibra la difficoltà dei primi cinque minuti | chore | gameplay | BLOCCATO | alta | PS-123, PS-124, PS-159, PS-160, PS-161, PS-165 |
+| [PS-158](./2_to_do/PS-158-impedisci-build-offensive-mature-di-rendere-run-afk.md) | Impedisci alle build offensive mature di rendere la run AFK | fix | gameplay | BLOCCATO | alta | PS-126, PS-157 |
+| [PS-159](./4_to_test/PS-159-riduci-velocita-base-player.md) | Riduci la velocità base del Player | fix | gameplay | IN VERIFICA | alta | PS-087 |
+| [PS-160](./2_to_do/PS-160-rendi-competitivi-upgrade-velocita.md) | Rendi competitivi gli upgrade di velocità | chore | gameplay | PRONTO | alta | PS-159 |
+| [PS-161](./2_to_do/PS-161-rendi-incisiva-progressione-abilita-attive.md) | Rendi incisiva la progressione delle abilità attive | chore | gameplay | PRONTO | alta | — |
+| [PS-162](./2_to_do/PS-162-evita-ripetizioni-ravvicinate-boss.md) | Evita ripetizioni ravvicinate nella selezione dei Boss | fix | gameplay | PRONTO | media | PS-127 |
+| [PS-163](./1_idea/PS-163-fai-reagire-boss-al-personaggio-giocato.md) | Fai reagire il Boss al personaggio giocato | feat | gameplay | DA DEFINIRE | bassa | — |
+| [PS-164](./2_to_do/PS-164-mostra-build-corrente-in-pausa.md) | Mostra la build corrente nel pannello pausa | ux | ui | PRONTO | media | PS-142, PS-145, PS-147 |
+| [PS-165](./2_to_do/PS-165-rendi-leggibili-scorrevoli-collisioni-prop.md) | Rendi leggibili e scorrevoli le collisioni con i prop | fix | gameplay | PRONTO | alta | PS-159 |
+| [PS-166](./2_to_do/PS-166-correggi-concordanze-testi-dinamici.md) | Correggi le concordanze nei testi dinamici | fix | ui | PRONTO | media | PS-101 |
+| [PS-167](./1_idea/PS-167-elimina-dominante-gialla-artwork.md) | Elimina la dominante gialla dagli artwork | art | arte | DA DEFINIRE | bassa | PS-084 |
+| [PS-168](./1_idea/PS-168-riduci-gommosita-stylization-artwork.md) | Riduci la gommosità della stilizzazione dei personaggi | art | arte | DA DEFINIRE | bassa | PS-167 |
+| [PS-169](./2_to_do/PS-169-aggiungi-battuta-ingresso-per-personaggio.md) | Aggiungi una battuta di ingresso per ogni personaggio | feat | ui | PRONTO | bassa | PS-101 |
+| [PS-170](./2_to_do/PS-170-aggiungi-selettore-difficolta-prima-della-run.md) | Aggiungi un selettore della difficoltà prima della run | feat | gameplay | BLOCCATO | media | PS-157, PS-158, PS-161 |
+| [PS-171](./2_to_do/PS-171-impedisci-sovrapposizione-totale-nemici.md) | Impedisci la sovrapposizione totale dei nemici in campo | fix | gameplay | PRONTO | alta | — |
