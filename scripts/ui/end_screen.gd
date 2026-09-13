@@ -44,7 +44,10 @@ func show_victory(
 	if safe_boss_title.is_empty():
 		safe_boss_title = "BOSS"
 	_title_label.text = "VITTORIA"
-	_summary_label.text = "%s sconfitto in %s" % [
+	# PS-166: "Hai sconfitto <Titolo>" invece di "<Titolo> sconfitto" — con
+	# l'ausiliare "avere" il participio non concorda con l'oggetto, quindi
+	# resta corretto anche quando il titolo dinamico e' un Evil femminile.
+	_summary_label.text = "Hai sconfitto %s in %s" % [
 		safe_boss_title,
 		format_run_time(summary.run_time),
 	]

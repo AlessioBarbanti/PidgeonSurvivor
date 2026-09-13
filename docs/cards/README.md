@@ -267,7 +267,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-163](./1_idea/PS-163-fai-reagire-boss-al-personaggio-giocato.md) | Fai reagire il Boss al personaggio giocato | feat | gameplay | DA DEFINIRE | bassa | — |
 | [PS-164](./2_to_do/PS-164-mostra-build-corrente-in-pausa.md) | Mostra la build corrente nel pannello pausa | ux | ui | PRONTO | media | PS-142, PS-145, PS-147 |
 | [PS-165](./4_to_test/PS-165-rendi-leggibili-scorrevoli-collisioni-prop.md) | Rendi leggibili e scorrevoli le collisioni con i prop | fix | gameplay | IN VERIFICA | alta | PS-159 |
-| [PS-166](./2_to_do/PS-166-correggi-concordanze-testi-dinamici.md) | Correggi le concordanze nei testi dinamici | fix | ui | PRONTO | media | PS-101 |
+| [PS-166](./4_to_test/PS-166-correggi-concordanze-testi-dinamici.md) | Correggi le concordanze nei testi dinamici | fix | ui | IN VERIFICA | media | PS-101 |
 | [PS-167](./1_idea/PS-167-elimina-dominante-gialla-artwork.md) | Elimina la dominante gialla dagli artwork | art | arte | DA DEFINIRE | bassa | PS-084 |
 | [PS-168](./1_idea/PS-168-riduci-gommosita-stylization-artwork.md) | Riduci la gommosità della stilizzazione dei personaggi | art | arte | DA DEFINIRE | bassa | PS-167 |
 | [PS-169](./2_to_do/PS-169-aggiungi-battuta-ingresso-per-personaggio.md) | Aggiungi una battuta di ingresso per ogni personaggio | feat | ui | PRONTO | bassa | PS-101 |

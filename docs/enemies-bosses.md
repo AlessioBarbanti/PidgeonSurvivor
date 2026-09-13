@@ -209,7 +209,8 @@ premio lo sfama e lo fa tornare come prima.
   espone il nome "buono" dell'amico appena redento (stringa vuota per il
   Piccione Malvagio, che non ha nessun amico da salvare). `BarbRewardOverlay`
   lo mostra in una riga sempre **positiva verso Barb**, mai un ammonimento
-  sulla fame: "`<Nome>` è tornato tra noi, grazie a Barb!" quando un amico è
+  sulla fame: "`<Nome>` è di nuovo tra noi, grazie a Barb!" (PS-166: forma
+  neutra rispetto al genere del nome interpolato) quando un amico è
   stato redento, altrimenti la riga generica
   `BarbRewardOverlay.BARB_GENERIC_REWARD_LINE` ("Con Barb alla griglia, va
   sempre a finire bene!").

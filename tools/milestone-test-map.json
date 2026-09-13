@@ -343,7 +343,8 @@
         "tests/unit/test_ps047_upgrade_card_hierarchy.gd",
         "tests/unit/test_ps059_upgrade_modal_contrast.gd",
         "tests/unit/test_ps101_evil_hunger_narrative.gd",
-        "tests/unit/test_ps139_upgrade_card_frame.gd"
+        "tests/unit/test_ps139_upgrade_card_frame.gd",
+        "tests/unit/test_ps166_character_copy_agreement.gd"
       ]
     },
     {
@@ -389,7 +390,8 @@
         "tests/unit/test_ps145_pause_buttons_distinct_and_spaced.gd",
         "tests/unit/test_ps146_hud_bars_floating.gd",
         "tests/unit/test_ps147_pause_exit_button.gd",
-        "tests/unit/test_ps140_hud_bar_border_color.gd"
+        "tests/unit/test_ps140_hud_bar_border_color.gd",
+        "tests/unit/test_ps166_character_copy_agreement.gd"
       ]
     },
     {
