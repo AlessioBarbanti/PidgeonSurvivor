@@ -183,21 +183,175 @@ func test_obstacle_collision_segments_block_only_opaque_parts() -> void:
 	)
 
 
-func _make_probe_body(start_position: Vector2) -> CharacterBody2D:
+func _make_probe_body(start_position: Vector2, radius: float = 10.0) -> CharacterBody2D:
 	var body := CharacterBody2D.new()
 	body.collision_layer = 1
 	body.collision_mask = OBSTACLE_LAYER_BIT
 	body.motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
 	var body_shape := CollisionShape2D.new()
 	var body_circle := CircleShape2D.new()
-	body_circle.radius = 10.0
+	body_circle.radius = radius
 	body_shape.shape = body_circle
 	body.add_child(body_shape)
 	body.global_position = start_position
 	return body
 
 
+func test_ps165_clothesline_collision_matches_visual_poles() -> void:
+	# PS-165: l'artwork del filo dei panni disegna i due pali in prospettiva
+	# diagonale (palo sinistro solo nella meta' inferiore del footprint, palo
+	# destro solo nella meta' superiore). I segmenti di produzione correnti
+	# (stessi valori usati in movement_slice.tscn) devono lasciare attraversabile
+	# il "cielo" vuoto sopra il palo sinistro e sotto il palo destro, restando
+	# comunque bloccanti sul legno reale di ciascun palo.
+	var fixture := Node2D.new()
+	var obstacle := STATIC_OBSTACLE_SCENE.instantiate() as StaticObstacle
+	obstacle.footprint_size = Vector2(150.0, 250.0)
+	obstacle.collision_segments = [
+		Rect2(-0.43, 0.03, 0.19, 0.47),
+		Rect2(0.27, -0.5, 0.19, 0.45),
+	]
+	obstacle.global_position = Vector2(300.0, 0.0)
+	fixture.add_child(obstacle)
+
+	# Scende lungo la colonna del palo sinistro: con i vecchi segmenti a tutta
+	# altezza si fermava subito sotto y=-125 (bordo superiore del footprint).
+	var down_left_column := _make_probe_body(obstacle.global_position + Vector2(-50.0, -200.0))
+	# Sale lungo la colonna del palo destro: con i vecchi segmenti a tutta
+	# altezza si fermava subito sopra y=125 (bordo inferiore del footprint).
+	var up_right_column := _make_probe_body(obstacle.global_position + Vector2(55.0, 200.0))
+	fixture.add_child(down_left_column)
+	fixture.add_child(up_right_column)
+	add_child_autofree(fixture)
+	await wait_process_frames(1)
+	await wait_physics_frames(1)
+
+	for _attempt in range(60):
+		down_left_column.velocity = Vector2.DOWN * 400.0
+		down_left_column.move_and_slide()
+		up_right_column.velocity = Vector2.UP * 400.0
+		up_right_column.move_and_slide()
+		await wait_physics_frames(1)
+
+	assert_true(
+		down_left_column.global_position.y > obstacle.global_position.y - 50.0,
+		(
+			"PS-165: sopra il palo sinistro l'artwork e' vuoto, un corpo deve poter "
+			+ "avanzare oltre il vecchio bordo pieno a y=-125 (y=%s)."
+		) % down_left_column.global_position.y
+	)
+	assert_true(
+		down_left_column.global_position.y < obstacle.global_position.y + 50.0,
+		"PS-165: il legno reale del palo sinistro deve restare bloccante (y=%s)."
+			% down_left_column.global_position.y
+	)
+	assert_true(
+		up_right_column.global_position.y < obstacle.global_position.y + 50.0,
+		(
+			"PS-165: sotto il palo destro l'artwork e' vuoto, un corpo deve poter "
+			+ "avanzare oltre il vecchio bordo pieno a y=125 (y=%s)."
+		) % up_right_column.global_position.y
+	)
+	assert_true(
+		up_right_column.global_position.y > obstacle.global_position.y - 50.0,
+		"PS-165: il legno reale del palo destro deve restare bloccante (y=%s)."
+			% up_right_column.global_position.y
+	)
+
+
+func test_ps165_diagonal_movement_slides_along_obstacle_edge() -> void:
+	# PS-165: un urto obliquo contro un bordo dritto non deve azzerare la
+	# componente di movimento tangenziale (il corpo deve scorrere lungo il
+	# bordo invece di inchiodarsi).
+	var fixture := Node2D.new()
+	var obstacle := STATIC_OBSTACLE_SCENE.instantiate() as StaticObstacle
+	obstacle.footprint_size = Vector2(200.0, 400.0)
+	obstacle.global_position = Vector2(300.0, 0.0)
+	fixture.add_child(obstacle)
+
+	# Muro alto (400px) per restare sulla faccia piatta per tutta la finestra di
+	# misura: con 60 tentativi a 300px/s la componente Y libera percorre circa
+	# 212px, ben dentro il muro (bordo inferiore a y=200) e lontana dall'angolo,
+	# cosi' la prova osserva solo lo scorrimento e non l'aggiramento dello spigolo.
+	var probe := _make_probe_body(Vector2(100.0, -150.0), 24.0)
+	fixture.add_child(probe)
+	add_child_autofree(fixture)
+	await wait_process_frames(1)
+	await wait_physics_frames(1)
+
+	for _attempt in range(60):
+		probe.velocity = Vector2(1.0, 1.0).normalized() * 300.0
+		probe.move_and_slide()
+		await wait_physics_frames(1)
+
+	assert_true(
+		probe.global_position.x < 190.0,
+		"PS-165: il corpo non deve attraversare il nucleo solido del muro (x=%s)."
+			% probe.global_position.x
+	)
+	assert_true(
+		probe.global_position.y > 0.0,
+		(
+			"PS-165: la componente tangenziale deve restare viva e far scorrere il "
+			+ "corpo lungo il bordo invece di inchiodarlo (y=%s)."
+		) % probe.global_position.y
+	)
+
+
+func test_ps165_corridor_as_wide_as_player_diameter_is_crossable() -> void:
+	# PS-165: un corridoio poco piu' largo del diametro del collider Player
+	# (56px contro un diametro di 48px, collision_radius 24) deve restare
+	# davvero attraversabile. Il gap piu' stretto fra prop reali dell'arena
+	# misura 92px (Clothesline-BenchD), quindi questa tolleranza minima resta
+	# comunque piu' severa di qualunque corridoio oggi presente in gioco.
+	# Nota: un gap esattamente pari al diametro (zero clearance) produce un
+	# doppio contatto d'angolo simultaneo alla bocca del corridoio che puo'
+	# incastrare move_and_slide() indipendentemente dalla geometria del prop
+	# (verificato empiricamente) - non e' il caso rappresentato da nessun prop
+	# reale, quindi non e' nello scopo di questa card introdurre una
+	# mitigazione motore per quel caso degenere.
+	var fixture := Node2D.new()
+	var wall_left := STATIC_OBSTACLE_SCENE.instantiate() as StaticObstacle
+	wall_left.footprint_size = Vector2(100.0, 300.0)
+	wall_left.global_position = Vector2(-78.0, 0.0)
+	var wall_right := STATIC_OBSTACLE_SCENE.instantiate() as StaticObstacle
+	wall_right.footprint_size = Vector2(100.0, 300.0)
+	wall_right.global_position = Vector2(78.0, 0.0)
+	fixture.add_child(wall_left)
+	fixture.add_child(wall_right)
+
+	var probe := _make_probe_body(Vector2(0.0, -300.0), 24.0)
+	fixture.add_child(probe)
+	add_child_autofree(fixture)
+	await wait_process_frames(1)
+	await wait_physics_frames(1)
+
+	for _attempt in range(90):
+		probe.velocity = Vector2.DOWN * 400.0
+		probe.move_and_slide()
+		await wait_physics_frames(1)
+
+	assert_true(
+		probe.global_position.y > 200.0,
+		(
+			"PS-165: un corridoio largo quanto il diametro del Player deve restare "
+			+ "attraversabile (y=%s)."
+		) % probe.global_position.y
+	)
+	print("PS165_PROP_COLLISION_SLIDE_SMOKE_OK")
+
+
 func test_camera_relative_spawn_reference() -> void:
+	# PS-165: senza forzare esplicitamente la dimensione del viewport (come
+	# fanno gia' altri test dipendenti dallo schermo, es. test_b18o_welcome_flow.gd),
+	# get_tree().root.size puo' non essersi ancora assestato su
+	# INITIAL_VIEWPORT_SIZE quando questo e' fra i primi test eseguiti in un
+	# processo Godot appena avviato, facendo leggere a get_viewport_rect() una
+	# dimensione transitoria diversa da quella richiesta con --resolution.
+	get_tree().root.content_scale_size = INITIAL_VIEWPORT_SIZE
+	get_tree().root.size = INITIAL_VIEWPORT_SIZE
+	await wait_process_frames(2)
+
 	var fixture := Node2D.new()
 	var arena := ArenaLayout.new()
 	arena.respect_display_safe_area = false

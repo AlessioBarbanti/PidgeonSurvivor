@@ -361,13 +361,13 @@ texture = ExtResource("104_obstacle_bench")
 position = Vector2(-1020, 60)
 footprint_size = Vector2(150, 250)
 texture = ExtResource("105_obstacle_clothesline")
-collision_segments = Array[Rect2]([Rect2(-0.5, -0.5, 0.18, 1.0), Rect2(0.32, -0.5, 0.18, 1.0)])
+collision_segments = Array[Rect2]([Rect2(-0.43, 0.03, 0.19, 0.47), Rect2(0.27, -0.5, 0.19, 0.45)])
 
 [node name="ClotheslineB" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
 position = Vector2(860, -480)
 footprint_size = Vector2(150, 250)
 texture = ExtResource("105_obstacle_clothesline")
-collision_segments = Array[Rect2]([Rect2(-0.5, -0.5, 0.18, 1.0), Rect2(0.32, -0.5, 0.18, 1.0)])
+collision_segments = Array[Rect2]([Rect2(-0.43, 0.03, 0.19, 0.47), Rect2(0.27, -0.5, 0.19, 0.45)])
 
 [node name="StoneWashbasin" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
 position = Vector2(-620, -340)

@@ -266,7 +266,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-162](./2_to_do/PS-162-evita-ripetizioni-ravvicinate-boss.md) | Evita ripetizioni ravvicinate nella selezione dei Boss | fix | gameplay | PRONTO | media | PS-127 |
 | [PS-163](./1_idea/PS-163-fai-reagire-boss-al-personaggio-giocato.md) | Fai reagire il Boss al personaggio giocato | feat | gameplay | DA DEFINIRE | bassa | — |
 | [PS-164](./2_to_do/PS-164-mostra-build-corrente-in-pausa.md) | Mostra la build corrente nel pannello pausa | ux | ui | PRONTO | media | PS-142, PS-145, PS-147 |
-| [PS-165](./2_to_do/PS-165-rendi-leggibili-scorrevoli-collisioni-prop.md) | Rendi leggibili e scorrevoli le collisioni con i prop | fix | gameplay | PRONTO | alta | PS-159 |
+| [PS-165](./4_to_test/PS-165-rendi-leggibili-scorrevoli-collisioni-prop.md) | Rendi leggibili e scorrevoli le collisioni con i prop | fix | gameplay | IN VERIFICA | alta | PS-159 |
 | [PS-166](./2_to_do/PS-166-correggi-concordanze-testi-dinamici.md) | Correggi le concordanze nei testi dinamici | fix | ui | PRONTO | media | PS-101 |
 | [PS-167](./1_idea/PS-167-elimina-dominante-gialla-artwork.md) | Elimina la dominante gialla dagli artwork | art | arte | DA DEFINIRE | bassa | PS-084 |
 | [PS-168](./1_idea/PS-168-riduci-gommosita-stylization-artwork.md) | Riduci la gommosità della stilizzazione dei personaggi | art | arte | DA DEFINIRE | bassa | PS-167 |
@@ -276,3 +276,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-172](./2_to_do/PS-172-diagnostica-freeze-totale-android-25-minuti.md) | Diagnostica il freeze totale su Android a ~25 minuti di run | chore | piattaforma | PRONTO | alta | — |
 | [PS-173](./4_to_test/PS-173-clone-marghe-spara-ai-nemici.md) | Il clone di Marghe (Reggeton time!) spara ai nemici vicini | feat | gameplay | IN VERIFICA | media | — |
 | [PS-174](./4_to_test/PS-174-evil-marghe-clone-minaccia-accumulo.md) | Il clone di Evil Marghe spara e si accumula se non ucciso | feat | gameplay | IN VERIFICA | media | — |
+| [PS-175](./2_to_do/PS-175-residuo-non-determinismo-separazione-nemici-full.md) | Diagnostica il residuo di non-determinismo nella separazione nemici su Full | fix | gameplay | PRONTO | bassa | PS-171, PS-174 |
