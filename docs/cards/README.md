@@ -273,3 +273,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-169](./2_to_do/PS-169-aggiungi-battuta-ingresso-per-personaggio.md) | Aggiungi una battuta di ingresso per ogni personaggio | feat | ui | PRONTO | bassa | PS-101 |
 | [PS-170](./2_to_do/PS-170-aggiungi-selettore-difficolta-prima-della-run.md) | Aggiungi un selettore della difficoltà prima della run | feat | gameplay | BLOCCATO | media | PS-157, PS-158, PS-161 |
 | [PS-171](./2_to_do/PS-171-impedisci-sovrapposizione-totale-nemici.md) | Impedisci la sovrapposizione totale dei nemici in campo | fix | gameplay | PRONTO | alta | — |
+| [PS-172](./2_to_do/PS-172-diagnostica-freeze-totale-android-25-minuti.md) | Diagnostica il freeze totale su Android a ~25 minuti di run | chore | piattaforma | PRONTO | alta | — |
