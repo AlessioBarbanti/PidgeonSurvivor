@@ -26,8 +26,8 @@ sola se serve nuova arte o basta riusare quella esistente, senza interpellare
 nessuno.
 
 Il caso concreto che ha originato questa card:
-[PS-102](./PS-102-cornice-dedicata-boss-intro.md) →
-[PS-103](../4_to_test/PS-103-integra-cornice-boss-intro.md). L'asset della
+[PS-102](../6_rejected/PS-102-cornice-dedicata-boss-intro.md) →
+[PS-103](../6_rejected/PS-103-integra-cornice-boss-intro.md). L'asset della
 cornice Boss Intro è stato consegnato come un'unica immagine composita, senza
 alcun dato di geometria (dove sta il foro del ritratto, quali margini sono
 sicuri per il testo). L'agente Game Art Designer lo ha eseguito correttamente
@@ -92,7 +92,7 @@ Non toccare:
 - `.claude/skills/asset-pipeline/SKILL.md`: derivazione tecnica (script,
   manifest), non decisione di direzione — non pertinente a questa card.
 - `card-risolvi`: il flusso di risoluzione/produzione a valle non cambia.
-- Le card `art` già prodotte ([PS-102](./PS-102-cornice-dedicata-boss-intro.md)
+- Le card `art` già prodotte ([PS-102](../6_rejected/PS-102-cornice-dedicata-boss-intro.md)
   compresa): restano storiche sotto il contratto con cui sono state
   lavorate, non vanno riaperte per questa regola.
 

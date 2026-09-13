@@ -203,8 +203,8 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-099](./4_to_test/PS-099-aura-iperfocus-lollo-e-tell-termico-aleo.md) | Sostituisci il particellare di Lollo e Aleo con aura di potenziamento e tell termico | ux | arte | IN VERIFICA | media | PS-098 |
 | [PS-100](./4_to_test/PS-100-rimuovi-ansia-dalle-specialita-di-barb.md) | Rimuovi L'Ansia dalle Specialità di Barb | chore | gameplay | IN VERIFICA | media | — |
 | [PS-101](./4_to_test/PS-101-racconta-fame-dietro-agli-evil.md) | Racconta la fame dietro agli Evil e la redenzione di Barb | feat | gameplay | IN VERIFICA | media | — |
-| [PS-102](./4_to_test/PS-102-cornice-dedicata-boss-intro.md) | Genera una cornice dedicata per la Boss Intro | art | arte | IN VERIFICA | media | — |
-| [PS-103](./4_to_test/PS-103-integra-cornice-boss-intro.md) | Integra la cornice dedicata nella Boss Intro | ux | ui | IN VERIFICA | media | PS-102 |
+| [PS-102](./6_rejected/PS-102-cornice-dedicata-boss-intro.md) | Genera una cornice dedicata per la Boss Intro | art | arte | SCARTATA | media | — |
+| [PS-103](./6_rejected/PS-103-integra-cornice-boss-intro.md) | Integra la cornice dedicata nella Boss Intro | ux | ui | SCARTATA | media | PS-102 |
 | [PS-104](./5_completed/PS-104-icona-calice-sobrieta-alea.md) | Genera l'icona del calice per la Sobrietà di Alea | art | arte | COMPLETATO | media | — |
 | [PS-105](./4_to_test/PS-105-nuova-passiva-alea-due-dita-e-parto.md) | Sostituisci la passiva di Alea con Due Dita e Parto | feat | gameplay | IN VERIFICA | media | — |
 | [PS-106](./4_to_test/PS-106-integra-icona-calice-sobrieta-alea-hud.md) | Integra l'icona del calice Sobrietà di Alea in HUD | ux | ui | IN VERIFICA | media | PS-104 |
@@ -277,3 +277,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-173](./4_to_test/PS-173-clone-marghe-spara-ai-nemici.md) | Il clone di Marghe (Reggeton time!) spara ai nemici vicini | feat | gameplay | IN VERIFICA | media | — |
 | [PS-174](./4_to_test/PS-174-evil-marghe-clone-minaccia-accumulo.md) | Il clone di Evil Marghe spara e si accumula se non ucciso | feat | gameplay | IN VERIFICA | media | — |
 | [PS-175](./2_to_do/PS-175-residuo-non-determinismo-separazione-nemici-full.md) | Diagnostica il residuo di non-determinismo nella separazione nemici su Full | fix | gameplay | PRONTO | bassa | PS-171, PS-174 |
+| [PS-176](./2_to_do/PS-176-ritratti-boss-fluttuanti-senza-cornice.md) | Ritratti Boss fluttuanti senza cornice nella Boss Intro | ux | ui | PRONTO | media | — |

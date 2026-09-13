@@ -26,7 +26,7 @@ calice di vino rosso) si ferma a master/derivato/manifest (PS-090).
 
 Questa card era in origine un unico criterio di accettazione dentro PS-105;
 il proprietario ha scelto di scorporarla in una card di integrazione
-separata — stessa forma già usata per [PS-102](./PS-102-cornice-dedicata-boss-intro.md)/[PS-103](./PS-103-integra-cornice-boss-intro.md)
+separata — stessa forma già usata per [PS-102](../6_rejected/PS-102-cornice-dedicata-boss-intro.md)/[PS-103](../6_rejected/PS-103-integra-cornice-boss-intro.md)
 — così PS-105 si sblocca sul resto della passiva senza dover attendere
 l'asset.
 
