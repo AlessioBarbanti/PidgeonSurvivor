@@ -14,7 +14,9 @@ signal external_speed_modifiers_changed(player: Player, effective_multiplier: fl
 @export var friend_definition: FriendDefinition
 
 @export_group("Movement")
-@export_range(0.0, 2000.0, 1.0) var move_speed: float = 360.0
+const DEFAULT_MOVE_SPEED := 300.0
+
+@export_range(0.0, 2000.0, 1.0) var move_speed: float = DEFAULT_MOVE_SPEED
 
 @export_range(1.0, 1024.0, 1.0, "or_greater") var pickup_radius := 160.0:
 	set(value):
@@ -71,7 +73,7 @@ var _damage_flash_remaining := 0.0
 var _damage_reaction_remaining := 0.0
 var _death_handled := false
 var _base_health_max := 100.0
-var _base_move_speed := 360.0
+var _base_move_speed := DEFAULT_MOVE_SPEED
 var _base_pickup_radius := 160.0
 var _character_move_speed_multiplier := 1.0
 var _character_pickup_radius_multiplier := 1.0

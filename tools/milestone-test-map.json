@@ -35,6 +35,7 @@
         "tests/unit/test_ps079_state_tell_particles.gd",
         "tests/unit/test_ps087_base_stat_identity.gd",
         "tests/unit/test_ps088_base_stat_differentiation.gd",
+        "tests/unit/test_ps159_player_base_speed.gd",
         "tests/unit/test_ps105_alea_sobriety_cycle.gd",
         "tests/unit/test_ps093_extended_base_stats.gd",
         "tests/unit/test_b44_state_tells.gd",
