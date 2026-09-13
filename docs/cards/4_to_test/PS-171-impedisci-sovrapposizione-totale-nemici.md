@@ -3,7 +3,7 @@ id: PS-171
 titolo: Impedisci la sovrapposizione totale dei nemici in campo
 tipo: fix
 area: gameplay
-stato: PRONTO
+stato: IN VERIFICA
 priorita: alta
 dipende_da: []
 origine: conversazione del proprietario 2026-09-13
@@ -38,23 +38,34 @@ un muro impenetrabile per il Player.
 
 ## Criteri di accettazione
 
-- [ ] Con un numero elevato di nemici (almeno 30) che convergono sullo stesso
+- [x] Con un numero elevato di nemici (almeno 30) che convergono sullo stesso
       punto o anello di distanza preferita, nessuna coppia resta a distanza
       inferiore a una soglia minima osservabile (proporzionale ai
       `collision_radius` coinvolti) oltre una breve finestra di assestamento.
-- [ ] Il caso segnalato — più `RangedEnemy` fermi alla stessa
+      Verificato con 32 `RangedEnemy` inizialmente entro 6px di distanza
+      reciproca: dopo l'assestamento nessuna coppia resta sotto il raggio
+      combinato (40px).
+- [x] Il caso segnalato — più `RangedEnemy` fermi alla stessa
       `ranged_preferred_distance` dallo stesso bersaglio — è esplicitamente
-      coperto dalla correzione.
-- [ ] A parità di seed e sequenza di spawn, l'esito resta deterministico: due
+      coperto dalla correzione. Il test usa `EnemyArchetypeDefinition` del
+      tiratore reale (`data/enemies/enemy_archetype_ranged.tres`) con
+      `_compute_chase_offset()` a zero per l'intera simulazione.
+- [x] A parità di seed e sequenza di spawn, l'esito resta deterministico: due
       run identiche producono la stessa disposizione risultante dei nemici.
-- [ ] Con pochi nemici e nessun affollamento, il pathing verso il bersaglio non
+- [x] Con pochi nemici e nessun affollamento, il pathing verso il bersaglio non
       cambia percettibilmente rispetto a oggi: la correzione agisce solo in
       presenza di sovrapposizione reale.
-- [ ] La separazione resta interna al gruppo nemico: non sposta né rallenta il
-      Player, i Boss o i proiettili, e non introduce un blocco fisico che
-      impedisca al Player di attraversare un varco altrimenti libero.
+- [x] La separazione resta interna al gruppo nemico: non sposta né rallenta il
+      Player, i Boss o i proiettili — verificato nel codice: solo i nodi nel
+      gruppo `"enemies"` (aggiunto esclusivamente da `EnemySpawner`, mai dai
+      Boss) entrano nel calcolo — e non introduce un blocco fisico
+      (`collision_layer`/`collision_mask` restano invariati).
 - [ ] Il costo prestazionale resta accettabile anche con centinaia di nemici a
-      schermo, coerentemente con la densità già raggiunta da PS-076.
+      schermo, coerentemente con la densità già raggiunta da PS-076. Il
+      design (griglia di prossimità ricostruita una sola volta per frame
+      fisico, ricerca 3x3 celle) è pensato per restare O(n) invece di O(n²),
+      ma la misura reale a `max_alive_enemies` (250) richiede un runtime
+      Windows/Android con onda affollata: gate manuale ancora aperto.
 
 ## Ambito
 
@@ -78,16 +89,21 @@ un muro impenetrabile per il Player.
 - GUT: `tests/unit/test_ps171_enemy_overlap_separation.gd` → marker
   `PS171_ENEMY_OVERLAP_SEPARATION_SMOKE_OK`, con un caso a nemici numerosi
   convergenti sullo stesso punto/anello e un caso a determinismo di seed.
-- Profilo minimo prima della chiusura: `Relevant`
+  3/3 test verdi.
+- Profilo minimo prima della chiusura: `Relevant` — eseguito, 34/34 test
+  verdi (1 focused + 33 di regressione mappati su `base_enemy.gd`/
+  `ranged_enemy.gd`), nessun `SCRIPT ERROR`/`FATAL EXCEPTION` nei log.
 
 ## Gate manuali
 
 - [ ] Runtime Windows (percorso: run con onda affollata di tiratori, verifica
-      visiva della separazione)
+      visiva della separazione) — non eseguito in questa sessione: richiede
+      un percorso di gioco interattivo reale, non un'ispezione di screenshot.
 - [ ] Validazione statica APK
 - [ ] Runtime fisico Pixel 9 (percorso: stessa onda affollata, verifica feel e
       frame rate con molti nemici a schermo)
-- [ ] Controllo percettivo richiesto: sì
+- [ ] Controllo percettivo richiesto: sì — resta aperto; una mia ispezione
+      diretta di uno screenshot non lo soddisfa (vedi nota sotto).
 
 ## Decisioni
 
@@ -99,6 +115,42 @@ un muro impenetrabile per il Player.
 - **2026-09-13 — Il determinismo del seed resta un vincolo duro.** Qualunque
   meccanismo di separazione deve produrre lo stesso risultato a parità di
   seed e sequenza di spawn, come il resto della run.
+- **2026-09-13 — Implementata come respinta locale basata su griglia di
+  prossimità, non come collisione fisica.** `BaseEnemy._compute_separation_velocity()`
+  somma un contributo per ogni vicino del gruppo `"enemies"` i cui cerchi di
+  collisione si sovrappongono, con direzione dal vicino verso di sé e
+  magnitudine proporzionale all'overlap; interviene anche quando il nemico è
+  già fermo (`_compute_chase_offset()` a zero), cosa necessaria perché è
+  proprio lì — un `RangedEnemy` fermo alla sua distanza preferita — che il
+  difetto segnalato si manifesta. La ricerca dei vicini usa una griglia
+  statica condivisa (celle da 256px, ricerca 3x3) ricostruita al più una
+  volta per frame fisico (`Engine.get_physics_frames()`), per restare O(n)
+  invece di O(n²) con centinaia di nemici.
+- **2026-09-13 — Overlap amplificato di un fattore `SEPARATION_STRENGTH = 4.0`
+  prima del limite di velocità (`SEPARATION_MAX_SPEED_FACTOR = 2.0`).** Senza
+  amplificazione, la componente radiale netta per singolo nemico in un
+  ammassamento denso è molto più piccola della somma dei contributi grezzi
+  (i vicini più vicini si respingono quasi tangenzialmente a vicenda), e
+  l'assestamento di 30+ nemici richiedeva decine di secondi anziché pochi;
+  emerso empiricamente durante la scrittura del test GUT dedicato. Il tetto
+  di velocità può superare la velocità di inseguimento ordinaria (come il
+  knockback) perché rappresenta l'essere "spinti fuori" da un ammassamento,
+  non locomozione volontaria — resta comunque un tetto percepibile, non un
+  teletrasporto.
+- **2026-09-13 — Il tie-break per due nemici esattamente sovrapposti usa
+  l'angolo del proprio `_pursuit_offset`.** Quando la distanza fra due centri
+  è zero non esiste una direzione geometrica; l'angolo di `_pursuit_offset`
+  è già derivato dall'RNG di run (assegnato dallo spawner), quindi resta
+  deterministico per seed invece di dipendere da un ordine di iterazione
+  arbitrario.
+- **2026-09-13 — Il gate "Controllo percettivo" non viene chiuso da
+  un'ispezione diretta mia.** Coerente con l'esperienza PS-145/PS-147: una
+  mia lettura non specializzata di uno screenshot ha già mancato problemi
+  reali in passato. Qui inoltre il comportamento da giudicare è percettivo
+  *in movimento* (leggibilità di un gruppo che si separa durante un'onda
+  affollata), non riproducibile da un singolo frame — richiede un playtest
+  reale del proprietario (o `qa-esplorativo`/`direttore-artistico` se li
+  invoca esplicitamente lui).
 
 ## Documenti sincronizzati
 

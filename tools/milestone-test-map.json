@@ -105,7 +105,8 @@
         "tests/unit/test_ps008_wave_events.gd",
         "tests/unit/test_ps076_enemy_density_rebalance.gd",
         "tests/unit/test_ps123_archetype_hp_rescale.gd",
-        "tests/unit/test_ps126_post_curve_pressure.gd"
+        "tests/unit/test_ps126_post_curve_pressure.gd",
+        "tests/unit/test_ps171_enemy_overlap_separation.gd"
       ]
     },
     {

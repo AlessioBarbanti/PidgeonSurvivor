@@ -101,6 +101,31 @@ var _knockback_remaining := 0.0
 var _speed_modifiers: Dictionary = {}
 var _damage_taken_modifiers: Dictionary = {}
 
+## PS-171: dimensione delle celle della griglia di prossimita' condivisa fra
+## tutti i nemici, usata solo per la respinta anti-sovrapposizione qui sotto.
+## Abbastanza grande da coprire il raggio combinato massimo plausibile
+## (collision_radius arriva fino a 128) senza dover cercare oltre le celle
+## adiacenti (ricerca 3x3).
+const SEPARATION_CELL_SIZE := 256.0
+## Amplifica la spinta grezza (proporzionale al solo overlap) prima del
+## limite di velocita' qui sotto: in un ammassamento denso la componente
+## radiale netta per singolo nemico e' molto piu' piccola della somma dei
+## contributi (i vicini piu' vicini si respingono quasi tangenzialmente a
+## vicenda), quindi senza questo fattore l'assestamento di un gruppo numeroso
+## richiederebbe decine di secondi invece di restare percettibile in pochi.
+const SEPARATION_STRENGTH := 4.0
+## Limite alla velocita' di respinta, come frazione della velocita' di
+## inseguimento del singolo nemico: puo' superarla (come il knockback) perche'
+## rappresenta l'essere "spinti fuori" da un ammassamento, non locomozione
+## volontaria, ma resta comunque un tetto percepibile e non un teletrasporto.
+const SEPARATION_MAX_SPEED_FACTOR := 2.0
+## Cache statica condivisa fra tutte le istanze: ricostruita al piu' una volta
+## per frame fisico (Engine.get_physics_frames()) invece che una volta per
+## nemico, cosicche' centinaia di nemici restino O(n) invece di O(n^2) quando
+## cercano i propri vicini.
+static var _separation_grid: Dictionary = {}
+static var _separation_grid_physics_frame: int = -1
+
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 @onready var _health_component: HealthComponent = %HealthComponent
 @onready var _hurtbox: Hurtbox = %Hurtbox
@@ -164,16 +189,25 @@ func _physics_process(delta: float) -> void:
 			_knockback_velocity = Vector2.ZERO
 		return
 
+	# PS-171: la respinta va calcolata anche quando il nemico e' fermo
+	# (es. RangedEnemy alla propria ranged_preferred_distance), perche' e'
+	# proprio li' che piu' tiratori convergono sullo stesso anello e possono
+	# collassare sullo stesso punto senza mai piu' muoversi.
 	var offset_to_target := _compute_chase_offset()
-	if offset_to_target.is_zero_approx():
+	var desired_direction := Vector2.ZERO
+	var chase_velocity := Vector2.ZERO
+	if not offset_to_target.is_zero_approx():
+		desired_direction = offset_to_target.normalized()
+		chase_velocity = desired_direction * get_effective_move_speed()
+		_sync_enemy_sprite_facing(offset_to_target)
+
+	velocity = chase_velocity + _compute_separation_velocity()
+	if velocity.is_zero_approx():
 		velocity = Vector2.ZERO
 		return
-	_sync_enemy_sprite_facing(offset_to_target)
-
-	var desired_direction := offset_to_target.normalized()
-	velocity = desired_direction * get_effective_move_speed()
 	move_and_slide()
-	_steer_around_blocking_obstacle(desired_direction)
+	if not desired_direction.is_zero_approx():
+		_steer_around_blocking_obstacle(desired_direction)
 
 
 ## Offset verso il punto inseguito, al netto dell'offset di dispersione B37.
@@ -199,6 +233,80 @@ func _steer_around_blocking_obstacle(desired_direction: Vector2) -> void:
 		tangent = -tangent
 	velocity = tangent * get_effective_move_speed()
 	move_and_slide()
+
+
+## PS-171: respinta leggera fra nemici vicini della stessa scena, indipendente
+## dalla fisica (i nemici hanno collision_layer = 0 e non collidono mai fra
+## loro con move_and_slide(), per scelta esplicita: vedi Decisioni PS-171).
+## Interviene solo quando i cerchi di collisione si sovrappongono davvero, cosi'
+## il pathing a bassa densita' resta identico a prima; a densita' alta separa
+## quel tanto che basta a restare leggibili, come richiesto per i tiratori
+## impilati sulla stessa ranged_preferred_distance.
+func _compute_separation_velocity() -> Vector2:
+	if not is_inside_tree():
+		return Vector2.ZERO
+	_rebuild_separation_grid_if_needed(get_tree())
+	var own_cell := _separation_cell_for(global_position)
+	var push := Vector2.ZERO
+	for x_offset in range(-1, 2):
+		for y_offset in range(-1, 2):
+			var neighbor_cell := own_cell + Vector2i(x_offset, y_offset)
+			if not _separation_grid.has(neighbor_cell):
+				continue
+			for other in _separation_grid[neighbor_cell]:
+				if other == self:
+					continue
+				push += _separation_push_from(other as BaseEnemy)
+	if push.is_zero_approx():
+		return Vector2.ZERO
+	return push.limit_length(get_effective_move_speed() * SEPARATION_MAX_SPEED_FACTOR)
+
+
+## Contributo di un singolo vicino: 0 se i cerchi non si toccano, altrimenti un
+## vettore proporzionale all'overlap che punta da `other` verso `self`. Quando
+## i due centri coincidono esattamente non esiste una direzione geometrica: si
+## usa l'angolo del proprio _pursuit_offset (gia' derivato dall'RNG di run) come
+## spareggio stabile, cosicche' l'esito resti deterministico a parita' di seed
+## invece di dipendere da un ordine di iterazione arbitrario.
+func _separation_push_from(other: BaseEnemy) -> Vector2:
+	var delta_position := global_position - other.global_position
+	var combined_radius := collision_radius + other.collision_radius
+	var distance_squared := delta_position.length_squared()
+	if distance_squared >= combined_radius * combined_radius:
+		return Vector2.ZERO
+	var distance := sqrt(distance_squared)
+	var direction := Vector2.RIGHT.rotated(_pursuit_offset.angle())
+	if distance > 0.0001:
+		direction = delta_position / distance
+	var overlap := combined_radius - distance
+	return direction * overlap * SEPARATION_STRENGTH
+
+
+static func _separation_cell_for(position: Vector2) -> Vector2i:
+	return Vector2i(
+		floori(position.x / SEPARATION_CELL_SIZE),
+		floori(position.y / SEPARATION_CELL_SIZE)
+	)
+
+
+## Ricostruita al piu' una volta per frame fisico e condivisa da tutti i
+## nemici: legge il gruppo "enemies" (Boss e nemici non ancora registrati
+## dallo spawner ne restano fuori per costruzione, vedi EnemySpawner) cosicche'
+## la separazione non tocchi mai Player, Boss o proiettili.
+static func _rebuild_separation_grid_if_needed(tree: SceneTree) -> void:
+	var current_physics_frame := Engine.get_physics_frames()
+	if _separation_grid_physics_frame == current_physics_frame:
+		return
+	_separation_grid_physics_frame = current_physics_frame
+	_separation_grid.clear()
+	for node in tree.get_nodes_in_group(&"enemies"):
+		var enemy := node as BaseEnemy
+		if enemy == null or not enemy.is_alive():
+			continue
+		var cell := _separation_cell_for(enemy.global_position)
+		if not _separation_grid.has(cell):
+			_separation_grid[cell] = []
+		(_separation_grid[cell] as Array).append(enemy)
 
 
 func _draw() -> void:
