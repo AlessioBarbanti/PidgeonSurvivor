@@ -146,7 +146,7 @@ Scarti estesi (PS-093): danno `×1,05`, avidità `×0,95`, raggio pickup `×1,10
 Ruolo: Indebolimento e distrazione dei nemici.  
 Passiva — Sorriso Contagioso: I nemici vicini subiscono più danno da ogni fonte, arma e abilità comprese (i Boss non ne risentono), e sono marcati da una tinta magenta riconoscibile.  
 Attiva — Reggaeton time!: Genera un clone che balla reggaeton, diventa il bersaglio dei nemici vicini e spara periodicamente al nemico più vicino finché resta in vita (PS-173).
-Boss: Evil Marghe — Signature *Reggaeton time!*: genera un clone ballerino distinguibile dal Boss reale, che l'auto-targeting del Player può preferire mentre Marghe continua a usare i propri pattern.
+Boss: Evil Marghe — Signature *Reggaeton time!*: genera un clone ballerino distinguibile dal Boss reale, che l'auto-targeting del Player può preferire mentre Marghe continua a usare i propri pattern. Il clone spara periodicamente al Player (stesso schema telegraph→proiettile dei nemici a distanza) e resta fermo; se il Player non lo elimina prima che la Signature si rielegga, un altro clone si aggiunge invece di sostituirlo, fino a un tetto massimo (PS-174).
 
 Scarti base (B47, PS-087): salute `×0,95`, velocità `×1,00`, cadenza `×1,10` — la cadenza sopra la norma rinforza "indebolimento e distrazione": più colpi distribuiti nel tempo per marcare bersagli.
 

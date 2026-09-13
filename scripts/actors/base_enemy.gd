@@ -119,12 +119,16 @@ const SEPARATION_STRENGTH := 4.0
 ## rappresenta l'essere "spinti fuori" da un ammassamento, non locomozione
 ## volontaria, ma resta comunque un tetto percepibile e non un teletrasporto.
 const SEPARATION_MAX_SPEED_FACTOR := 2.0
-## Cache statica condivisa fra tutte le istanze: ricostruita al piu' una volta
-## per frame fisico (Engine.get_physics_frames()) invece che una volta per
-## nemico, cosicche' centinaia di nemici restino O(n) invece di O(n^2) quando
-## cercano i propri vicini.
-static var _separation_grid: Dictionary = {}
-static var _separation_grid_physics_frame: int = -1
+## Cache statica condivisa fra tutte le istanze, indicizzata per
+## RunController (instance_id -> {physics_frame, grid}): ricostruita al piu'
+## una volta per frame fisico per ogni RunController, invece che una volta
+## per nemico, cosicche' centinaia di nemici restino O(n) invece di O(n^2)
+## quando cercano i propri vicini. Indicizzare per RunController (non una
+## griglia unica globale) e' necessario oltre che corretto: nei test GUT piu'
+## fixture indipendenti (ciascuna col proprio RunController) possono coesistere
+## nello stesso processo (vedi CLAUDE.md), e una cache unica farebbe filtrare
+## nemici di una fixture nella respinta di un'altra.
+static var _separation_grids_by_controller: Dictionary = {}
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 @onready var _health_component: HealthComponent = %HealthComponent
@@ -245,18 +249,21 @@ func _steer_around_blocking_obstacle(desired_direction: Vector2) -> void:
 func _compute_separation_velocity() -> Vector2:
 	if not is_inside_tree():
 		return Vector2.ZERO
-	_rebuild_separation_grid_if_needed(get_tree())
+	var own_run_controller := get_run_controller()
+	if own_run_controller == null:
+		return Vector2.ZERO
+	var grid := _get_separation_grid_for(get_tree(), own_run_controller)
 	var own_cell := _separation_cell_for(global_position)
 	var push := Vector2.ZERO
 	for x_offset in range(-1, 2):
 		for y_offset in range(-1, 2):
 			var neighbor_cell := own_cell + Vector2i(x_offset, y_offset)
-			if not _separation_grid.has(neighbor_cell):
+			if not grid.has(neighbor_cell):
 				continue
-			for other in _separation_grid[neighbor_cell]:
-				if other == self:
-					continue
-				push += _separation_push_from(other as BaseEnemy)
+			for other_node in grid[neighbor_cell]:
+				var other := other_node as BaseEnemy
+				if other != self:
+					push += _separation_push_from(other)
 	if push.is_zero_approx():
 		return Vector2.ZERO
 	return push.limit_length(get_effective_move_speed() * SEPARATION_MAX_SPEED_FACTOR)
@@ -289,24 +296,58 @@ static func _separation_cell_for(position: Vector2) -> Vector2i:
 	)
 
 
-## Ricostruita al piu' una volta per frame fisico e condivisa da tutti i
-## nemici: legge il gruppo "enemies" (Boss e nemici non ancora registrati
-## dallo spawner ne restano fuori per costruzione, vedi EnemySpawner) cosicche'
-## la separazione non tocchi mai Player, Boss o proiettili.
-static func _rebuild_separation_grid_if_needed(tree: SceneTree) -> void:
+## Ricostruita al piu' una volta per frame fisico per ogni RunController:
+## legge il gruppo "enemies" (Boss e clone-esca ne restano fuori per
+## costruzione dei rispettivi `.tscn`, corretto da PS-174 dopo che PS-171 ne
+## aveva ereditato involontariamente il gruppo statico) ma include solo i
+## nemici dello STESSO RunController richiesto, cosicche' la separazione non
+## tocchi mai Player, Boss, proiettili, o (nei test GUT con piu' fixture
+## indipendenti nello stesso processo) nemici di una popolazione diversa.
+static func _get_separation_grid_for(tree: SceneTree, run_controller: RunController) -> Dictionary:
+	var controller_id := run_controller.get_instance_id()
 	var current_physics_frame := Engine.get_physics_frames()
-	if _separation_grid_physics_frame == current_physics_frame:
-		return
-	_separation_grid_physics_frame = current_physics_frame
-	_separation_grid.clear()
+	var cached: Variant = _separation_grids_by_controller.get(controller_id)
+	if cached != null and cached["physics_frame"] == current_physics_frame:
+		return cached["grid"]
+
+	var grid: Dictionary = {}
 	for node in tree.get_nodes_in_group(&"enemies"):
 		var enemy := node as BaseEnemy
-		if enemy == null or not enemy.is_alive():
+		if enemy == null or not enemy.is_alive() or enemy.get_run_controller() != run_controller:
 			continue
 		var cell := _separation_cell_for(enemy.global_position)
-		if not _separation_grid.has(cell):
-			_separation_grid[cell] = []
-		(_separation_grid[cell] as Array).append(enemy)
+		if not grid.has(cell):
+			grid[cell] = []
+		(grid[cell] as Array).append(enemy)
+	# PS-174: l'ordine di SceneTree.get_nodes_in_group() non e' un contratto
+	# stabile dell'engine. La somma delle spinte di separazione e' in virgola
+	# mobile e non associativa: sommare gli stessi vicini in un ordine diverso
+	# produce un risultato leggermente diverso, che 240+ tick di un sistema a
+	# molti corpi mutuamente repulsivi amplificano in una divergenza
+	# osservabile. Ordinare per instance_id (assegnato in modo monotono e
+	# deterministico alla creazione, a parita' di sequenza di spawn) rende la
+	# somma riproducibile a parita' di seed, invece di dipendere da un
+	# dettaglio interno dell'engine.
+	for cell: Vector2i in grid.keys():
+		(grid[cell] as Array).sort_custom(
+			func(a: BaseEnemy, b: BaseEnemy) -> bool: return a.get_instance_id() < b.get_instance_id()
+		)
+
+	_prune_separation_grid_cache()
+	_separation_grids_by_controller[controller_id] = {
+		"physics_frame": current_physics_frame,
+		"grid": grid,
+	}
+	return grid
+
+
+## Pulizia opportunistica: rimuove le voci di RunController non piu' validi
+## (restart di editor/test, fixture distrutte) cosicche' la cache non cresca
+## senza limite in un processo di lunga durata (es. l'intera suite Full).
+static func _prune_separation_grid_cache() -> void:
+	for controller_id: Variant in _separation_grids_by_controller.keys():
+		if not is_instance_id_valid(controller_id):
+			_separation_grids_by_controller.erase(controller_id)
 
 
 func _draw() -> void:

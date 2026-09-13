@@ -275,4 +275,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-171](./4_to_test/PS-171-impedisci-sovrapposizione-totale-nemici.md) | Impedisci la sovrapposizione totale dei nemici in campo | fix | gameplay | IN VERIFICA | alta | — |
 | [PS-172](./2_to_do/PS-172-diagnostica-freeze-totale-android-25-minuti.md) | Diagnostica il freeze totale su Android a ~25 minuti di run | chore | piattaforma | PRONTO | alta | — |
 | [PS-173](./4_to_test/PS-173-clone-marghe-spara-ai-nemici.md) | Il clone di Marghe (Reggeton time!) spara ai nemici vicini | feat | gameplay | IN VERIFICA | media | — |
-| [PS-174](./3_in_sprint/PS-174-evil-marghe-clone-minaccia-accumulo.md) | Il clone di Evil Marghe spara e si accumula se non ucciso | feat | gameplay | IN CORSO | media | — |
+| [PS-174](./4_to_test/PS-174-evil-marghe-clone-minaccia-accumulo.md) | Il clone di Evil Marghe spara e si accumula se non ucciso | feat | gameplay | IN VERIFICA | media | — |

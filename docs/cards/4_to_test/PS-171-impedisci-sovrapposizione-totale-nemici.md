@@ -56,10 +56,13 @@ un muro impenetrabile per il Player.
       cambia percettibilmente rispetto a oggi: la correzione agisce solo in
       presenza di sovrapposizione reale.
 - [x] La separazione resta interna al gruppo nemico: non sposta né rallenta il
-      Player, i Boss o i proiettili — verificato nel codice: solo i nodi nel
-      gruppo `"enemies"` (aggiunto esclusivamente da `EnemySpawner`, mai dai
-      Boss) entrano nel calcolo — e non introduce un blocco fisico
-      (`collision_layer`/`collision_mask` restano invariati).
+      Player, i Boss o i proiettili, e non introduce un blocco fisico
+      (`collision_layer`/`collision_mask` restano invariati). **Nota
+      2026-09-13:** la verifica originale ("solo i nodi aggiunti da
+      `EnemySpawner` entrano nel calcolo") era incompleta — non aveva
+      controllato i gruppi dichiarati staticamente nei `.tscn` di Boss e
+      clone. Due difetti reali ne sono seguiti, scoperti e corretti da
+      PS-174: vedi Note in fondo a questa card.
 - [ ] Il costo prestazionale resta accettabile anche con centinaia di nemici a
       schermo, coerentemente con la densità già raggiunta da PS-076. Il
       design (griglia di prossimità ricostruita una sola volta per frame
@@ -162,3 +165,22 @@ un muro impenetrabile per il Player.
 Segnalazione originaria del proprietario (2026-09-13): circa 1000 tiratori
 impilati nello stesso punto durante una run. Il valore "1000" è evidenza
 percettiva della gravità del problema, non una soglia da riprodurre nel test.
+
+**Aggiornamento 2026-09-13 (da PS-174):** verificando che Boss e cloni
+restassero esclusi dalla respinta, PS-174 ha scoperto due difetti di questa
+card non colti dalla verifica originale: (1) `first_boss.tscn` e
+`boss_decoy.tscn` dichiaravano staticamente il gruppo `"enemies"` da prima
+di questa card, ereditato senza che nessuno lo controllasse, in violazione
+diretta del criterio "non sposta né rallenta... i Boss"; (2) anche togliendo
+quel gruppo, `_compute_separation_velocity()` restava comunque chiamabile
+su Boss/clone e li rendeva ancora *respingibili* (anche se non più
+*respingenti*) da nemici comuni ammassati contro di loro. PS-174 ha inoltre
+scoperto e corretto un terzo difetto, di scala maggiore ma non specifico a
+Boss/cloni: la cache statica di questa funzione era condivisa dall'intero
+processo invece che per popolazione nemica, causando una violazione del
+determinismo riproducibile solo con `-Profile Full` (fixture GUT diverse
+nello stesso processo). Tutti e tre corretti in `scripts/actors/base_enemy.gd`,
+`scripts/bosses/first_boss.gd`, `scripts/bosses/boss_decoy.gd` e nei due
+`.tscn`; dettagli e verifica completa nelle Decisioni di PS-174. Questa card
+non viene riaperta: la correzione è verificata dagli stessi test qui
+elencati, ora verdi anche su `-Profile Full`.

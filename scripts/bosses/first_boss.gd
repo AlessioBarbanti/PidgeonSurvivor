@@ -82,7 +82,9 @@ var _signature_direction := Vector2.RIGHT
 var _signature_corridor_end := Vector2.INF
 var _signature_serial := 0
 var _active_signature_areas: Array[BossSignatureArea] = []
-var _active_decoy: BossDecoy
+## PS-174: piu' cloni possono coesistere (fino a max_active_clones) se il
+## Player non li uccide prima che la Signature possa rieleggersi.
+var _active_decoys: Array[BossDecoy] = []
 var _signature_motion := SignatureMotion.NONE
 var _signature_motion_remaining := 0.0
 var _signature_motion_speed := 0.0
@@ -132,6 +134,16 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	clear_attack_runtime()
 	super._exit_tree()
+
+
+## PS-174: il Boss non appartiene piu' al gruppo "enemies" (era un difetto
+## precedente a PS-171, corretto qui), ma _compute_separation_velocity() di
+## BaseEnemy non lo sa: senza questa sovrascrittura, nemici comuni ammassati
+## contro il Boss lo spingerebbero comunque fuori posizione durante il
+## proprio inseguimento, anche se lui non li respinge mai. Il criterio di
+## PS-171 ("mai il Boss") deve valere in entrambe le direzioni.
+func _compute_separation_velocity() -> Vector2:
+	return Vector2.ZERO
 
 
 func _physics_process(delta: float) -> void:
@@ -294,11 +306,14 @@ func clear_signature_runtime() -> void:
 	for area in areas_to_clear:
 		if is_instance_valid(area) and not area.is_queued_for_deletion():
 			area.queue_free()
-	if is_instance_valid(_active_decoy):
+	var decoys_to_clear := _active_decoys.duplicate()
+	_active_decoys.clear()
+	for decoy in decoys_to_clear:
+		if not is_instance_valid(decoy):
+			continue
 		if is_instance_valid(_targeting_system):
-			_targeting_system.unregister_target(_active_decoy)
-		_active_decoy.expire()
-	_active_decoy = null
+			_targeting_system.unregister_target(decoy)
+		decoy.expire()
 	if is_instance_valid(_thunder_aura):
 		_thunder_aura.set_tier(ThunderChargeAura.TIER_LOW)
 	_thunder_charge_tier = ThunderChargeAura.TIER_LOW
@@ -336,8 +351,21 @@ func get_active_signature_area_count() -> int:
 	return _active_signature_areas.size()
 
 
+## Compatibilita' con l'API a singolo clone precedente a PS-174: il primo
+## clone ancora vivo, o null se nessuno e' attivo.
 func get_active_decoy() -> BossDecoy:
-	return _active_decoy if is_instance_valid(_active_decoy) else null
+	_prune_decoys()
+	return _active_decoys[0] if not _active_decoys.is_empty() else null
+
+
+func get_active_decoys() -> Array[BossDecoy]:
+	_prune_decoys()
+	return _active_decoys.duplicate()
+
+
+func get_active_decoy_count() -> int:
+	_prune_decoys()
+	return _active_decoys.size()
 
 
 func is_signature_motion_active() -> bool:
@@ -902,17 +930,24 @@ func _spawn_signature_area(mode: BossSignatureRegistry.AreaMode) -> BossSignatur
 	return area
 
 
+## PS-174: se un clone precedente e' ancora vivo quando la Signature si
+## rieleg­ge, se ne aggiunge uno invece di essere bloccati dal vecchio
+## vincolo "un solo clone alla volta" — fino a `max_active_clones`: oltre
+## quel tetto la Signature semplicemente non produce un altro clone, finche'
+## uno non scade o muore.
 func _spawn_signature_decoy() -> BossDecoy:
 	var run_controller := get_run_controller()
 	var player := get_target() as Player
 	var parent := _enemy_parent if is_instance_valid(_enemy_parent) else _projectile_parent
+	_prune_decoys()
 	if (
 		decoy_scene == null
 		or run_controller == null
 		or player == null
 		or not is_instance_valid(parent)
 		or not parent.is_inside_tree()
-		or is_instance_valid(_active_decoy)
+		or _announced_signature == null
+		or _active_decoys.size() >= _get_max_active_decoys()
 	):
 		return null
 	var instance := decoy_scene.instantiate()
@@ -944,15 +979,53 @@ func _spawn_signature_decoy() -> BossDecoy:
 			1.0
 		),
 		_announced_signature.duration_seconds,
-		run_controller
+		run_controller,
+		player
 	):
 		decoy.queue_free()
 		return null
-	_active_decoy = decoy
+	decoy.configure_ranged(_build_decoy_attack_definition(), _projectile_parent)
+	_active_decoys.append(decoy)
 	decoy.tree_exiting.connect(_on_decoy_tree_exiting.bind(decoy), CONNECT_ONE_SHOT)
 	if is_instance_valid(_targeting_system):
 		_targeting_system.register_target(decoy)
 	return decoy
+
+
+func _get_max_active_decoys() -> int:
+	if _announced_signature == null:
+		return 1
+	return maxi(int(_announced_signature.get_effect_float(&"max_active_clones", 1.0, 1.0)), 1)
+
+
+## EnemyArchetypeDefinition costruito a runtime (non caricato da `.tres`):
+## serve solo a riusare configure_ranged() e il ciclo telegraph->proiettile
+## di RangedEnemy con i parametri dichiarati dalla Signature, senza
+## introdurre un secondo formato dati per lo stesso concetto.
+func _build_decoy_attack_definition() -> EnemyArchetypeDefinition:
+	var attack_definition := EnemyArchetypeDefinition.new()
+	attack_definition.ranged_attack_range = _announced_signature.get_effect_float(
+		&"clone_attack_range", 1400.0, 1.0
+	)
+	attack_definition.ranged_telegraph_duration = _announced_signature.get_effect_float(
+		&"clone_telegraph_duration", 0.6, 0.01
+	)
+	attack_definition.ranged_attack_interval = _announced_signature.get_effect_float(
+		&"clone_attack_interval", 2.2, 0.01
+	)
+	attack_definition.ranged_projectile_damage = _announced_signature.get_effect_float(
+		&"clone_attack_damage", 6.0, 0.0
+	)
+	attack_definition.ranged_projectile_speed = _announced_signature.get_effect_float(
+		&"clone_projectile_speed", 220.0, 1.0
+	)
+	attack_definition.ranged_projectile_lifetime = _announced_signature.get_effect_float(
+		&"clone_projectile_lifetime", 3.5, 0.01
+	)
+	attack_definition.ranged_projectile_radius = _announced_signature.get_effect_float(
+		&"clone_projectile_radius", 8.0, 1.0
+	)
+	return attack_definition
 
 
 func _get_dash_distance() -> float:
@@ -1343,6 +1416,12 @@ func _prune_signature_areas() -> void:
 			_active_signature_areas.remove_at(index)
 
 
+func _prune_decoys() -> void:
+	for index in range(_active_decoys.size() - 1, -1, -1):
+		if not is_instance_valid(_active_decoys[index]):
+			_active_decoys.remove_at(index)
+
+
 func _on_projectile_tree_exiting(projectile: BossProjectile) -> void:
 	_active_projectiles.erase(projectile)
 
@@ -1354,5 +1433,4 @@ func _on_signature_area_tree_exiting(area: BossSignatureArea) -> void:
 func _on_decoy_tree_exiting(decoy: BossDecoy) -> void:
 	if is_instance_valid(_targeting_system):
 		_targeting_system.unregister_target(decoy)
-	if _active_decoy == decoy:
-		_active_decoy = null
+	_active_decoys.erase(decoy)
