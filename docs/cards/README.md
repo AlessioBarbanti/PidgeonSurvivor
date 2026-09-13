@@ -263,7 +263,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-159](./4_to_test/PS-159-riduci-velocita-base-player.md) | Riduci la velocità base del Player | fix | gameplay | IN VERIFICA | alta | PS-087 |
 | [PS-160](./4_to_test/PS-160-rendi-competitivi-upgrade-velocita.md) | Rendi competitivi gli upgrade di velocità | chore | gameplay | IN VERIFICA | alta | PS-159 |
 | [PS-161](./4_to_test/PS-161-rendi-incisiva-progressione-abilita-attive.md) | Rendi incisiva la progressione delle abilità attive | chore | gameplay | IN VERIFICA | alta | — |
-| [PS-162](./2_to_do/PS-162-evita-ripetizioni-ravvicinate-boss.md) | Evita ripetizioni ravvicinate nella selezione dei Boss | fix | gameplay | PRONTO | media | PS-127 |
+| [PS-162](./4_to_test/PS-162-evita-ripetizioni-ravvicinate-boss.md) | Evita ripetizioni ravvicinate nella selezione dei Boss | fix | gameplay | IN VERIFICA | media | PS-127 |
 | [PS-163](./1_idea/PS-163-fai-reagire-boss-al-personaggio-giocato.md) | Fai reagire il Boss al personaggio giocato | feat | gameplay | DA DEFINIRE | bassa | — |
 | [PS-164](./2_to_do/PS-164-mostra-build-corrente-in-pausa.md) | Mostra la build corrente nel pannello pausa | ux | ui | PRONTO | media | PS-142, PS-145, PS-147 |
 | [PS-165](./4_to_test/PS-165-rendi-leggibili-scorrevoli-collisioni-prop.md) | Rendi leggibili e scorrevoli le collisioni con i prop | fix | gameplay | IN VERIFICA | alta | PS-159 |

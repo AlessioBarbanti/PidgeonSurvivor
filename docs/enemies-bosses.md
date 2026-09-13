@@ -148,6 +148,15 @@ caso fra gli otto profili validi di `FriendRegistry` e duplica il
 `BossDefinition` in Evil (id `evil_<friend_id>`, colori e telegraph dedicati
 magenta/viola, Signature risolta dal catalogo).
 
+**Varietà delle identità Evil (PS-162):** l'estrazione esclude gli Evil già
+incontrati più di recente in questa run (cronologia scene-local in
+`BossEncounter`, azzerata al restart), con una finestra pari a
+`min(profili_eleggibili - 1, incontri_già_registrati)`. Effetto pratico con
+otto profili: nessuna ripetizione fra due incontri consecutivi, e i primi
+otto incontri di una run esplorano sempre tutti e otto i profili prima che
+uno possa ripetersi. La selezione resta interamente deterministica per
+seed + `schedule_index`.
+
 Profili confermati (uno-a-uno con `data/bosses/signatures/*.tres`): Alea,
 Aleo, Bea, Lollo, Magno, Marghe, Migi, Zat — vedi
 [characters.md](./characters.md) per identità e ruolo di ciascuno.

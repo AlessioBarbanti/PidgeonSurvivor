@@ -45,6 +45,13 @@ var _last_defeated_title := ""
 ## (`get_safe_title()`, che per un Evil resta "Evil <Nome>"), questo è il
 ## nome che l'amico riprende dopo la Specialità di Barb.
 var _last_defeated_friend_name := ""
+## PS-162: identità Evil già risolte in questa run, indicizzate per
+## `schedule_index` (non un semplice array in ordine di chiamata) cosi' che
+## richiamare `resolve_definition_for_event` due volte per lo stesso indice
+## resti idempotente — l'esclusione per l'indice N guarda solo gli indici
+## < N, mai l'esito che si sta calcolando in questa stessa chiamata. Azzerata
+## in `reset_for_run()`.
+var _evil_profile_id_by_schedule_index: Dictionary = {}
 
 
 func _init() -> void:
@@ -127,6 +134,7 @@ func reset_for_run() -> void:
 	_clear_active_boss(true)
 	_reward_granted = false
 	_last_defeated_title = ""
+	_evil_profile_id_by_schedule_index.clear()
 	if is_instance_valid(_boss_ui):
 		_boss_ui.reset_presentation()
 
@@ -153,14 +161,36 @@ func resolve_definition_for_event(seed_value: int, schedule_index: int) -> BossD
 	var profiles: Array[FriendDefinition] = []
 	if is_instance_valid(_friend_registry):
 		profiles = _friend_registry.get_definitions()
-	return resolve_variant(
+	var resolved := resolve_variant(
 		boss_definition,
 		profiles,
 		seed_value,
 		schedule_index,
 		evil_boss_chance,
-		signature_catalog
+		signature_catalog,
+		_get_recent_evil_profile_ids_before(schedule_index)
 	)
+	if resolved != null and resolved.is_evil_variant() and resolved.friend_profile != null:
+		_evil_profile_id_by_schedule_index[schedule_index] = resolved.friend_profile.id
+	elif _evil_profile_id_by_schedule_index.has(schedule_index):
+		_evil_profile_id_by_schedule_index.erase(schedule_index)
+	return resolved
+
+
+## PS-162: cronologia ordinata delle identità Evil già risolte per gli indici
+## strettamente precedenti a `schedule_index` — mai per l'indice corrente, cosi'
+## che risolvere due volte lo stesso indice (idempotenza, vedi test) non alteri
+## l'esclusione applicata a se stesso.
+func _get_recent_evil_profile_ids_before(schedule_index: int) -> Array[StringName]:
+	var earlier_indices: Array[int] = []
+	for key: int in _evil_profile_id_by_schedule_index.keys():
+		if key < schedule_index:
+			earlier_indices.append(key)
+	earlier_indices.sort()
+	var ids: Array[StringName] = []
+	for index in earlier_indices:
+		ids.append(_evil_profile_id_by_schedule_index[index])
+	return ids
 
 
 func get_signature_catalog() -> BossSignatureCatalog:
@@ -173,7 +203,8 @@ static func resolve_variant(
 	run_seed: int,
 	schedule_index: int,
 	evil_chance: float,
-	signatures: BossSignatureCatalog = null
+	signatures: BossSignatureCatalog = null,
+	recent_evil_profile_ids: Array[StringName] = []
 ) -> BossDefinition:
 	if baseline == null or not baseline.is_valid():
 		return null
@@ -190,7 +221,7 @@ static func resolve_variant(
 	if resolved_chance <= 0.0 or (resolved_chance < 1.0 and rng.randf() >= resolved_chance):
 		return baseline
 
-	var selected_profile := valid_profiles[rng.randi_range(0, valid_profiles.size() - 1)]
+	var selected_profile := _pick_profile_avoiding_recent(valid_profiles, rng, recent_evil_profile_ids)
 	var evil_definition := baseline.duplicate(true) as BossDefinition
 	if evil_definition == null:
 		return baseline
@@ -210,6 +241,34 @@ static func resolve_variant(
 	if signatures != null:
 		evil_definition.signature = signatures.resolve_for_friend(selected_profile.id)
 	return evil_definition
+
+
+## PS-162: esclude gli Evil incontrati piu' di recente, cosi' la selezione
+## esplora il roster prima di ripetere. La finestra di esclusione (min fra
+## `size-1` e la cronologia disponibile) garantisce sia "mai due incontri
+## consecutivi identici" (basta un solo elemento escluso) sia "almeno tre
+## identità diverse nei primi quattro incontri" quando il roster eleggibile
+## e' di almeno tre profili: con la cronologia ancora corta la finestra
+## esclude tutto cio' che e' gia' comparso, forzando un giro completo del
+## roster prima di qualunque ripetizione.
+static func _pick_profile_avoiding_recent(
+	valid_profiles: Array[FriendDefinition],
+	rng: RandomNumberGenerator,
+	recent_evil_profile_ids: Array[StringName]
+) -> FriendDefinition:
+	var candidates := valid_profiles
+	if valid_profiles.size() > 1 and not recent_evil_profile_ids.is_empty():
+		var window_size := mini(valid_profiles.size() - 1, recent_evil_profile_ids.size())
+		var excluded_ids: Dictionary = {}
+		for index in range(recent_evil_profile_ids.size() - window_size, recent_evil_profile_ids.size()):
+			excluded_ids[recent_evil_profile_ids[index]] = true
+		var filtered: Array[FriendDefinition] = []
+		for profile in valid_profiles:
+			if not excluded_ids.has(profile.id):
+				filtered.append(profile)
+		if not filtered.is_empty():
+			candidates = filtered
+	return candidates[rng.randi_range(0, candidates.size() - 1)]
 
 
 func get_last_defeated_title() -> String:
