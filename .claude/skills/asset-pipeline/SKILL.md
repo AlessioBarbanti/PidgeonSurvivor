@@ -68,8 +68,8 @@ Non inventare prompt, generatore, autore o licenza che non ti sono stati
 consegnati. Se il proprietario fornisce un master senza provenienza di terzi,
 scrivi esattamente questo: asset del progetto fornito dal proprietario.
 
-Per contenuti che ritraggono persone reali del cast, l'approvazione va
-registrata nella card pertinente.
+Per contenuti prodotti da reference visive riservate, l'approvazione va
+registrata nella card pertinente senza riportare dettagli personali.
 
 ## 0. Se l'asset reale non esiste ancora (PS-110)
 

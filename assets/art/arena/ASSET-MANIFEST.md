@@ -89,7 +89,7 @@ generati con OpenAI ImageGen built-in dopo l'art review dei cinque prop B38;
 quattro dei prop recenti e la cattura 20:9 dell'arena sono stati forniti al
 primo passaggio come riferimenti di stile e scala. Autore: progetto IL GIOCO
 con assistenza OpenAI ImageGen. Licenza: Licenza del progetto. Non sono stati
-usati asset grafici esterni, marchi, testo o persone reali.
+usati asset grafici esterni, marchi, testo o personaggi di terzi.
 
 ### Prompt finale — ghiacciaia
 

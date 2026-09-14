@@ -239,5 +239,5 @@ Se il confronto percettivo finale non chiude a sufficienza il gap, la card di
 follow-up per un nuovo master "sprite" chunky (Opzione 2 discussa in
 pianificazione) andrà aperta separatamente come `tipo: art`, con
 consultazione del `game-art-designer` per la scomposizione in pezzi di
-consegna e review d'identità per personaggio (rischio di deriva dai
-riferimenti fotografici autorizzati del 28/08/2026).
+  consegna e review d'identità per personaggio (rischio di deriva dai master
+  approvati del 28/08/2026).

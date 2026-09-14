@@ -17,26 +17,25 @@ aggiornato: 2026-09-04
 
 I prompt ImageGen e le reference ricevute in conversazione erano distribuiti
 fra messaggi, manifest sintetici e master HD. Un riuso futuro richiede un
-archivio testuale puntuale e un posto protetto per le foto autorizzate, senza
-farle entrare nel runtime.
+archivio testuale puntuale e un posto protetto per le reference visive
+riservate, senza farle entrare nel runtime.
 
 ## Comportamento atteso
 
-Ogni generazione storicizzata rimanda al prompt effettivamente usato, alla
-reference locale o alla sua assenza dichiarata, e al master prodotto. Le foto
-personali originali restano archiviate solo dopo che il proprietario ne fornisce
-nuovamente i file.
+Ogni generazione storicizzata rimanda al prompt archiviato, alla reference
+locale o alla sua assenza dichiarata, e al master prodotto. I materiali
+sorgente riservati restano fuori da import ed export.
 
 ## Criteri di accettazione
 
 - [x] I prompt finali delle tre icone B41 sono archiviati integralmente.
 - [x] La reference di stile B41 locale e il suo hash sono registrati.
-- [x] Il registro del cast elenca le reference fotografiche ricevute e dichiara
+- [x] Il registro del cast elenca le reference visive riservate e dichiara
       onestamente quali file non sono disponibili nel checkout.
-- [x] Le foto originali autorizzate sono archiviate con hash fuori da import ed
+- [x] I file sorgente riservati sono archiviati con hash fuori da import ed
       export.
-- [x] I prompt originali recuperati per Aleo e Magno sono archiviati
-      integralmente; gli altri prompt del cast sono separati e marcati come
+- [x] I prompt riutilizzabili per Aleo e Magno sono archiviati in forma
+      ripulita; gli altri prompt del cast sono separati e marcati come
       ricostruzioni probabili.
 
 ## Ambito
@@ -61,18 +60,16 @@ nuovamente i file.
 ## Decisioni
 
 - **2026-09-02 — Nessuna ricostruzione fittizia.** I prompt non disponibili in
-  forma integrale e i byte delle foto non vengono inventati né rigenerati; il
-  registro separa ciò che è verificabile da ciò che richiede una nuova
-  consegna del proprietario.
-- **2026-09-02 — Le reference personali restano fuori dal runtime.** Le
-  quattordici foto consegnate sono normalizzate in
-  `references/<id>/source-XX.png`, ignorate da Godot ed escluse dai tre preset;
+  forma integrale e i byte dei materiali sorgente non vengono inventati né
+  rigenerati; il registro separa ciò che è verificabile da ciò che manca.
+- **2026-09-02 — Le reference riservate restano fuori dal runtime.** I
+  quattordici file sorgente sono normalizzati in
+  `references/<id>/source-XX.png`, ignorati da Godot ed esclusi dai tre preset;
   i loro hash vivono nel registro storico.
-- **2026-09-02 — Originali e ricostruzioni non sono equivalenti.** I testi
-  completi recuperati da `img_char_prompts.md` per Aleo e Magno sono conservati
-  verbatim; per gli altri sei personaggi il registro conserva prompt di riuso
-  ricostruiti dalle fonti allora disponibili e li etichetta esplicitamente come
-  non originali.
+- **2026-09-02 — Prompt ripuliti e ricostruzioni non sono equivalenti.** Per
+  Aleo e Magno il registro conserva versioni riutilizzabili ripulite; per gli
+  altri sei personaggi conserva prompt ricostruiti dalle fonti disponibili e
+  li etichetta esplicitamente come non originali.
 
 ## Documenti sincronizzati
 
@@ -82,13 +79,13 @@ nuovamente i file.
 
 ## Note
 
-Le foto risultano archiviate; resta soltanto la verifica finale del proprietario
-sul registro e sulla convenzione dei nomi.
+Le reference risultano archiviate; resta soltanto la verifica finale del
+proprietario sul registro e sulla convenzione dei nomi.
 
 **2026-09-02 — Nota di percorso, non riapertura.** Il percorso citato in
 questa card (`assets/art/characters/references/`) è stato spostato sotto
 `docs/characters/references/` da
 [PS-084](./PS-084-direzione-visuale-per-personaggio-e-reference-cast.md),
-senza alterare i byte delle foto né le decisioni qui registrate. Riferimento
+senza alterare i byte dei file sorgente. Riferimento
 aggiornato: `docs/archive/generation-prompts-and-references.md` e
 `assets/art/characters/ASSET-MANIFEST.md`.

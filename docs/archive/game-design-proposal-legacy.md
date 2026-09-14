@@ -24,7 +24,7 @@ Quando una meccanica non è ancora stata definita, il documento deve evitarne pe
 
 # 2. Concept generale
 
-**Pidgeon Survivor** è un action roguelite a orde nel quale il giocatore controlla uno dei membri di un gruppo di amici, trasformato in un personaggio giocabile.
+**Pidgeon Survivor** è un action roguelite a orde nel quale il giocatore controlla uno degli otto personaggi giocabili del cast.
 
 Ogni partita consiste in una successione di **ondate di nemici**.
 
@@ -579,7 +579,7 @@ Le mappe potranno eventualmente differenziarsi attraverso:
 * eventi;
 * boss.
 
-Una possibile direzione tematica consiste nell'utilizzare luoghi e riferimenti collegati al gruppo di amici.
+Una possibile direzione tematica consiste nell'utilizzare luoghi e riferimenti coerenti con il tono comico del cast.
 
 Il sistema dettagliato delle mappe è ancora da definire.
 
@@ -775,7 +775,7 @@ Se questo loop risulta divertente, gli altri sistemi possono essere costruiti pr
 
 # 28. Identità del progetto
 
-Pidgeon Survivor deve mantenere come elemento centrale il fatto che i personaggi siano versioni reinterpretate ed esagerate di persone reali appartenenti allo stesso gruppo di amici.
+Pidgeon Survivor deve mantenere come elemento centrale un cast di archetipi originali, reinterpretati ed esagerati con tono coerente.
 
 Le meccaniche possono quindi nascere da:
 

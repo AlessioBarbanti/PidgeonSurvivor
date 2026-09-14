@@ -1112,8 +1112,8 @@ confronto finale 16:9/4:3 chiusi.
 
 - [x] Sostituire gli sprite Player provvisori degli otto `FriendDefinition` con
   asset raster originali coerenti con la sezione [Direzione visuale del cast](../characters.md#direzione-visuale-del-cast): Magno tellurico con richiami bovini, Bea pattinatrice, Zat infermiera elettrica, Alea ballerina, Aleo termotecnico (rework del 28 agosto 2026; arte da rigenerare), Lollo cosplayer retrofuturista, Migi con scudo a guscio e Marghe ballerina reggaeton con clone d'ombra.
-- [x] Rappresentare esclusivamente archetipi fittizi: nessuno sprite deve
-  riprodurre persone reali, loghi o marchi. Il simbolo medico generico a cuore
+- [x] Rappresentare esclusivamente archetipi fittizi originali: nessuno sprite
+  deve includere personaggi di terzi, loghi o marchi. Il simbolo medico generico a cuore
   di Zat resta consentito; silhouette, palette e posa devono essere leggibili
   alle dimensioni runtime e distinguibili da nemici, pickup, telegraph e VFX.
 - [x] Conservare per ogni profilo idle e movimento previsti da B18C, compreso

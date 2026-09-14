@@ -98,7 +98,7 @@ Studia i fratelli visivi prima di scrivere il prompt o modificare l'asset:
 - se l'asset riguarda un personaggio del cast, `docs/characters/<id>.md`,
   quando esiste: riassume silhouette, palette, costume, accessori e
   grammatica pixel-art già ricostruiti in un passaggio precedente, e
-  l'eventuale reference fotografica autorizzata in
+  l'eventuale reference visiva riservata in
   `docs/characters/references/<id>/`;
 - prompt e master precedenti che hanno prodotto fratelli approvati.
 

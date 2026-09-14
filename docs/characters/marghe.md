@@ -4,7 +4,7 @@ Riferimento sintetico per la famiglia visiva di Marghe, pensato come aiuto
 per `.agents/skills/game-art-designer/SKILL.md` (Claude:
 `.claude/agents/game-art-designer.md`; Codex:
 `.codex/agents/game-art-designer.toml`). Non sostituisce l'ispezione dei
-fratelli visivi reali: in caso di conflitto con i master o con
+fratelli visivi correnti: in caso di conflitto con i master o con
 `assets/art/characters/ASSET-MANIFEST.md`, questi ultimi restano autorevoli.
 Ruolo gameplay, passiva e abilità attiva restano in
 [`docs/characters.md`](../characters.md), non duplicati qui.
@@ -41,12 +41,11 @@ magenta-viola luminoso, poche crepe energetiche e rim light personale;
 preserva acconciatura, corporatura, colori dell'abito e accessori del
 Player.
 
-## Reference fotografica
+## Reference visive riservate
 
 - `docs/characters/references/marghe/source-01.png`,
-  `docs/characters/references/marghe/source-02.png` — 2 file, ruolo `subject
-  reference`, non editing target, mai output fotorealistico; autorizzate dal
-  proprietario, archiviate il 2 settembre 2026.
+  `docs/characters/references/marghe/source-02.png` — 2 file riservati, ruolo
+  `subject reference`, fuori da import/export.
 
 ## Master e derivati correnti
 

@@ -10,8 +10,8 @@ manifest resta autorevole per file runtime, trasformazioni e hash del derivato.
 
 - Le reference di stile già nel progetto sono citate con percorso, ruolo e
   SHA-256.
-- Le foto personali consegnate dal proprietario sono reference autorizzate, non
-  asset runtime: quando disponibili, vanno in
+- Le reference visive riservate del cast non sono asset runtime: quando
+  disponibili, vanno in
   `docs/characters/references/<id>/` (spostate da
   `assets/art/characters/references/<id>/` il 2 settembre 2026, PS-084), con
   `.gdignore`, esclusione dai tre preset export, hash e data di consegna nel
@@ -100,13 +100,11 @@ Constraints: exactly one coppa cut; no plate, bone, skewer, fork, hands, people,
 Per i master, derivati e hash finali, vedere
 `assets/art/icons/upgrades/ASSET-MANIFEST.md`.
 
-## Identity pass del cast — reference fotografiche 28 agosto 2026
+## Identity pass del cast — reference visive riservate
 
-Le fotografie sono state fornite dal proprietario nella conversazione come
-reference di identità per caricature pixel-art e archiviate il 2 settembre
-2026. Sono asset del progetto forniti dal proprietario: autorizzati soltanto
-come `subject reference`, mai come asset runtime o base per un output
-fotorealistico.
+I file sorgente riservati sono archiviati per continuità del soggetto e
+tracciabilità tecnica. Hanno ruolo `subject reference`, non sono asset runtime
+e restano fuori da import ed export.
 
 | ID | File | Dimensioni | SHA-256 |
 |---|---|---:|---|
@@ -129,50 +127,49 @@ Reference locali ancora disponibili:
 
 - `assets/art/ui/welcome/welcome_ability_cast_background.png` — **style e
   composition reference** per palette, linguaggio pixel-art e relazione tra i
-  personaggi; non sostituisce le fotografie originali.
+  personaggi; non sostituisce le reference sorgente.
 - `assets/art/characters/<id>/hd/poses.png` — **output master**, non reference
-  fotografica; è utile per continuità di silhouette, scala e tre pose.
+  riservata; è utile per continuità di silhouette, scala e tre pose.
 
 Il prompt comune B18U e le correzioni per personaggio restano in
-`assets/art/characters/ASSET-MANIFEST.md`; gli originali recuperati e le
+`assets/art/characters/ASSET-MANIFEST.md`; le versioni operative ripulite e le
 ricostruzioni dichiarate sono nella sezione seguente di questo archivio.
 
-Ogni nuova foto richiede percorso, SHA-256, persona rappresentata, ruolo
-ImageGen (`subject reference`) e conferma del proprietario. Non usare mai le
-foto come asset runtime o per un output fotorealistico.
+Ogni nuova reference richiede percorso, SHA-256, ruolo ImageGen (`subject
+reference`) e conferma del proprietario. Non usarla mai come asset runtime o
+come `edit target` se la card non lo autorizza.
 
 ## Identity pass del cast — prompt delle strisce Player
 
 ### Stato delle fonti
 
-I due prompt seguenti sono **prompt originali recuperati**, copiati senza
-modificarne il testo da `img_char_prompts.md` il 2 settembre 2026 e verificati
-per corrispondenza visiva con i master correnti (`aleo/hd/poses.png`,
-`magno/hd/poses.png`). Il file sorgente è stato rimosso lo stesso giorno dopo
-l'archiviazione verbatim: questo archivio resta il solo punto di
-consultazione storico. I prompt per Alea, Bea, Lollo, Marghe, Migi e Zat non
-sono presenti nel checkout come messaggi ImageGen originali: la sezione
-successiva li dichiara invece **ricostruzioni probabili**, non prove storiche.
+Le due sezioni seguenti conservano versioni operative ripulite dei prompt
+recuperati per Aleo e Magno, verificate per corrispondenza visiva con i master
+correnti (`aleo/hd/poses.png`, `magno/hd/poses.png`). Non sono trascrizioni
+verbatim. I prompt per Alea, Bea, Lollo, Marghe, Migi e Zat non sono presenti
+nel checkout come messaggi ImageGen originali: la sezione successiva li
+dichiara invece **ricostruzioni probabili**, non prove storiche.
 
 Fonti usate per le ricostruzioni: il prompt condiviso B18U e le correzioni nel
 manifest del cast, `docs/characters.md`, i documenti
 `docs/characters/<id>.md`, il fondale welcome come `style` e `composition
-reference`, le fotografie in `docs/characters/references/<id>/` come `subject
-reference` e il master `assets/art/characters/<id>/hd/poses.png` come `edit
-target` quando serve preservare registrazione e scala.
+reference`, le reference visive riservate in
+`docs/characters/references/<id>/` come `subject reference` e il master
+`assets/art/characters/<id>/hd/poses.png` come `edit target` quando serve
+preservare registrazione e scala.
 
-### Aleo — originale recuperato
+### Aleo — prompt riutilizzabile
 
 ```text
 Use case: identity-preserve
 Asset type: revised three-frame 2D Godot character sprite strip for IL GIOCO
 
 Input images:
-- Image 1 is the real-person identity reference for Aleo. Preserve the recognizable broad facial structure, medium-length side-parted brown hair, rectangular dark eyeglasses, full brown beard and moustache, fair complexion, calm expression and stocky heavy build. Translate these traits respectfully into caricatural pixel art rather than photorealism.
+- Image 1 is the approved character identity reference for Aleo. Preserve the broad facial structure, medium-length side-parted brown hair, rectangular dark eyeglasses, full brown beard and moustache, fair complexion, calm expression and stocky heavy build in caricatural pixel art.
 - Image 2 is the exact current Aleo HD sprite-strip edit target. Preserve its canvas, three-cell horizontal layout, right-facing pose registration, full-body scale, baseline, spacing and crisp silhouette.
 - Image 3 is the approved IL GIOCO welcome-screen style reference. Match its polished absurd arcade pixel-art language, dark outline, limited palette and chunky readable clusters.
 
-Primary request: redesign Aleo so he resembles the person in Image 1 much more closely and is now clearly a thermotechnician/HVAC specialist who playfully controls heat and cold, not a mason or generic construction worker.
+Primary request: redesign Aleo so he matches the approved character identity in Image 1 and is clearly a thermotechnician/HVAC specialist who playfully controls heat and cold, not a mason or generic construction worker.
 
 Subject and clothing: adult stocky thermotechnician with medium-length side-parted brown hair visible, rectangular dark glasses, full brown beard and moustache, fair skin and a friendly self-assured expression. Remove the hard hat. Replace the olive construction uniform with a practical dark charcoal work T-shirt under a compact work vest or utility harness. Use restrained warm orange/red accents on one side and icy cyan/blue accents on the other. Include work trousers, sturdy boots, protective gloves, compact HVAC manifold gauges and short red/blue service hoses or a small pipe-temperature probe integrated into the belt. Keep props compact and readable at 32x32; no bucket and no masonry trowel.
 
@@ -189,20 +186,20 @@ Composition/invariants: preserve Image 2's exact landscape canvas, three equal c
 Constraints: no real-world company branding, logos, trademarks, text, numbers or watermark; no extra characters; no helmet; no masonry tools; no machinery; no scenery; no photorealistic rendering; no cropped body parts; no duplicated poses; no object crossing between cells.
 ```
 
-### Magno — originale recuperato
+### Magno — prompt riutilizzabile
 
 ```text
 Use case: identity-preserve
 Asset type: revised three-frame 2D Godot character sprite strip for IL GIOCO
 
 Input images:
-- Image 1 is the real-person identity reference for Magno. Preserve the recognizable long oval facial structure, medium-length swept-back wavy brown hair, short full brown beard and moustache, fair complexion, gentle confident expression, tall proportions and athletic build. Translate these traits respectfully into caricatural pixel art rather than photorealism.
+- Image 1 is the approved character identity reference for Magno. Preserve the long oval facial structure, medium-length swept-back wavy brown hair, short full brown beard and moustache, fair complexion, gentle confident expression, tall proportions and athletic build in caricatural pixel art.
 - Image 2 is the exact current Magno HD sprite-strip edit target. Preserve its canvas, three-cell horizontal layout, right-facing pose registration, full-body scale, baseline, spacing, muscular heroic silhouette and crisp outline.
 - Image 3 is the approved IL GIOCO welcome-screen style reference. Match its polished absurd arcade pixel-art language, limited palette, dark outline and chunky readable clusters.
 
-Primary request: redesign Magno so his human face, hair and beard resemble the person in Image 1 much more closely while preserving Magno's exaggerated muscular, seismic and bovine visual identity.
+Primary request: redesign Magno so his face, hair and beard match the approved character identity in Image 1 while preserving Magno's exaggerated muscular, seismic and bovine visual identity.
 
-Subject: Magno is fully human, with swept-back medium-length wavy brown hair, a short full brown beard and moustache, fair skin, a long friendly face and calm self-assured smile inspired by Image 1. Keep an intentionally exaggerated broad chest, powerful shoulders, thick arms and heroic muscular legs, while retaining tall human proportions rather than a squat bodybuilder shape.
+Subject: Magno is fully human, with swept-back medium-length wavy brown hair, a short full brown beard and moustache, fair skin, a long friendly face and calm self-assured smile as established by Image 1. Keep an intentionally exaggerated broad chest, powerful shoulders, thick arms and heroic muscular legs, while retaining tall human proportions rather than a squat bodybuilder shape.
 
 Bovine identity: preserve clearly readable but purely decorative bovine motifs: a rugged headband with two small stylized horn ornaments sitting in front of or around the hair without hiding it, a bold generic bull-head emblem on the dark sleeveless shirt, horn-shaped shoulder or belt details and earthy hide/leather accents. He must remain an ordinary human with human ears, nose, hands, feet and skin. No muzzle, hooves, tail, animal fur, animal skull head, real horns growing from the body or minotaur anatomy.
 
@@ -218,7 +215,7 @@ Style/medium: polished caricatural arcade pixel art matching Image 3; crisp dark
 
 Composition/invariants: preserve Image 2's exact landscape canvas, three equal cells, generous padding, full-body visibility, right-facing direction, center, baseline, scale, pose registration and no dividers. Keep every decorative element inside its own cell.
 
-Constraints: preserve the person's recognizable hair, beard, facial proportions and friendly expression while keeping Magno muscular and bovine-themed; fictional game-character interpretation only; no real-world branding, logos, trademarks, text, numbers or watermark; no extra characters; no weapons; no scenery; no photorealistic rendering; no cropped body parts; no duplicated poses; no object crossing between cells.
+Constraints: preserve the approved hair, beard, facial proportions and friendly expression while keeping Magno muscular and bovine-themed; fictional game-character interpretation only; no real-world branding, logos, trademarks, text, numbers or watermark; no extra characters; no weapons; no scenery; no photorealistic rendering; no cropped body parts; no duplicated poses; no object crossing between cells.
 ```
 
 ### Prompt comuni ricostruiti — non originali
@@ -226,9 +223,9 @@ Constraints: preserve the person's recognizable hair, beard, facial proportions 
 Questi testi sono il miglior recupero riproducibile della generazione allora
 probabilmente usata. Non vanno citati come prompt effettivi: riuniscono solo
 vincoli documentati prima o durante l'identity pass. Per ciascuno: Image 1 è
-la fotografia indicata nel prospetto precedente (`subject reference`), Image 2
-è il rispettivo `hd/poses.png` (`edit target`) e Image 3 è il fondale welcome
-(`style and composition reference`).
+la reference visiva riservata indicata nel prospetto precedente (`subject
+reference`), Image 2 è il rispettivo `hd/poses.png` (`edit target`) e Image 3
+è il fondale welcome (`style and composition reference`).
 
 Vincoli condivisi impliciti in ogni prompt: tre pose full-body rivolte a destra
 in una riga orizzontale, passo A | idle | passo B, celle uguali, stessa
