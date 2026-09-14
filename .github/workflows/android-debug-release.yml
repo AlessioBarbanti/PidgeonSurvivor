@@ -40,8 +40,15 @@ jobs:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
 
+      # Google ha ritirato il pacchetto "tools" (SDK tools monolitico, ormai
+      # sostituito da cmdline-tools) dal repository il 14 settembre 2026: il
+      # default dell'azione lo richiede comunque e sdkmanager fallisce subito
+      # ("Failed to find package 'tools'"). platform-tools basta: build-tools,
+      # platform e NDK arrivano dallo step seguente, pinnato esplicitamente.
       - name: Setup Android SDK cmdline-tools
         uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
 
       - name: Install pinned Android SDK/NDK packages
         run: |
