@@ -89,6 +89,7 @@
         "scenes/actors/base_enemy.tscn",
         "scripts/actors/ranged_enemy.gd",
         "scenes/actors/ranged_enemy.tscn",
+        "scripts/actors/pending_ranged_shot.gd",
         "scripts/game/enemy_spawner.gd",
         "scripts/game/enemy_spawn_profile.gd",
         "scripts/game/enemy_archetype_definition.gd",
@@ -109,7 +110,8 @@
         "tests/unit/test_ps123_archetype_hp_rescale.gd",
         "tests/unit/test_ps126_post_curve_pressure.gd",
         "tests/unit/test_ps171_enemy_overlap_separation.gd",
-        "tests/unit/test_ps157_early_difficulty.gd"
+        "tests/unit/test_ps157_early_difficulty.gd",
+        "tests/unit/test_ps158_mature_build_anti_afk.gd"
       ]
     },
     {

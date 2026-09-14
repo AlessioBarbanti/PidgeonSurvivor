@@ -22,6 +22,50 @@ func _exit_tree() -> void:
 	super._exit_tree()
 
 
+## PS-158: una build ad alto DPS/piercing puo' uccidere il Tiratore durante
+## il proprio telegraph, prima che il colpo parta. Senza questo hook la
+## minaccia sparirebbe con lui, azzerando l'unica pressione anti-AFK che non
+## dipende dal solo output di danno del giocatore. Il colpo gia' annunciato
+## viene invece affidato a PendingRangedShot, che ne completa il conto alla
+## rovescia e lo spara restando leggibile e schivabile.
+func _on_died() -> void:
+	if _telegraph_active and _definition != null:
+		_commit_pending_shot()
+	super._on_died()
+
+
+func _commit_pending_shot() -> void:
+	var run_controller := get_run_controller()
+	var target := get_target() as Player
+	if (
+		projectile_scene == null
+		or not is_instance_valid(_projectile_parent)
+		or not _projectile_parent.is_inside_tree()
+		or run_controller == null
+		or target == null
+	):
+		return
+	var pending := PendingRangedShot.new()
+	pending.projectile_scene = projectile_scene
+	_projectile_parent.add_child(pending)
+	pending.global_position = global_position
+	pending.setup(
+		_telegraph_remaining,
+		_telegraph_duration,
+		_definition.ranged_attack_range,
+		_definition.ranged_telegraph_color,
+		collision_radius + 16.0,
+		_definition.ranged_projectile_damage,
+		_definition.ranged_projectile_speed,
+		_definition.ranged_projectile_lifetime,
+		_definition.ranged_projectile_radius,
+		pressure_multiplier,
+		run_controller,
+		target,
+		_projectile_parent
+	)
+
+
 func _physics_process(delta: float) -> void:
 	super._physics_process(delta)
 	_advance_attack_cycle(delta)

@@ -235,6 +235,23 @@ nuove decisioni e nuova pressione, non soltanto numeri più grandi"*. Entrambe
 le card hanno gate di playtest percettivo ancora aperti: il risultato
 automatico è verde, quello percettivo no.
 
+**PS-158 — il colpo telegrafato sopravvive alla morte del Tiratore.** Un
+playtest ha mostrato che una build offensiva matura (piercing/rimbalzo/
+esplosione/danno/fire rate) può uccidere il `RangedEnemy` prima che il suo
+telegraph scada, annullando col bersaglio l'unica minaccia della curva
+ordinaria che è spaziale/temporale invece che legata agli HP nemici (`Nido di
+tiratori`, PS-008, ne aumenta ×4 il peso di spawn). `RangedEnemy._on_died()`
+([scripts/actors/ranged_enemy.gd](../scripts/actors/ranged_enemy.gd)) ora
+affida un colpo già in telegraph a `PendingRangedShot`
+([scripts/actors/pending_ranged_shot.gd](../scripts/actors/pending_ranged_shot.gd)),
+un nodo indipendente dal ciclo di vita del Tiratore che continua il conto
+alla rovescia, disegna lo stesso anello di telegraph e ricontrolla il raggio
+rispetto al bersaglio al momento dello sparo (stessa garanzia di equità del
+Tiratore vivo). Il Tiratore muore comunque all'istante quando colpito: solo
+il colpo già annunciato resta in gioco. Nessun valore di HP, danno o cadenza
+è stato toccato: il gate percettivo su una build realmente composta e su un
+runtime fisico resta aperto (card `PS-158`).
+
 ## Sparo manuale e responsabilità del DPS (PS-085)
 
 `WeaponController` ([scripts/combat/weapon_controller.gd](../scripts/combat/weapon_controller.gd))
