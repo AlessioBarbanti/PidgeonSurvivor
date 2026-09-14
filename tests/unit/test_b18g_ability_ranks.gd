@@ -1,61 +1,65 @@
 extends GutGameplayTest
 
+## PS-161: valori per rango ritarati per rendere la progressione 1->5
+## nettamente percepibile lungo l'asse identitario di ciascuna attiva (area,
+## danno, mobilita, spinta, durata o rango copiato); il rango 1 resta
+## invariato (contratto PRD "Parametri iniziali").
 const EXPECTED_RANKS: Dictionary = {
 	&"magno_earthquake_shockwave": [
 		[8.0, 0.0, 220.0, 8.0, {"knockback_force": 300.0, "stun_duration": 0.2}],
-		[8.0, 0.0, 220.0, 9.0, {"knockback_force": 300.0, "stun_duration": 0.2}],
-		[8.0, 0.0, 260.0, 9.0, {"knockback_force": 300.0, "stun_duration": 0.2}],
-		[7.0, 0.0, 260.0, 9.0, {"knockback_force": 300.0, "stun_duration": 0.25}],
-		[7.0, 0.0, 280.0, 11.0, {"knockback_force": 380.0, "stun_duration": 0.25}],
+		[8.0, 0.0, 260.0, 10.0, {"knockback_force": 360.0, "stun_duration": 0.22}],
+		[7.5, 0.0, 300.0, 12.0, {"knockback_force": 430.0, "stun_duration": 0.26}],
+		[7.0, 0.0, 350.0, 15.0, {"knockback_force": 520.0, "stun_duration": 0.32}],
+		[6.0, 0.0, 420.0, 20.0, {"knockback_force": 650.0, "stun_duration": 0.4}],
 	],
 	&"bea_fire_z_trail": [
 		[10.0, 4.0, 0.0, 6.0, {"dash_distance": 320.0, "trail_width": 40.0}],
-		[10.0, 4.0, 0.0, 8.0, {"dash_distance": 320.0, "trail_width": 40.0}],
-		[10.0, 4.0, 0.0, 8.0, {"dash_distance": 380.0, "trail_width": 48.0}],
-		[9.0, 5.0, 0.0, 8.0, {"dash_distance": 380.0, "trail_width": 48.0}],
-		[9.0, 5.0, 0.0, 11.0, {"dash_distance": 440.0, "trail_width": 56.0}],
+		[10.0, 4.6, 0.0, 8.0, {"dash_distance": 380.0, "trail_width": 50.0}],
+		[9.5, 5.2, 0.0, 10.0, {"dash_distance": 460.0, "trail_width": 62.0}],
+		[9.0, 5.8, 0.0, 13.0, {"dash_distance": 560.0, "trail_width": 76.0}],
+		[8.0, 6.5, 0.0, 17.0, {"dash_distance": 680.0, "trail_width": 92.0}],
 	],
 	&"zat_lightning_storm": [
 		[60.0, 0.85, 150.0, 12.0, {"tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "tier_multiplier_high": 3.0, "warning_seconds": 0.35}],
-		[60.0, 0.85, 150.0, 16.0, {"tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "tier_multiplier_high": 3.0, "warning_seconds": 0.35}],
-		[55.0, 0.9, 170.0, 20.0, {"tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "tier_multiplier_high": 3.0, "warning_seconds": 0.35}],
-		[55.0, 0.9, 170.0, 25.0, {"tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "tier_multiplier_high": 3.0, "warning_seconds": 0.35}],
-		[50.0, 0.95, 190.0, 30.0, {"tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "tier_multiplier_high": 3.0, "warning_seconds": 0.35}],
+		[56.0, 0.85, 150.0, 20.0, {"tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "tier_multiplier_high": 3.0, "warning_seconds": 0.35}],
+		[50.0, 0.9, 170.0, 32.0, {"tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "tier_multiplier_high": 3.0, "warning_seconds": 0.35}],
+		[42.0, 0.9, 170.0, 46.0, {"tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "tier_multiplier_high": 3.0, "warning_seconds": 0.35}],
+		[34.0, 0.95, 190.0, 64.0, {"tier_multiplier_low": 1.0, "tier_multiplier_medium": 2.0, "tier_multiplier_high": 3.0, "warning_seconds": 0.35}],
 	],
 	&"alea_grand_spin": [
 		[9.0, 1.2, 140.0, 5.0, {"hits_per_second": 12.0}],
-		[9.0, 1.2, 140.0, 6.0, {"hits_per_second": 12.0}],
-		[9.0, 1.4, 165.0, 6.0, {"hits_per_second": 12.0}],
-		[8.0, 1.4, 165.0, 6.0, {"hits_per_second": 14.0}],
-		[8.0, 1.6, 180.0, 8.0, {"hits_per_second": 14.0}],
+		[9.0, 1.4, 175.0, 7.0, {"hits_per_second": 12.0}],
+		[8.5, 1.6, 220.0, 9.0, {"hits_per_second": 13.0}],
+		[8.0, 1.9, 270.0, 12.0, {"hits_per_second": 14.0}],
+		[7.0, 2.2, 330.0, 16.0, {"hits_per_second": 16.0}],
 	],
 	&"aleo_thermal_shock": [
 		[12.0, 1.2, 200.0, 14.0, {"shock_multiplier": 2.0, "slow_factor": 0.45}],
-		[12.0, 1.2, 200.0, 18.0, {"shock_multiplier": 2.0, "slow_factor": 0.45}],
-		[12.0, 1.4, 230.0, 18.0, {"shock_multiplier": 2.0, "slow_factor": 0.45}],
-		[11.0, 1.4, 230.0, 18.0, {"shock_multiplier": 2.2, "slow_factor": 0.35}],
-		[11.0, 1.6, 250.0, 26.0, {"shock_multiplier": 2.5, "slow_factor": 0.35}],
+		[12.0, 1.3, 240.0, 20.0, {"shock_multiplier": 2.2, "slow_factor": 0.4}],
+		[11.0, 1.4, 290.0, 28.0, {"shock_multiplier": 2.5, "slow_factor": 0.33}],
+		[10.0, 1.5, 350.0, 38.0, {"shock_multiplier": 2.8, "slow_factor": 0.25}],
+		[9.0, 1.7, 420.0, 52.0, {"shock_multiplier": 3.2, "slow_factor": 0.15}],
 	],
 	&"lollo_random_cosplay": [
 		[14.0, 0.0, 0.0, 0.0, {"copy_rank": 1, "avoid_repeat": false}],
-		[13.0, 0.0, 0.0, 0.0, {"copy_rank": 1, "avoid_repeat": false}],
 		[13.0, 0.0, 0.0, 0.0, {"copy_rank": 2, "avoid_repeat": false}],
-		[12.0, 0.0, 0.0, 0.0, {"copy_rank": 2, "avoid_repeat": true}],
-		[11.0, 0.0, 0.0, 0.0, {"copy_rank": 3, "avoid_repeat": true}],
+		[12.0, 0.0, 0.0, 0.0, {"copy_rank": 3, "avoid_repeat": true}],
+		[11.0, 0.0, 0.0, 0.0, {"copy_rank": 4, "avoid_repeat": true}],
+		[9.0, 0.0, 0.0, 0.0, {"copy_rank": 5, "avoid_repeat": true}],
 	],
 	&"migi_zen_slowdown": [
 		[11.0, 3.5, 260.0, 0.0, {"slow_factor": 0.4}],
-		[11.0, 4.5, 260.0, 0.0, {"slow_factor": 0.4}],
-		[11.0, 4.5, 300.0, 0.0, {"slow_factor": 0.4}],
-		[10.0, 4.5, 300.0, 0.0, {"slow_factor": 0.32}],
-		[10.0, 6.0, 340.0, 0.0, {"slow_factor": 0.25}],
+		[11.0, 4.2, 320.0, 0.0, {"slow_factor": 0.34}],
+		[10.5, 4.8, 390.0, 0.0, {"slow_factor": 0.28}],
+		[10.0, 5.4, 460.0, 0.0, {"slow_factor": 0.22}],
+		[9.0, 6.5, 560.0, 0.0, {"slow_factor": 0.15}],
 	],
 	&"marghe_shadow_deception": [
-		[13.0, 3.0, 0.0, 0.0, {"illusion_lifetime_on_death": true}],
-		[13.0, 4.0, 0.0, 0.0, {"illusion_lifetime_on_death": true}],
-		[12.0, 4.0, 0.0, 0.0, {"illusion_lifetime_on_death": true}],
-		[12.0, 5.0, 0.0, 0.0, {"illusion_lifetime_on_death": true}],
-		[10.0, 6.0, 0.0, 0.0, {"illusion_lifetime_on_death": true}],
+		[13.0, 3.0, 0.0, 0.0, {"illusion_lifetime_on_death": true, "clone_attack_damage": 2.0, "clone_attack_interval": 1.6}],
+		[12.0, 4.2, 0.0, 0.0, {"illusion_lifetime_on_death": true, "clone_attack_damage": 2.5, "clone_attack_interval": 1.45}],
+		[11.0, 5.4, 0.0, 0.0, {"illusion_lifetime_on_death": true, "clone_attack_damage": 3.0, "clone_attack_interval": 1.3}],
+		[10.0, 6.6, 0.0, 0.0, {"illusion_lifetime_on_death": true, "clone_attack_damage": 4.0, "clone_attack_interval": 1.1}],
+		[8.0, 8.5, 0.0, 0.0, {"illusion_lifetime_on_death": true, "clone_attack_damage": 5.0, "clone_attack_interval": 0.9}],
 	],
 }
 
@@ -134,7 +138,9 @@ func test_rank_catalog_and_flow() -> void:
 		activated_snapshot != null and activated_snapshot.get_resolved_rank() == 3,
 		"L'attivazione deve fotografare il rank 3."
 	)
-	assert_almost_eq(ability.get_cooldown_total(), 8.0, FLOAT_TOLERANCE, "Il cooldown rank 3 deve essere 8 s.")
+	# PS-161: il cooldown rank 3 di Magno e' sceso a 7,5s (era 8.0s piatto sui
+	# primi tre ranghi prima della ritaratura).
+	assert_almost_eq(ability.get_cooldown_total(), 7.5, FLOAT_TOLERANCE, "Il cooldown rank 3 deve essere 7,5 s.")
 
 	assert_true(
 		_open_next_level(experience), "La fixture deve aprire il level-up rank 4 durante il cooldown."
@@ -150,13 +156,13 @@ func test_rank_catalog_and_flow() -> void:
 		"Il profilo successivo deve usare cooldown 7 s."
 	)
 	assert_almost_eq(
-		ability.get_cooldown_total(), 8.0, FLOAT_TOLERANCE,
+		ability.get_cooldown_total(), 7.5, FLOAT_TOLERANCE,
 		"Il cooldown gia iniziato deve conservare lo snapshot rank 3."
 	)
 	assert_true(
 		activated_snapshot != null
 		and activated_snapshot.get_resolved_rank() == 3
-		and is_equal_approx(activated_snapshot.cooldown_seconds, 8.0),
+		and is_equal_approx(activated_snapshot.cooldown_seconds, 7.5),
 		"Lo snapshot dell'attivazione precedente non deve essere mutato dal rank 4."
 	)
 	ability._process(8.0)

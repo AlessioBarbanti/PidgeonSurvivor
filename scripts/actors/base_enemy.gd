@@ -101,6 +101,35 @@ var _knockback_remaining := 0.0
 var _speed_modifiers: Dictionary = {}
 var _damage_taken_modifiers: Dictionary = {}
 
+## PS-171: dimensione delle celle della griglia di prossimita' condivisa fra
+## tutti i nemici, usata solo per la respinta anti-sovrapposizione qui sotto.
+## Abbastanza grande da coprire il raggio combinato massimo plausibile
+## (collision_radius arriva fino a 128) senza dover cercare oltre le celle
+## adiacenti (ricerca 3x3).
+const SEPARATION_CELL_SIZE := 256.0
+## Amplifica la spinta grezza (proporzionale al solo overlap) prima del
+## limite di velocita' qui sotto: in un ammassamento denso la componente
+## radiale netta per singolo nemico e' molto piu' piccola della somma dei
+## contributi (i vicini piu' vicini si respingono quasi tangenzialmente a
+## vicenda), quindi senza questo fattore l'assestamento di un gruppo numeroso
+## richiederebbe decine di secondi invece di restare percettibile in pochi.
+const SEPARATION_STRENGTH := 4.0
+## Limite alla velocita' di respinta, come frazione della velocita' di
+## inseguimento del singolo nemico: puo' superarla (come il knockback) perche'
+## rappresenta l'essere "spinti fuori" da un ammassamento, non locomozione
+## volontaria, ma resta comunque un tetto percepibile e non un teletrasporto.
+const SEPARATION_MAX_SPEED_FACTOR := 2.0
+## Cache statica condivisa fra tutte le istanze, indicizzata per
+## RunController (instance_id -> {physics_frame, grid}): ricostruita al piu'
+## una volta per frame fisico per ogni RunController, invece che una volta
+## per nemico, cosicche' centinaia di nemici restino O(n) invece di O(n^2)
+## quando cercano i propri vicini. Indicizzare per RunController (non una
+## griglia unica globale) e' necessario oltre che corretto: nei test GUT piu'
+## fixture indipendenti (ciascuna col proprio RunController) possono coesistere
+## nello stesso processo (vedi CLAUDE.md), e una cache unica farebbe filtrare
+## nemici di una fixture nella respinta di un'altra.
+static var _separation_grids_by_controller: Dictionary = {}
+
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 @onready var _health_component: HealthComponent = %HealthComponent
 @onready var _hurtbox: Hurtbox = %Hurtbox
@@ -164,16 +193,25 @@ func _physics_process(delta: float) -> void:
 			_knockback_velocity = Vector2.ZERO
 		return
 
+	# PS-171: la respinta va calcolata anche quando il nemico e' fermo
+	# (es. RangedEnemy alla propria ranged_preferred_distance), perche' e'
+	# proprio li' che piu' tiratori convergono sullo stesso anello e possono
+	# collassare sullo stesso punto senza mai piu' muoversi.
 	var offset_to_target := _compute_chase_offset()
-	if offset_to_target.is_zero_approx():
+	var desired_direction := Vector2.ZERO
+	var chase_velocity := Vector2.ZERO
+	if not offset_to_target.is_zero_approx():
+		desired_direction = offset_to_target.normalized()
+		chase_velocity = desired_direction * get_effective_move_speed()
+		_sync_enemy_sprite_facing(offset_to_target)
+
+	velocity = chase_velocity + _compute_separation_velocity()
+	if velocity.is_zero_approx():
 		velocity = Vector2.ZERO
 		return
-	_sync_enemy_sprite_facing(offset_to_target)
-
-	var desired_direction := offset_to_target.normalized()
-	velocity = desired_direction * get_effective_move_speed()
 	move_and_slide()
-	_steer_around_blocking_obstacle(desired_direction)
+	if not desired_direction.is_zero_approx():
+		_steer_around_blocking_obstacle(desired_direction)
 
 
 ## Offset verso il punto inseguito, al netto dell'offset di dispersione B37.
@@ -199,6 +237,117 @@ func _steer_around_blocking_obstacle(desired_direction: Vector2) -> void:
 		tangent = -tangent
 	velocity = tangent * get_effective_move_speed()
 	move_and_slide()
+
+
+## PS-171: respinta leggera fra nemici vicini della stessa scena, indipendente
+## dalla fisica (i nemici hanno collision_layer = 0 e non collidono mai fra
+## loro con move_and_slide(), per scelta esplicita: vedi Decisioni PS-171).
+## Interviene solo quando i cerchi di collisione si sovrappongono davvero, cosi'
+## il pathing a bassa densita' resta identico a prima; a densita' alta separa
+## quel tanto che basta a restare leggibili, come richiesto per i tiratori
+## impilati sulla stessa ranged_preferred_distance.
+func _compute_separation_velocity() -> Vector2:
+	if not is_inside_tree():
+		return Vector2.ZERO
+	var own_run_controller := get_run_controller()
+	if own_run_controller == null:
+		return Vector2.ZERO
+	var grid := _get_separation_grid_for(get_tree(), own_run_controller)
+	var own_cell := _separation_cell_for(global_position)
+	var push := Vector2.ZERO
+	for x_offset in range(-1, 2):
+		for y_offset in range(-1, 2):
+			var neighbor_cell := own_cell + Vector2i(x_offset, y_offset)
+			if not grid.has(neighbor_cell):
+				continue
+			for other_node in grid[neighbor_cell]:
+				var other := other_node as BaseEnemy
+				if other != self:
+					push += _separation_push_from(other)
+	if push.is_zero_approx():
+		return Vector2.ZERO
+	return push.limit_length(get_effective_move_speed() * SEPARATION_MAX_SPEED_FACTOR)
+
+
+## Contributo di un singolo vicino: 0 se i cerchi non si toccano, altrimenti un
+## vettore proporzionale all'overlap che punta da `other` verso `self`. Quando
+## i due centri coincidono esattamente non esiste una direzione geometrica: si
+## usa l'angolo del proprio _pursuit_offset (gia' derivato dall'RNG di run) come
+## spareggio stabile, cosicche' l'esito resti deterministico a parita' di seed
+## invece di dipendere da un ordine di iterazione arbitrario.
+func _separation_push_from(other: BaseEnemy) -> Vector2:
+	var delta_position := global_position - other.global_position
+	var combined_radius := collision_radius + other.collision_radius
+	var distance_squared := delta_position.length_squared()
+	if distance_squared >= combined_radius * combined_radius:
+		return Vector2.ZERO
+	var distance := sqrt(distance_squared)
+	var direction := Vector2.RIGHT.rotated(_pursuit_offset.angle())
+	if distance > 0.0001:
+		direction = delta_position / distance
+	var overlap := combined_radius - distance
+	return direction * overlap * SEPARATION_STRENGTH
+
+
+static func _separation_cell_for(position: Vector2) -> Vector2i:
+	return Vector2i(
+		floori(position.x / SEPARATION_CELL_SIZE),
+		floori(position.y / SEPARATION_CELL_SIZE)
+	)
+
+
+## Ricostruita al piu' una volta per frame fisico per ogni RunController:
+## legge il gruppo "enemies" (Boss e clone-esca ne restano fuori per
+## costruzione dei rispettivi `.tscn`, corretto da PS-174 dopo che PS-171 ne
+## aveva ereditato involontariamente il gruppo statico) ma include solo i
+## nemici dello STESSO RunController richiesto, cosicche' la separazione non
+## tocchi mai Player, Boss, proiettili, o (nei test GUT con piu' fixture
+## indipendenti nello stesso processo) nemici di una popolazione diversa.
+static func _get_separation_grid_for(tree: SceneTree, run_controller: RunController) -> Dictionary:
+	var controller_id := run_controller.get_instance_id()
+	var current_physics_frame := Engine.get_physics_frames()
+	var cached: Variant = _separation_grids_by_controller.get(controller_id)
+	if cached != null and cached["physics_frame"] == current_physics_frame:
+		return cached["grid"]
+
+	var grid: Dictionary = {}
+	for node in tree.get_nodes_in_group(&"enemies"):
+		var enemy := node as BaseEnemy
+		if enemy == null or not enemy.is_alive() or enemy.get_run_controller() != run_controller:
+			continue
+		var cell := _separation_cell_for(enemy.global_position)
+		if not grid.has(cell):
+			grid[cell] = []
+		(grid[cell] as Array).append(enemy)
+	# PS-174: l'ordine di SceneTree.get_nodes_in_group() non e' un contratto
+	# stabile dell'engine. La somma delle spinte di separazione e' in virgola
+	# mobile e non associativa: sommare gli stessi vicini in un ordine diverso
+	# produce un risultato leggermente diverso, che 240+ tick di un sistema a
+	# molti corpi mutuamente repulsivi amplificano in una divergenza
+	# osservabile. Ordinare per instance_id (assegnato in modo monotono e
+	# deterministico alla creazione, a parita' di sequenza di spawn) rende la
+	# somma riproducibile a parita' di seed, invece di dipendere da un
+	# dettaglio interno dell'engine.
+	for cell: Vector2i in grid.keys():
+		(grid[cell] as Array).sort_custom(
+			func(a: BaseEnemy, b: BaseEnemy) -> bool: return a.get_instance_id() < b.get_instance_id()
+		)
+
+	_prune_separation_grid_cache()
+	_separation_grids_by_controller[controller_id] = {
+		"physics_frame": current_physics_frame,
+		"grid": grid,
+	}
+	return grid
+
+
+## Pulizia opportunistica: rimuove le voci di RunController non piu' validi
+## (restart di editor/test, fixture distrutte) cosicche' la cache non cresca
+## senza limite in un processo di lunga durata (es. l'intera suite Full).
+static func _prune_separation_grid_cache() -> void:
+	for controller_id: Variant in _separation_grids_by_controller.keys():
+		if not is_instance_id_valid(controller_id):
+			_separation_grids_by_controller.erase(controller_id)
 
 
 func _draw() -> void:

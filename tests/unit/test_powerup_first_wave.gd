@@ -83,11 +83,12 @@ func _assert_projectile_speed(
 		"Via dalla Griglia! deve essere selezionabile."
 	)
 	assert_almost_eq(
-		weapon.get_effective_projectile_speed(), base_speed * 1.1, FLOAT_TOLERANCE, "La velocita dei proiettili deve crescere del 10%."
+		# PS-160: Via dalla Griglia! e' passata da +10%/rank a +20%/rank.
+		weapon.get_effective_projectile_speed(), base_speed * 1.2, FLOAT_TOLERANCE, "La velocita dei proiettili deve crescere del 20%."
 	)
 	assert_almost_eq(
 		effects.get_effective_multiplier(UpgradeEffectRegistry.WEAPON_PROJECTILE_SPEED_MULTIPLIER),
-		1.1,
+		1.2,
 		FLOAT_TOLERANCE,
 		"Il moltiplicatore projectile speed deve essere tracciato."
 	)

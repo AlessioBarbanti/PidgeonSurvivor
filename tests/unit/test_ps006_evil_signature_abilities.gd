@@ -484,6 +484,65 @@ func test_marghe_decoy_diverts_targeting_and_stays_distinguishable() -> void:
 	_teardown_fixture(built)
 
 
+## Copre: PS-174, il clone di Evil Marghe minaccia realmente se non ucciso.
+## Spara al Player riusando lo schema telegraph->BossProjectile di
+## RangedEnemy, resta immobile, e se la Signature si rielegge con un clone
+## ancora vivo se ne aggiunge un secondo invece di essere bloccati dal
+## vecchio vincolo "un solo clone alla volta", fino al tetto dichiarato nei
+## dati (`max_active_clones: 3`).
+func test_marghe_decoy_attacks_and_accumulates_up_to_cap() -> void:
+	var built := await _build_fixture(60614)
+	var boss := _spawn_and_execute_signature(built, &"marghe", NEAR_OFFSET)
+	if boss == null:
+		return
+
+	var first_decoy := boss.get_active_decoy()
+	assert_not_null(first_decoy, "Reggeton time! deve generare il primo clone.")
+	if first_decoy == null:
+		return
+	var spawn_position := first_decoy.global_position
+	first_decoy.set_physics_process(false)
+
+	# Intervallo (2,5s) dichiarato nei dati: con margine, sparo immediato a tiro.
+	for _step in range(30):
+		first_decoy._physics_process(DRIVE_STEP)
+	assert_true(
+		first_decoy.get_active_projectile_count() > 0,
+		"Il clone deve sparare un BossProjectile al Player entro il primo ciclo d'attacco."
+	)
+	assert_vector_near(
+		first_decoy.global_position, spawn_position,
+		"Il clone deve restare immobile: solo il comportamento d'attacco cambia, non il movimento."
+	)
+
+	# Rieleggere la Signature con un clone ancora vivo deve aggiungerne un
+	# secondo, non essere bloccato dal vecchio vincolo "un solo clone".
+	assert_true(
+		_drive_until_executed(boss, FirstBoss.SIGNATURE), "La Signature di Marghe deve poter rieleggersi."
+	)
+	assert_eq(boss.get_active_decoy_count(), 2, "Un secondo clone deve aggiungersi al primo ancora vivo.")
+
+	assert_true(
+		_drive_until_executed(boss, FirstBoss.SIGNATURE), "La Signature di Marghe deve poter rieleggersi una terza volta."
+	)
+	assert_eq(boss.get_active_decoy_count(), 3, "Il terzo clone deve raggiungere il tetto dichiarato nei dati (3).")
+
+	assert_true(
+		_drive_until_executed(boss, FirstBoss.SIGNATURE), "La Signature di Marghe deve poter rieleggersi una quarta volta."
+	)
+	assert_eq(boss.get_active_decoy_count(), 3, "Oltre il tetto la Signature non deve produrre un quarto clone.")
+
+	# Uccidere un clone lo rimuove subito, senza respawn automatico dello
+	# stesso.
+	var decoys := boss.get_active_decoys()
+	decoys[0].take_damage(999999.0)
+	await wait_process_frames(2)
+	assert_eq(boss.get_active_decoy_count(), 2, "Uccidere un clone deve rimuoverlo immediatamente, senza respawn.")
+
+	_teardown_fixture(built)
+	print("PS174_EVIL_MARGHE_CLONE_THREAT_SMOKE_OK")
+
+
 ## Copre: Tempesta di Tuoni di Evil Zat. L'aura dichiara la fascia di carica, il
 ## colpo resta dentro il raggio annunciato e la fascia alta batte quella bassa.
 func test_zat_thunder_is_avoidable_and_scales_with_charge() -> void:

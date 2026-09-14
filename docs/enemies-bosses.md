@@ -21,7 +21,7 @@ curva in `EnemySpawnProfile` (dettagli in
 |---|---|---|---|---|---|
 | Piccione base | 10.0 | 140.0 | 12.0 | — | Riempimento, peso dominante nei primi minuti |
 | `swarmer` | 5.0 | 210.0 | 7.0 | 1 | Sciamatore, spawna in gruppi di 3 |
-| `ranged` | 9.0 | 110.0 | 7.0 | 2 | Tiratore a distanza, telegrafa e spara |
+| `ranged` | 9.0 | 110.0 | 7.0 | 2 | Tiratore a distanza, spara appena a tiro |
 | `armored` | 31.0 | 70.0 | 15.0 | 3 | Corazzato, lento e con HP alto |
 | `splitter` | 15.0 | 130.0 | 10.0 | 2 | Divisore, genera 2 frammenti alla morte |
 | `splitter_fragment` | 4.0 | 160.0 | 6.0 | 1 | Solo prodotto dalla morte di `splitter`, mai spawnato ordinariamente |
@@ -59,14 +59,19 @@ velocità ridotta. `BaseEnemy` puro.
 **Tiratore (`ranged`).** Script dedicato `RangedEnemy extends BaseEnemy`
 ([scripts/actors/ranged_enemy.gd](../scripts/actors/ranged_enemy.gd)).
 `spawn_weight 1.2`, moltiplicatore late-run `2.5`, eleggibile da `15s`. Ciclo
-d'attacco: cooldown → telegraph (`0.6s`, anello disegnato) → verifica di
-nuovo il range a fine telegraph → proiettile (`BossProjectile`, lo stesso
-script condiviso col Boss). Parametri: `attack_range 420.0`,
-`preferred_distance 320.0` (smette di avvicinarsi entro questa distanza),
-`attack_interval 2.2s`, danno proiettile `8.0`, velocità `200.0`. **Garanzia
-tardo-gioco**: da `180s`, se sono passati più di `4s` senza uno spawn
-`ranged`, il prossimo spawn eleggibile lo forza
-(`enemy_spawner.gd:344-362`).
+d'attacco: cooldown → appena il bersaglio è a tiro spara subito un
+proiettile (`BossProjectile`, lo stesso script condiviso col Boss) → si
+ricarica per `attack_interval` prima del colpo successivo. Nessun tempo di
+telegraph né anello disegnato (rimosso su richiesta esplicita del
+proprietario, PS-158): l'unico tell è il proiettile stesso in volo.
+Parametri: `attack_range 420.0`, `preferred_distance 320.0` (smette di
+avvicinarsi entro questa distanza), `attack_interval 2.2s`, danno proiettile
+`8.0`, velocità `200.0`. Un proiettile già sparato è indipendente dal
+Tiratore che lo ha lanciato: se questo muore in combattimento mentre la run
+è ancora in corso, il colpo in volo non viene annullato con lui (solo un
+vero restart pulisce anche i proiettili residui). **Garanzia tardo-gioco**:
+da `180s`, se sono passati più di `4s` senza uno spawn `ranged`, il prossimo
+spawn eleggibile lo forza (`enemy_spawner.gd:344-362`).
 
 **Divisore (`splitter`).** Script dedicato `SplitterEnemy extends BaseEnemy`
 ([scripts/actors/splitter_enemy.gd](../scripts/actors/splitter_enemy.gd)).
@@ -148,30 +153,42 @@ caso fra gli otto profili validi di `FriendRegistry` e duplica il
 `BossDefinition` in Evil (id `evil_<friend_id>`, colori e telegraph dedicati
 magenta/viola, Signature risolta dal catalogo).
 
+**Varietà delle identità Evil (PS-162):** l'estrazione esclude gli Evil già
+incontrati più di recente in questa run (cronologia scene-local in
+`BossEncounter`, azzerata al restart), con una finestra pari a
+`min(profili_eleggibili - 1, incontri_già_registrati)`. Effetto pratico con
+otto profili: nessuna ripetizione fra due incontri consecutivi, e i primi
+otto incontri di una run esplorano sempre tutti e otto i profili prima che
+uno possa ripetersi. La selezione resta interamente deterministica per
+seed + `schedule_index`.
+
 Profili confermati (uno-a-uno con `data/bosses/signatures/*.tres`): Alea,
 Aleo, Bea, Lollo, Magno, Marghe, Migi, Zat — vedi
 [characters.md](./characters.md) per identità e ruolo di ciascuno.
 
-### Boss Intro: identità individuale (PS-051)
+### Boss Intro: ritratto fluttuante (PS-176, sostituisce PS-051/PS-102/PS-103)
 
 `BossUI.show_intro()` ([scripts/ui/boss_ui.gd](../scripts/ui/boss_ui.gd))
-distingue le due varianti invece di mostrare soltanto titolo, citazione e CTA:
+mostra il ritratto Boss (Evil `<Nome>` o Piccione Malvagio) per intero, in
+`contain`, senza alcun pannello o cornice esterna: l'unica ornamentazione
+visibile (ali, catene, gemme, cornice dorata) è quella già dipinta dentro il
+file `1536×1024` fornito dal proprietario. La citazione
+(`BossDefinition.get_safe_quote()`) è sovrapposta al ritratto tramite ancore
+percentuali dentro il cartiglio scuro già dipinto nell'immagine, con un inset
+di sicurezza lontano dai bordi. Titolo (nome Boss) e icona Signature non sono
+più mostrati nella Boss Intro (rimossi dalla scena). Il bottone "AFFRONTA"
+compare sotto il ritratto, mai sovrapposto.
 
-- **Piccione Malvagio**: mostra il ritratto definitivo `256×256`
-  `assets/art/characters/piccione_malvagio/generated/portrait.png`, risolto da
-  `BossDefinition.get_safe_portrait()`; non ha icona Signature né trattamento
-  cromatico personale, quindi titolo e cornice restano sul colore neutro.
+- **Piccione Malvagio**: mostra `assets/art/characters/piccione_malvagio/generated/portrait.png`,
+  risolto da `BossDefinition.get_safe_portrait()`.
 - **`Evil <Nome>`**: mostra il ritratto risolto dal `FriendDefinition`
-  (`friend_profile.get_public_evil_portrait()`), l'icona della Signature
-  attiva (`BossSignatureDefinition.icon`) e tinge nome e cornice con
-  l'`accent_color` della Signature, mescolato a bianco per restare leggibile.
+  (`friend_profile.get_public_evil_portrait()`).
 
-Ritratto, icona o Signature mancanti fanno ricomporre la intro sugli elementi
-restanti (slot nascosto, mai una texture nulla visibile o uno spazio vuoto
-dedicato). La CTA "AFFRONTA" non cambia mai stile o colore in base al Boss.
-Gli otto `evil_portrait` e le otto icone Signature sono gli asset definitivi
-integrati da [PS-052](./cards/5_completed/PS-052-genera-ritratti-evil-e-icone-signature.md);
-il ritratto baseline dedicato è prodotto da PS-128 e collegato da PS-129. Lo
+Un ritratto mancante fa nascondere l'intero blocco ritratto+citazione senza
+lasciare spazio vuoto dedicato. Gli otto `evil_portrait` e il ritratto del
+Piccione Malvagio sono gli asset definitivi integrati da PS-176 (in
+precedenza da [PS-052](./cards/5_completed/PS-052-genera-ritratti-evil-e-icone-signature.md)
+per gli Evil e da PS-128/PS-129 per il baseline, entrambi sostituiti). Lo
 stato artistico dettagliato resta in
 [visual-audio-identity.md](./visual-audio-identity.md).
 
@@ -200,7 +217,8 @@ premio lo sfama e lo fa tornare come prima.
   espone il nome "buono" dell'amico appena redento (stringa vuota per il
   Piccione Malvagio, che non ha nessun amico da salvare). `BarbRewardOverlay`
   lo mostra in una riga sempre **positiva verso Barb**, mai un ammonimento
-  sulla fame: "`<Nome>` è tornato tra noi, grazie a Barb!" quando un amico è
+  sulla fame: "`<Nome>` è di nuovo tra noi, grazie a Barb!" (PS-166: forma
+  neutra rispetto al genere del nome interpolato) quando un amico è
   stato redento, altrimenti la riga generica
   `BarbRewardOverlay.BARB_GENERIC_REWARD_LINE` ("Con Barb alla griglia, va
   sempre a finire bene!").
@@ -258,7 +276,7 @@ tre eventi baseline (`data/wave_events/*.tres`):
 |---|---|---|---|---|
 | Accerchiamento | 10s | 2.5s (richiesto) | 100 `swarmer`, uno ogni 0.1s | Ridotto (×1.15 intervallo) |
 | Stormo laterale | 8s | Nessuno | 60 `swarmer`, uno ogni 0.1s | Ridotto (×1.1 intervallo) |
-| Nido di tiratori | 14s | Nessuno (ogni tiratore mantiene il proprio) | Peso `ranged` ×4 nel pool esistente | Invariato |
+| Nido di tiratori | 14s | Nessuno | Peso `ranged` ×4 nel pool esistente | Invariato |
 
 **PS-124 (2026-09-07).** I valori originali di Accerchiamento (`ordinary_spawn_mode`
 *Sostituito*, 8 `swarmer` ogni 0.35s) e Stormo laterale (10 `swarmer` ogni

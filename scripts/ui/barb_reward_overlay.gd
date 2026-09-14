@@ -356,7 +356,10 @@ func _show_offer(
 	_is_bonus_mode = is_bonus
 	_title_label.text = "IL PREMIO DI BARB" if is_bonus else "LE SPECIALITÀ DI BARB"
 	_redemption_label.text = (
-		"%s è tornato tra noi, grazie a Barb!" % _redeemed_friend_name
+		# PS-166: "di nuovo tra noi" invece di "tornato tra noi" resta neutro
+		# rispetto al genere del nome interpolato (Evil femminili compresi),
+		# senza introdurre un metadato di genere su FriendDefinition.
+		"%s è di nuovo tra noi, grazie a Barb!" % _redeemed_friend_name
 		if not _redeemed_friend_name.is_empty()
 		else BARB_GENERIC_REWARD_LINE
 	)

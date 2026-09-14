@@ -126,7 +126,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/tutorial_screen.tscn" id="118_tutorial_screen"]
 [ext_resource type="PackedScene" path="res://scenes/ui/settings_overlay.tscn" id="131_settings_overlay"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/menu_music_wipics/menu_music_loop.ogg" id="119_menu_music"]
-[ext_resource type="AudioStream" path="res://assets/audio/third_party/matthewpablo_vilified/boss_music_loop.mp3" id="125_boss_music"]
+[ext_resource type="AudioStream" path="res://assets/audio/third_party/matthewpablo_vilified/boss_music_loop.ogg" id="125_boss_music"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/cynicmusic_victory_fanfare/victory_music.wav" id="129_victory_music"]
 [ext_resource type="AudioStream" path="res://assets/audio/third_party/emma_ma_sad_game_over/defeat_music.wav" id="130_defeat_music"]
 
@@ -361,13 +361,13 @@ texture = ExtResource("104_obstacle_bench")
 position = Vector2(-1020, 60)
 footprint_size = Vector2(150, 250)
 texture = ExtResource("105_obstacle_clothesline")
-collision_segments = Array[Rect2]([Rect2(-0.5, -0.5, 0.18, 1.0), Rect2(0.32, -0.5, 0.18, 1.0)])
+collision_segments = Array[Rect2]([Rect2(-0.43, 0.03, 0.19, 0.47), Rect2(0.27, -0.5, 0.19, 0.45)])
 
 [node name="ClotheslineB" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
 position = Vector2(860, -480)
 footprint_size = Vector2(150, 250)
 texture = ExtResource("105_obstacle_clothesline")
-collision_segments = Array[Rect2]([Rect2(-0.5, -0.5, 0.18, 1.0), Rect2(0.32, -0.5, 0.18, 1.0)])
+collision_segments = Array[Rect2]([Rect2(-0.43, 0.03, 0.19, 0.47), Rect2(0.27, -0.5, 0.19, 0.45)])
 
 [node name="StoneWashbasin" parent="World/Obstacles" instance=ExtResource("101_static_obstacle")]
 position = Vector2(-620, -340)

@@ -3,12 +3,12 @@ id: PS-102
 titolo: Genera una cornice dedicata per la Boss Intro
 tipo: art
 area: arte
-stato: IN VERIFICA
+stato: SCARTATA
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-09-05
-aggiornato: 2026-09-06
+aggiornato: 2026-09-14
 ---
 
 # PS-102 — Genera una cornice dedicata per la Boss Intro
@@ -32,7 +32,7 @@ stata disegnata per questo scopo.
 
 Questa card si ferma alla produzione degli asset, come impone
 [PS-090](../5_completed/PS-090-separa-generazione-integrazione-card-art.md).
-Il cablaggio in `boss_ui.tscn` è [PS-103](../2_to_do/PS-103-integra-cornice-boss-intro.md).
+Il cablaggio in `boss_ui.tscn` è [PS-103](./PS-103-integra-cornice-boss-intro.md).
 
 ## Comportamento atteso
 
@@ -64,7 +64,7 @@ riquadro 112×112.
       riga nell'`ASSET-MANIFEST.md` pertinente: origine, autore/licenza,
       trasformazioni, hash SHA-256.
 - [x] Nessun file derivato è ancora referenziato da `boss_ui.tscn`: il
-      cablaggio resta a [PS-103](../2_to_do/PS-103-integra-cornice-boss-intro.md).
+      cablaggio resta a [PS-103](./PS-103-integra-cornice-boss-intro.md).
 
 ## Ambito
 
@@ -112,6 +112,12 @@ Non toccare:
   ritratto.** Il proprietario ha chiesto un ritratto "più protagonista" senza
   fissare una dimensione target; va proposta in bozza rispettando i vincoli
   di risoluzione dei ritratti già generati in PS-052.
+- **2026-09-14 — SCARTATA.** Il proprietario ha deciso una direzione diversa
+  per la Boss Intro: ritratti interi "fluttuanti" senza alcun pannello/cornice
+  esterna (l'ornamentazione è già dipinta dentro i nuovi ritratti forniti in
+  `assets/Evil portrais new/`). Questa cornice non verrà mai cablata; il
+  lavoro di presentazione prosegue in
+  [PS-176](../2_to_do/PS-176-ritratti-boss-fluttuanti-senza-cornice.md).
 
 ## Documenti sincronizzati
 
@@ -120,7 +126,7 @@ Non toccare:
 
 ## Note
 
-Card gemella di [PS-103](../2_to_do/PS-103-integra-cornice-boss-intro.md), che la
+Card gemella di [PS-103](./PS-103-integra-cornice-boss-intro.md), che la
 cablerà in scena. Nessuna relazione con [PS-101](./PS-101-racconta-fame-dietro-agli-evil.md)
 (narrativa/copy): le due linee di lavoro sono indipendenti.
 

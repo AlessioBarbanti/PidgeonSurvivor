@@ -109,7 +109,7 @@ Non toccare:
 - `BossEncounter.resolve_variant()` — RNG, soglie e selezione del profilo
   restano quelli di PS-006/PS-037;
 - il layout e la cornice della Boss Intro (quello è
-  [PS-102](./PS-102-cornice-dedicata-boss-intro.md)/PS-103, non questa card);
+  [PS-102](../6_rejected/PS-102-cornice-dedicata-boss-intro.md)/PS-103, non questa card);
 - `effect_id`, statistiche, Signature e ogni altro contratto meccanico dei
   profili Evil.
 
@@ -243,7 +243,7 @@ Non toccare:
 ## Note
 
 Questa card è indipendente dal redesign visivo del pannello
-([PS-102](./PS-102-cornice-dedicata-boss-intro.md)/PS-103): tocca solo dati e
+([PS-102](../6_rejected/PS-102-cornice-dedicata-boss-intro.md)/PS-103): tocca solo dati e
 copy, non frame o layout. Le due linee di lavoro possono procedere in
 parallelo e chiudersi in qualunque ordine.
 

@@ -87,6 +87,27 @@ quattro i bottoni della colonna. Non introduce un `RunState` dedicato: resta
 un uso di `prepare_restart()` identico a quello già in atto per CAMBIA
 PERSONAGGIO.
 
+### Riepilogo build nella pausa (PS-164)
+
+Sotto la colonna RIPRENDI/CAMBIA PERSONAGGIO/IMPOSTAZIONI/ESCI, nello stesso
+`ScrollContainer`/clamp di PS-142, il pannello pausa mostra una sezione
+"LA TUA BUILD" read-only: una riga per ogni upgrade con rango > 0 nella run
+corrente (icona, titolo, rango), costruita a runtime da
+`PauseOverlay._refresh_build_summary()` leggendo solo API già esposte da
+`UpgradeService` (`get_ranks()`, `get_registry()`) — nessuna nuova superficie
+di lettura, nessuna scrittura verso il servizio. Le Specialità di Barb
+sbloccate compaiono nello stesso elenco, distinte dagli upgrade ordinari
+unicamente dal colore del titolo (oro `Color(1, 0.85, 0.32, 1)`, lo stesso
+già in uso nel pannello per `ConfirmationTitleLabel`): niente bordo/sfondo
+dedicato, riservato invece alla card cliccabile `UpgradeCard` nella
+ricompensa di Barb. Le Specialità ancora bloccate non hanno rango e restano
+fuori dall'elenco. La sezione si ricostruisce a ogni apertura della pausa
+(`show_pause()`), quindi un upgrade appena scelto compare alla riapertura
+successiva senza refresh dedicato, e si azzera da sola a restart/cambio
+personaggio insieme ai ranghi di `UpgradeService`. Resta strettamente in
+lettura: non esiste alcun percorso da questo pannello per modificare la
+build della run.
+
 ### Composizione del selettore personaggi
 
 Il selettore ([scenes/ui/character_select_overlay.tscn](../scenes/ui/character_select_overlay.tscn))

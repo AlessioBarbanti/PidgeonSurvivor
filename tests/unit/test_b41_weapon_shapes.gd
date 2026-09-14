@@ -351,8 +351,12 @@ func test_saturated_repeatable_cards_stop_being_offered() -> void:
 		"Al rango 2 (3 proiettili, il tetto runtime) Tagliata non deve più cambiare nulla."
 	)
 	assert_false(
-		effects.is_rank_saturated(SWIFT_STEPS, 5),
-		"Dai che si fredda! al rango 5 (x1,1^5≈1,61) resta lontana dal proprio tetto (x2,0): non deve saturare prima del tempo."
+		# PS-160: il valore per rango e' salito a +15% (da +10%), quindi il
+		# rango 5 (x1,15^5≈2,01) ora raggiunge il tetto x2,0 per primo; il
+		# rango 4 (x1,15^4≈1,75) resta l'ultimo punto di controllo ancora
+		# lontano dal tetto, prima che salire al 5 lo saturi.
+		effects.is_rank_saturated(SWIFT_STEPS, 4),
+		"Dai che si fredda! al rango 4 (x1,15^4≈1,75) resta lontana dal proprio tetto (x2,0): non deve saturare prima del tempo."
 	)
 
 	catalog.definitions = [DOUBLE_BARREL, WIDE_MAGNET, SWIFT_STEPS, MEAT_FORK_DAMAGE]

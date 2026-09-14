@@ -62,6 +62,19 @@ del documento architetturale, non una lacuna di questo file.
   (`direttore-artistico` sullo screenshot in
   `exports/ui-screenshots/07_pause_overlay.png`, non sui numeri nel
   `.tscn`), prima di considerare il gate percettivo di una card chiuso.
+- **Specialità di Barb: due trattamenti distinti a seconda del contesto,
+  mai un terzo** (PS-164, confermato da `direttore-artistico` sul render
+  finale): su una card grande cliccabile (`UpgradeCard`, ricompensa di Barb),
+  bordo+sfondo ambra dedicati (`upgrade_card.gd:_apply_visual_treatment`); su
+  una riga di riepilogo read-only (`PauseOverlay`, riepilogo build in pausa),
+  solo il `font_color` del titolo passa all'oro già in uso nel pannello per
+  `ConfirmationTitleLabel` (`Color(1, 0.85, 0.32, 1)`), mai un bordo/sfondo —
+  quel trattamento resta riservato alle card cliccabili. Misurato sui pixel
+  reali di `exports/ui-screenshots/07_pause_overlay.png`: lo scarto di
+  tinta fra crema (`Color(1, 0.91, 0.7, 1)`) e oro è ≈0.34 sul canale blu,
+  ben oltre la soglia ±0.3-0.4 già stabilita per questo pannello scuro (vedi
+  voce sui bottoni secondari sopra) — un solo canale di distinzione basta,
+  non serve un secondo segnale (peso del font, tag testuale, icona).
 - **Ornamenti d'angolo delle carte upgrade**
   ([manifest](../assets/art/ui/upgrade_card/ASSET-MANIFEST.md)): per gli usi a
   clip, il medaglione/rivetto esiste come asset autonomo con alpha reale e
@@ -126,7 +139,7 @@ del documento architetturale, non una lacuna di questo file.
 | `ui/barb_reward` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/barb_reward/ASSET-MANIFEST.md) | Caricatura dedicata di Barb (PS-036) |
 | `ui/pause` | 2 | [ASSET-MANIFEST.md](../assets/art/ui/pause/ASSET-MANIFEST.md) | Cornice riusata da pausa, cambio personaggio, tutorial, terminale, intro Boss |
 | `ui/upgrade_card` | 3 | [ASSET-MANIFEST.md](../assets/art/ui/upgrade_card/ASSET-MANIFEST.md) | Rivetto d'angolo PS-152: master, copia review e derivato runtime |
-| `ui/boss` | 4 | [ASSET-MANIFEST.md](../assets/art/ui/boss/ASSET-MANIFEST.md) | Plancia CTA "AFFRONTA" e cornice Boss Intro PS-102 (in attesa di wiring PS-103) |
+| `ui/boss` | 4 | [ASSET-MANIFEST.md](../assets/art/ui/boss/ASSET-MANIFEST.md) | Plancia CTA "AFFRONTA"; cornice PS-102 orfana da PS-176 (asset su disco, non più cablata) |
 | `pickups` | 2 | [ASSET-MANIFEST.md](../assets/art/pickups/ASSET-MANIFEST.md) | Coscia di piccione, pickup cura |
 | `branding` | 3 | [ASSET-MANIFEST.md](../assets/art/branding/ASSET-MANIFEST.md) | Icona app e adaptive icon Android |
 
@@ -176,41 +189,46 @@ secondario di continuità del soggetto. L'accettazione percettiva del
 proprietario copre tutti gli otto busti; Marghe è stata accettata dopo la
 correzione dei capelli da castani a neri.
 
-### Stato dei ritratti Evil nella Boss Intro (PS-051, integrato da PS-052)
+### Ritratti Boss fluttuanti nella Boss Intro (PS-176, sostituisce PS-051/PS-052/PS-102/PS-103)
 
-PS-051 ha dato identità individuale alla Boss Intro degli Evil. PS-052 ha
-prodotto e integrato gli asset definitivi: ogni `data/friends/*.tres`
-valorizza `evil_portrait` con il busto dedicato del personaggio
-(`assets/art/characters/<id>/generated/evil_portrait.png`), distinto dal
-precedente ritaglio condiviso del foglio CC0 di terze parti. Il fallback
-`evil_portrait_placeholder` (e la dipendenza da
-`assets/art/third_party/eldiran_rpg_characters/`) sono stati rimossi: gli
-otto profili hanno `evil_portrait` e `portraits_approved = true` da PS-052,
-quindi il fallback non veniva più esercitato a runtime. `FriendDefinition.
-get_public_evil_portrait()` ora ritorna `evil_portrait` (o `null` se non
-approvato), senza placeholder. Ogni `data/bosses/signatures/*.tres`
-espone inoltre un'icona dedicata
-(`assets/art/icons/signatures/generated/evil_<signature_id>.png`) tramite il
-campo `BossSignatureDefinition.icon`. I sedici segnaposto `fake_*.png`
-introdotti da PS-051 sono stati rimossi dalle cartelle runtime.
+PS-176 sostituisce il trattamento a pannello/medaglione/tinta di PS-051 con un
+ritratto Boss "fluttuante" mostrato per intero in `contain`, senza pannello,
+cornice o icona Signature. I nove ritratti definitivi (otto Evil più il
+Piccione Malvagio) sono i busti `1536×1024` forniti dal proprietario in
+`assets/Evil portrais new/*.png`, con ornamentazione (ali, catene, gemme,
+cornice dorata) e cartiglio per la citazione già dipinti dentro l'immagine.
+Sostituiscono i precedenti busti quadrati `256×256` prodotti da PS-052 (Evil)
+e PS-128 (Piccione Malvagio): ogni `data/friends/*.tres` continua a
+valorizzare `evil_portrait` (`assets/art/characters/<id>/generated/evil_portrait.png`)
+e `data/bosses/first_boss.tres` continua a valorizzare `portrait`
+(`assets/art/characters/piccione_malvagio/generated/portrait.png`), stessi
+percorsi, nuovo contenuto. Il derivato runtime è ottenuto con
+`tools/process-boss-portrait.ps1` (ridimensionamento bicubico che preserva il
+rapporto d'aspetto `3:2`, nessun ritaglio sui bounds alpha: l'intera tela
+dipinta è contenuto valido). Le otto icone Signature restano invariate e
+continuano a esistere come asset (`assets/art/icons/signatures/generated/evil_<signature_id>.png`),
+ma non sono più mostrate nella Boss Intro.
 
-`BossUI` ([scripts/ui/boss_ui.gd](../scripts/ui/boss_ui.gd)) mostra ritratto e
-icona quando il Boss è un Evil, e tinge nome e cornice con l'`accent_color`
-della Signature (mescolato a bianco per restare leggibile); il Piccione
-Malvagio (`data/bosses/first_boss.tres`) non ha Signature e resta sul
-trattamento neutro, senza slot icona.
+`BossUI` ([scripts/ui/boss_ui.gd](../scripts/ui/boss_ui.gd)) sovrappone la
+citazione (`BossDefinition.get_safe_quote()`) al ritratto tramite ancore
+percentuali (`AspectRatioContainer` più un `Control` non-container per il
+posizionamento libero), calibrate sul rettangolo verde misurato su
+`assets/Evil portrais new/REFERENCE.png`. Titolo e tinta personale
+dell'`accent_color` non sono più applicati a nulla nella Boss Intro (erano il
+contratto di PS-051, rimosso). Il Piccione Malvagio riceve lo stesso
+trattamento degli Evil, senza layout ad hoc.
 
-L'accettazione percettiva del proprietario (silhouette, leggibilità alla
-dimensione reale della Boss intro sul Pixel 9) resta un gate manuale aperto
-su [PS-052](../docs/cards/4_to_test/PS-052-genera-ritratti-evil-e-icone-signature.md).
+L'accettazione percettiva del proprietario (confronto con `direttore-artistico`
+sulla resa cablata in scena) resta un gate manuale registrato nella card
+[PS-176](../docs/cards/5_completed/PS-176-ritratti-boss-fluttuanti-senza-cornice.md).
 
-### Cornice Boss Intro (PS-102, in attesa di PS-103)
+### Cornice Boss Intro, rimossa (PS-102/PS-103, scartate da PS-176)
 
-`assets/art/ui/boss/generated/boss_intro_frame.png` è la placca di rivelazione
-neutra: medaglione ritratto circolare in alto, ferro brunito, piume plum e
-brace arancio attorno a un centro libero per il copy nativo. Non contiene
-colori personali né testo; PS-103 la applicherà senza cambiare la modulazione
-già prevista per `Evil <Nome>` o il trattamento neutro del Piccione Malvagio.
+`assets/art/ui/boss/generated/boss_intro_frame.png` (medaglione ritratto
+circolare, ferro brunito, piume plum e brace arancio) non è più cablata nella
+Boss Intro: PS-176 l'ha sostituita col ritratto fluttuante a schermo intero.
+Il file resta sul disco come asset orfano, fuori dall'ambito di rimozione
+della card. PS-102 e PS-103 sono state spostate a `SCARTATA`.
 
 ## Audio
 
@@ -251,7 +269,7 @@ musica di run `super_wreck_roadway_loop.ogg` (Umplix, CC0)
 ([super_wreck_roadway_loop/ASSET-MANIFEST.md](../assets/audio/third_party/super_wreck_roadway_loop/ASSET-MANIFEST.md));
 musica menu
 `menu_music_loop.ogg` (wipics, CC0); musica Boss dedicata (PS-073)
-`boss_music_loop.mp3`, "Vilified" di Matthew Pablo, CC-BY 3.0 — l'unico asset
+`boss_music_loop.ogg`, "Vilified" di Matthew Pablo, CC-BY 3.0 — l'unico asset
 audio del progetto con attribuzione obbligatoria invece che volontaria
 ([matthewpablo_vilified/ASSET-MANIFEST.md](../assets/audio/third_party/matthewpablo_vilified/ASSET-MANIFEST.md)).
 Musica dedicata di fine run (PS-080), un solo colpo non in loop, distinta dai

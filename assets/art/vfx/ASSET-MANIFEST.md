@@ -131,7 +131,7 @@ B18M precedente al refresh):
 | `scripts/abilities/ability_area_effect.gd` | Decal Piroetta e Zen senza base circolare; Piroetta a due giri per attivazione | `7e7ed0664d50609d423a9b10bfb68402dac650e6d91bf6746bf43e575eaae31d` |
 | `scripts/abilities/cosplay_accent.gd` | Decal reveal e coriandoli senza anello sottostante | `72521e3e91469c6fc9b4160e8853e5c1d027eb0dd863097996c09b05d0af9664` |
 | `scripts/abilities/thermal_shock.gd` | Decal separati per brina e bloom senza basi o anelli procedurali | `4316a441084c661934991561309e0f18059d7fb344c880dc37b3c2d5814bb09c` |
-| `scripts/abilities/illusion_decoy.gd` | Clone e boombox raster con note animate, senza aura circolare | `44126e90d493708de81e63167c4e75249aa75a855ced1a8b85d347c212053bde` |
+| `scripts/abilities/illusion_decoy.gd` | Clone e boombox raster con note animate, senza aura circolare; PS-173 aggiunge il ciclo d'attacco periodico (nessuna modifica al disegno) | `266d9ce8f9d008f0753c7559680dcc3051e1470985679c01c85f7048c11cd50d` |
 | `scripts/abilities/instinctive_dodge_accent.gd` | Tell Sesto Senso Equino invariato | `6a07ae5b742a3bc92d5a79a4288c075d6e73005a7e00a803e46185dc331c8aa7` |
 
 Budget corrente: massimo un overlay fullscreen, 64 particelle logiche e due
@@ -158,7 +158,7 @@ storica documentata, ma non è più consumato dal runtime.
 | `scripts/abilities/ability_area_effect.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Archi rotanti, pozza con bolle e campo zen con anelli e moti lenti; il campo zen assorbe anche i proiettili ostili nel raggio, stesso disegno (B45) | `4a5eabf0409b07b9dfd95787cf2d0346c92296db5263ec41afdd40206e611578` |
 | `scripts/abilities/cosplay_accent.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Coda B18R non interattiva da 18 coriandoli, con entrata/uscita centralizzate nella palette dell'abilità copiata | `8d62630788467479ff2fbbf1587f753c2212c32e8720e81e1379b80bd2b9cff1` |
 | `scripts/abilities/thermal_shock.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Corona di brina contrattile con 12 schegge e bloom di calore a tre anelli | `581ae10c475c789b2f9c1d623d9b31938181703a4f4e2d58ba8207c526276836` |
-| `scripts/abilities/illusion_decoy.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Clone ballerino, cassa pulsante e sei note musicali | `01df1dc441abf245404b8cb6bf794753b6df77b2efb893c3c3d15acf74ace07d` |
+| `scripts/abilities/illusion_decoy.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Clone ballerino, cassa pulsante e sei note musicali | `266d9ce8f9d008f0753c7559680dcc3051e1470985679c01c85f7048c11cd50d` |
 | `scripts/abilities/ability_icon_burst.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Otto profili B18R da `1,20 s` con entrata/uscita centralizzate; coda non interattiva e clock solo `RUNNING` | `19790185309cbda01378ed93fad00f6554687129c9e741841178fc68e066f9e5` |
 | `scripts/abilities/instinctive_dodge_accent.gd` | progetto IL GIOCO | progetto IL GIOCO | Licenza del progetto | Tell del Sesto Senso Equino di Bea (B45): sagoma a ferro di cavallo e scia viola non interattiva, stesso schema di entrata/uscita centralizzata delle altre code | `57d9f40966aa37c523f4d67f4a235d3ff5671d4b746097d0aca7a29c073847b6` |
 

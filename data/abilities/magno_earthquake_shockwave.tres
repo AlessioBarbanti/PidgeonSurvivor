@@ -18,36 +18,36 @@ script = ExtResource("3_rank")
 rank = 2
 cooldown_seconds = 8.0
 duration_seconds = 0.0
-area_radius = 220.0
-damage = 9.0
-effect_parameters = {"knockback_force": 300.0, "stun_duration": 0.2, "visual_duration": 1.2, "momentum_damage_bonus_max": 0.5, "momentum_knockback_bonus_max": 0.4}
+area_radius = 260.0
+damage = 10.0
+effect_parameters = {"knockback_force": 360.0, "stun_duration": 0.22, "visual_duration": 1.2, "momentum_damage_bonus_max": 0.5, "momentum_knockback_bonus_max": 0.4}
 
 [sub_resource type="Resource" id="Rank_3"]
 script = ExtResource("3_rank")
 rank = 3
-cooldown_seconds = 8.0
+cooldown_seconds = 7.5
 duration_seconds = 0.0
-area_radius = 260.0
-damage = 9.0
-effect_parameters = {"knockback_force": 300.0, "stun_duration": 0.2, "visual_duration": 1.2, "momentum_damage_bonus_max": 0.5, "momentum_knockback_bonus_max": 0.4}
+area_radius = 300.0
+damage = 12.0
+effect_parameters = {"knockback_force": 430.0, "stun_duration": 0.26, "visual_duration": 1.2, "momentum_damage_bonus_max": 0.5, "momentum_knockback_bonus_max": 0.4}
 
 [sub_resource type="Resource" id="Rank_4"]
 script = ExtResource("3_rank")
 rank = 4
 cooldown_seconds = 7.0
 duration_seconds = 0.0
-area_radius = 260.0
-damage = 9.0
-effect_parameters = {"knockback_force": 300.0, "stun_duration": 0.25, "visual_duration": 1.2, "momentum_damage_bonus_max": 0.5, "momentum_knockback_bonus_max": 0.4}
+area_radius = 350.0
+damage = 15.0
+effect_parameters = {"knockback_force": 520.0, "stun_duration": 0.32, "visual_duration": 1.2, "momentum_damage_bonus_max": 0.5, "momentum_knockback_bonus_max": 0.4}
 
 [sub_resource type="Resource" id="Rank_5"]
 script = ExtResource("3_rank")
 rank = 5
-cooldown_seconds = 7.0
+cooldown_seconds = 6.0
 duration_seconds = 0.0
-area_radius = 280.0
-damage = 11.0
-effect_parameters = {"knockback_force": 380.0, "stun_duration": 0.25, "visual_duration": 1.2, "momentum_damage_bonus_max": 0.5, "momentum_knockback_bonus_max": 0.4}
+area_radius = 420.0
+damage = 20.0
+effect_parameters = {"knockback_force": 650.0, "stun_duration": 0.4, "visual_duration": 1.2, "momentum_damage_bonus_max": 0.5, "momentum_knockback_bonus_max": 0.4}
 
 [resource]
 script = ExtResource("1_definition")

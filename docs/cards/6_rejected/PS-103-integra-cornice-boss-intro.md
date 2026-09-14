@@ -3,19 +3,19 @@ id: PS-103
 titolo: Integra la cornice dedicata nella Boss Intro
 tipo: ux
 area: ui
-stato: IN VERIFICA
+stato: SCARTATA
 priorita: media
 dipende_da: [PS-102]
 origine:
 creato: 2026-09-05
-aggiornato: 2026-09-06
+aggiornato: 2026-09-14
 ---
 
 # PS-103 — Integra la cornice dedicata nella Boss Intro
 
 ## Contesto
 
-[PS-102](../4_to_test/PS-102-cornice-dedicata-boss-intro.md) produce una cornice propria
+[PS-102](./PS-102-cornice-dedicata-boss-intro.md) produce una cornice propria
 per il pannello `IntroPanel` di `BossUI` ([scenes/ui/boss_ui.tscn](../../../scenes/ui/boss_ui.tscn),
 righe 89-93), oggi ancora sullo `StyleBoxTexture_intro_panel` costruito su
 `pause_panel_frame.png` — lo stesso asset del pannello di pausa. Questa card
@@ -119,7 +119,7 @@ Non toccare:
 
 - **2026-09-05 — Card di solo wiring, nessuna decisione creativa propria.**
   Ogni scelta sul linguaggio visivo della cornice appartiene a
-  [PS-102](../4_to_test/PS-102-cornice-dedicata-boss-intro.md); questa card la applica e
+  [PS-102](./PS-102-cornice-dedicata-boss-intro.md); questa card la applica e
   basta.
 - **2026-09-06 — Il ritratto è un overlay disegnato prima di `%Center`, non
   un figlio della `VBox`.** Il medaglione di PS-102 e' un cerchio scavato
@@ -159,6 +159,11 @@ Non toccare:
   Restano comunque il candidato più naturale da rifinire nel controllo
   percettivo del proprietario, se la resa dal vivo suggerisse un
   aggiustamento fine.
+- **2026-09-14 — SCARTATA.** Il proprietario ha deciso una direzione diversa
+  per la Boss Intro: ritratti interi "fluttuanti" senza alcun pannello/cornice
+  esterna, che rimuove interamente il pannello/medaglione cablato da questa
+  card prima ancora che superasse la verifica. Il lavoro di presentazione
+  prosegue in [PS-176](../2_to_do/PS-176-ritratti-boss-fluttuanti-senza-cornice.md).
 
 ## Documenti sincronizzati
 

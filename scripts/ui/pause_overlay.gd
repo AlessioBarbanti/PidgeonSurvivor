@@ -22,11 +22,30 @@ signal ui_click_requested()
 @onready var _confirm_change_button: Button = %ConfirmChangeButton
 @onready var _pause_scroll: ScrollContainer = %PauseScroll
 @onready var _pause_vbox: VBoxContainer = %VBox
+@onready var _build_summary_separator: HSeparator = %BuildSummarySeparator
+@onready var _build_summary_title: Label = %BuildSummaryTitle
+@onready var _build_summary_list: VBoxContainer = %BuildSummaryList
 
 ## PS-085: margine di respiro fra lo scroll del pannello e i bordi del
 ## viewport, cosi' il contenuto non tocca mai esattamente il limite anche
 ## quando e' clampato al massimo consentito.
 const PAUSE_SCROLL_SAFETY_MARGIN := 24.0
+
+## PS-164: icona alla stessa dimensione già validata per la leggibilità delle
+## icone upgrade (vedi `EndScreen.UPGRADE_CHIP_ICON_SIZE`), non un valore
+## ridotto per "risparmiare spazio" — se la lista cresce ci pensa lo
+## scroll/clamp già esistente del pannello.
+const BUILD_SUMMARY_ICON_SIZE := Vector2(48, 48)
+const BUILD_SUMMARY_ROW_SEPARATION := 12
+## Stesso oro già in uso in questo pannello per `ConfirmationTitleLabel`
+## (elemento "in rilievo"): unico scarto di colore ammesso, solo sul titolo —
+## mai un bordo/sfondo dedicato come su `UpgradeCard`, che resta riservato
+## alle card cliccabili (revisione direttore-artistico, PS-164).
+const BUILD_SUMMARY_SPECIALITY_TITLE_COLOR := Color(1, 0.85, 0.32, 1)
+const BUILD_SUMMARY_TITLE_COLOR := Color(1, 0.91, 0.7, 1)
+const BUILD_SUMMARY_RANK_COLOR := Color(0.722, 0.784, 0.85, 1)
+
+var _upgrade_service: UpgradeService
 
 ## PS-147: `ConfirmationCenter` serve due scopi (CAMBIA PERSONAGGIO ed ESCI);
 ## questi valori distinguono quale testo mostrare e quale segnale emettere
@@ -70,6 +89,21 @@ func configure_settings_overlay(overlay: SettingsOverlay) -> bool:
 	return true
 
 
+## PS-164: cablata una sola volta da `movement_slice.gd`, come già fa
+## `configure_settings_overlay()`. Sola lettura: il riepilogo legge
+## `get_ranks()`/`get_registry()` già esposti da `UpgradeService`, non
+## modifica mai la build da qui.
+func configure_upgrade_service(service: UpgradeService) -> bool:
+	if not is_instance_valid(service):
+		return false
+	_upgrade_service = service
+	return true
+
+
+func get_upgrade_service() -> UpgradeService:
+	return _upgrade_service if is_instance_valid(_upgrade_service) else null
+
+
 ## PS-137: l'overlay impostazioni ha sempre precedenza — se è aperto, `ui_cancel`
 ## deve chiuderlo, non la conferma di cambio personaggio sottostante.
 func _unhandled_input(event: InputEvent) -> void:
@@ -84,6 +118,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func show_pause() -> void:
 	_accepting_resume = true
 	visible = true
+	_refresh_build_summary()
 	_request_pause_scroll_height_refresh()
 	_show_pause_controls()
 	_resume_button.call_deferred("grab_focus")
@@ -177,6 +212,139 @@ func get_pause_panel_rect() -> Rect2:
 		return Rect2()
 	var panel := _pause_center.get_child(0) as Control
 	return panel.get_global_rect() if is_instance_valid(panel) else Rect2()
+
+
+## PS-164: numero di voci mostrate nel riepilogo build (upgrade ordinari +
+## Specialità sbloccate), ricostruito a ogni `show_pause()`.
+func get_build_summary_row_count() -> int:
+	return _build_summary_list.get_child_count() if is_instance_valid(_build_summary_list) else 0
+
+
+## PS-164: la sezione resta nascosta finché non c'è almeno un upgrade da
+## mostrare, cosi' un'apertura pausa a inizio run non mostra un'intestazione
+## vuota.
+func is_build_summary_visible() -> bool:
+	return is_instance_valid(_build_summary_list) and _build_summary_list.visible
+
+
+func get_build_summary_row_title_text(index: int) -> String:
+	var title_label := _get_build_summary_row_title_label(index)
+	return title_label.text if title_label != null else ""
+
+
+func get_build_summary_row_title_color(index: int) -> Color:
+	var title_label := _get_build_summary_row_title_label(index)
+	return title_label.get_theme_color(&"font_color") if title_label != null else Color.BLACK
+
+
+func get_build_summary_row_rank_text(index: int) -> String:
+	var row := _get_build_summary_row(index)
+	if row == null or row.get_child_count() < 3:
+		return ""
+	var rank_label := row.get_child(2) as Label
+	return rank_label.text if rank_label != null else ""
+
+
+func _get_build_summary_row_title_label(index: int) -> Label:
+	var row := _get_build_summary_row(index)
+	if row == null or row.get_child_count() < 2:
+		return null
+	return row.get_child(1) as Label
+
+
+func _get_build_summary_row(index: int) -> Control:
+	if (
+		not is_instance_valid(_build_summary_list)
+		or index < 0
+		or index >= _build_summary_list.get_child_count()
+	):
+		return null
+	return _build_summary_list.get_child(index) as Control
+
+
+## PS-164: ricostruito a ogni apertura della pausa — un upgrade appena scelto
+## compare senza bisogno di un segnale dedicato, e il riepilogo si azzera da
+## solo a restart/cambio personaggio, quando `UpgradeService` svuota i
+## ranghi prima della prossima `RUNNING` (nessuno stato duplicato da
+## resettare qui).
+func _refresh_build_summary() -> void:
+	if not is_instance_valid(_build_summary_list):
+		return
+	for child in _build_summary_list.get_children():
+		_build_summary_list.remove_child(child)
+		child.queue_free()
+
+	var entries := _collect_build_summary_entries()
+	var has_entries := not entries.is_empty()
+	if is_instance_valid(_build_summary_separator):
+		_build_summary_separator.visible = has_entries
+	if is_instance_valid(_build_summary_title):
+		_build_summary_title.visible = has_entries
+	_build_summary_list.visible = has_entries
+	for entry in entries:
+		_build_summary_list.add_child(_build_summary_build_row(entry))
+
+
+## Stesso ordinamento deterministico di
+## `movement_slice._build_top_upgrade_entries()` (rango decrescente, poi ID),
+## ma senza il troncamento a 3: qui serve l'intera build, non solo i
+## migliori. Le Specialità ancora bloccate non hanno rango nel dizionario
+## (mai selezionate) e restano fuori da questa lista senza filtro dedicato.
+func _collect_build_summary_entries() -> Array[RunSummary.UpgradeEntry]:
+	var entries: Array[RunSummary.UpgradeEntry] = []
+	if not is_instance_valid(_upgrade_service):
+		return entries
+	var registry := _upgrade_service.get_registry()
+	if not is_instance_valid(registry):
+		return entries
+	var ranks := _upgrade_service.get_ranks()
+	for definition in registry.get_definitions():
+		var rank: int = ranks.get(definition.id, 0)
+		if rank <= 0:
+			continue
+		entries.append(RunSummary.UpgradeEntry.new(definition, rank))
+	entries.sort_custom(
+		func(a: RunSummary.UpgradeEntry, b: RunSummary.UpgradeEntry) -> bool:
+			if a.rank != b.rank:
+				return a.rank > b.rank
+			return String(a.definition.id) < String(b.definition.id)
+	)
+	return entries
+
+
+## Riga costruita a runtime come `EndScreen._build_upgrade_chip()`: stessa
+## dimensione/filtro icona, nessun nodo salvato in scena da tenere in sync.
+func _build_summary_build_row(entry: RunSummary.UpgradeEntry) -> Control:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override(&"separation", BUILD_SUMMARY_ROW_SEPARATION)
+
+	var icon := TextureRect.new()
+	icon.custom_minimum_size = BUILD_SUMMARY_ICON_SIZE
+	icon.texture = entry.definition.icon
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(icon)
+
+	var title_label := Label.new()
+	title_label.theme_type_variation = &"BodyM"
+	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title_label.add_theme_color_override(
+		&"font_color",
+		BUILD_SUMMARY_SPECIALITY_TITLE_COLOR if entry.definition.is_speciality else BUILD_SUMMARY_TITLE_COLOR
+	)
+	title_label.text = entry.definition.title
+	row.add_child(title_label)
+
+	var rank_label := Label.new()
+	rank_label.theme_type_variation = &"ValueNumeric"
+	rank_label.add_theme_color_override(&"font_color", BUILD_SUMMARY_RANK_COLOR)
+	rank_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	rank_label.text = "Rango %d" % entry.rank
+	row.add_child(rank_label)
+
+	return row
 
 
 ## PS-142: quando il pannello passa da nascosto a visibile, Godot rimanda al

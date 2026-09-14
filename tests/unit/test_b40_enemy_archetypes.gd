@@ -125,7 +125,7 @@ func test_cluster_respects_max_alive_cap() -> void:
 	_teardown_fixture(built)
 
 
-func test_ranged_enemy_telegraph_and_range() -> void:
+func test_ranged_enemy_fires_instantly_and_respects_range() -> void:
 	var fixture := Node2D.new()
 	var controller := RunController.new()
 	controller.set_process(false)
@@ -150,7 +150,6 @@ func test_ranged_enemy_telegraph_and_range() -> void:
 	definition.experience_amount = 2
 	definition.ranged_attack_range = 400.0
 	definition.ranged_preferred_distance = 300.0
-	definition.ranged_telegraph_duration = 0.5
 	definition.ranged_attack_interval = 1.0
 	definition.ranged_projectile_damage = 8.0
 	definition.ranged_projectile_speed = 200.0
@@ -168,38 +167,24 @@ func test_ranged_enemy_telegraph_and_range() -> void:
 	enemy.global_position = Vector2.ZERO
 	target.global_position = Vector2(200.0, 0.0)
 
-	# Il cooldown iniziale e' ranged_attack_interval: lo esaurisce per far
-	# partire subito il telegraph con il bersaglio a tiro.
+	# Il cooldown iniziale e' ranged_attack_interval: appena scade con il
+	# bersaglio a tiro, il colpo parte nello stesso avanzamento (nessun
+	# tempo di telegraph).
 	enemy._advance_attack_cycle(definition.ranged_attack_interval)
-	assert_true(
-		enemy.is_telegraph_active(), "Il tiratore deve avviare il telegraph quando il bersaglio e' a tiro."
-	)
-	enemy._advance_attack_cycle(definition.ranged_telegraph_duration * 0.5)
-	assert_eq(
-		enemy.get_active_projectile_count(),
-		0,
-		"Nessun proiettile deve partire prima che il telegraph sia completo."
-	)
-	enemy._advance_attack_cycle(definition.ranged_telegraph_duration * 0.5 + 0.001)
 	assert_eq(
 		enemy.get_active_projectile_count(),
 		1,
-		"Il tiratore deve sparare un proiettile a telegraph completo con il bersaglio a tiro."
+		"Il tiratore deve sparare immediatamente a cooldown esaurito con il bersaglio a tiro."
 	)
 
-	# Seconda finestra: il bersaglio esce dal raggio prima che il telegraph finisca.
+	# Seconda finestra: il bersaglio e' fuori raggio quando il cooldown scade.
 	enemy.clear_attack_runtime()
-	enemy._advance_attack_cycle(definition.ranged_attack_interval)
-	assert_true(
-		enemy.is_telegraph_active(),
-		"Il secondo ciclo deve avviare comunque il telegraph con il bersaglio ancora a tiro."
-	)
 	target.global_position = Vector2(5000.0, 0.0)
-	enemy._advance_attack_cycle(definition.ranged_telegraph_duration + 0.001)
+	enemy._advance_attack_cycle(definition.ranged_attack_interval)
 	assert_eq(
 		enemy.get_active_projectile_count(),
 		0,
-		"Se il bersaglio esce dal raggio durante il telegraph, il colpo non deve partire."
+		"Se il bersaglio e' fuori raggio a cooldown esaurito, il colpo non deve partire."
 	)
 
 	controller.prepare_restart()

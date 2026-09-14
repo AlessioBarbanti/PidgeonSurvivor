@@ -32,9 +32,11 @@
         "tests/unit/test_ps006_evil_signature_abilities.gd",
         "tests/unit/test_ps041_magno_trail_reset_redraw.gd",
         "tests/unit/test_ps051_boss_intro_identity.gd",
+        "tests/unit/test_ps176_boss_intro_floating_portrait.gd",
         "tests/unit/test_ps079_state_tell_particles.gd",
         "tests/unit/test_ps087_base_stat_identity.gd",
         "tests/unit/test_ps088_base_stat_differentiation.gd",
+        "tests/unit/test_ps159_player_base_speed.gd",
         "tests/unit/test_ps105_alea_sobriety_cycle.gd",
         "tests/unit/test_ps093_extended_base_stats.gd",
         "tests/unit/test_b44_state_tells.gd",
@@ -59,10 +61,12 @@
         "tests/unit/test_ps051_boss_intro_identity.gd",
         "tests/unit/test_ps101_evil_hunger_narrative.gd",
         "tests/unit/test_ps103_boss_intro_frame_wiring.gd",
+        "tests/unit/test_ps176_boss_intro_floating_portrait.gd",
         "tests/unit/test_ps126_post_curve_pressure.gd",
         "tests/unit/test_ps127_piccione_malvagio_hard_rare.gd",
         "tests/unit/test_ps136_boss_victory_fanfare.gd",
-        "tests/unit/test_ps148_boss_baseline_gameplay_sprite.gd"
+        "tests/unit/test_ps148_boss_baseline_gameplay_sprite.gd",
+        "tests/unit/test_ps162_boss_variety_sequence.gd"
       ]
     },
     {
@@ -105,7 +109,10 @@
         "tests/unit/test_ps008_wave_events.gd",
         "tests/unit/test_ps076_enemy_density_rebalance.gd",
         "tests/unit/test_ps123_archetype_hp_rescale.gd",
-        "tests/unit/test_ps126_post_curve_pressure.gd"
+        "tests/unit/test_ps126_post_curve_pressure.gd",
+        "tests/unit/test_ps171_enemy_overlap_separation.gd",
+        "tests/unit/test_ps157_early_difficulty.gd",
+        "tests/unit/test_ps158_mature_build_anti_afk.gd"
       ]
     },
     {
@@ -149,7 +156,8 @@
         "tests/unit/test_b41_weapon_shapes.gd",
         "tests/unit/test_ps006_evil_signature_abilities.gd",
         "tests/unit/test_ps093_extended_base_stats.gd",
-        "tests/unit/test_ps085_manual_fire_mode.gd"
+        "tests/unit/test_ps085_manual_fire_mode.gd",
+        "tests/unit/test_ps157_early_difficulty.gd"
       ]
     },
     {
@@ -168,7 +176,8 @@
         "tests/unit/test_ps027_bea_powerslide_visual_cleanup.gd",
         "tests/unit/test_ps040_bea_powerslide_landing_iframe.gd",
         "tests/unit/test_ps042_bea_powerslide_spark_subordination.gd",
-        "tests/unit/test_ps094_ability_charge_stacking.gd"
+        "tests/unit/test_ps094_ability_charge_stacking.gd",
+        "tests/unit/test_ps173_marghe_clone_attacks.gd"
       ]
     },
     {
@@ -191,7 +200,8 @@
         "tests/unit/test_ps089_ordinary_catalog_meat_audit.gd",
         "tests/unit/test_ps108_cooking_point_catalog_wiring.gd",
         "tests/unit/test_ps094_ability_charge_stacking.gd",
-        "tests/unit/test_ps100_anxiety_removal.gd"
+        "tests/unit/test_ps100_anxiety_removal.gd",
+        "tests/unit/test_ps160_speed_upgrade_value.gd"
       ]
     },
     {
@@ -214,7 +224,8 @@
         "tests/unit/test_ps093_extended_base_stats.gd",
         "tests/unit/test_ps108_cooking_point_catalog_wiring.gd",
         "tests/unit/test_ps094_ability_charge_stacking.gd",
-        "tests/unit/test_ps100_anxiety_removal.gd"
+        "tests/unit/test_ps100_anxiety_removal.gd",
+        "tests/unit/test_ps160_speed_upgrade_value.gd"
       ]
     },
     {
@@ -293,7 +304,8 @@
         "tests/unit/test_ps100_anxiety_removal.gd",
         "tests/unit/test_b13_signature_upgrades.gd",
         "tests/unit/test_b18j_summer_grill.gd",
-        "tests/unit/test_ps147_pause_exit_button.gd"
+        "tests/unit/test_ps147_pause_exit_button.gd",
+        "tests/unit/test_ps164_pause_build_summary.gd"
       ]
     },
     {
@@ -337,7 +349,8 @@
         "tests/unit/test_ps047_upgrade_card_hierarchy.gd",
         "tests/unit/test_ps059_upgrade_modal_contrast.gd",
         "tests/unit/test_ps101_evil_hunger_narrative.gd",
-        "tests/unit/test_ps139_upgrade_card_frame.gd"
+        "tests/unit/test_ps139_upgrade_card_frame.gd",
+        "tests/unit/test_ps166_character_copy_agreement.gd"
       ]
     },
     {
@@ -373,6 +386,7 @@
         "tests/unit/test_ps051_boss_intro_identity.gd",
         "tests/unit/test_ps085_manual_fire_mode.gd",
         "tests/unit/test_ps103_boss_intro_frame_wiring.gd",
+        "tests/unit/test_ps176_boss_intro_floating_portrait.gd",
         "tests/unit/test_ps106_alea_sobriety_hud.gd",
         "tests/unit/test_ps094_ability_charge_stacking.gd",
         "tests/unit/test_ps074_ui_click_feedback.gd",
@@ -383,7 +397,9 @@
         "tests/unit/test_ps145_pause_buttons_distinct_and_spaced.gd",
         "tests/unit/test_ps146_hud_bars_floating.gd",
         "tests/unit/test_ps147_pause_exit_button.gd",
-        "tests/unit/test_ps140_hud_bar_border_color.gd"
+        "tests/unit/test_ps140_hud_bar_border_color.gd",
+        "tests/unit/test_ps166_character_copy_agreement.gd",
+        "tests/unit/test_ps164_pause_build_summary.gd"
       ]
     },
     {

@@ -235,6 +235,24 @@ nuove decisioni e nuova pressione, non soltanto numeri più grandi"*. Entrambe
 le card hanno gate di playtest percettivo ancora aperti: il risultato
 automatico è verde, quello percettivo no.
 
+**PS-158 — il Tiratore spara senza telegraph e il colpo sopravvive alla sua
+morte.** Un playtest ha mostrato che una build offensiva matura (piercing/
+rimbalzo/esplosione/danno/fire rate) poteva azzerare l'unica minaccia della
+curva ordinaria spaziale/temporale invece che legata agli HP nemici (`Nido
+di tiratori`, PS-008, ne aumenta ×4 il peso di spawn), semplicemente
+uccidendo il `RangedEnemy` prima o dopo lo sparo. Su richiesta esplicita del
+proprietario il Tiratore non telegrafa più: appena il bersaglio è a tiro e
+il cooldown (`ranged_attack_interval`) è scaduto, spara nello stesso
+avanzamento, poi si ricarica
+([scripts/actors/ranged_enemy.gd](../scripts/actors/ranged_enemy.gd)).
+Un proiettile già lanciato è indipendente dal Tiratore che lo ha sparato:
+`_exit_tree()` pulisce i proiettili ancora in volo solo se la run non è più
+`RUNNING` (un vero restart), non quando il Tiratore muore in combattimento
+mentre la run prosegue — altrimenti uccidere la fonte dopo lo sparo
+cancellerebbe comunque la minaccia. Nessun valore di HP, danno o cadenza è
+stato toccato: il gate percettivo su una build realmente composta e su un
+runtime fisico resta aperto (card `PS-158`).
+
 ## Sparo manuale e responsabilità del DPS (PS-085)
 
 `WeaponController` ([scripts/combat/weapon_controller.gd](../scripts/combat/weapon_controller.gd))

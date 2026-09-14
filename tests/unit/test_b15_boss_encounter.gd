@@ -73,7 +73,7 @@ func test_composed_encounter() -> void:
 		boss.health_bar_thickness > 4.0 and boss.health_bar_length_scale > 1.0,
 		"PS-033: senza HUD dedicata il Boss deve ingrandire la propria barra vita overhead rispetto ai nemici comuni."
 	)
-	var continue_button := boss_ui.get_node_or_null("IntroLayer/Center/IntroPanel/VBox/ContinueButton") as Button
+	var continue_button := boss_ui.get_continue_button()
 	var continue_style := continue_button.get_theme_stylebox("normal") as StyleBoxTexture if continue_button != null else null
 	assert_true(
 		continue_style != null
@@ -85,14 +85,11 @@ func test_composed_encounter() -> void:
 		definition.get_safe_quote() in boss_ui.get_intro_quote_text(),
 		"La UI deve mostrare esattamente la citazione risolta da get_safe_quote() (approvata o fallback sicuro)."
 	)
-	# Il wrapping di titolo/citazione può assestarsi un paio di frame dopo
-	# l'assegnazione (PS-071, `_defer_reflow_intro_panel_position`): con una
-	# citazione approvata più lunga del vecchio placeholder, il rect
-	# immediato (frame 0) può eccedere transitoriamente la safe area finché
-	# il ricalcolo differito non lo corregge.
+	# PS-176: il ricalcolo del layout (AspectRatioContainer) può assestarsi
+	# un frame dopo l'apertura della intro.
 	await wait_process_frames(2)
 	assert_rect_inside(
-		boss_ui.get_intro_panel_rect(), arena_layout.get_safe_area_rect(), "Il pannello intro Boss deve restare nella safe area."
+		boss_ui.get_intro_portrait_rect(), arena_layout.get_safe_area_rect(), "Il ritratto della Boss Intro deve restare nella safe area."
 	)
 	var boss_health := boss.get_health_component()
 	assert_almost_eq(boss_health.health_max, definition.health_max, FLOAT_TOLERANCE, "Gli HP Boss devono provenire dal Resource.")

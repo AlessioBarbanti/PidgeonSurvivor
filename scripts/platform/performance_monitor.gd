@@ -1,6 +1,13 @@
 class_name PerformanceMonitor
 extends Control
 
+## PS-172: `_process` gira in ogni build (l'overlay visivo e' l'unica parte
+## opt-in/debug-only), quindi senza un tetto `_samples` cresce per l'intera
+## durata della run, in produzione inclusa. Il tetto tiene solo la storia
+## recente utile a un'ispezione dal vivo, coerente con il pattern gia' usato
+## da `CombatFeedback.max_active_effects`.
+const MAX_SAMPLES := 300
+
 signal sample_recorded(sample: Dictionary)
 
 @export_range(0.25, 10.0, 0.25) var sample_interval_seconds := 1.0
@@ -85,6 +92,8 @@ func _process(delta: float) -> void:
 	_elapsed = 0.0
 	var sample := get_snapshot()
 	_samples.append(sample)
+	while _samples.size() > MAX_SAMPLES:
+		_samples.pop_front()
 	print("B18V_PERF_SAMPLE %s" % JSON.stringify(sample))
 	sample_recorded.emit(sample)
 	if visible:

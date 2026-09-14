@@ -134,6 +134,7 @@ func _ready() -> void:
 	_platform_lifecycle.set_boot_back_handler(_on_boot_back_requested)
 	_welcome_screen.configure_settings_overlay(_settings_overlay)
 	_pause_overlay.configure_settings_overlay(_settings_overlay)
+	_pause_overlay.configure_upgrade_service(_upgrade_service)
 	_visual_accessibility_settings.configure(_settings_overlay)
 	_touch_control_settings.configure(_settings_overlay)
 	_touch_control_settings.settings_changed.connect(_on_touch_control_settings_changed)
@@ -1345,6 +1346,8 @@ func _validate_current_contract() -> bool:
 			failures.append("PauseOverlay B18N privo della conferma di abbandono run.")
 		if _pause_overlay.get_exit_button() == null:
 			failures.append("PauseOverlay PS-147 privo del bottone ESCI.")
+		if _pause_overlay.get_upgrade_service() != _upgrade_service:
+			failures.append("PauseOverlay PS-164 non collegato a UpgradeService.")
 	if _welcome_screen == null:
 		failures.append("WelcomeScreen B18O non presente.")
 	else:

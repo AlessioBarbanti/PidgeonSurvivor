@@ -278,13 +278,18 @@ in base ai tag di compatibilità, in particolare per gli effetti di copia.
 
 #### Marghe — Reggeton time!
 
-- **Tipo:** esca illusoria a tema reggaeton.
-- **Effetto:** genera un clone che balla reggaeton e attira temporaneamente
-  l'aggro dei nemici.
+- **Tipo:** esca illusoria a tema reggaeton con attacco a distanza (PS-173).
+- **Effetto:** genera un clone che balla reggaeton, attira temporaneamente
+  l'aggro dei nemici e spara periodicamente al nemico vivo più vicino per
+  tutta la propria durata (fin dal rango 1, non solo al rango massimo).
 - **Parametri iniziali:** `cooldown_seconds: 13.0`, `duration_seconds: 3.0`,
-  `illusion_lifetime_on_death: true`.
+  `illusion_lifetime_on_death: true`, `clone_attack_damage: 2.0`,
+  `clone_attack_interval: 1.6`.
 - **Nota tecnica:** definire raggio e priorità dell'aggro e rendere configurabile
   se il clone sia invulnerabile o possa essere distrutto prima della scadenza.
+  Il colpo del clone riusa la pipeline `Projectile` alleata esistente (stessa
+  Hurtbox dei colpi del Player); danno e cadenza restano volutamente ben sotto
+  quelli dell'arma automatica di Marghe, per non farne un secondo Player.
 
 I valori numerici sono una baseline di bilanciamento e devono poter essere
 modificati nei `Resource` senza cambiare il codice.
@@ -302,10 +307,13 @@ I valori completi e cumulativi sono la tabella B18G del piano di sviluppo. Le
 progressioni sono: danno/raggio/knockback per Magno; danno/distanza/scia per Bea;
 percentuali e cooldown per Zat; danno/durata/raggio/frequenza per Alea;
 danno/durata/raggio/sbalzo per Aleo; rank copiato, cooldown e anti-ripetizione per
-Lollo; durata/raggio/slow per Migi; durata e cooldown del clone per Marghe.
-Cosplay non trasferisce rank: risolve temporaneamente il profilo copiato al rank
-`1`, `2` o `3` previsto dal proprio rank, con filtri anti-ricorsione e di
-compatibilità invariati.
+Lollo; durata/raggio/slow per Migi; durata e cooldown del clone per Marghe, il
+cui clone spara anche periodicamente ai nemici (danno/cadenza crescenti,
+PS-173).
+Cosplay non trasferisce rank: risolve temporaneamente il profilo copiato al
+rank (da `1` a `5`) previsto dal proprio rank — PS-161 ha esteso la
+progressione fino a copiare un'abilità al proprio rank massimo — con filtri
+anti-ricorsione e di compatibilità invariati.
 
 ### 3.5. Boss, vittoria e chiusura della run
 

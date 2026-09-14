@@ -75,3 +75,30 @@ func test_hardening_performance_contract() -> void:
 			monitor.get_profile() == profile,
 			"%s: il resize non deve cambiare profilo." % viewport_size
 		)
+
+
+func test_ps172_performance_monitor_caps_sample_history() -> void:
+	# PS-172: _process() di PerformanceMonitor gira in ogni build (non solo
+	# quando l'overlay e' visibile), quindi senza un tetto _samples cresce per
+	# tutta la durata della run, anche in produzione. Verifica che una run
+	# molto piu' lunga del tetto non faccia crescere la storia oltre MAX_SAMPLES.
+	var movement_slice := await instantiate_movement_slice()
+	var monitor := movement_slice.get_performance_monitor() as PerformanceMonitor
+	assert_not_null(monitor, "PS-172 richiede il PerformanceMonitor della scena composta.")
+	if monitor == null:
+		return
+
+	monitor.set_process(false)
+	monitor.sample_interval_seconds = 0.25
+	monitor.clear_samples()
+	for _tick in range(PerformanceMonitor.MAX_SAMPLES + 50):
+		monitor._process(monitor.sample_interval_seconds)
+
+	assert_true(
+		monitor.get_samples().size() == PerformanceMonitor.MAX_SAMPLES,
+		(
+			"PS-172: la storia campioni di PerformanceMonitor deve restare "
+			+ "limitata a MAX_SAMPLES anche su una run molto lunga (trovati %d)."
+		) % monitor.get_samples().size()
+	)
+	print("PS172_PERFORMANCE_MONITOR_SAMPLE_CAP_SMOKE_OK")

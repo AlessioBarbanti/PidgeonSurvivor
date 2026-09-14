@@ -17,37 +17,37 @@ effect_parameters = {"hits_per_second": 12.0}
 script = ExtResource("3_rank")
 rank = 2
 cooldown_seconds = 9.0
-duration_seconds = 1.2
-area_radius = 140.0
-damage = 6.0
+duration_seconds = 1.4
+area_radius = 175.0
+damage = 7.0
 effect_parameters = {"hits_per_second": 12.0}
 
 [sub_resource type="Resource" id="Rank_3"]
 script = ExtResource("3_rank")
 rank = 3
-cooldown_seconds = 9.0
-duration_seconds = 1.4
-area_radius = 165.0
-damage = 6.0
-effect_parameters = {"hits_per_second": 12.0}
+cooldown_seconds = 8.5
+duration_seconds = 1.6
+area_radius = 220.0
+damage = 9.0
+effect_parameters = {"hits_per_second": 13.0}
 
 [sub_resource type="Resource" id="Rank_4"]
 script = ExtResource("3_rank")
 rank = 4
 cooldown_seconds = 8.0
-duration_seconds = 1.4
-area_radius = 165.0
-damage = 6.0
+duration_seconds = 1.9
+area_radius = 270.0
+damage = 12.0
 effect_parameters = {"hits_per_second": 14.0}
 
 [sub_resource type="Resource" id="Rank_5"]
 script = ExtResource("3_rank")
 rank = 5
-cooldown_seconds = 8.0
-duration_seconds = 1.6
-area_radius = 180.0
-damage = 8.0
-effect_parameters = {"hits_per_second": 14.0}
+cooldown_seconds = 7.0
+duration_seconds = 2.2
+area_radius = 330.0
+damage = 16.0
+effect_parameters = {"hits_per_second": 16.0}
 
 [resource]
 script = ExtResource("1_definition")

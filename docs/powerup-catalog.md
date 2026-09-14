@@ -130,7 +130,8 @@ L'icona di questa abilità è nel file `upgrade_via_dalla_griglia.png`.
 **Effetto proposto:** `weapon_projectile_speed_multiplier`  
 **Ruolo:** velocità dei proiettili
 
-- `+10%` velocità dei proiettili alleati per rango;
+- `+20%` velocità dei proiettili alleati per rango (PS-160: alzato dal `+10%`
+  iniziale per rendere la carta competitiva rispetto alle scelte offensive);
 - rango nominale `5`; ripetibile all'infinito;
 - stacking moltiplicativo;
 - cap iniziale consigliato `3,0×`;

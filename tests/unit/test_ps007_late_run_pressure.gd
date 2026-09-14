@@ -181,7 +181,7 @@ func test_seeded_late_sequence_is_deterministic_and_guarantees_ranged_pressure()
 	_teardown_fixture(run_b)
 
 
-func test_static_player_position_is_reached_by_a_telegraphed_threat_within_ten_seconds() -> void:
+func test_static_player_position_is_reached_by_an_instant_threat_within_ten_seconds() -> void:
 	var built := await _build_spawner(1707)
 	var controller: RunController = built["controller"]
 	var spawner: EnemySpawner = built["spawner"]
@@ -196,11 +196,12 @@ func test_static_player_position_is_reached_by_a_telegraphed_threat_within_ten_s
 	enemy.set_physics_process(false)
 	target.global_position = Vector2(640.0, 360.0)
 	enemy.global_position = target.global_position + Vector2(-320.0, 0.0)
-	var threat_time := RANGED.ranged_attack_interval + RANGED.ranged_telegraph_duration
+	var threat_time := RANGED.ranged_attack_interval
 	enemy._advance_attack_cycle(RANGED.ranged_attack_interval)
-	assert_true(enemy.is_telegraph_active(), "La minaccia deve essere leggibile prima del colpo.")
-	enemy._advance_attack_cycle(RANGED.ranged_telegraph_duration + 0.001)
-	assert_eq(enemy.get_active_projectile_count(), 1, "Il tiratore deve produrre una minaccia concreta.")
+	assert_eq(
+		enemy.get_active_projectile_count(), 1,
+		"Il tiratore deve sparare subito, senza telegraph, appena il cooldown scade a tiro."
+	)
 
 	var projectiles: Node = built["projectile_parent"]
 	var projectile := projectiles.get_child(0) as BossProjectile

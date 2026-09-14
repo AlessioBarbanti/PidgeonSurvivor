@@ -11,50 +11,50 @@ cooldown_seconds = 13.0
 duration_seconds = 3.0
 area_radius = 0.0
 damage = 0.0
-effect_parameters = {"illusion_lifetime_on_death": true}
+effect_parameters = {"illusion_lifetime_on_death": true, "clone_attack_damage": 2.0, "clone_attack_interval": 1.6}
 
 [sub_resource type="Resource" id="Rank_2"]
 script = ExtResource("3_rank")
 rank = 2
-cooldown_seconds = 13.0
-duration_seconds = 4.0
+cooldown_seconds = 12.0
+duration_seconds = 4.2
 area_radius = 0.0
 damage = 0.0
-effect_parameters = {"illusion_lifetime_on_death": true}
+effect_parameters = {"illusion_lifetime_on_death": true, "clone_attack_damage": 2.5, "clone_attack_interval": 1.45}
 
 [sub_resource type="Resource" id="Rank_3"]
 script = ExtResource("3_rank")
 rank = 3
-cooldown_seconds = 12.0
-duration_seconds = 4.0
+cooldown_seconds = 11.0
+duration_seconds = 5.4
 area_radius = 0.0
 damage = 0.0
-effect_parameters = {"illusion_lifetime_on_death": true}
+effect_parameters = {"illusion_lifetime_on_death": true, "clone_attack_damage": 3.0, "clone_attack_interval": 1.3}
 
 [sub_resource type="Resource" id="Rank_4"]
 script = ExtResource("3_rank")
 rank = 4
-cooldown_seconds = 12.0
-duration_seconds = 5.0
+cooldown_seconds = 10.0
+duration_seconds = 6.6
 area_radius = 0.0
 damage = 0.0
-effect_parameters = {"illusion_lifetime_on_death": true}
+effect_parameters = {"illusion_lifetime_on_death": true, "clone_attack_damage": 4.0, "clone_attack_interval": 1.1}
 
 [sub_resource type="Resource" id="Rank_5"]
 script = ExtResource("3_rank")
 rank = 5
-cooldown_seconds = 10.0
-duration_seconds = 6.0
+cooldown_seconds = 8.0
+duration_seconds = 8.5
 area_radius = 0.0
 damage = 0.0
-effect_parameters = {"illusion_lifetime_on_death": true}
+effect_parameters = {"illusion_lifetime_on_death": true, "clone_attack_damage": 5.0, "clone_attack_interval": 0.9}
 
 [resource]
 script = ExtResource("1_definition")
 id = &"marghe_shadow_deception"
 title = "Reggaeton time!"
-description = "Genera un clone che balla reggaeton e diventa il bersaglio dei nemici vicini."
-effect_summary = "DURATA CLONE 3 S · RICARICA 13 S"
+description = "Genera un clone che balla reggaeton, diventa il bersaglio dei nemici vicini e spara ai nemici finché resta in vita."
+effect_summary = "DURATA CLONE 3 S · RICARICA 13 S · IL CLONE SPARA"
 icon = ExtResource("2_icon")
 cooldown_seconds = 13.0
 duration_seconds = 3.0
@@ -62,7 +62,9 @@ area_radius = 0.0
 damage = 0.0
 effect_id = &"shadow_deception"
 effect_parameters = {
-"illusion_lifetime_on_death": true
+"illusion_lifetime_on_death": true,
+"clone_attack_damage": 2.0,
+"clone_attack_interval": 1.6
 }
 tags = Array[StringName]([&"aggro", &"illusion", &"control", &"copy_compatible"])
 rank_snapshots = Array[ExtResource("3_rank")]([SubResource("Rank_1"), SubResource("Rank_2"), SubResource("Rank_3"), SubResource("Rank_4"), SubResource("Rank_5")])

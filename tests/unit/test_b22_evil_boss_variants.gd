@@ -135,8 +135,8 @@ func test_evil_boss_two_run_cycle() -> void:
 			"Lo sprite Evil deve usare il Player con palette viola/magenta."
 		)
 		assert_eq(
-			boss_ui.get_intro_title_text(), definition.get_safe_title().to_upper(),
-			"La UI deve mostrare il titolo Evil risolto."
+			boss_ui.get_intro_portrait_texture(), definition.get_safe_portrait(),
+			"La UI deve mostrare il ritratto Evil risolto."
 		)
 		assert_eq(
 			get_tree().get_nodes_in_group(&"bosses").size(), 1, "Può esistere un solo Boss attivo."

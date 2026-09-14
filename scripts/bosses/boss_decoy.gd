@@ -1,13 +1,15 @@
 class_name BossDecoy
-extends BaseEnemy
+extends RangedEnemy
 
-## Clone ballerino di Evil Marghe (PS-006).
+## Clone ballerino di Evil Marghe (PS-006; spara dal PS-174).
 ##
 ## E' un bersaglio registrabile nel `TargetingSystem`: l'auto-targeting del
 ## Player puo' preferirlo al Boss reale perche' viene piazzato piu' vicino, non
-## perche' qualcuno riscriva i comandi del giocatore. Non insegue, non
-## infligge danno da contatto e non passa dallo spawner, quindi non produce
-## esperienza.
+## perche' qualcuno riscriva i comandi del giocatore. Non insegue (resta
+## sempre fermo, vedi _compute_chase_offset), non infligge danno da contatto
+## e non passa dallo spawner, quindi non produce esperienza. Estende
+## RangedEnemy solo per riusare il ciclo telegraph->proiettile gia' validato
+## sui nemici a distanza: il movimento resta quello di un bersaglio immobile.
 
 signal decoy_expired(decoy: BossDecoy)
 
@@ -26,19 +28,25 @@ var _expire_handled := false
 
 func _ready() -> void:
 	super._ready()
-	set_target(null)
 	var contact_damage := get_contact_damage()
 	if contact_damage != null:
 		contact_damage.damage = 0.0
 		contact_damage.disable()
 
 
+## PS-174: `target` e' il Player, necessario al ciclo d'attacco ereditato da
+## RangedEnemy (_advance_attack_cycle richiede un target non nullo). Il
+## clone non insegue comunque nulla: vedi _compute_chase_offset(). I
+## parametri di tiro vanno configurati separatamente con
+## `configure_ranged()` (stesso metodo gia' pubblico di RangedEnemy), che
+## richiede questo target gia' impostato.
 func initialize(
 	source_texture: Texture2D,
 	decoy_health: float,
 	decoy_radius: float,
 	duration: float,
-	run_controller: RunController
+	run_controller: RunController,
+	target: Node2D
 ) -> bool:
 	if (
 		not is_finite(decoy_health)
@@ -48,12 +56,14 @@ func initialize(
 		or not is_finite(duration)
 		or duration <= 0.0
 		or not is_instance_valid(run_controller)
+		or not is_instance_valid(target)
 	):
 		return false
 	collision_radius = decoy_radius
 	_duration_total = duration
 	_duration_remaining = duration
 	set_run_controller(run_controller)
+	set_target(target)
 	var health_component := get_health_component()
 	if health_component == null:
 		return false
@@ -62,6 +72,24 @@ func initialize(
 	_sync_decoy_sprite(source_texture)
 	queue_redraw()
 	return true
+
+
+## Il clone resta sempre fermo: la minaccia e' lo sparo, non l'inseguimento.
+## Sovrascrive RangedEnemy._compute_chase_offset() invece di affidarsi a
+## ranged_preferred_distance, cosi' "sta fermo" resta esplicito e
+## indipendente da qualunque valore letto dalla Signature.
+func _compute_chase_offset() -> Vector2:
+	return Vector2.ZERO
+
+
+## Il clone non appartiene al gruppo "enemies" (PS-174: corretto perche' la
+## respinta anti-sovrapposizione di PS-171 non deve mai toccare Boss o
+## cloni), ma _compute_separation_velocity() di BaseEnemy non lo sa: senza
+## questa sovrascrittura, nemici comuni ammassati vicino al clone lo
+## spingerebbero comunque fuori posizione, anche se lui non li respinge mai.
+## "Resta sempre fermo" deve valere in entrambe le direzioni.
+func _compute_separation_velocity() -> Vector2:
+	return Vector2.ZERO
 
 
 func _physics_process(delta: float) -> void:

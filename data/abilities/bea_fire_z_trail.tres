@@ -17,37 +17,37 @@ effect_parameters = {"dash_distance": 320.0, "trail_duration": 4.0, "trail_tick_
 script = ExtResource("3_rank")
 rank = 2
 cooldown_seconds = 10.0
-duration_seconds = 4.0
+duration_seconds = 4.6
 area_radius = 0.0
 damage = 8.0
-effect_parameters = {"dash_distance": 320.0, "trail_duration": 4.0, "trail_tick_interval": 0.25, "trail_width": 40.0, "iframe_duration": 0.3}
+effect_parameters = {"dash_distance": 380.0, "trail_duration": 4.6, "trail_tick_interval": 0.25, "trail_width": 50.0, "iframe_duration": 0.3}
 
 [sub_resource type="Resource" id="Rank_3"]
 script = ExtResource("3_rank")
 rank = 3
-cooldown_seconds = 10.0
-duration_seconds = 4.0
+cooldown_seconds = 9.5
+duration_seconds = 5.2
 area_radius = 0.0
-damage = 8.0
-effect_parameters = {"dash_distance": 380.0, "trail_duration": 4.0, "trail_tick_interval": 0.25, "trail_width": 48.0, "iframe_duration": 0.3}
+damage = 10.0
+effect_parameters = {"dash_distance": 460.0, "trail_duration": 5.2, "trail_tick_interval": 0.22, "trail_width": 62.0, "iframe_duration": 0.3}
 
 [sub_resource type="Resource" id="Rank_4"]
 script = ExtResource("3_rank")
 rank = 4
 cooldown_seconds = 9.0
-duration_seconds = 5.0
+duration_seconds = 5.8
 area_radius = 0.0
-damage = 8.0
-effect_parameters = {"dash_distance": 380.0, "trail_duration": 5.0, "trail_tick_interval": 0.25, "trail_width": 48.0, "iframe_duration": 0.3}
+damage = 13.0
+effect_parameters = {"dash_distance": 560.0, "trail_duration": 5.8, "trail_tick_interval": 0.2, "trail_width": 76.0, "iframe_duration": 0.3}
 
 [sub_resource type="Resource" id="Rank_5"]
 script = ExtResource("3_rank")
 rank = 5
-cooldown_seconds = 9.0
-duration_seconds = 5.0
+cooldown_seconds = 8.0
+duration_seconds = 6.5
 area_radius = 0.0
-damage = 11.0
-effect_parameters = {"dash_distance": 440.0, "trail_duration": 5.0, "trail_tick_interval": 0.25, "trail_width": 56.0, "iframe_duration": 0.3}
+damage = 17.0
+effect_parameters = {"dash_distance": 680.0, "trail_duration": 6.5, "trail_tick_interval": 0.18, "trail_width": 92.0, "iframe_duration": 0.3}
 
 [resource]
 script = ExtResource("1_definition")
