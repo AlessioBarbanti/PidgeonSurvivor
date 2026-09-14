@@ -293,14 +293,14 @@ jobs:
           fi
 
       - name: Upload workflow artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pidgeon-survivor-${{ steps.version.outputs.tag }}-apk
           path: ${{ env.APK_PATH }}
           if-no-files-found: error
 
       - name: Publish GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.version.outputs.tag }}
           name: "Pidgeon Survivor ${{ steps.version.outputs.tag }}"
