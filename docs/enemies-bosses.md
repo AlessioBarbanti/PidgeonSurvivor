@@ -166,26 +166,29 @@ Profili confermati (uno-a-uno con `data/bosses/signatures/*.tres`): Alea,
 Aleo, Bea, Lollo, Magno, Marghe, Migi, Zat — vedi
 [characters.md](./characters.md) per identità e ruolo di ciascuno.
 
-### Boss Intro: identità individuale (PS-051)
+### Boss Intro: ritratto fluttuante (PS-176, sostituisce PS-051/PS-102/PS-103)
 
 `BossUI.show_intro()` ([scripts/ui/boss_ui.gd](../scripts/ui/boss_ui.gd))
-distingue le due varianti invece di mostrare soltanto titolo, citazione e CTA:
+mostra il ritratto Boss (Evil `<Nome>` o Piccione Malvagio) per intero, in
+`contain`, senza alcun pannello o cornice esterna: l'unica ornamentazione
+visibile (ali, catene, gemme, cornice dorata) è quella già dipinta dentro il
+file `1536×1024` fornito dal proprietario. La citazione
+(`BossDefinition.get_safe_quote()`) è sovrapposta al ritratto tramite ancore
+percentuali dentro il cartiglio scuro già dipinto nell'immagine, con un inset
+di sicurezza lontano dai bordi. Titolo (nome Boss) e icona Signature non sono
+più mostrati nella Boss Intro (rimossi dalla scena). Il bottone "AFFRONTA"
+compare sotto il ritratto, mai sovrapposto.
 
-- **Piccione Malvagio**: mostra il ritratto definitivo `256×256`
-  `assets/art/characters/piccione_malvagio/generated/portrait.png`, risolto da
-  `BossDefinition.get_safe_portrait()`; non ha icona Signature né trattamento
-  cromatico personale, quindi titolo e cornice restano sul colore neutro.
+- **Piccione Malvagio**: mostra `assets/art/characters/piccione_malvagio/generated/portrait.png`,
+  risolto da `BossDefinition.get_safe_portrait()`.
 - **`Evil <Nome>`**: mostra il ritratto risolto dal `FriendDefinition`
-  (`friend_profile.get_public_evil_portrait()`), l'icona della Signature
-  attiva (`BossSignatureDefinition.icon`) e tinge nome e cornice con
-  l'`accent_color` della Signature, mescolato a bianco per restare leggibile.
+  (`friend_profile.get_public_evil_portrait()`).
 
-Ritratto, icona o Signature mancanti fanno ricomporre la intro sugli elementi
-restanti (slot nascosto, mai una texture nulla visibile o uno spazio vuoto
-dedicato). La CTA "AFFRONTA" non cambia mai stile o colore in base al Boss.
-Gli otto `evil_portrait` e le otto icone Signature sono gli asset definitivi
-integrati da [PS-052](./cards/5_completed/PS-052-genera-ritratti-evil-e-icone-signature.md);
-il ritratto baseline dedicato è prodotto da PS-128 e collegato da PS-129. Lo
+Un ritratto mancante fa nascondere l'intero blocco ritratto+citazione senza
+lasciare spazio vuoto dedicato. Gli otto `evil_portrait` e il ritratto del
+Piccione Malvagio sono gli asset definitivi integrati da PS-176 (in
+precedenza da [PS-052](./cards/5_completed/PS-052-genera-ritratti-evil-e-icone-signature.md)
+per gli Evil e da PS-128/PS-129 per il baseline, entrambi sostituiti). Lo
 stato artistico dettagliato resta in
 [visual-audio-identity.md](./visual-audio-identity.md).
 

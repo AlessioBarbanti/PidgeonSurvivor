@@ -1,13 +1,13 @@
 extends GutGameplayTest
 
-## PS-051: la Boss Intro deve distinguere il Piccione Malvagio (nessuna
-## Signature, nessuno slot icona) dagli Evil (ritratto del FriendDefinition,
-## icona della Signature attiva, tinta personale dell'accent_color) senza
-## rompersi quando ritratto, icona o Signature mancano.
+## PS-051, riscritto da PS-176: la Boss Intro deve distinguere il Piccione
+## Malvagio (ritratto baseline, mai una Signature) dagli Evil (ritratto del
+## FriendDefinition) senza rompersi quando il ritratto manca. Icona Signature
+## e tinta personale sono state rimosse da PS-176 (ritratto fluttuante senza
+## cornice): quelle asserzioni non hanno più un contratto da coprire qui.
 
 const BOSS_UI_SCENE := preload("res://scenes/ui/boss_ui.tscn")
 const BASELINE_PORTRAIT_PATH := "res://assets/art/characters/piccione_malvagio/generated/portrait.png"
-const REFERENCE_SIGNATURE := preload("res://data/bosses/signatures/evil_alea_grand_spin.tres")
 const SIGNATURE_CATALOG: BossSignatureCatalog = preload("res://data/bosses/evil_signature_catalog.tres")
 const FRIEND_IDS_WITH_EVIL_VARIANT := [
 	"alea", "aleo", "bea", "lollo", "magno", "marghe", "migi", "zat",
@@ -19,7 +19,7 @@ const ASPECT_PROFILES := [
 ]
 
 
-func test_baseline_intro_shows_pigeon_without_signature_slot() -> void:
+func test_baseline_intro_shows_pigeon_portrait() -> void:
 	var slice := await instantiate_movement_slice()
 	var controller := slice.get_run_controller() as RunController
 	var encounter := slice.get_boss_encounter() as BossEncounter
@@ -38,39 +38,22 @@ func test_baseline_intro_shows_pigeon_without_signature_slot() -> void:
 		return
 
 	var portrait := definition.get_safe_portrait()
-	assert_true(portrait != null, "Il Piccione Malvagio deve risolvere il ritratto definitivo PS-128.")
+	assert_true(portrait != null, "Il Piccione Malvagio deve risolvere il ritratto definitivo.")
 	assert_eq(
 		portrait.resource_path, BASELINE_PORTRAIT_PATH,
-		"Il baseline deve usare il derivato definitivo 256x256, non lo spritesheet pigeon_special.png."
-	)
-	assert_false(
-		portrait is AtlasTexture,
-		"Il ritratto baseline non deve più essere un AtlasTexture ritagliato dallo sprite di gameplay."
+		"Il baseline deve usare il derivato definitivo del ritratto fluttuante PS-176."
 	)
 	assert_true(boss_ui.is_intro_portrait_visible(), "Il Piccione Malvagio deve mostrare il proprio ritratto.")
 	assert_eq(
 		boss_ui.get_intro_portrait_texture(), definition.get_safe_portrait(),
 		"Il ritratto mostrato deve essere quello risolto dal Boss baseline."
 	)
-	assert_false(
-		boss_ui.is_intro_signature_icon_visible(),
-		"Il Piccione Malvagio non deve mostrare uno slot Signature, vuoto o valorizzato."
-	)
-	assert_null(boss_ui.get_intro_signature_icon_texture(), "Nessuna icona deve essere assegnata al baseline.")
-	assert_true(
-		boss_ui.get_intro_title_color().is_equal_approx(BossUI.DEFAULT_TITLE_COLOR),
-		"Senza Signature il titolo deve restare sul colore neutro."
-	)
-	assert_true(
-		boss_ui.get_intro_frame_modulate().is_equal_approx(BossUI.DEFAULT_PANEL_MODULATE),
-		"Senza Signature la cornice non deve ricevere alcuna tinta."
-	)
 
 	encounter.complete_intro()
 	controller.prepare_restart()
 
 
-func test_evil_intro_shows_friend_portrait_signature_icon_and_accent_tint() -> void:
+func test_evil_intro_shows_friend_portrait() -> void:
 	var slice := await instantiate_movement_slice()
 	var controller := slice.get_run_controller() as RunController
 	var encounter := slice.get_boss_encounter() as BossEncounter
@@ -89,46 +72,20 @@ func test_evil_intro_shows_friend_portrait_signature_icon_and_accent_tint() -> v
 		return
 	var friend := definition.friend_profile
 	assert_true(definition.has_signature() and friend != null, "Ogni Evil in catalogo deve avere Signature e profilo.")
-	if not definition.has_signature() or friend == null:
+	if friend == null:
 		return
-	var signature := definition.signature
 
 	assert_true(boss_ui.is_intro_portrait_visible(), "L'intro Evil deve mostrare un ritratto.")
 	assert_eq(
 		boss_ui.get_intro_portrait_texture(), friend.get_public_evil_portrait(),
 		"Il ritratto mostrato deve provenire dal FriendDefinition dell'Evil attivo."
 	)
-	assert_true(boss_ui.is_intro_signature_icon_visible(), "L'intro Evil deve mostrare l'icona della Signature.")
-	assert_not_null(signature.icon, "Ogni Signature del catalogo deve avere un'icona valorizzata.")
-	assert_eq(
-		boss_ui.get_intro_signature_icon_texture(), signature.icon,
-		"L'icona mostrata deve essere quella della Signature attiva."
-	)
-
-	var expected_title_color := BossUI.DEFAULT_TITLE_COLOR.lerp(signature.accent_color, BossUI.ACCENT_TITLE_MIX)
-	expected_title_color.a = 1.0
-	assert_true(
-		boss_ui.get_intro_title_color().is_equal_approx(expected_title_color),
-		"Il titolo deve riprendere l'accent_color della Signature restando leggibile."
-	)
-	var expected_frame_modulate := BossUI.DEFAULT_PANEL_MODULATE.lerp(signature.accent_color, BossUI.ACCENT_FRAME_MIX)
-	expected_frame_modulate.a = 1.0
-	assert_true(
-		boss_ui.get_intro_frame_modulate().is_equal_approx(expected_frame_modulate),
-		"La cornice deve mostrare almeno un dettaglio tinto dell'accent_color."
-	)
-
-	var cta_style := boss_ui.get_continue_button_style(&"normal") as StyleBoxTexture
-	assert_true(
-		cta_style != null and cta_style.modulate_color.is_equal_approx(Color(1, 1, 1, 1)),
-		"La CTA non deve cambiare colore in base al Boss."
-	)
 
 	encounter.complete_intro()
 	controller.prepare_restart()
 
 
-func test_boss_intro_panel_stays_in_safe_area_across_aspect_ratios() -> void:
+func test_boss_intro_portrait_stays_in_safe_area_across_aspect_ratios() -> void:
 	var slice := await instantiate_movement_slice()
 	var controller := slice.get_run_controller() as RunController
 	var encounter := slice.get_boss_encounter() as BossEncounter
@@ -142,7 +99,7 @@ func test_boss_intro_panel_stays_in_safe_area_across_aspect_ratios() -> void:
 	controller._process(120.01)
 	assert_eq(
 		controller.get_state(), RunController.RunState.BOSS_INTRO,
-		"La fixture PS-051 deve aprire la Boss Intro con identita' Evil al completo (caso di contenuto piu' alto)."
+		"La fixture PS-051 deve aprire la Boss Intro con identita' Evil al completo."
 	)
 
 	for profile in ASPECT_PROFILES:
@@ -152,15 +109,15 @@ func test_boss_intro_panel_stays_in_safe_area_across_aspect_ratios() -> void:
 		get_tree().root.size = viewport_size
 		await wait_process_frames(2)
 		assert_rect_inside(
-			boss_ui.get_intro_panel_rect(), safe_rect,
-			"%s: il pannello della Boss Intro deve restare nella safe area." % profile.name
+			boss_ui.get_intro_portrait_rect(), safe_rect,
+			"%s: il ritratto della Boss Intro deve restare nella safe area." % profile.name
 		)
 
 	encounter.complete_intro()
 	controller.prepare_restart()
 
 
-func test_boss_intro_recomposes_gracefully_when_portrait_or_icon_are_missing() -> void:
+func test_boss_intro_recomposes_gracefully_when_portrait_is_missing() -> void:
 	var boss_ui := BOSS_UI_SCENE.instantiate() as BossUI
 	add_child_autofree(boss_ui)
 	await wait_process_frames(1)
@@ -178,51 +135,16 @@ func test_boss_intro_recomposes_gracefully_when_portrait_or_icon_are_missing() -
 	assert_true(boss_ui.show_intro(missing_portrait), "La intro deve potersi aprire senza portrait.")
 	assert_false(
 		boss_ui.is_intro_portrait_visible(),
-		"Senza portrait lo slot deve restare nascosto invece di mostrare una texture nulla."
+		"Senza portrait il blocco ritratto+citazione deve restare nascosto invece di mostrare una texture nulla."
 	)
-	assert_false(boss_ui.is_intro_signature_icon_visible(), "Senza Signature l'icona non deve comparire.")
-	assert_eq(boss_ui.get_intro_title_text(), "SENZA RITRATTO", "Titolo e citazione restano dai dati del Boss.")
-
-	var signature_without_icon := BossSignatureDefinition.new()
-	signature_without_icon.id = &"ps051_signature_no_icon"
-	signature_without_icon.friend_id = &"alea"
-	signature_without_icon.title = "Prova Senza Icona"
-	signature_without_icon.effect_id = REFERENCE_SIGNATURE.effect_id
-	signature_without_icon.effect_parameters = REFERENCE_SIGNATURE.effect_parameters.duplicate()
-	signature_without_icon.telegraph_duration = 1.0
-	signature_without_icon.duration_seconds = 1.0
-	signature_without_icon.area_radius = 10.0
-	signature_without_icon.damage = 1.0
-	signature_without_icon.accent_color = REFERENCE_SIGNATURE.accent_color
-	signature_without_icon.icon = null
-	assert_true(signature_without_icon.is_valid(), "Una Signature senza icona deve restare valida per il fallback.")
-
-	var friend_definition := load("res://data/friends/alea.tres") as FriendDefinition
-	var evil_without_icon := BossDefinition.new()
-	evil_without_icon.id = &"ps051_evil_no_icon"
-	evil_without_icon.visual_kind = BossDefinition.VisualKind.EVIL_FRIEND
-	evil_without_icon.friend_profile = friend_definition
-	evil_without_icon.signature = signature_without_icon
-	assert_true(evil_without_icon.is_valid(), "L'Evil di prova deve restare valido pur senza icona Signature.")
-
-	assert_true(boss_ui.show_intro(evil_without_icon), "La intro deve potersi aprire senza icona Signature.")
-	assert_true(boss_ui.is_intro_portrait_visible(), "Il ritratto Evil deve comunque comparire.")
 	assert_eq(
-		boss_ui.get_intro_portrait_texture(), friend_definition.get_public_evil_portrait(),
-		"Il ritratto deve restare quello del FriendDefinition anche senza icona."
+		boss_ui.get_intro_quote_text(), "“%s”" % missing_portrait.get_safe_quote(),
+		"La citazione resta indipendente dal ritratto mancante."
 	)
-	assert_false(
-		boss_ui.is_intro_signature_icon_visible(),
-		"Senza icona lo slot deve restare nascosto invece di una texture nulla visibile."
-	)
-	assert_null(boss_ui.get_intro_signature_icon_texture())
-	var expected_title_color := BossUI.DEFAULT_TITLE_COLOR.lerp(
-		signature_without_icon.accent_color, BossUI.ACCENT_TITLE_MIX
-	)
-	expected_title_color.a = 1.0
+	var continue_button := boss_ui.get_continue_button()
 	assert_true(
-		boss_ui.get_intro_title_color().is_equal_approx(expected_title_color),
-		"La tinta personale deve applicarsi anche quando manca soltanto l'icona."
+		continue_button != null and not continue_button.disabled,
+		"Il bottone AFFRONTA deve restare utilizzabile anche senza ritratto."
 	)
 
 	print("BOSS_INTRO_IDENTITY_SMOKE_OK")

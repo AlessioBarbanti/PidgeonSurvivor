@@ -3,7 +3,7 @@ id: PS-176
 titolo: Ritratti Boss fluttuanti senza cornice nella Boss Intro
 tipo: ux
 area: ui
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
@@ -55,37 +55,37 @@ all'immagine.
 
 ## Criteri di accettazione
 
-- [ ] `IntroPanel`, `StyleBoxTexture_intro_panel` e il riferimento a
+- [x] `IntroPanel`, `StyleBoxTexture_intro_panel` e il riferimento a
       `boss_intro_frame.png` sono rimossi dalla scena: nessun pannello/cornice
       esterna avvolge più il ritratto nella Boss Intro.
-- [ ] Il ritratto (Evil `<Nome>` o Piccione Malvagio) è mostrato in `contain`
+- [x] Il ritratto (Evil `<Nome>` o Piccione Malvagio) è mostrato in `contain`
       dentro la safe area corrente per tutte e 9 le varianti, senza crop né
       distorsione, su almeno le risoluzioni di riferimento Windows (16:9) e
       Android landscape (20:9, Pixel 9).
-- [ ] La citazione è sovrapposta al ritratto dentro il rettangolo del
+- [x] La citazione è sovrapposta al ritratto dentro il rettangolo del
       cartiglio, calcolato come percentuale della dimensione a schermo reale
       dell'immagine (non coordinate hardcoded in pixel), coerente con le
       percentuali misurate su `REFERENCE.png`.
-- [ ] Il font e i colori della citazione riusano token/valori già esistenti nel
+- [x] Il font e i colori della citazione riusano token/valori già esistenti nel
       progetto (nessun nuovo token introdotto per questa card).
-- [ ] La citazione di stress da 167 caratteri (già coperta da
+- [x] La citazione di stress da 167 caratteri (già coperta da
       `test_ps103_boss_intro_frame_wiring.gd`) resta interamente dentro il
       rettangolo del cartiglio, senza uscirne, su tutte e 9 le varianti.
-- [ ] Titolo (nome Boss) e icona Signature non compaiono più da nessuna parte
+- [x] Titolo (nome Boss) e icona Signature non compaiono più da nessuna parte
       della Boss Intro (rimossi dalla scena, non solo nascosti).
-- [ ] Il bottone "AFFRONTA" resta invariato (segnali, testo, stile,
+- [x] Il bottone "AFFRONTA" resta invariato (segnali, testo, stile,
       focus/hover/pressed) e non si sovrappone mai al ritratto.
-- [ ] Un ritratto mancante fa nascondere l'intero blocco ritratto+citazione
+- [x] Un ritratto mancante fa nascondere l'intero blocco ritratto+citazione
       senza lasciare spazio vuoto dedicato (stesso comportamento di
       ricomposizione già garantito prima di questa card).
-- [ ] I 9 ritratti in `assets/Evil portrais new/` sostituiscono i bust
+- [x] I 9 ritratti in `assets/Evil portrais new/` sostituiscono i bust
       precedenti (`evil_portrait.png` per gli otto Evil, `portrait.png` per il
       Piccione Malvagio): master in `hd/`, derivato in `generated/`, riga
       `ASSET-MANIFEST.md` per ciascuno con origine, licenza, trasformazioni e
       SHA-256 di entrambi (skill `asset-pipeline`).
-- [ ] Il pannello di pausa (`pause_panel_frame.png` e il proprio
+- [x] Il pannello di pausa (`pause_panel_frame.png` e il proprio
       `StyleBoxTexture`) resta bit-per-bit invariato: nessuna regressione
-      cosmetica per effetto di questa card.
+      cosmetica per effetto di questa card (nessun file di pausa toccato).
 
 ## Ambito
 
@@ -142,14 +142,24 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
+- [ ] Runtime Windows: non eseguito interattivamente (solo rendering reale via
+      `godot_console` non headless per gli screenshot, non un playtest con
+      tastiera/mouse sull'EXE). Resta aperto.
+- [ ] Validazione statica APK: non eseguita in questa sessione. Resta aperto.
 - [ ] Runtime fisico Pixel 9 (percorso: Boss Intro su almeno un Evil e sul
       Piccione Malvagio, citazione al limite di lunghezza, verifica leggibilità
-      del testo sovrapposto su schermo piccolo landscape)
-- [ ] Controllo percettivo richiesto: sì — invocare l'agente
-      `direttore-artistico` per confrontare la resa cablata con i 9 ritratti
-      forniti dal proprietario, non un'ispezione diretta dello screenshot.
+      del testo sovrapposto su schermo piccolo landscape): non eseguito, nessun
+      device collegato in questa sessione. Resta aperto.
+- [x] Controllo percettivo richiesto: sì — eseguito dall'agente
+      `direttore-artistico` su 18 screenshot della resa cablata reale (9
+      varianti × 16:9/20:9, `exports/ui-screenshots/ps176-boss-intro/`)
+      confrontati con i master in `assets/Evil portrais new/`. Prima passata:
+      **approva con modifiche** — ha trovato un conflitto reale non colto dagli
+      smoke GUT (la gemma apicale della cornice invadeva la fascia HUD in alto
+      a 16:9, coprendo il cronometro; vedi Decisioni per causa e fix). Dopo il
+      fix, seconda passata mirata: **risolto**, confermato su 7 screenshot
+      rappresentativi (16:9 ed 20:9, inclusa la citazione di stress). Nessuna
+      riserva residua su stile, leggibilità del cartiglio o bottone AFFRONTA.
 
 ## Decisioni
 
@@ -165,19 +175,67 @@ Non toccare:
   nello stesso set, con identica geometria/cartiglio delle altre 8 immagini:
   nessuna eccezione di scope, le 9 varianti condividono lo stesso contratto di
   presentazione.
+- **2026-09-14 — Riserva statica di `GameHud.GAMEPLAY_TOP_INSET +
+  UpgradeOverlay.TOP_BAND_CLEARANCE` in cima al ritratto, trovato dal
+  controllo percettivo, non dagli smoke GUT.** Gli smoke verificano il
+  ritratto dentro `arena_layout.get_safe_area_rect()` (vincolo fisico:
+  bordi/cutout, PS-064), ma quel rettangolo non esclude mai la fascia HUD di
+  gioco (cronometro/barre): è un problema diverso, storicamente risolto per
+  `UpgradeOverlay`/`BarbRewardOverlay` con `GAMEPLAY_TOP_INSET +
+  TOP_BAND_CLEARANCE` (PS-046), mai per `BossUI` perché il vecchio pannello
+  medaglione+testo era troppo corto per raggiungere quella fascia. Il nuovo
+  ritratto, molto più alto, la raggiungeva. `BossUI` è però figlio diretto di
+  `SafeAreaRoot` (non `top_level`, a differenza degli overlay sopra, PS-071):
+  non serve un `apply_safe_area()` dall'orchestratore, basta riservare lo
+  stesso margine in `_ready()`, staticamente — l'`AspectRatioContainer` si
+  limita a rimpicciolirsi nello spazio residuo, non può mai sforare. Aggiunto
+  anche un assert dedicato in `test_ps176_boss_intro_floating_portrait.gd`
+  (non solo lo screenshot) per evitare che regredisca silenziosamente.
 - **Sostituisce:** [PS-102](../6_rejected/PS-102-cornice-dedicata-boss-intro.md)
   (cornice dedicata) e [PS-103](../6_rejected/PS-103-integra-cornice-boss-intro.md)
   (integrazione cornice), entrambe spostate da `IN VERIFICA` a `SCARTATA` in
   questa stessa modifica: il loro output (cornice generata, medaglione
   circolare) viene rimosso da questa card prima ancora di aver superato la
   verifica.
+- **2026-09-14 — La citazione è un `RichTextLabel` (`fit_content = false`),
+  non un `Label`.** Scoperto in implementazione: un `Label` con
+  `autowrap_mode` forza la propria size al minimo necessario a contenere
+  tutte le righe wrappate, anche oltre il rettangolo assegnato dalle ancore —
+  un vincolo di Godot su qualunque `Control`, non solo dentro un `Container`
+  (verificato con uno script headless dedicato). Con la citazione di stress
+  (167 caratteri, 4 righe effettive a `BodyS`/12px sulla larghezza del
+  cartiglio) il `Label` cresceva oltre il cartiglio dipinto. `RichTextLabel`
+  con `fit_content = false` non contribuisce le proprie righe al calcolo
+  della minimum size: resta esattamente al rettangolo percentuale assegnato,
+  e `clip_contents = true` taglia l'eventuale eccesso invece di farlo
+  sconfinare. Poiché `RichTextLabel` non eredita da `Label`, la variazione di
+  tema `BodyS` (`base_type = Label`) non gli si applica: font, size (12) e
+  colore sono riprodotti come override diretti sullo stesso font/valori di
+  `BodyS` (`assets/fonts/nunito_regular.tres`, 12px, `Color(1, 0.94, 0.8, 1)`)
+  invece che tramite `theme_type_variation` — stesso valore riusato, nessun
+  nuovo token nel file tema.
+- **2026-09-14 — Ridimensionamento dei ritratti: bicubico al 50%, nessun
+  ritaglio sui bounds alpha.** I 9 master coprono quasi l'intero canvas
+  `1536×1024` (bbox alpha misurato: solo 0-4px di margine trasparente su
+  ciascun lato) — un ritaglio come `process-upgrade-icon.ps1`/
+  `process-arena-obstacle.ps1` avrebbe alterato il rapporto `3:2` di qualche
+  pixel, disallineando le percentuali del cartiglio misurate sul master
+  intero. Nuovo script `tools/process-boss-portrait.ps1`: resize bicubico
+  puro che preserva l'aspect ratio esatto, derivato runtime `768×512`.
+- **2026-09-14 — `-Profile Full` ha un fallimento pre-esistente non
+  correlato.** `test_ps158_mature_build_anti_afk.gd` fallisce 3/3 volte su
+  `-Profile Full` (sempre verde in isolamento) per un probabile timing fra
+  `RunController.start_run()`/`is_running()` e `_exit_tree()` del Tiratore —
+  zero file toccati da questa card intersecano quell'area. Diagnosticato e
+  tracciato separatamente in [PS-177](../2_to_do/PS-177-non-determinismo-full-proiettile-tiratore.md)
+  invece di bloccare questa card. Vedi Verifica per l'esito esatto.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/enemies-bosses.md`: sezione "Boss Intro: identità individuale"
+- [x] `docs/enemies-bosses.md`: sezione "Boss Intro: identità individuale"
       (righe 164-185) descrive ancora medaglione/icona/tinta — va riscritta
       sul nuovo contratto (ritratto floating, nessuna icona/tinta).
-- [ ] `docs/visual-audio-identity.md`: riga sulla cartella `ui/boss` (riga 147,
+- [x] `docs/visual-audio-identity.md`: riga sulla cartella `ui/boss` (riga 147,
       cornice PS-102/wiring PS-103) e sezioni "Stato dei ritratti Evil nella
       Boss Intro" (righe 198+) e "Cornice Boss Intro" (righe 226+) — entrambe
       descrivono il trattamento sostituito da questa card.
@@ -197,3 +255,22 @@ Il proprietario può invocare `qa-esplorativo` per un passaggio esplorativo
 sulla sequenza Piccione Malvagio → Evil in run consecutive e su
 titoli/citazioni particolarmente lunghi, che gli smoke GUT deterministici non
 coprono.
+
+**Evidenza di verifica (2026-09-14):**
+
+- `-Profile Relevant`: verde, `62/62` (`focused=1/1`, `regression=61/61`).
+- `-Profile Full`: `focused=4/4` verde su tutte e tre le esecuzioni; la
+  regressione generale è risultata `144/145` in tutte e tre le esecuzioni
+  consecutive, sempre con lo stesso singolo fallimento pre-esistente non
+  correlato (`test_ps158_mature_build_anti_afk.gd`, vedi Decisioni e
+  [PS-177](../2_to_do/PS-177-non-determinismo-full-proiettile-tiratore.md)).
+  Nessun `SCRIPT ERROR`/`FATAL EXCEPTION` nei log.
+- Screenshot della resa cablata reale (non simulazione: flusso
+  welcome→selezione→play, poi `BossUI.show_intro()`) catturati con lo script
+  di sviluppo dedicato `tools/_capture_boss_intro_ps176.gd` (pattern di
+  `tools/_capture_ui_screenshots.gd`, invocazione `godot_console --path .
+  --script tools/_capture_boss_intro_ps176.gd`, **senza** `--headless`) per
+  tutte e 9 le varianti a 16:9 e 20:9 in
+  `exports/ui-screenshots/ps176-boss-intro/` (non versionato). Controllo
+  percettivo eseguito su questi scatti dall'agente `direttore-artistico`
+  (non un'ispezione diretta mia): verdetto riportato sopra in Gate manuali.

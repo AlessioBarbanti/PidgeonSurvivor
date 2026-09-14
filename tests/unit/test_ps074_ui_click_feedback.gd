@@ -277,10 +277,8 @@ func test_boss_ui_continue_button_plays_click() -> void:
 	controller.set_process(false)
 	spawner.set_process(false)
 	controller._process(120.01)
-	# `show_intro()` (boss_ui.gd) accoda `_defer_reflow_intro_panel_position()`,
-	# due `await get_tree().process_frame` prima di ritoccare il layout: senza
-	# lasciarli risolvere prima della teardown del fixture, la scena viene
-	# liberata a metà await ("Resumed function... but class instance is gone").
+	# Lascia assestare il layout Container (AspectRatioContainer/VBoxContainer)
+	# di `show_intro()` prima delle asserzioni sotto.
 	await wait_process_frames(3)
 	assert_true(
 		controller.get_state() == RunController.RunState.BOSS_INTRO and boss_ui.is_intro_visible(),

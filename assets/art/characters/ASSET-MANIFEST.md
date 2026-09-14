@@ -509,3 +509,54 @@ quattro angoli del derivato hanno alpha `0`.
 Il master è escluso da import tramite
 `piccione_malvagio/hd/.gdignore` e dai tre export tramite il filtro comune
 `assets/art/characters/*/hd/**`.
+
+## Parte 5 — Ritratti Boss fluttuanti senza cornice (PS-176)
+
+### Integrazione del 14 settembre 2026
+
+I nove busti quadrati `256×256` della Parte 2 e della Parte 4 sono sostituiti
+dai nuovi ritratti "fluttuanti" `1536×1024` consegnati dal proprietario in
+`assets/Evil portrais new/*.png` (uno per Evil più `Evil_Pidgeon.png` per il
+Piccione Malvagio), con ornamentazione (ali, catene, gemme, cornice dorata)
+già dipinta dentro l'immagine e un cartiglio scuro riservato al testo della
+citazione. PS-176 rimuove il trattamento a pannello/medaglione/tinta di
+PS-102/PS-103 (scartate) e mostra il ritratto per intero in `contain`.
+
+- Origine: asset del progetto fornito dal proprietario.
+- Autore e licenza: non applicabili a un master fornito privatamente dal
+  proprietario (nessuna origine di terzi dichiarata).
+- Trasformazione: nessun ritaglio sui bounds alpha (l'intera tela dipinta è
+  contenuto valido, non uno sprite ritagliabile) — solo un ridimensionamento
+  bicubico che preserva esattamente il rapporto d'aspetto `3:2` del master,
+  cosi le percentuali del cartiglio misurate su `REFERENCE.png` restano
+  valide sul derivato:
+
+```powershell
+.\tools\process-boss-portrait.ps1 -InputPath <id>/hd/evil_portrait.png `
+  -OutputPath <id>/generated/evil_portrait.png -Scale 0.5
+```
+
+- I master rimpiazzano gli stessi percorsi `hd/evil_portrait.png` (otto Evil)
+  e `hd/portrait.png` (Piccione Malvagio) delle Parti 2 e 4; i derivati
+  rimpiazzano gli stessi percorsi `generated/`, quindi `data/friends/*.tres`
+  e `data/bosses/first_boss.tres` non richiedono modifiche (`ExtResource`
+  già puntato a quei percorsi).
+
+| Personaggio | Master HD escluso | SHA-256 master | Derivato runtime | SHA-256 runtime |
+|---|---|---|---|---|
+| Alea | `alea/hd/evil_portrait.png` (`1536x1024`) | `89EF4C3CE73EA3437C592F2D2D751A9B3007EFA24920F4A2D2B4EF0F5C81522C` | `alea/generated/evil_portrait.png` (`768x512`) | `7FA4B05BD358E6C75C622CC463EA5DF1A38ACC000E7E29A587DCA1025CA7CF92` |
+| Aleo | `aleo/hd/evil_portrait.png` (`1536x1024`) | `A9D1D63D676E1482BD36C1DE44D5CE85526287CCB3E704476FCAA000B73CF337` | `aleo/generated/evil_portrait.png` (`768x512`) | `5F35291431676AC1A4CC8FB51EE3F27E8A12B7BC6A1AF893738B993062AEE162` |
+| Bea | `bea/hd/evil_portrait.png` (`1536x1024`) | `56FDF00A0F239BB5CFF3D22509A9CAF6699DB6D1E6A29BFED0700B0680F10C13` | `bea/generated/evil_portrait.png` (`768x512`) | `A4EE18ED06E7E41E8E9972113DD09A578BDF40DC7E5693EDCF1FD4F0B223C035` |
+| Lollo | `lollo/hd/evil_portrait.png` (`1536x1024`) | `B37B6CF5A3E121BB7E624CC7DBB4E52F482A6037F8F0A9B9617E56624D7DB3F0` | `lollo/generated/evil_portrait.png` (`768x512`) | `752790AEE0ECE3A2A227C9855EBB9BBBAE488AA8A095D271356DCF158641ACD5` |
+| Magno | `magno/hd/evil_portrait.png` (`1536x1024`) | `B27FC9B8B45ACDAF55FDA502F473B4E12054ABF407B750AC4DBD7CFACBF5BBAB` | `magno/generated/evil_portrait.png` (`768x512`) | `A0841509EFAADAEF2EEAA658B0139981CBB4463BF2BF89EBA74CE2C43FA9BAFF` |
+| Marghe | `marghe/hd/evil_portrait.png` (`1536x1024`) | `9D0107C8B82BB33780ED9DD846ACAA309E38DEB042EAC06BD6E0DB9923E98F4B` | `marghe/generated/evil_portrait.png` (`768x512`) | `FE4CD9C07AB44DBB127DC7096C273232D13E4A1E0ED67C87B6ECD83DB8F83884` |
+| Migi | `migi/hd/evil_portrait.png` (`1536x1024`) | `05B75468BDE6D86D82BFD0CEA457AAD06A33F5B90B4F41C23609DA6ECFAE9558` | `migi/generated/evil_portrait.png` (`768x512`) | `A5450229AF727485A7720E4FD91AF1AA385F1FD121FBBCDB86D1AFE1848514BC` |
+| Zat | `zat/hd/evil_portrait.png` (`1536x1024`) | `6873A6926C86455695DD336331FCE9C14A2DBAC59D3D0C9E60C305585D0C291A` | `zat/generated/evil_portrait.png` (`768x512`) | `421CB772406F6BCD915FB296E6BB7E37274273BA85EC6B7B8D5B14448BDB536C` |
+| Piccione Malvagio | `piccione_malvagio/hd/portrait.png` (`1536x1024`) | `39851332E8C4AF8381F83D463DE68BC69C8F2AEDD67F40565596C054569693F3` | `piccione_malvagio/generated/portrait.png` (`768x512`) | `06BA740FD51570019ADA0A4A21FAC6F9938ABA81F2A52B838E1A438152BD1A9D` |
+
+`assets/Evil portrais new/REFERENCE.png` (rettangolo verde di misura, non un
+master di produzione) resta fuori da `hd/`/`generated/`: è un file di
+riferimento per la geometria del cartiglio, non un asset runtime.
+L'accettazione percettiva del proprietario (confronto con `direttore-artistico`
+sulla resa cablata in scena) resta un gate manuale separato, registrato nella
+card PS-176.

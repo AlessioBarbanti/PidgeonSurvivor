@@ -1,19 +1,8 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/boss_ui.gd" id="1_boss_ui"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/boss/boss_continue_cta_base.png" id="2_boss_continue_cta"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/boss/generated/boss_intro_frame.png" id="3_modal_frame"]
-
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_intro_panel"]
-texture = ExtResource("3_modal_frame")
-texture_margin_left = 70.0
-texture_margin_top = 208.0
-texture_margin_right = 70.0
-texture_margin_bottom = 48.0
-content_margin_left = 74.0
-content_margin_top = 208.0
-content_margin_right = 74.0
-content_margin_bottom = 40.0
+[ext_resource type="FontVariation" path="res://assets/fonts/nunito_regular.tres" id="3_quote_font"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_continue_cta"]
 atlas = ExtResource("2_boss_continue_cta")
@@ -76,41 +65,7 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.008, 0.005, 0.02, 0.86)
 
-[node name="PortraitFrame" type="Control" parent="IntroLayer"]
-unique_name_in_owner = true
-layout_mode = 1
-offset_right = 128.0
-offset_bottom = 144.0
-mouse_filter = 2
-
-[node name="PortraitTexture" type="TextureRect" parent="IntroLayer/PortraitFrame"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-expand_mode = 1
-stretch_mode = 5
-
-[node name="SignatureIcon" type="TextureRect" parent="IntroLayer/PortraitFrame"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -36.0
-offset_top = -36.0
-grow_horizontal = 0
-grow_vertical = 0
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Center" type="MarginContainer" parent="IntroLayer"]
+[node name="ContentVBox" type="VBoxContainer" parent="IntroLayer"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -119,50 +74,62 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-
-[node name="IntroPanel" type="PanelContainer" parent="IntroLayer/Center"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(620, 0)
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxTexture_intro_panel")
-
-[node name="VBox" type="VBoxContainer" parent="IntroLayer/Center/IntroPanel"]
-unique_name_in_owner = true
-layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="Caption" type="Label" parent="IntroLayer/Center/IntroPanel/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.42, 0.32, 1)
-theme_type_variation = &"Eyebrow"
-text = "BOSS IN ARRIVO"
-horizontal_alignment = 1
-
-[node name="IntroTitleLabel" type="Label" parent="IntroLayer/Center/IntroPanel/VBox"]
+[node name="PortraitAspect" type="AspectRatioContainer" parent="IntroLayer/ContentVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.92, 0.76, 1, 1)
-theme_override_colors/font_outline_color = Color(0.09, 0.025, 0.15, 1)
-theme_override_constants/outline_size = 5
-theme_type_variation = &"TitleXL"
-text = "EVIL BEA"
-horizontal_alignment = 1
-autowrap_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+ratio = 1.5
 
-[node name="IntroQuoteLabel" type="Label" parent="IntroLayer/Center/IntroPanel/VBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 72)
+[node name="PortraitSurface" type="Control" parent="IntroLayer/ContentVBox/PortraitAspect"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.94, 0.8, 1)
-theme_type_variation = &"BodyXL"
+mouse_filter = 2
+
+[node name="PortraitTexture" type="TextureRect" parent="IntroLayer/ContentVBox/PortraitAspect/PortraitSurface"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="IntroQuoteLabel" type="RichTextLabel" parent="IntroLayer/ContentVBox/PortraitAspect/PortraitSurface"]
+unique_name_in_owner = true
+clip_contents = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.325
+anchor_top = 0.782
+anchor_right = 0.673
+anchor_bottom = 0.884
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_colors/default_color = Color(1, 0.94, 0.8, 1)
+theme_override_constants/line_separation = -2
+theme_override_fonts/normal_font = ExtResource("3_quote_font")
+theme_override_font_sizes/normal_font_size = 12
+bbcode_enabled = false
 text = "“Il Boss entra nell'arena.”"
+fit_content = false
+scroll_active = false
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
-[node name="ContinueButton" type="Button" parent="IntroLayer/Center/IntroPanel/VBox"]
+[node name="ButtonCenter" type="CenterContainer" parent="IntroLayer/ContentVBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ContinueButton" type="Button" parent="IntroLayer/ContentVBox/ButtonCenter"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 64)
+custom_minimum_size = Vector2(472, 64)
 layout_mode = 2
 focus_neighbor_top = NodePath(".")
 focus_neighbor_bottom = NodePath(".")

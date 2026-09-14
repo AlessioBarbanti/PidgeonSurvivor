@@ -277,4 +277,5 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-173](./4_to_test/PS-173-clone-marghe-spara-ai-nemici.md) | Il clone di Marghe (Reggeton time!) spara ai nemici vicini | feat | gameplay | IN VERIFICA | media | — |
 | [PS-174](./4_to_test/PS-174-evil-marghe-clone-minaccia-accumulo.md) | Il clone di Evil Marghe spara e si accumula se non ucciso | feat | gameplay | IN VERIFICA | media | — |
 | [PS-175](./2_to_do/PS-175-residuo-non-determinismo-separazione-nemici-full.md) | Diagnostica il residuo di non-determinismo nella separazione nemici su Full | fix | gameplay | PRONTO | bassa | PS-171, PS-174 |
-| [PS-176](./2_to_do/PS-176-ritratti-boss-fluttuanti-senza-cornice.md) | Ritratti Boss fluttuanti senza cornice nella Boss Intro | ux | ui | PRONTO | media | — |
+| [PS-176](./4_to_test/PS-176-ritratti-boss-fluttuanti-senza-cornice.md) | Ritratti Boss fluttuanti senza cornice nella Boss Intro | ux | ui | IN VERIFICA | media | — |
+| [PS-177](./2_to_do/PS-177-non-determinismo-full-proiettile-tiratore.md) | Diagnostica il proiettile del Tiratore espulso in modo non deterministico su Full | fix | gameplay | PRONTO | media | — |

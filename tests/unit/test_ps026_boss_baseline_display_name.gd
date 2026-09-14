@@ -27,9 +27,12 @@ func test_boss_intro_and_evil_variants() -> void:
 
 	encounter.evil_boss_chance = 0.0
 	controller._process(120.01)
+	var baseline_definition := encounter.get_active_definition()
+	assert_true(baseline_definition != null, "PS-026 richiede la definizione del Boss baseline attivo.")
+	var baseline_portrait := baseline_definition.get_safe_portrait() if baseline_definition != null else null
 	assert_eq(
-		boss_ui.get_intro_title_text(), "PICCIONE MALVAGIO",
-		"La Boss Intro deve mostrare Piccione Malvagio per il Boss baseline."
+		boss_ui.get_intro_portrait_texture(), baseline_portrait,
+		"La Boss Intro deve mostrare il ritratto del Piccione Malvagio per il Boss baseline."
 	)
 	assert_true(encounter.complete_intro(), "L'intro del Boss baseline deve poter terminare.")
 	assert_true(controller.request_defeat(), "Il test deve poter chiudere la run per il restart.")
@@ -39,10 +42,10 @@ func test_boss_intro_and_evil_variants() -> void:
 
 	encounter.evil_boss_chance = 1.0
 	controller._process(120.01)
-	var evil_title := boss_ui.get_intro_title_text()
+	var evil_portrait := boss_ui.get_intro_portrait_texture()
 	assert_true(
-		evil_title != "PICCIONE MALVAGIO" and evil_title.begins_with("EVIL "),
-		"Le varianti Evil devono conservare il proprio nome, non quello del Boss baseline."
+		evil_portrait != baseline_portrait and evil_portrait != null,
+		"Le varianti Evil devono mostrare il proprio ritratto, non quello del Boss baseline."
 	)
 
 	controller.prepare_restart()
