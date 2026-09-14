@@ -555,8 +555,14 @@ PS-102/PS-103 (scartate) e mostra il ritratto per intero in `contain`.
 | Piccione Malvagio | `piccione_malvagio/hd/portrait.png` (`1536x1024`) | `39851332E8C4AF8381F83D463DE68BC69C8F2AEDD67F40565596C054569693F3` | `piccione_malvagio/generated/portrait.png` (`768x512`) | `06BA740FD51570019ADA0A4A21FAC6F9938ABA81F2A52B838E1A438152BD1A9D` |
 
 `assets/Evil portrais new/REFERENCE.png` (rettangolo verde di misura, non un
-master di produzione) resta fuori da `hd/`/`generated/`: è un file di
-riferimento per la geometria del cartiglio, non un asset runtime.
+master di produzione) non è mai stato un asset runtime: le percentuali del
+cartiglio misurate su di esso sono cablate come costanti in
+`scripts/ui/boss_ui.gd` e nel test PS-176. L'intera cartella
+`assets/Evil portrais new/` era materiale di staging non versionato per
+convenzione (vedi Parte 1): dopo che i master sono stati promossi ai percorsi
+`hd/` sopra (byte identici, SHA-256 verificati) è stata rimossa dal
+repository.
+
 L'accettazione percettiva del proprietario (confronto con `direttore-artistico`
 sulla resa cablata in scena) resta un gate manuale separato, registrato nella
 card PS-176.
