@@ -88,10 +88,6 @@ extends Resource
 	set(value):
 		ranged_preferred_distance = maxf(value, 0.0) if is_finite(value) else 0.0
 
-@export_range(0.01, 10.0, 0.01, "or_greater") var ranged_telegraph_duration := 0.6:
-	set(value):
-		ranged_telegraph_duration = maxf(value, 0.01) if is_finite(value) else 0.01
-
 @export_range(0.01, 60.0, 0.01, "or_greater") var ranged_attack_interval := 2.0:
 	set(value):
 		ranged_attack_interval = maxf(value, 0.01) if is_finite(value) else 0.01
@@ -111,8 +107,6 @@ extends Resource
 @export_range(1.0, 128.0, 0.5, "or_greater") var ranged_projectile_radius := 8.0:
 	set(value):
 		ranged_projectile_radius = maxf(value, 1.0) if is_finite(value) else 1.0
-
-@export var ranged_telegraph_color := Color(1.0, 0.24, 0.18, 0.72)
 
 
 func get_effective_eligible_time_start() -> float:

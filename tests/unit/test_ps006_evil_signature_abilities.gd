@@ -503,7 +503,7 @@ func test_marghe_decoy_attacks_and_accumulates_up_to_cap() -> void:
 	var spawn_position := first_decoy.global_position
 	first_decoy.set_physics_process(false)
 
-	# Intervallo (2,5s) + telegraph (0,8s) dichiarati nei dati: con margine.
+	# Intervallo (2,5s) dichiarato nei dati: con margine, sparo immediato a tiro.
 	for _step in range(30):
 		first_decoy._physics_process(DRIVE_STEP)
 	assert_true(

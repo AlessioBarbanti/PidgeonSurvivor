@@ -1,18 +1,18 @@
 extends GutTest
 
 ## PS-158 — Una build offensiva matura (piercing/rimbalzo/esplosione/danno/
-## fire rate) puo' uccidere il Tiratore prima che il proprio telegraph finisca.
-## Senza PendingRangedShot il colpo annunciato spariva con lui, azzerando
-## l'unica pressione anti-AFK che non dipende dal solo output di danno del
-## Player (vedi Decisioni di PS-158). Questo test dimostra che il colpo resta
-## leggibile, schivabile e in arrivo anche se la fonte muore durante l'attesa.
+## fire rate) puo' uccidere il Tiratore appena dopo che ha sparato. Un
+## proiettile gia' in volo e' pero' indipendente dalla propria fonte:
+## cancellarlo insieme a lei azzererebbe l'unica pressione anti-AFK della
+## curva ordinaria che non dipende dal solo output di danno del Player (vedi
+## Decisioni di PS-158). Solo un vero restart pulisce anche i proiettili
+## ancora in volo del tiratore rimosso.
 
 const PLAYER_SCENE: PackedScene = preload("res://scenes/actors/player.tscn")
 const RANGED_ENEMY_SCENE: PackedScene = preload("res://scenes/actors/ranged_enemy.tscn")
-const FLOAT_TOLERANCE := 0.001
 
 
-func test_killing_the_shooter_mid_telegraph_does_not_cancel_the_committed_shot() -> void:
+func test_killing_the_shooter_after_it_fires_does_not_cancel_the_projectile() -> void:
 	var built := await _build_fixture()
 	var controller: RunController = built["controller"]
 	var enemy: RangedEnemy = built["enemy"]
@@ -20,77 +20,46 @@ func test_killing_the_shooter_mid_telegraph_does_not_cancel_the_committed_shot()
 	var projectile_parent: Node2D = built["projectile_parent"]
 
 	enemy._advance_attack_cycle(definition.ranged_attack_interval)
-	assert_true(enemy.is_telegraph_active(), "Il tiratore deve avviare il telegraph col bersaglio a tiro.")
-	enemy._advance_attack_cycle(definition.ranged_telegraph_duration * 0.5)
+	var projectile := _find_projectile(projectile_parent)
+	assert_not_null(projectile, "Il tiratore deve sparare subito col bersaglio a tiro, senza telegraph.")
+	if projectile == null:
+		return
 
 	enemy.get_health_component().take_damage(definition.health_max)
-	assert_true(not enemy.is_alive(), "Un burst letale deve poter uccidere il tiratore durante il telegraph.")
+	assert_true(not enemy.is_alive(), "Un burst letale deve poter uccidere il tiratore.")
+	enemy.queue_free()
+	await wait_process_frames(1)
 
-	var pending := _find_pending_shot(projectile_parent)
-	assert_not_null(
-		pending,
-		"La morte durante il telegraph deve affidare il colpo gia' annunciato a PendingRangedShot."
-	)
-	if pending == null:
-		return
-	assert_almost_eq(
-		pending.get_remaining(),
-		definition.ranged_telegraph_duration * 0.5,
-		FLOAT_TOLERANCE,
-		"Il tempo residuo del telegraph deve trasferirsi intatto al colpo pendente."
-	)
-
-	pending._physics_process(definition.ranged_telegraph_duration * 0.5 + 0.001)
-	assert_not_null(
-		_find_projectile(projectile_parent),
-		"Il colpo pendente deve sparare un proiettile reale allo scadere del telegraph, anche a tiratore morto."
+	assert_true(
+		is_instance_valid(projectile) and not projectile.is_queued_for_deletion(),
+		"Il proiettile gia' sparato non deve sparire con la fonte uccisa mentre la run e' ancora in corso."
 	)
 
 	print("PS158_MATURE_BUILD_ANTI_AFK_SMOKE_OK")
 	controller.prepare_restart()
 
 
-func test_killing_the_shooter_outside_of_telegraph_spawns_no_pending_shot() -> void:
+func test_restart_still_clears_the_shooters_in_flight_projectile() -> void:
 	var built := await _build_fixture()
 	var controller: RunController = built["controller"]
 	var enemy: RangedEnemy = built["enemy"]
 	var definition: EnemyArchetypeDefinition = built["definition"]
 	var projectile_parent: Node2D = built["projectile_parent"]
-
-	assert_true(not enemy.is_telegraph_active(), "Il tiratore non deve partire gia' in telegraph.")
-	enemy.get_health_component().take_damage(definition.health_max)
-	assert_true(not enemy.is_alive(), "Il danno letale deve uccidere il tiratore.")
-
-	assert_null(
-		_find_pending_shot(projectile_parent),
-		"Un kill ordinario fuori dal telegraph non deve generare un colpo fantasma."
-	)
-	controller.prepare_restart()
-
-
-func test_pending_shot_does_not_fire_if_the_player_leaves_range_before_it_resolves() -> void:
-	var built := await _build_fixture()
-	var controller: RunController = built["controller"]
-	var enemy: RangedEnemy = built["enemy"]
-	var definition: EnemyArchetypeDefinition = built["definition"]
-	var projectile_parent: Node2D = built["projectile_parent"]
-	var target: Player = built["target"]
 
 	enemy._advance_attack_cycle(definition.ranged_attack_interval)
-	assert_true(enemy.is_telegraph_active(), "Il tiratore deve avviare il telegraph col bersaglio a tiro.")
-	enemy.get_health_component().take_damage(definition.health_max)
-	var pending := _find_pending_shot(projectile_parent)
-	assert_not_null(pending, "La morte durante il telegraph deve creare il colpo pendente.")
-	if pending == null:
+	var projectile := _find_projectile(projectile_parent)
+	assert_not_null(projectile, "Il tiratore deve sparare subito col bersaglio a tiro.")
+	if projectile == null:
 		return
 
-	target.global_position = Vector2(definition.ranged_attack_range * 10.0, 0.0)
-	pending._physics_process(definition.ranged_telegraph_duration + 0.001)
-	assert_null(
-		_find_projectile(projectile_parent),
-		"Se il bersaglio esce dal raggio prima che il colpo pendente risolva, il colpo non deve partire."
-	)
 	controller.prepare_restart()
+	enemy.queue_free()
+	await wait_process_frames(1)
+
+	assert_true(
+		not is_instance_valid(projectile) or projectile.is_queued_for_deletion(),
+		"Un vero restart deve pulire anche i proiettili ancora in volo del tiratore rimosso."
+	)
 
 
 func _build_fixture() -> Dictionary:
@@ -118,7 +87,6 @@ func _build_fixture() -> Dictionary:
 	definition.experience_amount = 2
 	definition.ranged_attack_range = 400.0
 	definition.ranged_preferred_distance = 300.0
-	definition.ranged_telegraph_duration = 0.6
 	definition.ranged_attack_interval = 1.0
 	definition.ranged_projectile_damage = 8.0
 	definition.ranged_projectile_speed = 200.0
@@ -141,13 +109,6 @@ func _build_fixture() -> Dictionary:
 		"projectile_parent": projectile_parent,
 		"target": target,
 	}
-
-
-func _find_pending_shot(projectile_parent: Node2D) -> PendingRangedShot:
-	for child in projectile_parent.get_children():
-		if child is PendingRangedShot:
-			return child
-	return null
 
 
 func _find_projectile(projectile_parent: Node2D) -> BossProjectile:

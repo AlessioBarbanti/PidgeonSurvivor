@@ -2,78 +2,37 @@ class_name RangedEnemy
 extends BaseEnemy
 
 ## Tiratore (B40): si ferma entro ranged_preferred_distance dal bersaglio e
-## spara un proiettile telegrafato, riusando lo stesso layer proiettili e lo
-## stesso schema telegraph->esecuzione gia' introdotto per il Boss
-## (scripts/bosses/boss_projectile.gd, scripts/bosses/first_boss.gd).
+## spara un proiettile appena e' a tiro e il proprio cooldown
+## (ranged_attack_interval) e' scaduto, poi si ricarica prima del colpo
+## successivo. Nessun tempo di telegraph: lo sparo e' immediato (richiesta
+## esplicita del proprietario, PS-158).
+##
+## PS-158: un proiettile gia' lanciato e' indipendente dal Tiratore che lo ha
+## sparato. Se il Tiratore muore in combattimento mentre la run e' ancora
+## RUNNING, il proiettile in volo non viene annullato: altrimenti una build
+## offensiva matura (piercing/rimbalzo/esplosione/danno/fire rate) potrebbe
+## azzerare ogni minaccia a distanza semplicemente uccidendo la fonte dopo lo
+## sparo. Solo un vero restart (run non piu' RUNNING quando il nodo esce
+## dall'albero) pulisce anche i proiettili ancora in volo.
 
 @export var projectile_scene: PackedScene
 
 var _definition: EnemyArchetypeDefinition
 var _projectile_parent: Node
 var _attack_cooldown_remaining := 0.0
-var _telegraph_active := false
-var _telegraph_remaining := 0.0
-var _telegraph_duration := 0.0
 var _active_projectiles: Array[BossProjectile] = []
 
 
 func _exit_tree() -> void:
-	clear_attack_runtime()
-	super._exit_tree()
-
-
-## PS-158: una build ad alto DPS/piercing puo' uccidere il Tiratore durante
-## il proprio telegraph, prima che il colpo parta. Senza questo hook la
-## minaccia sparirebbe con lui, azzerando l'unica pressione anti-AFK che non
-## dipende dal solo output di danno del giocatore. Il colpo gia' annunciato
-## viene invece affidato a PendingRangedShot, che ne completa il conto alla
-## rovescia e lo spara restando leggibile e schivabile.
-func _on_died() -> void:
-	if _telegraph_active and _definition != null:
-		_commit_pending_shot()
-	super._on_died()
-
-
-func _commit_pending_shot() -> void:
 	var run_controller := get_run_controller()
-	var target := get_target() as Player
-	if (
-		projectile_scene == null
-		or not is_instance_valid(_projectile_parent)
-		or not _projectile_parent.is_inside_tree()
-		or run_controller == null
-		or target == null
-	):
-		return
-	var pending := PendingRangedShot.new()
-	pending.projectile_scene = projectile_scene
-	_projectile_parent.add_child(pending)
-	pending.global_position = global_position
-	pending.setup(
-		_telegraph_remaining,
-		_telegraph_duration,
-		_definition.ranged_attack_range,
-		_definition.ranged_telegraph_color,
-		collision_radius + 16.0,
-		_definition.ranged_projectile_damage,
-		_definition.ranged_projectile_speed,
-		_definition.ranged_projectile_lifetime,
-		_definition.ranged_projectile_radius,
-		pressure_multiplier,
-		run_controller,
-		target,
-		_projectile_parent
-	)
+	if run_controller == null or not run_controller.is_running():
+		clear_attack_runtime()
+	super._exit_tree()
 
 
 func _physics_process(delta: float) -> void:
 	super._physics_process(delta)
 	_advance_attack_cycle(delta)
-
-
-func _draw() -> void:
-	super._draw()
-	_draw_telegraph_ring()
 
 
 func configure_ranged(definition: EnemyArchetypeDefinition, projectile_parent: Node) -> void:
@@ -82,30 +41,17 @@ func configure_ranged(definition: EnemyArchetypeDefinition, projectile_parent: N
 	_attack_cooldown_remaining = (
 		definition.ranged_attack_interval if definition != null else 0.0
 	)
-	_telegraph_active = false
-	_telegraph_remaining = 0.0
-	_telegraph_duration = 0.0
-	queue_redraw()
 
 
+## Espelle e ferma tutti i proiettili ancora in volo di questo Tiratore.
+## Va invocata solo per una pulizia genuina (restart/teardown), mai per la
+## sola morte in combattimento: vedi nota di classe.
 func clear_attack_runtime() -> void:
-	_telegraph_active = false
-	_telegraph_remaining = 0.0
-	_telegraph_duration = 0.0
 	var projectiles_to_clear := _active_projectiles.duplicate()
 	_active_projectiles.clear()
 	for projectile in projectiles_to_clear:
 		if is_instance_valid(projectile) and not projectile.is_queued_for_deletion():
 			projectile.expire()
-	queue_redraw()
-
-
-func is_telegraph_active() -> bool:
-	return _telegraph_active
-
-
-func get_telegraph_remaining() -> float:
-	return _telegraph_remaining
 
 
 func get_active_projectile_count() -> int:
@@ -135,40 +81,14 @@ func _advance_attack_cycle(delta: float) -> void:
 		return
 
 	var safe_delta := maxf(delta, 0.0) if is_finite(delta) else 0.0
-	if _telegraph_active:
-		_telegraph_remaining = maxf(_telegraph_remaining - safe_delta, 0.0)
-		queue_redraw()
-		if _telegraph_remaining <= 0.0:
-			_execute_attack()
+	_attack_cooldown_remaining = maxf(_attack_cooldown_remaining - safe_delta, 0.0)
+	if _attack_cooldown_remaining > 0.0:
 		return
-
 	var target := get_target()
 	if target == null or not _is_target_in_range(target):
 		return
-	_attack_cooldown_remaining = maxf(_attack_cooldown_remaining - safe_delta, 0.0)
-	if _attack_cooldown_remaining <= 0.0:
-		_begin_telegraph()
-
-
-func _begin_telegraph() -> void:
-	_telegraph_active = true
-	_telegraph_duration = _definition.ranged_telegraph_duration
-	_telegraph_remaining = _telegraph_duration
-	queue_redraw()
-
-
-## Ricontrolla il raggio a fine telegraph (come FirstBoss per il targeted
-## blast): il bersaglio puo' essere uscito dal raggio mentre il tiratore
-## caricava, e in quel caso il colpo non parte.
-func _execute_attack() -> void:
-	_telegraph_active = false
-	_telegraph_remaining = 0.0
-	_telegraph_duration = 0.0
+	_fire_projectile(target)
 	_attack_cooldown_remaining = _definition.ranged_attack_interval
-	var target := get_target()
-	if target != null and _is_target_in_range(target):
-		_fire_projectile(target)
-	queue_redraw()
 
 
 func _is_target_in_range(target: Node2D) -> bool:
@@ -216,27 +136,6 @@ func _fire_projectile(target: Node2D) -> void:
 	projectile.tree_exiting.connect(
 		_on_projectile_tree_exiting.bind(projectile),
 		CONNECT_ONE_SHOT
-	)
-
-
-func _draw_telegraph_ring() -> void:
-	if not _telegraph_active or _definition == null:
-		return
-	var progress := 1.0 - clampf(
-		_telegraph_remaining / maxf(_telegraph_duration, 0.001),
-		0.0,
-		1.0
-	)
-	var ring_radius := collision_radius + 16.0 + progress * 14.0
-	draw_arc(
-		Vector2.ZERO,
-		ring_radius,
-		0.0,
-		TAU,
-		32,
-		_definition.ranged_telegraph_color,
-		4.0,
-		true
 	)
 
 

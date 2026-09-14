@@ -89,7 +89,6 @@
         "scenes/actors/base_enemy.tscn",
         "scripts/actors/ranged_enemy.gd",
         "scenes/actors/ranged_enemy.tscn",
-        "scripts/actors/pending_ranged_shot.gd",
         "scripts/game/enemy_spawner.gd",
         "scripts/game/enemy_spawn_profile.gd",
         "scripts/game/enemy_archetype_definition.gd",

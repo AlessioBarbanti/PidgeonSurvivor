@@ -999,16 +999,13 @@ func _get_max_active_decoys() -> int:
 
 
 ## EnemyArchetypeDefinition costruito a runtime (non caricato da `.tres`):
-## serve solo a riusare configure_ranged() e il ciclo telegraph->proiettile
-## di RangedEnemy con i parametri dichiarati dalla Signature, senza
-## introdurre un secondo formato dati per lo stesso concetto.
+## serve solo a riusare configure_ranged() e il ciclo cooldown->proiettile di
+## RangedEnemy con i parametri dichiarati dalla Signature, senza introdurre
+## un secondo formato dati per lo stesso concetto.
 func _build_decoy_attack_definition() -> EnemyArchetypeDefinition:
 	var attack_definition := EnemyArchetypeDefinition.new()
 	attack_definition.ranged_attack_range = _announced_signature.get_effect_float(
 		&"clone_attack_range", 1400.0, 1.0
-	)
-	attack_definition.ranged_telegraph_duration = _announced_signature.get_effect_float(
-		&"clone_telegraph_duration", 0.6, 0.01
 	)
 	attack_definition.ranged_attack_interval = _announced_signature.get_effect_float(
 		&"clone_attack_interval", 2.2, 0.01
