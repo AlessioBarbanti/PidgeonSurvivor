@@ -3,12 +3,12 @@ id: PS-115
 titolo: Aggiungi una Modalità risparmio energetico con profilo mobile_low
 tipo: feat
 area: piattaforma
-stato: BLOCCATO
+stato: POSTICIPATA
 priorita: media
 dipende_da: [PS-113, PS-117]
 origine:
 creato: 2026-09-07
-aggiornato: 2026-09-07
+aggiornato: 2026-09-14
 ---
 
 # PS-115 — Aggiungi una Modalità risparmio energetico con profilo mobile_low
@@ -92,7 +92,7 @@ alcun cambiamento.
   a costo di richiedere un'azione esplicita da chi gioca.
 - **Dipendenze:** questa card dipende da [PS-113](../4_to_test/PS-113-cabla-cap-fps-performance-profile.md)
   (`IN VERIFICA`, prerequisito soddisfatto) e da
-  [PS-117](../2_to_do/PS-117-subviewport-mondo-di-gioco-per-render-scale.md)
+  [PS-117](../1_idea/PS-117-subviewport-mondo-di-gioco-per-render-scale.md)
   perché senza quei due meccanismi il profilo `mobile_low` avrebbe come unica
   leva reale le soglie di stress (`max_transient_feedback`), insufficiente da
   sola per un effetto percepibile su calore e batteria.
@@ -100,6 +100,9 @@ alcun cambiamento.
   (cablaggio diretto di `render_scale`) si è rivelata insufficiente ed è
   stata sostituita da PS-117 (mondo di gioco in `SubViewport` dedicato), che
   ne eredita lo scopo.
+- **2026-09-14 — POSTICIPATA.** Contratto già completo, nessuna decisione
+  mancante: il proprietario ha spostato il focus su altri filoni
+  (difficoltà/Boss). Segue PS-117, anch'essa posticipata lo stesso giorno.
 
 ## Documenti sincronizzati
 

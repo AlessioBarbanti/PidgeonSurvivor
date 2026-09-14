@@ -138,7 +138,7 @@ smoke esistente copre questa card: il tentativo `test_ps114_render_scale.gd`
 
 Card sorella: [PS-113](../4_to_test/PS-113-cabla-cap-fps-performance-profile.md)
 (stesso profilo dati, leva diversa: cap FPS invece della risoluzione interna
-— quella è andata a buon fine, `IN VERIFICA`). [PS-115](../2_to_do/PS-115-modalita-risparmio-energetico-profilo-mobile-low.md)
+— quella è andata a buon fine, `IN VERIFICA`). [PS-115](../1_idea/PS-115-modalita-risparmio-energetico-profilo-mobile-low.md)
 dipende da questa card per avere una leva reale sulla risoluzione nel profilo
 "mobile_low": resta bloccata anche per questo finché questa card non si
 risolve in una direzione o nell'altra.

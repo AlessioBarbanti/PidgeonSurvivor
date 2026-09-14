@@ -5,12 +5,12 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 
 - Un file per card: `PS-<numero>-<slug>.md`, numerazione progressiva, nella
   cartella corrispondente alla fase corrente.
-- Il vocabolario degli stati è: `DA DEFINIRE`,
+- Il vocabolario degli stati è: `DA DEFINIRE`, `POSTICIPATA`,
   `BLOCCATO`, `PRONTO`, `IN CORSO`, `IN ATTESA ASSET`, `IN VERIFICA`,
   `COMPLETATO`, `SCARTATA`.
 - Le sei cartelle sono numerate secondo l'ordine di avanzamento e
   raggruppano gli stati senza sostituirli:
-  - `1_idea`: `DA DEFINIRE`;
+  - `1_idea`: `DA DEFINIRE`, `POSTICIPATA`;
   - `2_to_do`: `BLOCCATO`, `PRONTO` (non ancora pescata nello sprint corrente);
   - `3_in_sprint`: `PRONTO` (pescata nel blocco su cui si sta lavorando adesso,
     in coda), `IN CORSO` o `IN ATTESA ASSET`;
@@ -28,6 +28,12 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
   stato non `IN CORSO`; la card resta storica in `6_rejected` con il motivo
   dello scarto in `Decisioni`, non va eliminata né riaperta silenziosamente
   (un ripensamento apre una nuova card, come per `COMPLETATO`).
+- `POSTICIPATA` è diverso da `DA DEFINIRE`: il contratto della card è già
+  completo e verificabile (era `PRONTO`/`BLOCCATO`), ma il proprietario ha
+  scelto di non lavorarla ora per priorità, senza che manchi una sua
+  decisione. Non è uno stato terminale: la selezione "prossima card" la
+  ignora finché non torna manualmente a `PRONTO`/`BLOCCATO` in `2_to_do/`. Il
+  motivo del rinvio va in `Decisioni`, come per `SCARTATA`.
 - Quando cambia fase, sposta il file nella cartella corretta e aggiorna il link
   nella board nello stesso cambiamento.
 - Modello: [`_TEMPLATE.md`](./_TEMPLATE.md).
@@ -216,9 +222,9 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-112](./5_completed/PS-112-vieta-imagegen-diretto-game-art-designer-claude.md) | Vieta l'accesso diretto a ImageGen al game-art-designer lato Claude | fix | tooling | COMPLETATO | media | — |
 | [PS-113](./4_to_test/PS-113-cabla-cap-fps-performance-profile.md) | Cabla il cap FPS dal PerformanceProfile attivo | perf | piattaforma | IN VERIFICA | alta | — |
 | [PS-114](./1_idea/PS-114-cabla-render-scale-risoluzione-interna.md) | Cabla render_scale del PerformanceProfile alla risoluzione interna | perf | piattaforma | DA DEFINIRE | media | — |
-| [PS-115](./2_to_do/PS-115-modalita-risparmio-energetico-profilo-mobile-low.md) | Aggiungi una Modalità risparmio energetico con profilo mobile_low | feat | piattaforma | BLOCCATO | media | PS-113, PS-117 |
+| [PS-115](./1_idea/PS-115-modalita-risparmio-energetico-profilo-mobile-low.md) | Aggiungi una Modalità risparmio energetico con profilo mobile_low | feat | piattaforma | POSTICIPATA | media | PS-113, PS-117 |
 | [PS-116](./4_to_test/PS-116-aumenta-risoluzione-sprite-gameplay-cast.md) | Aumenta la risoluzione nativa dello sprite di gameplay del cast a 64×64 | fix | arte | IN VERIFICA | media | — |
-| [PS-117](./2_to_do/PS-117-subviewport-mondo-di-gioco-per-render-scale.md) | Sposta il mondo di gioco in un SubViewport dedicato per abilitare render_scale | perf | piattaforma | PRONTO | media | — |
+| [PS-117](./1_idea/PS-117-subviewport-mondo-di-gioco-per-render-scale.md) | Sposta il mondo di gioco in un SubViewport dedicato per abilitare render_scale | perf | piattaforma | POSTICIPATA | media | — |
 | [PS-118](./4_to_test/PS-118-nome-e-icona-nona-specialita-cariche-abilita.md) | Genera nome e icona definitivi per la nona Specialità (cariche multiple abilità attiva) | art | arte | IN VERIFICA | bassa | — |
 | [PS-119](./4_to_test/PS-119-fix-spawn-non-sospeso-boss-ricorrente-con-evento-attivo.md) | Correggi lo spawn ordinario che non si sospende durante un Boss se un evento d'ondata è già maturato | fix | gameplay | IN VERIFICA | alta | — |
 | [PS-120](./4_to_test/PS-120-fix-ricarica-cariche-abilita-e-indicatore-hud.md) | Correggi il tetto di ricarica delle cariche abilità e distingui l'indicatore HUD di ricarica in background | fix | gameplay | IN VERIFICA | alta | PS-094 |
@@ -270,7 +276,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-166](./4_to_test/PS-166-correggi-concordanze-testi-dinamici.md) | Correggi le concordanze nei testi dinamici | fix | ui | IN VERIFICA | media | PS-101 |
 | [PS-167](./1_idea/PS-167-elimina-dominante-gialla-artwork.md) | Elimina la dominante gialla dagli artwork | art | arte | DA DEFINIRE | bassa | PS-084 |
 | [PS-168](./1_idea/PS-168-riduci-gommosita-stylization-artwork.md) | Riduci la gommosità della stilizzazione dei personaggi | art | arte | DA DEFINIRE | bassa | PS-167 |
-| [PS-169](./2_to_do/PS-169-aggiungi-battuta-ingresso-per-personaggio.md) | Aggiungi una battuta di ingresso per ogni personaggio | feat | ui | PRONTO | bassa | PS-101 |
+| [PS-169](./1_idea/PS-169-aggiungi-battuta-ingresso-per-personaggio.md) | Aggiungi una battuta di ingresso per ogni personaggio | feat | ui | POSTICIPATA | bassa | PS-101 |
 | [PS-170](./2_to_do/PS-170-aggiungi-selettore-difficolta-prima-della-run.md) | Aggiungi un selettore della difficoltà prima della run | feat | gameplay | BLOCCATO | media | PS-157, PS-158, PS-161 |
 | [PS-171](./4_to_test/PS-171-impedisci-sovrapposizione-totale-nemici.md) | Impedisci la sovrapposizione totale dei nemici in campo | fix | gameplay | IN VERIFICA | alta | — |
 | [PS-172](./3_in_sprint/PS-172-diagnostica-freeze-totale-android-25-minuti.md) | Diagnostica il freeze totale su Android a ~25 minuti di run | chore | piattaforma | IN CORSO | alta | — |

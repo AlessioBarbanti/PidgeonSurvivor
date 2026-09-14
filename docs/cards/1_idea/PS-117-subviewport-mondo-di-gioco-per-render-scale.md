@@ -3,12 +3,12 @@ id: PS-117
 titolo: Sposta il mondo di gioco in un SubViewport dedicato per abilitare render_scale
 tipo: perf
 area: piattaforma
-stato: PRONTO
+stato: POSTICIPATA
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-09-07
-aggiornato: 2026-09-07
+aggiornato: 2026-09-14
 ---
 
 # PS-117 — Sposta il mondo di gioco in un SubViewport dedicato per abilitare render_scale
@@ -136,6 +136,9 @@ del mondo tramite il normale inoltro di Godot da `SubViewportContainer` a
 - **Aperto:** la scelta del valore `render_scale` per il profilo mobile resta
   fuori da questa card, come già deciso per PS-114 — qui si cabla solo il
   meccanismo, i due `.tres` restano a `1.0`.
+- **2026-09-14 — POSTICIPATA.** Contratto già completo e verificabile, nessuna
+  decisione mancante: il proprietario ha spostato il focus su altri filoni
+  (difficoltà/Boss) e la riprende quando torna prioritaria.
 
 ## Documenti sincronizzati
 
@@ -147,5 +150,5 @@ del mondo tramite il normale inoltro di Godot da `SubViewportContainer` a
 
 Card storica collegata: [PS-114](../1_idea/PS-114-cabla-render-scale-risoluzione-interna.md)
 (tentativo insufficiente, dettagli tecnici del fallimento nelle sue
-Decisioni). [PS-115](../2_to_do/PS-115-modalita-risparmio-energetico-profilo-mobile-low.md)
+Decisioni). [PS-115](../1_idea/PS-115-modalita-risparmio-energetico-profilo-mobile-low.md)
 va aggiornata per dipendere da questa card invece che da PS-114.

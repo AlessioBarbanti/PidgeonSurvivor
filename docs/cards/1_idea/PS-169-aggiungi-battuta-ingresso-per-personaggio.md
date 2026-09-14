@@ -3,12 +3,12 @@ id: PS-169
 titolo: Aggiungi una battuta di ingresso per ogni personaggio
 tipo: feat
 area: ui
-stato: PRONTO
+stato: POSTICIPATA
 priorita: bassa
 dipende_da: [PS-101]
 origine: playtest esterno 2026-09-11 — feedback Lollo/Magno
 creato: 2026-09-11
-aggiornato: 2026-09-11
+aggiornato: 2026-09-14
 ---
 
 # PS-169 — Aggiungi una battuta di ingresso per ogni personaggio
@@ -76,6 +76,7 @@ I testi sono battute del personaggio, non sostituzioni del copy di sistema. Prim
 - **2026-09-11 — Un solo evento a bassa frequenza.** La personalizzazione riguarda l'ingresso nella run; non crea rumore testuale durante il combattimento.
 - **2026-09-11 — Gli avvisi urgenti restano condivisi e prioritari.** La nuova corsia non riusa gli slot Boss/evento e non modifica la citazione condivisa di PS-101.
 - **2026-09-11 — Copy nei dati del personaggio.** La HUD osserva lo stato e presenta testo già risolto; non possiede identità o contenuti del roster.
+- **2026-09-14 — POSTICIPATA.** Contratto già completo e verificabile, nessuna decisione mancante: il proprietario ha spostato il focus su altri filoni (difficoltà/Boss) e la riprende quando torna prioritaria.
 
 ## Documenti sincronizzati
 
