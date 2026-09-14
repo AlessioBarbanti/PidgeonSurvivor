@@ -108,7 +108,8 @@
         "tests/unit/test_ps076_enemy_density_rebalance.gd",
         "tests/unit/test_ps123_archetype_hp_rescale.gd",
         "tests/unit/test_ps126_post_curve_pressure.gd",
-        "tests/unit/test_ps171_enemy_overlap_separation.gd"
+        "tests/unit/test_ps171_enemy_overlap_separation.gd",
+        "tests/unit/test_ps157_early_difficulty.gd"
       ]
     },
     {
@@ -152,7 +153,8 @@
         "tests/unit/test_b41_weapon_shapes.gd",
         "tests/unit/test_ps006_evil_signature_abilities.gd",
         "tests/unit/test_ps093_extended_base_stats.gd",
-        "tests/unit/test_ps085_manual_fire_mode.gd"
+        "tests/unit/test_ps085_manual_fire_mode.gd",
+        "tests/unit/test_ps157_early_difficulty.gd"
       ]
     },
     {

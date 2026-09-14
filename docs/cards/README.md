@@ -258,7 +258,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-154](./4_to_test/PS-154-correggi-cornice-roster-e-desatura-non-selezionati.md) | Correggi la cornice del roster nel selettore personaggi e desatura i non selezionati | fix | ui | IN VERIFICA | media | — |
 | [PS-155](./4_to_test/PS-155-correggi-altezza-e-centratura-testo-cta-arancione.md) | Correggi altezza e centratura del testo sul CTA arancione | fix | ui | IN VERIFICA | alta | — |
 | [PS-156](./4_to_test/PS-156-riduci-peso-apk-android.md) | Riduci il peso dell'APK Android | perf | piattaforma | IN VERIFICA | alta | — |
-| [PS-157](./2_to_do/PS-157-ricalibra-difficolta-primi-cinque-minuti.md) | Ricalibra la difficoltà dei primi cinque minuti | chore | gameplay | BLOCCATO | alta | PS-123, PS-124, PS-159, PS-160, PS-161, PS-165 |
+| [PS-157](./4_to_test/PS-157-ricalibra-difficolta-primi-cinque-minuti.md) | Ricalibra la difficoltà dei primi cinque minuti | chore | gameplay | IN VERIFICA | alta | PS-123, PS-124, PS-159, PS-160, PS-161, PS-165 |
 | [PS-158](./2_to_do/PS-158-impedisci-build-offensive-mature-di-rendere-run-afk.md) | Impedisci alle build offensive mature di rendere la run AFK | fix | gameplay | BLOCCATO | alta | PS-126, PS-157 |
 | [PS-159](./4_to_test/PS-159-riduci-velocita-base-player.md) | Riduci la velocità base del Player | fix | gameplay | IN VERIFICA | alta | PS-087 |
 | [PS-160](./4_to_test/PS-160-rendi-competitivi-upgrade-velocita.md) | Rendi competitivi gli upgrade di velocità | chore | gameplay | IN VERIFICA | alta | PS-159 |
