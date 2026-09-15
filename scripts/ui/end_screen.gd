@@ -176,7 +176,7 @@ func _format_boss_count(count: int) -> String:
 	return "1 Boss sconfitto" if count == 1 else "%d Boss sconfitti" % count
 
 
-func _rebuild_upgrades_row(entries: Array[RunSummary.UpgradeEntry]) -> void:
+func _rebuild_upgrades_row(entries: Array[UpgradeService.RankedUpgrade]) -> void:
 	if not is_instance_valid(_upgrades_row):
 		return
 	for child in _upgrades_row.get_children():
@@ -187,7 +187,7 @@ func _rebuild_upgrades_row(entries: Array[RunSummary.UpgradeEntry]) -> void:
 		_upgrades_row.add_child(_build_upgrade_chip(entry))
 
 
-func _build_upgrade_chip(entry: RunSummary.UpgradeEntry) -> Control:
+func _build_upgrade_chip(entry: UpgradeService.RankedUpgrade) -> Control:
 	var chip := VBoxContainer.new()
 	chip.alignment = BoxContainer.ALIGNMENT_CENTER
 	chip.add_theme_constant_override(&"separation", 2)

@@ -93,9 +93,13 @@ Sotto la colonna RIPRENDI/CAMBIA PERSONAGGIO/IMPOSTAZIONI/ESCI, nello stesso
 `ScrollContainer`/clamp di PS-142, il pannello pausa mostra una sezione
 "LA TUA BUILD" read-only: una riga per ogni upgrade con rango > 0 nella run
 corrente (icona, titolo, rango), costruita a runtime da
-`PauseOverlay._refresh_build_summary()` leggendo solo API già esposte da
-`UpgradeService` (`get_ranks()`, `get_registry()`) — nessuna nuova superficie
-di lettura, nessuna scrittura verso il servizio. Le Specialità di Barb
+`PauseOverlay._refresh_build_summary()` leggendo
+`UpgradeService.get_acquired_upgrades()` (PS-185). Il servizio restituisce
+copie dei ranghi acquisiti, ordinate per rango decrescente e poi ID; il rango
+iniziale implicito delle abilità non entra nella build finché la carta non è
+stata scelta. Il terminale usa la stessa lettura limitandola a tre elementi.
+Le schermate non attraversano più registry e dizionario dei ranghi, e non
+scrivono nel servizio. Le Specialità di Barb
 sbloccate compaiono nello stesso elenco, distinte dagli upgrade ordinari
 unicamente dal colore del titolo (oro `Color(1, 0.85, 0.32, 1)`, lo stesso
 già in uso nel pannello per `ConfirmationTitleLabel`): niente bordo/sfondo

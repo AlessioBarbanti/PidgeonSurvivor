@@ -3,6 +3,20 @@
   "rules": [
     {
       "patterns": [
+        "scripts/progression/upgrade_service.gd",
+        "scripts/game/run_summary.gd",
+        "scripts/ui/pause_overlay.gd",
+        "scripts/ui/end_screen.gd"
+      ],
+      "smokes": [
+        "tests/unit/test_ps185_upgrade_queries.gd",
+        "tests/unit/test_ps053_run_summary.gd",
+        "tests/unit/test_ps164_pause_build_summary.gd",
+        "tests/unit/test_b18g_ability_ranks.gd"
+      ]
+    },
+    {
+      "patterns": [
         "project.godot",
         "export_presets.cfg"
       ],

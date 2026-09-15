@@ -274,7 +274,9 @@ func _refresh_build_summary() -> void:
 		_build_summary_list.remove_child(child)
 		child.queue_free()
 
-	var entries := _collect_build_summary_entries()
+	var entries: Array[UpgradeService.RankedUpgrade] = []
+	if is_instance_valid(_upgrade_service):
+		entries = _upgrade_service.get_acquired_upgrades()
 	var has_entries := not entries.is_empty()
 	if is_instance_valid(_build_summary_separator):
 		_build_summary_separator.visible = has_entries
@@ -285,36 +287,9 @@ func _refresh_build_summary() -> void:
 		_build_summary_list.add_child(_build_summary_build_row(entry))
 
 
-## Stesso ordinamento deterministico di
-## `movement_slice._build_top_upgrade_entries()` (rango decrescente, poi ID),
-## ma senza il troncamento a 3: qui serve l'intera build, non solo i
-## migliori. Le Specialità ancora bloccate non hanno rango nel dizionario
-## (mai selezionate) e restano fuori da questa lista senza filtro dedicato.
-func _collect_build_summary_entries() -> Array[RunSummary.UpgradeEntry]:
-	var entries: Array[RunSummary.UpgradeEntry] = []
-	if not is_instance_valid(_upgrade_service):
-		return entries
-	var registry := _upgrade_service.get_registry()
-	if not is_instance_valid(registry):
-		return entries
-	var ranks := _upgrade_service.get_ranks()
-	for definition in registry.get_definitions():
-		var rank: int = ranks.get(definition.id, 0)
-		if rank <= 0:
-			continue
-		entries.append(RunSummary.UpgradeEntry.new(definition, rank))
-	entries.sort_custom(
-		func(a: RunSummary.UpgradeEntry, b: RunSummary.UpgradeEntry) -> bool:
-			if a.rank != b.rank:
-				return a.rank > b.rank
-			return String(a.definition.id) < String(b.definition.id)
-	)
-	return entries
-
-
 ## Riga costruita a runtime come `EndScreen._build_upgrade_chip()`: stessa
 ## dimensione/filtro icona, nessun nodo salvato in scena da tenere in sync.
-func _build_summary_build_row(entry: RunSummary.UpgradeEntry) -> Control:
+func _build_summary_build_row(entry: UpgradeService.RankedUpgrade) -> Control:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override(&"separation", BUILD_SUMMARY_ROW_SEPARATION)
 

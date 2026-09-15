@@ -2071,29 +2071,8 @@ func _build_run_summary(run_time: float) -> RunSummary:
 	summary.level = _experience_system.level
 	summary.bosses_defeated = _defeated_boss_count
 	summary.run_time = run_time
-	summary.top_upgrades = _build_top_upgrade_entries()
+	summary.top_upgrades = _upgrade_service.get_acquired_upgrades().slice(0, 3)
 	return summary
-
-
-## Rango decrescente; a parita' di rango l'id testuale decide, cosi' il
-## risultato non cambia riaprendo la stessa schermata (PS-053).
-func _build_top_upgrade_entries() -> Array[RunSummary.UpgradeEntry]:
-	var ranks := _upgrade_service.get_ranks()
-	var entries: Array[RunSummary.UpgradeEntry] = []
-	for definition in _upgrade_registry.get_definitions():
-		var rank: int = ranks.get(definition.id, 0)
-		if rank <= 0:
-			continue
-		entries.append(RunSummary.UpgradeEntry.new(definition, rank))
-	entries.sort_custom(
-		func(a: RunSummary.UpgradeEntry, b: RunSummary.UpgradeEntry) -> bool:
-			if a.rank != b.rank:
-				return a.rank > b.rank
-			return String(a.definition.id) < String(b.definition.id)
-	)
-	if entries.size() > 3:
-		entries.resize(3)
-	return entries
 
 
 func _on_boss_defeated_for_summary(_boss: FirstBoss) -> void:
