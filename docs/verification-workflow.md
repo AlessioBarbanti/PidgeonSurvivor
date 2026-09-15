@@ -61,6 +61,16 @@ corrispondenza sul nome. Un test può citare più di una milestone (es. un
 raffronto esplicito fra due slice): in quel caso comparirà nel piano
 `Focused` di entrambe, invariato.
 
+## Diagnostica della scena composta
+
+I controlli della scena composta sono raccolti in
+`scripts/app/run_contract_validator.gd` (PS-186), separati dall'orchestrazione
+di `MovementSlice`. `collect_failures(scene)` restituisce tutti i messaggi
+senza stamparli; `print_result(scene)` emette gli stessi marker di contratto
+usati dallo smoke del progetto e degli eseguibili. La chiamata resta dopo il
+wiring di `_ready()` e prima dell'avvio della run. I test del validatore possono
+così introdurre guasti controllati senza produrre falsi errori motore nel batch.
+
 ## Fallimento di un test e fallimento del batch
 
 I due casi sono distinti e vanno letti in modo diverso.

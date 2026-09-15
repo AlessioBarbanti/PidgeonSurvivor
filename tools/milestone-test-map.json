@@ -284,9 +284,11 @@
         "scripts/game/movement_slice.gd",
         "scenes/game/movement_slice.tscn",
         "scripts/game/run_controller.gd",
-        "scripts/game/run_summary.gd"
+        "scripts/game/run_summary.gd",
+        "scripts/app/run_contract_validator.gd"
       ],
       "smokes": [
+        "tests/unit/test_ps186_run_contract_validator.gd",
         "tests/unit/test_ps108_cooking_point_catalog_wiring.gd",
         "tests/unit/test_b03_movement_slice.gd",
         "tests/unit/test_b16_complete_run.gd",
