@@ -291,3 +291,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-181](./2_to_do/PS-181-telegraph-boss-a-volte-non-spara.md) | Il telegraph di attacco del Boss a volte non si risolve in un colpo (visto su Evil Alea) | fix | gameplay | PRONTO | alta | — |
 | [PS-182](./2_to_do/PS-182-primo-boss-troppa-vita.md) | Il primo Boss (minuto 2) ha troppa vita | fix | gameplay | PRONTO | alta | — |
 | [PS-183](./1_idea/PS-183-ripensa-proiettile-clone-marghe.md) | Ripensa l'attacco del clone di Marghe, forse un'esplosione al posto del proiettile | ux | gameplay | DA DEFINIRE | alta | — |
+| [PS-184](./2_to_do/PS-184-recap-numero-piccioni-uccisi.md) | Mostra il numero di piccioni uccisi nel recap di fine partita | feat | ui | PRONTO | media | — |
