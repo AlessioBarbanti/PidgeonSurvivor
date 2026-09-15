@@ -3,12 +3,12 @@ id: PS-185
 titolo: Centralizza le letture della build e i filtri delle offerte upgrade
 tipo: chore
 area: gameplay
-stato: IN CORSO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine: Richiesta autonoma di code cleaning del 2026-09-15
 creato: 2026-09-15
-aggiornato: 2026-09-15
+aggiornato: 2026-09-16
 ---
 
 # PS-185 — Centralizza le letture della build e i filtri delle offerte upgrade
@@ -35,7 +35,7 @@ le schermate decidono soltanto quanti elementi visualizzare e come disegnarli.
 - [x] Modificare lo snapshot restituito non modifica ranghi o letture successive.
 - [x] Level-up e bonus Barb applicano lo stesso percorso di filtraggio, mantenendo
       stream RNG distinti, ordine dei candidati e fallback del pool saturo.
-- [ ] Test mirati e Full eseguiti; eventuali fallimenti della baseline distinti.
+- [x] Test mirati e Full eseguiti; eventuali fallimenti della baseline distinti.
 
 ## Ambito
 
@@ -49,8 +49,8 @@ Nessun bilanciamento, asset, dato serializzato o stato di RunController modifica
 
 ## Gate manuali
 
-- [ ] Runtime Windows esportato.
-- [ ] Validazione statica APK corrente.
+- [x] Runtime Windows esportato: export e smoke automatico di avvio.
+- [x] Validazione statica APK corrente.
 - [ ] Runtime fisico Pixel 9: upgrade, pausa/build, Barb, terminale e restart.
 - Controllo percettivo dedicato: non richiesto; layout invariato.
 
@@ -87,3 +87,11 @@ Nessun bilanciamento, asset, dato serializzato o stato di RunController modifica
   Log `20260915-231112-PS-185`; copre snapshot isolati, rango iniziale implicito,
   restart, fallback saturazione, stream RNG indipendenti e sequenza preesistente.
 - `tests/tooling/_milestone_runner_contract.ps1`: `MILESTONE_RUNNER_CONTRACT_OK`.
+- **2026-09-16 — Verifica finale con PS-186.** `Release -KeepGoing -NoCache`:
+  476/477 test GUT verdi, stesso fallimento PS-158 della baseline (PS-177).
+  Export/smoke Windows e ispezione statica APK verdi; Android export `RECOVERED`.
+  Toolchain e project smoke ripetuti con successo dopo la creazione del template
+  Gradle nel worktree. Comandi, log e hash nella
+  [PS-186](./PS-186-separa-validazione-contratti-run.md).
+- La card resta `IN VERIFICA`: review del branch e percorso fisico Pixel 9
+  ancora aperti; il profilo completo non viene dichiarato verde.

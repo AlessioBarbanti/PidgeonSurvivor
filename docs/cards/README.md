@@ -292,5 +292,5 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-182](./2_to_do/PS-182-primo-boss-troppa-vita.md) | Il primo Boss (minuto 2) ha troppa vita | fix | gameplay | PRONTO | alta | — |
 | [PS-183](./1_idea/PS-183-ripensa-proiettile-clone-marghe.md) | Ripensa l'attacco del clone di Marghe, forse un'esplosione al posto del proiettile | ux | gameplay | DA DEFINIRE | alta | — |
 | [PS-184](./2_to_do/PS-184-recap-numero-piccioni-uccisi.md) | Mostra il numero di piccioni uccisi nel recap di fine partita | feat | ui | PRONTO | media | — |
-| [PS-185](./3_in_sprint/PS-185-centralizza-letture-e-filtri-upgrade.md) | Centralizza le letture della build e i filtri delle offerte upgrade | chore | gameplay | IN CORSO | media | — |
-| [PS-186](./3_in_sprint/PS-186-separa-validazione-contratti-run.md) | Separa la validazione dei contratti dall'orchestrazione della run | chore | tooling | IN CORSO | media | — |
+| [PS-185](./4_to_test/PS-185-centralizza-letture-e-filtri-upgrade.md) | Centralizza le letture della build e i filtri delle offerte upgrade | chore | gameplay | IN VERIFICA | media | — |
+| [PS-186](./4_to_test/PS-186-separa-validazione-contratti-run.md) | Separa la validazione dei contratti dall'orchestrazione della run | chore | tooling | IN VERIFICA | media | — |
