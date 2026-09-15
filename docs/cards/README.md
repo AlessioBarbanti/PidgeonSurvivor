@@ -285,3 +285,10 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-175](./2_to_do/PS-175-residuo-non-determinismo-separazione-nemici-full.md) | Diagnostica il residuo di non-determinismo nella separazione nemici su Full | fix | gameplay | PRONTO | bassa | PS-171, PS-174 |
 | [PS-176](./4_to_test/PS-176-ritratti-boss-fluttuanti-senza-cornice.md) | Ritratti Boss fluttuanti senza cornice nella Boss Intro | ux | ui | IN VERIFICA | media | — |
 | [PS-177](./2_to_do/PS-177-non-determinismo-full-proiettile-tiratore.md) | Diagnostica il proiettile del Tiratore espulso in modo non deterministico su Full | fix | gameplay | PRONTO | media | — |
+| [PS-178](./3_in_sprint/PS-178-lag-al-minuto-2-arrivo-primo-boss.md) | Diagnostica il lag riportato al minuto 2 (coincide con l'arrivo del primo Boss) | perf | gameplay | IN CORSO | alta | — |
+| [PS-179](./2_to_do/PS-179-riprendi-non-centrato-pulsante-pausa.md) | RIPRENDI non è centrato nel bottone della pausa nonostante PS-155 | fix | ui | PRONTO | alta | — |
+| [PS-180](./2_to_do/PS-180-citazione-boss-nascosta-gate-pixel-ps176.md) | La citazione del Boss è leggermente nascosta su device reale (gate Pixel di PS-176) | fix | ui | PRONTO | alta | — |
+| [PS-181](./2_to_do/PS-181-telegraph-boss-a-volte-non-spara.md) | Il telegraph di attacco del Boss a volte non si risolve in un colpo (visto su Evil Alea) | fix | gameplay | PRONTO | alta | — |
+| [PS-182](./2_to_do/PS-182-primo-boss-troppa-vita.md) | Il primo Boss (minuto 2) ha troppa vita | fix | gameplay | PRONTO | alta | — |
+| [PS-183](./1_idea/PS-183-ripensa-proiettile-clone-marghe.md) | Ripensa l'attacco del clone di Marghe, forse un'esplosione al posto del proiettile | ux | gameplay | DA DEFINIRE | alta | — |
+| [PS-184](./2_to_do/PS-184-recap-numero-piccioni-uccisi.md) | Mostra il numero di piccioni uccisi nel recap di fine partita | feat | ui | PRONTO | media | — |
