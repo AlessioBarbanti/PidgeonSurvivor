@@ -50,6 +50,10 @@ checkpoint delimitato, il path viene solo segnalato a schermo come privo di
 regressioni automatiche. Copertura completa per quel path si ottiene con
 `-RegressionSmoke` esplicito o con un profilo `Full`/`Release`.
 
+Gli helper GDScript in `tests/unit/helpers/` sono anch'essi input di verifica.
+La regola di `gameplay_test.gd` seleziona tutti i test `GutGameplayTest`; il
+contratto PowerShell controlla che nessun consumatore manchi dalla mappa.
+
 «Solo documentali» include i `.md` e i `.txt` **ovunque**, anche dentro
 `assets/`: un `ASSET-MANIFEST.md` descrive gli asset, non è un asset.
 
@@ -69,6 +73,10 @@ Un **test rosso** appartiene al proprio script: solo quello risulta `FAIL`,
 con il conteggio nella nota (`GUT: 1/3 test falliti.`). GUT con `-gexit` esce
 con codice non-zero appena un test fallisce, ma quel codice riguarda il
 processo, non gli altri script del batch, che restano `PASS`.
+
+Il conteggio deriva dai nodi JUnit `testcase`: `testsuite.failures` di GUT
+conta invece le asserzioni, quindi puo' superare il numero di test. Report
+vuoti, troncati o incoerenti non sono risultati verdi.
 
 Un **fallimento di batch** compare come step separato `<categoria>-gut-batch`
 e ha solo tre cause, nessuna attribuibile a un singolo script:
@@ -175,6 +183,20 @@ la scena da `MOVEMENT_SLICE_SCENE.instantiate()` deve impostare
 `get_tree().root.content_scale_size`/`size` da sé, come fa già
 `instantiate_movement_slice()`.
 
+Per il frontend si usa
+`instantiate_movement_slice(viewport_size, true, seed_value)`: fissa viewport
+e seed, forza la welcome durante `_ready` e ripristina il flag precedente
+(anche quando non esisteva). Fixture che devono configurare nodi prima di
+`_ready`, come la persistenza touch, possono conservare il setup esplicito.
+
+Le attese UI condivise (`wait_for_selection_unlock`, `wait_for_transitions`)
+usano una deadline reale e falliscono al timeout. Il polling avviene sui
+segnali di frame anche quando il gioco mette in pausa il `SceneTree`; il
+`wait_while` nativo di GUT avanza in fisica e si ferma durante quella pausa.
+Nei test che chiamano `move_and_slide()` manualmente, attendere il frame
+fisico **prima del primo passo**: passare un delta costante a
+`_physics_process()` non impone quel delta a `move_and_slide()`.
+
 ## Cache e diagnostica
 
 Sono riutilizzati soltanto risultati `PASS`. La chiave del batch GUT include
@@ -183,6 +205,9 @@ quel profilo; un cache hit rimaterializza l'esito per singolo script senza
 rilanciare Godot né riparsare il report. Per gli export viene verificato anche
 l'hash dell'artefatto presente. Cambiare un test invalida solo il batch che lo
 contiene; cambiare il runtime invalida tutti i batch pertinenti.
+Anche il contenuto degli helper GDScript entra nella chiave GUT: una modifica
+a una fixture condivisa non puo' riutilizzare un precedente risultato verde.
+Questo hash aggiuntivo non entra nella cache degli export.
 
 **Una verifica ripetuta richiede `-NoCache`.** Rilanciare lo stesso comando
 senza `-NoCache` restituisce `CACHED` in un secondo senza avviare Godot: se un
