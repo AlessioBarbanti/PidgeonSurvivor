@@ -247,6 +247,7 @@
         "tests/unit/test_ps126_post_curve_pressure.gd",
         "tests/unit/test_ps171_enemy_overlap_separation.gd",
         "tests/unit/test_ps157_early_difficulty.gd",
+        "tests/unit/test_ps178_enemy_separation_query.gd",
         "tests/unit/test_ps158_mature_build_anti_afk.gd"
       ]
     },
