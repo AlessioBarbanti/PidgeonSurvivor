@@ -9,19 +9,31 @@ extends GutTest
 const FLOAT_TOLERANCE := 0.001
 const MOVEMENT_SLICE_SCENE := preload("res://scenes/game/movement_slice.tscn")
 const INITIAL_VIEWPORT_SIZE := Vector2i(1280, 720)
+const FORCE_WELCOME_SETTING := "application/run/b18o_force_welcome_for_test"
+const UI_WAIT_TIMEOUT_SECONDS := 5.0
 
 ## Seed fisso per ogni run avviata dai test GUT tramite
 ## instantiate_movement_slice(): rende deterministico l'RNG di spawn (PS-032).
 const GUT_TEST_RUN_SEED := 1
 
 
-func instantiate_movement_slice(viewport_size: Vector2i = INITIAL_VIEWPORT_SIZE) -> Control:
+func instantiate_movement_slice(
+	viewport_size: Vector2i = INITIAL_VIEWPORT_SIZE,
+	start_at_welcome: bool = false,
+	seed_value: int = GUT_TEST_RUN_SEED
+) -> Control:
 	get_tree().root.content_scale_size = viewport_size
 	get_tree().root.size = viewport_size
 	await wait_process_frames(2)
 	var slice := MOVEMENT_SLICE_SCENE.instantiate() as Control
-	slice.set("gut_test_run_seed_override", GUT_TEST_RUN_SEED)
+	slice.set("gut_test_run_seed_override", seed_value)
+	var previous_welcome_setting: Variant = ProjectSettings.get_setting(FORCE_WELCOME_SETTING, null)
+	if start_at_welcome:
+		ProjectSettings.set_setting(FORCE_WELCOME_SETTING, true)
 	add_child_autofree(slice)
+	# _ready legge il flag durante add_child; ripristinalo prima di sospendere.
+	if start_at_welcome:
+		ProjectSettings.set_setting(FORCE_WELCOME_SETTING, previous_welcome_setting)
 	await wait_process_frames(2)
 	return slice
 
@@ -29,21 +41,42 @@ func instantiate_movement_slice(viewport_size: Vector2i = INITIAL_VIEWPORT_SIZE)
 ## Attende che le transizioni in corso (Tween) siano concluse.
 ##
 ## Misurare un layout a meta' animazione lo lega alla velocita' della macchina
-## invece che al contratto: finche' la cattura dell'output rallentava Godot di
-## 15x, un solo frame copriva l'intera transizione e la differenza non si
-## vedeva. Il limite di frame evita che un tween infinito appenda il test.
-func wait_for_transitions(max_frames: int = 600) -> void:
-	var waited := 0
-	while waited < max_frames:
-		var running := false
-		for tween in get_tree().get_processed_tweens():
-			if tween.is_valid() and tween.is_running():
-				running = true
-				break
-		if not running:
-			return
-		await wait_process_frames(1)
-		waited += 1
+## invece che al contratto. Il timeout deve rendere rosso il test, altrimenti
+## si continua a misurare un layout che non ha raggiunto lo stato atteso.
+func wait_for_transitions(timeout_seconds: float = UI_WAIT_TIMEOUT_SECONDS) -> void:
+	assert_true(
+		await _wait_while_ui(_has_running_transitions, timeout_seconds),
+		"Le transizioni UI devono terminare entro %.1f s." % timeout_seconds
+	)
+
+
+## Il Callable mantiene tipizzati i chiamanti UpgradeOverlay/BarbRewardOverlay
+## senza costringerli a condividere una nuova classe nel codice di produzione.
+func wait_for_selection_unlock(is_locked: Callable) -> void:
+	assert_true(
+		await _wait_while_ui(is_locked, UI_WAIT_TIMEOUT_SECONDS),
+		"La selezione deve sbloccarsi entro %.1f s." % UI_WAIT_TIMEOUT_SECONDS
+	)
+	await wait_process_frames(2)
+
+
+func _has_running_transitions() -> bool:
+	for tween in get_tree().get_processed_tweens():
+		if tween.is_valid() and tween.is_running():
+			return true
+	return false
+
+
+## Il wait_while di GUT avanza in _physics_process e si ferma con SceneTree
+## in pausa (LEVEL_UP/BARB_REWARD). I segnali di frame continuano invece ad
+## arrivare: deadline reale e polling funzionano anche sui modali in pausa.
+func _wait_while_ui(condition: Callable, timeout_seconds: float) -> bool:
+	var deadline := Time.get_ticks_msec() + int(timeout_seconds * 1000.0)
+	while bool(condition.call()):
+		if Time.get_ticks_msec() >= deadline:
+			return false
+		await get_tree().process_frame
+	return true
 
 
 func assert_vector_near(

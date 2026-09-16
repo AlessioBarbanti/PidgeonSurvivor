@@ -142,7 +142,7 @@ func test_composed_input_and_queue() -> void:
 	Input.parse_input_event(make_key_event(KEY_1, false))
 	await wait_process_frames(2)
 	assert_true(selected_ids.is_empty(), "Un input dentro il lock non deve applicare scelte.")
-	await _wait_selection_unlock(overlay)
+	await wait_for_selection_unlock(overlay.is_selection_locked)
 
 	# Tastiera: il tasto numerico sceglie direttamente la seconda carta.
 	Input.parse_input_event(make_key_event(KEY_2, true))
@@ -151,7 +151,7 @@ func test_composed_input_and_queue() -> void:
 	assert_eq(selected_ids.size(), 1, "Un input tastiera deve applicare una sola scelta.")
 	assert_eq(overlay.get_displayed_level(), 3, "La coda deve mostrare subito l'offerta successiva.")
 
-	await _wait_selection_unlock(overlay)
+	await wait_for_selection_unlock(overlay.is_selection_locked)
 
 	# Controller: D-pad sposta il focus, A conferma la carta focalizzata.
 	assert_true(overlay.focus_card(0), "La fixture deve poter focalizzare la prima carta.")
@@ -165,7 +165,7 @@ func test_composed_input_and_queue() -> void:
 	assert_eq(selected_ids.size(), 2, "Un input controller deve applicare una sola scelta.")
 	assert_eq(overlay.get_displayed_level(), 4, "La terza offerta deve seguire senza frame RUNNING.")
 
-	await _wait_selection_unlock(overlay)
+	await wait_for_selection_unlock(overlay.is_selection_locked)
 
 	# Mouse: l'intero riquadro Button e' selezionabile.
 	var mouse_card := overlay.get_cards()[0]
@@ -174,7 +174,7 @@ func test_composed_input_and_queue() -> void:
 	assert_eq(selected_ids.size(), 3, "Un click mouse deve applicare una sola scelta.")
 	assert_eq(overlay.get_displayed_level(), 5, "La quarta offerta deve restare nello stesso LEVEL_UP.")
 
-	await _wait_selection_unlock(overlay)
+	await wait_for_selection_unlock(overlay.is_selection_locked)
 
 	# Touch: un tap sul terzo riquadro percorre lo stesso segnale del Button.
 	var touch_card := overlay.get_cards()[2]
@@ -284,7 +284,7 @@ func _create_overlay_fixture(safe_rect: Rect2, seed_value: int) -> Dictionary:
 	assert_true(experience.add_experience(1), "La fixture B11 deve generare un'offerta.")
 	await wait_process_frames(2)
 	assert_true(overlay.get_focused_card_index() < 0, "L'offerta non deve preselezionare nessuna carta.")
-	await _wait_selection_unlock(overlay)
+	await wait_for_selection_unlock(overlay.is_selection_locked)
 	return {
 		"root": fixture_root,
 		"controller": controller,
@@ -323,9 +323,3 @@ func _joy_button(button: JoyButton, pressed_value: bool = true) -> InputEventJoy
 	event.pressed = pressed_value
 	event.pressure = 1.0 if pressed_value else 0.0
 	return event
-
-
-func _wait_selection_unlock(overlay: UpgradeOverlay) -> void:
-	while overlay.is_selection_locked():
-		await get_tree().create_timer(overlay.get_selection_lock_remaining() + 0.05, true, false, true).timeout
-	await wait_process_frames(2)
