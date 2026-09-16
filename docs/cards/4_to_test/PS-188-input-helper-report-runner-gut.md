@@ -87,3 +87,15 @@ SMOKE_FAIL o CONTRACT_FAIL. Log in %TEMP%/il-gioco-verification:
 20260916-082143-PS-188, 20260916-082416-PS-188.
 
 Stato IN VERIFICA per la revisione del branch refactor/test-cleaning-2026-09-16.
+
+Diagnostica di shutdown gia' presente nella baseline Full: 11 RID texture,
+26 RID shaped text, 8 RID font, 232 ObjectDB e 68 risorse ancora in uso,
+oltre alle pagine Variant PagedAllocator. Conteggi invariati nei cinque
+passaggi; non si dichiara eliminata questa diagnostica preesistente.
+
+Verifica aggiuntiva sul risultato finale del branch, dopo PS-178:
+`20260916-150244-PS-188` Full senza cache, 151 script / 474 casi nello
+stesso processo GUT, nessun fallimento o pending e nessun marker di errore.
+Release `20260916-145813-PS-178`: 474 casi, smoke Windows e APK statico
+verdi; Android fisico aperto. Le misure del lag e i relativi limiti restano
+nella card PS-178, distinta dalle correzioni delle fixture e del runner.
