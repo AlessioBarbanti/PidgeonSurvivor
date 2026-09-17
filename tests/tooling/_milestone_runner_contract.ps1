@@ -71,6 +71,24 @@ if ($docsOnly.regression_smokes.Count -ne 0) {
     throw 'Una modifica solo documentale non deve invalidare regressioni runtime.'
 }
 
+# PS-188: il checkout pulito produce una lista vuota. Eseguire le funzioni
+# reali in uno scope locale rende il caso ripetibile anche con worktree dirty.
+& {
+    $runnerAst = [Management.Automation.Language.Parser]::ParseFile($runner, [ref]$null, [ref]$null)
+    $functions = $runnerAst.FindAll({
+        param($node)
+        $node -is [Management.Automation.Language.FunctionDefinitionAst] -and
+        $node.Name -in @('Resolve-RepositoryPath', 'Find-RelevantSmokes')
+    }, $true)
+    foreach ($definition in $functions) {
+        . ([scriptblock]::Create($definition.Extent.Text))
+    }
+    $selected = @(Find-RelevantSmokes -Paths @() -MapPath $testMapPath)
+    if ($selected.Count -ne 0) {
+        throw 'Nessuna modifica deve selezionare zero regressioni, senza errore di binding.'
+    }
+}
+
 # PS-023: un manifest o un README *dentro* assets/ resta documentazione. Prima
 # finiva fra le path runtime non mappate e faceva scattare run_all, cioe' ogni
 # card che aggiornava la propria documentazione pagava un Full.

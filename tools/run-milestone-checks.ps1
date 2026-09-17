@@ -280,6 +280,7 @@ function Test-IsRuntimePath {
 function Find-RelevantSmokes {
     param(
         [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
         [string[]]$Paths,
 
         [Parameter(Mandatory)]

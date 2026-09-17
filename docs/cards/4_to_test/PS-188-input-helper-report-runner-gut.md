@@ -8,7 +8,7 @@ priorita: media
 dipende_da: []
 origine: Audit autonomo dei test richiesto dal proprietario
 creato: 2026-09-16
-aggiornato: 2026-09-16
+aggiornato: 2026-09-17
 ---
 
 # PS-188 — Includi gli helper nella verifica GUT e conta i test falliti correttamente
@@ -50,6 +50,13 @@ Windows runtime, APK e Pixel 9: non pertinenti per modifiche al tooling.
 Revisione del branch prima dell'integrazione.
 
 ## Decisioni
+
+- **2026-09-17 — Integrazione su checkout pulito.** Il contratto del runner
+  ha riprodotto un errore di binding su `Find-RelevantSmokes -Paths @()`:
+  il parametro obbligatorio rifiutava la lista vuota. Accettare esplicitamente
+  la collezione vuota conserva zero regressioni quando Git non trova modifiche.
+  Aggiunta una prova delle funzioni reali, indipendente dallo stato dirty del
+  checkout; il contratto CRLF esistente verifica anche il percorso Git reale.
 
 - **2026-09-16 — Confine esplicito.** Gli helper GDScript sotto
   `tests/unit/helpers/` sono input di verifica. La mappa resta la fonte delle
