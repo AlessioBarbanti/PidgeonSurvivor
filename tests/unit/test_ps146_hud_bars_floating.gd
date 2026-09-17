@@ -46,12 +46,14 @@ func test_ps146_hud_bars_floating_no_double_border() -> void:
 		"Pannello e barra HP non devono più condividere lo stesso StyleBox (doppio bordo)."
 	)
 
-	# Lo StyleBoxEmpty preserva l'inset attuale via content_margin, cosi' la ProgressBar non cambia dimensione.
+	# Lo StyleBoxEmpty inserisce le barre XP/HP nel loro pannello: margine
+	# laterale invariato da PS-146, margine verticale ridotto da PS-185 per
+	# guadagnare spessore di riempimento a parita' di altezza del pannello.
 	var empty_style := experience_panel_style as StyleBoxEmpty
-	assert_eq(empty_style.content_margin_left, 3.0, "content_margin_left deve preservare l'inset attuale (3px).")
-	assert_eq(empty_style.content_margin_top, 3.0, "content_margin_top deve preservare l'inset attuale (3px).")
-	assert_eq(empty_style.content_margin_right, 3.0, "content_margin_right deve preservare l'inset attuale (3px).")
-	assert_eq(empty_style.content_margin_bottom, 2.0, "content_margin_bottom deve preservare l'inset attuale (2px).")
+	assert_eq(empty_style.content_margin_left, 3.0, "content_margin_left deve preservare l'inset laterale PS-146 (3px).")
+	assert_eq(empty_style.content_margin_top, 1.0, "content_margin_top deve usare il margine PS-185 (1px).")
+	assert_eq(empty_style.content_margin_right, 3.0, "content_margin_right deve preservare l'inset laterale PS-146 (3px).")
+	assert_eq(empty_style.content_margin_bottom, 1.0, "content_margin_bottom deve usare il margine PS-185 (1px).")
 
 	# Il track/colore della ProgressBar resta quello di PS-140: nessuna proprieta' del track cambia.
 	assert_not_null(experience_bar_style, "ExperienceBar deve conservare il proprio StyleBoxFlat di sfondo.")

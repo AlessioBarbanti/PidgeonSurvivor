@@ -3,7 +3,10 @@ extends Control
 
 signal pause_requested()
 
-const GAMEPLAY_TOP_INSET := 124.0
+## PS-185: 140 (era 124) - il cronometro ingrandito (32px) supera l'altezza
+## minima del proprio slot, che l'engine espande da solo; la fascia sotto
+## (avviso Boss/evento ondata) e' stata spostata piu' in basso di conseguenza.
+const GAMEPLAY_TOP_INSET := 140.0
 const DEFAULT_CONTROL_EDGE_PADDING := Vector2(20.0, 20.0)
 const BAR_LABEL_INSET := 10.0
 ## UI-004: margine orizzontale delle barre XP/HP, in frazione della

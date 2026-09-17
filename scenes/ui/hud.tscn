@@ -94,9 +94,9 @@ anti_aliasing = false
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_bar_panel"]
 content_margin_left = 3.0
-content_margin_top = 3.0
+content_margin_top = 1.0
 content_margin_right = 3.0
-content_margin_bottom = 2.0
+content_margin_bottom = 1.0
 
 [node name="HUD" type="Control"]
 process_mode = 3
@@ -111,11 +111,11 @@ script = ExtResource("1_hud")
 
 [node name="TopBand" type="Control" parent="."]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 124)
+custom_minimum_size = Vector2(0, 140)
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 124.0
+offset_bottom = 140.0
 grow_horizontal = 2
 mouse_filter = 2
 
@@ -150,6 +150,7 @@ theme_override_colors/font_color = Color(0.92, 0.99, 1, 1)
 theme_override_colors/font_shadow_color = Color(0, 0.04, 0.08, 0.95)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 16
 theme_type_variation = &"Eyebrow"
 text = "XP"
 vertical_alignment = 1
@@ -188,6 +189,7 @@ theme_override_colors/font_color = Color(1, 0.96, 0.97, 1)
 theme_override_colors/font_shadow_color = Color(0.08, 0, 0.02, 0.95)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 16
 theme_type_variation = &"Eyebrow"
 text = "HP"
 vertical_alignment = 1
@@ -245,9 +247,9 @@ layout_mode = 1
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -360.0
-offset_top = 87.0
+offset_top = 100.0
 offset_right = 360.0
-offset_bottom = 124.0
+offset_bottom = 137.0
 grow_horizontal = 2
 mouse_filter = 2
 
@@ -260,7 +262,7 @@ theme_override_colors/font_color = Color(1, 0.82, 0.4, 1)
 theme_override_colors/font_shadow_color = Color(0.18, 0.015, 0.01, 0.95)
 theme_override_constants/shadow_offset_x = 3
 theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 23
+theme_override_font_sizes/font_size = 27
 theme_type_variation = &"TitleXS"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -271,9 +273,9 @@ layout_mode = 1
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -320.0
-offset_top = 87.0
+offset_top = 100.0
 offset_right = 320.0
-offset_bottom = 124.0
+offset_bottom = 137.0
 grow_horizontal = 2
 mouse_filter = 2
 
@@ -286,7 +288,7 @@ theme_override_colors/font_color = Color(0.43, 0.9, 1, 1)
 theme_override_colors/font_shadow_color = Color(0.01, 0.1, 0.13, 0.95)
 theme_override_constants/shadow_offset_x = 2
 theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 19
 theme_type_variation = &"TitleXS"
 horizontal_alignment = 1
 vertical_alignment = 1

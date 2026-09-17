@@ -292,7 +292,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-182](./2_to_do/PS-182-primo-boss-troppa-vita.md) | Il primo Boss (minuto 2) ha troppa vita | fix | gameplay | PRONTO | alta | — |
 | [PS-183](./1_idea/PS-183-ripensa-proiettile-clone-marghe.md) | Ripensa l'attacco del clone di Marghe, forse un'esplosione al posto del proiettile | ux | gameplay | DA DEFINIRE | alta | — |
 | [PS-184](./2_to_do/PS-184-recap-numero-piccioni-uccisi.md) | Mostra il numero di piccioni uccisi nel recap di fine partita | feat | ui | PRONTO | media | — |
-| [PS-185](./2_to_do/PS-185-elementi-run-troppo-piccoli.md) | Aumenta la leggibilità generale degli elementi a schermo durante la run | ux | ui | PRONTO | alta | — |
+| [PS-185](./4_to_test/PS-185-elementi-run-troppo-piccoli.md) | Aumenta la leggibilità generale degli elementi a schermo durante la run | ux | ui | IN VERIFICA | alta | — |
 | [PS-186](./4_to_test/PS-186-separa-validazione-contratti-run.md) | Separa la validazione dei contratti dall'orchestrazione della run | chore | tooling | IN VERIFICA | media | — |
 | [PS-187](./5_completed/PS-187-fixture-frontend-attese-gut.md) | Centralizza le fixture frontend e rendi espliciti i timeout GUT | chore | tooling | COMPLETATO | media | — |
 | [PS-188](./5_completed/PS-188-input-helper-report-runner-gut.md) | Includi gli helper nella verifica GUT e conta i test falliti correttamente | fix | tooling | COMPLETATO | media | — |
