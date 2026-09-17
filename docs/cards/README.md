@@ -286,7 +286,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-176](./4_to_test/PS-176-ritratti-boss-fluttuanti-senza-cornice.md) | Ritratti Boss fluttuanti senza cornice nella Boss Intro | ux | ui | IN VERIFICA | media | — |
 | [PS-177](./5_completed/PS-177-non-determinismo-full-proiettile-tiratore.md) | Diagnostica il proiettile del Tiratore espulso in modo non deterministico su Full | fix | gameplay | COMPLETATO | media | — |
 | [PS-178](./4_to_test/PS-178-lag-al-minuto-2-arrivo-primo-boss.md) | Diagnostica e riduci il lag prima del minuto 2 | perf | gameplay | IN VERIFICA | alta | — |
-| [PS-179](./2_to_do/PS-179-riprendi-non-centrato-pulsante-pausa.md) | RIPRENDI non è centrato nel bottone della pausa nonostante PS-155 | fix | ui | PRONTO | alta | — |
+| [PS-179](./4_to_test/PS-179-riprendi-non-centrato-pulsante-pausa.md) | RIPRENDI non è centrato nel bottone della pausa nonostante PS-155 | fix | ui | IN VERIFICA | alta | — |
 | [PS-180](./2_to_do/PS-180-citazione-boss-nascosta-gate-pixel-ps176.md) | La citazione del Boss è leggermente nascosta su device reale (gate Pixel di PS-176) | fix | ui | PRONTO | alta | — |
 | [PS-181](./2_to_do/PS-181-telegraph-boss-a-volte-non-spara.md) | Il telegraph di attacco del Boss a volte non si risolve in un colpo (visto su Evil Alea) | fix | gameplay | PRONTO | alta | — |
 | [PS-182](./2_to_do/PS-182-primo-boss-troppa-vita.md) | Il primo Boss (minuto 2) ha troppa vita | fix | gameplay | PRONTO | alta | — |
