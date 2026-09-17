@@ -20,6 +20,12 @@ const ABILITY_FADED_ALPHA := 0.3
 ## sfumatura parte poco prima della sovrapposizione vera, cosi' non scatta
 ## sul pixel di bordo.
 const ABILITY_FADE_MARGIN := 24.0
+## PS-180: stesso valore di `ABILITY_FADED_ALPHA` (coerenza visiva, non un
+## nuovo numero magico), ma una costante propria — l'occlusione locale del
+## Player e l'attenuazione globale della fascia durante la Boss Intro sono
+## due casi semanticamente distinti; chi ritocca l'una non deve toccare
+## anche l'altra per errore (nota del direttore-artistico).
+const TOP_BAND_BOSS_INTRO_ALPHA := ABILITY_FADED_ALPHA
 const BOSS_WARNING_COLOR := Color("ffd166")
 const BOSS_COUNTDOWN_COLOR := Color("ff6b6b")
 const BOSS_APPROACHING_TEXT := "LA GRIGLIA STA FACENDO UN PROFUMINO..."
@@ -719,7 +725,7 @@ func _on_run_state_changed(
 	# ci passa sotto, non nascosta con un `visible = false` one-off.
 	if is_instance_valid(_top_band):
 		_top_band.modulate.a = (
-			ABILITY_FADED_ALPHA if current_state == RunController.RunState.BOSS_INTRO else 1.0
+			TOP_BAND_BOSS_INTRO_ALPHA if current_state == RunController.RunState.BOSS_INTRO else 1.0
 		)
 	_refresh_ability_state()
 

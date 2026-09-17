@@ -222,6 +222,20 @@ L'accettazione percettiva del proprietario (confronto con `direttore-artistico`
 sulla resa cablata in scena) resta un gate manuale registrato nella card
 [PS-176](../docs/cards/5_completed/PS-176-ritratti-boss-fluttuanti-senza-cornice.md).
 
+**Fascia HUD superiore durante la Boss Intro (PS-180).** Il ritratto
+full-bleed cresce nello spazio verticale prima riservato a `GameHud.TopBand`
+(il gutter che teneva libera la fascia, `BossUI.CONTENT_TOP_MARGIN`), che
+altrimenti risulterebbe invaso dall'arte opaca — lo stesso problema già
+osservato da PS-176. Convenzione emersa dalla revisione del
+`direttore-artistico`: **il top band di `GameHud` non viene mai nascosto
+(`visible = false`) in nessuno stato non-`RUNNING`**; resta sempre almeno
+visibile a piena opacità, come già accade in `LEVEL_UP`/`BARB_REWARD`/
+`MANUAL_PAUSE`. Scende sotto `1.0` di alpha (`GameHud.TOP_BAND_BOSS_INTRO_ALPHA`)
+solo quando il contenuto del modale occupa geometricamente lo stesso spazio
+verticale della fascia stessa — oggi l'unico caso è `BOSS_INTRO`. Un
+prossimo overlay che avesse bisogno di più spazio verticale segue la stessa
+regola: attenuare, mai nascondere del tutto.
+
 ### Cornice Boss Intro, rimossa (PS-102/PS-103, scartate da PS-176)
 
 `assets/art/ui/boss/generated/boss_intro_frame.png` (medaglione ritratto

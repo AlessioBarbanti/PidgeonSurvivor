@@ -3,7 +3,7 @@ id: PS-180
 titolo: La citazione del Boss è leggermente nascosta su device reale (gate Pixel di PS-176)
 tipo: fix
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine: test reale su Pixel 9 della v0.3.0, 2026-09-15
@@ -91,14 +91,17 @@ limite di lunghezza.
       interamente leggibile su 2 righe, ritratto ingrandito, fascia HUD
       attenuata ma leggibile (non nascosta, dopo la revisione del
       direttore-artistico).
-- [ ] Controllo percettivo richiesto: sì — delegato all'agente
+- [x] Controllo percettivo richiesto: sì — delegato all'agente
       `direttore-artistico` (non un'ispezione diretta mia, per prassi di
       progetto). Prima passata (fascia HUD nascosta del tutto): **approvato
       con modifiche** — rompeva la coerenza con gli altri modali e toglieva
-      la vista su HP entrando in uno scontro Boss (vedi Decisioni).
-      Implementata l'alternativa raccomandata (attenuazione, non
-      nascondimento); seconda passata di conferma sul risultato finale
-      ancora da eseguire.
+      la vista su HP entrando in uno scontro Boss. Seconda passata
+      (attenuazione invece di nascondimento): **approvato**, con una riserva
+      non bloccante (il cronometro resta comunque occluso dall'arte opaca del
+      ritratto nella fascia centrale — non un problema di alpha, e il
+      cronometro è comunque congelato in `BOSS_INTRO` come negli altri
+      modali) e una richiesta implementativa applicata (costante propria
+      invece di riusare `ABILITY_FADED_ALPHA` direttamente). Vedi Decisioni.
 
 ## Decisioni
 
@@ -138,6 +141,22 @@ limite di lunghezza.
   visibili, attenuate. Resta comunque un'eccezione isolata al solo stato
   `BOSS_INTRO`: gli altri modali continuano a mostrare l'HUD a piena
   opacità, invariati.
+- **2026-09-17 — Seconda passata del direttore-artistico: approvato.**
+  Barre XP/HP attenuate rimangono perfettamente distinguibili sui fianchi
+  del ritratto; il valore `0.3` è confermato adeguato (né troppo debole né
+  troppo marcato). Riserva non bloccante: il cronometro "00:00" resta
+  comunque completamente coperto dall'arte opaca del ritratto nella fascia
+  centrale — non è un problema dell'alpha (nessun valore di attenuazione lo
+  risolverebbe, l'arte è opaca), ed è accettabile perché il cronometro è
+  congelato durante `BOSS_INTRO` come in tutti gli altri modali, e il dato
+  più critico per la sicurezza percepita (HP residua) resta leggibile sui
+  fianchi. Richiesta implementativa applicata: `GameHud.ABILITY_FADED_ALPHA`
+  non viene più riusato direttamente per la fascia — nuova costante propria
+  `TOP_BAND_BOSS_INTRO_ALPHA` (stesso valore `0.3`, per coerenza visiva) così
+  i due usi (occlusione locale del Player vs attenuazione globale della
+  fascia) restano disaccoppiati. Convenzione "mai `visible = false`, solo
+  attenuare quando il modale invade lo spazio della fascia" documentata in
+  `docs/visual-audio-identity.md`.
 - **2026-09-17 — Font della citazione aumentato da 12px a 14px, su richiesta
   del proprietario dopo aver visto lo spazio liberato.** Verificato via
   script di debug che a 14px la citazione reale resta su 2 righe con margine
@@ -164,8 +183,9 @@ limite di lunghezza.
 
 - [x] `docs/enemies-bosses.md`: aggiunta la nota sulla fascia HUD attenuata
       durante `BOSS_INTRO`.
-- [x] Nessun altro documento atteso oltre a quanto già sincronizzato da
-      PS-176.
+- [x] `docs/visual-audio-identity.md`: aggiunta la convenzione "mai
+      `visible = false`, solo attenuare" emersa dalla revisione del
+      direttore-artistico.
 
 ## Evidenze
 
