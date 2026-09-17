@@ -294,3 +294,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-184](./2_to_do/PS-184-recap-numero-piccioni-uccisi.md) | Mostra il numero di piccioni uccisi nel recap di fine partita | feat | ui | PRONTO | media | — |
 | [PS-187](./4_to_test/PS-187-fixture-frontend-attese-gut.md) | Centralizza le fixture frontend e rendi espliciti i timeout GUT | chore | tooling | IN VERIFICA | media | — |
 | [PS-188](./4_to_test/PS-188-input-helper-report-runner-gut.md) | Includi gli helper nella verifica GUT e conta i test falliti correttamente | fix | tooling | IN VERIFICA | media | — |
+| [PS-189](./2_to_do/PS-189-lag-residuo-marghe-orda-clone.md) | Isola e riduci il lag residuo con Marghe prima del minuto 2 | perf | gameplay | PRONTO | alta | PS-178 |

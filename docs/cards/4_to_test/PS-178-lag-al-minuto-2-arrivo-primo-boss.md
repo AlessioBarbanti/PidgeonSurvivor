@@ -8,7 +8,7 @@ priorita: alta
 dipende_da: []
 origine: test reale su Pixel 9 della v0.3.0, 2026-09-15
 creato: 2026-09-15
-aggiornato: 2026-09-16
+aggiornato: 2026-09-17
 ---
 
 # PS-178 — Diagnostica e riduci il lag prima del minuto 2
@@ -179,3 +179,8 @@ ordine di somma e tempi dell'engine e non costituiscono un replay bit a bit.
 ## Note
 
 Branch di revisione `refactor/test-cleaning-2026-09-16`, senza merge/push.
+
+Seguito operativo richiesto dal proprietario:
+[PS-189 — lag residuo con Marghe](../2_to_do/PS-189-lag-residuo-marghe-orda-clone.md).
+La nuova card isola il costo residuo nella finestra critica e confronta
+popolazioni identiche; i gate fisici qui aperti restano da verificare.
