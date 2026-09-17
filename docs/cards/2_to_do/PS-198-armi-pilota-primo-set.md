@@ -3,7 +3,7 @@ id: PS-198
 titolo: Progetta e implementa il primo set di armi pilota
 tipo: feat
 area: gameplay
-stato: DA DEFINIRE
+stato: BLOCCATO
 priorita: alta
 dipende_da: [PS-197]
 origine:
@@ -15,42 +15,37 @@ aggiornato: 2026-09-18
 
 ## Contesto
 
-Con il contratto di [PS-196](../2_to_do/PS-196-contratto-armi-per-personaggio.md)
+Con il contratto di [PS-196](./PS-196-contratto-armi-per-personaggio.md)
 e l'impianto neutro di
-[PS-197](../2_to_do/PS-197-impianto-arma-per-personaggio-neutro.md), questa
+[PS-197](./PS-197-impianto-arma-per-personaggio-neutro.md), questa
 card produce le **prime armi realmente diverse**. Il proprietario ha scelto
-(2026-09-18) un set pilota di due o tre armi invece dell'intero cast: se il
-feel non cambia davvero, si è buttato poco e l'impianto resta neutro.
+(2026-09-18) un set pilota ristretto invece dell'intero cast: se il feel non
+cambia davvero, si è buttato poco e l'impianto resta neutro.
 
 Lo scopo del pilota è dimostrare in mano che l'escursione fra armi è
 percepibile, restando dentro l'invariante di PS-196 (ogni arma emette
 `Projectile`, quindi tutte le Specialità di Barb restano valide).
 
-## Domanda aperta per il proprietario
+## Il set pilota
 
-Questa card resta `DA DEFINIRE` finché non sono approvati **quali personaggi**
-ricevono un'arma nel pilota e **con quale nome**. Proposta da confermare o
-correggere:
+Quattro armi, approvate dal proprietario il 2026-09-18:
 
-| Personaggio | Nome proposto | Concept | Assi che lo distinguono |
+| Personaggio | Nome | Concept | Assi che lo distinguono |
 |---|---|---|---|
 | Magno | **Carbonella** | un carbone ardente singolo, lento e massiccio, portata corta | ritmo lento; corpo grande; portata corta |
 | Bea | **Spiedo** | due spiedi sottili alternati destra/sinistra, cadenza alta, portata lunga | ritmo rapido alternato; geometria alternata; corpo sottile e veloce |
-| Alea | **Girarrosto** | proiettili che orbitano attorno al personaggio prima di allontanarsi in spirale | traiettoria orbitale; emissione tutt'intorno senza mira frontale |
+| Alea | **Cavatappi** | colpo singolo perfettamente preciso che **a metà corsa si sdoppia** in due proiettili divergenti | traiettoria che diverge in volo; emissione singola che diventa doppia; ritmo medio |
+| Migi | **Graticola** | frammenti di graticola che **orbitano** attorno al personaggio | traiettoria orbitale; emissione tutt'intorno senza mira frontale; portata fissa |
 
-Tutti e tre i nomi stanno nel registro utensile/brace imposto da PS-196 e non
-usano parole della carne, riservate alle Specialità.
+Tutti i nomi stanno nel registro utensile/brace imposto da PS-196 e non usano
+parole della carne, riservate alle Specialità.
 
-**Riserva segnalata su Alea**: la sua attiva è già Gran Piroetta, un melee
-rotante attorno al personaggio; un'arma orbitale rischia di rendere l'attiva
-meno riconoscibile. Due alternative, da scegliere:
-
-1. l'orbitale va a **Migi** (difensivo, controlla lo spazio attorno a sé,
-   coerente con Rallentamento Zen) e Alea riceve invece una **traiettoria
-   ubriaca** — proiettili con oscillazione irregolare, coerente con Sobrietà
-   e la fase Brilla;
-2. si tiene l'orbitale su Alea accettando la sovrapposizione come rinforzo
-   identitario ("il personaggio che ruota").
+**Nota di leggibilità su Migi**: la sua passiva Guscio Tartarughina è già fatta
+di *placche* che annullano i colpi
+([docs/characters.md:136](../../characters.md)). Le placche della passiva sono
+aderenti al personaggio, i frammenti della Graticola orbitano a distanza: la
+distinzione visiva fra i due va tenuta netta, altrimenti il giocatore non
+capisce quale dei due sistemi sta guardando.
 
 ## Comportamento atteso
 
@@ -115,7 +110,26 @@ Barb continua a produrre un effetto sensato su entrambi.
 - **2026-09-18 — Set pilota invece dell'intero cast**, scelto dal
   proprietario: valida l'idea prima di impegnare otto armi, e mantiene
   l'impianto di PS-197 reversibile se il feel non convince.
-- **Aperta** — quali personaggi e quali nomi (vedi "Domanda aperta").
+- **2026-09-18 — Personaggi e nomi approvati**: Magno/Carbonella,
+  Bea/Spiedo, Alea/Cavatappi, Migi/Graticola.
+- **2026-09-18 — L'orbitale è passato da Alea a Migi**, su scelta del
+  proprietario: su Alea si sarebbe sovrapposto alla sua attiva Gran Piroetta,
+  già un melee rotante attorno al personaggio, rendendola meno riconoscibile.
+  Su Migi è invece coerente col suo ruolo di controllo dello spazio
+  circostante.
+- **2026-09-18 — Scartata per Alea la "traiettoria ubriaca"** (oscillazione
+  irregolare del colpo), su osservazione del proprietario: replicava la
+  dispersione di mira di Alette (`beer_signature`, ±24°) e sommata a essa
+  avrebbe reso il personaggio soltanto impreciso. Sostituita dal Cavatappi,
+  che parte perfettamente preciso e si sdoppia a metà corsa — "l'ubriaco non
+  ha la mira che trema, vede doppio". Il caso ha prodotto la regola generale
+  di non sovrapposizione ora in PS-196.
+- **2026-09-18 — Il pilota è salito da tre a quattro armi** come conseguenza
+  dello spostamento dell'orbitale su Migi (Alea resta nel set con un concept
+  proprio). Se il proprietario preferisce restare a tre, il candidato allo
+  stralcio è il Cavatappi: è il più sottile dei quattro, mentre
+  Carbonella/Spiedo/Graticola coprono già l'escursione massima
+  (lento e pesante / rapido e sottile / orbitale).
 - **Aperta** — margine ammesso fra l'arma pilota più forte e la più debole sul
   tetto di kill-rate: da fissare in implementazione e dichiarare qui.
 

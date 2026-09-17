@@ -83,6 +83,11 @@ i valori base rispetto ai moltiplicatori di personaggio.
 - [ ] È dichiarata la **reinterpretazione di Alette** (`beer_signature`) per
       armi prive di direzione di mira: la dispersione va reinterpretata su un
       parametro equivalente dell'arma, mai ignorata silenziosamente.
+- [ ] È dichiarata la **regola di non sovrapposizione**: nessuna arma può
+      avere come tratto caratterizzante l'effetto già portato da una
+      Specialità o da un'abilità esistente. Un'arma che duplica una
+      Specialità non differenzia il personaggio, lo rende soltanto
+      ridondante quando quella Specialità gli viene offerta.
 - [ ] È dichiarato che l'arma è **contenuto nominato e visibile** (nome +
       icona) e dove compare (selettore personaggi, pannello build in pausa di
       [PS-164](../4_to_test/PS-164-mostra-build-corrente-in-pausa.md)).
@@ -133,6 +138,12 @@ i valori base rispetto ai moltiplicatori di personaggio.
   essere leggibile prima di giocare, non solo scoperta in partita.
 - **2026-09-18 — Arma fissa per personaggio**, non selezionabile: è identità,
   non equipaggiamento.
+- **2026-09-18 — Aggiunta la regola di non sovrapposizione** su
+  osservazione del proprietario: una prima proposta d'arma per Alea
+  ("traiettoria ubriaca", oscillazione irregolare del colpo) è stata scartata
+  perché replicava la dispersione di mira di Alette (`beer_signature`, ±24°),
+  e sommata a essa avrebbe reso il personaggio soltanto impreciso invece che
+  caratterizzato. La regola generalizza quel caso a tutte le armi future.
 - **Precedente noto**: in
   [PS-085](../4_to_test/PS-085-introduci-sparo-manuale-con-secondo-joystick.md)
   il proprietario aveva scartato la scelta *per personaggio* della modalità di
@@ -151,7 +162,7 @@ i valori base rispetto ai moltiplicatori di personaggio.
 
 Primo anello della famiglia "armi per personaggio": la seguono
 [PS-197](./PS-197-impianto-arma-per-personaggio-neutro.md) (impianto neutro) e
-[PS-198](../1_idea/PS-198-armi-pilota-primo-set.md) (armi pilota). Le card
+[PS-198](./PS-198-armi-pilota-primo-set.md) (armi pilota). Le card
 `art` per le icone e la card di integrazione UI si aprono solo quando le armi
 pilota hanno un nome approvato, per non fissare criteri su contenuto che non
 esiste ancora.

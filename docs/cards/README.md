@@ -305,4 +305,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-195](./2_to_do/PS-195-personaggio-iniziale-selettore-casuale.md) | Rendi casuale il personaggio evidenziato al primo ingresso nel selettore | ux | ui | PRONTO | media | — |
 | [PS-196](./2_to_do/PS-196-contratto-armi-per-personaggio.md) | Fissa il contratto delle armi per personaggio | chore | gameplay | PRONTO | alta | — |
 | [PS-197](./2_to_do/PS-197-impianto-arma-per-personaggio-neutro.md) | Introduci l'impianto arma per personaggio senza cambiare il gioco | feat | gameplay | BLOCCATO | alta | PS-196 |
-| [PS-198](./1_idea/PS-198-armi-pilota-primo-set.md) | Progetta e implementa il primo set di armi pilota | feat | gameplay | DA DEFINIRE | alta | PS-197 |
+| [PS-198](./2_to_do/PS-198-armi-pilota-primo-set.md) | Progetta e implementa il primo set di armi pilota | feat | gameplay | BLOCCATO | alta | PS-197 |
