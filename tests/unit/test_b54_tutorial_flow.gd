@@ -38,11 +38,7 @@ const LAYOUT_PROFILES: Array[Vector2i] = [
 
 
 func test_tutorial_flow() -> void:
-	ProjectSettings.set_setting("application/run/b18o_force_welcome_for_test", true)
-	var movement_slice := MOVEMENT_SLICE_SCENE.instantiate() as Control
-	add_child_autofree(movement_slice)
-	ProjectSettings.set_setting("application/run/b18o_force_welcome_for_test", false)
-	await wait_process_frames(2)
+	var movement_slice := await instantiate_movement_slice(INITIAL_VIEWPORT_SIZE, true)
 
 	var controller := movement_slice.get_run_controller() as RunController
 	var welcome := movement_slice.get_welcome_screen() as WelcomeScreen
@@ -58,7 +54,6 @@ func test_tutorial_flow() -> void:
 		controller != null and welcome != null and tutorial != null and selector != null, "Il frontend B54 deve essere composto."
 	)
 	if controller == null or welcome == null or tutorial == null or selector == null:
-		ProjectSettings.set_setting("application/run/b18o_force_welcome_for_test", false)
 		return
 
 	var play_button := welcome.get_play_button()

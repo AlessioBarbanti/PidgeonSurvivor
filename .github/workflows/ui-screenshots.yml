@@ -22,7 +22,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Xvfb and Mesa software GL
         run: |
@@ -68,7 +68,7 @@ jobs:
           }
 
       - name: Upload UI screenshots artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ui-screenshots
           path: exports/ui-screenshots/**

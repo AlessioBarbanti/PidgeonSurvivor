@@ -37,6 +37,16 @@ const BARB_BONUS_SELECTIONS := 2
 
 enum BarbMode { NONE, SPECIALITY, BONUS }
 
+## Copia del rango acquisito; la definizione resta il Resource del catalogo.
+class RankedUpgrade:
+	var definition: UpgradeDefinition
+	var rank: int
+
+	func _init(upgrade_definition: UpgradeDefinition, upgrade_rank: int) -> void:
+		definition = upgrade_definition
+		rank = upgrade_rank
+
+
 @export_range(1, 10, 1) var offer_size := DEFAULT_OFFER_SIZE
 
 var _registry: UpgradeRegistry
@@ -131,13 +141,7 @@ func generate_offer(level: int) -> Array[UpgradeDefinition]:
 	if level < 1 or not is_instance_valid(_registry):
 		return []
 
-	var candidates := _registry.get_eligible_definitions(_ranks)
-	_filter_ability_rank_candidates(candidates)
-	_filter_locked_speciality_candidates(candidates)
-	_filter_saturated_repeatable_candidates(candidates)
-	var next_offer := _draw_weighted_without_replacement(candidates, offer_size)
-
-	_current_offer = next_offer
+	_current_offer = _draw_weighted_without_replacement(_get_offer_candidates(), offer_size)
 	_active_offer_level = level
 	_draw_count += 1
 	offer_generated.emit(level, get_current_offer())
@@ -160,11 +164,7 @@ func select_upgrade(upgrade_id: StringName) -> bool:
 	):
 		return false
 
-	var selected_definition: UpgradeDefinition
-	for definition in _current_offer:
-		if definition.id == upgrade_id:
-			selected_definition = definition
-			break
+	var selected_definition := _find_in_offer(_current_offer, upgrade_id)
 	if selected_definition == null or not selected_definition.is_eligible(_ranks):
 		return false
 
@@ -325,6 +325,26 @@ func get_ranks() -> Dictionary:
 	return _ranks.duplicate()
 
 
+## Solo ranghi effettivamente acquisiti: il rango iniziale implicito delle
+## abilità non compare finché non viene scelta la relativa carta.
+## Ogni chiamata restituisce copie nuove, ordinate per rango e poi per ID.
+func get_acquired_upgrades() -> Array[RankedUpgrade]:
+	var entries: Array[RankedUpgrade] = []
+	if not is_instance_valid(_registry):
+		return entries
+	for definition in _registry.get_definitions():
+		var rank: int = _ranks.get(definition.id, 0)
+		if rank > 0:
+			entries.append(RankedUpgrade.new(definition, rank))
+	entries.sort_custom(
+		func(a: RankedUpgrade, b: RankedUpgrade) -> bool:
+			if a.rank != b.rank:
+				return a.rank > b.rank
+			return String(a.definition.id) < String(b.definition.id)
+	)
+	return entries
+
+
 func get_active_offer_level() -> int:
 	return _active_offer_level
 
@@ -373,6 +393,16 @@ func _draw_weighted_without_replacement(
 		selected.append(available[selected_index])
 		available.remove_at(selected_index)
 	return selected
+
+
+## L'ordine dei filtri è parte del contratto: il fallback di saturazione
+## deve valutare soltanto i candidati rimasti dopo abilità e Specialità.
+func _get_offer_candidates() -> Array[UpgradeDefinition]:
+	var candidates := _registry.get_eligible_definitions(_ranks)
+	_filter_ability_rank_candidates(candidates)
+	_filter_locked_speciality_candidates(candidates)
+	_filter_saturated_repeatable_candidates(candidates)
+	return candidates
 
 
 func _filter_ability_rank_candidates(candidates: Array[UpgradeDefinition]) -> void:
@@ -451,12 +481,8 @@ func _start_barb_reward_session() -> void:
 
 
 func _generate_bonus_offer() -> void:
-	var candidates := _registry.get_eligible_definitions(_ranks)
-	_filter_ability_rank_candidates(candidates)
-	_filter_locked_speciality_candidates(candidates)
-	_filter_saturated_repeatable_candidates(candidates)
 	_barb_current_offer = _draw_weighted_without_replacement(
-		candidates, mini(offer_size, candidates.size()), _barb_rng
+		_get_offer_candidates(), offer_size, _barb_rng
 	)
 	barb_offer_generated.emit(get_current_barb_offer(), true, _barb_bonus_index, _barb_bonus_total)
 

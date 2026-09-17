@@ -38,18 +38,7 @@ const IDENTITY_LABEL_PATHS := [
 
 
 func test_character_select_bust_portrait_contract() -> void:
-	# La viewport va fissata prima di comporre la scena: senza, il test eredita
-	# quella lasciata dal file eseguito prima nello stesso processo e misura il
-	# layout a una larghezza che non e' quella dichiarata.
-	get_tree().root.content_scale_size = LAYOUT_PROFILES[0]
-	get_tree().root.size = LAYOUT_PROFILES[0]
-	await wait_process_frames(2)
-
-	ProjectSettings.set_setting("application/run/b18o_force_welcome_for_test", true)
-	var movement_slice := MOVEMENT_SLICE_SCENE.instantiate() as Control
-	add_child_autofree(movement_slice)
-	ProjectSettings.set_setting("application/run/b18o_force_welcome_for_test", false)
-	await wait_process_frames(2)
+	var movement_slice := await instantiate_movement_slice(INITIAL_VIEWPORT_SIZE, true)
 
 	var controller := movement_slice.get_run_controller() as RunController
 	var welcome := movement_slice.get_welcome_screen() as WelcomeScreen

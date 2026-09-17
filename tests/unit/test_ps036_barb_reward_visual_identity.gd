@@ -127,11 +127,11 @@ func test_bonus_mode_keeps_barb_but_restores_normal_cards_and_input_contract() -
 			"La carta bonus deve conservare il bordo freddo del level-up."
 		)
 
-	await _wait_selection_unlock(overlay)
+	await wait_for_selection_unlock(overlay.is_selection_locked)
 	assert_true(overlay.submit_card(0), "La prima selezione bonus deve restare inoltrabile dalla UI.")
 	await wait_process_frames(2)
 	assert_true(overlay.visible and overlay.is_bonus_mode(), "La seconda offerta bonus deve restare nella scena Barb.")
-	await _wait_selection_unlock(overlay)
+	await wait_for_selection_unlock(overlay.is_selection_locked)
 	assert_true(overlay.submit_card(0), "La seconda selezione bonus deve chiudere il premio.")
 	assert_true(controller.is_running() and not overlay.visible, "Dopo il premio la run deve riprendere.")
 
@@ -230,9 +230,3 @@ func _make_filler(upgrade_id: StringName) -> UpgradeDefinition:
 	definition.repeatable = true
 	definition.tags = [&"test"]
 	return definition
-
-
-func _wait_selection_unlock(overlay: BarbRewardOverlay) -> void:
-	while overlay.is_selection_locked():
-		await get_tree().create_timer(overlay.get_selection_lock_remaining() + 0.05, true, false, true).timeout
-	await wait_process_frames(2)

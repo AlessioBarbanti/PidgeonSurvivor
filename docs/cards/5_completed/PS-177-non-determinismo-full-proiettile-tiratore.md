@@ -3,19 +3,19 @@ id: PS-177
 titolo: Diagnostica il proiettile del Tiratore espulso in modo non deterministico su Full
 tipo: fix
 area: gameplay
-stato: PRONTO
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-09-14
-aggiornato: 2026-09-14
+aggiornato: 2026-09-17
 ---
 
 # PS-177 — Diagnostica il proiettile del Tiratore espulso in modo non deterministico su Full
 
 ## Contesto
 
-Durante la verifica di [PS-176](../3_in_sprint/PS-176-ritratti-boss-fluttuanti-senza-cornice.md)
+Durante la verifica di [PS-176](../4_to_test/PS-176-ritratti-boss-fluttuanti-senza-cornice.md)
 (Boss Intro, ritratti fluttuanti — nessun file toccato interseca
 `scripts/actors/base_enemy.gd`, `ranged_enemy.gd` o la logica del Tiratore),
 `-Profile Full` ha fallito **3 volte su 3** tentativi consecutivi, sempre sullo
@@ -74,20 +74,10 @@ nasconderlo.
 
 ## Criteri di accettazione
 
-- [ ] `-Profile Full` eseguito almeno 5 volte consecutive produce lo stesso
-      esito su `test_ps158_mature_build_anti_afk.gd` tutte le volte.
-- [ ] Se la causa è una race genuina su `RunController.is_running()`/
-      `start_run()` (o sull'ordine di `_exit_tree()` rispetto alla
-      transizione di stato), il fix vive in `scripts/game/run_controller.gd`
-      o `scripts/actors/ranged_enemy.gd`, con motivazione esplicita in
-      Decisioni.
-- [ ] Se la causa è invece uno stato residuo fra fixture GUT diverse nello
-      stesso processo (stessa classe di PS-175), il fix isola la fixture di
-      `test_ps158_mature_build_anti_afk.gd` (o la causa condivisa, se
-      diagnosticata insieme a PS-175) invece di allentare l'asserzione.
-- [ ] Nessuna regressione sul contratto PS-158 (un proiettile già in volo
-      resta indipendente dalla fonte uccisa mentre la run è `RUNNING`; un
-      restart genuino lo pulisce comunque).
+- [x] Cinque Full consecutivi senza cache verdi sul test del proiettile.
+- [x] Causa nella registrazione fisica della fixture diagnosticata tramite stack.
+- [x] Nessuna race di RunController: codice runtime invariato, collisioni reali conservate.
+- [x] Sopravvivenza dopo la morte e pulizia al restart verificate; prova negativa sensibile alla regressione.
 
 ## Ambito
 
@@ -116,10 +106,8 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows: non pertinente (bug di test/determinismo, non di feel).
-- [ ] Validazione statica APK: non pertinente.
-- [ ] Runtime fisico Pixel 9: non pertinente.
-- [ ] Controllo percettivo richiesto: no.
+Windows runtime, APK e Pixel 9 non pertinenti: cambia solo il test.
+Revisione completata; integrazione autorizzata dal proprietario il 2026-09-17.
 
 ## Decisioni
 
@@ -128,12 +116,26 @@ Non toccare:
   `run_controller.gd`; il fallimento è emerso solo perché la verifica di
   PS-176 esegue `-Profile Full`.
 
+
+- **2026-09-16 — Ipotesi sul controller esclusa dallo stack reale.**
+  Full originale rosso in `20260916-005747-PS-177` e
+  `20260916-010223-PS-177`: il nemico usciva con `running=true` e lo stack
+  di `expired` era `_on_body_entered -> try_hit`, non `clear_attack_runtime`.
+  Il colpo era a x=3,33 e il Player gia' a x=200: collisione pendente dopo
+  aver inserito il Player all'origine e spostato soltanto dopo un frame.
+- **2026-09-16 — Inizializzazione prima della registrazione fisica.**
+  Player posizionato prima di `add_child`, fisica dei due attori disattivata
+  per il setup manuale, controller assegnato e un frame fisico di
+  sincronizzazione prima di sparare. Il proiettile mantiene fisica e
+  collisioni vere: non si maschera il problema disabilitando il collider.
+  Il test ora controlla anche controller ancora RUNNING, nemico liberato e
+  avanzamento del colpo. La prova negativa con cancellazione incondizionata
+  in `_exit_tree` e' rossa (`20260916-081324-PS-177`); mutazione rimossa.
+  Sopravvivenza e restart passano insieme dopo il ripristino.
+
 ## Documenti sincronizzati
 
-- [ ] Nessuno atteso, salvo che l'indagine riveli un contratto di timing fra
-      `RunController.start_run()` e `_exit_tree()` dei nemici da formalizzare
-      oltre quanto già scritto nella nota di classe di `ranged_enemy.gd`
-      (PS-158).
+- [x] Board e `docs/verification-workflow.md`.
 
 ## Note
 
@@ -143,3 +145,32 @@ riassunte nei rispettivi `LOG_ROOT` locali (non nel repository):
 in `%LOCALAPPDATA%\Temp\il-gioco-verification\`. Lo stesso test, isolato con
 `-Profile Focused -FocusedSmoke tests/unit/test_ps158_mature_build_anti_afk.gd`,
 è passato pulito.
+
+
+Verifica finale 2026-09-16: cinque esecuzioni consecutive di Full con
+-NoCache e un solo processo GUT: 150 script / 469 test verdi per esecuzione,
+toolchain e project smoke verdi. Nessun SCRIPT ERROR, FATAL EXCEPTION,
+SMOKE_FAIL o CONTRACT_FAIL. Log in %TEMP%/il-gioco-verification:
+20260916-081407-PS-188, 20260916-081639-PS-188, 20260916-081909-PS-188,
+20260916-082143-PS-188, 20260916-082416-PS-188.
+
+Stato IN VERIFICA per la revisione del branch refactor/test-cleaning-2026-09-16.
+
+Verifica aggiuntiva sul risultato finale del branch, dopo PS-178:
+`20260916-150244-PS-188` Full senza cache, 151 script / 474 casi nello
+stesso processo GUT, nessun fallimento o pending e nessun marker di errore.
+Release `20260916-145813-PS-178`: 474 casi, smoke Windows e APK statico
+verdi; Android fisico aperto. Le misure del lag e i relativi limiti restano
+nella card PS-178, distinta dalle correzioni delle fixture e del runner.
+
+### Chiusura e integrazione autorizzata — 2026-09-17
+
+Revisione tecnica dei due branch completata su richiesta di merge del
+proprietario. Il risultato combinato al commit `56256b5` passa **153 script /
+484 casi GUT nello stesso processo**, zero fallimenti o pending, e il
+contratto PowerShell del runner anche con checkout pulito. Log
+`20260917-202700-PS-188` in `%TEMP%/il-gioco-verification`.
+Questa evidenza chiude i gate dei test/tooling della card; i gate fisici e
+il rallentamento residuo restano nelle card runtime PS-178/PS-186/PS-190 e
+nel seguito PS-189. Il primo export Android combinato richiede un recupero
+dell'ambiente generato, documentato in PS-186: non e' una prova Pixel.

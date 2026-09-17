@@ -370,16 +370,7 @@ func test_end_screen_change_character_button_plays_click() -> void:
 
 
 func _build_boot_fixture(seed_value: int) -> Dictionary:
-	get_tree().root.content_scale_size = INITIAL_VIEWPORT_SIZE
-	get_tree().root.size = INITIAL_VIEWPORT_SIZE
-	await wait_process_frames(2)
-
-	ProjectSettings.set_setting("application/run/b18o_force_welcome_for_test", true)
-	var movement_slice := MOVEMENT_SLICE_SCENE.instantiate() as Control
-	movement_slice.set("gut_test_run_seed_override", seed_value)
-	add_child_autofree(movement_slice)
-	ProjectSettings.set_setting("application/run/b18o_force_welcome_for_test", false)
-	await wait_process_frames(2)
+	var movement_slice := await instantiate_movement_slice(INITIAL_VIEWPORT_SIZE, true, seed_value)
 
 	var controller := movement_slice.get_run_controller() as RunController
 	var welcome := movement_slice.get_welcome_screen() as WelcomeScreen

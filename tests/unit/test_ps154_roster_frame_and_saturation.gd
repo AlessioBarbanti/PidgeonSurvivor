@@ -22,11 +22,7 @@ const LOW_SATURATION_CEILING := 0.2
 
 
 func test_ps154_all_roster_cards_share_the_correct_frame_asset() -> void:
-	ProjectSettings.set_setting("application/run/b18o_force_welcome_for_test", true)
-	var movement_slice := MOVEMENT_SLICE_SCENE.instantiate() as Control
-	add_child_autofree(movement_slice)
-	ProjectSettings.set_setting("application/run/b18o_force_welcome_for_test", false)
-	await wait_process_frames(2)
+	var movement_slice := await instantiate_movement_slice(INITIAL_VIEWPORT_SIZE, true)
 
 	var welcome := movement_slice.get_welcome_screen() as WelcomeScreen
 	var selector := movement_slice.get_character_select_overlay() as CharacterSelectOverlay
@@ -59,11 +55,7 @@ func test_ps154_all_roster_cards_share_the_correct_frame_asset() -> void:
 
 
 func test_ps154_selected_card_is_saturated_others_are_desaturated() -> void:
-	ProjectSettings.set_setting("application/run/b18o_force_welcome_for_test", true)
-	var movement_slice := MOVEMENT_SLICE_SCENE.instantiate() as Control
-	add_child_autofree(movement_slice)
-	ProjectSettings.set_setting("application/run/b18o_force_welcome_for_test", false)
-	await wait_process_frames(2)
+	var movement_slice := await instantiate_movement_slice(INITIAL_VIEWPORT_SIZE, true)
 
 	var welcome := movement_slice.get_welcome_screen() as WelcomeScreen
 	var selector := movement_slice.get_character_select_overlay() as CharacterSelectOverlay

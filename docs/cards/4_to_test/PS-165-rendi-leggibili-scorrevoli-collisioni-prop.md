@@ -146,7 +146,7 @@ Il volume occupato da un prop deve essere intuibile dalla sua grafica e un urto 
   parte corretto da PS-174 (somma in virgola mobile sensibile all'ordine,
   amplificata da centinaia di tick fisici caotici). Non essendo introdotto né
   aggravato da questa card, non viene investigato oltre qui: aperta
-  [PS-175](../2_to_do/PS-175-residuo-non-determinismo-separazione-nemici-full.md)
+  [PS-175](../5_completed/PS-175-residuo-non-determinismo-separazione-nemici-full.md)
   per diagnosticarlo separatamente.
 
 ## Documenti sincronizzati

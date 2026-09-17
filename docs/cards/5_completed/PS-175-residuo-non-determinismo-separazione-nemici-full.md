@@ -3,12 +3,12 @@ id: PS-175
 titolo: Diagnostica il residuo di non-determinismo nella separazione nemici su Full
 tipo: fix
 area: gameplay
-stato: PRONTO
+stato: COMPLETATO
 priorita: bassa
 dipende_da: [PS-171, PS-174]
 origine: verifica PS-165 2026-09-13
 creato: 2026-09-13
-aggiornato: 2026-09-13
+aggiornato: 2026-09-17
 ---
 
 # PS-175 — Diagnostica il residuo di non-determinismo nella separazione nemici su Full
@@ -47,16 +47,9 @@ esatta che lo rende un flake.
 
 ## Criteri di accettazione
 
-- [ ] `-Profile Full` eseguito almeno 5 volte consecutive su
-      `test_ps171_enemy_overlap_separation.gd` (o il file che lo sostituisce)
-      produce lo stesso esito tutte le volte.
-- [ ] Se la causa è un residuo di non-determinismo reale nella simulazione
-      (non solo nel test), il fix vive in `scripts/actors/base_enemy.gd` o
-      affini, non nell'allentare l'asserzione per nasconderlo.
-- [ ] Se invece lo scarto è fisiologico (somma float non associativa anche a
-      ordine fisso, entro un epsilon piccolo e stabile), il test lo dichiara
-      con `assert_vector_near`/tolleranza esplicita invece di uguaglianza
-      esatta, e la card motiva perché quell'epsilon è la scelta corretta.
+- [x] Cinque Full consecutivi senza cache verdi sul test di separazione.
+- [x] Causa nella fixture riprodotta e corretta, runtime invariato.
+- [x] Nessun allargamento della tolleranza: resta 0,001 px per ogni posizione.
 
 ## Ambito
 
@@ -75,10 +68,8 @@ esatta che lo rende un flake.
 
 ## Gate manuali
 
-- [ ] Runtime Windows: non pertinente (bug di test/determinismo, non di feel).
-- [ ] Validazione statica APK: non pertinente.
-- [ ] Runtime fisico Pixel 9: non pertinente.
-- [ ] Controllo percettivo richiesto: no.
+Windows runtime, APK e Pixel 9 non pertinenti: cambia solo il test.
+Revisione completata; integrazione autorizzata dal proprietario il 2026-09-17.
 
 ## Decisioni
 
@@ -87,10 +78,25 @@ esatta che lo rende un flake.
   fallimento è emerso solo perché PS-165 esegue `-Profile Full` come parte
   della propria verifica.
 
+
+- **2026-09-16 — Causa riprodotta nella fixture, nessun epsilon allargato.**
+  Il primo `_physics_process(1/60)` partiva dal ciclo grafico, dopo un'attesa
+  di process frame. `move_and_slide()` prende il delta dell'engine e non
+  quello passato al metodo del nemico. La sonda ha misurato `physics=false`,
+  delta grafico 0,006896 contro 0,006944444 s nelle due simulazioni: un errore
+  iniziale che la separazione a molti corpi amplifica. Il Focused originale
+  ha fallito tutte le 32 posizioni (`20260916-010332-PS-175`).
+  Ogni passo attende ora `SceneTree.physics_frame` prima di muovere i corpi,
+  incluso il primo e il caso del nemico singolo. Tolleranza invariata 0,001;
+  nessun intervento al runtime, alla griglia o al bilanciamento.
+- **2026-09-16 — Due cause diverse.** PS-177 riguarda un evento di collisione
+  pendente per una posizione iniziale errata; PS-175 un delta grafico usato
+  per il primo passo fisico. Non si introduce un reset globale delle fixture
+  per nascondere due difetti locali distinti.
+
 ## Documenti sincronizzati
 
-- [ ] Nessuno atteso, salvo che l'indagine riveli un contratto di
-      determinismo da formalizzare oltre quanto già scritto in PS-171/PS-174.
+- [x] Board e `docs/verification-workflow.md`.
 
 ## Note
 
@@ -99,3 +105,32 @@ log del run fallito in
 `C:\Users\aless\AppData\Local\Temp\il-gioco-verification\20260913-223906-PS-165\gut-regression.log`
 (percorso locale, non nel repository). Il run immediatamente successivo,
 identico per codice, è risultato verde (142/142).
+
+
+Verifica finale 2026-09-16: cinque esecuzioni consecutive di Full con
+-NoCache e un solo processo GUT: 150 script / 469 test verdi per esecuzione,
+toolchain e project smoke verdi. Nessun SCRIPT ERROR, FATAL EXCEPTION,
+SMOKE_FAIL o CONTRACT_FAIL. Log in %TEMP%/il-gioco-verification:
+20260916-081407-PS-188, 20260916-081639-PS-188, 20260916-081909-PS-188,
+20260916-082143-PS-188, 20260916-082416-PS-188.
+
+Stato IN VERIFICA per la revisione del branch refactor/test-cleaning-2026-09-16.
+
+Verifica aggiuntiva sul risultato finale del branch, dopo PS-178:
+`20260916-150244-PS-188` Full senza cache, 151 script / 474 casi nello
+stesso processo GUT, nessun fallimento o pending e nessun marker di errore.
+Release `20260916-145813-PS-178`: 474 casi, smoke Windows e APK statico
+verdi; Android fisico aperto. Le misure del lag e i relativi limiti restano
+nella card PS-178, distinta dalle correzioni delle fixture e del runner.
+
+### Chiusura e integrazione autorizzata — 2026-09-17
+
+Revisione tecnica dei due branch completata su richiesta di merge del
+proprietario. Il risultato combinato al commit `56256b5` passa **153 script /
+484 casi GUT nello stesso processo**, zero fallimenti o pending, e il
+contratto PowerShell del runner anche con checkout pulito. Log
+`20260917-202700-PS-188` in `%TEMP%/il-gioco-verification`.
+Questa evidenza chiude i gate dei test/tooling della card; i gate fisici e
+il rallentamento residuo restano nelle card runtime PS-178/PS-186/PS-190 e
+nel seguito PS-189. Il primo export Android combinato richiede un recupero
+dell'ambiente generato, documentato in PS-186: non e' una prova Pixel.
