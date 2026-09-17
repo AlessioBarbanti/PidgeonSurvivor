@@ -301,3 +301,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-191](./4_to_test/PS-191-ripristina-rilascio-versione-duplicata.md) | Ripristina il rilascio dopo il tentativo di ripubblicare v0.3.0 | fix | tooling | IN VERIFICA | alta | PS-134 |
 | [PS-192](./1_idea/PS-192-citazione-stress-sfora-cartiglio-boss.md) | La citazione di stress da 167 caratteri sfora il cartiglio della Boss Intro | fix | ui | DA DEFINIRE | bassa | PS-180 |
 | [PS-193](./2_to_do/PS-193-aumenta-cadenza-attacco-boss-non-pausa-ondate.md) | Aumenta la cadenza d'attacco del Boss per non farlo sentire una pausa dalle ondate | fix | gameplay | PRONTO | alta | — |
+| [PS-194](./2_to_do/PS-194-movimento-errante-copia-fantasma-piccione-malvagio.md) | Fai vagare la copia fantasma dello specchio invece di farla orbitare in cerchio fisso | ux | gameplay | PRONTO | media | — |
