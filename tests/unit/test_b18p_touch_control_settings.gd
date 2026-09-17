@@ -17,12 +17,14 @@ const SUPPORTED_SCALE_PAIRS := [
 func test_touch_control_settings() -> void:
 	_remove_test_settings()
 	_write_invalid_settings()
-	ProjectSettings.set_setting("application/run/b18o_force_welcome_for_test", true)
+	# Questa fixture deve impostare il percorso di persistenza prima di _ready.
+	var previous_welcome_setting: Variant = ProjectSettings.get_setting(FORCE_WELCOME_SETTING, null)
+	ProjectSettings.set_setting(FORCE_WELCOME_SETTING, true)
 	var movement_slice := MOVEMENT_SLICE_SCENE.instantiate() as Control
 	var settings := movement_slice.get_node("TouchControlSettings") as TouchControlSettings
 	settings.settings_path = TEST_SETTINGS_PATH
 	add_child_autofree(movement_slice)
-	ProjectSettings.set_setting("application/run/b18o_force_welcome_for_test", false)
+	ProjectSettings.set_setting(FORCE_WELCOME_SETTING, previous_welcome_setting)
 	await wait_process_frames(2)
 
 	var controller := movement_slice.get_run_controller() as RunController

@@ -1,5 +1,47 @@
 Set-StrictMode -Version Latest
 
+# GUT scrive il numero di asserzioni in testsuite.failures. Per contare test
+# falliti (es. uno con 32 assert rossi su tre casi) occorre leggere i testcase.
+function Get-GutJUnitResults {
+    param(
+        [Parameter(Mandatory)]
+        [string]$XmlPath
+    )
+
+    if (-not (Test-Path -LiteralPath $XmlPath -PathType Leaf)) {
+        return $null
+    }
+    try {
+        [xml]$xml = Get-Content -LiteralPath $XmlPath -Raw -Encoding UTF8
+    } catch {
+        return $null
+    }
+    $suites = [Collections.Generic.List[object]]::new()
+    foreach ($suite in $xml.SelectNodes('/testsuites/testsuite')) {
+        $cases = @($suite.SelectNodes('testcase'))
+        if ($cases.Count -eq 0 -or $cases.Count -ne [int]$suite.GetAttribute('tests')) {
+            return $null
+        }
+        $failures = $suite.SelectNodes('testcase[failure or error or @status="fail"]').Count
+        $skipped = $suite.SelectNodes('testcase[skipped or @status="pending"]').Count
+        # Un riepilogo rosso senza casi rossi non e' una verifica verde valida.
+        if ($failures -eq 0 -and [int]$suite.GetAttribute('failures') -gt 0) {
+            return $null
+        }
+        $suites.Add([pscustomobject]@{
+            path = $suite.GetAttribute('name')
+            tests = $cases.Count
+            failures = $failures
+            skipped = $skipped
+            status = if ($failures -eq 0) { 'PASS' } else { 'FAIL' }
+        }) | Out-Null
+    }
+    if ($suites.Count -eq 0) {
+        return $null
+    }
+    return @($suites)
+}
+
 <#
 .SYNOPSIS
     Distingue il fallimento di un singolo test dal fallimento del batch GUT.

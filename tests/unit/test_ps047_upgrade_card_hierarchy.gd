@@ -38,7 +38,7 @@ func test_ps047_normal_offer_card_hierarchy() -> void:
 	assert_true(wide_magnet_found, "\"Pinza Lunga\" deve comparire fra le tre carte del pool completo.")
 
 	_assert_card_group_hierarchy(cards, SAFE_RECT, "offerta normale")
-	await _wait_selection_unlock(overlay)
+	await wait_for_selection_unlock(overlay.is_selection_locked)
 	_assert_card_size_invariant_on_focus(cards[0], "offerta normale")
 
 	# Le carte non devono allungarsi solo per riempire l'altezza disponibile:
@@ -67,7 +67,7 @@ func test_ps047_barb_speciality_and_bonus_card_hierarchy() -> void:
 		"Il catalogo Barb non ancora esaurito deve aprirsi in modalità sblocco."
 	)
 	_assert_card_group_hierarchy(overlay.get_cards(), SAFE_RECT, "BARB_SPECIALITY")
-	await _wait_selection_unlock(overlay)
+	await wait_for_selection_unlock(overlay.is_selection_locked)
 	_assert_card_size_invariant_on_focus(overlay.get_cards()[0], "BARB_SPECIALITY")
 
 	await _unlock_all_specialities(service)
@@ -257,9 +257,3 @@ func _unlock_all_specialities(service: UpgradeService) -> void:
 		if offer.is_empty():
 			return
 		assert_true(service.select_barb_speciality(offer[0].id), "La Specialità preparatoria deve sbloccarsi.")
-
-
-func _wait_selection_unlock(overlay: Node) -> void:
-	while overlay.is_selection_locked():
-		await get_tree().create_timer(overlay.get_selection_lock_remaining() + 0.05, true, false, true).timeout
-	await wait_process_frames(2)

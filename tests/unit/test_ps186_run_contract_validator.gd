@@ -2,7 +2,7 @@ extends GutGameplayTest
 
 
 func test_validation_is_repeatable_and_does_not_change_run_state() -> void:
-	var scene := await _create_boot_scene()
+	var scene := await instantiate_movement_slice(INITIAL_VIEWPORT_SIZE, true)
 	var controller: RunController = scene.get_run_controller()
 	var upgrades: UpgradeService = scene.get_upgrade_service()
 	var node_count := get_tree().get_node_count()
@@ -25,7 +25,7 @@ func test_validation_is_repeatable_and_does_not_change_run_state() -> void:
 
 
 func test_independent_faults_are_reported_in_order_and_recover_after_restore() -> void:
-	var scene := await _create_boot_scene()
+	var scene := await instantiate_movement_slice(INITIAL_VIEWPORT_SIZE, true)
 	var joystick: TouchJoystick = scene.get_touch_joystick()
 	var weapon: WeaponController = scene.get_weapon_controller()
 	var end_screen: EndScreen = scene.get_end_screen()
@@ -46,7 +46,7 @@ func test_independent_faults_are_reported_in_order_and_recover_after_restore() -
 
 
 func test_validation_remains_available_after_restart() -> void:
-	var scene := await _create_boot_scene()
+	var scene := await instantiate_movement_slice(INITIAL_VIEWPORT_SIZE, true)
 	var controller: RunController = scene.get_run_controller()
 	controller.set_process(false)
 	assert_true(scene.start_selected_run(18601))
@@ -56,12 +56,3 @@ func test_validation_remains_available_after_restart() -> void:
 	assert_eq(controller.get_state(), RunController.RunState.BOOT)
 	assert_eq(controller.get_seed(), 0)
 	assert_false(get_tree().paused)
-
-
-func _create_boot_scene() -> Control:
-	const FORCE_WELCOME := "application/run/b18o_force_welcome_for_test"
-	var previous: Variant = ProjectSettings.get_setting(FORCE_WELCOME, null)
-	ProjectSettings.set_setting(FORCE_WELCOME, true)
-	var scene := await instantiate_movement_slice()
-	ProjectSettings.set_setting(FORCE_WELCOME, previous)
-	return scene

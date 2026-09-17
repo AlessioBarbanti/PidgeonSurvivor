@@ -52,6 +52,20 @@ if ($relevant.export_windows -or $relevant.export_android) {
     throw 'Relevant non deve esportare artefatti.'
 }
 
+# PS-188: modificare la base condivisa deve selezionare ogni suo consumatore.
+$helperPlan = Invoke-Plan -Profile Relevant -ChangedPath @('tests/unit/helpers/gameplay_test.gd')
+$helperSelected = @($helperPlan.focused_smokes) + @($helperPlan.regression_smokes)
+$helperConsumers = @(
+    Get-ChildItem (Join-Path $repoRoot 'tests/unit') -Filter 'test_*.gd' -File -Recurse |
+        Where-Object { Select-String -LiteralPath $_.FullName -Pattern '^extends GutGameplayTest\s*$' -Quiet }
+)
+foreach ($consumer in $helperConsumers) {
+    $relative = $consumer.FullName.Substring($repoRoot.Length + 1).Replace('\', '/')
+    if ($helperSelected -notcontains $relative) {
+        throw "Consumatore di GutGameplayTest non coperto dalla mappa: $relative"
+    }
+}
+
 $docsOnly = Invoke-Plan -Profile Relevant -ChangedPath @('docs/development-plan.md')
 if ($docsOnly.regression_smokes.Count -ne 0) {
     throw 'Una modifica solo documentale non deve invalidare regressioni runtime.'
@@ -123,6 +137,39 @@ if ($timeoutRange.Count -eq 0 -or [int]$timeoutRange[0].MinRange -lt 60) {
 # non-zero appena un test fallisce: leggere quell'exit code come fallimento di
 # batch marcava FAIL ogni script del batch.
 . (Join-Path $repoRoot 'tools\lib\gut-batch-status.ps1')
+
+# Il riepilogo GUT conta asserzioni; i dettagli JUnit contano casi di test.
+$junitProbePath = Join-Path ([IO.Path]::GetTempPath()) ('gut-report-contract-' + [guid]::NewGuid().ToString('N') + '.xml')
+try {
+    $junitProbe = @'
+<testsuites tests="3" failures="1">
+  <testsuite name="tests/unit/test_probe.gd" tests="3" failures="32" skipped="1">
+    <testcase name="green" status="pass" />
+    <testcase name="red" status="fail"><failure message="one" /><failure message="two" /></testcase>
+    <testcase name="pending" status="pending"><skipped /></testcase>
+  </testsuite>
+</testsuites>
+'@
+    [IO.File]::WriteAllText($junitProbePath, $junitProbe)
+    $parsed = @(Get-GutJUnitResults -XmlPath $junitProbePath)
+    if ($parsed.Count -ne 1 -or $parsed[0].tests -ne 3 -or $parsed[0].failures -ne 1 -or
+        $parsed[0].skipped -ne 1 -or $parsed[0].status -ne 'FAIL') {
+        throw 'Il parser JUnit deve contare una sola volta ciascun caso fallito o saltato.'
+    }
+    foreach ($invalidReport in @(
+        '<testsuites />',
+        '<testsuites',
+        '<testsuites><testsuite name="empty" tests="1" failures="0" /></testsuites>',
+        '<testsuites><testsuite name="inconsistent" tests="1" failures="1"><testcase status="pass" /></testsuite></testsuites>'
+    )) {
+        [IO.File]::WriteAllText($junitProbePath, $invalidReport)
+        if ($null -ne (Get-GutJUnitResults -XmlPath $junitProbePath)) {
+            throw 'Un report JUnit vuoto, troncato o incoerente non deve diventare verde.'
+        }
+    }
+} finally {
+    Remove-Item -LiteralPath $junitProbePath -Force -ErrorAction SilentlyContinue
+}
 
 $noReason = @(
     Get-GutBatchFailureReasons -ExitCode 1 -TimedOut $false -ErrorMarkers @() `

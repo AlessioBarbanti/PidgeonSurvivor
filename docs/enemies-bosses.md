@@ -17,6 +17,15 @@ dedicate per `splitter_enemy.gd` e `ranged_enemy.gd`. Selezione e spawn in
 curva in `EnemySpawnProfile` (dettagli in
 [systems-difficulty.md](./systems-difficulty.md)).
 
+**Separazione ordinaria (PS-171/PS-174/PS-178).** I nemici non collidono
+fisicamente fra loro: una spinta proporzionale alla sovrapposizione dei
+cerchi li separa, con forza e tetto di velocita' comuni in `BaseEnemy`.
+La ricerca usa una griglia da 64 px per RunController e si estende in base
+ai raggi presenti; le celle seguono il movimento nello stesso tick.
+Boss e clone-esca non appartengono alla popolazione indicizzata. Il costo
+dipende dai vicini locali: una folla tutta coincidente resta un caso denso.
+Questa ottimizzazione non modifica conteggi di spawn, HP, danni o velocita'.
+
 | Archetipo | HP | Velocità | Danno contatto | XP | Ruolo |
 |---|---|---|---|---|---|
 | Piccione base | 10.0 | 140.0 | 12.0 | — | Riempimento, peso dominante nei primi minuti |

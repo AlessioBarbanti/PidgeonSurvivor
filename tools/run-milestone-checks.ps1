@@ -303,7 +303,10 @@ function Find-RelevantSmokes {
             }
             continue
         }
-        if (-not (Test-IsRuntimePath -Path $normalized)) {
+        if (
+            -not (Test-IsRuntimePath -Path $normalized) -and
+            $normalized -notmatch '^tests/unit/helpers/.+\.gd$'
+        ) {
             continue
         }
 
@@ -550,30 +553,6 @@ function Add-ProcessStep {
         $script:halted = $true
     }
     return $step
-}
-
-function Get-GutJUnitResults {
-    param(
-        [Parameter(Mandatory)]
-        [string]$XmlPath
-    )
-
-    if (-not (Test-Path -LiteralPath $XmlPath -PathType Leaf)) {
-        return $null
-    }
-    [xml]$xml = Get-Content -LiteralPath $XmlPath -Raw -Encoding UTF8
-    $suites = [Collections.Generic.List[object]]::new()
-    foreach ($suite in @($xml.testsuites.testsuite)) {
-        $failures = [int]$suite.failures
-        $suites.Add([pscustomobject]@{
-            path = [string]$suite.name
-            tests = [int]$suite.tests
-            failures = $failures
-            skipped = [int]$suite.skipped
-            status = if ($failures -eq 0) { 'PASS' } else { 'FAIL' }
-        }) | Out-Null
-    }
-    return @($suites)
 }
 
 # Una sola invocazione GUT copre molti file: la cache per l'intero batch (non
@@ -1350,6 +1329,15 @@ try {
         "$(Get-FileContentHash -Path (Resolve-RepositoryPath -Path $TestMap -MustExist))"
     )
     $runtimeHash = Get-CombinedRepositoryHash -Paths @(Get-RepositoryRuntimeFiles)
+    # Gli helper sono dipendenze indirette dei test: includili nella cache
+    # GUT senza invalidare gli export quando cambia soltanto una fixture.
+    $gutHelperPaths = @(
+        Get-ChildItem -LiteralPath (Join-Path $repoRoot 'tests/unit/helpers') -Filter '*.gd' -File -Recurse |
+            ForEach-Object { ConvertTo-RepositoryRelativePath -Path $_.FullName }
+    )
+    $gutRuntimeHash = Get-StringHash -Text (
+        "$runtimeHash|$(Get-CombinedRepositoryHash -Paths $gutHelperPaths)"
+    )
 
     if ($RefreshEditor) {
         Write-StepStart 'refresh-editor'
@@ -1364,7 +1352,7 @@ try {
     if (-not $halted) {
         Write-StepStart "focused: $($FocusedSmoke.Count) test GUT"
         Invoke-GutBatch -Category 'focused' -TestPaths $FocusedSmoke -GodotPath $godot `
-            -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion `
+            -RuntimeHash $gutRuntimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion `
             -ParallelJobs $ParallelJobs | Out-Null
         Write-Host "<== focused: $(Get-CategorySummary -Category 'focused')"
     }
@@ -1372,7 +1360,7 @@ try {
     if (-not $halted) {
         Write-StepStart "regression: $($RegressionSmoke.Count) test GUT"
         Invoke-GutBatch -Category 'regression' -TestPaths $RegressionSmoke -GodotPath $godot `
-            -RuntimeHash $runtimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion `
+            -RuntimeHash $gutRuntimeHash -RunnerHash $runnerHash -GodotVersion $godotVersion `
             -ParallelJobs $ParallelJobs | Out-Null
         Write-Host "<== regression: $(Get-CategorySummary -Category 'regression')"
     }

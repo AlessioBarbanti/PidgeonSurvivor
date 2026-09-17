@@ -34,6 +34,8 @@ signal damage_taken_modifiers_changed(enemy: BaseEnemy, effective_multiplier: fl
 		collision_radius = maxf(value, 1.0)
 		if is_node_ready():
 			_sync_collision_radius()
+			if is_instance_valid(_run_controller):
+				_separation_grids_by_controller.erase(_run_controller.get_instance_id())
 		queue_redraw()
 
 @export_group("Visual")
@@ -103,10 +105,9 @@ var _damage_taken_modifiers: Dictionary = {}
 
 ## PS-171: dimensione delle celle della griglia di prossimita' condivisa fra
 ## tutti i nemici, usata solo per la respinta anti-sovrapposizione qui sotto.
-## Abbastanza grande da coprire il raggio combinato massimo plausibile
-## (collision_radius arriva fino a 128) senza dover cercare oltre le celle
-## adiacenti (ricerca 3x3).
-const SEPARATION_CELL_SIZE := 256.0
+## PS-178: celle vicine al diametro ordinario evitano di esaminare quasi
+## tutta l'orda. La ricerca usa il massimo raggio presente, anche oltre 128.
+const SEPARATION_CELL_SIZE := 64.0
 ## Amplifica la spinta grezza (proporzionale al solo overlap) prima del
 ## limite di velocita' qui sotto: in un ammassamento denso la componente
 ## radiale netta per singolo nemico e' molto piu' piccola della somma dei
@@ -120,11 +121,11 @@ const SEPARATION_STRENGTH := 4.0
 ## volontaria, ma resta comunque un tetto percepibile e non un teletrasporto.
 const SEPARATION_MAX_SPEED_FACTOR := 2.0
 ## Cache statica condivisa fra tutte le istanze, indicizzata per
-## RunController (instance_id -> {physics_frame, grid}): ricostruita al piu'
+## RunController (instance_id -> {physics_frame, grid, max_radius}): ricostruita al piu'
 ## una volta per frame fisico per ogni RunController, invece che una volta
-## per nemico, cosicche' centinaia di nemici restino O(n) invece di O(n^2)
-## quando cercano i propri vicini. Indicizzare per RunController (non una
-## griglia unica globale) e' necessario oltre che corretto: nei test GUT piu'
+## per nemico. Il costo delle query dipende dalla densita' locale dei vicini,
+## non e' O(n) garantito per un gruppo tutto sovrapposto. L'indice per
+## RunController evita una griglia unica globale: nei test GUT piu'
 ## fixture indipendenti (ciascuna col proprio RunController) possono coesistere
 ## nello stesso processo (vedi CLAUDE.md), e una cache unica farebbe filtrare
 ## nemici di una fixture nella respinta di un'altra.
@@ -184,10 +185,12 @@ func _physics_process(delta: float) -> void:
 	if not _can_chase_target():
 		velocity = Vector2.ZERO
 		return
+	var previous_cell := _separation_cell_for(global_position)
 	if _knockback_remaining > 0.0:
 		var safe_delta := maxf(delta, 0.0) if is_finite(delta) else 0.0
 		velocity = _knockback_velocity
 		move_and_slide()
+		_update_separation_cell(previous_cell)
 		_knockback_remaining = maxf(_knockback_remaining - safe_delta, 0.0)
 		if _knockback_remaining <= 0.0:
 			_knockback_velocity = Vector2.ZERO
@@ -212,6 +215,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	if not desired_direction.is_zero_approx():
 		_steer_around_blocking_obstacle(desired_direction)
+	_update_separation_cell(previous_cell)
 
 
 ## Offset verso il punto inseguito, al netto dell'offset di dispersione B37.
@@ -252,41 +256,39 @@ func _compute_separation_velocity() -> Vector2:
 	var own_run_controller := get_run_controller()
 	if own_run_controller == null:
 		return Vector2.ZERO
-	var grid := _get_separation_grid_for(get_tree(), own_run_controller)
-	var own_cell := _separation_cell_for(global_position)
+	var snapshot := _get_separation_grid_for(get_tree(), own_run_controller)
+	var grid: Dictionary = snapshot["grid"]
+	var own_position := global_position
+	var own_radius := collision_radius
+	# A centri coincidenti lo spareggio dipende dall'offset derivato dal seed.
+	var overlap_direction := Vector2.RIGHT.rotated(_pursuit_offset.angle())
+	var reach := Vector2.ONE * (collision_radius + float(snapshot["max_radius"]))
+	var first_cell := _separation_cell_for(own_position - reach)
+	var last_cell := _separation_cell_for(own_position + reach)
 	var push := Vector2.ZERO
-	for x_offset in range(-1, 2):
-		for y_offset in range(-1, 2):
-			var neighbor_cell := own_cell + Vector2i(x_offset, y_offset)
+	for cell_x in range(first_cell.x, last_cell.x + 1):
+		for cell_y in range(first_cell.y, last_cell.y + 1):
+			var neighbor_cell := Vector2i(cell_x, cell_y)
 			if not grid.has(neighbor_cell):
 				continue
 			for other_node in grid[neighbor_cell]:
 				var other := other_node as BaseEnemy
-				if other != self:
-					push += _separation_push_from(other)
+				if not is_instance_valid(other) or other == self or other._death_handled:
+					continue
+				# Dati propri invarianti nella query; nessuna chiamata GDScript per coppia.
+				var delta_position := own_position - other.global_position
+				var combined_radius := own_radius + other.collision_radius
+				var distance_squared := delta_position.length_squared()
+				if distance_squared >= combined_radius * combined_radius:
+					continue
+				var distance := sqrt(distance_squared)
+				var direction := overlap_direction
+				if distance > 0.0001:
+					direction = delta_position / distance
+				push += direction * (combined_radius - distance) * SEPARATION_STRENGTH
 	if push.is_zero_approx():
 		return Vector2.ZERO
 	return push.limit_length(get_effective_move_speed() * SEPARATION_MAX_SPEED_FACTOR)
-
-
-## Contributo di un singolo vicino: 0 se i cerchi non si toccano, altrimenti un
-## vettore proporzionale all'overlap che punta da `other` verso `self`. Quando
-## i due centri coincidono esattamente non esiste una direzione geometrica: si
-## usa l'angolo del proprio _pursuit_offset (gia' derivato dall'RNG di run) come
-## spareggio stabile, cosicche' l'esito resti deterministico a parita' di seed
-## invece di dipendere da un ordine di iterazione arbitrario.
-func _separation_push_from(other: BaseEnemy) -> Vector2:
-	var delta_position := global_position - other.global_position
-	var combined_radius := collision_radius + other.collision_radius
-	var distance_squared := delta_position.length_squared()
-	if distance_squared >= combined_radius * combined_radius:
-		return Vector2.ZERO
-	var distance := sqrt(distance_squared)
-	var direction := Vector2.RIGHT.rotated(_pursuit_offset.angle())
-	if distance > 0.0001:
-		direction = delta_position / distance
-	var overlap := combined_radius - distance
-	return direction * overlap * SEPARATION_STRENGTH
 
 
 static func _separation_cell_for(position: Vector2) -> Vector2i:
@@ -308,13 +310,15 @@ static func _get_separation_grid_for(tree: SceneTree, run_controller: RunControl
 	var current_physics_frame := Engine.get_physics_frames()
 	var cached: Variant = _separation_grids_by_controller.get(controller_id)
 	if cached != null and cached["physics_frame"] == current_physics_frame:
-		return cached["grid"]
+		return cached
 
 	var grid: Dictionary = {}
+	var max_radius := 0.0
 	for node in tree.get_nodes_in_group(&"enemies"):
 		var enemy := node as BaseEnemy
 		if enemy == null or not enemy.is_alive() or enemy.get_run_controller() != run_controller:
 			continue
+		max_radius = maxf(max_radius, enemy.collision_radius)
 		var cell := _separation_cell_for(enemy.global_position)
 		if not grid.has(cell):
 			grid[cell] = []
@@ -337,8 +341,34 @@ static func _get_separation_grid_for(tree: SceneTree, run_controller: RunControl
 	_separation_grids_by_controller[controller_id] = {
 		"physics_frame": current_physics_frame,
 		"grid": grid,
+		"max_radius": max_radius,
 	}
-	return grid
+	return _separation_grids_by_controller[controller_id]
+
+
+## Le spinte leggono posizioni correnti: un nemico gia' mosso nello stesso
+## tick deve essere reperibile nella nuova cella, anche durante il knockback.
+func _update_separation_cell(previous_cell: Vector2i) -> void:
+	var current_cell := _separation_cell_for(global_position)
+	if current_cell == previous_cell or not is_instance_valid(_run_controller):
+		return
+	var cached: Variant = _separation_grids_by_controller.get(_run_controller.get_instance_id())
+	if cached == null or cached["physics_frame"] != Engine.get_physics_frames():
+		return
+	var grid: Dictionary = cached["grid"]
+	var previous_bucket: Array = grid.get(previous_cell, [])
+	if not previous_bucket.has(self):
+		return
+	previous_bucket.erase(self)
+	if previous_bucket.is_empty():
+		grid.erase(previous_cell)
+	if not grid.has(current_cell):
+		grid[current_cell] = []
+	var current_bucket: Array = grid[current_cell]
+	current_bucket.append(self)
+	current_bucket.sort_custom(
+		func(a: BaseEnemy, b: BaseEnemy) -> bool: return a.get_instance_id() < b.get_instance_id()
+	)
 
 
 ## Pulizia opportunistica: rimuove le voci di RunController non piu' validi

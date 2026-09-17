@@ -227,7 +227,7 @@ Non toccare:
   `-Profile Full` (sempre verde in isolamento) per un probabile timing fra
   `RunController.start_run()`/`is_running()` e `_exit_tree()` del Tiratore —
   zero file toccati da questa card intersecano quell'area. Diagnosticato e
-  tracciato separatamente in [PS-177](../2_to_do/PS-177-non-determinismo-full-proiettile-tiratore.md)
+  tracciato separatamente in [PS-177](./PS-177-non-determinismo-full-proiettile-tiratore.md)
   invece di bloccare questa card. Vedi Verifica per l'esito esatto.
 
 ## Documenti sincronizzati
@@ -263,7 +263,7 @@ coprono.
   regressione generale è risultata `144/145` in tutte e tre le esecuzioni
   consecutive, sempre con lo stesso singolo fallimento pre-esistente non
   correlato (`test_ps158_mature_build_anti_afk.gd`, vedi Decisioni e
-  [PS-177](../2_to_do/PS-177-non-determinismo-full-proiettile-tiratore.md)).
+  [PS-177](./PS-177-non-determinismo-full-proiettile-tiratore.md)).
   Nessun `SCRIPT ERROR`/`FATAL EXCEPTION` nei log.
 - Screenshot della resa cablata reale (non simulazione: flusso
   welcome→selezione→play, poi `BossUI.show_intro()`) catturati con lo script

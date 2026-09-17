@@ -282,10 +282,10 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-172](./3_in_sprint/PS-172-diagnostica-freeze-totale-android-25-minuti.md) | Diagnostica il freeze totale su Android a ~25 minuti di run | chore | piattaforma | IN CORSO | alta | — |
 | [PS-173](./4_to_test/PS-173-clone-marghe-spara-ai-nemici.md) | Il clone di Marghe (Reggeton time!) spara ai nemici vicini | feat | gameplay | IN VERIFICA | media | — |
 | [PS-174](./4_to_test/PS-174-evil-marghe-clone-minaccia-accumulo.md) | Il clone di Evil Marghe spara e si accumula se non ucciso | feat | gameplay | IN VERIFICA | media | — |
-| [PS-175](./2_to_do/PS-175-residuo-non-determinismo-separazione-nemici-full.md) | Diagnostica il residuo di non-determinismo nella separazione nemici su Full | fix | gameplay | PRONTO | bassa | PS-171, PS-174 |
+| [PS-175](./4_to_test/PS-175-residuo-non-determinismo-separazione-nemici-full.md) | Diagnostica il residuo di non-determinismo nella separazione nemici su Full | fix | gameplay | IN VERIFICA | bassa | PS-171, PS-174 |
 | [PS-176](./4_to_test/PS-176-ritratti-boss-fluttuanti-senza-cornice.md) | Ritratti Boss fluttuanti senza cornice nella Boss Intro | ux | ui | IN VERIFICA | media | — |
-| [PS-177](./2_to_do/PS-177-non-determinismo-full-proiettile-tiratore.md) | Diagnostica il proiettile del Tiratore espulso in modo non deterministico su Full | fix | gameplay | PRONTO | media | — |
-| [PS-178](./3_in_sprint/PS-178-lag-al-minuto-2-arrivo-primo-boss.md) | Diagnostica il lag riportato al minuto 2 (coincide con l'arrivo del primo Boss) | perf | gameplay | IN CORSO | alta | — |
+| [PS-177](./4_to_test/PS-177-non-determinismo-full-proiettile-tiratore.md) | Diagnostica il proiettile del Tiratore espulso in modo non deterministico su Full | fix | gameplay | IN VERIFICA | media | — |
+| [PS-178](./4_to_test/PS-178-lag-al-minuto-2-arrivo-primo-boss.md) | Diagnostica e riduci il lag prima del minuto 2 | perf | gameplay | IN VERIFICA | alta | — |
 | [PS-179](./2_to_do/PS-179-riprendi-non-centrato-pulsante-pausa.md) | RIPRENDI non è centrato nel bottone della pausa nonostante PS-155 | fix | ui | PRONTO | alta | — |
 | [PS-180](./2_to_do/PS-180-citazione-boss-nascosta-gate-pixel-ps176.md) | La citazione del Boss è leggermente nascosta su device reale (gate Pixel di PS-176) | fix | ui | PRONTO | alta | — |
 | [PS-181](./2_to_do/PS-181-telegraph-boss-a-volte-non-spara.md) | Il telegraph di attacco del Boss a volte non si risolve in un colpo (visto su Evil Alea) | fix | gameplay | PRONTO | alta | — |
@@ -294,4 +294,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-184](./2_to_do/PS-184-recap-numero-piccioni-uccisi.md) | Mostra il numero di piccioni uccisi nel recap di fine partita | feat | ui | PRONTO | media | — |
 | [PS-185](./2_to_do/PS-185-elementi-run-troppo-piccoli.md) | Aumenta la leggibilità generale degli elementi a schermo durante la run | ux | ui | PRONTO | alta | — |
 | [PS-186](./4_to_test/PS-186-separa-validazione-contratti-run.md) | Separa la validazione dei contratti dall'orchestrazione della run | chore | tooling | IN VERIFICA | media | — |
+| [PS-187](./4_to_test/PS-187-fixture-frontend-attese-gut.md) | Centralizza le fixture frontend e rendi espliciti i timeout GUT | chore | tooling | IN VERIFICA | media | — |
+| [PS-188](./4_to_test/PS-188-input-helper-report-runner-gut.md) | Includi gli helper nella verifica GUT e conta i test falliti correttamente | fix | tooling | IN VERIFICA | media | — |
+| [PS-189](./2_to_do/PS-189-lag-residuo-marghe-orda-clone.md) | Isola e riduci il lag residuo con Marghe prima del minuto 2 | perf | gameplay | PRONTO | alta | PS-178 |
 | [PS-190](./4_to_test/PS-190-centralizza-letture-e-filtri-upgrade.md) | Centralizza le letture della build e i filtri delle offerte upgrade | chore | gameplay | IN VERIFICA | media | — |

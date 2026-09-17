@@ -82,7 +82,7 @@ func test_lone_enemy_pathing_is_unaffected() -> void:
 	enemy.set_run_controller(controller)
 	enemy.add_to_group(&"enemies")
 
-	enemy._physics_process(PHYSICS_DELTA)
+	await _settle([enemy], 1)
 	assert_vector_near(
 		enemy.velocity,
 		Vector2.RIGHT * enemy.move_speed,
@@ -110,12 +110,9 @@ func test_same_setup_produces_identical_settled_positions() -> void:
 		)
 
 
-## Non usa add_child_autofree(): l'autofree di GUT rimanda la pulizia alla
-## fine dell'intero test, ma questa funzione viene chiamata due volte nello
-## stesso test per confrontare due run — senza una pulizia immediata, i
-## nemici della prima run resterebbero nel gruppo "enemies" durante la
-## seconda, alterando la griglia di separazione condivisa e rompendo il
-## confronto deterministico.
+## Libera la prima simulazione prima di crearne una seconda. PS-174 isola
+## gia' le griglie per controller; la pulizia esplicita evita comunque di
+## mantenere in vita corpi e fixture inutili durante il confronto.
 func _run_cluster_and_collect_positions(seed_value: int) -> Array[Vector2]:
 	var fixture := Node2D.new()
 	var target := Node2D.new()
@@ -174,9 +171,11 @@ func _spawn_ranged_cluster(
 
 func _settle(enemies: Array[BaseEnemy], ticks: int) -> void:
 	for _tick in ticks:
+		# move_and_slide() usa il delta dell'engine, non l'argomento del nostro
+		# _physics_process(). Anche il primo passo deve cadere in un tick fisico.
+		await get_tree().physics_frame
 		for enemy in enemies:
 			enemy._physics_process(PHYSICS_DELTA)
-		await wait_physics_frames(1)
 
 
 func _minimum_pairwise_distance(enemies: Array[BaseEnemy]) -> float:
