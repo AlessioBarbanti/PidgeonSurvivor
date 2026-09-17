@@ -100,3 +100,37 @@ Nessun bilanciamento, asset, dato serializzato o stato di RunController modifica
   assegnato indipendentemente su develop alla leggibilita' degli elementi.
   Questo refactoring diventa PS-190; i nomi dei log storici PS-185 e i seed
   restano quelli realmente usati. Test, mappa e riferimenti correnti aggiornati.
+
+### Integrazione dei refactoring — 2026-09-17
+
+Il proprietario ha autorizzato l'integrazione in develop. Risultato combinato
+al commit `56256b5`: **153 script / 484 casi GUT verdi nello stesso processo**,
+zero pending/fallimenti; contratto PowerShell del runner verde anche su
+checkout pulito. Export e runtime Windows verdi. Log del Release
+`20260917-202700-PS-188` in `%TEMP%/il-gioco-verification`.
+Il fallimento storico PS-177 è risolto dalle correzioni delle fixture.
+Il test PS-186 usa ora il setup BOOT condiviso di PS-187 ed è incluso nella
+mappa di tutti i consumatori dell'helper. La vecchia card upgrade PS-185 è
+rinumerata PS-190 per preservare la PS-185 di leggibilità già in develop.
+
+Il primo Release è **FAIL sul solo export Android**: nel worktree mancava
+`android/build/.gdignore`, quindi il refresh aveva importato i file generati
+per Gradle e prodotto `.import` non validi dentro `res/`. Il vecchio APK del
+16 settembre non è stato accettato come nuova build dal runner.
+Ripristinata l'esclusione presente nel checkout principale, rimossi soltanto
+19 `.import` generati nella cartella `android/build/res` e rigenerata la cache
+UID. Nessun asset o sorgente di produzione cambiato per questo recupero.
+
+Ripetizione mirata `20260917-203230-PS-186`: refresh, 3/3 test focused,
+export Android **RECOVERED** dopo il marker di fine e ispezione statica **PASS**.
+Nuovo file `exports/android/pidgeon-survivor-integrated-20260917.apk`,
+73.434.243 byte, SHA-256
+`6B8557EEC8B516FFFD3B77D42BB49F1FCE07D5E4FB70A4F03B9A5CFDE222E078`.
+Contiene il validatore estratto, package `com.ilgioco.pidgeonsurvivor`,
+API 31/36, sola ARM64 e firma v2 valida. Nessun SCRIPT ERROR,
+FATAL EXCEPTION, SMOKE_FAIL o CONTRACT_FAIL nei controlli finali.
+
+Restano le diagnostiche di teardown già osservate nel branch runtime
+(11/26/8 RID, 235 ObjectDB, 70 risorse e pagine Variant PagedAllocator).
+Gate fisico Pixel 9 aperto: nessun device installato/provato. L'autorizzazione
+al merge non sostituisce questo gate; la card resta IN VERIFICA per esso.

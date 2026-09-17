@@ -3,12 +3,12 @@ id: PS-187
 titolo: Centralizza le fixture frontend e rendi espliciti i timeout GUT
 tipo: chore
 area: tooling
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine: Audit autonomo dei test richiesto dal proprietario
 creato: 2026-09-16
-aggiornato: 2026-09-16
+aggiornato: 2026-09-17
 ---
 
 # PS-187 — Centralizza le fixture frontend e rendi espliciti i timeout GUT
@@ -49,7 +49,7 @@ GUT Focused sui test migrati; Full nello stesso processo, senza cache.
 ## Gate manuali
 
 Windows runtime, APK e Pixel 9: non pertinenti per modifiche ai soli test.
-Revisione del branch prima dell'integrazione; nessun merge automatico.
+Revisione completata; integrazione autorizzata dal proprietario il 2026-09-17.
 
 ## Decisioni
 
@@ -96,3 +96,15 @@ stesso processo GUT, nessun fallimento o pending e nessun marker di errore.
 Release `20260916-145813-PS-178`: 474 casi, smoke Windows e APK statico
 verdi; Android fisico aperto. Le misure del lag e i relativi limiti restano
 nella card PS-178, distinta dalle correzioni delle fixture e del runner.
+
+### Chiusura e integrazione autorizzata — 2026-09-17
+
+Revisione tecnica dei due branch completata su richiesta di merge del
+proprietario. Il risultato combinato al commit `56256b5` passa **153 script /
+484 casi GUT nello stesso processo**, zero fallimenti o pending, e il
+contratto PowerShell del runner anche con checkout pulito. Log
+`20260917-202700-PS-188` in `%TEMP%/il-gioco-verification`.
+Questa evidenza chiude i gate dei test/tooling della card; i gate fisici e
+il rallentamento residuo restano nelle card runtime PS-178/PS-186/PS-190 e
+nel seguito PS-189. Il primo export Android combinato richiede un recupero
+dell'ambiente generato, documentato in PS-186: non e' una prova Pixel.
