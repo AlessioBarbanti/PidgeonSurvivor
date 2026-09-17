@@ -303,3 +303,6 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-193](./2_to_do/PS-193-aumenta-cadenza-attacco-boss-non-pausa-ondate.md) | Aumenta la cadenza d'attacco del Boss per non farlo sentire una pausa dalle ondate | fix | gameplay | PRONTO | alta | — |
 | [PS-194](./2_to_do/PS-194-movimento-errante-copia-fantasma-piccione-malvagio.md) | Fai vagare la copia fantasma dello specchio invece di farla orbitare in cerchio fisso | ux | gameplay | PRONTO | media | — |
 | [PS-195](./2_to_do/PS-195-personaggio-iniziale-selettore-casuale.md) | Rendi casuale il personaggio evidenziato al primo ingresso nel selettore | ux | ui | PRONTO | media | — |
+| [PS-196](./2_to_do/PS-196-contratto-armi-per-personaggio.md) | Fissa il contratto delle armi per personaggio | chore | gameplay | PRONTO | alta | — |
+| [PS-197](./2_to_do/PS-197-impianto-arma-per-personaggio-neutro.md) | Introduci l'impianto arma per personaggio senza cambiare il gioco | feat | gameplay | BLOCCATO | alta | PS-196 |
+| [PS-198](./1_idea/PS-198-armi-pilota-primo-set.md) | Progetta e implementa il primo set di armi pilota | feat | gameplay | DA DEFINIRE | alta | PS-197 |
