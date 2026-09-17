@@ -298,3 +298,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-188](./5_completed/PS-188-input-helper-report-runner-gut.md) | Includi gli helper nella verifica GUT e conta i test falliti correttamente | fix | tooling | COMPLETATO | media | — |
 | [PS-189](./2_to_do/PS-189-lag-residuo-marghe-orda-clone.md) | Isola e riduci il lag residuo con Marghe prima del minuto 2 | perf | gameplay | PRONTO | alta | PS-178 |
 | [PS-190](./4_to_test/PS-190-centralizza-letture-e-filtri-upgrade.md) | Centralizza le letture della build e i filtri delle offerte upgrade | chore | gameplay | IN VERIFICA | media | — |
+| [PS-191](./4_to_test/PS-191-ripristina-rilascio-versione-duplicata.md) | Ripristina il rilascio dopo il tentativo di ripubblicare v0.3.0 | fix | tooling | IN VERIFICA | alta | PS-134 |
