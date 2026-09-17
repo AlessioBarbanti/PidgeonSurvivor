@@ -18,17 +18,22 @@ aggiornato: 2026-09-15
 Il proprietario segnala che "il primo boss ha troppa vita", testando la
 build reale v0.3.0. La soglia del primo Boss è a `t=120s`
 (`GameDirectorProfile.boss_thresholds_seconds`,
-[scripts/game/game_director_profile.gd:8](../../../scripts/game/game_director_profile.gd)),
-e l'incontro garantito a quel punto è il Piccione Malvagio baseline
-(`health_max = 2400.0`, [data/bosses/first_boss.tres:19](../../../data/bosses/first_boss.tres)),
-salvo l'estrazione rara di un Evil (~10%, PS-127). A quel punto della run il
-personaggio ha avuto poco tempo per accumulare upgrade offensivi, quindi
-2400 HP può risultare uno scontro percepito come troppo lungo/spugnoso.
+[scripts/game/game_director_profile.gd:8](../../../scripts/game/game_director_profile.gd)).
+Confermato dal proprietario (2026-09-15): l'incontro era **Evil Alea**, non
+il Piccione Malvagio baseline — quindi è scattata l'estrazione rara di
+PS-127 (~10%) già alla prima ricorrenza.
 
-Non è chiaro dal feedback se "il primo boss" significhi sempre il Piccione
-Malvagio baseline o genericamente il primo Boss incontrato in quella run
-specifica (che potrebbe essere stato un Evil se l'estrazione rara di PS-127
-è scattata): da chiarire con il proprietario prima di toccare i numeri.
+Verificato in [scripts/bosses/boss_encounter.gd:225](../../../scripts/bosses/boss_encounter.gd)
+(`resolve_variant`, `evil_definition := baseline.duplicate(true)`): un
+Evil è un duplicato del `BossDefinition` baseline che cambia solo
+`visual_kind`/identità, **non** `health_max`. Evil Alea ha quindi lo stesso
+`health_max = 2400.0` del Piccione Malvagio
+([data/bosses/first_boss.tres:19](../../../data/bosses/first_boss.tres)),
+pur non ereditando lo split a metà vita di PS-127 (gating
+`not is_evil_variant()`): i due incontri non sono direttamente comparabili
+a parità di HP nominale. A `t=120s` il personaggio ha avuto poco tempo per
+accumulare upgrade offensivi, quindi 2400 HP può risultare uno scontro
+percepito come troppo lungo/spugnoso — tanto sul baseline quanto su un Evil.
 
 ## Comportamento atteso
 
