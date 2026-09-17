@@ -3,7 +3,7 @@ id: PS-185
 titolo: Aumenta la leggibilità generale degli elementi a schermo durante la run
 tipo: ux
 area: ui
-stato: IN VERIFICA
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine: feedback di playtest di Elisa (giocatrice esterna), riportato dal proprietario il 2026-09-16
@@ -73,11 +73,11 @@ velocità.
       (`test_ps185_onscreen_readability.gd`) su 16:9/20:9/4:3, e dalle
       regressioni esistenti (`test_ps005_boss_warning.gd`,
       `test_ps025_boss_warning_size.gd`) riallineate al nuovo layout.
-- [ ] Il proprietario (idealmente con un secondo riscontro di Elisa) conferma
+- [x] Il proprietario (idealmente con un secondo riscontro di Elisa) conferma
       percettivamente che la sensazione di "tutto piccolo" è risolta o
-      significativamente ridotta. Non chiudibile da questa sessione: il
-      proprietario ha scelto di provare di persona l'APK già installato sul
-      Pixel 9 invece di una prova automatizzata via ADB.
+      significativamente ridotta. Confermato dal proprietario dopo prova
+      reale sul Pixel 9 ("mi pare funzioni tutto"). Riscontro di Elisa non
+      ancora raccolto.
 
 ## Ambito
 
@@ -121,18 +121,16 @@ Non toccare:
       `SCRIPT ERROR`/`FATAL EXCEPTION`.
 - [x] Validazione statica APK: `RECOVERED` (export non uscito da solo dopo
       `[ DONE ] export`, APK stabile), ispezione statica verde.
-- [ ] Runtime fisico Pixel 9 (percorso: run completa con orda densa e almeno
-      un incontro Boss) — **non eseguito in automatico in questa sessione**:
-      il flag di verifica fisica B22 salta il tempo con un unico balzo e non
-      fa accumulare spawn come farebbe una run reale (verificato leggendo
-      `EnemySpawner._process`, incrementa un accumulatore con un singolo
-      `if`, non un `while` di recupero). Serve tempo di gioco reale, non
-      simulabile con lo shortcut usato per le altre card di questa sessione.
-      APK aggiornato installato sul Pixel 9; il proprietario ha scelto di
-      provarlo di persona invece di una prova automatizzata via ADB.
-- [ ] Controllo percettivo richiesto: sì — è il criterio primario della
-      card, non chiudibile da questa sessione (serve il proprietario,
-      idealmente con un secondo riscontro di Elisa).
+- [x] Runtime fisico Pixel 9 (percorso: run completa con orda densa e almeno
+      un incontro Boss): eseguito di persona dal proprietario sull'APK
+      installato in sessione, non automatizzato via ADB (il flag di verifica
+      fisica B22 salta il tempo con un unico balzo e non fa accumulare spawn
+      come farebbe una run reale — verificato leggendo `EnemySpawner._process`,
+      incrementa un accumulatore con un singolo `if`, non un `while` di
+      recupero). Confermato funzionante.
+- [x] Controllo percettivo richiesto: sì — confermato dal proprietario su
+      device reale. Riscontro di Elisa non ancora raccolto (non bloccante,
+      era "idealmente", non un requisito stretto).
 
 ## Decisioni
 
@@ -225,6 +223,9 @@ Non toccare:
 - **2026-09-17 — APK installato sul Pixel 9** (`49140DLAQ0010Y`) per la
   prova reale del proprietario; nessuna prova automatizzata via ADB in
   questa sessione (vedi Gate manuali).
+- **2026-09-17 — Conferma del proprietario dopo prova reale:** "Ok, mi pare
+  funzioni tutto". Chiude il gate di runtime fisico e il controllo
+  percettivo.
 
 ## Note
 

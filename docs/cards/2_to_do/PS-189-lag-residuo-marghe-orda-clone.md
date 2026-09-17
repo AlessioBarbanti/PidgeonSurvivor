@@ -131,3 +131,11 @@ separazione, attrazione dell'esca e comportamento degli attacchi.
 Card creata su richiesta del proprietario; implementazione non avviata.
 Le misure riportate sono quelle Windows della sessione PS-178, non nuove
 misure del Pixel. Decisioni, nuovi risultati e gate restano in questa card.
+
+**2026-09-17 — Osservazione non verificata, non un'evidenza.** Durante la
+prova reale di PS-185 il proprietario ha notato: "il lag pre minuto 2 è
+scomparso". Nessuna delle due card in sessione ha toccato nemici, clone,
+targeting o separazione — non è chiaro se derivi da varianza del device
+(termica, stato del sistema) o da altro. Non chiude alcun criterio: restano
+validi il profilo p95 richiesto, la fixture prestazionale ripetibile e le
+almeno tre run comparabili su Pixel 9 prima di dichiarare risolto.
