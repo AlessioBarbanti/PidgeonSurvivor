@@ -40,6 +40,11 @@ Tutto è **scene-local e signal-driven**: nessun autoload, nessun event bus
 globale. La scena della run è [scenes/game/movement_slice.tscn](scenes/game/movement_slice.tscn),
 orchestrata da [scripts/game/movement_slice.gd](scripts/game/movement_slice.gd).
 
+La diagnostica della scena composta vive in
+[RunContractValidator](scripts/app/run_contract_validator.gd): raccoglie gli
+errori per dominio e stampa i marker di smoke. MovementSlice la invoca dopo il
+wiring e prima dell'avvio della run; il validatore non possiede stato di gioco.
+
 Contratti da preservare:
 
 - **`RunController`** ([scripts/game/run_controller.gd](scripts/game/run_controller.gd))

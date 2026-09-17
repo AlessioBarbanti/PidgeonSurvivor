@@ -3,6 +3,20 @@
   "rules": [
     {
       "patterns": [
+        "scripts/progression/upgrade_service.gd",
+        "scripts/game/run_summary.gd",
+        "scripts/ui/pause_overlay.gd",
+        "scripts/ui/end_screen.gd"
+      ],
+      "smokes": [
+        "tests/unit/test_ps190_upgrade_queries.gd",
+        "tests/unit/test_ps053_run_summary.gd",
+        "tests/unit/test_ps164_pause_build_summary.gd",
+        "tests/unit/test_b18g_ability_ranks.gd"
+      ]
+    },
+    {
+      "patterns": [
         "project.godot",
         "export_presets.cfg"
       ],
@@ -270,9 +284,11 @@
         "scripts/game/movement_slice.gd",
         "scenes/game/movement_slice.tscn",
         "scripts/game/run_controller.gd",
-        "scripts/game/run_summary.gd"
+        "scripts/game/run_summary.gd",
+        "scripts/app/run_contract_validator.gd"
       ],
       "smokes": [
+        "tests/unit/test_ps186_run_contract_validator.gd",
         "tests/unit/test_ps108_cooking_point_catalog_wiring.gd",
         "tests/unit/test_b03_movement_slice.gd",
         "tests/unit/test_b16_complete_run.gd",
