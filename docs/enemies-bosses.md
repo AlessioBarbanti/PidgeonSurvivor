@@ -201,6 +201,20 @@ per gli Evil e da PS-128/PS-129 per il baseline, entrambi sostituiti). Lo
 stato artistico dettagliato resta in
 [visual-audio-identity.md](./visual-audio-identity.md).
 
+**Fascia HUD attenuata durante la Boss Intro (PS-180).** `GameHud` attenua
+(non nasconde) la propria fascia superiore (timer, barre XP/HP, pausa — già
+disabilitata in questo stato) mentre `RunController` è in `BOSS_INTRO`,
+liberando lo spazio verticale che il ritratto usa per crescere: `BossUI` non
+riserva più il margine che teneva libera quella fascia. L'arte opaca del
+ritratto copre comunque la fascia dov'è più larga di lei; ai lati, dove le
+barre occupano quasi tutta la larghezza dello schermo, restano visibili ma
+attenuate — stesso trattamento (`GameHud.ABILITY_FADED_ALPHA`) già usato per
+il controllo abilità sotto al Player, mai un nascondimento totale come negli
+altri modali (level-up, ricompensa Barb e pausa restano invariati, HUD
+sempre a piena opacità). La citazione condivisa da tutte le varianti
+(PS-101) va a capo su più righe: senza questo spazio andava in clipping su
+device reale a risoluzione fisica.
+
 ### Perché diventano Evil: la fame (PS-101)
 
 Ogni `Evil <Nome>` non è cattivo per natura: ha fame. È il solo aggancio

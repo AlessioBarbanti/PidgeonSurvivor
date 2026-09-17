@@ -274,6 +274,14 @@ func get_top_band_rect() -> Rect2:
 	return _top_band.get_global_rect() if is_instance_valid(_top_band) else Rect2()
 
 
+func is_top_band_visible() -> bool:
+	return is_instance_valid(_top_band) and _top_band.visible
+
+
+func get_top_band_alpha() -> float:
+	return _top_band.modulate.a if is_instance_valid(_top_band) else 1.0
+
+
 func get_portrait_rect() -> Rect2:
 	return Rect2()
 
@@ -702,6 +710,17 @@ func _on_run_state_changed(
 		RunController.RunState.DEFEAT,
 	]:
 		_clear_visual_feedback()
+	# PS-180: la Boss Intro copre l'intera safe area col ritratto fluttuante,
+	# che cresce nello spazio prima riservato alla fascia HUD (timer/pausa gia'
+	# disabilitati). Nasconderla del tutto pero' toglierebbe al giocatore la
+	# vista su HP/XP proprio entrando in uno scontro Boss (controllo
+	# percettivo del direttore-artistico): resta visibile ma attenuata, come
+	# gia' fa `ABILITY_FADED_ALPHA` per il controllo abilita' quando il Player
+	# ci passa sotto, non nascosta con un `visible = false` one-off.
+	if is_instance_valid(_top_band):
+		_top_band.modulate.a = (
+			ABILITY_FADED_ALPHA if current_state == RunController.RunState.BOSS_INTRO else 1.0
+		)
 	_refresh_ability_state()
 
 

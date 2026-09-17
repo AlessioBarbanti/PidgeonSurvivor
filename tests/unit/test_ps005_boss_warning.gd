@@ -160,11 +160,20 @@ func test_warning_uses_running_clock_and_hands_off_to_boss_intro() -> void:
 	assert_false(hud.is_boss_warning_visible(), "Il warning deve sparire contestualmente a BOSS_INTRO.")
 	assert_false(director.is_boss_warning_active(), "Il Director non deve lasciare warning attivo durante il Boss.")
 	assert_eq(_count_warning_phase(GameDirector.BossWarningPhase.HIDDEN), 1, "L'handoff deve nascondere il warning una sola volta.")
+	# PS-180: la fascia HUD resta visibile ma attenuata durante BOSS_INTRO
+	# (controllo percettivo del direttore-artistico: nasconderla del tutto
+	# toglierebbe la vista su HP/XP entrando in uno scontro Boss).
+	assert_true(hud.is_top_band_visible(), "La fascia HUD non deve sparire del tutto durante BOSS_INTRO.")
+	assert_true(hud.get_top_band_alpha() < 1.0, "La fascia HUD deve attenuarsi durante BOSS_INTRO.")
 
 	controller._process(30.0)
 	assert_eq(director.get_requested_count(), 1, "La soglia consumata non deve richiedere un secondo Boss.")
 	assert_true(encounter.complete_intro(), "La fixture PS-005 deve poter entrare nello scontro.")
 	assert_false(hud.is_boss_warning_visible(), "Il warning non deve riapparire durante lo scontro.")
+	assert_almost_eq(
+		hud.get_top_band_alpha(), 1.0, FLOAT_TOLERANCE,
+		"La fascia HUD deve tornare opaca una volta chiusa la Boss Intro."
+	)
 
 	assert_true(controller.request_defeat(), "La fixture PS-005 deve poter preparare il restart.")
 	assert_true(movement_slice.restart_run(5005), "Il restart PS-005 deve ripartire in-place.")
