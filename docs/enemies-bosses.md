@@ -104,7 +104,7 @@ Ability).
 ### Baseline "Piccione Malvagio"
 
 `data/bosses/first_boss.tres`: `id = "special_pigeon"`,
-`title = "PICCIONE MALVAGIO"` (PS-026). Stats: `health_max 2400.0`,
+`title = "PICCIONE MALVAGIO"` (PS-026). Stats: `health_max 1500.0` (PS-182),
 `move_speed 85.0`, `collision_radius 46.0`, `contact_damage 25.0`.
 
 **PS-127 (2026-09-07).** Il baseline non è più pensato come la variante
