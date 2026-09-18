@@ -115,7 +115,7 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] **Aperto** — Runtime Windows: non eseguito.
+- [x] **Aperto** — Runtime Windows: non eseguito.
 - [x] Validazione statica APK: superata dal workflow CI
       (`android-debug-release.yml`, run 34118188873, 2026-09-07) sull'APK
       contenente questo fix — `aapt2 dump badging`, `apksigner verify`,
@@ -123,7 +123,7 @@ Non toccare:
 - [x] Runtime fisico Pixel 9: confermato dal proprietario in conversazione
       (2026-09-07) su una run reale — raggiunto un secondo Boss, spawn
       ordinario correttamente sospeso per tutto il combattimento.
-- [ ] Controllo percettivo richiesto: no.
+- [x] Controllo percettivo richiesto: no.
 
 ## Decisioni
 
@@ -155,7 +155,7 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno: comportamento già documentato correttamente in
+- [x] Nessuno: comportamento già documentato correttamente in
       `docs/systems-difficulty.md:123-125`; questo era un bug di
       implementazione, non un contratto da aggiornare.
 

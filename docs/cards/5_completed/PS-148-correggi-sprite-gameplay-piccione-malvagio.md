@@ -101,11 +101,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: incontrare il Piccione Malvagio in
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: incontrare il Piccione Malvagio in
       run e osservare lo sprite sul campo)
-- [ ] Controllo percettivo richiesto: sì, confronto sprite in game
+- [x] Controllo percettivo richiesto: sì, confronto sprite in game
       pre/post fix
 
 ## Decisioni
@@ -125,7 +125,7 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno a questo stadio: nessun contratto di prodotto o catalogo
+- [x] Nessuno a questo stadio: nessun contratto di prodotto o catalogo
       cambia, solo un bug di rendering.
 
 ## Note

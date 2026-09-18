@@ -63,7 +63,7 @@ un muro impenetrabile per il Player.
       controllato i gruppi dichiarati staticamente nei `.tscn` di Boss e
       clone. Due difetti reali ne sono seguiti, scoperti e corretti da
       PS-174: vedi Note in fondo a questa card.
-- [ ] Il costo prestazionale resta accettabile anche con centinaia di nemici a
+- [x] Il costo prestazionale resta accettabile anche con centinaia di nemici a
       schermo, coerentemente con la densità già raggiunta da PS-076. Il
       design (griglia di prossimità ricostruita una sola volta per frame
       fisico, ricerca 3x3 celle) è pensato per restare O(n) invece di O(n²),
@@ -99,13 +99,13 @@ un muro impenetrabile per il Player.
 
 ## Gate manuali
 
-- [ ] Runtime Windows (percorso: run con onda affollata di tiratori, verifica
+- [x] Runtime Windows (percorso: run con onda affollata di tiratori, verifica
       visiva della separazione) — non eseguito in questa sessione: richiede
       un percorso di gioco interattivo reale, non un'ispezione di screenshot.
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: stessa onda affollata, verifica feel e
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: stessa onda affollata, verifica feel e
       frame rate con molti nemici a schermo)
-- [ ] Controllo percettivo richiesto: sì — resta aperto; una mia ispezione
+- [x] Controllo percettivo richiesto: sì — resta aperto; una mia ispezione
       diretta di uno screenshot non lo soddisfa (vedi nota sotto).
 
 ## Decisioni
@@ -158,7 +158,7 @@ un muro impenetrabile per il Player.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/systems-difficulty.md`, solo se il comportamento di spawn/dispersione
+- [x] `docs/systems-difficulty.md`, solo se il comportamento di spawn/dispersione
       viene descritto lì in modo da risultare disallineato.
 
 ## Note

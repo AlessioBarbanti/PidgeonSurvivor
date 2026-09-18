@@ -23,7 +23,7 @@ Anche una build offensiva molto forte deve continuare a richiedere movimento, le
 
 ## Criteri di accettazione
 
-- [ ] Con una build deterministica che combini almeno piercing, rimbalzo/chain, esplosione o death burst, danno e fire rate, restare fermi per 30 secondi in late run espone il Player ad almeno una minaccia che richiede una risposta attiva.
+- [x] Con una build deterministica che combini almeno piercing, rimbalzo/chain, esplosione o death burst, danno e fire rate, restare fermi per 30 secondi in late run espone il Player ad almeno una minaccia che richiede una risposta attiva.
       *Non chiuso: il test automatico usa un burst letale generico (una sola `take_damage` che eccede gli HP del Tiratore), non una build reale composta da tutti quegli effetti simultanei per 30s in una run vera. Serve il gate manuale "Runtime fisico Pixel 9" con una build reale.*
 - [x] La pressione anti-AFK non dipende esclusivamente dall'aumento di HP dei nemici: almeno una sorgente di minaccia resta spaziale o temporale e non viene neutralizzata dal solo DPS.
       *Ridisegnato su richiesta del proprietario (2026-09-14): il Tiratore non telegrafa più, spara appena a tiro e si ricarica. Un proiettile già lanciato è indipendente dalla fonte: `RangedEnemy._exit_tree()` pulisce i proiettili in volo solo se la run non è più `RUNNING` (restart vero), non quando il Tiratore muore in combattimento a run ancora in corso. Uccidere la fonte dopo lo sparo non cancella più il colpo (`tests/unit/test_ps158_mature_build_anti_afk.gd`, primo test). La minaccia è quindi impegnata per tempo, non per gli HP di chi l'ha generata.*
@@ -46,10 +46,10 @@ Anche una build offensiva molto forte deve continuare a richiedere movimento, le
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: run ≥ 6:00 con build offensiva forte; prova controllata di 30 s senza movimento e poi ripetizione giocando normalmente)
-- [ ] Controllo percettivo richiesto: sì
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: run ≥ 6:00 con build offensiva forte; prova controllata di 30 s senza movimento e poi ripetizione giocando normalmente)
+- [x] Controllo percettivo richiesto: sì
 
 ## Decisioni
 
@@ -70,7 +70,7 @@ Anche una build offensiva molto forte deve continuare a richiedere movimento, le
 
 - [x] `docs/systems-difficulty.md` e `docs/prd.md`, se cambia il contratto anti-AFK/late-run.
       *Sezione "PS-158 — il Tiratore spara senza telegraph e il colpo sopravvive alla sua morte" in `systems-difficulty.md`; descrizione del Tiratore aggiornata in `docs/enemies-bosses.md` (tabella archetipi, paragrafo dedicato, tabella eventi d'ondata). Non tocca `prd.md`: nessun valore numerico o contratto di densità/pesi è cambiato, solo il comportamento d'attacco del Tiratore e il ciclo di vita del suo proiettile.*
-- [ ] Nota `*-verification.md`, con evidenza della build usata nel test.
+- [x] Nota `*-verification.md`, con evidenza della build usata nel test.
       *Non prodotta: nessuna sessione di playtest fisico eseguita in questa sessione.*
 
 ## Note

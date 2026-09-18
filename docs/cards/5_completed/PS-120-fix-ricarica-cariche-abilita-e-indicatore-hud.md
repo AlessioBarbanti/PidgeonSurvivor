@@ -117,7 +117,7 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] **Aperto** — Runtime Windows: non eseguito.
+- [x] **Aperto** — Runtime Windows: non eseguito.
 - [x] Validazione statica APK: superata dal workflow CI
       (`android-debug-release.yml`, run 34118188873, 2026-09-07) sull'APK
       contenente questo fix.
@@ -127,7 +127,7 @@ Non toccare:
       **Resta aperta la parte percettiva**: non confermato se il contorno di
       ricarica in background sia stato effettivamente notato/distinto dalla
       maschera scura di blocco.
-- [ ] **Aperto** — Controllo percettivo richiesto: sì — il nuovo contorno di
+- [x] **Aperto** — Controllo percettivo richiesto: sì — il nuovo contorno di
       ricarica deve restare leggibile e distinguibile sia dall'anello dorato
       "pronto" sia dalla maschera scura di blocco, a dimensione reale. Non
       ancora confermato esplicitamente dal proprietario.
@@ -159,7 +159,7 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno: la card PS-094 già descrive il modello a cariche nella card
+- [x] Nessuno: la card PS-094 già descrive il modello a cariche nella card
       stessa; questi erano bug di implementazione, non un contratto da
       aggiornare nei documenti durevoli.
 

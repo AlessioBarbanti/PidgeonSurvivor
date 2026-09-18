@@ -88,10 +88,10 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: selettore personaggi, carta Alea)
-- [ ] Controllo percettivo richiesto: sì, l'icona nel selettore alla
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: selettore personaggi, carta Alea)
+- [x] Controllo percettivo richiesto: sì, l'icona nel selettore alla
       dimensione reale
 
 ## Decisioni

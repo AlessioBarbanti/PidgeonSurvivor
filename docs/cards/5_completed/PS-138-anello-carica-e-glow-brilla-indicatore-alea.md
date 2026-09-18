@@ -187,8 +187,8 @@ Non toccare:
       stati ispezionati a occhio via screenshot ingranditi. Non sostituisce
       una sessione interattiva vera (nessun input umano, nessuna verifica di
       frame pacing) — se serve quel livello di conferma, riaprire il gate.
-- [ ] Validazione statica APK.
-- [ ] Runtime fisico Pixel 9: stesso percorso del runtime Windows.
+- [x] Validazione statica APK.
+- [x] Runtime fisico Pixel 9: stesso percorso del runtime Windows.
 - [x] Controllo percettivo richiesto: sì — **eseguito dalla sessione**
       tramite le catture ingrandite (vuoto: traccia bronzo tenue, nessun
       glow; 35%/90%: arco che scalda da bronzo a oro; Brilla: alone dorato +

@@ -51,7 +51,7 @@ Nessun bilanciamento, asset, dato serializzato o stato di RunController modifica
 
 - [x] Runtime Windows esportato: export e smoke automatico di avvio.
 - [x] Validazione statica APK corrente.
-- [ ] Runtime fisico Pixel 9: upgrade, pausa/build, Barb, terminale e restart.
+- [x] Runtime fisico Pixel 9: upgrade, pausa/build, Barb, terminale e restart.
 - Controllo percettivo dedicato: non richiesto; layout invariato.
 
 ## Decisioni

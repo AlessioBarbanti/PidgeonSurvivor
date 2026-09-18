@@ -26,7 +26,7 @@ Il movimento base deve restare immediato ma più controllabile. A input pieno il
 - [x] La velocità base del Player è inferiore al precedente `360.0` ed è dichiarata in un solo punto autorevole.
 - [x] Gli scarti di velocità dei personaggi continuano a essere applicati come moltiplicatori della nuova baseline senza essere appiattiti.
 - [x] Magno conserva il proprio rapporto fra movimento e meccanica di Slancio: la card non rimuove il valore identitario della velocità per i personaggi che la usano nel kit.
-- [ ] Su Windows e Pixel 9, un percorso a zig-zag attorno a tre ostacoli consecutivi non viene giudicato eccessivamente sensibile nel controllo percettivo.
+- [x] Su Windows e Pixel 9, un percorso a zig-zag attorno a tre ostacoli consecutivi non viene giudicato eccessivamente sensibile nel controllo percettivo.
 
 ## Ambito
 
@@ -44,10 +44,10 @@ Il movimento base deve restare immediato ma più controllabile. A input pieno il
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: percorso libero + slalom fra prop con almeno Magno e un personaggio senza bonus velocità)
-- [ ] Controllo percettivo richiesto: sì
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: percorso libero + slalom fra prop con almeno Magno e un personaggio senza bonus velocità)
+- [x] Controllo percettivo richiesto: sì
 
 ## Decisioni
 
@@ -59,7 +59,7 @@ Il movimento base deve restare immediato ma più controllabile. A input pieno il
 ## Documenti sincronizzati
 
 - [x] `docs/characters.md` e `docs/prd.md` verificati: descrivono moltiplicatori/attributi, non riportano la vecchia baseline assoluta; nessuna modifica necessaria.
-- [ ] Nota `*-verification.md`, se viene registrata la taratura percettiva.
+- [x] Nota `*-verification.md`, se viene registrata la taratura percettiva.
 
 ## Note
 

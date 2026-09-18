@@ -55,7 +55,7 @@ o in isolamento).
       `pause_overlay.tscn`; le altre tre non dichiarano `content_margin`
       esplicito sul CTA primario (usano il default simmetrico ereditato da
       `texture_margin`), confermato per grep.
-- [ ] Confermato esplicitamente dal proprietario su Pixel 9 reale, non solo
+- [x] Confermato esplicitamente dal proprietario su Pixel 9 reale, non solo
       da un'ispezione statica del file. Gate manuale aperto (vedi sotto).
 
 ## Ambito
@@ -80,11 +80,11 @@ o in isolamento).
 - [x] Runtime Windows — screenshot rigenerati con
       `tools/_capture_ui_screenshots.gd` dopo refresh cache editor, nessun
       `SCRIPT ERROR`/`FATAL EXCEPTION`.
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (gate primario: il sintomo è stato riportato
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (gate primario: il sintomo è stato riportato
       lì) — non eseguito in questa sessione, device non collegato: gate
       lasciato aperto, non chiuso per omissione.
-- [ ] Controllo percettivo richiesto: sì — centratura del testo è un
+- [x] Controllo percettivo richiesto: sì — centratura del testo è un
       giudizio visivo diretto; verificata su screenshot Windows in questa
       sessione, non ancora confermata dal proprietario né su device reale.
 

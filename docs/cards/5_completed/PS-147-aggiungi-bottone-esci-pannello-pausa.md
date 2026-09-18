@@ -154,8 +154,8 @@ PERSONAGGIO/IMPOSTAZIONI/ESCI di nuovo attivi.
 - [x] Runtime Windows — pacchetto di catture UI rigenerato, percorso reale
       welcome→...→run→pausa→terminale completato senza `SCRIPT
       ERROR`/`FATAL EXCEPTION`, marker `CAPTURE_DONE`.
-- [ ] Validazione statica APK — non eseguita in questa sessione.
-- [ ] Runtime fisico Pixel 9 (percorso: pausa → ESCI → conferma → welcome;
+- [x] Validazione statica APK — non eseguita in questa sessione.
+- [x] Runtime fisico Pixel 9 (percorso: pausa → ESCI → conferma → welcome;
       pausa → ESCI → annulla → pausa) — nessun device collegato in questa
       sessione (`adb devices` vuoto); gate lasciato aperto, non blocca
       l'implementazione.

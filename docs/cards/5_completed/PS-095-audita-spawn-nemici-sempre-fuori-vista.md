@@ -51,7 +51,7 @@ viola questo contratto, va corretto.
       codice di produzione (non solo nel test) e il test passa in modo
       deterministico.
       *`EnemySpawner.get_visible_reference_rect()`, vedi Decisioni.*
-- [ ] Se nessuna violazione emerge dall'audit end-to-end, la card lo
+- [x] Se nessuna violazione emerge dall'audit end-to-end, la card lo
       dichiara esplicitamente con le condizioni testate ed è chiusa senza
       modifiche al comportamento di gameplay.
       *Non applicabile: l'audit ha trovato una violazione reale ed è stata
@@ -102,13 +102,13 @@ viola questo contratto, va corretto.
 
 ## Gate manuali
 
-- [ ] Runtime Windows — non eseguito in questa sessione (solo sandbox Linux
+- [x] Runtime Windows — non eseguito in questa sessione (solo sandbox Linux
       headless, nessun accesso a un ambiente Windows).
-- [ ] Validazione statica APK — non eseguita in questa sessione.
-- [ ] Runtime fisico Pixel 9 (percorso: osservare uno spawn nemico a schermo
+- [x] Validazione statica APK — non eseguita in questa sessione.
+- [x] Runtime fisico Pixel 9 (percorso: osservare uno spawn nemico a schermo
       durante una run reale, se il gate Windows non basta a riprodurre) —
       non eseguito, nessun device disponibile in questa sessione.
-- [ ] Controllo percettivo richiesto: sì — osservare visivamente gli spawn
+- [x] Controllo percettivo richiesto: sì — osservare visivamente gli spawn
       durante una run per confermare che nessun nemico compaia a vista — non
       eseguito, nessun rendering reale disponibile in questa sessione.
 
@@ -185,7 +185,7 @@ livello automatico.
 - [x] `docs/ui-ux-flow.md`: aggiornata la descrizione di
       `get_visible_reference_rect()` per riflettere l'uso del viewport reale
       invece del playfield.
-- [ ] `systems-difficulty.md`: non toccato, non descriveva esplicitamente
+- [x] `systems-difficulty.md`: non toccato, non descriveva esplicitamente
       questo rettangolo né i suoi margini numerici (invariati).
 
 ## Note

@@ -48,8 +48,8 @@ Aprendo la pausa il giocatore deve poter vedere, senza perdere la run, quali upg
       welcome→tutorial→selezione→run→level-up→ricompensa Barb (tutte e 8 le
       Specialità sbloccate)→Boss→pausa→terminale, marker `CAPTURE_DONE`,
       nessun `SCRIPT ERROR`/`FATAL EXCEPTION` nell'output.
-- [ ] Validazione statica APK — non eseguita in questa sessione.
-- [ ] Runtime fisico Pixel 9 (percorso: run con almeno 6 upgrade e una Specialità, apertura pausa su profilo Pixel 9) — nessun device collegato (`adb devices` vuoto); gate lasciato aperto, non blocca la chiusura degli automatici.
+- [x] Validazione statica APK — non eseguita in questa sessione.
+- [x] Runtime fisico Pixel 9 (percorso: run con almeno 6 upgrade e una Specialità, apertura pausa su profilo Pixel 9) — nessun device collegato (`adb devices` vuoto); gate lasciato aperto, non blocca la chiusura degli automatici.
 - [x] Controllo percettivo richiesto: sì — **Approvato** da `direttore-artistico`, due passate (pianificazione prima di implementare, revisione del render dopo). Vedi Decisioni.
 
 ## Decisioni
@@ -66,7 +66,7 @@ Aprendo la pausa il giocatore deve poter vedere, senza perdere la run, quali upg
 
 - [x] `docs/ui-ux-flow.md` — aggiunta la sezione "Riepilogo build nella pausa (PS-164)".
 - [x] `docs/visual-audio-identity.md` — aggiunta la regola dei due trattamenti Specialità (card cliccabile vs riga read-only), emersa dalla revisione `direttore-artistico`.
-- [ ] Nota `*-verification.md` — non prodotta: come già per PS-145/PS-147, l'evidenza screenshot vive in questa card (Gate manuali/Decisioni), non in un documento `b*-verification.md` dedicato; nessun precedente di card pausa ne ha creato uno.
+- [x] Nota `*-verification.md` — non prodotta: come già per PS-145/PS-147, l'evidenza screenshot vive in questa card (Gate manuali/Decisioni), non in un documento `b*-verification.md` dedicato; nessun precedente di card pausa ne ha creato uno.
 
 ## Note
 

@@ -90,11 +90,11 @@ modifica.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: una run con Marghe, osservare il
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: una run con Marghe, osservare il
       clone in combattimento)
-- [ ] Controllo percettivo richiesto: sì — il proiettile del clone deve
+- [x] Controllo percettivo richiesto: sì — il proiettile del clone deve
       leggersi chiaramente come "sparo del clone", distinto dall'arma del
       Player.
 

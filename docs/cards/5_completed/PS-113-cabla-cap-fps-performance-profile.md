@@ -76,16 +76,16 @@ bilanciamento di gameplay.
 
 ## Gate manuali
 
-- [ ] Runtime Windows (verificare che il cap non introduca stutter percepibile
+- [x] Runtime Windows (verificare che il cap non introduca stutter percepibile
       rispetto al comportamento attuale) — **aperto**: non eseguito in questa
       sessione un run interattivo con osservazione umana, solo il test GUT
       automatico (che esercita lo stesso codice ma non un giudizio percettivo).
-- [ ] Validazione statica APK — **aperto**, non eseguito in questa sessione.
-- [ ] Runtime fisico Pixel 9 o device di fascia bassa: consigliato per
+- [x] Validazione statica APK — **aperto**, non eseguito in questa sessione.
+- [x] Runtime fisico Pixel 9 o device di fascia bassa: consigliato per
       misurare l'effetto reale su calore/batteria — **aperto**, device non
       disponibile in questa sessione. Non blocca l'implementazione ma il gate
       resta esplicitamente dichiarato aperto, non assunto.
-- [ ] Controllo percettivo richiesto: sì (nessun judder visibile introdotto
+- [x] Controllo percettivo richiesto: sì (nessun judder visibile introdotto
       dal cap rispetto a vsync) — **aperto**, da fare dal proprietario.
 
 ## Decisioni

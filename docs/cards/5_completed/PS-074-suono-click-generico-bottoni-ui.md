@@ -95,12 +95,12 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: naviga l'intero flusso welcome → tutorial →
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: naviga l'intero flusso welcome → tutorial →
       selezione → run → pausa → cambio personaggio → fine run toccando ogni
       bottone, con le cuffie
-- [ ] Controllo percettivo richiesto: sì — il click non deve risultare
+- [x] Controllo percettivo richiesto: sì — il click non deve risultare
       fastidioso su pressioni ripetute rapide (carosello, tutorial)
 
 ## Decisioni

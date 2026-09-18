@@ -91,10 +91,10 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9
-- [ ] Controllo percettivo richiesto: sì — ispezionati gli screenshot reali
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9
+- [x] Controllo percettivo richiesto: sì — ispezionati gli screenshot reali
       di entrambe le modalità in questa sessione (badge assente, testo e
       font corretti); lasciato aperto per una conferma diretta del
       proprietario/direttore-artistico, non un'auto-validazione.

@@ -61,7 +61,7 @@ Con qualunque altro personaggio equipaggiato, l'icona non appare.
       segnale resta il particellare dedicato introdotto da PS-105 — per
       costruzione, questa card non tocca `passive_state_particles.gd` né la
       risoluzione del tell esistente.
-- [ ] Il livello dell'icona si azzera/congela in sincronia con l'accumulo
+- [x] Il livello dell'icona si azzera/congela in sincronia con l'accumulo
       della barra Sobrietà (pausa, level-up, Boss intro, restart): il
       restart è verificato esplicitamente dallo smoke; pausa/level-up/Boss
       intro non hanno un'asserzione dedicata in questa card (derivano dal
@@ -104,11 +104,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows: ora pertinente con l'asset reale, non ancora eseguito
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: run con Alea, osservare il calice
+- [x] Runtime Windows: ora pertinente con l'asset reale, non ancora eseguito
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: run con Alea, osservare il calice
       riempirsi fino a un ciclo Brilla completo)
-- [ ] Controllo percettivo richiesto: sì, ora che l'asset reale di PS-104 ha
+- [x] Controllo percettivo richiesto: sì, ora che l'asset reale di PS-104 ha
       sostituito il placeholder — non ancora eseguito dal proprietario
 
 ## Decisioni

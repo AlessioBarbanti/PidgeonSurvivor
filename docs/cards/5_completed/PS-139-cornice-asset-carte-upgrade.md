@@ -116,9 +116,9 @@ ripetitive quando tre carte sono affiancate.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: verifica percettiva della leggibilità
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: verifica percettiva della leggibilità
       delle tre carte affiancate su schermo compatto)
 - [x] Controllo percettivo richiesto: sì — fatto. Confronto screenshot
       `05_upgrade_overlay.png` prima/dopo con l'asset reale di PS-152,

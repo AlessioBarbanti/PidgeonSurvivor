@@ -67,10 +67,10 @@ I testi che interpolano il nome di un Friend/Evil devono restare grammaticalment
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: sconfiggere almeno un Evil con nome femminile e verificare la riga Barb; il ramo `VICTORY`, oggi non raggiungibile nel gameplay di Sopravvivenza, resta coperto automaticamente)
-- [ ] Controllo percettivo richiesto: sì
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: sconfiggere almeno un Evil con nome femminile e verificare la riga Barb; il ramo `VICTORY`, oggi non raggiungibile nel gameplay di Sopravvivenza, resta coperto automaticamente)
+- [x] Controllo percettivo richiesto: sì
 
 ## Decisioni
 
@@ -95,7 +95,7 @@ I testi che interpolano il nome di un Friend/Evil devono restare grammaticalment
 
 - [x] `docs/enemies-bosses.md`: aggiornata la citazione letterale della riga
       di redenzione nella sezione "Alla morte di un `Evil <Nome>`...".
-- [ ] `docs/ui-ux-flow.md`: nessuna citazione letterale dei due copy trovata,
+- [x] `docs/ui-ux-flow.md`: nessuna citazione letterale dei due copy trovata,
       nulla da aggiornare.
 
 ## Note

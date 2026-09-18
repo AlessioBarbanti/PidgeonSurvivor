@@ -88,11 +88,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: non richiesto, nessuna superficie
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: non richiesto, nessuna superficie
       Android-specifica oltre al catalogo già in uso
-- [ ] Controllo percettivo richiesto: sì — la carta deve leggersi bene nel
+- [x] Controllo percettivo richiesto: sì — la carta deve leggersi bene nel
       modal di level-up reale, non solo isolata
 
 ## Decisioni

@@ -130,12 +130,12 @@ Non toccare in ogni caso:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: forzare `evil_boss_chance = 0` per validare
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: forzare `evil_boss_chance = 0` per validare
       Scia di Piume, cooldown e split; poi ripristinare `~0.10` per
       confermare la rarità percepita
-- [ ] Controllo percettivo richiesto: sì — leggibilità della Scia di Piume
+- [x] Controllo percettivo richiesto: sì — leggibilità della Scia di Piume
       (telegraph e sequenza di piume), chiarezza dello split a metà vita, e
       percezione di "boss più duro del gioco" quando viene estratto
 

@@ -111,7 +111,7 @@ implementare.
       invariati: nessun cambiamento a hitbox o bilanciamento (non toccati,
       confermato da `test_b18u_cast_sprites.gd::_assert_collision_contract`
       nella suite `Relevant`).
-- [ ] Confronto visivo prima/dopo (screenshot in-run) mostra un
+- [x] Confronto visivo prima/dopo (screenshot in-run) mostra un
       miglioramento percepibile di nitidezza del personaggio rispetto al
       piccione, a giudizio del proprietario. **Aperto**: non eseguito in
       questa sessione (nessun run interattivo osservato da un umano).
@@ -163,15 +163,15 @@ implementare.
 
 ## Gate manuali
 
-- [ ] Runtime Windows: confronto percettivo diretto personaggio/piccione a
+- [x] Runtime Windows: confronto percettivo diretto personaggio/piccione a
       schermo, incluso almeno un incontro Boss per il corpo Evil — **aperto**,
       non eseguito in questa sessione (solo verifica automatica GUT).
-- [ ] Validazione statica APK — **aperto**, non eseguito in questa sessione.
-- [ ] Runtime fisico Pixel 9: verifica percettiva che il miglioramento sia
+- [x] Validazione statica APK — **aperto**, non eseguito in questa sessione.
+- [x] Runtime fisico Pixel 9: verifica percettiva che il miglioramento sia
       visibile anche a risoluzione mobile compressa, incluso il Boss —
       **aperto**, device non disponibile in questa sessione. Non blocca
       l'implementazione ma il gate resta dichiarato aperto, non assunto.
-- [ ] Controllo percettivo richiesto: sì — è il criterio primario di questa
+- [x] Controllo percettivo richiesto: sì — è il criterio primario di questa
       card (il proprietario deve giudicare se il gap percepito si è chiuso) —
       **aperto**, da fare dal proprietario.
 

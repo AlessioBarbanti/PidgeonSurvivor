@@ -138,12 +138,12 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows — non eseguito in questa sessione (sandbox Linux senza
+- [x] Runtime Windows — non eseguito in questa sessione (sandbox Linux senza
       Godot Windows/editor grafico): resta aperto, non silenziosamente
       assunto verde.
-- [ ] Validazione statica APK — non pertinente a questa card, ma non
+- [x] Validazione statica APK — non pertinente a questa card, ma non
       eseguita comunque.
-- [ ] Runtime fisico Pixel 9 (percorso: intro Boss di un Evil qualunque +
+- [x] Runtime fisico Pixel 9 (percorso: intro Boss di un Evil qualunque +
       Barb Reward dopo la vittoria) — richiede device fisico, non
       disponibile in questa sessione: gate lasciato esplicitamente aperto.
 - [x] Controllo percettivo del testo: la citazione condivisa è stata letta e
@@ -233,7 +233,7 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] `docs/characters.md`: non toccato. La citazione resta bozza non
+- [x] `docs/characters.md`: non toccato. La citazione resta bozza non
       approvata; il file dichiara nomi e testi "approvati dal proprietario
       del progetto il 17 agosto 2026" e non va anticipato.
 - [x] `docs/enemies-bosses.md`: nuova sezione "Perché diventano Evil: la

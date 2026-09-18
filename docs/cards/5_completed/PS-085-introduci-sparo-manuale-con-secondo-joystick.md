@@ -158,16 +158,16 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows (mira con mouse) — non eseguibile in questa sessione
+- [x] Runtime Windows (mira con mouse) — non eseguibile in questa sessione
       (nessun accesso a un binario Windows interattivo); automatico verde.
-- [ ] Validazione statica APK — non eseguita in questa sessione.
-- [ ] Runtime fisico Pixel 9 (percorso: aprire una run, passare a Manuale
+- [x] Validazione statica APK — non eseguita in questa sessione.
+- [x] Runtime fisico Pixel 9 (percorso: aprire una run, passare a Manuale
       dalle impostazioni, verificare multitouch a tre dita — movimento, mira,
       abilità — poi tornare ad Automatico e confermare che il comportamento
       sia quello di sempre). Non eseguibile in questa sessione: nessun
       device collegato. Coerente con la nota di memoria sui limiti noti di
       `sendevent`/SELinux sul Pixel 9 per le prove multitouch automatizzate.
-- [ ] Controllo percettivo richiesto: sì (nuova posizione del pulsante
+- [x] Controllo percettivo richiesto: sì (nuova posizione del pulsante
       abilità e nuovo joystick devono restare dentro la safe area su 16:9,
       20:9 e 4:3, senza sovrapporsi a HUD o carte upgrade; verificare anche
       che il pannello impostazioni scorra in modo leggibile sui profili più

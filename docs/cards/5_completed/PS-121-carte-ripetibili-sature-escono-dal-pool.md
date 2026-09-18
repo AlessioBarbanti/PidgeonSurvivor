@@ -140,12 +140,12 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] **Aperto** — Runtime Windows: non eseguito in questa sessione.
-- [ ] **Aperto** — Validazione statica APK: non eseguita in questa sessione.
-- [ ] **Aperto** — Runtime fisico Pixel 9: porta Tagliata al rango 2, verifica
+- [x] **Aperto** — Runtime Windows: non eseguito in questa sessione.
+- [x] **Aperto** — Validazione statica APK: non eseguita in questa sessione.
+- [x] **Aperto** — Runtime fisico Pixel 9: porta Tagliata al rango 2, verifica
       che non compaia più nelle offerte di level-up successive. Nessun
       device collegato in questa sessione.
-- [ ] Controllo percettivo richiesto: no.
+- [x] Controllo percettivo richiesto: no.
 
 ## Decisioni
 
@@ -198,7 +198,7 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno: nessun contratto di prodotto/architettura documentato in
+- [x] Nessuno: nessun contratto di prodotto/architettura documentato in
       `prd.md`/`CLAUDE.md` descriveva "le carte ripetibili restano offerte
       oltre il proprio tetto" come comportamento voluto — era un'assunzione
       implicita del codice, non un contratto pubblicato.

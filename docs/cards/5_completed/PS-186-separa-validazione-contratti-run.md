@@ -50,7 +50,7 @@ all'ordine di configure(), al modello scene-local, ai modali o al bilanciamento.
 
 - [x] Runtime Windows esportato: export e smoke automatico di avvio.
 - [x] Validazione statica APK corrente.
-- [ ] Runtime fisico Pixel 9: avvio, selezione, run, pausa e restart.
+- [x] Runtime fisico Pixel 9: avvio, selezione, run, pausa e restart.
 - Controllo percettivo dedicato: non richiesto; presentazione invariata.
 
 ## Decisioni

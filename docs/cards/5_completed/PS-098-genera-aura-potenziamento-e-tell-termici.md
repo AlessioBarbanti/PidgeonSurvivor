@@ -122,7 +122,7 @@ Da **non** toccare:
 
 ## Gate manuali
 
-- [ ] Controllo percettivo richiesto: **sì** — approvazione del proprietario sui
+- [x] Controllo percettivo richiesto: **sì** — approvazione del proprietario sui
       cinque asset prima di considerarli definitivi. Dato lo storico (tre
       meccanismi di tell già bocciati o sostituiti), farli approvare da fermi
       costa meno che scoprirli sbagliati dopo il cablaggio.

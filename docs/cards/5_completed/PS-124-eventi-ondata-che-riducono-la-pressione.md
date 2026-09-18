@@ -103,12 +103,12 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: raggiungere Accerchiamento e Stormo
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: raggiungere Accerchiamento e Stormo
       laterale in una run reale, valutare se si leggono come minaccia
       crescente)
-- [ ] Controllo percettivo richiesto: sì — chiude anche il gate percettivo
+- [x] Controllo percettivo richiesto: sì — chiude anche il gate percettivo
       ancora aperto di [PS-008](../5_completed/PS-008-eventi-di-ondata.md)
       per questi due eventi specifici
 

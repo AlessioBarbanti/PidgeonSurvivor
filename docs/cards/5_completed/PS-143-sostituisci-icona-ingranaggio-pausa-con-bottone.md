@@ -100,12 +100,12 @@ non cambia: mantiene la propria icona ingranaggio così com'è oggi.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: apertura pausa, navigazione da
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: apertura pausa, navigazione da
       tastiera/gamepad fra i tre bottoni, apertura impostazioni dal nuovo
       bottone)
-- [ ] Controllo percettivo richiesto: sì — confronto screenshot fornito dal
+- [x] Controllo percettivo richiesto: sì — confronto screenshot fornito dal
       proprietario prima/dopo
 
 ## Decisioni

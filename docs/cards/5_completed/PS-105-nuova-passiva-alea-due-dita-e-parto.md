@@ -165,11 +165,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: run con Alea fino ad almeno due
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: run con Alea fino ad almeno due
       cicli Brilla, per sentire cadenza/movimento e instabilità)
-- [ ] Controllo percettivo richiesto: sì — l'instabilità di movimento deve
+- [x] Controllo percettivo richiesto: sì — l'instabilità di movimento deve
       sentirsi come una sfida gestibile, non come una perdita di controllo
       frustrante; la barra Sobrietà deve leggersi chiaramente durante il
       gameplay reale, non solo in un provino statico

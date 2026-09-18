@@ -101,12 +101,12 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: run fino ad almeno 5 minuti,
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: run fino ad almeno 5 minuti,
       confrontare la sensazione di pressione con la baseline pre-PS-076 se
       possibile)
-- [ ] Controllo percettivo richiesto: sì — nemici più fragili non devono
+- [x] Controllo percettivo richiesto: sì — nemici più fragili non devono
       leggersi come "troppo facili" rispetto alla cadenza più alta
 
 ## Decisioni

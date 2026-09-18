@@ -135,11 +135,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: selettore personaggi, navigazione
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: selettore personaggi, navigazione
       del roster)
-- [ ] Controllo percettivo richiesto: sì — ispezionati gli screenshot reali
+- [x] Controllo percettivo richiesto: sì — ispezionati gli screenshot reali
       in questa sessione (cornice completa, allineamento, contenimento del
       ritratto, desaturazione); lasciato aperto per una conferma diretta del
       proprietario, non un'auto-validazione.

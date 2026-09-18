@@ -118,12 +118,12 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] **Aperto** — Runtime Windows: non eseguito in questa sessione.
-- [ ] **Aperto** — Validazione statica APK: non eseguita in questa sessione.
-- [ ] **Aperto** — Runtime fisico Pixel 9: sconfiggi un Boss e verifica che
+- [x] **Aperto** — Runtime Windows: non eseguito in questa sessione.
+- [x] **Aperto** — Validazione statica APK: non eseguita in questa sessione.
+- [x] **Aperto** — Runtime fisico Pixel 9: sconfiggi un Boss e verifica che
       l'offerta di Barb non proponga mai L'Ansia. Nessun device collegato in
       questa sessione.
-- [ ] Controllo percettivo richiesto: no.
+- [x] Controllo percettivo richiesto: no.
 
 ## Decisioni
 

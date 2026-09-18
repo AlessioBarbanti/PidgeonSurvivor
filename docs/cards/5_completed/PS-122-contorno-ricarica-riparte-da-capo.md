@@ -101,16 +101,16 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] **Aperto** — Runtime Windows: non eseguito.
-- [ ] **Aperto** — Validazione statica APK: non ancora eseguita su un APK
+- [x] **Aperto** — Runtime Windows: non eseguito.
+- [x] **Aperto** — Validazione statica APK: non ancora eseguita su un APK
       contenente questo fix specifico.
-- [ ] **Aperto** — Runtime fisico Pixel 9: lancia l'abilità più volte in
+- [x] **Aperto** — Runtime fisico Pixel 9: lancia l'abilità più volte in
       rapida sequenza con più cariche disponibili e verifica che il
       contorno riparta sempre da un cerchio pieno a ogni lancio, mai da un
       punto già avanzato. Nessun device collegato in questa sessione — è
       esattamente il gate che il proprietario ha già esercitato riportando
       il comportamento originale.
-- [ ] **Aperto** — Controllo percettivo richiesto: sì — stesso gate rimasto
+- [x] **Aperto** — Controllo percettivo richiesto: sì — stesso gate rimasto
       aperto su PS-120, ora più mirato: il contorno deve visibilmente
       ripartire da pieno a ogni lancio.
 
@@ -137,7 +137,7 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno: comportamento HUD, nessun contratto di prodotto/architettura
+- [x] Nessuno: comportamento HUD, nessun contratto di prodotto/architettura
       da aggiornare.
 
 ## Note

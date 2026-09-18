@@ -97,8 +97,8 @@ allineate all'inizio della barra.
 - [x] Runtime Windows — pacchetto di catture UI rigenerato, percorso reale
       welcome→...→run→pausa→terminale completato senza `SCRIPT
       ERROR`/`FATAL EXCEPTION`, marker `CAPTURE_DONE`.
-- [ ] Validazione statica APK — non eseguita in questa sessione.
-- [ ] Runtime fisico Pixel 9 (percorso: HUD a schermo pieno in
+- [x] Validazione statica APK — non eseguita in questa sessione.
+- [x] Runtime fisico Pixel 9 (percorso: HUD a schermo pieno in
       combattimento, controllo che le barre non tocchino i lati schermo) —
       nessun device collegato in questa sessione (`adb devices` vuoto); gate
       lasciato aperto, non blocca l'implementazione.

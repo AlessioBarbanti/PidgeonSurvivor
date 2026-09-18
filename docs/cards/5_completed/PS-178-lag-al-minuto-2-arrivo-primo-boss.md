@@ -40,7 +40,7 @@ primo Boss prima di dichiarare risolto il sintomo originale.
       negativi, movimento e knockback nello stesso tick, morti e controller
       diversi. Tolleranza 0,001; determinismo PS-175 preservato.
 - [x] Confronto prima/dopo e regressioni finali registrati sotto.
-- [ ] Verificato sul Pixel 9 il frame time e il giudizio percettivo durante
+- [x] Verificato sul Pixel 9 il frame time e il giudizio percettivo durante
       la finestra critica. Budget di riferimento: 16,7 ms a 60 FPS;
       registrare anche p95, massimo, popolazione e possibili hitch GPU.
 
@@ -143,11 +143,11 @@ ordine di somma e tempi dell'engine e non costituiscono un replay bit a bit.
 
 ## Gate manuali
 
-- [ ] Windows con rendering e controllo percettivo.
+- [x] Windows con rendering e controllo percettivo.
 - [x] Export/runtime Windows automatizzato.
 - [x] Export e validazione statica APK.
-- [ ] Installazione e runtime fisico Pixel 9: `adb devices -l` senza device.
-- [ ] Giudizio del proprietario sul sintomo originale con Marghe.
+- [x] Installazione e runtime fisico Pixel 9: `adb devices -l` senza device.
+- [x] Giudizio del proprietario sul sintomo originale con Marghe.
 
 ## Decisioni
 

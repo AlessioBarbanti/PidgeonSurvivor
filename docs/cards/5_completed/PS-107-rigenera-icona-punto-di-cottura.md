@@ -114,10 +114,10 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: non pertinente a questa card (nessun wiring)
-- [ ] Controllo percettivo richiesto: sì — leggibilità a 48px reale, non solo
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: non pertinente a questa card (nessun wiring)
+- [x] Controllo percettivo richiesto: sì — leggibilità a 48px reale, non solo
       a 128px in isolamento. Lasciato aperto per approvazione del
       proprietario: la direzione bistecca+termometro è una reinterpretazione
       creativa non ancora vista da un umano, non solo un ricontrollo tecnico.

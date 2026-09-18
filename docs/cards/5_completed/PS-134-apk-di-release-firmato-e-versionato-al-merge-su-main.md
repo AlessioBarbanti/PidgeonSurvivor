@@ -127,7 +127,7 @@ Non toccare:
       `34287138282` (push del merge PR #12 `develop` → `main`) concluso
       `success` in 2m46s; release GitHub `v0.1.0`, `isPrerelease: false`,
       asset `pidgeon-survivor.apk` (120511556 byte) presente e scaricabile.
-- [ ] Runtime fisico Pixel 9: l'APK **di release** scaricato dalla Release va
+- [x] Runtime fisico Pixel 9: l'APK **di release** scaricato dalla Release va
       installato su device e il gioco avviato almeno fino a una run. Una build
       release non è mai stata provata su device: cambia il livello di
       ottimizzazione e la firma, quindi il gate di PS-060 non vale per questa.

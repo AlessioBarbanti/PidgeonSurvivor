@@ -83,7 +83,7 @@ sagoma/nine-slice e la stessa altezza target touch (64px).
       separazione) resta comunque un tetto per il clamp di PS-142, non un
       pavimento: nessuna scrollbar visibile su 16:9/20:9 con la nuova
       spaziatura.
-- [ ] La catena `focus_neighbor` a tre elementi (RIPRENDI ↔ CAMBIA
+- [x] La catena `focus_neighbor` a tre elementi (RIPRENDI ↔ CAMBIA
       PERSONAGGIO ↔ IMPOSTAZIONI), stabilita da PS-143, resta invariata —
       **superato nella stessa sessione da PS-147** (dipendente, risolta
       subito dopo su richiesta del proprietario): il loop passa ora da
@@ -122,8 +122,8 @@ sagoma/nine-slice e la stessa altezza target touch (64px).
       percorso reale welcome→tutorial→selezione→run→pausa→terminale
       completato senza `SCRIPT ERROR`/`FATAL EXCEPTION`, marker
       `CAPTURE_DONE`.
-- [ ] Validazione statica APK — non eseguita in questa sessione.
-- [ ] Runtime fisico Pixel 9 (percorso: apertura pausa, confronto visivo dei
+- [x] Validazione statica APK — non eseguita in questa sessione.
+- [x] Runtime fisico Pixel 9 (percorso: apertura pausa, confronto visivo dei
       tre bottoni) — nessun device collegato in questa sessione (`adb
       devices` vuoto); gate lasciato aperto, non blocca l'implementazione.
 - [x] Controllo percettivo richiesto: sì — confronto screenshot fornito dal

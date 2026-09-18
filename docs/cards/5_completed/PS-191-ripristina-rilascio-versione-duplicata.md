@@ -29,10 +29,10 @@ attraverso il normale merge `develop` → `main` e i gate del workflow PS-134.
 ## Criteri di accettazione
 
 - [x] `project.godot` dichiara `0.3.1`; il tag risulta libero prima del rilascio.
-- [ ] La run di rilascio supera il controllo del tag e termina con successo.
-- [ ] La Release `v0.3.1` contiene un APK firmato, non debuggabile, con
+- [x] La run di rilascio supera il controllo del tag e termina con successo.
+- [x] La Release `v0.3.1` contiene un APK firmato, non debuggabile, con
       `versionName=0.3.1` e `versionCode=301`, verificato dal workflow.
-- [ ] Il tag e la Release `v0.3.0` restano intatti.
+- [x] Il tag e la Release `v0.3.0` restano intatti.
 
 ## Ambito
 

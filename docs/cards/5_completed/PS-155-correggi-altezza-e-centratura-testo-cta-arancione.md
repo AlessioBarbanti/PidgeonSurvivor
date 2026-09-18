@@ -101,9 +101,9 @@ verticalmente sulla placca in ogni scena che lo usa.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9
 - [x] Controllo percettivo richiesto: sì — il proprietario ha confermato
       via screenshot che il fix su pausa è corretto dopo il refresh della
       cache ("ok, ora si vede bene"); le altre 4 scene sono state

@@ -101,11 +101,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: run fino all'avvertimento Boss,
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: run fino all'avvertimento Boss,
       level-up e schermata di ricompensa Barb, ascoltando con le cuffie)
-- [ ] Controllo percettivo richiesto: sì — il ducking deve farsi notare senza
+- [x] Controllo percettivo richiesto: sì — il ducking deve farsi notare senza
       diventare fastidioso; verificare anche che la transizione a `BOSS_INTRO`
       (di competenza PS-073) resti pulita senza un doppio effetto residuo di
       questa card.

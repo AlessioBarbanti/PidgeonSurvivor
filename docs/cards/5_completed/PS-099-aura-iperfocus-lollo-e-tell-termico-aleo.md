@@ -157,12 +157,12 @@ Da **non** toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: run con Lollo fino ad almeno un ciclo
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: run con Lollo fino ad almeno un ciclo
       iperfocus→distrazione→iperfocus; run con Aleo attraversando la soglia HP
       in entrambe le direzioni; una fase densa per ciascuno)
-- [ ] Controllo percettivo richiesto: **sì** — l'aura deve leggersi come un
+- [x] Controllo percettivo richiesto: **sì** — l'aura deve leggersi come un
       potenziamento e non come un effetto ambientale, e il termometro deve
       essere leggibile nell'istante in cui compare. Dato lo storico (B44,
       PS-001 e PS-029 tutti bocciati o superati), non dichiarare `COMPLETATO`
@@ -226,7 +226,7 @@ Da **non** toccare:
 - [x] `docs/characters.md`: le descrizioni pubbliche del tell di Aleo e Lollo
       sono state riscritte per riflettere aura a terra + termometro e aura di
       potenziamento invece del particellare.
-- [ ] Nota `*-verification.md`, se i gate Windows/Android producono evidenze.
+- [x] Nota `*-verification.md`, se i gate Windows/Android producono evidenze.
 
 ## Note
 

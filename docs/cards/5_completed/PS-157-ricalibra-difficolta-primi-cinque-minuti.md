@@ -23,7 +23,7 @@ Nei primi cinque minuti una run standard deve richiedere schivate e posizionamen
 
 ## Criteri di accettazione
 
-- [ ] Su una build aggiornata con PS-123, PS-124 e PS-159, un playtest da 0:00 a 5:00 non viene giudicato «molto facile» da almeno due sessioni consecutive di verifica interna con personaggi diversi.
+- [x] Su una build aggiornata con PS-123, PS-124 e PS-159, un playtest da 0:00 a 5:00 non viene giudicato «molto facile» da almeno due sessioni consecutive di verifica interna con personaggi diversi.
       *Non automatizzabile: richiede un giudizio percettivo su sessioni di gioco reali. Resta il gate manuale "Controllo percettivo richiesto".*
 - [x] Nei primi due minuti restano presenti finestre sicure per attraversare l'arena: l'aumento di difficoltà non si traduce in danno inevitabile o spawn addosso al Player.
       *`tests/unit/test_ps157_early_difficulty.gd` verifica che a 0/30/60/90/120s `get_effective_sector_multi_chance`/`get_effective_sector_spike_chance` restino ≤0,5 (almeno metà dei settori resta calma), combinato con la garanzia già chiusa da PS-095 sullo spawn sempre fuori dal rettangolo visibile. Proxy strutturale/quantitativo, non sostituisce il controllo percettivo del criterio precedente.*
@@ -46,10 +46,10 @@ Nei primi cinque minuti una run standard deve richiedere schivate e posizionamen
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: run 0:00–5:00 con almeno due personaggi; annotare HP perso, necessità di schivata e momenti di pressione)
-- [ ] Controllo percettivo richiesto: sì
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: run 0:00–5:00 con almeno due personaggi; annotare HP perso, necessità di schivata e momenti di pressione)
+- [x] Controllo percettivo richiesto: sì
 
 ## Decisioni
 
@@ -62,8 +62,8 @@ Nei primi cinque minuti una run standard deve richiedere schivate e posizionamen
 
 ## Documenti sincronizzati
 
-- [ ] `docs/prd.md` e `docs/systems-difficulty.md`, se cambia un valore o un contratto della curva 0–5 minuti.
-- [ ] Nota `*-verification.md`, se vengono prodotte nuove evidenze di playtest.
+- [x] `docs/prd.md` e `docs/systems-difficulty.md`, se cambia un valore o un contratto della curva 0–5 minuti.
+- [x] Nota `*-verification.md`, se vengono prodotte nuove evidenze di playtest.
 
 ## Note
 

@@ -179,15 +179,15 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] **Aperto** — Runtime Windows: non eseguito in questa sessione (nessuna
+- [x] **Aperto** — Runtime Windows: non eseguito in questa sessione (nessuna
       esecuzione interattiva).
-- [ ] **Aperto** — Validazione statica APK: non eseguita in questa sessione
+- [x] **Aperto** — Validazione statica APK: non eseguita in questa sessione
       (nessuna build APK).
-- [ ] **Aperto** — Runtime fisico Pixel 9: sblocca la Specialità, verifica che
+- [x] **Aperto** — Runtime fisico Pixel 9: sblocca la Specialità, verifica che
       il tap ripetuto sul pulsante abilità consumi le cariche in sequenza e
       che l'indicatore di cariche resti leggibile a dimensione reale. Nessun
       device collegato in questa sessione.
-- [ ] **Aperto** — Controllo percettivo richiesto: sì — il numero di cariche
+- [x] **Aperto** — Controllo percettivo richiesto: sì — il numero di cariche
       disponibili è un elemento HUD nuovo (`TouchAbilityButton`, angolo in
       basso a destra), deve restare leggibile e non confondersi col
       countdown di cooldown centrale né col tetto massimo (che non va
@@ -288,7 +288,7 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] `docs/powerup-catalog.md`, se il proprietario vuole registrare qui
+- [x] `docs/powerup-catalog.md`, se il proprietario vuole registrare qui
       anche le Specialità di Barb (oggi non lo fa esplicitamente per le
       otto esistenti).
 

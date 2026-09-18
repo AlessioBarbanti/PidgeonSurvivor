@@ -88,12 +88,12 @@ liberate.
 
 ## Gate manuali
 
-- [ ] Runtime Windows — non eseguito in questa sessione (solo sandbox Linux
+- [x] Runtime Windows — non eseguito in questa sessione (solo sandbox Linux
       headless, nessun accesso a un ambiente Windows).
-- [ ] Validazione statica APK — non eseguita in questa sessione.
-- [ ] Runtime fisico Pixel 9 (percorso: non applicabile, è un problema di
+- [x] Validazione statica APK — non eseguita in questa sessione.
+- [x] Runtime fisico Pixel 9 (percorso: non applicabile, è un problema di
       soli test) — n/a, nessun comportamento percettibile in gioco cambia.
-- [ ] Controllo percettivo richiesto: no
+- [x] Controllo percettivo richiesto: no
 
 Gate Windows/APK lasciati esplicitamente aperti (nessun ambiente disponibile
 in questa sessione), coerente con l'onestà dei gate del progetto, anche se
@@ -153,7 +153,7 @@ piattaforma che esegue lo stesso motore.
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno atteso: è una correzione di affidabilità dei test, non un
+- [x] Nessuno atteso: è una correzione di affidabilità dei test, non un
       contratto di prodotto.
 
 ## Note

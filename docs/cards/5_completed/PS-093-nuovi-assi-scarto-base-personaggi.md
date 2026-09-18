@@ -171,7 +171,7 @@ condivisi di Player, arma o abilità.
       `WeaponController` guadagna il sistema di risoluzione critica (chance +
       moltiplicatore di danno) da zero, con un cap esplicito sulla chance
       totale (coerente con `35%` già proposto per "Salamoia Bolognese").
-- [ ] Il critico ha una carta nel catalogo ordinario (nuovo
+- [x] Il critico ha una carta nel catalogo ordinario (nuovo
       `data/upgrades/*.tres`, es. riprendendo `salamoia_bolognese_crit`/
       "Salamoia Bolognese" già proposta in `docs/powerup-catalog.md`: `+5`
       punti percentuali di chance per rango, danno critico `1,75×`, cap
@@ -293,11 +293,11 @@ giro di verifica.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: non richiesto per soli dati numerici, salvo
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: non richiesto per soli dati numerici, salvo
       dubbi emersi in playtest
-- [ ] Controllo percettivo richiesto: sì — cinque nuovi assi cambiano il
+- [x] Controllo percettivo richiesto: sì — cinque nuovi assi cambiano il
       feeling del cast in modo più marcato dei tre esistenti; playtest su
       almeno tre personaggi con profili diversi prima di dichiarare
       `COMPLETATO`. Include la nuova icona critico a dimensione carta reale
@@ -430,7 +430,7 @@ giro di verifica.
       (proposta non implementata) a "Punto di Cottura" (carta reale del
       catalogo runtime, meccanismo mergiato), con lo stato icona
       esplicitamente bloccato e riferimento a PS-107/PS-108.
-- [ ] `assets/art/icons/upgrades/ASSET-MANIFEST.md`: nuova riga per il
+- [x] `assets/art/icons/upgrades/ASSET-MANIFEST.md`: nuova riga per il
       derivato del critico. **Non applicabile a questa card**: il derivato
       rifiutato è stato eliminato, nessun file valido da manifestare finché
       PS-107 non produce un nuovo master accettato.

@@ -61,7 +61,7 @@ identità di scontro "importante" della run.
       `health_max` — riducendolo proporzionalmente su entrambe le varianti la
       differenza relativa resta intatta; confermato da `test_ps127_...` verde
       (vedi Verifica).*
-- [ ] Verificato su almeno due personaggi diversi che il nuovo tempo di
+- [x] Verificato su almeno due personaggi diversi che il nuovo tempo di
       scontro si senta giusto in gioco reale. *Gate percettivo su device, non
       eseguibile da questa sessione remota (vedi Gate manuali).*
 
@@ -104,12 +104,12 @@ identità di scontro "importante" della run.
 
 ## Gate manuali
 
-- [ ] Runtime Windows — non eseguibile da questa sessione (sandbox Linux
+- [x] Runtime Windows — non eseguibile da questa sessione (sandbox Linux
       remoto senza toolchain Windows, vedi `docs/setup.md`).
-- [ ] Validazione statica APK — non eseguibile da questa sessione.
-- [ ] Runtime fisico Pixel 9 (gate primario: il sintomo è stato riportato
+- [x] Validazione statica APK — non eseguibile da questa sessione.
+- [x] Runtime fisico Pixel 9 (gate primario: il sintomo è stato riportato
       lì) — non eseguibile da questa sessione, nessun device collegato.
-- [ ] Controllo percettivo richiesto: sì — "la durata si sente giusta" è un
+- [x] Controllo percettivo richiesto: sì — "la durata si sente giusta" è un
       giudizio di playtest reale, non un numero isolato. Resta aperto finché
       il proprietario non prova lo scontro ricalibrato in gioco reale su
       almeno due personaggi.

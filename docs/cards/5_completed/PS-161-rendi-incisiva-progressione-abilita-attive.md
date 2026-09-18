@@ -48,10 +48,10 @@ I cinque ranghi già esistenti di ogni abilità attiva devono costruire una prog
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: una run con almeno tre personaggi diversi, verificando comparsa e impatto dell'upgrade specifico)
-- [ ] Controllo percettivo richiesto: sì — resta aperto: "il rango 5 si vede chiaramente più forte del rango 1" è un giudizio che richiede l'uso reale, non una mia ispezione dei numeri.
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: una run con almeno tre personaggi diversi, verificando comparsa e impatto dell'upgrade specifico)
+- [x] Controllo percettivo richiesto: sì — resta aperto: "il rango 5 si vede chiaramente più forte del rango 1" è un giudizio che richiede l'uso reale, non una mia ispezione dei numeri.
 
 ## Decisioni
 

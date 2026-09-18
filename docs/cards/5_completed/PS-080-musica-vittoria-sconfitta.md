@@ -79,13 +79,13 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso sconfitta: gioca fino alla morte,
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso sconfitta: gioca fino alla morte,
       ascolta la musica dimessa; percorso vittoria: **non raggiungibile in
       un playthrough reale oggi**, vedi Decisioni — verificabile solo via
       `RunController.request_victory()` da test/debug)
-- [ ] Controllo percettivo richiesto: sì per la sconfitta (raggiungibile in
+- [x] Controllo percettivo richiesto: sì per la sconfitta (raggiungibile in
       gioco); rimane aperto per la vittoria finché non esiste un percorso di
       gioco reale che la raggiunga
 

@@ -95,10 +95,10 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9
-- [ ] Controllo percettivo richiesto: no — nessun asset visivo nuovo, solo
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9
+- [x] Controllo percettivo richiesto: no — nessun asset visivo nuovo, solo
       rimozione di un fallback mai esercitato in produzione.
 
 ## Decisioni

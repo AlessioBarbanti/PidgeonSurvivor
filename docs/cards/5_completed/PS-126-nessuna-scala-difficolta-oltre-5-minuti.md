@@ -167,12 +167,12 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: run di almeno 10 minuti con almeno
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: run di almeno 10 minuti con almeno
       due ricorrenze Boss, valutare se la crescita si legge come pressione
       credibile e non come uno scatto improvviso)
-- [ ] Controllo percettivo richiesto: sì — i tassi di crescita proposti sono
+- [x] Controllo percettivo richiesto: sì — i tassi di crescita proposti sono
       un punto di partenza numerico, non un valore finale: la taratura vera
       è percettiva
 

@@ -35,7 +35,7 @@ placeholder a scacchiera magenta.
 
 ## Criteri di accettazione
 
-- [ ] Nome italiano definitivo proposto (soggetto da griglia, coerente col
+- [x] Nome italiano definitivo proposto (soggetto da griglia, coerente col
       registro di PS-078) e approvato dal proprietario.
 - [x] Master HD e derivato `128×128` generati con
       `tools/process-upgrade-icon.ps1`, stessa geometria delle altre icone
@@ -86,10 +86,10 @@ zero failure; nessun `SCRIPT ERROR`, `FATAL EXCEPTION`, `SMOKE_FAIL` o
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9
-- [ ] Controllo percettivo richiesto: sì — confronto diretto con le altre
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9
+- [x] Controllo percettivo richiesto: sì — confronto diretto con le altre
       otto icone Specialità a dimensione reale (128×128) e a 48×48.
 
 ## Decisioni

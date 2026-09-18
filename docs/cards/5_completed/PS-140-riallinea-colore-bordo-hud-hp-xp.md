@@ -43,7 +43,7 @@ tinta scollegata.
 - [x] Il bordo resta uno `StyleBoxFlat` piatto (nessuna cornice a rivetti o
       texture aggiunta): la forma non cambia, solo il colore — nessun'altra
       proprietà di `StyleBoxFlat_bar_background` è stata toccata.
-- [ ] Il contrasto fra il bordo e il riempimento delle barre (blu XP, rosso
+- [x] Il contrasto fra il bordo e il riempimento delle barre (blu XP, rosso
       HP) resta leggibile quanto oggi a colpo d'occhio durante il gameplay
       attivo. Non automatizzabile: resta il gate percettivo dedicato più
       sotto (screenshot `04_gameplay_hud.png` prima/dopo).
@@ -65,11 +65,11 @@ tinta scollegata.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: leggibilità HUD a schermo pieno in
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: leggibilità HUD a schermo pieno in
       combattimento)
-- [ ] Controllo percettivo richiesto: sì — confronto screenshot
+- [x] Controllo percettivo richiesto: sì — confronto screenshot
       `04_gameplay_hud.png` prima/dopo
 
 ## Decisioni
@@ -83,7 +83,7 @@ tinta scollegata.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/visual-audio-identity.md` — non sincronizzato in questa card:
+- [x] `docs/visual-audio-identity.md` — non sincronizzato in questa card:
       PS-139 non è stata risolta in questa stessa sessione, quindi la regola
       "HUD permanente = bordo piatto, overlay/modali = cornice a rivetti"
       resta da fissare quando entrambe le card avranno confermato la stessa

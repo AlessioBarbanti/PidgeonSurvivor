@@ -106,11 +106,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK — non pertinente, nessuna superficie
+- [x] Runtime Windows
+- [x] Validazione statica APK — non pertinente, nessuna superficie
       Android-specifica.
-- [ ] Runtime fisico Pixel 9 — non richiesto, comportamento non touch-specifico.
-- [ ] Controllo percettivo richiesto: sì — muovi il personaggio fino a far
+- [x] Runtime fisico Pixel 9 — non richiesto, comportamento non touch-specifico.
+- [x] Controllo percettivo richiesto: sì — muovi il personaggio fino a far
       scorrere la camera, muori o premi restart, verifica che il personaggio
       riappaia esattamente al centro fin dal primo frame.
 
@@ -153,7 +153,7 @@ Non toccare:
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno atteso: comportamento non documentato esplicitamente altrove.
+- [x] Nessuno atteso: comportamento non documentato esplicitamente altrove.
 
 ## Note
 

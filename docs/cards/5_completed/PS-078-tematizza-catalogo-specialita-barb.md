@@ -62,7 +62,7 @@ senza alterare l'effetto meccanico che rappresentano.
       coerente con la direzione visiva dichiarata in
       `docs/powerup-catalog.md` (nessun piccione come soggetto principale,
       stile pixel-art già stabilito nel resto del catalogo).
-- [ ] Le sette icone si leggono come una famiglia: un menù di tagli diversi
+- [x] Le sette icone si leggono come una famiglia: un menù di tagli diversi
       dello stesso grigliatore, non sette illustrazioni scollegate.
 - [x] `effect_id`, `effect_parameters`, `weight`, `max_rank` e ogni altro
       dato meccanico restano bit-per-bit identici: la card cambia solo
@@ -71,7 +71,7 @@ senza alterare l'effetto meccanico che rappresentano.
       esistenti (nessun nuovo componente, scena o registry) è l'unica
       integrazione di questa card, esplicitamente ammessa come eccezione
       "banale" alla regola generale di PS-090 — vedi Decisioni.
-- [ ] Le sette Specialità restano distinguibili fra loro e dagli upgrade
+- [x] Le sette Specialità restano distinguibili fra loro e dagli upgrade
       statistici ordinari già tematizzati, senza sovrapposizioni semantiche
       (stesso principio già dichiarato per le due pirofile in
       `powerup-catalog.md`).
@@ -128,11 +128,11 @@ il derivato ha lo stesso nome file e contenuto nuovo:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: apri la schermata Barb con le nuove
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: apri la schermata Barb con le nuove
       Specialità, verifica leggibilità di nome e icona a dimensione reale
-- [ ] Controllo percettivo richiesto: sì — le sette icone devono leggersi come
+- [x] Controllo percettivo richiesto: sì — le sette icone devono leggersi come
       sette pezzi di carne distinti dello stesso menù, riconoscibili l'uno
       dall'altro a dimensione carta, non come restyle cosmetico casuale
 - [x] Approvazione del proprietario sui nomi prima di generare le

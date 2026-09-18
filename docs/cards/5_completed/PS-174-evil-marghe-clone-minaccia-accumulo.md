@@ -112,11 +112,11 @@ tetto, la Signature non aggiunge altri cloni finché uno non scade o muore.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: incontro con Evil Marghe, ignorare
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: incontro con Evil Marghe, ignorare
       deliberatamente un clone e osservare l'accumulo)
-- [ ] Controllo percettivo richiesto: sì
+- [x] Controllo percettivo richiesto: sì
 
 ## Decisioni
 

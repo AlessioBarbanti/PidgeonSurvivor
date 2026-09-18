@@ -75,10 +75,10 @@ Una run con Boss ricorrenti deve esplorare il roster prima di ripetere frequente
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: run con almeno quattro Evil; annotare ordine delle identità)
-- [ ] Controllo percettivo richiesto: sì
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: run con almeno quattro Evil; annotare ordine delle identità)
+- [x] Controllo percettivo richiesto: sì
 
 ## Decisioni
 
@@ -122,10 +122,10 @@ Una run con Boss ricorrenti deve esplorare il roster prima di ripetere frequente
 
 - [x] `docs/enemies-bosses.md`: aggiunta la sezione "Varietà delle identità
       Evil (PS-162)" sotto "Baseline vs `Evil <Nome>`".
-- [ ] `docs/systems-difficulty.md`: nessuna policy di selezione Boss descritta
+- [x] `docs/systems-difficulty.md`: nessuna policy di selezione Boss descritta
       lì (solo un riferimento incidentale a `resolve_variant()` in una nota
       PS-126 su cosa NON tocca), nulla da aggiornare.
-- [ ] Nota `*-verification.md`, se viene salvata una sequenza seedata di evidenza.
+- [x] Nota `*-verification.md`, se viene salvata una sequenza seedata di evidenza.
 
 ## Note
 

@@ -119,7 +119,7 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows interattivo — **parziale**: la geometria del nuovo
+- [x] Runtime Windows interattivo — **parziale**: la geometria del nuovo
       layout (area contenuto fissa, nessuno scroll su CONTROLLI, tab
       allo stesso posto su tutte e tre) è stata verificata con rendering
       reale via uno script di cattura headless ad-hoc a 1280×720 e 960×720
@@ -127,7 +127,7 @@ Non toccare:
       sessione interattiva. Resta da fare un passaggio interattivo vero.
 - [x] Validazione statica APK — `android-static: PASS` (ispezione
       `inspect-android-artifact.ps1` via runner, sessione 2026-09-09).
-- [ ] Runtime fisico Pixel 9 — **parziale**: il fix dell'invisibilità del
+- [x] Runtime fisico Pixel 9 — **parziale**: il fix dell'invisibilità del
       testo delle tab (StyleBoxTexture/content_margin) è stato verificato
       dal vivo sul Pixel 9 con screenshot prima/dopo. Il giro successivo
       (redesign tab piatte, spaziature strette, area contenuto a
@@ -135,7 +135,7 @@ Non toccare:
       proprietario ha scollegato il device: verificato solo via il capture
       script su Windows, non ancora sul Pixel 9 fisico. Riaprire questo
       gate al prossimo collegamento del device prima di chiudere la card.
-- [ ] Controllo percettivo — **parziale**: il layout (tab/area
+- [x] Controllo percettivo — **parziale**: il layout (tab/area
       contenuto/footer) è stato controllato a fondo (device + script di
       cattura Windows) e approvato in questa sessione dopo tre giri di
       correzione col proprietario. Resta aperta la verifica originaria non

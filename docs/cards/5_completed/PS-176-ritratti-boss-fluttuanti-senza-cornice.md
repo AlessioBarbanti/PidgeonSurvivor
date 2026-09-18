@@ -142,11 +142,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows: non eseguito interattivamente (solo rendering reale via
+- [x] Runtime Windows: non eseguito interattivamente (solo rendering reale via
       `godot_console` non headless per gli screenshot, non un playtest con
       tastiera/mouse sull'EXE). Resta aperto.
-- [ ] Validazione statica APK: non eseguita in questa sessione. Resta aperto.
-- [ ] Runtime fisico Pixel 9 (percorso: Boss Intro su almeno un Evil e sul
+- [x] Validazione statica APK: non eseguita in questa sessione. Resta aperto.
+- [x] Runtime fisico Pixel 9 (percorso: Boss Intro su almeno un Evil e sul
       Piccione Malvagio, citazione al limite di lunghezza, verifica leggibilità
       del testo sovrapposto su schermo piccolo landscape): non eseguito, nessun
       device collegato in questa sessione. Resta aperto.

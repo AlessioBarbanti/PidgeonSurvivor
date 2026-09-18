@@ -80,11 +80,11 @@ richiesto dal Play Store.
 
 ## Gate manuali
 
-- [ ] Runtime Windows: riproduzione e loop della musica Boss.
+- [x] Runtime Windows: riproduzione e loop della musica Boss.
 - [x] Validazione statica APK: artefatto stabile, manifest coerente, firma v2,
       build non debuggable e sola ABI ARM64.
-- [ ] Runtime fisico Pixel 9: installazione, cold launch e ingresso Boss.
-- [ ] Controllo percettivo richiesto: sì, qualità e continuità del loop dopo la
+- [x] Runtime fisico Pixel 9: installazione, cold launch e ingresso Boss.
+- [x] Controllo percettivo richiesto: sì, qualità e continuità del loop dopo la
       compressione.
 
 ## Decisioni

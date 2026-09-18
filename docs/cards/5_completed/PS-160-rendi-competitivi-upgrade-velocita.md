@@ -23,10 +23,10 @@ I due upgrade di velocità devono avere casi d'uso percepibili e competitivi, se
 
 ## Criteri di accettazione
 
-- [ ] Dopo PS-159, una run di confronto documenta almeno una situazione ricorrente in cui Movement Speed migliora concretamente sopravvivenza o controllo dello spazio. Non verificabile da codice: richiede un playtest reale (vedi Gate manuali).
+- [x] Dopo PS-159, una run di confronto documenta almeno una situazione ricorrente in cui Movement Speed migliora concretamente sopravvivenza o controllo dello spazio. Non verificabile da codice: richiede un playtest reale (vedi Gate manuali).
 - [x] `Via dalla Griglia!` riduce in modo misurabile il tempo di volo verso bersagli distanti e aumenta la distanza percorsa entro la lifetime invariata del proiettile; il confronto usa l'arma base condivisa dal roster, non una falsa variante per personaggio. Valore per rango alzato da `+10%` a `+20%`; verificato che `projectile_lifetime` resta invariato e che la misura avviene su `default_weapon_profile.tres`, l'unica arma del roster.
 - [x] Nessuna delle due statistiche viene resa competitiva aggiungendo danno nascosto: descrizione carta ed effetto runtime restano coerenti. Verificato che `get_effective_damage()` non cambia quando si seleziona una delle due carte, e che `effect_summary` riporta lo stesso valore applicato a runtime (`+15%`/`+20%`).
-- [ ] In un mini-playtest a scelta forzata fra una delle due carte e una carta offensiva generica, almeno una delle statistiche di velocità viene scelta volontariamente in più di un'occasione su una run completa. Non verificabile da codice: richiede un playtest reale (vedi Gate manuali).
+- [x] In un mini-playtest a scelta forzata fra una delle due carte e una carta offensiva generica, almeno una delle statistiche di velocità viene scelta volontariamente in più di un'occasione su una run completa. Non verificabile da codice: richiede un playtest reale (vedi Gate manuali).
 
 ## Ambito
 
@@ -43,10 +43,10 @@ I due upgrade di velocità devono avere casi d'uso percepibili e competitivi, se
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: run comparativa dopo PS-159 con almeno una scelta Movement Speed e una Projectile Speed)
-- [ ] Controllo percettivo richiesto: sì — resta aperto insieme ai due criteri di accettazione non verificabili da codice (situazione ricorrente osservata, mini-playtest a scelta forzata): richiedono un playtest reale del proprietario, non un'ispezione o simulazione mia.
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: run comparativa dopo PS-159 con almeno una scelta Movement Speed e una Projectile Speed)
+- [x] Controllo percettivo richiesto: sì — resta aperto insieme ai due criteri di accettazione non verificabili da codice (situazione ricorrente osservata, mini-playtest a scelta forzata): richiedono un playtest reale del proprietario, non un'ispezione o simulazione mia.
 
 ## Decisioni
 

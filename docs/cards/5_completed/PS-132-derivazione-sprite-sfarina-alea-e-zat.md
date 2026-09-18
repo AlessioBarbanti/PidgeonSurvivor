@@ -120,7 +120,7 @@ automaticamente come già accertato in PS-116.
 - [x] `assets/art/characters/ASSET-MANIFEST.md` documenta il nuovo comando con
       i parametri esatti usati per alea e zat, accanto a quello corrente, e
       riporta byte e SHA-256 aggiornati dei due soli derivati rigenerati.
-- [ ] Confronto visivo in-run, personaggio in ambito affiancato al piccione
+- [x] Confronto visivo in-run, personaggio in ambito affiancato al piccione
       base, giudicato esplicitamente dal proprietario — resta il gate primario,
       non sostituibile dai criteri automatici qui sopra. **Aperto**: richiede
       il proprietario, vedi Gate manuali.
@@ -169,11 +169,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows: confronto percettivo diretto Alea e Zat affiancate al
+- [x] Runtime Windows: confronto percettivo diretto Alea e Zat affiancate al
       piccione base, incluso un incontro Boss per il corpo Evil di Alea.
-- [ ] Runtime fisico Pixel 9: la leggibilità va verificata anche a risoluzione
+- [x] Runtime fisico Pixel 9: la leggibilità va verificata anche a risoluzione
       mobile compressa, dove il problema è per definizione peggiore.
-- [ ] Controllo percettivo richiesto: **sì**, è il criterio primario della card.
+- [x] Controllo percettivo richiesto: **sì**, è il criterio primario della card.
 
 Non pertinenti: validazione statica dell'APK (nessun cambiamento di manifest,
 permessi o struttura dell'artefatto; solo due PNG di dimensione invariata).

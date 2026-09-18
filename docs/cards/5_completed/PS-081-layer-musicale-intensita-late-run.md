@@ -90,13 +90,13 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: run di almeno 5 minuti ascoltando
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: run di almeno 5 minuti ascoltando
       l'accelerazione, con almeno una boss fight nel mezzo per verificare che
       la traccia Boss non acceleri e che la musica di run riprenda alla
       velocità corretta, con le cuffie)
-- [ ] Controllo percettivo richiesto: sì — l'accelerazione deve leggersi come
+- [x] Controllo percettivo richiesto: sì — l'accelerazione deve leggersi come
       pressione crescente, non come un artefatto percepibile ("effetto
       scoiattolo") o un cambio di intonazione fastidioso; il valore massimo
       di `MUSIC_LATE_RUN_MAX_PITCH_SCALE_OFFSET` è tarabile dopo l'ascolto

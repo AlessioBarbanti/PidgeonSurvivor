@@ -91,11 +91,11 @@ che comunque non era ancora chiusa quando questa card è stata scritta).
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: apri il level-up o Barb con `Ravviva la
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: apri il level-up o Barb con `Ravviva la
       Brace!` in offerta, verifica leggibilità dell'icona a dimensione reale
-- [ ] Controllo percettivo richiesto: sì — l'icona deve leggersi come
+- [x] Controllo percettivo richiesto: sì — l'icona deve leggersi come
       brace/cottura, non più come salume, e restare coerente con le altre
       icone del catalogo ordinario
 

@@ -48,7 +48,7 @@ entra comodamente nello schermo disponibile.
       corrisponde all'altezza naturale minima del suo `VBoxContainer`
       (più il chrome della cornice), non a un valore residuo/stale
       calcolato prima che il layout fosse pronto.
-- [ ] Nessuna scrollbar verticale è visibile nel pannello pausa quando il
+- [x] Nessuna scrollbar verticale è visibile nel pannello pausa quando il
       contenuto (titolo + bottoni) entra nello spazio disponibile del
       viewport, su 16:9, 20:9 e 4:3. Confermato indirettamente su 16:9/20:9
       dal test automatico (assegnato == naturale, quindi nessuno spazio in
@@ -86,11 +86,11 @@ entra comodamente nello schermo disponibile.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: apertura pausa, verifica assenza
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: apertura pausa, verifica assenza
       scrollbar/spazio vuoto)
-- [ ] Controllo percettivo richiesto: sì — confronto screenshot fornito dal
+- [x] Controllo percettivo richiesto: sì — confronto screenshot fornito dal
       proprietario prima/dopo
 
 ## Decisioni
@@ -131,7 +131,7 @@ entra comodamente nello schermo disponibile.
 
 ## Documenti sincronizzati
 
-- [ ] Nessuno atteso: fix di comportamento, nessun contratto di prodotto
+- [x] Nessuno atteso: fix di comportamento, nessun contratto di prodotto
       cambia.
 
 ## Note

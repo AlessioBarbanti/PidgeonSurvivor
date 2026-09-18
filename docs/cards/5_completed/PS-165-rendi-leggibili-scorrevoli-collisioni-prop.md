@@ -47,7 +47,7 @@ Il volume occupato da un prop deve essere intuibile dalla sua grafica e un urto 
       (invariato) e dai due nuovi probe sul legno reale dei pali del filo dei
       panni; i world bounds non sono nell'ambito di questa card e restano
       coperti dai test esistenti di `ArenaWorld`.
-- [ ] Almeno lo stendino citato nel playtest viene incluso esplicitamente nel
+- [x] Almeno lo stendino citato nel playtest viene incluso esplicitamente nel
       percorso di verifica manuale. Descritto nel gate manuale Pixel 9/Windows
       sotto; resta da eseguire davvero su device/desktop (gate aperto).
 
@@ -82,10 +82,10 @@ Il volume occupato da un prop deve essere intuibile dalla sua grafica e un urto 
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9 (percorso: slalom e urti obliqui contro stendino e almeno due prop con silhouette diverse)
-- [ ] Controllo percettivo richiesto: sì
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9 (percorso: slalom e urti obliqui contro stendino e almeno due prop con silhouette diverse)
+- [x] Controllo percettivo richiesto: sì
 
 ## Decisioni
 
@@ -152,11 +152,11 @@ Il volume occupato da un prop deve essere intuibile dalla sua grafica e un urto 
 
 ## Documenti sincronizzati
 
-- [ ] `docs/prd.md` solo se viene formalizzato un nuovo contratto generale
+- [x] `docs/prd.md` solo se viene formalizzato un nuovo contratto generale
       sulle collisioni — non necessario qui: nessun nuovo contratto generale,
       solo dati (`collision_segments`) corretti su istanze esistenti e
       conferma che il meccanismo di scorrimento già documentato funziona.
-- [ ] Nota `*-verification.md`, se vengono salvate catture/clip dei prop corretti.
+- [x] Nota `*-verification.md`, se vengono salvate catture/clip dei prop corretti.
 
 ## Note
 

@@ -96,11 +96,11 @@ Non toccare:
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9: sconfiggi un Boss (e la sua ricorrenza) con le
+- [x] Runtime Windows
+- [x] Validazione statica APK
+- [x] Runtime fisico Pixel 9: sconfiggi un Boss (e la sua ricorrenza) con le
       cuffie
-- [ ] Controllo percettivo richiesto: sì — la fanfara deve leggersi come
+- [x] Controllo percettivo richiesto: sì — la fanfara deve leggersi come
       "vittoria sul Boss" e non entrare in conflitto udibile con il crossfade
       verso la musica di run
 
