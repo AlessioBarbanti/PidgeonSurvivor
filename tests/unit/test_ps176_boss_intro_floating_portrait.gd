@@ -123,6 +123,17 @@ func test_nine_variants_contain_scale_quote_overlay_and_button_below_portrait() 
 			and quote_rect.size.distance_to(expected_quote_rect.size) <= RECT_TOLERANCE,
 			"\"%s\": la citazione deve restare sulla percentuale misurata su REFERENCE.png, non su coordinate hardcoded." % definition.id
 		)
+		# PS-180: il rettangolo e' fisso per costruzione (ancore percentuali) e
+		# passerebbe anche con l'ultima riga clippata — serve un controllo
+		# separato sul contenuto reale renderizzato (PS-180, citazione condivisa
+		# tagliata su device reale, mai colta da questo smoke).
+		assert_true(
+			boss_ui.get_intro_quote_content_height() <= quote_rect.size.y + RECT_TOLERANCE,
+			(
+				"\"%s\": il testo della citazione eccede il cartiglio ed entra in clipping "
+				+ "(content_height=%f rect_height=%f)."
+			) % [definition.id, boss_ui.get_intro_quote_content_height(), quote_rect.size.y]
+		)
 
 		var continue_button := boss_ui.get_continue_button()
 		var button_rect := continue_button.get_global_rect()

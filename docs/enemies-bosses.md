@@ -104,7 +104,7 @@ Ability).
 ### Baseline "Piccione Malvagio"
 
 `data/bosses/first_boss.tres`: `id = "special_pigeon"`,
-`title = "PICCIONE MALVAGIO"` (PS-026). Stats: `health_max 2400.0`,
+`title = "PICCIONE MALVAGIO"` (PS-026). Stats: `health_max 1500.0` (PS-182),
 `move_speed 85.0`, `collision_radius 46.0`, `contact_damage 25.0`.
 
 **PS-127 (2026-09-07).** Il baseline non è più pensato come la variante
@@ -200,6 +200,20 @@ precedenza da [PS-052](./cards/5_completed/PS-052-genera-ritratti-evil-e-icone-s
 per gli Evil e da PS-128/PS-129 per il baseline, entrambi sostituiti). Lo
 stato artistico dettagliato resta in
 [visual-audio-identity.md](./visual-audio-identity.md).
+
+**Fascia HUD attenuata durante la Boss Intro (PS-180).** `GameHud` attenua
+(non nasconde) la propria fascia superiore (timer, barre XP/HP, pausa — già
+disabilitata in questo stato) mentre `RunController` è in `BOSS_INTRO`,
+liberando lo spazio verticale che il ritratto usa per crescere: `BossUI` non
+riserva più il margine che teneva libera quella fascia. L'arte opaca del
+ritratto copre comunque la fascia dov'è più larga di lei; ai lati, dove le
+barre occupano quasi tutta la larghezza dello schermo, restano visibili ma
+attenuate — stesso trattamento (`GameHud.ABILITY_FADED_ALPHA`) già usato per
+il controllo abilità sotto al Player, mai un nascondimento totale come negli
+altri modali (level-up, ricompensa Barb e pausa restano invariati, HUD
+sempre a piena opacità). La citazione condivisa da tutte le varianti
+(PS-101) va a capo su più righe: senza questo spazio andava in clipping su
+device reale a risoluzione fisica.
 
 ### Perché diventano Evil: la fame (PS-101)
 

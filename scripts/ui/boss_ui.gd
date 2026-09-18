@@ -25,14 +25,17 @@ signal ui_click_requested()
 ## (`movement_slice.tscn`), quindi la sua origine locale coincide gia' con
 ## l'angolo della safe area (PS-071) — a differenza di `UpgradeOverlay`/
 ## `BarbRewardOverlay`, non serve un `apply_safe_area()` dall'orchestratore.
-## Il ritratto pero' e' molto piu' alto del vecchio pannello e, senza questo
-## margine, il suo bordo superiore invade la fascia HUD in alto (cronometro),
-## esattamente il problema gia' risolto altrove da `GameHud.GAMEPLAY_TOP_INSET`
-## + `UpgradeOverlay.TOP_BAND_CLEARANCE` (PS-046). L'`AspectRatioContainer` si
-## limita a restringersi nello spazio residuo (mai un vincolo duro da forzare
-## come in PS-067/PS-071): un margine statico basta, non serve ricalcolarlo a
-## ogni resize.
-const CONTENT_TOP_MARGIN := GameHud.GAMEPLAY_TOP_INSET + UpgradeOverlay.TOP_BAND_CLEARANCE
+## PS-180: `GameHud` nasconde la propria fascia superiore (timer, barre XP/HP,
+## pausa gia' disabilitata) durante `BOSS_INTRO` (vedi `GameHud._on_run_state_changed`),
+## quindi qui basta un piccolo margine estetico, lo stesso gutter usato da
+## `UpgradeOverlay`/`BarbRewardOverlay` — non serve piu' riservare tutto
+## `GameHud.GAMEPLAY_TOP_INSET`: quello spazio ora appartiene al ritratto, che
+## cresce per dare piu' respiro verticale al cartiglio della citazione (la
+## citazione condivisa da tutte le varianti, PS-101, sforava il cartiglio a
+## schermo reale, non colto dagli smoke con testo sintetico). L'`AspectRatioContainer`
+## si limita a restringersi nello spazio residuo (mai un vincolo duro da
+## forzare come in PS-067/PS-071): un margine statico basta.
+const CONTENT_TOP_MARGIN := UpgradeOverlay.TOP_BAND_CLEARANCE
 
 @onready var _intro_layer: Control = %IntroLayer
 @onready var _content_vbox: VBoxContainer = %ContentVBox
@@ -97,6 +100,12 @@ func get_intro_quote_text() -> String:
 
 func get_intro_quote_label_rect() -> Rect2:
 	return _intro_quote_label.get_global_rect() if is_instance_valid(_intro_quote_label) else Rect2()
+
+
+## PS-180: l'altezza del rettangolo da sola non basta a scoprire un
+## clipping — il rettangolo e' fisso (ancore percentuali), il contenuto no.
+func get_intro_quote_content_height() -> float:
+	return _intro_quote_label.get_content_height() if is_instance_valid(_intro_quote_label) else 0.0
 
 
 func get_intro_portrait_texture() -> Texture2D:

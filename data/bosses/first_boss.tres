@@ -16,7 +16,7 @@ quote = "Non sono cattivo, sono solo affamato...
 E nessuno mi ha ancora portato la grigliata!"
 quote_approved = true
 safe_quote_placeholder = "Qualcuno ha sentito profumo di griglia."
-health_max = 2400.0
+health_max = 1500.0
 move_speed = 85.0
 collision_radius = 46.0
 contact_damage = 25.0

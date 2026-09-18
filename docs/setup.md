@@ -261,6 +261,13 @@ La versione ha **una sola fonte di verità**: `config/version` in
 Se la versione non è stata alzata la build fallisce sul tag già esistente,
 invece di sovrascrivere una Release che qualcuno potrebbe aver già scaricato.
 
+Prima di approvare il merge di rilascio, leggere `config/version` nel commit
+della PR e verificare che `git ls-remote --tags origin refs/tags/v<versione>`
+termini senza errori e non restituisca alcun tag. Se il tag esiste, incrementare
+la versione su `develop` prima del merge: i test verdi non verificano la
+disponibilità del numero di versione. Rilanciare la stessa run sul medesimo
+commit non risolve una versione duplicata (PS-191).
+
 Le due build automatiche non vanno confuse:
 
 | Workflow | Quando | Cosa produce |
