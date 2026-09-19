@@ -300,7 +300,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-190](./5_completed/PS-190-centralizza-letture-e-filtri-upgrade.md) | Centralizza le letture della build e i filtri delle offerte upgrade | chore | gameplay | COMPLETATO | media | — |
 | [PS-191](./5_completed/PS-191-ripristina-rilascio-versione-duplicata.md) | Ripristina il rilascio dopo il tentativo di ripubblicare v0.3.0 | fix | tooling | COMPLETATO | alta | PS-134 |
 | [PS-192](./1_idea/PS-192-citazione-stress-sfora-cartiglio-boss.md) | La citazione di stress da 167 caratteri sfora il cartiglio della Boss Intro | fix | ui | DA DEFINIRE | bassa | PS-180 |
-| [PS-193](./2_to_do/PS-193-aumenta-cadenza-attacco-boss-non-pausa-ondate.md) | Aumenta la cadenza d'attacco del Boss per non farlo sentire una pausa dalle ondate | fix | gameplay | PRONTO | alta | — |
+| [PS-193](./4_to_test/PS-193-aumenta-cadenza-attacco-boss-non-pausa-ondate.md) | Aumenta la cadenza d'attacco del Boss per non farlo sentire una pausa dalle ondate | fix | gameplay | IN VERIFICA | alta | — |
 | [PS-194](./2_to_do/PS-194-movimento-errante-copia-fantasma-piccione-malvagio.md) | Fai vagare la copia fantasma dello specchio invece di farla orbitare in cerchio fisso | ux | gameplay | PRONTO | media | — |
 | [PS-195](./2_to_do/PS-195-personaggio-iniziale-selettore-casuale.md) | Rendi casuale il personaggio evidenziato al primo ingresso nel selettore | ux | ui | PRONTO | media | — |
 | [PS-196](./2_to_do/PS-196-contratto-armi-per-personaggio.md) | Fissa il contratto delle armi per personaggio | chore | gameplay | PRONTO | alta | — |

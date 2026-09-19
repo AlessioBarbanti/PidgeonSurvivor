@@ -130,9 +130,19 @@ Cicla su **tre** pattern comuni, mai su due (`_resolve_next_pattern_id`,
   allungato in più turni.
 
 Il cooldown fra un pattern e l'altro è proprio del baseline
-(`baseline_pattern_interval = 1.6s`, contro `pattern_interval = 2.5s`
+(`baseline_pattern_interval = 0.9s`, contro `pattern_interval = 1.4s`
 ereditato dagli Evil): il baseline attacca più spesso di qualunque Evil a
 parità di soglia.
+
+**PS-193 (2026-09-20).** Un Boss attivo sospende del tutto lo spawn ordinario
+(B53/PS-119), quindi è l'unico a fare il ritmo in quella finestra e deve
+occuparla. I cooldown sono scesi da `1.6s`/`2.5s` a `0.9s`/`1.4s` e
+`initial_attack_delay` da `1.5s` a `1.0s`; le durate di telegraph restano
+invariate, perché sono il budget di leggibilità con cui il colpo si schiva.
+L'intervallo medio fra un attacco risolto e il successivo passa così da
+~2.48s a ~1.78s sul baseline e da ~3.48s a ~2.38s su un Evil. Resta un solo
+preavviso alla volta: un nuovo pattern non parte mentre il Boss è in
+Powerslide o in Piroetta.
 
 **Specchio a doppio attacco.** Sceso sotto `split_health_ratio` (metà vita),
 il baseline non genera una seconda entità: apre una seconda origine
