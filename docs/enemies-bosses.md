@@ -149,6 +149,29 @@ esistente e **non cambia**: radiale → area mirata → Signature
 aggiuntivo, cooldown ridotto, specchio a doppio attacco) si applica agli
 Evil.
 
+### Presentazione degli attacchi (PS-141/PS-144)
+
+Ogni preavviso e ogni area attiva del Boss si disegnano con le stampe raster
+di `BossAttackVisuals` (`scripts/bosses/boss_attack_visuals.gd`): anello di
+pericolo, deflagrazione, mirino e nastro di corsia, più il VFX della Signature
+annunciata. Convenzione valida anche per i pattern futuri:
+
+- niente `draw_arc`, `draw_circle` o `draw_line` come rappresentazione di un
+  attacco: erano il motivo per cui i telegraph si leggevano come wireframe di
+  debug;
+- l'intensità (opacità del tratto) sale con il countdown da `0.42` a `1.0`
+  (`BossAttackVisuals.intensity`), mentre **la geometria resta congelata**:
+  il confine del pericolo non avanza con il preavviso;
+- i quattro raster sono in grigio neutro e vengono modulati dal colore
+  runtime — `telegraph_color` del baseline o `EVIL_TELEGRAPH_COLOR` — così la
+  distinzione Boss/Evil resta quella di sempre; i motivi Signature restano
+  invece in tinta nativa, con il segnale perimetrale nel colore ostile;
+- l'anello è ancorato al raggio autorevole del pattern (`ring_rect` deriva il
+  quad dal raggio di gameplay), le corsie della Scia di Piume all'inviluppo
+  reale del colpo (raggio della piuma più raggio del Player);
+- un nastro di corsia viene ripetuto vicino alla proporzione nativa
+  (`corridor_tiles`) invece di essere stirato per tutta la lunghezza.
+
 ### Baseline vs `Evil <Nome>`
 
 Risoluzione in `BossEncounter.resolve_variant`

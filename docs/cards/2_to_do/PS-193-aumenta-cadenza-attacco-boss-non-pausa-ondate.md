@@ -99,7 +99,7 @@ un solo preavviso alla volta, come oggi.
 - Non toccare:
   - `health_max` (ambito di PS-182);
   - la presentazione visiva del telegraph (ambito di
-    [PS-141](./PS-141-arricchisci-telegraph-attacchi-boss.md));
+    [PS-141](../4_to_test/PS-141-arricchisci-telegraph-attacchi-boss.md));
   - il bug per cui il telegraph a volte non si risolve in un colpo (ambito di
     [PS-181](./PS-181-telegraph-boss-a-volte-non-spara.md));
   - la sospensione dello spawn ordinario durante il Boss

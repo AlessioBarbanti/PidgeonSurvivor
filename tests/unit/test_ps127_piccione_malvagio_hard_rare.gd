@@ -52,6 +52,11 @@ func test_baseline_pattern_cycle_includes_feather_line_with_faster_cooldown() ->
 	)
 	for direction in fan_directions:
 		assert_almost_eq(direction.length(), 1.0, FLOAT_TOLERANCE, "Ogni raggio del ventaglio deve essere un versore.")
+	for pair_index in range(0, fan_directions.size(), 2):
+		assert_almost_eq(
+			fan_directions[pair_index].dot(fan_directions[pair_index + 1]), -1.0, FLOAT_TOLERANCE,
+			"I raggi restano accoppiati e opposti: PS-141 disegna la corsia intera su questa coppia."
+		)
 
 	boss._physics_process(definition.feather_line_telegraph_duration + 0.01)
 	assert_true(boss.is_feather_line_active(), "A fine telegraph lo stream della Scia di Piume deve avviarsi.")

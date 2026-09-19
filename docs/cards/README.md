@@ -248,10 +248,10 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-138](./5_completed/PS-138-anello-carica-e-glow-brilla-indicatore-alea.md) | Ridisegna l'indicatore HUD della passiva di Alea con anello di carica e glow Brilla | ux | ui | COMPLETATO | media | PS-106 |
 | [PS-139](./5_completed/PS-139-cornice-asset-carte-upgrade.md) | Applica la cornice asset esistente alle carte upgrade | ux | ui | COMPLETATO | bassa | PS-152 |
 | [PS-140](./5_completed/PS-140-riallinea-colore-bordo-hud-hp-xp.md) | Riallinea il colore del bordo HP/XP alla palette oro esistente | fix | ui | COMPLETATO | bassa | — |
-| [PS-141](./2_to_do/PS-141-arricchisci-telegraph-attacchi-boss.md) | Arricchisci i telegraph d'attacco del Boss per non sembrare debug | ux | arte | PRONTO | media | — |
+| [PS-141](./4_to_test/PS-141-arricchisci-telegraph-attacchi-boss.md) | Arricchisci i telegraph d'attacco del Boss per non sembrare debug | ux | arte | IN VERIFICA | media | PS-144 |
 | [PS-142](./5_completed/PS-142-correggi-clamp-altezza-pannello-pausa.md) | Correggi il clamp dell'altezza del pannello pausa | fix | ui | COMPLETATO | media | — |
 | [PS-143](./5_completed/PS-143-sostituisci-icona-ingranaggio-pausa-con-bottone.md) | Sostituisci l'icona ingranaggio della pausa con un bottone IMPOSTAZIONI | ux | ui | COMPLETATO | media | PS-137 |
-| [PS-144](./1_idea/PS-144-arte-dedicata-vfx-attacchi-boss.md) | Valuta arte dedicata per le VFX degli attacchi Boss (oltre il telegraph) | art | arte | DA DEFINIRE | bassa | PS-141 |
+| [PS-144](./4_to_test/PS-144-arte-dedicata-vfx-attacchi-boss.md) | Asset dedicati per tutti gli attacchi Boss | art | arte | IN VERIFICA | bassa | — |
 | [PS-145](./5_completed/PS-145-distingui-e-distanzia-bottoni-secondari-pausa.md) | Distingui e distanzia CAMBIA PERSONAGGIO da IMPOSTAZIONI nel pannello pausa | ux | ui | COMPLETATO | media | PS-142, PS-143 |
 | [PS-146](./5_completed/PS-146-barre-hp-xp-sospese-senza-doppio-bordo.md) | Rendi le barre HP/XP "sospese" e rimuovi il doppio bordo | ux | ui | COMPLETATO | media | PS-140 |
 | [PS-147](./5_completed/PS-147-aggiungi-bottone-esci-pannello-pausa.md) | Aggiungi bottone ESCI al pannello pausa | feat | ui | COMPLETATO | media | PS-145 |

@@ -93,7 +93,7 @@ sempre relativo alla posizione corrente del Boss (nessuna dipendenza da
   - i pattern d'attacco stessi e la loro cadenza (ambito di
     [PS-193](./PS-193-aumenta-cadenza-attacco-boss-non-pausa-ondate.md));
   - la presentazione visiva di base del telegraph (ambito di
-    [PS-141](./PS-141-arricchisci-telegraph-attacchi-boss.md));
+    [PS-141](../4_to_test/PS-141-arricchisci-telegraph-attacchi-boss.md));
   - `_draw_split_ghost` oltre a quanto serve per seguire il nuovo offset (lo
     sprite disegnato resta lo stesso, nessun nuovo asset).
 

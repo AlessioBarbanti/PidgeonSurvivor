@@ -384,104 +384,39 @@ func _draw_expanding_front(accent: Color) -> void:
 	if _front_radius <= 0.0:
 		return
 	var thickness := _definition.get_effect_float(&"front_thickness", 48.0, 1.0)
-	draw_arc(Vector2.ZERO, _front_radius, 0.0, TAU, 72, accent, thickness, true)
-	draw_arc(
-		Vector2.ZERO,
-		maxf(_front_radius - thickness * 0.5, 1.0),
-		0.0,
-		TAU,
-		72,
-		Color(1.0, 1.0, 1.0, accent.a * 0.5),
-		3.0,
-		true
-	)
+	var outer := _front_radius + thickness * 0.5
+	BossAttackVisuals.stamp(self, BossAttackVisuals.signature_texture(_definition.effect_id), Vector2.ZERO, outer, Color.WHITE)
+	BossAttackVisuals.ring(self, Vector2.ZERO, outer, accent)
+	if _front_radius > thickness * 0.5:
+		BossAttackVisuals.ring(self, Vector2.ZERO, _front_radius - thickness * 0.5, Color(accent, accent.a * 0.65))
 
 
 func _draw_corridor(accent: Color, fade: float) -> void:
+	BossAttackVisuals.corridor(self, Vector2.ZERO, _corridor_end - global_position, _definition.area_radius, Color(accent, accent.a * fade))
 	var local_end := _corridor_end - global_position
-	var body_color := Color(accent, accent.a * fade)
-	draw_line(Vector2.ZERO, local_end, body_color, _definition.area_radius * 2.0, true)
-	draw_circle(Vector2.ZERO, _definition.area_radius, body_color)
-	draw_circle(local_end, _definition.area_radius, body_color)
-	draw_line(
-		Vector2.ZERO,
-		local_end,
-		Color(1.0, 0.94, 0.62, accent.a * fade * 0.7),
-		maxf(_definition.area_radius * 0.5, 2.0),
-		true
-	)
+	var steps := maxi(ceili(local_end.length() / maxf(_definition.area_radius * 1.5, 1.0)), 1)
+	for index in steps + 1:
+		BossAttackVisuals.stamp(self, BossAttackVisuals.signature_texture(_definition.effect_id), local_end * float(index) / float(steps), _definition.area_radius, Color(1.0, 1.0, 1.0, fade), local_end.angle())
 
 
 func _draw_spin_aura(accent: Color, fade: float) -> void:
-	var radius := _definition.area_radius
-	draw_circle(Vector2.ZERO, radius, Color(accent, accent.a * 0.28 * fade))
-	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 64, Color(accent, accent.a * fade), 6.0, true)
 	var phase := maxf(_duration_total - _duration_remaining, 0.0) * TAU
-	for blade_index in 4:
-		var direction := Vector2.RIGHT.rotated(phase + TAU * float(blade_index) / 4.0)
-		draw_line(
-			direction * radius * 0.35,
-			direction * radius,
-			Color(1.0, 1.0, 1.0, accent.a * fade * 0.8),
-			4.0,
-			true
-		)
+	BossAttackVisuals.stamp(self, BossAttackVisuals.signature_texture(_definition.effect_id), Vector2.ZERO, _definition.area_radius, Color(1.0, 1.0, 1.0, fade), phase)
+	BossAttackVisuals.ring(self, Vector2.ZERO, _definition.area_radius, Color(accent, accent.a * fade))
 
 
 func _draw_two_phase(accent: Color, fade: float) -> void:
-	var radius := _definition.area_radius
-	if not _detonated:
-		var cold_progress := PresentationTimings.normalized_progress_from_remaining(
-			_cold_remaining,
-			_cold_total
-		)
-		draw_circle(Vector2.ZERO, radius, Color(accent, accent.a * 0.3))
-		draw_arc(Vector2.ZERO, radius, 0.0, TAU, 64, accent, 6.0, true)
-		draw_arc(
-			Vector2.ZERO,
-			maxf(radius * cold_progress, 1.0),
-			0.0,
-			TAU,
-			64,
-			Color(1.0, 1.0, 1.0, accent.a),
-			4.0,
-			true
-		)
-		return
-	var hot := Color(1.0, 0.46, 0.14, accent.a * fade)
-	draw_circle(Vector2.ZERO, radius, Color(hot, hot.a * 0.55))
-	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 64, hot, 8.0, true)
+	var texture := BossAttackVisuals.THERMAL_HOT if _detonated else BossAttackVisuals.signature_texture(_definition.effect_id)
+	var opacity := fade if _detonated else BossAttackVisuals.intensity(PresentationTimings.normalized_progress_from_remaining(_cold_remaining, _cold_total))
+	BossAttackVisuals.stamp(self, texture, Vector2.ZERO, _definition.area_radius, Color(1.0, 1.0, 1.0, opacity))
+	BossAttackVisuals.ring(self, Vector2.ZERO, _definition.area_radius, Color(accent, accent.a * opacity))
 
 
 func _draw_zen_zone(accent: Color, fade: float) -> void:
-	var radius := _definition.area_radius
-	draw_circle(Vector2.ZERO, radius, Color(accent, accent.a * 0.22 * fade))
-	for ring_index in 3:
-		draw_arc(
-			Vector2.ZERO,
-			radius * (0.45 + 0.275 * float(ring_index)),
-			0.0,
-			TAU,
-			56,
-			Color(accent, accent.a * fade * (0.9 - 0.2 * float(ring_index))),
-			3.0,
-			true
-		)
+	BossAttackVisuals.stamp(self, BossAttackVisuals.signature_texture(_definition.effect_id), Vector2.ZERO, _definition.area_radius, Color(1.0, 1.0, 1.0, fade))
+	BossAttackVisuals.ring(self, Vector2.ZERO, _definition.area_radius, Color(accent, accent.a * fade))
 
 
 func _draw_thunder_burst(accent: Color, fade: float) -> void:
-	var radius := _definition.area_radius
-	draw_circle(Vector2.ZERO, radius, Color(accent, accent.a * 0.24 * fade))
-	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 72, Color(accent, accent.a * fade), 6.0, true)
-	for bolt_index in 8:
-		var direction := Vector2.RIGHT.rotated(TAU * float(bolt_index) / 8.0)
-		draw_polyline(
-			PackedVector2Array([
-				Vector2.ZERO,
-				direction.rotated(0.18) * radius * 0.55,
-				direction * radius,
-			]),
-			Color(1.0, 1.0, 1.0, accent.a * fade),
-			3.0,
-			true
-		)
+	BossAttackVisuals.stamp(self, BossAttackVisuals.signature_texture(_definition.effect_id), Vector2.ZERO, _definition.area_radius, Color(1.0, 1.0, 1.0, fade))
+	BossAttackVisuals.ring(self, Vector2.ZERO, _definition.area_radius, Color(accent, accent.a * fade))

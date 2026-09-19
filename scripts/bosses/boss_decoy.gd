@@ -15,7 +15,9 @@ signal decoy_expired(decoy: BossDecoy)
 
 const GHOST_MODULATE := Color(0.42, 0.98, 1.0, 0.78)
 const NOTE_COUNT := 5
-const NOTE_COLOR := Color(0.35, 0.92, 1.0, 1.0)
+const NOTE_TEXTURE: Texture2D = preload("res://assets/art/vfx/abilities/generated/reggaeton_decoy.png")
+## Nota ciano isolata dal VFX approvato: conserva la silhouette del clone.
+const NOTE_REGION := Rect2(421.0, 177.0, 68.0, 70.0)
 const VISUAL_SCALE := 0.82
 
 var _duration_total := 0.0
@@ -120,14 +122,12 @@ func _draw() -> void:
 			collision_radius * 0.9 + lane * 11.0,
 			-collision_radius - rise * 0.6
 		)
-		var note_color := Color(NOTE_COLOR, alpha * (1.0 - rise / 60.0))
-		draw_circle(note_origin, 3.0, note_color)
-		draw_line(
-			note_origin + Vector2(2.6, 0.0),
-			note_origin + Vector2(2.6, -11.0),
-			note_color,
-			2.0,
-			true
+		var note_color := Color(1.0, 1.0, 1.0, alpha * (1.0 - rise / 60.0))
+		draw_texture_rect_region(
+			NOTE_TEXTURE,
+			Rect2(note_origin - Vector2(7.0, 10.0), Vector2(14.0, 14.0)),
+			NOTE_REGION,
+			note_color
 		)
 
 
@@ -137,6 +137,11 @@ func get_duration_remaining() -> float:
 
 func get_decoy_texture() -> Texture2D:
 	return _decoy_sprite.texture if is_instance_valid(_decoy_sprite) else null
+
+
+## Evita il corpo procedurale di BaseEnemy sotto il clone trasparente.
+func has_visual_sprite() -> bool:
+	return get_decoy_texture() != null
 
 
 func get_decoy_modulate() -> Color:

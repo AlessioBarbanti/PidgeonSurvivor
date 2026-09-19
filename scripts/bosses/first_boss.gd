@@ -65,6 +65,8 @@ var _active_pattern_id: StringName
 var _telegraph_remaining := 0.0
 var _telegraph_duration := 0.0
 var _targeted_position := Vector2.ZERO
+var _blast_visual_remaining := 0.0
+var _blast_visual_positions: Array[Vector2] = []
 var _next_pattern_index := 0
 var _radial_volley_count := 0
 var _targeted_blast_count := 0
@@ -160,6 +162,7 @@ func _physics_process(delta: float) -> void:
 
 func _draw() -> void:
 	super._draw()
+	_draw_blast_aftermath()
 	_draw_active_telegraph()
 	_draw_signature_motion()
 	_draw_split_ghost()
@@ -241,6 +244,8 @@ func reset_attack_cycle() -> void:
 
 
 func clear_attack_runtime() -> void:
+	_blast_visual_remaining = 0.0
+	_blast_visual_positions.clear()
 	_active_pattern_id = &""
 	_telegraph_remaining = 0.0
 	_telegraph_duration = 0.0
@@ -495,6 +500,7 @@ func _sync_thunder_aura() -> void:
 		has_signature()
 		and _signature.effect_id == BossSignatureRegistry.THUNDER_STORM
 	)
+	_thunder_aura.set_bolt_texture(BossAttackVisuals.signature_texture(BossSignatureRegistry.THUNDER_STORM))
 	_thunder_aura.set_presented(uses_thunder)
 	if not uses_thunder:
 		_thunder_aura.set_rotation_speed(0.0)
@@ -573,6 +579,9 @@ func _advance_attack_cycle(delta: float) -> void:
 		return
 
 	var safe_delta := maxf(delta, 0.0) if is_finite(delta) else 0.0
+	if _blast_visual_remaining > 0.0:
+		_blast_visual_remaining = maxf(_blast_visual_remaining - safe_delta, 0.0)
+		queue_redraw()
 	if is_telegraph_active():
 		_telegraph_remaining = maxf(_telegraph_remaining - safe_delta, 0.0)
 		queue_redraw()
@@ -1174,6 +1183,10 @@ func _execute_targeted_blast() -> int:
 		or not player.is_alive()
 	):
 		return 0
+	_blast_visual_remaining = PresentationTimings.ONE_SHOT_EXIT_SECONDS
+	_blast_visual_positions.assign([_targeted_position])
+	if _split_active:
+		_blast_visual_positions.append(_targeted_position_ghost)
 	var hits := 0
 	if _is_within_targeted_blast(player.global_position, _targeted_position, player.collision_radius):
 		hits += 1 if player.take_contact_damage(definition.targeted_blast_damage * pressure_multiplier, _targeted_position) else 0
@@ -1192,6 +1205,14 @@ func _execute_targeted_blast() -> int:
 func _is_within_targeted_blast(player_position: Vector2, blast_center: Vector2, player_radius: float) -> bool:
 	var effective_radius := definition.targeted_blast_radius + player_radius
 	return player_position.distance_squared_to(blast_center) <= effective_radius * effective_radius
+
+
+func _draw_blast_aftermath() -> void:
+	if _blast_visual_remaining <= 0.0 or definition == null:
+		return
+	var fade := clampf(_blast_visual_remaining / PresentationTimings.ONE_SHOT_EXIT_SECONDS, 0.0, 1.0)
+	for center in _blast_visual_positions:
+		BossAttackVisuals.stamp(self, BossAttackVisuals.BLAST, center - global_position, definition.targeted_blast_radius, Color(definition.telegraph_color, fade))
 
 
 func _draw_active_telegraph() -> void:
@@ -1221,168 +1242,58 @@ func _draw_active_telegraph() -> void:
 
 
 func _draw_radial_volley_telegraph(local_center: Vector2, progress: float, color: Color) -> void:
-	var ring_radius := collision_radius + 24.0 + progress * 18.0
-	draw_arc(local_center, ring_radius, 0.0, TAU, 48, color, 5.0, true)
+	BossAttackVisuals.warning(self, local_center, collision_radius + 42.0, progress, color)
 	for projectile_index in definition.radial_projectile_count:
-		var direction := Vector2.RIGHT.rotated(
-			TAU * float(projectile_index) / float(definition.radial_projectile_count)
-		)
-		draw_line(
-			local_center + direction * (collision_radius + 8.0),
-			local_center + direction * (collision_radius + 38.0),
-			color,
-			3.0,
-			true
-		)
+		var direction := Vector2.RIGHT.rotated(TAU * float(projectile_index) / float(definition.radial_projectile_count))
+		BossAttackVisuals.stamp(self, BossAttackVisuals.RETICLE, local_center + direction * (collision_radius + 38.0), 10.0, Color(color, color.a * BossAttackVisuals.intensity(progress)), direction.angle())
 
 
 func _draw_targeted_blast_telegraph(local_target: Vector2, progress: float, color: Color) -> void:
-	draw_circle(
-		local_target,
-		definition.targeted_blast_radius * progress,
-		Color(color, 0.16)
-	)
-	draw_arc(
-		local_target,
-		definition.targeted_blast_radius,
-		0.0,
-		TAU,
-		64,
-		color,
-		5.0,
-		true
-	)
-	var crosshair_radius := definition.targeted_blast_radius * 0.72
-	for direction in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
-		draw_line(
-			local_target + direction * crosshair_radius * 0.62,
-			local_target + direction * crosshair_radius,
-			Color(1.0, 1.0, 1.0, color.a),
-			4.0,
-			true
-		)
+	BossAttackVisuals.warning(self, local_target, definition.targeted_blast_radius, progress, color)
 
 
-## Il telegraph della Scia di Piume mostra la linea intera fin da subito
-## (tenue) e la "riempie" progressivamente in bianco, cosi' il giocatore vede
-## esattamente dove passeranno le piume prima che partano. Disegna l'intero
-## ventaglio: ogni coppia di raggi opposti in `_feather_line_directions`
-## forma una linea intera attraverso l'origine.
+## Le corsie mantengono la geometria congelata all'inizio del preavviso. La
+## fascia disegnata e' l'inviluppo reale del colpo (raggio piuma + raggio del
+## Player): il solo raggio del proiettile si schiaccerebbe in un tratto da
+## debug e mostrerebbe meno di cio' che colpisce davvero.
+## `_build_feather_fan_directions` accoppia ogni raggio con il suo opposto:
+## disegnare la linea intera evita dodici cappucci sovrapposti sul Boss.
 func _draw_feather_line_telegraph(local_origin: Vector2, progress: float, color: Color) -> void:
-	for direction in _feather_line_directions:
-		var local_end := local_origin + direction * FEATHER_LINE_TELEGRAPH_LENGTH
-		draw_line(local_origin, local_end, Color(color, color.a * 0.4), 6.0, true)
-		draw_line(
-			local_origin,
-			local_origin.lerp(local_end, progress),
-			Color(1.0, 1.0, 1.0, color.a),
-			3.0,
-			true
-		)
+	var half_width := definition.feather_line_projectile_radius
+	var target := get_target() as Player
+	if target != null:
+		half_width += target.collision_radius
+	var lane_color := Color(color, color.a * BossAttackVisuals.intensity(progress))
+	for index in range(0, _feather_line_directions.size(), 2):
+		var reach := _feather_line_directions[index] * FEATHER_LINE_TELEGRAPH_LENGTH
+		BossAttackVisuals.corridor(self, local_origin - reach, local_origin + reach, half_width, lane_color)
 
 
-## Il preavviso della Signature disegna la forma esatta che sta per diventare
-## pericolosa. Per Evil Lollo e' anche l'annuncio della copia: la sagoma e il
-## colore appartengono alla Signature estratta, non a Cosplay Casuale.
 func _draw_signature_telegraph(progress: float) -> void:
 	if _announced_signature == null:
 		return
-	var accent := _announced_signature.accent_color
 	var radius := _announced_signature.area_radius
-	var is_copy := (
-		has_signature()
-		and _signature.effect_id == BossSignatureRegistry.RANDOM_COSPLAY
-	)
-	if is_copy:
-		draw_arc(
-			Vector2.ZERO,
-			collision_radius + 16.0 + progress * 10.0,
-			0.0,
-			TAU,
-			48,
-			Color(_signature.accent_color, _signature.accent_color.a),
-			5.0,
-			true
-		)
-	match BossSignatureRegistry.get_area_mode(_announced_signature.effect_id):
-		BossSignatureRegistry.AreaMode.EXPANDING_FRONT, BossSignatureRegistry.AreaMode.INSTANT_BURST:
-			draw_arc(Vector2.ZERO, radius, 0.0, TAU, 72, accent, 5.0, true)
-			draw_arc(
-				Vector2.ZERO,
-				maxf(radius * progress, 1.0),
-				0.0,
-				TAU,
-				72,
-				Color(1.0, 1.0, 1.0, accent.a * 0.85),
-				4.0,
-				true
-			)
-		BossSignatureRegistry.AreaMode.TRAIL_CORRIDOR:
-			var local_end := _signature_direction * _get_dash_distance()
-			draw_line(Vector2.ZERO, local_end, Color(accent, accent.a * 0.35), radius * 2.0, true)
-			draw_line(Vector2.ZERO, local_end, accent, 5.0, true)
-			draw_line(
-				Vector2.ZERO,
-				local_end * progress,
-				Color(1.0, 1.0, 1.0, accent.a),
-				3.0,
-				true
-			)
-			draw_arc(local_end, radius, 0.0, TAU, 48, accent, 4.0, true)
-		BossSignatureRegistry.AreaMode.TWO_PHASE_BURST:
-			var local_origin := _signature_origin - global_position
-			draw_circle(local_origin, radius, Color(accent, accent.a * 0.2))
-			draw_arc(local_origin, radius, 0.0, TAU, 64, accent, 5.0, true)
-			draw_arc(
-				local_origin,
-				maxf(radius * progress, 1.0),
-				0.0,
-				TAU,
-				64,
-				Color(1.0, 1.0, 1.0, accent.a),
-				4.0,
-				true
-			)
-		BossSignatureRegistry.AreaMode.FOLLOWING_CONTACT, BossSignatureRegistry.AreaMode.FOLLOWING_SLOW_ABSORB:
-			draw_arc(Vector2.ZERO, radius, 0.0, TAU, 64, accent, 5.0, true)
-			for blade_index in 6:
-				var direction := Vector2.RIGHT.rotated(
-					progress * TAU + TAU * float(blade_index) / 6.0
-				)
-				draw_line(
-					direction * radius * 0.6,
-					direction * radius,
-					Color(1.0, 1.0, 1.0, accent.a),
-					3.0,
-					true
-				)
-		_:
-			draw_arc(
-				Vector2.ZERO,
-				collision_radius + 30.0,
-				0.0,
-				TAU,
-				48,
-				accent,
-				5.0,
-				true
-			)
+	var color := definition.telegraph_color
+	var center := Vector2.ZERO
+	var mode := BossSignatureRegistry.get_area_mode(_announced_signature.effect_id)
+	if mode == BossSignatureRegistry.AreaMode.TWO_PHASE_BURST:
+		center = _signature_origin - global_position
+	if mode == BossSignatureRegistry.AreaMode.TRAIL_CORRIDOR:
+		BossAttackVisuals.corridor(self, Vector2.ZERO, _signature_direction * _get_dash_distance(), radius, Color(color, color.a * BossAttackVisuals.intensity(progress)))
+	else:
+		if mode == BossSignatureRegistry.AreaMode.NONE:
+			radius = collision_radius + 30.0
+		BossAttackVisuals.warning(self, center, radius, progress, color)
+	BossAttackVisuals.stamp(self, BossAttackVisuals.signature_texture(_announced_signature.effect_id), center, minf(radius * 0.58, 65.0), Color(1.0, 1.0, 1.0, BossAttackVisuals.intensity(progress)))
+	if has_signature() and _signature.effect_id == BossSignatureRegistry.RANDOM_COSPLAY:
+		BossAttackVisuals.stamp(self, BossAttackVisuals.signature_texture(_signature.effect_id), Vector2(0.0, -collision_radius - 28.0), 22.0, Color.WHITE)
 
 
-## Durante Powerslide e Piroetta il Boss stesso e' l'area pericolosa: qui la si
-## rende esplicita anche quando l'area persistente non copre ancora la sagoma.
 func _draw_signature_motion() -> void:
 	if not is_signature_motion_active() or _announced_signature == null:
 		return
-	var accent := _announced_signature.accent_color
-	draw_arc(Vector2.ZERO, collision_radius + 10.0, 0.0, TAU, 48, accent, 5.0, true)
-	draw_line(
-		Vector2.ZERO,
-		_signature_direction * (collision_radius + 46.0),
-		Color(1.0, 1.0, 1.0, accent.a),
-		4.0,
-		true
-	)
+	BossAttackVisuals.ring(self, Vector2.ZERO, collision_radius + 10.0, definition.telegraph_color)
+	BossAttackVisuals.stamp(self, BossAttackVisuals.RETICLE, _signature_direction * (collision_radius + 32.0), 14.0, definition.telegraph_color, _signature_direction.angle())
 
 
 ## Sprite fantasma nella posizione orbitante: senza di questo lo specchio a

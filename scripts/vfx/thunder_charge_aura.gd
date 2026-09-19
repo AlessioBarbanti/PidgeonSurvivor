@@ -32,6 +32,17 @@ const CORE_RADIUS := 3.5
 var _tier := TIER_LOW
 var _rotation_speed := 0.0
 var _angle := 0.0
+var _bolt_texture: Texture2D
+
+
+## Il Boss usa arte raster; il tell del Player mantiene la propria resa.
+func set_bolt_texture(texture: Texture2D) -> void:
+	_bolt_texture = texture
+	queue_redraw()
+
+
+func get_bolt_texture() -> Texture2D:
+	return _bolt_texture
 
 
 func set_tier(tier: int) -> bool:
@@ -96,6 +107,14 @@ func _draw() -> void:
 		var direction := Vector2.RIGHT.rotated(bolt_angle)
 		var tangent := direction.orthogonal()
 		var center := direction * ORBIT_RADIUS
+		if _bolt_texture != null:
+			draw_texture_rect(
+				_bolt_texture,
+				Rect2(center - Vector2.ONE * BOLT_LENGTH * 0.5, Vector2.ONE * BOLT_LENGTH),
+				false,
+				color
+			)
+			continue
 		draw_line(
 			center - tangent * BOLT_LENGTH * 0.5,
 			center + tangent * BOLT_LENGTH * 0.5,
