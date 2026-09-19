@@ -83,9 +83,16 @@ vettoriale statico e uniforme.
       nessun `error!=0`, run sempre in `RUNNING`). È una scena congelata a
       frame guidati, non una partita giocata: il giudizio sul combattimento
       vero resta al gate percettivo qui sotto.
-- [ ] Validazione statica APK — non eseguita in questa sessione
-- [ ] Runtime fisico Pixel 9 (percorso: percezione durante un vero
-      combattimento Boss, non solo screenshot statico)
+- [x] Validazione statica APK — export e ispezione dal runner
+      (`-ExportAndroid -InspectAndroid`): `android_static_valid=true`,
+      package `com.ilgioco.pidgeonsurvivor`, minSdk 31, targetSdk 36,
+      `arm64-v8a`, firma v2, landscape, nessun permesso, `issues: []`.
+      Artefatto pronto in `exports/android/pidgeon-survivor-debug.apk`
+      (73.6 MB, SHA-256 `29B68C88…9C6D26F`) se serve installarlo a mano.
+- [ ] Runtime fisico Pixel 9 — **aperto**: nessun device collegato
+      (`adb devices` vuoto), quindi nessun log letto e nessun combattimento
+      provato su telefono. Percorso da esercitare: percezione durante un
+      vero combattimento Boss, non uno screenshot statico.
 - [ ] Controllo percettivo richiesto: sì — il proprietario ha segnalato
       l'aspetto "da debug" giocando dal vivo, non da uno screenshot
 
@@ -138,10 +145,12 @@ vettoriale statico e uniforme.
 Verifica eseguita il 2026-09-20 (nessun `SCRIPT ERROR` nei log):
 
 ```powershell
-.	oolsun-milestone-checks.ps1 -Milestone PS-141 -Profile Relevant `
+.	ools
+un-milestone-checks.ps1 -Milestone PS-141 -Profile Relevant `
   -FocusedSmoke tests/unit/test_ps141_boss_telegraph_intensity.gd,`
 tests/unit/test_ps141_boss_raster_decorations.gd
-.	oolsun-milestone-checks.ps1 -Milestone PS-141 -Profile Full
+.	ools
+un-milestone-checks.ps1 -Milestone PS-141 -Profile Full
 ```
 
 `Relevant` PASS (focused 3/3, regression 28/28), `Full` PASS (regression
