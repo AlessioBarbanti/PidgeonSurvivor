@@ -35,8 +35,13 @@ enum VisualKind {
 ## doppio attacco (PS-127): non una seconda entita', solo una seconda origine
 ## fantasma da cui ripetere ogni pattern normale.
 @export_range(0.0, 1.0, 0.01) var split_health_ratio := 0.5
-@export_range(1.0, 1024.0, 1.0, "or_greater") var split_ghost_distance := 96.0
-@export_range(0.0, 16.0, 0.01, "or_greater") var split_ghost_orbit_speed := 0.8
+## PS-194: la copia vaga dentro un anello attorno al Boss reale. Il minimo la
+## tiene staccata dalla sagoma vera, il massimo le impedisce di leggersi come
+## un'entita' slegata dall'incontro.
+@export_range(1.0, 1024.0, 1.0, "or_greater") var split_ghost_min_distance := 72.0
+@export_range(1.0, 1024.0, 1.0, "or_greater") var split_ghost_distance := 150.0
+## Velocita' di passeggiata della copia, in unita' al secondo.
+@export_range(0.0, 2000.0, 1.0, "or_greater") var split_ghost_wander_speed := 70.0
 
 @export_group("Feather line")
 ## PS-127: terzo pattern nativo del baseline (mai usato dagli Evil, che
@@ -149,8 +154,10 @@ func is_valid() -> bool:
 		and split_health_ratio >= 0.0
 		and split_health_ratio <= 1.0
 		and _is_positive_finite(split_ghost_distance)
-		and is_finite(split_ghost_orbit_speed)
-		and split_ghost_orbit_speed >= 0.0
+		and _is_positive_finite(split_ghost_min_distance)
+		and split_ghost_min_distance <= split_ghost_distance
+		and is_finite(split_ghost_wander_speed)
+		and split_ghost_wander_speed >= 0.0
 		and _is_positive_finite(feather_line_telegraph_duration)
 		and feather_line_count >= 1
 		and feather_line_projectile_count >= 1

@@ -146,8 +146,10 @@ Powerslide o in Piroetta.
 
 **Specchio a doppio attacco.** Sceso sotto `split_health_ratio` (metà vita),
 il baseline non genera una seconda entità: apre una seconda origine
-"fantasma" che orbita attorno a sé (`split_ghost_distance`,
-`split_ghost_orbit_speed`) e ripete da lì ogni pattern normale (raffica,
+"fantasma" che vaga attorno a sé (PS-194: sceglie un punto dell'anello fra
+`split_ghost_min_distance` e `split_ghost_distance` e ci cammina verso a
+`split_ghost_wander_speed`, cambiando meta prima di arrivarci, con percorso
+seedato dal seed di run) e ripete da lì ogni pattern normale (raffica,
 area mirata, Scia di Piume), raddoppiando la densità di proiettili/aree da
 schivare senza raddoppiare gli HP totali dell'incontro né toccare
 l'invariante "un solo Boss attivo" di `BossEncounter`/`GameDirector`.

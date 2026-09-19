@@ -3,12 +3,12 @@ id: PS-194
 titolo: Fai vagare la copia fantasma dello specchio invece di farla orbitare in cerchio fisso
 tipo: ux
 area: gameplay
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-09-18
-aggiornato: 2026-09-18
+aggiornato: 2026-09-20
 ---
 
 # PS-194 — Fai vagare la copia fantasma dello specchio invece di farla orbitare in cerchio fisso
@@ -54,25 +54,27 @@ sempre relativo alla posizione corrente del Boss (nessuna dipendenza da
 
 ## Criteri di accettazione
 
-- [ ] L'offset della copia fantasma non è più calcolato con la formula
+- [x] L'offset della copia fantasma non è più calcolato con la formula
       circolare a raggio fisso attuale (`Vector2.RIGHT.rotated(angle) *
       distance` a velocità angolare costante).
-- [ ] Il movimento resta deterministico a parità di seed di run, con lo
+- [x] Il movimento resta deterministico a parità di seed di run, con lo
       stesso principio di seeding già usato per
       `_build_feather_fan_directions`
       ([first_boss.gd:667-684](../../../scripts/bosses/first_boss.gd)): due
       run con lo stesso seed producono lo stesso percorso della copia.
-- [ ] L'offset resta sempre relativo a `global_position` del Boss (nessuna
+- [x] L'offset resta sempre relativo a `global_position` del Boss (nessuna
       lettura di `ArenaLayout` o coordinate assolute di schermo).
-- [ ] La distanza fra Boss reale e copia resta entro un intervallo dichiarato
+- [x] La distanza fra Boss reale e copia resta entro un intervallo dichiarato
       esplicitamente in `Decisioni` (né sovrapposta al Boss reale, né così
       lontana da leggersi come un'entità slegata).
-- [ ] Nessuna regressione sul contratto PS-127: la copia non genera un
+- [x] Nessuna regressione sul contratto PS-127: la copia non genera un
       secondo `HealthComponent`, l'attivazione resta irreversibile per
       l'intero incontro e si azzera solo su `reset_attack_cycle`.
 - [ ] Verificato in gioco reale che, con lo specchio attivo, gli attacchi
       della copia non si leggano più come sempre nella stessa disposizione
-      rispetto al Boss reale.
+      rispetto al Boss reale. **Aperto**: giudizio del proprietario. Le catture
+      in `exports/ui-screenshots/ps194-boss-split-wander/` mostrano lo specchio
+      attivo senza dover incontrare il baseline raro e portarlo a metà vita.
 
 ## Ambito
 
@@ -108,9 +110,14 @@ sempre relativo alla posizione corrente del Boss (nessuna dipendenza da
 
 ## Gate manuali
 
-- [ ] Runtime Windows
+- [x] Runtime Windows — run reale con renderer Windows
+      (`tools/_capture_boss_split_wander_ps194.gd`): specchio attivo, cinque
+      catture a 3.4s di distanza con la copia in posizioni diverse
+      (raggi 72 / 95 / 72 / 72 / 77, angoli tutti diversi), run sempre in
+      `RUNNING`, nessun `SCRIPT ERROR`. Non è una partita giocata.
 - [ ] Validazione statica APK — non pertinente, nessun nuovo asset
-- [ ] Runtime fisico Pixel 9
+- [ ] Runtime fisico Pixel 9 — **aperto**: nessun device collegato
+      (`adb devices` vuoto)
 - [ ] Controllo percettivo richiesto: sì — "la copia si muove in giro, non
       sempre nella stessa orbita" è un giudizio visivo di playtest reale, va
       raggiunto lo specchio attivo (sotto metà vita del baseline) in una run
@@ -121,6 +128,24 @@ sempre relativo alla posizione corrente del Boss (nessuna dipendenza da
 - **2026-09-18 — Aperta da feedback diretto del proprietario**: l'orbita
   circolare a raggio fisso della copia fantasma rende ogni pattern ripetuto
   sempre uguale nella disposizione geometrica.
+- **2026-09-20 — Wander scelto: punto dell'anello + camminata, seedato.** La
+  copia sceglie un punto casuale nell'anello `split_ghost_min_distance` (72)
+  … `split_ghost_distance` (150) e ci cammina verso a
+  `split_ghost_wander_speed` (70 u/s), cambiando meta ogni 0.6–1.4s
+  (`SPLIT_WANDER_HOLD_MIN`/`MAX`): quasi mai arriva a destinazione, quindi il
+  percorso è una deriva continua invece di una traiettoria periodica. L'RNG è
+  seminato all'attivazione dello specchio con `seed_run ^ SPLIT_WANDER_SEED_SALT`,
+  stesso schema del ventaglio di piume, quindi lo stesso seed di run rifà lo
+  stesso percorso. `split_ghost_orbit_speed` (rad/s) è stato sostituito, non
+  riusato con un'altra unità di misura.
+
+- **2026-09-20 — Il tragitto viene ricondotto nell'anello, non interrotto.**
+  La linea retta fra due punti dell'anello può passare sopra il Boss reale:
+  l'offset viene quindi riportato fra minimo e massimo mantenendo la
+  direzione. La copia scivola lungo il bordo interno invece di attraversare
+  la sagoma vera — per questo nelle catture il raggio tocca spesso il minimo
+  72, ed è il comportamento voluto.
+
 - **Algoritmo di wander esatto lasciato aperto** a chi implementa (es.
   retargeting periodico con interpolazione verso un nuovo punto entro un
   raggio min/max, seedato come `_build_feather_fan_directions`): dichiarare
@@ -129,10 +154,30 @@ sempre relativo alla posizione corrente del Boss (nessuna dipendenza da
 
 ## Documenti sincronizzati
 
-- [ ] `docs/enemies-bosses.md:137-144` (sezione "Specchio a doppio attacco")
-      — se il comportamento descritto cambia in modo stabile.
+- [x] `docs/enemies-bosses.md` (sezione "Specchio a doppio attacco") — la
+      descrizione dell'orbita è stata sostituita da quella del wander, con i
+      campi e il seeding.
 
 ## Note
+
+Verifica eseguita il 2026-09-20 (nessun `SCRIPT ERROR` nei log):
+
+```powershell
+.	oolsun-milestone-checks.ps1 -Milestone PS-194 -Profile Relevant `
+  -FocusedSmoke tests/unit/test_ps194_boss_split_ghost_wander.gd
+.	oolsun-milestone-checks.ps1 -Milestone PS-194 -Profile Full
+```
+
+`Relevant` PASS (focused 2/2, regression 20/20), `Full` PASS (regression
+158/158, toolchain 1/1). Marker: `PS194_BOSS_SPLIT_GHOST_WANDER_SMOKE_OK`.
+Lo smoke campiona sei secondi di percorso: distanza sempre dentro l'anello,
+raggio che varia (non più un cerchio), stesso seed di run → stesso percorso,
+un solo `HealthComponent` e nessun clone nella scena.
+
+Catture: `exports/ui-screenshots/ps194-boss-split-wander/` (cinque PNG
+1280x720). In `split_02.png` si vedono contemporaneamente il Boss reale, la
+copia in posizione diversa e le due aree mirate distinte — il raddoppio
+PS-127 resta intatto. Log: `exports/ps194-capture.log`.
 
 Segnalato dal proprietario nella stessa sessione di
 [PS-193](./PS-193-aumenta-cadenza-attacco-boss-non-pausa-ondate.md), ma

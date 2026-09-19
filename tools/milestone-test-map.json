@@ -221,7 +221,8 @@
         "tests/unit/test_ps181_boss_telegraph_survives_pause.gd",
         "tests/unit/test_ps141_boss_telegraph_intensity.gd",
         "tests/unit/test_ps141_boss_raster_decorations.gd",
-        "tests/unit/test_ps193_boss_attack_cadence.gd"
+        "tests/unit/test_ps193_boss_attack_cadence.gd",
+        "tests/unit/test_ps194_boss_split_ghost_wander.gd"
       ]
     },
     {

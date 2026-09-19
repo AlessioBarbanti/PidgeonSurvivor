@@ -34,6 +34,13 @@ const FEATHER_FAN_SEED_SALT := 0x2F3A6B11
 const FEATHER_FAN_SEED_FACTOR := 0x15C3F2A7
 const FEATHER_FAN_USE_FACTOR := 0x0A9E4D5B
 
+## PS-194: la copia fantasma sceglie un nuovo punto dell'anello ogni tot
+## secondi. Stesso schema di seeding del ventaglio, cosi' due run con lo stesso
+## seed producono lo stesso percorso.
+const SPLIT_WANDER_SEED_SALT := 0x6D41B27F
+const SPLIT_WANDER_HOLD_MIN := 0.6
+const SPLIT_WANDER_HOLD_MAX := 1.4
+
 ## PS-033: senza più una HUD dedicata, la barra vita disegnata da BaseEnemy
 ## sopra lo sprite resta l'unico indicatore del Boss e va resa più leggibile.
 const BOSS_HEALTH_BAR_THICKNESS := 9.0
@@ -97,8 +104,10 @@ var _thunder_charge_tier := ThunderChargeAura.TIER_LOW
 ## nessun secondo HealthComponent: solo una seconda origine "fantasma" da cui
 ## ripetere ogni pattern normale una volta sotto `split_health_ratio`.
 var _split_active := false
-var _split_orbit_angle := 0.0
 var _split_ghost_offset := Vector2.ZERO
+var _split_wander_target := Vector2.ZERO
+var _split_wander_remaining := 0.0
+var _split_wander_rng := RandomNumberGenerator.new()
 
 ## PS-127: stato di esecuzione della Scia di Piume, l'unico pattern che non
 ## si risolve in un solo frame ma lancia proiettili in sequenza nel tempo.
@@ -238,8 +247,9 @@ func reset_attack_cycle() -> void:
 	_signature_count = 0
 	_feather_line_pattern_uses = 0
 	_split_active = false
-	_split_orbit_angle = 0.0
 	_split_ghost_offset = Vector2.ZERO
+	_split_wander_target = Vector2.ZERO
+	_split_wander_remaining = 0.0
 	queue_redraw()
 
 
@@ -280,20 +290,59 @@ func _on_health_changed(health_current: float, health_max: float) -> void:
 		return
 	if health_current / health_max <= definition.split_health_ratio:
 		_split_active = true
+		var run_controller := get_run_controller()
+		_split_wander_rng.seed = (
+			(run_controller.get_seed() if run_controller != null else 0)
+			^ SPLIT_WANDER_SEED_SALT
+		)
+		_split_wander_remaining = 0.0
 
 
-## Offset dell'origine "fantasma" attorno al Boss reale: orbita lentamente
-## cosi' si legge come un secondo piccione vivo, non come un decalcomania
-## statica. Nessuna dipendenza da ArenaLayout o da coordinate di schermo.
+## PS-194: l'origine "fantasma" passeggia attorno al Boss reale invece di
+## orbitare. Sceglie un punto dell'anello e ci cammina verso, cambiando meta'
+## prima di arrivarci: la copia non ripete mai la stessa disposizione
+## geometrica degli attacchi. L'offset resta sempre relativo al Boss, senza
+## leggere ArenaLayout o coordinate di schermo.
 func _advance_split_ghost(delta: float) -> void:
 	if not _split_active or definition == null:
 		return
 	var safe_delta := maxf(delta, 0.0) if is_finite(delta) else 0.0
-	_split_orbit_angle = fmod(
-		_split_orbit_angle + definition.split_ghost_orbit_speed * safe_delta,
-		TAU
+	_split_wander_remaining -= safe_delta
+	if _split_wander_remaining <= 0.0:
+		_split_wander_target = _pick_split_wander_target()
+		_split_wander_remaining = _split_wander_rng.randf_range(
+			SPLIT_WANDER_HOLD_MIN,
+			SPLIT_WANDER_HOLD_MAX
+		)
+	_split_ghost_offset = _clamp_split_offset(
+		_split_ghost_offset.move_toward(
+			_split_wander_target,
+			definition.split_ghost_wander_speed * safe_delta
+		)
 	)
-	_split_ghost_offset = Vector2.RIGHT.rotated(_split_orbit_angle) * definition.split_ghost_distance
+
+
+func _pick_split_wander_target() -> Vector2:
+	return Vector2.RIGHT.rotated(_split_wander_rng.randf_range(0.0, TAU)) * _split_wander_rng.randf_range(
+		definition.split_ghost_min_distance,
+		definition.split_ghost_distance
+	)
+
+
+## Il tragitto fra due punti dell'anello puo' passare sopra il Boss reale: qui
+## la copia viene tenuta dentro i limiti dichiarati, cosi' non si sovrappone
+## alla sagoma vera ne' si stacca come entita' a se'.
+func _clamp_split_offset(offset: Vector2) -> Vector2:
+	var direction := (
+		offset.normalized()
+		if not offset.is_zero_approx()
+		else Vector2.RIGHT.rotated(_split_wander_target.angle())
+	)
+	return direction * clampf(
+		offset.length(),
+		definition.split_ghost_min_distance,
+		definition.split_ghost_distance
+	)
 
 
 ## Rimuove ogni residuo della Signature: aree, scie, cloni, telegraph e stato
