@@ -69,3 +69,12 @@ con Marghe resta in PS-189. Il successo della pubblicazione non chiude quei gate
   versionCode=301`; `git diff --check` superato. `git ls-remote` completato
   senza errori e senza risultati per `refs/tags/v0.3.1`. La Release `v0.3.0`
   resta pubblicata. Verifica CI della nuova versione in attesa del merge.
+- **2026-09-19 — Rilascio CI:** merge della PR #21 su `main` (`bb54e94`),
+  run [35407623940](https://github.com/AlessioBarbanti/PidgeonSurvivor/actions/runs/35407623940)
+  verde in tutti gli step, compreso il controllo del tag. La Release `v0.3.1`
+  contiene `pidgeon-survivor.apk` (68 500 998 byte); l'ispezione statica del
+  workflow riporta `versionCode='301' versionName='0.3.1'`, nessun
+  `application-debuggable`, firma APK Signature Scheme v2 verificata. Tag e
+  Release `v0.3.0` intatti. Il tag `v0.3.1` punta a `ee3879f` (testa di
+  `develop`) invece che al merge: stesso albero di `bb54e94`, nessuna
+  differenza di contenuto.
