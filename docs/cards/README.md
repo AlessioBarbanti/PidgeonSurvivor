@@ -296,7 +296,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-186](./5_completed/PS-186-separa-validazione-contratti-run.md) | Separa la validazione dei contratti dall'orchestrazione della run | chore | tooling | COMPLETATO | media | — |
 | [PS-187](./5_completed/PS-187-fixture-frontend-attese-gut.md) | Centralizza le fixture frontend e rendi espliciti i timeout GUT | chore | tooling | COMPLETATO | media | — |
 | [PS-188](./5_completed/PS-188-input-helper-report-runner-gut.md) | Includi gli helper nella verifica GUT e conta i test falliti correttamente | fix | tooling | COMPLETATO | media | — |
-| [PS-189](./2_to_do/PS-189-lag-residuo-marghe-orda-clone.md) | Isola e riduci il lag residuo con Marghe prima del minuto 2 | perf | gameplay | PRONTO | alta | PS-178 |
+| [PS-189](./4_to_test/PS-189-lag-residuo-marghe-orda-clone.md) | Isola e riduci il lag residuo con Marghe prima del minuto 2 | perf | gameplay | IN VERIFICA | alta | PS-178 |
 | [PS-190](./5_completed/PS-190-centralizza-letture-e-filtri-upgrade.md) | Centralizza le letture della build e i filtri delle offerte upgrade | chore | gameplay | COMPLETATO | media | — |
 | [PS-191](./5_completed/PS-191-ripristina-rilascio-versione-duplicata.md) | Ripristina il rilascio dopo il tentativo di ripubblicare v0.3.0 | fix | tooling | COMPLETATO | alta | PS-134 |
 | [PS-192](./1_idea/PS-192-citazione-stress-sfora-cartiglio-boss.md) | La citazione di stress da 167 caratteri sfora il cartiglio della Boss Intro | fix | ui | DA DEFINIRE | bassa | PS-180 |
@@ -306,3 +306,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-196](./2_to_do/PS-196-contratto-armi-per-personaggio.md) | Fissa il contratto delle armi per personaggio | chore | gameplay | PRONTO | alta | — |
 | [PS-197](./2_to_do/PS-197-impianto-arma-per-personaggio-neutro.md) | Introduci l'impianto arma per personaggio senza cambiare il gioco | feat | gameplay | BLOCCATO | alta | PS-196 |
 | [PS-198](./2_to_do/PS-198-armi-pilota-primo-set.md) | Progetta e implementa il primo set di armi pilota | feat | gameplay | BLOCCATO | alta | PS-197 |
+| [PS-199](./1_idea/PS-199-crash-a-spegnimento-suite-gut.md) | Crash a spegnimento della suite GUT completa, con report verde | bug | tooling | DA DEFINIRE | media | — |

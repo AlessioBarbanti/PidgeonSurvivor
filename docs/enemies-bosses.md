@@ -17,14 +17,22 @@ dedicate per `splitter_enemy.gd` e `ranged_enemy.gd`. Selezione e spawn in
 curva in `EnemySpawnProfile` (dettagli in
 [systems-difficulty.md](./systems-difficulty.md)).
 
-**Separazione ordinaria (PS-171/PS-174/PS-178).** I nemici non collidono
+**Separazione ordinaria (PS-171/PS-174/PS-178/PS-189).** I nemici non collidono
 fisicamente fra loro: una spinta proporzionale alla sovrapposizione dei
 cerchi li separa, con forza e tetto di velocita' comuni in `BaseEnemy`.
 La ricerca usa una griglia da 64 px per RunController e si estende in base
 ai raggi presenti; le celle seguono il movimento nello stesso tick.
 Boss e clone-esca non appartengono alla popolazione indicizzata. Il costo
 dipende dai vicini locali: una folla tutta coincidente resta un caso denso.
-Questa ottimizzazione non modifica conteggi di spawn, HP, danni o velocita'.
+PS-189: la fotografia di ogni frame fisico porta posizione e raggio in array
+paralleli indicizzati per slot, quindi il test geometrico non dereferenzia un
+nodo per ogni candidato; il nodo si tocca solo quando i cerchi si sovrappongono
+davvero. La posizione nella fotografia viene riscritta a ogni movimento, non
+solo al cambio di cella. L'ordine per `instance_id` richiesto da PS-174 si
+fissa una volta sull'intera popolazione e gli slot lo ereditano, quindi le
+celle restano ordinate senza confronti lambda.
+Nessuna di queste ottimizzazioni modifica la spinta risultante, che resta
+identica bit a bit, ne' conteggi di spawn, HP, danni o velocita'.
 
 | Archetipo | HP | Velocità | Danno contatto | XP | Ruolo |
 |---|---|---|---|---|---|

@@ -4,6 +4,17 @@ const SETUP_VALIDATOR = preload("res://scripts/app/setup_validator.gd")
 const B22_PHYSICAL_VERIFICATION_FLAG := "user://b22_physical_verification.flag"
 const B22_PHYSICAL_VERIFICATION_SEED := 4
 const B22_PHYSICAL_AUTODEFEAT_DELAY_SECONDS := 8.0
+## PS-189: facilitazione di sola diagnosi prestazionale. Serve a tenere in vita
+## il Player mentre si misura un percorso lungo (l'orda attorno al clone di
+## Marghe arriva dopo il minuto 2), esattamente come gia' fa la sonda headless
+## `tools/_diagnose_boss_lag_ps178.gd`, che sul device non puo' girare.
+## Solo build di debug, e solo con il flag presente: l'APK di release non lo
+## legge mai. Non tocca spawn, HP massimi, danni ne' cadenze: rinnova i-frame,
+## quindi le misure di densita' e di costo per frame restano quelle vere.
+## Attivazione: `--godmode` da riga di comando, oppure il file flag qui sotto
+## (`adb shell run-as com.ilgioco.pidgeonsurvivor touch files/ps189_godmode.flag`).
+const PS189_GODMODE_FLAG := "user://ps189_godmode.flag"
+const PS189_GODMODE_IFRAME_SECONDS := 1.0
 
 ## Impostato da tests/unit/helpers/gameplay_test.gd su questa istanza, prima
 ## che entri nell'albero, cosicche' l'auto-avvio headless in _ready() usi un
@@ -102,6 +113,7 @@ var _run_difficulty: DifficultyProfile
 # TEMP DEBUG — telemetria di validazione batch PS-123/124/126, da rimuovere
 # dopo la sessione di raccolta dati sul Pixel (non e' una card).
 const _DEBUG_BALANCE_SAMPLE_INTERVAL_SECONDS := 5.0
+var _godmode_active := false
 var _debug_balance_sample_elapsed := 0.0
 var _debug_balance_window_enemy_count := 0
 var _debug_balance_window_hp_sum := 0.0
@@ -335,6 +347,7 @@ func _ready() -> void:
 		_start_selected_run(_resolve_run_seed())
 	else:
 		_show_welcome_screen()
+	_resolve_ps189_godmode()
 	call_deferred("_start_b18v_stress_from_args")
 	call_deferred("_start_b22_physical_verification_from_flag")
 	print(
@@ -998,6 +1011,18 @@ func _resolve_performance_profile() -> PerformanceProfile:
 	return windows_performance_profile
 
 
+## PS-189: la facilitazione viene dichiarata nel log, cosicche' una cattura
+## presa con il godmode attivo non possa essere scambiata per una partita
+## normale quando si riportano i tempi per frame.
+func _resolve_ps189_godmode() -> void:
+	_godmode_active = OS.is_debug_build() and (
+		OS.get_cmdline_user_args().has("--godmode")
+		or FileAccess.file_exists(PS189_GODMODE_FLAG)
+	)
+	if _godmode_active:
+		print("PS189_GODMODE_ON os=%s note=misura_prestazionale_non_partita_normale" % OS.get_name())
+
+
 func _start_b18v_stress_from_args() -> void:
 	var args := OS.get_cmdline_user_args()
 	if not args.has("--b18v-stress") and not args.has("--b18v-soak"):
@@ -1354,6 +1379,8 @@ func _on_enemy_died_for_summary(_enemy: BaseEnemy) -> void:
 func _process(_delta: float) -> void:
 	if not _run_controller.is_running():
 		return
+	if _godmode_active:
+		_player.get_health_component().grant_invulnerability(PS189_GODMODE_IFRAME_SECONDS)
 	_debug_balance_sample_elapsed += _delta
 	if _debug_balance_sample_elapsed < _DEBUG_BALANCE_SAMPLE_INTERVAL_SECONDS:
 		return

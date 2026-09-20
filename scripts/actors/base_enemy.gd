@@ -102,6 +102,12 @@ var _knockback_velocity := Vector2.ZERO
 var _knockback_remaining := 0.0
 var _speed_modifiers: Dictionary = {}
 var _damage_taken_modifiers: Dictionary = {}
+## PS-189: posizione dello slot di questo nemico negli array paralleli della
+## fotografia di separazione. Vale solo per `_separation_frame`, cosicche' un
+## nemico non ancora censito (o censito in un frame precedente) non riscriva
+## lo slot di un altro.
+var _separation_slot := -1
+var _separation_frame := -1
 
 ## PS-171: dimensione delle celle della griglia di prossimita' condivisa fra
 ## tutti i nemici, usata solo per la respinta anti-sovrapposizione qui sotto.
@@ -120,10 +126,10 @@ const SEPARATION_STRENGTH := 4.0
 ## rappresenta l'essere "spinti fuori" da un ammassamento, non locomozione
 ## volontaria, ma resta comunque un tetto percepibile e non un teletrasporto.
 const SEPARATION_MAX_SPEED_FACTOR := 2.0
-## Cache statica condivisa fra tutte le istanze, indicizzata per
-## RunController (instance_id -> {physics_frame, grid, max_radius}): ricostruita al piu'
-## una volta per frame fisico per ogni RunController, invece che una volta
-## per nemico. Il costo delle query dipende dalla densita' locale dei vicini,
+## Cache statica condivisa fra tutte le istanze, indicizzata per RunController
+## (instance_id -> {physics_frame, grid, nodes, positions, radii, max_radius}):
+## ricostruita al piu' una volta per frame fisico per ogni RunController,
+## invece che una volta per nemico. Il costo delle query dipende dalla densita' locale dei vicini,
 ## non e' O(n) garantito per un gruppo tutto sovrapposto. L'indice per
 ## RunController evita una griglia unica globale: nei test GUT piu'
 ## fixture indipendenti (ciascuna col proprio RunController) possono coesistere
@@ -190,7 +196,7 @@ func _physics_process(delta: float) -> void:
 		var safe_delta := maxf(delta, 0.0) if is_finite(delta) else 0.0
 		velocity = _knockback_velocity
 		move_and_slide()
-		_update_separation_cell(previous_cell)
+		_sync_separation_snapshot(previous_cell)
 		_knockback_remaining = maxf(_knockback_remaining - safe_delta, 0.0)
 		if _knockback_remaining <= 0.0:
 			_knockback_velocity = Vector2.ZERO
@@ -215,7 +221,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	if not desired_direction.is_zero_approx():
 		_steer_around_blocking_obstacle(desired_direction)
-	_update_separation_cell(previous_cell)
+	_sync_separation_snapshot(previous_cell)
 
 
 ## Offset verso il punto inseguito, al netto dell'offset di dispersione B37.
@@ -258,28 +264,35 @@ func _compute_separation_velocity() -> Vector2:
 		return Vector2.ZERO
 	var snapshot := _get_separation_grid_for(get_tree(), own_run_controller)
 	var grid: Dictionary = snapshot["grid"]
+	var nodes: Array = snapshot["nodes"]
+	var positions: Array = snapshot["positions"]
+	var radii: PackedFloat64Array = snapshot["radii"]
 	var own_position := global_position
 	var own_radius := collision_radius
 	# A centri coincidenti lo spareggio dipende dall'offset derivato dal seed.
 	var overlap_direction := Vector2.RIGHT.rotated(_pursuit_offset.angle())
-	var reach := Vector2.ONE * (collision_radius + float(snapshot["max_radius"]))
+	var reach := Vector2.ONE * (own_radius + float(snapshot["max_radius"]))
 	var first_cell := _separation_cell_for(own_position - reach)
 	var last_cell := _separation_cell_for(own_position + reach)
 	var push := Vector2.ZERO
 	for cell_x in range(first_cell.x, last_cell.x + 1):
 		for cell_y in range(first_cell.y, last_cell.y + 1):
-			var neighbor_cell := Vector2i(cell_x, cell_y)
-			if not grid.has(neighbor_cell):
+			var bucket: Variant = grid.get(Vector2i(cell_x, cell_y))
+			if bucket == null:
 				continue
-			for other_node in grid[neighbor_cell]:
-				var other := other_node as BaseEnemy
-				if not is_instance_valid(other) or other == self or other._death_handled:
-					continue
-				# Dati propri invarianti nella query; nessuna chiamata GDScript per coppia.
-				var delta_position := own_position - other.global_position
-				var combined_radius := own_radius + other.collision_radius
+			for slot: int in bucket as Array:
+				# PS-189: il test geometrico legge i soli array paralleli. Su
+				# un'orda raccolta attorno all'esca la grande maggioranza dei
+				# candidati non si sovrappone: dereferenziare il nodo e
+				# chiamare is_instance_valid() per ciascuno costava piu' della
+				# geometria stessa. Il nodo serve solo dopo il test.
+				var delta_position: Vector2 = own_position - positions[slot]
+				var combined_radius := own_radius + radii[slot]
 				var distance_squared := delta_position.length_squared()
 				if distance_squared >= combined_radius * combined_radius:
+					continue
+				var other := nodes[slot] as BaseEnemy
+				if not is_instance_valid(other) or other == self or other._death_handled:
 					continue
 				var distance := sqrt(distance_squared)
 				var direction := overlap_direction
@@ -312,17 +325,6 @@ static func _get_separation_grid_for(tree: SceneTree, run_controller: RunControl
 	if cached != null and cached["physics_frame"] == current_physics_frame:
 		return cached
 
-	var grid: Dictionary = {}
-	var max_radius := 0.0
-	for node in tree.get_nodes_in_group(&"enemies"):
-		var enemy := node as BaseEnemy
-		if enemy == null or not enemy.is_alive() or enemy.get_run_controller() != run_controller:
-			continue
-		max_radius = maxf(max_radius, enemy.collision_radius)
-		var cell := _separation_cell_for(enemy.global_position)
-		if not grid.has(cell):
-			grid[cell] = []
-		(grid[cell] as Array).append(enemy)
 	# PS-174: l'ordine di SceneTree.get_nodes_in_group() non e' un contratto
 	# stabile dell'engine. La somma delle spinte di separazione e' in virgola
 	# mobile e non associativa: sommare gli stessi vicini in un ordine diverso
@@ -332,15 +334,61 @@ static func _get_separation_grid_for(tree: SceneTree, run_controller: RunControl
 	# deterministico alla creazione, a parita' di sequenza di spawn) rende la
 	# somma riproducibile a parita' di seed, invece di dipendere da un
 	# dettaglio interno dell'engine.
-	for cell: Vector2i in grid.keys():
-		(grid[cell] as Array).sort_custom(
-			func(a: BaseEnemy, b: BaseEnemy) -> bool: return a.get_instance_id() < b.get_instance_id()
-		)
+	# PS-189: l'ordine si fissa una volta sola sull'intera popolazione, con
+	# l'ordinamento numerico nativo di PackedInt64Array. Gli slot lo ereditano,
+	# quindi ogni cella nasce gia' ordinata e un cambio di cella si richiude
+	# con Array.sort(): spariscono tutti i confronti lambda in GDScript.
+	var members_by_id: Dictionary = {}
+	for node in tree.get_nodes_in_group(&"enemies"):
+		var enemy := node as BaseEnemy
+		if enemy == null or not enemy.is_alive() or enemy.get_run_controller() != run_controller:
+			continue
+		members_by_id[enemy.get_instance_id()] = enemy
+	var sorted_ids := PackedInt64Array()
+	sorted_ids.resize(members_by_id.size())
+	var cursor := 0
+	for instance_id: int in members_by_id:
+		sorted_ids[cursor] = instance_id
+		cursor += 1
+	sorted_ids.sort()
+
+	# PS-189: posizione e raggio di ogni nemico vivono in array paralleli
+	# indicizzati per slot, cosi' la query di separazione non dereferenzia un
+	# nodo per ogni candidato. `positions` e' un Array (semantica per
+	# riferimento) perche' _sync_separation_snapshot() lo riscrive a ogni
+	# movimento dello stesso tick; `radii` resta immutabile nel frame perche'
+	# il setter di collision_radius invalida l'intera fotografia.
+	var grid: Dictionary = {}
+	var nodes: Array[BaseEnemy] = []
+	var positions: Array[Vector2] = []
+	var radii := PackedFloat64Array()
+	nodes.resize(sorted_ids.size())
+	positions.resize(sorted_ids.size())
+	radii.resize(sorted_ids.size())
+	var max_radius := 0.0
+	for slot in sorted_ids.size():
+		var enemy: BaseEnemy = members_by_id[sorted_ids[slot]]
+		var position := enemy.global_position
+		nodes[slot] = enemy
+		positions[slot] = position
+		radii[slot] = enemy.collision_radius
+		max_radius = maxf(max_radius, enemy.collision_radius)
+		enemy._separation_slot = slot
+		enemy._separation_frame = current_physics_frame
+		var cell := _separation_cell_for(position)
+		var bucket: Variant = grid.get(cell)
+		if bucket == null:
+			bucket = []
+			grid[cell] = bucket
+		(bucket as Array).append(slot)
 
 	_prune_separation_grid_cache()
 	_separation_grids_by_controller[controller_id] = {
 		"physics_frame": current_physics_frame,
 		"grid": grid,
+		"nodes": nodes,
+		"positions": positions,
+		"radii": radii,
 		"max_radius": max_radius,
 	}
 	return _separation_grids_by_controller[controller_id]
@@ -348,27 +396,38 @@ static func _get_separation_grid_for(tree: SceneTree, run_controller: RunControl
 
 ## Le spinte leggono posizioni correnti: un nemico gia' mosso nello stesso
 ## tick deve essere reperibile nella nuova cella, anche durante il knockback.
-func _update_separation_cell(previous_cell: Vector2i) -> void:
-	var current_cell := _separation_cell_for(global_position)
-	if current_cell == previous_cell or not is_instance_valid(_run_controller):
+## PS-189: da quando posizione e raggio vivono nella fotografia invece che nel
+## nodo, la posizione va riscritta a ogni movimento e non solo quando cambia
+## la cella, altrimenti i vicini leggerebbero un valore vecchio di un tick.
+func _sync_separation_snapshot(previous_cell: Vector2i) -> void:
+	if not is_instance_valid(_run_controller) or _separation_frame != Engine.get_physics_frames():
 		return
 	var cached: Variant = _separation_grids_by_controller.get(_run_controller.get_instance_id())
-	if cached == null or cached["physics_frame"] != Engine.get_physics_frames():
+	if cached == null or cached["physics_frame"] != _separation_frame:
+		return
+	var positions: Array = cached["positions"]
+	if _separation_slot < 0 or _separation_slot >= positions.size():
+		return
+	var current_position := global_position
+	positions[_separation_slot] = current_position
+	var current_cell := _separation_cell_for(current_position)
+	if current_cell == previous_cell:
 		return
 	var grid: Dictionary = cached["grid"]
 	var previous_bucket: Array = grid.get(previous_cell, [])
-	if not previous_bucket.has(self):
+	if not previous_bucket.has(_separation_slot):
 		return
-	previous_bucket.erase(self)
+	previous_bucket.erase(_separation_slot)
 	if previous_bucket.is_empty():
 		grid.erase(previous_cell)
-	if not grid.has(current_cell):
-		grid[current_cell] = []
-	var current_bucket: Array = grid[current_cell]
-	current_bucket.append(self)
-	current_bucket.sort_custom(
-		func(a: BaseEnemy, b: BaseEnemy) -> bool: return a.get_instance_id() < b.get_instance_id()
-	)
+	var current_bucket: Variant = grid.get(current_cell)
+	if current_bucket == null:
+		current_bucket = []
+		grid[current_cell] = current_bucket
+	(current_bucket as Array).append(_separation_slot)
+	# Gli slot crescono con l'instance_id: l'ordine per instance_id della
+	# cella si ripristina con il solo ordinamento numerico nativo.
+	(current_bucket as Array).sort()
 
 
 ## Pulizia opportunistica: rimuove le voci di RunController non piu' validi

@@ -269,6 +269,7 @@
         "tests/unit/test_ps171_enemy_overlap_separation.gd",
         "tests/unit/test_ps157_early_difficulty.gd",
         "tests/unit/test_ps178_enemy_separation_query.gd",
+        "tests/unit/test_ps189_separation_snapshot.gd",
         "tests/unit/test_ps158_mature_build_anti_afk.gd"
       ]
     },
@@ -432,6 +433,7 @@
       ],
       "smokes": [
         "tests/unit/test_ps186_run_contract_validator.gd",
+        "tests/unit/test_ps189_godmode_flag.gd",
         "tests/unit/test_ps108_cooking_point_catalog_wiring.gd",
         "tests/unit/test_b03_movement_slice.gd",
         "tests/unit/test_b16_complete_run.gd",

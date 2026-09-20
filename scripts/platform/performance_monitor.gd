@@ -17,6 +17,10 @@ var _sources: Dictionary = {}
 var _elapsed := 0.0
 var _samples: Array[Dictionary] = []
 var _label: Label
+## PS-189: `frame_ms` deriva da Engine.get_frames_per_second(), che e' una
+## media smussata: su device nasconde proprio i singoli frame lunghi che
+## vanno localizzati. Questo e' il picco reale dell'ultimo intervallo.
+var _frame_max_ms := 0.0
 
 
 func _ready() -> void:
@@ -69,6 +73,7 @@ func get_snapshot() -> Dictionary:
 		"profile": String(_profile.profile_id) if _profile != null else "unconfigured",
 		"fps": snappedf(Engine.get_frames_per_second(), 0.01),
 		"frame_ms": snappedf(frame_time_ms, 0.01),
+		"frame_max_ms": snappedf(_frame_max_ms, 0.01),
 		"process_ms": snappedf(Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0, 0.01),
 		"physics_ms": snappedf(Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS) * 1000.0, 0.01),
 		"nodes": int(Performance.get_monitor(Performance.OBJECT_NODE_COUNT)),
@@ -86,11 +91,14 @@ func get_snapshot() -> Dictionary:
 
 
 func _process(delta: float) -> void:
-	_elapsed += maxf(delta, 0.0)
+	var safe_delta := maxf(delta, 0.0) if is_finite(delta) else 0.0
+	_frame_max_ms = maxf(_frame_max_ms, safe_delta * 1000.0)
+	_elapsed += safe_delta
 	if _elapsed < sample_interval_seconds:
 		return
 	_elapsed = 0.0
 	var sample := get_snapshot()
+	_frame_max_ms = 0.0
 	_samples.append(sample)
 	while _samples.size() > MAX_SAMPLES:
 		_samples.pop_front()

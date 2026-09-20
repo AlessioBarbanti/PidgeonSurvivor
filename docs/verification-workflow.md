@@ -281,6 +281,34 @@ Questo non prova installazione, cold launch, touch, multitouch, lifecycle,
 prestazioni o qualità percettiva sul device. Tali risultati restano gate
 separati nelle note di verifica collegate dalla card.
 
+## Facilitazioni di misura su device (PS-189)
+
+Un gate prestazionale su device deve raggiungere il tratto di run che si vuole
+misurare. La sonda headless tiene vivo il Player curandolo a ogni frame, ma
+nell'APK non gira: senza un equivalente il percorso lungo non è ripetibile.
+
+`MovementSlice` riconosce quindi un godmode di **sola diagnosi**, attivo solo
+in build di debug e solo se richiesto esplicitamente, con `--godmode` da riga
+di comando o con il file flag `user://ps189_godmode.flag`:
+
+```powershell
+adb shell "run-as com.ilgioco.pidgeonsurvivor sh -c 'echo ps189 > files/ps189_godmode.flag'"
+adb shell "run-as com.ilgioco.pidgeonsurvivor rm -f files/ps189_godmode.flag"
+```
+
+Rinnova i-frame invece di curare: spawn, HP massimi, danni e cadenze restano
+quelli dichiarati, quindi densità e costo per frame misurati sono quelli veri.
+Si dichiara nel log con `PS189_GODMODE_ON`, cosicché una cattura presa con la
+facilitazione attiva non possa essere riportata come partita normale. **Va
+rimosso dal device a fine misura**, altrimenti resta attivo nelle partite
+successive.
+
+`PerformanceMonitor` campiona una volta al secondo. Oltre a `frame_ms`, che
+deriva dalla media smussata di `Engine.get_frames_per_second()`, il campione
+porta `frame_max_ms`, il **peggior frame dell'intervallo**: è la metrica con
+cui si localizzano i picchi su device. Non è un p95 per frame, e una card che
+lo richieda deve dirlo esplicitamente.
+
 ## Pacchetto di catture UI
 
 Le revisioni visive e le evidenze percettive partono da un pacchetto di

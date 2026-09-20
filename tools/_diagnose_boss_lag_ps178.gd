@@ -10,6 +10,18 @@ extends SceneTree
 ##   --friend=marghe --run-seed=20260915 --tag=marghe-clone
 ## Opzioni: --mobile-profile, --no-active-ability, --stationary, --run-seconds=126,
 ## --capture-from=90, --wall-timeout=180. CSV in exports/diagnostics/.
+##
+## PS-189: il CSV registra anche `physics_steps` (passi fisici accumulati fra
+## due frame disegnati) e `max_cell` (occupazione massima di una cella da
+## SEPARATION_CELL_SIZE px). Il bucketing e' ricalcolato qui e non legge la
+## cache di BaseEnemy: la sonda non deve alterare lo stato del runtime.
+## Costo di misura: un passaggio sul gruppo "enemies" per frame catturato,
+## solo da `--capture-from` in poi.
+##
+## PS-189: con `--dump-fixture` salva in exports/diagnostics/ anche il JSON
+## del frame a densita' massima (scena, posizione, raggio, velocita', offset
+## e bersaglio di ogni nemico vivo), che `_profile_clone_pileup_ps189.gd`
+## ricostruisce a popolazione fissa.
 
 const MOVEMENT_SLICE_SCENE := preload("res://scenes/game/movement_slice.tscn")
 const FORCE_WELCOME_SETTING := "application/run/b18o_force_welcome_for_test"
@@ -26,6 +38,10 @@ var _start_usec := 0
 var _last_tick_usec := 0
 var _intro_started_usec := 0
 var _capture_from := 90.0
+var _last_physics_frame := 0
+var _dump_fixture := false
+var _worst_cell := 0
+var _fixture: Dictionary = {}
 var _run_seconds := 126.0
 var _wall_timeout := 180.0
 var _active_ability := true
@@ -45,6 +61,7 @@ func _run() -> void:
 	_wall_timeout = maxf(float(_argument("--wall-timeout=", "180")), 0.1)
 	_active_ability = not OS.get_cmdline_user_args().has("--no-active-ability")
 	_stationary = OS.get_cmdline_user_args().has("--stationary")
+	_dump_fixture = OS.get_cmdline_user_args().has("--dump-fixture")
 	_tag = _argument("--tag=", "marghe-clone").validate_filename()
 	root.content_scale_size = Vector2i(1280, 720)
 	root.size = Vector2i(1280, 720)
@@ -73,6 +90,7 @@ func _run() -> void:
 	])
 	_start_usec = Time.get_ticks_usec()
 	_last_tick_usec = _start_usec
+	_last_physics_frame = Engine.get_physics_frames()
 	while _controller.get_run_time() < _run_seconds:
 		await process_frame
 		_record_frame()
@@ -101,6 +119,12 @@ func _advance_harness() -> void:
 			var offer := _upgrades.get_current_offer()
 			if not offer.is_empty():
 				_upgrades.select_upgrade(offer[0].id)
+		RunController.RunState.MANUAL_PAUSE:
+			# PS-189: con rendering la finestra perde il fuoco e PlatformLifecycle
+			# mette in pausa, per contratto senza mai riprendere da sola. La sonda
+			# e' un'imbracatura, non il lifecycle: chiede la ripresa come gia' fa
+			# per i modali, altrimenti la cattura con GPU non parte nemmeno.
+			_controller.resume_run()
 		RunController.RunState.BOSS_INTRO:
 			if Time.get_ticks_usec() - _intro_started_usec >= 1000000:
 				_boss.complete_intro()
@@ -127,9 +151,18 @@ func _record_frame() -> void:
 	var now := Time.get_ticks_usec()
 	var frame_ms := float(now - _last_tick_usec) / 1000.0
 	_last_tick_usec = now
+	var physics_frame := Engine.get_physics_frames()
+	var physics_steps := physics_frame - _last_physics_frame
+	_last_physics_frame = physics_frame
 	if _controller.get_run_time() < _capture_from:
 		return
 	var snapshot := _monitor.get_snapshot()
+	snapshot["physics_steps"] = physics_steps
+	var max_cell := _max_separation_cell_occupancy()
+	snapshot["max_cell"] = max_cell
+	if _dump_fixture and max_cell > _worst_cell and _controller.get_state() == RunController.RunState.RUNNING:
+		_worst_cell = max_cell
+		_fixture = _capture_fixture(max_cell)
 	snapshot["wall_seconds"] = float(now - _start_usec) / 1000000.0
 	snapshot["run_time"] = _controller.get_run_time()
 	snapshot["frame_ms"] = frame_ms
@@ -145,13 +178,15 @@ func _finish(success: bool, reason: String) -> void:
 		success = false
 		reason = "scrittura_csv"
 	else:
-		file.store_line("wall_seconds,run_time,frame_ms,process_ms,physics_ms,state,enemies,projectiles,pickups,ability_effects,nodes,draw_calls")
+		file.store_line("wall_seconds,run_time,frame_ms,process_ms,physics_ms,state,enemies,projectiles,pickups,ability_effects,nodes,draw_calls,physics_steps,max_cell")
 		for row in _rows:
-			file.store_line("%.3f,%.3f,%.3f,%.3f,%.3f,%s,%d,%d,%d,%d,%d,%d" % [
+			file.store_line("%.3f,%.3f,%.3f,%.3f,%.3f,%s,%d,%d,%d,%d,%d,%d,%d,%d" % [
 				row.wall_seconds, row.run_time, row.frame_ms, row.process_ms, row.physics_ms,
 				row.state, row.enemies, row.projectiles, row.pickups, row.ability_effects, row.nodes, row.draw_calls,
+				row.physics_steps, row.max_cell,
 			])
 		file.close()
+	_write_fixture()
 	for phase: String in ["RUNNING", "BOSS_INTRO", "LEVEL_UP"]:
 		_summarize(phase)
 	print("PS178_DIAGNOSTIC_%s reason=%s rows=%d csv=%s" % [
@@ -166,11 +201,88 @@ func _finish(success: bool, reason: String) -> void:
 	quit(0 if success else 1)
 
 
+## Densita' locale osservata, con la stessa granularita' della griglia di
+## separazione: dice quanti vicini una query deve esaminare nel caso peggiore.
+func _max_separation_cell_occupancy() -> int:
+	var cells: Dictionary = {}
+	var worst := 0
+	for node in root.get_tree().get_nodes_in_group(&"enemies"):
+		var enemy := node as BaseEnemy
+		if enemy == null or not enemy.is_alive():
+			continue
+		var cell := Vector2i(
+			floori(enemy.global_position.x / BaseEnemy.SEPARATION_CELL_SIZE),
+			floori(enemy.global_position.y / BaseEnemy.SEPARATION_CELL_SIZE)
+		)
+		var occupancy: int = int(cells.get(cell, 0)) + 1
+		cells[cell] = occupancy
+		worst = maxi(worst, occupancy)
+	return worst
+
+
+## Fotografia del frame peggiore: quanto basta a ricostruire la geometria che
+## determina il costo di separazione e movimento, senza replay bit a bit.
+func _capture_fixture(max_cell: int) -> Dictionary:
+	var enemies: Array = []
+	var decoy_position := Vector2.ZERO
+	for node in root.get_tree().get_nodes_in_group(&"enemies"):
+		var enemy := node as BaseEnemy
+		if enemy == null or not enemy.is_alive():
+			continue
+		var target := enemy.get_target()
+		var target_kind := "none"
+		if target is IllusionDecoy:
+			target_kind = "decoy"
+			decoy_position = target.global_position
+		elif target is Player:
+			target_kind = "player"
+		elif target != null:
+			target_kind = "other"
+		enemies.append({
+			"scene": enemy.scene_file_path,
+			"x": enemy.global_position.x,
+			"y": enemy.global_position.y,
+			"radius": enemy.collision_radius,
+			"move_speed": enemy.move_speed,
+			"offset_x": enemy.get_pursuit_offset().x,
+			"offset_y": enemy.get_pursuit_offset().y,
+			"target": target_kind,
+		})
+	return {
+		"tag": _tag,
+		"run_time": _controller.get_run_time(),
+		"max_cell": max_cell,
+		"decoy_x": decoy_position.x,
+		"decoy_y": decoy_position.y,
+		"player_x": _player.global_position.x,
+		"player_y": _player.global_position.y,
+		"enemies": enemies,
+	}
+
+
+func _write_fixture() -> void:
+	if not _dump_fixture or _fixture.is_empty():
+		return
+	var path := "%s/ps189-fixture-%s.json" % [OUT_DIR, _tag]
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		print("PS189_FIXTURE_FAIL path=%s" % path)
+		return
+	file.store_string(JSON.stringify(_fixture))
+	file.close()
+	print("PS189_FIXTURE_DUMP run_time=%.3f max_cell=%d enemies=%d path=%s" % [
+		float(_fixture["run_time"]), int(_fixture["max_cell"]), (_fixture["enemies"] as Array).size(),
+		ProjectSettings.globalize_path(path),
+	])
+
+
 func _summarize(phase: String) -> void:
 	var frames: Array[float] = []
 	var peak_physics := 0.0
 	var peak_process := 0.0
 	var peak_enemies := 0
+	var peak_steps := 0
+	var peak_cell := 0
 	for row in _rows:
 		if row.state != phase:
 			continue
@@ -178,12 +290,14 @@ func _summarize(phase: String) -> void:
 		peak_physics = maxf(peak_physics, float(row.physics_ms))
 		peak_process = maxf(peak_process, float(row.process_ms))
 		peak_enemies = maxi(peak_enemies, int(row.enemies))
+		peak_steps = maxi(peak_steps, int(row.physics_steps))
+		peak_cell = maxi(peak_cell, int(row.max_cell))
 	if frames.is_empty():
 		return
 	frames.sort()
-	print("PS178_DIAGNOSTIC_SUMMARY state=%s frames=%d p95_ms=%.3f max_ms=%.3f physics_max_ms=%.3f process_max_ms=%.3f enemies_max=%d" % [
+	print("PS178_DIAGNOSTIC_SUMMARY state=%s frames=%d p95_ms=%.3f max_ms=%.3f physics_max_ms=%.3f process_max_ms=%.3f enemies_max=%d steps_max=%d cell_max=%d" % [
 		phase, frames.size(), frames[mini(ceili(frames.size() * 0.95) - 1, frames.size() - 1)],
-		frames[-1], peak_physics, peak_process, peak_enemies,
+		frames[-1], peak_physics, peak_process, peak_enemies, peak_steps, peak_cell,
 	])
 
 
