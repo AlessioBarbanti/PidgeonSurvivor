@@ -133,9 +133,7 @@ verifica e i test, non il runtime del gioco né la sua presentazione.
 
 ## Note
 
-`docs/test-timing-report.md` conserva la cronaca della diagnosi, comprese le
-ipotesi scartate con la misura che le ha chiuse: istanziare la scena di gioco
-costa 77-140 ms e non 12 s, non c'è accumulo di nodi fra i test, l'avvio di
-Godot pesa 16-20 s per processo, e `--fixed-fps` non serviva. Le prime due
-sezioni di quel documento misurano un artefatto del metodo e sono marcate come
-tali.
+Ipotesi scartate durante la diagnosi, con la misura che le ha chiuse:
+istanziare la scena di gioco costa 77-140 ms e non 12 s, non c'è accumulo di
+nodi fra i test, l'avvio di Godot pesa 16-20 s per processo, e `--fixed-fps`
+non serviva.

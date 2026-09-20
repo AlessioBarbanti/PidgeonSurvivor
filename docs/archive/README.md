@@ -21,3 +21,7 @@ valgono, nell'ordine:
 | [`decision-log-card-transition-2026-08-30.md`](./decision-log-card-transition-2026-08-30.md) | Ultimo registro corrente prima di trasferire le decisioni nelle card. |
 | [`game-design-proposal-legacy.md`](./game-design-proposal-legacy.md) | Guida embrionale precedente ai contratti correnti del PRD. |
 | [`new-design-notes-2026-08-28.md`](./new-design-notes-2026-08-28.md) | Nota temporanea: CTA Boss e splitter sono stati risolti; i proiettili sono passati a PS-002. |
+| [`generation-prompts-and-references.md`](./generation-prompts-and-references.md) | Prompt e reference di generazione storicizzati da PS-083. |
+| [`aleo-rework-art-prompts.md`](./aleo-rework-art-prompts.md) | Prompt del rework termotecnico di Aleo, già integrato nel runtime. |
+| [`verifications-legacy/`](./verifications-legacy/) | Verbali `m0` e B-series, precedenti alla board a card. |
+| [`PS-098-generation/`](./PS-098-generation/) | Contact sheet di revisione dei VFX termici di PS-098. |

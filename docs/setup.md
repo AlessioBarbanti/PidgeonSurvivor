@@ -348,4 +348,4 @@ Un export locale verifica toolchain, packaging, manifest e firma debug. Touch,
 safe area, Back/Home, lifecycle, frame pacing e temperatura richiedono comunque
 un telefono Android fisico e rientrano nelle milestone successive.
 
-Esito dettagliato del setup corrente: [`m0-verification.md`](./m0-verification.md).
+Esito dettagliato del setup corrente: [`m0-verification.md`](./archive/verifications-legacy/m0-verification.md).

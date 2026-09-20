@@ -22,7 +22,7 @@ contratti a memoria: leggili.
 | [docs/visual-audio-identity.md](docs/visual-audio-identity.md) | Stato corrente di identità visiva e audio |
 | [docs/verification-workflow.md](docs/verification-workflow.md) | Contratto dei profili del runner di verifica |
 | [docs/setup.md](docs/setup.md) | Toolchain, variabili locali, export, manifest asset |
-| `docs/b*-verification.md` | Evidenze per milestone |
+| [docs/archive/](docs/archive/README.md) | Piani, decision log e verbali B-series storici |
 
 Ogni lavoro parte da una card. Decisioni e motivazioni restano nella card; il
 contratto risultante viene sincronizzato nel documento durevole pertinente.

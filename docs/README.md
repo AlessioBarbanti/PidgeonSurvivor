@@ -11,19 +11,25 @@ decisioni ed evidenze non si duplicano.
 | [`prd.md`](./prd.md) | Come deve funzionare il prodotto corrente? |
 | [`characters.md`](./characters.md) | Qual è l'identità corrente degli otto profili? |
 | [`powerup-catalog.md`](./powerup-catalog.md) | Quali powerup esistono o sono proposti? |
+| [`enemies-bosses.md`](./enemies-bosses.md) | Quali nemici e Boss esistono e come si comportano? |
+| [`systems-difficulty.md`](./systems-difficulty.md) | Come sono fatti loop di run, spawn e curva di difficoltà? |
+| [`ui-ux-flow.md`](./ui-ux-flow.md) | Com'è fatto il flusso di schermate, HUD e input? |
+| [`visual-audio-identity.md`](./visual-audio-identity.md) | Qual è l'identità visiva e audio corrente? |
 | [`verification-workflow.md`](./verification-workflow.md) | Come funzionano profili, cache, marker e log del runner? |
 | [`setup.md`](./setup.md) | Come si prepara toolchain ed export locale? |
 
 ## Evidenze
 
-I file `b*-verification.md` e `m0-verification.md` sono verbali storici: vanno
-aperti dalla card o dal riferimento storico interessato, non letti come roadmap. Restano nella
-radice di `docs/` per non rompere i collegamenti esistenti.
+I verbali storici della serie B stanno in
+[`archive/verifications-legacy/`](./archive/verifications-legacy/): vanno aperti
+dalla card o dal riferimento storico interessato, non letti come roadmap.
 
 - fondazioni: `m0`, B03–B18 e B22;
 - refinement: B18B–B18W;
-- evoluzione: B24–B36;
-- chiusura aggregata: [`b24-b35-gate-closure-verification.md`](./b24-b35-gate-closure-verification.md).
+- evoluzione: B24–B36 e B54;
+- chiusura aggregata: [`b24-b35-gate-closure-verification.md`](./archive/verifications-legacy/b24-b35-gate-closure-verification.md).
+
+Le evidenze delle card correnti vivono nella card stessa.
 
 Una nota di verifica registra soltanto prove realmente eseguite. Un cambio di
 stato o un'accettazione del proprietario resta nella card e non riscrive

@@ -358,7 +358,7 @@ minaccia, non la quantità.
 Card: [docs/cards/5_completed/PS-008-eventi-di-ondata.md](./cards/5_completed/PS-008-eventi-di-ondata.md),
 `COMPLETATO`; il ribilanciamento quantitativo di Accerchiamento e Stormo
 laterale è tracciato separatamente in
-[docs/cards/4_to_test/PS-124-eventi-ondata-che-riducono-la-pressione.md](./cards/4_to_test/PS-124-eventi-ondata-che-riducono-la-pressione.md).
+[docs/cards/4_to_test/PS-124-eventi-ondata-che-riducono-la-pressione.md](./cards/5_completed/PS-124-eventi-ondata-che-riducono-la-pressione.md).
 Il gate percettivo su questi due eventi resta aperto lì.
 
 ## Ricompensa della sconfitta del Boss

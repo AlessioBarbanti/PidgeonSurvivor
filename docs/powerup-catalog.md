@@ -44,14 +44,14 @@ Con un nome di una parola sola il titolo non basta più a comunicare l'effetto:
 accorciati per ragioni estetiche.
 
 `L'Ansia` (`anxiety_signature`) è uscita dal gioco con
-[PS-100](./cards/4_to_test/PS-100-rimuovi-ansia-dalle-specialita-di-barb.md):
+[PS-100](./cards/5_completed/PS-100-rimuovi-ansia-dalle-specialita-di-barb.md):
 non è più offerta né dalla ricompensa di Barb né dal level-up ordinario.
 
 L'ottava Specialità reale, `ability_charge_stacking` (cariche multiple
 sull'abilità attiva), è entrata col catalogo di run con
-[PS-094](./cards/4_to_test/PS-094-specialita-cariche-abilita-attiva.md) ed è
+[PS-094](./cards/5_completed/PS-094-specialita-cariche-abilita-attiva.md) ed è
 stata tematizzata da
-[PS-118](./cards/4_to_test/PS-118-nome-e-icona-nona-specialita-cariche-abilita.md)
+[PS-118](./cards/5_completed/PS-118-nome-e-icona-nona-specialita-cariche-abilita.md)
 come `Pancetta`.
 
 Due conseguenze operative sulla separazione fra i registri:
@@ -175,7 +175,7 @@ alle Specialità.
 bagliore che torna vivo, come dopo un colpo di mantice o un ventaglio.
 Deve comunicare immediatamente il concetto di **ricarica pronta di nuovo**,
 mai carne (riservata alle Specialità di Barb, PS-078/PS-089), evitando
-orologi, timer o simboli tecnici. Vedi anche [PS-092](./cards/2_to_do/PS-092-nuova-icona-ravviva-la-brace.md).
+orologi, timer o simboli tecnici. Vedi anche [PS-092](./cards/5_completed/PS-092-nuova-icona-ravviva-la-brace.md).
 
 ---
 
@@ -213,7 +213,7 @@ glint ciano-bianco isolato come unico elemento univoco di "colpo perfetto".
 Master (`assets/art/icons/upgrades/hd/upgrade_cooking_point_crit.png`) e
 derivato (`assets/art/icons/upgrades/generated/cooking_point_crit.png`,
 `128×128`) esistono a manifest e leggibili anche a 48×48 (vedi
-`ASSET-MANIFEST.md` e [PS-107](./cards/4_to_test/PS-107-rigenera-icona-punto-di-cottura.md)
+`ASSET-MANIFEST.md` e [PS-107](./cards/5_completed/PS-107-rigenera-icona-punto-di-cottura.md)
 per dettaglio prompt e verifica). Il controllo percettivo del proprietario
 sulla direzione bistecca+termometro resta un gate aperto in PS-107, ma non
 blocca il cablaggio: **PS-108, 2026-09-07 — la carta è ora referenziata in
