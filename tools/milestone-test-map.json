@@ -464,7 +464,8 @@
         "tests/unit/test_b13_signature_upgrades.gd",
         "tests/unit/test_b18j_summer_grill.gd",
         "tests/unit/test_ps147_pause_exit_button.gd",
-        "tests/unit/test_ps164_pause_build_summary.gd"
+        "tests/unit/test_ps164_pause_build_summary.gd",
+        "tests/unit/test_ps195_random_initial_character.gd"
       ]
     },
     {

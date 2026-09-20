@@ -3,12 +3,12 @@ id: PS-195
 titolo: Rendi casuale il personaggio evidenziato al primo ingresso nel selettore
 tipo: ux
 area: ui
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
 creato: 2026-09-18
-aggiornato: 2026-09-18
+aggiornato: 2026-09-20
 ---
 
 # PS-195 — Rendi casuale il personaggio evidenziato al primo ingresso nel selettore
@@ -51,19 +51,19 @@ selettore continua a evidenziare l'ultimo personaggio giocato, invariato.
 
 ## Criteri di accettazione
 
-- [ ] Al primo ingresso nel selettore in una sessione app (nessun
+- [x] Al primo ingresso nel selettore in una sessione app (nessun
       `FriendDefinition` ancora assegnato a `_player`), il personaggio
       evidenziato varia fra le aperture (non è deterministicamente sempre
       Magno o sempre lo stesso id).
-- [ ] Il personaggio scelto casualmente è sempre uno di quelli restituiti da
+- [x] Il personaggio scelto casualmente è sempre uno di quelli restituiti da
       `FriendRegistry.get_definitions()` (lo stesso roster già mostrato nel
       carosello, nessun id fuori roster o non valido).
-- [ ] Quando `_player` ha già un `FriendDefinition` assegnato (dopo la prima
+- [x] Quando `_player` ha già un `FriendDefinition` assegnato (dopo la prima
       selezione/partita nella sessione), riaprire il selettore (CAMBIA
       PERSONAGGIO, o una nuova "Nuova Partita" successiva nella stessa
       sessione) continua a evidenziare l'ultimo personaggio giocato — nessuna
       regressione.
-- [ ] Se il roster ha un solo personaggio valido, il comportamento resta
+- [x] Se il roster ha un solo personaggio valido, il comportamento resta
       corretto (nessun errore di indice/RNG su lista di taglia 1).
 
 ## Ambito
@@ -102,15 +102,29 @@ selettore continua a evidenziare l'ultimo personaggio giocato, invariato.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK — non pertinente
-- [ ] Runtime fisico Pixel 9 — non essenziale, comportamento identico fra
-      piattaforme (nessuna dipendenza da input specifico)
-- [ ] Controllo percettivo richiesto: no — criterio osservabile e binario
+- [ ] Runtime Windows — **aperto**: gli automatici girano su Windows e
+      pilotano il vero `CharacterSelectOverlay` dentro `MovementSlice`, ma
+      nessuno ha ancora aperto il gioco a mano e premuto NUOVA PARTITA
+- [x] Validazione statica APK — non pertinente (nessuna modifica a manifest
+      o export)
+- [ ] Runtime fisico Pixel 9 — non essenziale per dichiarazione della card
+      stessa; comunque non eseguito, `adb devices` non vede device collegati
+- [x] Controllo percettivo richiesto: no — criterio osservabile e binario
       (id casuale nel roster vs sempre lo stesso), non un giudizio di feel
 
 ## Decisioni
 
+- **2026-09-20 — `Array.pick_random()` invece di un indice calcolato a mano.**
+  Un `randi() % size` scritto a mano è il posto naturale per l'errore di
+  indice su roster di taglia 1 che il quarto criterio teme; `pick_random()`
+  lo rende strutturalmente impossibile ed è già nello stdlib del motore.
+  Nessuna chiamata a `randomize()`: Godot 4 semina il generatore globale
+  all'avvio, e questa scelta non fa parte del contratto deterministico
+  della run.
+- **2026-09-20 — Fallback a `&"magno"` solo su roster vuoto.** Se
+  `get_definitions()` torna vuoto non c'è nulla da estrarre; in quel caso il
+  codice torna al letterale di prima, e `show_selection()` esce comunque
+  subito perché `_buttons_by_id` è vuoto. Nessun percorso nuovo da coprire.
 - **2026-09-18 — Ambito confermato col proprietario**: casualità solo sul
   fallback "nessun personaggio ancora scelto in sessione", mai sovrascrive
   l'ultimo personaggio giocato in CAMBIA PERSONAGGIO o in una nuova partita
@@ -122,6 +136,28 @@ selettore continua a evidenziare l'ultimo personaggio giocato, invariato.
   `prd.md`/`ui-ux-flow.md`.
 
 ## Note
+
+Comandi di verifica eseguiti:
+
+```powershell
+.\tools\run-milestone-checks.ps1 -Milestone PS-195 -Profile Focused `
+  -FocusedSmoke tests/unit/test_ps195_random_initial_character.gd -RefreshEditor
+.\tools\run-milestone-checks.ps1 -Milestone PS-195 -Profile Relevant `
+  -FocusedSmoke tests/unit/test_ps195_random_initial_character.gd
+.\tools\run-milestone-checks.ps1 -Milestone PS-195 -Profile Full
+```
+
+Esiti: `Focused` PASS (3/3 test, 81 assert), `Relevant` PASS (34/34 script,
+106/106 test), `Full` PASS (159/159 script, 500/500 test, toolchain PASS).
+Nessun `SCRIPT ERROR` né `FATAL EXCEPTION` nei log. Marker
+`PS195_RANDOM_INITIAL_CHARACTER_SMOKE_OK` presente.
+
+Il nuovo smoke è stato aggiunto alla regola di `scripts/game/movement_slice.gd`
+in `tools/milestone-test-map.json`.
+
+Il primo caso apre il selettore 24 volte azzerando ogni volta
+`player.friend_definition`: il vecchio fallback fisso avrebbe prodotto un solo
+id osservato, quindi il test fallisce davvero sul codice di prima.
 
 Segnalato dal proprietario nella stessa sessione di PS-193/PS-194, problema
 indipendente (selettore personaggi, non sistema Boss).

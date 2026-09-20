@@ -1146,9 +1146,20 @@ func _show_character_selection() -> void:
 	_game_audio.start_menu_music()
 	var current_friend := _player.get_friend_definition()
 	_character_select_overlay.show_selection(
-		current_friend.id if current_friend != null else &"magno"
+		current_friend.id if current_friend != null else _pick_random_friend_id()
 	)
 	print("B18O_CHARACTER_SELECT_SHOWN")
+
+
+## PS-195: al primo ingresso nel selettore nessun personaggio e' ancora stato
+## scelto in questa sessione, quindi evidenziarne uno a caso invece del
+## letterale "magno". E' presentazione: usa l'RNG globale, non il seed di run.
+func _pick_random_friend_id() -> StringName:
+	var definitions := _friend_registry.get_definitions()
+	if definitions.is_empty():
+		return &"magno"
+	var picked: FriendDefinition = definitions.pick_random()
+	return picked.id
 
 
 func _show_welcome_screen(focus_tutorial: bool = false) -> void:
