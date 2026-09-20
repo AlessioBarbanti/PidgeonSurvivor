@@ -125,6 +125,24 @@ layout_mode = 2
 alignment = 1
 theme_override_constants/separation = 20
 
+[node name="GameTabButton" type="Button" parent="Center/Panel/VBox/TabBar"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+toggle_mode = true
+button_group = SubResource("ButtonGroup_tabs")
+focus_neighbor_left = NodePath("../ControlsTabButton")
+focus_neighbor_right = NodePath("../AudioTabButton")
+theme_override_colors/font_color = Color(0.5, 0.53, 0.58, 1)
+theme_override_colors/font_hover_color = Color(0.78, 0.83, 0.88, 1)
+theme_override_colors/font_pressed_color = Color(1, 0.85, 0.32, 1)
+theme_type_variation = &"ButtonCompact"
+theme_override_styles/normal = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_focus")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_focus")
+text = "GIOCO"
+
 [node name="AudioTabButton" type="Button" parent="Center/Panel/VBox/TabBar"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 36)
@@ -132,7 +150,7 @@ layout_mode = 2
 toggle_mode = true
 button_pressed = true
 button_group = SubResource("ButtonGroup_tabs")
-focus_neighbor_left = NodePath("../ControlsTabButton")
+focus_neighbor_left = NodePath("../GameTabButton")
 focus_neighbor_right = NodePath("../AccessibilityTabButton")
 focus_neighbor_bottom = NodePath("../../PageScroll/PageStack/AudioPage/VolumeRow/VolumeSlider")
 theme_override_colors/font_color = Color(0.5, 0.53, 0.58, 1)
@@ -171,7 +189,7 @@ layout_mode = 2
 toggle_mode = true
 button_group = SubResource("ButtonGroup_tabs")
 focus_neighbor_left = NodePath("../AccessibilityTabButton")
-focus_neighbor_right = NodePath("../AudioTabButton")
+focus_neighbor_right = NodePath("../GameTabButton")
 focus_neighbor_bottom = NodePath("../../PageScroll/PageStack/ControlsPage/ManualFireCheckButton")
 theme_override_colors/font_color = Color(0.5, 0.53, 0.58, 1)
 theme_override_colors/font_hover_color = Color(0.78, 0.83, 0.88, 1)
@@ -197,6 +215,39 @@ horizontal_scroll_mode = 0
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="GamePage" type="VBoxContainer" parent="Center/Panel/VBox/PageScroll/PageStack"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="DifficultyCaption" type="Label" parent="Center/Panel/VBox/PageScroll/PageStack/GamePage"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.86, 0.93, 1, 1)
+theme_type_variation = &"BodyM"
+text = "Difficoltà"
+
+[node name="DifficultyRow" type="HBoxContainer" parent="Center/Panel/VBox/PageScroll/PageStack/GamePage"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DifficultyDescriptionLabel" type="Label" parent="Center/Panel/VBox/PageScroll/PageStack/GamePage"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.722, 0.784, 0.85, 1)
+theme_type_variation = &"BodyS"
+autowrap_mode = 3
+
+[node name="DifficultyLockedLabel" type="Label" parent="Center/Panel/VBox/PageScroll/PageStack/GamePage"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.32, 1)
+theme_type_variation = &"BodyS"
+autowrap_mode = 3
+text = "Non modificabile durante una partita."
 
 [node name="AudioPage" type="VBoxContainer" parent="Center/Panel/VBox/PageScroll/PageStack"]
 unique_name_in_owner = true

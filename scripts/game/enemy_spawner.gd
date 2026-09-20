@@ -14,6 +14,16 @@ const ALL_SECTORS: Array[int] = [0, 1, 2, 3]
 ## spawn_profile.base_archetype_weight.
 @export var archetypes: Array[EnemyArchetypeDefinition] = []
 
+## PS-170: moltiplicatore di difficolta' fotografato all'avvio della run da
+## MovementSlice. Si compone con la curva temporale di pressione invece di sostituirla, e
+## non tocca intervalli, pesi, cap di spawn, soglie Boss o economia: a parita'
+## di seed la sequenza resta identica fra i quattro livelli, cambia solo
+## quanto i nemici reggono e quanto fanno male.
+var difficulty_multiplier := 1.0:
+	set(value):
+		difficulty_multiplier = maxf(value, 0.01) if is_finite(value) else 1.0
+
+
 var _run_controller: RunController
 var _arena_layout: ArenaLayout
 var _target: Node2D
@@ -451,7 +461,10 @@ func _finalize_spawned_enemy(
 ## proprio (RangedEnemy) lo leggono al momento di sparare, cosi' anche quello
 ## scala invece di restare piatto per sempre.
 func _apply_post_curve_pressure(enemy: BaseEnemy) -> void:
-	var multiplier := spawn_profile.get_post_curve_pressure_multiplier(_run_controller.get_run_time())
+	var multiplier := (
+		spawn_profile.get_post_curve_pressure_multiplier(_run_controller.get_run_time())
+		* difficulty_multiplier
+	)
 	enemy.pressure_multiplier = multiplier
 	if is_equal_approx(multiplier, 1.0):
 		return

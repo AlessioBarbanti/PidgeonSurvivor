@@ -253,6 +253,40 @@ cancellerebbe comunque la minaccia. Nessun valore di HP, danno o cadenza è
 stato toccato: il gate percettivo su una build realmente composta e su un
 runtime fisico resta aperto (card `PS-158`).
 
+## Difficoltà selezionabile (PS-170)
+
+`DifficultySettings` ([scripts/app/difficulty_settings.gd](../scripts/app/difficulty_settings.gd))
+tiene i quattro profili dichiarati in `data/difficulty/` e persiste l'id
+scelto in `user://difficulty_settings.cfg`, sullo stesso pattern `ConfigFile`
+di `FireModeSettings`. Un id mancante o non risolvibile ricade su `normal`:
+`get_selected_profile()` non torna mai `null` con un catalogo valido.
+
+**Autorità.** Il nodo espone la scelta e non conosce né `RunController` né i
+sistemi di spawn. È `MovementSlice` a fotografarla su `run_started`
+(`_snapshot_run_difficulty()`) e a consegnare il moltiplicatore già risolto a
+`EnemySpawner.difficulty_multiplier` e `BossEncounter.difficulty_multiplier`.
+Da quel punto la run non rilegge più le impostazioni: cambiare difficoltà a
+partita avviata non può spostarne il bilanciamento.
+
+**Punto di composizione.** Il moltiplicatore entra in due soli punti, gli
+stessi che già applicano le curve esistenti:
+`EnemySpawner._apply_post_curve_pressure()` e
+`BossEncounter._apply_recurrence_scaling()`. Entrambi lo moltiplicano per la
+propria curva e assegnano il risultato a `BaseEnemy.pressure_multiplier`, che
+è già il canale letto da `RangedEnemy` per il danno a distanza e da
+`FirstBoss` per raffica radiale, colpo mirato e Signature. Un solo valore,
+applicato una volta sola dopo baseline e curve, copre quindi tutti i percorsi
+di HP e danno senza un secondo sistema parallelo.
+
+**Determinismo.** La difficoltà non tocca l'RNG: `EnemySpawner` resta seminato
+da `reset_for_run(seed)` e né intervalli, né pesi, né settori, né soglie Boss
+leggono il moltiplicatore. A parità di seed due run a difficoltà diverse
+producono la stessa sequenza e differiscono solo nei valori di HP e danno.
+
+**Confine con le prestazioni.** `PerformanceProfile` non legge, non scrive e
+non seleziona la difficoltà: nessun dispositivo riceve una curva più facile
+per effetto del profilo grafico.
+
 ## Sparo manuale e responsabilità del DPS (PS-085)
 
 `WeaponController` ([scripts/combat/weapon_controller.gd](../scripts/combat/weapon_controller.gd))

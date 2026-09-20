@@ -1,4 +1,4 @@
-[gd_scene load_steps=123 format=3]
+[gd_scene load_steps=128 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -41,6 +41,11 @@
 [ext_resource type="Resource" path="res://data/bosses/first_boss.tres" id="41_boss_definition"]
 [ext_resource type="Resource" path="res://data/bosses/evil_signature_catalog.tres" id="123_evil_signature_catalog"]
 [ext_resource type="PackedScene" path="res://scenes/ui/boss_ui.tscn" id="42_boss_ui"]
+[ext_resource type="Script" path="res://scripts/app/difficulty_settings.gd" id="132_difficulty_settings"]
+[ext_resource type="Resource" path="res://data/difficulty/easy_difficulty_profile.tres" id="133_difficulty_easy"]
+[ext_resource type="Resource" path="res://data/difficulty/normal_difficulty_profile.tres" id="134_difficulty_normal"]
+[ext_resource type="Resource" path="res://data/difficulty/hard_difficulty_profile.tres" id="135_difficulty_hard"]
+[ext_resource type="Resource" path="res://data/difficulty/pavone_difficulty_profile.tres" id="136_difficulty_pavone"]
 [ext_resource type="Script" path="res://scripts/content/friend_registry.gd" id="43_friend_registry"]
 [ext_resource type="Resource" path="res://data/friends/magno.tres" id="44_magno"]
 [ext_resource type="Resource" path="res://data/friends/bea.tres" id="45_bea"]
@@ -185,6 +190,11 @@ script = ExtResource("88_touch_settings")
 [node name="FireModeSettings" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("126_fire_mode_settings")
+
+[node name="DifficultySettings" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("132_difficulty_settings")
+profiles = Array[ExtResource("133_difficulty_easy")]([ExtResource("133_difficulty_easy"), ExtResource("134_difficulty_normal"), ExtResource("135_difficulty_hard"), ExtResource("136_difficulty_pavone")])
 
 [node name="FriendRegistry" type="Node" parent="."]
 unique_name_in_owner = true

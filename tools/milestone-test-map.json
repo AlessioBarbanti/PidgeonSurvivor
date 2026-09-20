@@ -686,6 +686,26 @@
     },
     {
       "patterns": [
+        "scripts/content/difficulty_profile.gd",
+        "scripts/app/difficulty_settings.gd",
+        "scripts/ui/settings_overlay.gd",
+        "scenes/ui/settings_overlay.tscn",
+        "scripts/game/enemy_spawner.gd",
+        "scripts/bosses/boss_encounter.gd",
+        "scripts/game/movement_slice.gd",
+        "scripts/game/run_summary.gd",
+        "scripts/ui/end_screen.gd",
+        "data/difficulty/easy_difficulty_profile.tres",
+        "data/difficulty/normal_difficulty_profile.tres",
+        "data/difficulty/hard_difficulty_profile.tres",
+        "data/difficulty/pavone_difficulty_profile.tres"
+      ],
+      "smokes": [
+        "tests/unit/test_ps170_difficulty_selector.gd"
+      ]
+    },
+    {
+      "patterns": [
         "tools/_capture_ui_screenshots.gd"
       ],
       "smokes": [

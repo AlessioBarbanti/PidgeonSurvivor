@@ -81,6 +81,8 @@ var gut_test_run_seed_override := 0
 @onready var _end_screen: EndScreen = %EndScreen
 ## PS-137: overlay impostazioni condiviso fra welcome e pausa, istanza unica.
 @onready var _settings_overlay: SettingsOverlay = %SettingsOverlay
+## PS-170: registro dei profili di difficolta' e persistenza della scelta.
+@onready var _difficulty_settings: DifficultySettings = %DifficultySettings
 
 var _last_logged_safe_area := Rect2()
 var _last_logged_joystick_rect := Rect2()
@@ -92,6 +94,10 @@ var _defeated_boss_count := 0
 ## ordinari si agganciano per-istanza allo spawn; i Boss non passano dallo
 ## spawner, quindi arrivano dal segnale boss_defeated.
 var _defeated_enemy_count := 0
+## PS-170: difficolta' fotografata all'avvio della run. Da qui in poi la
+## run non rilegge piu' le impostazioni: cambiarle mentre si gioca non puo'
+## spostare il bilanciamento della partita in corso.
+var _run_difficulty: DifficultyProfile
 
 # TEMP DEBUG — telemetria di validazione batch PS-123/124/126, da rimuovere
 # dopo la sessione di raccolta dati sul Pixel (non e' una card).
@@ -119,6 +125,8 @@ func _ready() -> void:
 	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_barb_reward)
 	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_summary)
 	_run_controller.run_started.connect(_on_run_started_for_summary)
+	_run_controller.state_changed.connect(_on_run_state_changed_for_difficulty)
+	_settings_overlay.difficulty_selected.connect(_on_difficulty_selected)
 	_enemy_spawner.enemy_spawned.connect(_on_enemy_spawned_for_summary)
 	_hud.pause_requested.connect(_on_pause_requested)
 	_end_screen.restart_requested.connect(_on_restart_requested)
@@ -307,6 +315,10 @@ func _ready() -> void:
 	)
 	_settings_overlay.set_reduced_flashes(
 		_visual_accessibility_settings.is_reduced_flashes_enabled()
+	)
+	_settings_overlay.set_difficulty_profiles(
+		_difficulty_settings.get_profiles(),
+		_difficulty_settings.get_selected_profile_id()
 	)
 	_tutorial_screen.set_reduced_flashes(
 		_visual_accessibility_settings.is_reduced_flashes_enabled()
@@ -708,6 +720,14 @@ func get_camera() -> Camera2D:
 
 func get_game_director() -> GameDirector:
 	return _game_director
+
+
+func get_difficulty_settings() -> DifficultySettings:
+	return _difficulty_settings
+
+
+func get_run_difficulty() -> DifficultyProfile:
+	return _run_difficulty
 
 
 func get_friend_registry() -> FriendRegistry:
@@ -1269,6 +1289,8 @@ func _build_run_summary(run_time: float) -> RunSummary:
 	summary.level = _experience_system.level
 	summary.bosses_defeated = _defeated_boss_count
 	summary.enemies_defeated = _defeated_enemy_count
+	summary.difficulty_id = _run_difficulty.id if _run_difficulty != null else &""
+	summary.difficulty_label = _run_difficulty.label if _run_difficulty != null else ""
 	summary.run_time = run_time
 	summary.top_upgrades = _upgrade_service.get_acquired_upgrades().slice(0, 3)
 	return summary
@@ -1282,6 +1304,35 @@ func _on_boss_defeated_for_summary(_boss: FirstBoss) -> void:
 func _on_run_started_for_summary(_seed_value: int) -> void:
 	_defeated_boss_count = 0
 	_defeated_enemy_count = 0
+	_snapshot_run_difficulty()
+
+
+## PS-170: la scelta viene letta una volta sola, qui. Spawner e Boss
+## ricevono il moltiplicatore gia' risolto e non conoscono ne' i profili
+## ne' le impostazioni: restano gli unici punti che compongono HP e danno.
+func _snapshot_run_difficulty() -> void:
+	_run_difficulty = _difficulty_settings.get_selected_profile()
+	var multiplier := _run_difficulty.pressure_multiplier if _run_difficulty != null else 1.0
+	_enemy_spawner.difficulty_multiplier = multiplier
+	_boss_encounter.difficulty_multiplier = multiplier
+
+
+func _on_difficulty_selected(profile_id: StringName) -> void:
+	if not _difficulty_settings.select_profile(profile_id):
+		return
+	_settings_overlay.set_difficulty_selection(_difficulty_settings.get_selected_profile_id())
+
+
+## Le impostazioni si aprono anche dalla pausa: fuori da BOOT una run e'
+## gia' partita e la sua difficolta' e' fotografata, quindi il selettore
+## resta leggibile ma disattivato.
+func _on_run_state_changed_for_difficulty(
+	_previous_state: RunController.RunState,
+	current_state: RunController.RunState
+) -> void:
+	_settings_overlay.set_difficulty_locked(
+		current_state != RunController.RunState.BOOT
+	)
 
 
 func _on_enemy_spawned_for_summary(enemy: BaseEnemy) -> void:

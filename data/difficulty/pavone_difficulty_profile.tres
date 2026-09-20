@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="DifficultyProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/content/difficulty_profile.gd" id="1_difficulty"]
+
+[resource]
+script = ExtResource("1_difficulty")
+id = &"pavone"
+label = "PAVONE"
+description = "Quasi punitivo: solo per chi vuole il massimo."
+pressure_multiplier = 1.6

@@ -23,6 +23,17 @@ un'icona fluttuante fuori colonna): non fa parte della sequenza sopra,
 resta un layer puramente visivo sopra lo stato attivo (`BOOT` o
 `MANUAL_PAUSE`).
 
+Le tab dell'overlay sono quattro: `GIOCO`, `AUDIO`, `ACCESSIBILITÀ`,
+`CONTROLLI` (l'apertura riparte sempre da `AUDIO`). La tab `GIOCO` ospita il
+selettore di difficoltà (PS-170): quattro bottoni esclusivi costruiti dai
+profili dichiarati — la UI non contiene né id né numeri di bilanciamento —
+più la descrizione dell'opzione corrente. La scelta è persistente fra
+sessioni. Poiché l'overlay si apre anche dalla pausa, fuori da `BOOT` il
+selettore resta visibile ma **disabilitato**, con una riga che lo dichiara:
+la run ha già la propria difficoltà fotografata e non è modificabile a
+partita avviata. L'etichetta della difficoltà giocata compare poi nella riga
+statistiche di `EndScreen`.
+
 Transizioni (tutte in `movement_slice.gd`):
 
 - `_show_welcome_screen()` (:907) e `_show_tutorial_screen()` (:921) agiscono

@@ -24,6 +24,16 @@ const SCHEDULE_SEED_FACTOR := 0x045D9F3B
 ## pareggiare in probabilita'. Default precedente (PS-037): 0.5.
 @export_range(0.0, 1.0, 0.01) var evil_boss_chance := 0.9
 
+## PS-170: moltiplicatore di difficolta' fotografato all'avvio della run da
+## MovementSlice. Si compone con la curva di ricorrenza dei Boss invece di sostituirla, e
+## non tocca intervalli, pesi, cap di spawn, soglie Boss o economia: a parita'
+## di seed la sequenza resta identica fra i quattro livelli, cambia solo
+## quanto i nemici reggono e quanto fanno male.
+var difficulty_multiplier := 1.0:
+	set(value):
+		difficulty_multiplier = maxf(value, 0.01) if is_finite(value) else 1.0
+
+
 var _run_controller: RunController
 var _game_director: GameDirector
 var _arena_layout: ArenaLayout
@@ -436,7 +446,10 @@ func _spawn_boss(schedule_index: int) -> FirstBoss:
 func _apply_recurrence_scaling(boss: FirstBoss, schedule_index: int) -> void:
 	if not is_instance_valid(_game_director) or _game_director.profile == null:
 		return
-	var multiplier := _game_director.profile.get_boss_recurrence_multiplier(schedule_index)
+	var multiplier := (
+		_game_director.profile.get_boss_recurrence_multiplier(schedule_index)
+		* difficulty_multiplier
+	)
 	# Letto da first_boss.gd per scalare anche i pattern d'attacco (raffica
 	# radiale, colpo mirato) e le Signature, non solo HP/contatto sotto.
 	boss.pressure_multiplier = multiplier

@@ -81,6 +81,36 @@ viene ricondotto da `ArenaLayout` dentro l'arena. Il clamp include il raggio di
 raccolta del pickup, espresso in unità logiche del mondo, così l'oggetto resta
 interamente visibile e raggiungibile su ogni aspect ratio.
 
+### 3.2A. Difficoltà selezionabile (PS-170)
+
+Il giocatore sceglie la difficoltà nelle impostazioni, tab `GIOCO`, fra
+quattro profili dichiarati in `data/difficulty/` come Resource
+`DifficultyProfile`:
+
+| ID | Etichetta | Moltiplicatore |
+|---|---|---:|
+| `easy` | FACILE | 0,80 |
+| `normal` | NORMALE | 1,00 |
+| `hard` | DIFFICILE | 1,25 |
+| `pavone` | PAVONE | 1,60 |
+
+`NORMALE` è un moltiplicatore neutro sopra la baseline autorevole: le card di
+ribilanciamento continuano a modificare `EnemySpawnProfile`,
+`WaveEventSchedulerProfile` e `GameDirectorProfile` senza toccare il
+selettore.
+
+Il moltiplicatore si compone con le curve già esistenti (pressione temporale
+per i nemici ordinari, ricorrenza per i Boss) e agisce **solo** su resistenza
+e pericolosità: HP massimi, danno da contatto, proiettili dei tiratori,
+pattern del Boss e Signature Evil. Non tocca intervalli o cap di spawn, pesi
+degli archetipi, eventi d'ondata, soglie o ricorrenza Boss, drop, XP, offerte,
+rarità o potenza degli upgrade: a parità di seed la sequenza di spawn, eventi,
+Boss e offerte resta identica fra i quattro livelli.
+
+La scelta è persistente fra sessioni e viene fotografata all'avvio della run:
+da quel momento cambiare le impostazioni non sposta la partita in corso. Il
+riepilogo finale mostra l'etichetta della difficoltà giocata.
+
 ### 3.3. Sistema di level up e upgrade (Carte Amici)
 
 Le definizioni dei potenziamenti sono dati e contengono almeno:

@@ -12,6 +12,9 @@ signal audio_mute_toggled(muted: bool)
 signal reduced_flashes_toggled(enabled: bool)
 signal touch_control_scale_changed(control_id: StringName, value: float)
 signal fire_mode_toggled(manual_enabled: bool)
+## PS-170: intenzione di cambiare difficolta'. L'overlay non persiste e
+## non risolve nulla: dichiara quale id e' stato premuto.
+signal difficulty_selected(profile_id: StringName)
 ## Emesso alla chiusura, qualunque sia la causa (bottone Chiudi, Back/ui_cancel).
 ## Chi ha aperto l'overlay (welcome o pausa) lo usa per riabilitare i propri
 ## controlli e restituire il focus, senza che l'overlay sappia chi l'ha aperto.
@@ -19,7 +22,7 @@ signal closed()
 ## PS-074: click generico — tab e bottone Chiudi.
 signal ui_click_requested()
 
-enum Tab { AUDIO, ACCESSIBILITY, CONTROLS }
+enum Tab { GAME, AUDIO, ACCESSIBILITY, CONTROLS }
 
 const DEFAULT_TAB := Tab.AUDIO
 ## Respiro minimo fra il pannello e i bordi del viewport, stesso valore di
@@ -36,14 +39,22 @@ const SAFETY_MARGIN := 24.0
 ## raccolte in alto con lo spazio restante semplicemente libero, non
 ## ridistribuito.
 const CONTENT_AREA_HEIGHT := 240.0
+## PS-170: minimo tattile dei bottoni di difficolta', stesso pavimento di
+## 44px usato dagli altri target touch del progetto.
+const DIFFICULTY_BUTTON_MIN_HEIGHT := 44.0
 
 @onready var _center: CenterContainer = %Center
 @onready var _panel: PanelContainer = %Panel
 @onready var _vbox: VBoxContainer = %VBox
+@onready var _game_tab_button: Button = %GameTabButton
 @onready var _audio_tab_button: Button = %AudioTabButton
 @onready var _accessibility_tab_button: Button = %AccessibilityTabButton
 @onready var _controls_tab_button: Button = %ControlsTabButton
 @onready var _page_scroll: ScrollContainer = %PageScroll
+@onready var _game_page: VBoxContainer = %GamePage
+@onready var _difficulty_row: HBoxContainer = %DifficultyRow
+@onready var _difficulty_description_label: Label = %DifficultyDescriptionLabel
+@onready var _difficulty_locked_label: Label = %DifficultyLockedLabel
 @onready var _audio_page: VBoxContainer = %AudioPage
 @onready var _accessibility_page: VBoxContainer = %AccessibilityPage
 @onready var _controls_page: VBoxContainer = %ControlsPage
@@ -61,12 +72,17 @@ const CONTENT_AREA_HEIGHT := 240.0
 var _syncing_controls := false
 var _active_tab: Tab = DEFAULT_TAB
 var _chrome_height := 0.0
+var _difficulty_buttons_by_id: Dictionary = {}
+var _difficulty_profiles_by_id: Dictionary = {}
+var _last_difficulty_button: Button
+var _difficulty_locked := false
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_game_tab_button.pressed.connect(_on_game_tab_pressed)
 	_audio_tab_button.pressed.connect(_on_audio_tab_pressed)
 	_accessibility_tab_button.pressed.connect(_on_accessibility_tab_pressed)
 	_controls_tab_button.pressed.connect(_on_controls_tab_pressed)
@@ -239,6 +255,118 @@ func get_joystick_size_slider() -> HSlider:
 	return _joystick_size_slider if is_instance_valid(_joystick_size_slider) else null
 
 
+## PS-170: i bottoni nascono dai profili dichiarati invece di stare in scena,
+## cosi' la UI non contiene ne' gli id ne' i moltiplicatori di bilanciamento.
+func set_difficulty_profiles(
+	profiles: Array[DifficultyProfile],
+	selected_id: StringName
+) -> void:
+	if not is_instance_valid(_difficulty_row):
+		return
+	for child in _difficulty_row.get_children():
+		_difficulty_row.remove_child(child)
+		child.queue_free()
+	_difficulty_buttons_by_id.clear()
+	_difficulty_profiles_by_id.clear()
+	_last_difficulty_button = null
+	var exclusive_group := ButtonGroup.new()
+	for profile in profiles:
+		if profile == null or not profile.is_valid():
+			continue
+		var button := Button.new()
+		button.name = "DifficultyButton_%s" % profile.id
+		button.text = profile.label
+		button.toggle_mode = true
+		button.button_group = exclusive_group
+		button.custom_minimum_size = Vector2(0.0, DIFFICULTY_BUTTON_MIN_HEIGHT)
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.theme_type_variation = &"ButtonCompact"
+		button.disabled = _difficulty_locked
+		button.pressed.connect(_on_difficulty_button_pressed.bind(profile.id))
+		_difficulty_row.add_child(button)
+		_difficulty_buttons_by_id[profile.id] = button
+		_difficulty_profiles_by_id[profile.id] = profile
+		_last_difficulty_button = button
+	set_difficulty_selection(selected_id)
+	_update_close_button_focus(_active_tab)
+
+
+func set_difficulty_selection(profile_id: StringName) -> void:
+	_syncing_controls = true
+	for id in _difficulty_buttons_by_id:
+		var button: Button = _difficulty_buttons_by_id[id]
+		button.button_pressed = id == profile_id
+	_syncing_controls = false
+	if not is_instance_valid(_difficulty_description_label):
+		return
+	var profile: DifficultyProfile = _difficulty_profiles_by_id.get(profile_id)
+	_difficulty_description_label.text = profile.description if profile != null else ""
+
+
+## PS-170: la difficolta' della run e' uno snapshot immutabile, ma le
+## impostazioni si aprono anche dalla pausa. Durante una partita il selettore
+## resta visibile e disabilitato invece di sparire: il giocatore continua a
+## vedere su quale livello sta giocando senza poterlo cambiare a meta' run.
+func set_difficulty_locked(locked: bool) -> void:
+	_difficulty_locked = locked
+	for id in _difficulty_buttons_by_id:
+		var button: Button = _difficulty_buttons_by_id[id]
+		button.disabled = locked
+	if is_instance_valid(_difficulty_locked_label):
+		_difficulty_locked_label.visible = locked
+
+
+func is_difficulty_locked() -> bool:
+	return _difficulty_locked
+
+
+func get_game_tab_button() -> Button:
+	return _game_tab_button if is_instance_valid(_game_tab_button) else null
+
+
+func get_difficulty_button(profile_id: StringName) -> Button:
+	var button: Button = _difficulty_buttons_by_id.get(profile_id)
+	return button if is_instance_valid(button) else null
+
+
+## Etichette nell'ordine in cui compaiono nella riga: l'ordine e' il contratto
+## osservabile del selettore.
+func get_difficulty_option_labels() -> Array[String]:
+	var labels: Array[String] = []
+	if not is_instance_valid(_difficulty_row):
+		return labels
+	for child in _difficulty_row.get_children():
+		if child is Button:
+			labels.append((child as Button).text)
+	return labels
+
+
+func get_selected_difficulty_id() -> StringName:
+	for id in _difficulty_buttons_by_id:
+		var button: Button = _difficulty_buttons_by_id[id]
+		if is_instance_valid(button) and button.button_pressed:
+			return id
+	return &""
+
+
+func get_difficulty_description_text() -> String:
+	if not is_instance_valid(_difficulty_description_label):
+		return ""
+	return _difficulty_description_label.text
+
+
+func get_game_page() -> Control:
+	return _game_page if is_instance_valid(_game_page) else null
+
+
+func _on_difficulty_button_pressed(profile_id: StringName) -> void:
+	if _syncing_controls or _difficulty_locked:
+		return
+	ui_click_requested.emit()
+	set_difficulty_selection(profile_id)
+	difficulty_selected.emit(profile_id)
+
+
 func get_audio_page() -> Control:
 	return _audio_page if is_instance_valid(_audio_page) else null
 
@@ -255,6 +383,11 @@ func get_panel_rect() -> Rect2:
 	if not is_instance_valid(_panel):
 		return Rect2()
 	return Rect2(_panel.global_position, _panel.size)
+
+
+func _on_game_tab_pressed() -> void:
+	ui_click_requested.emit()
+	_select_tab(Tab.GAME)
 
 
 func _on_audio_tab_pressed() -> void:
@@ -279,9 +412,11 @@ func _on_close_button_pressed() -> void:
 
 func _select_tab(tab: Tab) -> void:
 	_active_tab = tab
+	_game_tab_button.button_pressed = tab == Tab.GAME
 	_audio_tab_button.button_pressed = tab == Tab.AUDIO
 	_accessibility_tab_button.button_pressed = tab == Tab.ACCESSIBILITY
 	_controls_tab_button.button_pressed = tab == Tab.CONTROLS
+	_game_page.visible = tab == Tab.GAME
 	_audio_page.visible = tab == Tab.AUDIO
 	_accessibility_page.visible = tab == Tab.ACCESSIBILITY
 	_controls_page.visible = tab == Tab.CONTROLS
@@ -299,6 +434,8 @@ func _update_close_button_focus(tab: Tab) -> void:
 		return
 	var last_control: Control
 	match tab:
+		Tab.GAME:
+			last_control = _last_difficulty_button
 		Tab.AUDIO:
 			last_control = _mute_check_button
 		Tab.ACCESSIBILITY:

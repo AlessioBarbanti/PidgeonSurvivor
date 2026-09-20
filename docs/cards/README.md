@@ -277,7 +277,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-167](./1_idea/PS-167-elimina-dominante-gialla-artwork.md) | Elimina la dominante gialla dagli artwork | art | arte | DA DEFINIRE | bassa | PS-084 |
 | [PS-168](./1_idea/PS-168-riduci-gommosita-stylization-artwork.md) | Riduci la gommosità della stilizzazione dei personaggi | art | arte | DA DEFINIRE | bassa | PS-167 |
 | [PS-169](./1_idea/PS-169-aggiungi-battuta-ingresso-per-personaggio.md) | Aggiungi una battuta di ingresso per ogni personaggio | feat | ui | POSTICIPATA | bassa | PS-101 |
-| [PS-170](./2_to_do/PS-170-aggiungi-selettore-difficolta-prima-della-run.md) | Aggiungi un selettore della difficoltà prima della run | feat | gameplay | BLOCCATO | media | PS-157, PS-158, PS-161 |
+| [PS-170](./4_to_test/PS-170-aggiungi-selettore-difficolta-prima-della-run.md) | Aggiungi un selettore della difficoltà prima della run | feat | gameplay | IN VERIFICA | media | PS-157, PS-158, PS-161 |
 | [PS-171](./5_completed/PS-171-impedisci-sovrapposizione-totale-nemici.md) | Impedisci la sovrapposizione totale dei nemici in campo | fix | gameplay | COMPLETATO | alta | — |
 | [PS-172](./3_in_sprint/PS-172-diagnostica-freeze-totale-android-25-minuti.md) | Diagnostica il freeze totale su Android a ~25 minuti di run | chore | piattaforma | IN CORSO | alta | — |
 | [PS-173](./5_completed/PS-173-clone-marghe-spara-ai-nemici.md) | Il clone di Marghe (Reggeton time!) spara ai nemici vicini | feat | gameplay | COMPLETATO | media | — |
