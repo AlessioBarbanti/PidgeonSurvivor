@@ -88,6 +88,12 @@ func test_run_summary_reflects_character_level_boss_and_top_upgrades() -> void:
 		stats_text.contains("Livello %d" % expected_level), "Il riepilogo deve mostrare il livello raggiunto."
 	)
 	assert_true(stats_text.contains("1 Boss sconfitto"), "Il riepilogo deve contare il Boss appena sconfitto.")
+	# PS-184: il Boss e' un piccione a tutti gli effetti, e l'unico nemico morto
+	# di questa run: il nemico ordinario spawnato sopra resta vivo.
+	assert_true(
+		stats_text.contains("1 piccione ucciso"),
+		"Il riepilogo deve contare il Boss fra i piccioni uccisi, al singolare."
+	)
 	assert_true(
 		end_screen.get_summary_text().contains(EndScreen.format_run_time(controller.get_run_time())),
 		"Il tempo mostrato deve coincidere con lo snapshot passato al terminale."
@@ -160,6 +166,46 @@ func test_run_summary_also_works_for_victory() -> void:
 	assert_true(
 		end_screen.get_stats_text().contains("Livello"),
 		"Il riepilogo di vittoria deve mostrare comunque livello e Boss sconfitti."
+	)
+
+
+## PS-184 — Il conteggio uccisioni somma solo i nemici morti per danno e
+## concorda al plurale; chi resta vivo non entra nel totale.
+func test_run_summary_counts_only_enemies_killed_by_damage() -> void:
+	var movement_slice := await instantiate_movement_slice()
+	var controller := movement_slice.get_run_controller() as RunController
+	var spawner := movement_slice.get_enemy_spawner() as EnemySpawner
+	var end_screen := movement_slice.get_end_screen() as EndScreen
+	assert_true(
+		controller != null and spawner != null and end_screen != null,
+		"PS-184 richiede run controller, spawner e terminale."
+	)
+	if controller == null or spawner == null or end_screen == null:
+		return
+
+	controller.set_process(false)
+	spawner.set_process(false)
+
+	var enemies: Array[BaseEnemy] = []
+	for _index in range(3):
+		var enemy := spawner.try_spawn_enemy()
+		assert_true(enemy != null, "Servono tre nemici ordinari reali.")
+		if enemy == null:
+			return
+		enemies.append(enemy)
+
+	for index in range(2):
+		var victim := enemies[index]
+		assert_true(
+			victim.take_damage(victim.get_health_component().health_current),
+			"Il nemico deve morire per danno."
+		)
+	await wait_process_frames(2)
+
+	assert_true(controller.request_defeat(), "Il conteggio va letto da un terminale reale.")
+	assert_true(
+		end_screen.get_stats_text().contains("2 piccioni uccisi"),
+		"Solo i due nemici uccisi devono entrare nel conteggio, al plurale."
 	)
 
 

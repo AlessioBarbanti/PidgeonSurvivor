@@ -10,5 +10,7 @@ var character_name := ""
 var character_portrait: Texture2D
 var level := 1
 var bosses_defeated := 0
+## PS-184: totale dei nemici morti per danno nella run, Boss compresi.
+var enemies_defeated := 0
 var run_time := 0.0
 var top_upgrades: Array[UpgradeService.RankedUpgrade] = []

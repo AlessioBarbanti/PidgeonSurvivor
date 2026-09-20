@@ -88,6 +88,10 @@ var _last_logged_joystick_rect := Rect2()
 ## (solo il segnale boss_defeated e l'ultimo titolo); il riepilogo finale lo
 ## richiede, quindi il conteggio vive qui invece che in BossEncounter.
 var _defeated_boss_count := 0
+## PS-184: totale delle uccisioni della run mostrato nel recap. I nemici
+## ordinari si agganciano per-istanza allo spawn; i Boss non passano dallo
+## spawner, quindi arrivano dal segnale boss_defeated.
+var _defeated_enemy_count := 0
 
 # TEMP DEBUG — telemetria di validazione batch PS-123/124/126, da rimuovere
 # dopo la sessione di raccolta dati sul Pixel (non e' una card).
@@ -115,6 +119,7 @@ func _ready() -> void:
 	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_barb_reward)
 	_boss_encounter.boss_defeated.connect(_on_boss_defeated_for_summary)
 	_run_controller.run_started.connect(_on_run_started_for_summary)
+	_enemy_spawner.enemy_spawned.connect(_on_enemy_spawned_for_summary)
 	_hud.pause_requested.connect(_on_pause_requested)
 	_end_screen.restart_requested.connect(_on_restart_requested)
 	_end_screen.change_character_requested.connect(_on_change_character_requested)
@@ -1252,6 +1257,7 @@ func _build_run_summary(run_time: float) -> RunSummary:
 		summary.character_portrait = friend.get_public_selection_portrait()
 	summary.level = _experience_system.level
 	summary.bosses_defeated = _defeated_boss_count
+	summary.enemies_defeated = _defeated_enemy_count
 	summary.run_time = run_time
 	summary.top_upgrades = _upgrade_service.get_acquired_upgrades().slice(0, 3)
 	return summary
@@ -1259,10 +1265,23 @@ func _build_run_summary(run_time: float) -> RunSummary:
 
 func _on_boss_defeated_for_summary(_boss: FirstBoss) -> void:
 	_defeated_boss_count += 1
+	_defeated_enemy_count += 1
 
 
 func _on_run_started_for_summary(_seed_value: int) -> void:
 	_defeated_boss_count = 0
+	_defeated_enemy_count = 0
+
+
+func _on_enemy_spawned_for_summary(enemy: BaseEnemy) -> void:
+	if not is_instance_valid(enemy):
+		return
+	# ONE_SHOT: un died duplicato sullo stesso nemico non puo' gonfiare il totale.
+	enemy.died.connect(_on_enemy_died_for_summary, CONNECT_ONE_SHOT)
+
+
+func _on_enemy_died_for_summary(_enemy: BaseEnemy) -> void:
+	_defeated_enemy_count += 1
 
 
 # TEMP DEBUG — telemetria di validazione batch PS-123/124/126, da rimuovere

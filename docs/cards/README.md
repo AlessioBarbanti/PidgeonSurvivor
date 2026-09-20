@@ -291,7 +291,7 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-181](./3_in_sprint/PS-181-telegraph-boss-a-volte-non-spara.md) | Il telegraph di attacco del Boss a volte non si risolve in un colpo (visto su Evil Alea) | fix | gameplay | IN CORSO | alta | — |
 | [PS-182](./5_completed/PS-182-primo-boss-troppa-vita.md) | Il primo Boss (minuto 2) ha troppa vita | fix | gameplay | COMPLETATO | alta | — |
 | [PS-183](./1_idea/PS-183-ripensa-proiettile-clone-marghe.md) | Ripensa l'attacco del clone di Marghe, forse un'esplosione al posto del proiettile | ux | gameplay | DA DEFINIRE | alta | — |
-| [PS-184](./2_to_do/PS-184-recap-numero-piccioni-uccisi.md) | Mostra il numero di piccioni uccisi nel recap di fine partita | feat | ui | PRONTO | media | — |
+| [PS-184](./4_to_test/PS-184-recap-numero-piccioni-uccisi.md) | Mostra il numero di piccioni uccisi nel recap di fine partita | feat | ui | IN VERIFICA | media | — |
 | [PS-185](./5_completed/PS-185-elementi-run-troppo-piccoli.md) | Aumenta la leggibilità generale degli elementi a schermo durante la run | ux | ui | COMPLETATO | alta | — |
 | [PS-186](./5_completed/PS-186-separa-validazione-contratti-run.md) | Separa la validazione dei contratti dall'orchestrazione della run | chore | tooling | COMPLETATO | media | — |
 | [PS-187](./5_completed/PS-187-fixture-frontend-attese-gut.md) | Centralizza le fixture frontend e rendi espliciti i timeout GUT | chore | tooling | COMPLETATO | media | — |

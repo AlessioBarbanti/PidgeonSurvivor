@@ -168,12 +168,21 @@ func _apply_summary(summary: RunSummary) -> void:
 		_character_portrait.texture = summary.character_portrait
 		_character_portrait.visible = summary.character_portrait != null
 	if is_instance_valid(_stats_label):
-		_stats_label.text = "Livello %d · %s" % [summary.level, _format_boss_count(summary.bosses_defeated)]
+		_stats_label.text = "Livello %d · %s · %s" % [
+			summary.level,
+			_format_boss_count(summary.bosses_defeated),
+			_format_enemy_count(summary.enemies_defeated),
+		]
 	_rebuild_upgrades_row(summary.top_upgrades)
 
 
 func _format_boss_count(count: int) -> String:
 	return "1 Boss sconfitto" if count == 1 else "%d Boss sconfitti" % count
+
+
+## PS-184: concordanza singolare/plurale come in PS-166.
+func _format_enemy_count(count: int) -> String:
+	return "1 piccione ucciso" if count == 1 else "%d piccioni uccisi" % count
 
 
 func _rebuild_upgrades_row(entries: Array[UpgradeService.RankedUpgrade]) -> void:
