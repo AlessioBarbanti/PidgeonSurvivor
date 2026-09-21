@@ -193,7 +193,8 @@
         "tests/unit/test_ps099_state_tell_aura.gd",
         "tests/unit/test_ps197_weapon_definition_wiring.gd",
         "tests/unit/test_ps198_pilot_weapons.gd",
-        "tests/unit/test_ps200_cast_weapons.gd"
+        "tests/unit/test_ps200_cast_weapons.gd",
+        "tests/unit/test_ps202_coperchio_sweep.gd"
       ]
     },
     {
@@ -321,7 +322,8 @@
         "tests/unit/test_ps157_early_difficulty.gd",
         "tests/unit/test_ps197_weapon_definition_wiring.gd",
         "tests/unit/test_ps198_pilot_weapons.gd",
-        "tests/unit/test_ps200_cast_weapons.gd"
+        "tests/unit/test_ps200_cast_weapons.gd",
+        "tests/unit/test_ps202_coperchio_sweep.gd"
       ]
     },
     {
@@ -476,7 +478,8 @@
         "tests/unit/test_ps195_random_initial_character.gd",
         "tests/unit/test_ps197_weapon_definition_wiring.gd",
         "tests/unit/test_ps198_pilot_weapons.gd",
-        "tests/unit/test_ps200_cast_weapons.gd"
+        "tests/unit/test_ps200_cast_weapons.gd",
+        "tests/unit/test_ps202_coperchio_sweep.gd"
       ]
     },
     {

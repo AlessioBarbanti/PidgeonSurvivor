@@ -12,6 +12,7 @@ const STRAIGHT_SHOT := &"straight_shot"
 const ALTERNATING_SKEWERS := &"alternating_skewers"
 const SPLITTING_SHOT := &"splitting_shot"
 const ORBITING_FRAGMENTS := &"orbiting_fragments"
+const SWEEPING_ARC := &"sweeping_arc"
 
 @export var definitions: Array[WeaponDefinition] = []
 
@@ -111,6 +112,24 @@ func build_emissions(
 					{"radius": orbit_radius}
 				))
 			return emissions
+		SWEEPING_ARC:
+			# Coperchio (PS-202): un'arma in mischia costruita come un solo
+			# corpo agganciato al personaggio che spazza un arco, riusando la
+			# traiettoria orbitale. Parte mezzo arco prima della mira, cosi' il
+			# fendente e' centrato sul bersaglio. L'ampiezza e' la portata
+			# dell'arma (velocita' x durata) avvolta sul raggio: un bonus di
+			# velocita' allunga il fendente come allungherebbe un colpo dritto.
+			var sweep_radius := definition.get_effect_float(&"orbit_radius", 62.0, 1.0)
+			var half_arc := (
+				definition.projectile_speed * definition.projectile_lifetime / sweep_radius * 0.5
+			)
+			var start_direction := direction.rotated(-half_arc)
+			return [make_emission(
+				start_direction * sweep_radius,
+				start_direction,
+				Projectile.TRAJECTORY_ORBIT,
+				definition.effect_parameters.merged({"radius": sweep_radius}, true)
+			)]
 		_:
 			# Colpo frontale singolo. Se l'arma dichiara una traiettoria nei
 			# propri dati se la porta dietro: una differenza di sola

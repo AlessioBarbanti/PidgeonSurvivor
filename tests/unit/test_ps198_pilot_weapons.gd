@@ -17,7 +17,7 @@ const GOSSIP := preload("res://data/upgrades/specialities/gossip_projectiles.tre
 const BEER := preload("res://data/upgrades/specialities/beer_signature.tres")
 
 const PILOT_FRIENDS: Array[StringName] = [&"magno", &"bea", &"alea", &"migi"]
-const PILOT_WEAPONS: Array[StringName] = [&"carbonella", &"spiedo", &"cavatappi", &"graticola"]
+const PILOT_WEAPONS: Array[StringName] = [&"coperchio", &"spiedo", &"cavatappi", &"graticola"]
 
 ## Build di riferimento per il tetto aritmetico, dichiarata in PS-198:
 ## Alette (cadenza x1,25), danno x1,5, Tagliata a rango 2 (tre proiettili),
@@ -368,6 +368,13 @@ func _assert_trajectory(
 				),
 				lateral, 0.5,
 				"PS-198: lo Spiedo deve partire spostato di fianco alla linea di mira."
+			)
+		WeaponEffectRegistry.SWEEPING_ARC:
+			# PS-202: la geometria del fendente e' verificata in
+			# test_ps202_coperchio_sweep.gd; qui basta che resti orbitale.
+			assert_eq(
+				volley[0].get_trajectory(), Projectile.TRAJECTORY_ORBIT,
+				"PS-202: il Coperchio deve spazzare l'arco attorno a Magno."
 			)
 		_:
 			assert_eq(

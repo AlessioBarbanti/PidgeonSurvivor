@@ -38,7 +38,7 @@ Scarti base (B47, PS-087): salute `×1,15`, velocità `×0,95`, cadenza `×1,00`
 
 Scarti estesi (PS-093): danno `×0,98`, avidità `×1,02`, raggio pickup `×1,05`, difesa `×1,00`, critico `+0%` — il peso resta nell'onda d'urto della passiva, non nella precisione dei colpi automatici; il piccolo bonus di raccolta compensa la velocità sotto la norma.
 
-Arma (PS-198) — **Carbonella**: un carbone ardente alla volta, lento e massiccio, che non arriva lontano. Ritmo lentissimo (1,1 colpi/s), il colpo singolo più pesante del set pilota e portata corta (~440 px): per colpire, Magno deve entrare nella mischia, esattamente dove la sua passiva gli chiede di andare.
+Arma (PS-202, in prova) — **Coperchio**: la prima arma in mischia del cast. A ogni colpo Magno fa roteare davanti a sé un coperchio da barbecue lungo un arco di circa 150° centrato sulla mira; il coperchio gli resta agganciato mentre si muove e spazza fino a cinque nemici per fendente. Ritmo lentissimo (1 fendente/s): per colpire, Magno deve entrare nella mischia, esattamente dove la sua passiva gli chiede di andare. Non respinge, perché la spinta è dell'Onda d'Urto Tellurica. Sostituisce la Carbonella di PS-198.
 
 ## Bea
 

@@ -517,6 +517,7 @@ func test_composed_scene() -> void:
 	)
 	assert_true(weapon.weapon_profile != null, "La scena deve assegnare il profilo arma.")
 	assert_true(weapon.projectile_scene != null, "La scena deve assegnare la scena proiettile.")
+	assert_true(mount_shared_weapon(movement_slice), "La mira composta va provata sul colpo frontale condiviso.")
 
 	spawner.reset_for_run(5150)
 	spawner._process(spawner.spawn_profile.initial_spawn_delay)

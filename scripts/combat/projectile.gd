@@ -26,6 +26,14 @@ const TRAJECTORY_RETURN := &"return"
 const TRAJECTORY_FADING := &"fading"
 const TRAJECTORY_BUILDING := &"building"
 const TRAJECTORY_LINGERING := &"lingering"
+## PS-202: disegno a primitive dichiarato dai dati dell'arma (`visual`), per
+## provare in partita un'arma prima di commissionarne l'arte. Senza `visual`
+## il colpo resta lo sprite della brace.
+const VISUAL_LID := &"lid"
+const LID_FILL_COLOR := Color(0.30, 0.31, 0.34)
+const LID_RIM_COLOR := Color(0.78, 0.80, 0.84)
+const LID_HANDLE_COLOR := Color(0.12, 0.12, 0.13)
+const LID_TRAIL_COLOR := Color(1.0, 0.62, 0.28, 0.22)
 
 var damage := 0.0
 var direction := Vector2.RIGHT
@@ -58,6 +66,8 @@ var _split_done := false
 var _orbit_anchor: Node2D
 var _orbit_radius := 0.0
 var _orbit_angle := 0.0
+var _orbit_start_angle := 0.0
+var _visual := &""
 var _initial_lifetime := 0.0
 var _turn_seconds := 0.0
 var _returned := false
@@ -142,6 +152,8 @@ func _physics_process(delta: float) -> void:
 				global_position += direction * speed * travel_delta
 		_:
 			global_position += direction * speed * movement_delta
+	if not _visual.is_empty():
+		queue_redraw()
 	lifetime_remaining -= safe_delta
 	if lifetime_remaining <= 0.0:
 		expire()
@@ -189,6 +201,10 @@ func configure_trajectory(
 	_split_done = false
 	_returned = false
 	_initial_lifetime = maxf(lifetime_remaining, MINIMUM_RAMP_LIFETIME)
+	_visual = StringName(parameters.get("visual", &""))
+	if is_instance_valid(_projectile_sprite):
+		_projectile_sprite.visible = _visual.is_empty()
+	queue_redraw()
 	match trajectory:
 		TRAJECTORY_SPLIT:
 			var delay := float(parameters.get("delay", 0.0))
@@ -205,6 +221,7 @@ func configure_trajectory(
 			_orbit_radius = radius
 			_orbit_anchor = anchor
 			_orbit_angle = direction.angle()
+			_orbit_start_angle = _orbit_angle
 			global_position = (
 				anchor.global_position + Vector2.RIGHT.rotated(_orbit_angle) * radius
 			)
@@ -236,6 +253,10 @@ func get_trajectory() -> StringName:
 
 func get_orbit_radius() -> float:
 	return _orbit_radius
+
+
+func get_visual() -> StringName:
+	return _visual
 
 
 func has_split() -> bool:
@@ -456,6 +477,34 @@ func get_death_burst_damage_multiplier() -> float:
 
 func has_hit_target(target: BaseEnemy) -> bool:
 	return is_instance_valid(target) and _hit_target_ids.has(target.get_instance_id())
+
+
+# ponytail: primitive provvisorie del solo Coperchio (PS-202); lasciano il
+# posto a uno sprite dedicato se la prova passa e si apre la card art.
+func _draw() -> void:
+	if _visual != VISUAL_LID:
+		return
+	# La scia e' l'arco gia' spazzato, disegnato attorno al personaggio largo
+	# quanto il coperchio: e' lei a far leggere il colpo come un fendente.
+	if _trajectory == TRAJECTORY_ORBIT and is_instance_valid(_orbit_anchor):
+		draw_arc(
+			to_local(_orbit_anchor.global_position),
+			_orbit_radius,
+			_orbit_start_angle - global_rotation,
+			_orbit_angle - global_rotation,
+			16,
+			LID_TRAIL_COLOR,
+			projectile_radius * 2.0
+		)
+	draw_circle(Vector2.ZERO, projectile_radius, LID_FILL_COLOR)
+	draw_arc(Vector2.ZERO, projectile_radius, 0.0, TAU, 24, LID_RIM_COLOR, 3.0)
+	draw_rect(
+		Rect2(
+			-projectile_radius * 0.15, -projectile_radius * 0.4,
+			projectile_radius * 0.3, projectile_radius * 0.8
+		),
+		LID_HANDLE_COLOR
+	)
 
 
 func _on_area_entered(area: Area2D) -> void:

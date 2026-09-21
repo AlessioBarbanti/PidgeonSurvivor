@@ -309,3 +309,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-199](./1_idea/PS-199-crash-a-spegnimento-suite-gut.md) | Crash a spegnimento della suite GUT completa, con report verde | bug | tooling | DA DEFINIRE | media | — |
 | [PS-200](./4_to_test/PS-200-armi-secondo-set-cast-completo.md) | Completa il cast con il secondo set di armi | feat | gameplay | IN VERIFICA | alta | PS-198 |
 | [PS-201](./1_idea/PS-201-nome-spiedo-contro-lista-parole-vietate.md) | Il nome Spiedo confligge con la lista di parole vietate | chore | contenuti | DA DEFINIRE | bassa | — |
+| [PS-202](./4_to_test/PS-202-coperchio-arma-mischia-magno.md) | Prova il Coperchio di Magno come prima arma in mischia | feat | gameplay | IN VERIFICA | alta | PS-198 |

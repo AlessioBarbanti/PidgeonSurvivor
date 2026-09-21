@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/weapon_definition.gd" id="1_weapon_definition"]
+
+[resource]
+script = ExtResource("1_weapon_definition")
+id = &"coperchio"
+display_name = "Coperchio"
+description = "Un coperchio da barbecue fatto roteare davanti a sé, che spazza chiunque si trovi sull'arco."
+effect_id = &"sweeping_arc"
+effect_parameters = {
+"orbit_radius": 62.0,
+"visual": &"lid"
+}
+shots_per_second = 1.0
+damage = 32.3
+projectile_speed = 740.0
+projectile_lifetime = 0.22
+projectile_radius = 30.0
+muzzle_offset = 0.0
+base_pierce_count = 5
+base_pierce_damage_falloff = 0.9
+base_multishot_count = 1
+base_multishot_spread_degrees = 0.0

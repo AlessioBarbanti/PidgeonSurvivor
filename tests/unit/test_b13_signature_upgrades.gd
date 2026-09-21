@@ -67,6 +67,7 @@ func test_signature_composition() -> void:
 	player.set_physics_process(false)
 	weapon.set_process(false)
 	effects.set_process(false)
+	assert_true(mount_shared_weapon(movement_slice), "La dispersione di Birra va misurata sul colpo frontale condiviso.")
 	var ability := player.get_ability_controller()
 	if ability != null:
 		ability.set_process(false)

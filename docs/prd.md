@@ -71,7 +71,10 @@ sceglie, non si sblocca e non si cambia durante la run. Armi alternative o
 sbloccabili sono esplicitamente fuori contratto.
 
 **Invariante di compatibilità.** Ogni arma del Player emette `Projectile`.
-Non esistono raggi continui, aure o mischia pura come attacco automatico.
+Non esistono raggi continui o aure come attacco automatico. Un'arma in
+mischia è ammessa solo come corpo `Projectile` agganciato al personaggio che
+spazza un arco (PS-202, il Coperchio di Magno), mai come colpo istantaneo
+fuori dal proiettile.
 È questa regola a rendere ogni Specialità di Barb valida per costruzione su
 ogni arma, senza casi speciali per personaggio: le cinque Specialità legate
 al proiettile — Arrosticini (perforazione), Tagliata (ventaglio), Fiorentina
@@ -83,7 +86,7 @@ equipaggiata.
 **almeno tre** di questi cinque assi:
 
 1. **Traiettoria** — come il proiettile viaggia (dritta, divergente in volo,
-   orbitale attorno alla sorgente).
+   orbitale attorno alla sorgente, fendente ad arco centrato sulla mira).
 2. **Geometria d'emissione** — da dove partono i colpi di uno stesso sparo
    (dalla volata, alternati ai fianchi, tutt'intorno).
 3. **Ritmo** — cadenza e regolarità della raffica.

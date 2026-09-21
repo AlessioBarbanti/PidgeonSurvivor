@@ -30,6 +30,7 @@ func test_manual_fire_mode() -> void:
 	controller.set_process(false)
 	spawner.set_process(false)
 	weapon.set_process(false)
+	assert_true(mount_shared_weapon(movement_slice), "PS-085: la mira va provata sul colpo frontale condiviso.")
 
 	spawner.reset_for_run(5150)
 	spawner._process(spawner.spawn_profile.initial_spawn_delay)

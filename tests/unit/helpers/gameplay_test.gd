@@ -38,6 +38,16 @@ func instantiate_movement_slice(
 	return slice
 
 
+## Monta l'arma condivisa `Scintilla`, il colpo frontale di riferimento. Serve
+## ai test di mira e bersagliamento, che leggono `projectile.direction`: con
+## l'arma del personaggio di default, il Coperchio in mischia di Magno
+## (PS-202), quella direzione e' l'inizio del fendente, non la mira.
+func mount_shared_weapon(slice: Control) -> bool:
+	var weapon: WeaponController = slice.get_weapon_controller()
+	var registry: WeaponEffectRegistry = slice.get_weapon_effect_registry()
+	return weapon.set_weapon_definition(registry.resolve_definition(&"scintilla"))
+
+
 ## Attende che le transizioni in corso (Tween) siano concluse.
 ##
 ## Misurare un layout a meta' animazione lo lega alla velocita' della macchina

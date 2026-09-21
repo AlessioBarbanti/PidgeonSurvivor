@@ -1,4 +1,4 @@
-[gd_scene load_steps=138 format=3]
+[gd_scene load_steps=139 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -29,6 +29,7 @@
 [ext_resource type="Resource" path="res://data/weapons/soffietto.tres" id="144_weapon_soffietto"]
 [ext_resource type="Resource" path="res://data/weapons/attizzatoio.tres" id="145_weapon_attizzatoio"]
 [ext_resource type="Resource" path="res://data/weapons/marinata.tres" id="146_weapon_marinata"]
+[ext_resource type="Resource" path="res://data/weapons/coperchio.tres" id="147_weapon_coperchio"]
 [ext_resource type="Script" path="res://scripts/progression/upgrade_registry.gd" id="21_upgrade_registry"]
 [ext_resource type="Script" path="res://scripts/progression/upgrade_service.gd" id="22_upgrade_service"]
 [ext_resource type="Resource" path="res://data/upgrades/swift_steps.tres" id="23_swift_steps"]
@@ -241,7 +242,7 @@ script = ExtResource("11_targeting")
 [node name="WeaponEffectRegistry" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("137_weapon_registry")
-definitions = Array[ExtResource("138_weapon_scintilla")]([ExtResource("138_weapon_scintilla"), ExtResource("139_weapon_carbonella"), ExtResource("140_weapon_spiedo"), ExtResource("141_weapon_cavatappi"), ExtResource("142_weapon_graticola"), ExtResource("143_weapon_paletta"), ExtResource("144_weapon_soffietto"), ExtResource("145_weapon_attizzatoio"), ExtResource("146_weapon_marinata")])
+definitions = Array[ExtResource("138_weapon_scintilla")]([ExtResource("138_weapon_scintilla"), ExtResource("139_weapon_carbonella"), ExtResource("140_weapon_spiedo"), ExtResource("141_weapon_cavatappi"), ExtResource("142_weapon_graticola"), ExtResource("143_weapon_paletta"), ExtResource("144_weapon_soffietto"), ExtResource("145_weapon_attizzatoio"), ExtResource("146_weapon_marinata"), ExtResource("147_weapon_coperchio")])
 
 [node name="AbilityEffectRegistry" type="Node" parent="."]
 unique_name_in_owner = true
