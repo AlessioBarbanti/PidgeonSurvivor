@@ -152,7 +152,9 @@ func test_pilot_weapons() -> void:
 		if spawner.get_alive_count() == 1:
 			var enemy := spawner.get_spawned_enemies()[0]
 			enemy.set_physics_process(false)
-			enemy.global_position = player.global_position + Vector2(200.0, 0.0)
+			# Dentro la portata del Coperchio (PS-202), che in automatico non
+			# colpisce oltre: per le armi a distanza la posizione e' indifferente.
+			enemy.global_position = player.global_position + Vector2(120.0, 0.0)
 			var auto_volley := _fire_weapon(weapon)
 			assert_eq(
 				auto_volley.size(), emission_count,

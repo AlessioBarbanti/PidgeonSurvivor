@@ -9,14 +9,14 @@ display_name = "Coperchio"
 description = "Un coperchio da barbecue fatto roteare davanti a sé, che spazza chiunque si trovi sull'arco."
 effect_id = &"sweeping_arc"
 effect_parameters = {
-"orbit_radius": 62.0,
+"orbit_radius": 90.0,
 "visual": &"lid"
 }
 shots_per_second = 1.0
 damage = 32.3
-projectile_speed = 740.0
+projectile_speed = 1070.0
 projectile_lifetime = 0.22
-projectile_radius = 30.0
+projectile_radius = 40.0
 muzzle_offset = 0.0
 base_pierce_count = 5
 base_pierce_damage_falloff = 0.9

@@ -38,6 +38,30 @@ func test_coperchio_sweep() -> void:
 	)
 
 	weapon.projectile_fired.connect(_on_projectile_fired)
+
+	# 0. In automatico il fendente aspetta che il nemico sia a portata: un colpo
+	#    nel vuoto consumerebbe il cooldown proprio quando il nemico arriva.
+	var reach := registry.get_engage_distance(definition)
+	assert_true(is_finite(reach), "PS-202: il Coperchio deve dichiarare una portata.")
+	assert_eq(
+		registry.get_engage_distance(registry.resolve_definition(&"spiedo")), INF,
+		"PS-202: le armi a distanza non devono avere un limite di portata."
+	)
+	spawner.reset_for_run(5150)
+	spawner._process(spawner.spawn_profile.initial_spawn_delay)
+	assert_eq(spawner.get_alive_count(), 1, "PS-202: la fixture deve avere un bersaglio.")
+	if spawner.get_alive_count() == 1:
+		var enemy := spawner.get_spawned_enemies()[0]
+		enemy.set_physics_process(false)
+		enemy.global_position = player.global_position + Vector2(reach + 40.0, 0.0)
+		assert_true(_fire_weapon(weapon).is_empty(), "PS-202: oltre la portata il Coperchio non deve colpire.")
+		assert_true(weapon.is_ready_to_fire(), "PS-202: un colpo non partito non deve consumare il cooldown.")
+		enemy.global_position = player.global_position + Vector2(reach - 10.0, 0.0)
+		var auto_volley := _fire_weapon(weapon)
+		assert_eq(auto_volley.size(), 1, "PS-202: a portata il Coperchio deve colpire subito.")
+		for projectile in auto_volley:
+			projectile.expire()
+
 	weapon.set_manual_fire_enabled(true)
 	weapon.set_manual_aim_state(Vector2.RIGHT, true)
 	var volley := _fire_weapon(weapon)
@@ -48,7 +72,7 @@ func test_coperchio_sweep() -> void:
 	var lid := volley[0]
 	lid.set_physics_process(false)
 
-	var radius := definition.get_effect_float(&"orbit_radius", 62.0, 1.0)
+	var radius := definition.get_effect_float(&"orbit_radius", WeaponEffectRegistry.DEFAULT_SWEEP_RADIUS, 1.0)
 	var lifetime := definition.projectile_lifetime
 	var half_arc := weapon.get_effective_projectile_speed() * lifetime / radius * 0.5
 	assert_true(

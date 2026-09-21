@@ -13,6 +13,10 @@ const ALTERNATING_SKEWERS := &"alternating_skewers"
 const SPLITTING_SHOT := &"splitting_shot"
 const ORBITING_FRAGMENTS := &"orbiting_fragments"
 const SWEEPING_ARC := &"sweeping_arc"
+const DEFAULT_SWEEP_RADIUS := 90.0
+## Raggio di un nemico base: la portata si misura fra i centri, e il fendente
+## tocca il nemico gia' quando ne sfiora il bordo.
+const ENGAGE_TARGET_MARGIN := 20.0
 
 @export var definitions: Array[WeaponDefinition] = []
 
@@ -119,7 +123,7 @@ func build_emissions(
 			# fendente e' centrato sul bersaglio. L'ampiezza e' la portata
 			# dell'arma (velocita' x durata) avvolta sul raggio: un bonus di
 			# velocita' allunga il fendente come allungherebbe un colpo dritto.
-			var sweep_radius := definition.get_effect_float(&"orbit_radius", 62.0, 1.0)
+			var sweep_radius := definition.get_effect_float(&"orbit_radius", DEFAULT_SWEEP_RADIUS, 1.0)
 			var half_arc := (
 				definition.projectile_speed * definition.projectile_lifetime / sweep_radius * 0.5
 			)
@@ -144,6 +148,20 @@ func build_emissions(
 				)),
 				definition.effect_parameters
 			)]
+
+
+## Distanza oltre la quale l'arma non colpisce in automatico (PS-202). Solo il
+## fendente ne ha una: oltre, girerebbe nel vuoto e consumerebbe il cooldown,
+## che non sarebbe pronto quando il nemico arriva davvero. Le armi a distanza
+## hanno portata illimitata.
+func get_engage_distance(definition: WeaponDefinition) -> float:
+	if definition == null or definition.effect_id != SWEEPING_ARC:
+		return INF
+	return (
+		definition.get_effect_float(&"orbit_radius", DEFAULT_SWEEP_RADIUS, 1.0)
+		+ definition.projectile_radius
+		+ ENGAGE_TARGET_MARGIN
+	)
 
 
 static func build_straight_emissions(aim_direction: Vector2) -> Array[Dictionary]:

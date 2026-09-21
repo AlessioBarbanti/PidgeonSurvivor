@@ -48,6 +48,9 @@ poligonali, abbastanza da leggere la forma in partita.
       sprite.
 - [x] Le cinque Specialità legate al proiettile arrivano al coperchio dagli
       stessi setter di sempre (verificato dalla matrice di PS-198).
+- [x] In automatico il Coperchio non colpisce se il nemico più vicino è
+      oltre la sua portata, e il cooldown resta pronto; le armi a distanza non
+      hanno limite di portata.
 - [x] Il tetto aritmetico di kill-rate del cast resta entro il 10% dichiarato
       da PS-198/PS-200.
 
@@ -98,6 +101,18 @@ poligonali, abbastanza da leggere la forma in partita.
   allungherebbe la corsa di un proiettile, senza un parametro in più.
 - **2026-09-22 — Solo poligoni, niente arte** su richiesta del proprietario.
   L'arte del coperchio si apre come card `art` solo se la prova passa.
+- **2026-09-22 — Prima prova su Pixel 9: "molto difficile da usare, non
+  faccio tempo a colpire i nemici che mi colpiscono loro".** Le cause erano
+  due. (1) In automatico il fendente partiva verso il nemico più vicino a
+  qualunque distanza: girava nel vuoto e consumava il cooldown di 1 s, che non
+  era pronto quando il nemico arrivava. (2) La portata era corta: il coperchio
+  arrivava a ~112 px dal centro di Magno contro i ~44 px del contatto, e uno
+  sciame a 210 px/s copre quel margine in 0,3 s. Correzioni: in automatico il
+  fendente parte solo con il nemico più vicino entro la portata dell'arma
+  (`WeaponEffectRegistry.get_engage_distance()`, illimitata per le armi a
+  distanza; in manuale decide il giocatore), e l'arco passa a raggio 90 con
+  coperchio da 40, cioè fascia 50–130 px e portata 150 px. Cadenza e danno
+  invariati, per tenere il colpo singolo sul nemico corazzato (31 HP).
 - **Aperte, da osservare in partita:**
   - con **Salsiccia** il coperchio si ferma al primo nemico, perché la catena
     prevale sulla perforazione (regola esistente di `Projectile`, vale già per
@@ -121,9 +136,10 @@ Tagliata a tre proiettili, Arrosticini +3 perforazioni a decadimento 0,7.
 Con il Coperchio (1 fendente/s, 32,3 danno, 5 bersagli) il tetto è 5,707
 kill/s contro 5,699 dell'arma condivisa: scarto dell'intero cast 0,5%.
 
-Parametri del fendente: raggio d'orbita 62 px (Magno ha raggio 24), coperchio
-di raggio 30, quindi spazza la fascia 32–92 px dal centro; velocità 740 ×
-durata 0,22 s su raggio 62 = arco di ~150°.
+Parametri del fendente (dopo la prima prova su Pixel): raggio d'orbita 90 px
+(Magno ha raggio 24), coperchio di raggio 40, quindi spazza la fascia 50–130
+px dal centro; velocità 1070 × durata 0,22 s su raggio 90 = arco di ~150°.
+Portata in automatico 90 + 40 + 20 (raggio di un nemico base) = 150 px.
 
 Tre test di mira (`test_b05_combat_slice`, `test_b13_signature_upgrades`,
 `test_ps085_manual_fire_mode`) leggevano `projectile.direction` con l'arma del
@@ -137,7 +153,11 @@ Evidenze:
   -FocusedSmoke tests/unit/test_ps202_coperchio_sweep.gd` → `status=PASS
   focused=1/1 regression=141/141`, nessun `SCRIPT ERROR`/`FATAL EXCEPTION`
   nei log; marker `PS202_COPERCHIO_SWEEP_SMOKE_OK` e
-  `PS198_PILOT_WEAPONS_SMOKE_OK`.
+  `PS198_PILOT_WEAPONS_SMOKE_OK`. Dopo la correzione di portata: `status=PASS
+  focused=1/1 regression=11/11`, log puliti.
+- Primo APK su Pixel 9: export `PASS`, statica `PASS`, installato e avviato
+  fino a `B18O_RUN_STARTED friend=magno` senza errori; prova del proprietario
+  negativa (vedi Decisioni), da ripetere con l'APK corretto.
 - Cattura di sviluppo con renderer Windows reale (script usa e getta, non
   versionato): coperchio con bordo e maniglia che spazza l'arco attorno a
   Magno, con la scia dell'arco già percorso. Non sostituisce il controllo

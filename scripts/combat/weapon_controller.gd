@@ -128,6 +128,8 @@ func try_fire() -> Projectile:
 		if target == null:
 			return null
 		var offset_to_target := target.global_position - _source.global_position
+		if offset_to_target.length() > _get_engage_distance():
+			return null
 		if not offset_to_target.is_zero_approx():
 			base_aim_direction = offset_to_target.normalized()
 			muzzle_offset = minf(weapon_profile.muzzle_offset, offset_to_target.length())
@@ -704,6 +706,14 @@ func _build_emissions(aim_direction: Vector2) -> Array[Dictionary]:
 			_weapon_definition, aim_direction, _shot_index
 		)
 	return WeaponEffectRegistry.build_straight_emissions(aim_direction)
+
+
+## Solo lo sparo automatico la rispetta: in manuale e' il giocatore a scegliere
+## quando colpire, anche nel vuoto.
+func _get_engage_distance() -> float:
+	if is_instance_valid(_weapon_effect_registry) and _weapon_definition != null:
+		return _weapon_effect_registry.get_engage_distance(_weapon_definition)
+	return INF
 
 
 func _seed_aim_rng(seed_value: int) -> void:
