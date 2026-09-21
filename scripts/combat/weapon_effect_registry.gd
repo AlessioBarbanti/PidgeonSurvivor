@@ -74,12 +74,16 @@ func build_emissions(
 			var side := 1.0 if shot_index % 2 == 0 else -1.0
 			return [make_emission(direction.orthogonal() * lateral * side, direction)]
 		SPLITTING_SHOT:
-			# Cavatappi: due colpi perfettamente sovrapposti che divergono a
-			# meta' corsa. Sono due proiettili dal primo istante, non uno che
-			# si duplica: finche' viaggiano insieme sono indistinguibili da un
-			# colpo solo, e il tetto di kill-rate li conta entrambi.
-			var delay := definition.get_effect_float(&"split_delay_seconds", 0.8, 0.0)
-			var divergence := definition.get_effect_float(&"divergence_degrees", 17.0, 0.0)
+			# Cavatappi: due colpi perfettamente sovrapposti che divergono
+			# poco dopo la volata. Sono due proiettili dal primo istante, non
+			# uno che si duplica: finche' viaggiano insieme sono
+			# indistinguibili da un colpo solo, e il tetto di kill-rate li
+			# conta entrambi. Il ritardo va tenuto corto: con 0,8 s lo
+			# sdoppiamento cadeva a 656 px, cioe' fuori dallo schermo sull'asse
+			# verticale (mezza altezza = 360 px) e oltre il bersaglio piu'
+			# vicino, quindi non avveniva quasi mai.
+			var delay := definition.get_effect_float(&"split_delay_seconds", 0.22, 0.0)
+			var divergence := definition.get_effect_float(&"divergence_degrees", 10.0, 0.0)
 			return [
 				make_emission(
 					Vector2.ZERO, direction, Projectile.TRAJECTORY_SPLIT,

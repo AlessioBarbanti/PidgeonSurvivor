@@ -6,11 +6,11 @@
 script = ExtResource("1_weapon_definition")
 id = &"cavatappi"
 display_name = "Cavatappi"
-description = "Un colpo perfettamente dritto che a metà corsa si apre in due e diverge."
+description = "Un colpo che parte dritto e si apre subito in due metà che divergono."
 effect_id = &"splitting_shot"
 effect_parameters = {
-"divergence_degrees": 17.0,
-"split_delay_seconds": 0.8
+"divergence_degrees": 10.0,
+"split_delay_seconds": 0.22
 }
 shots_per_second = 3.2
 damage = 6.25

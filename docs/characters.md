@@ -123,7 +123,7 @@ Scarti base (B47, PS-087): salute `×0,85`, velocità `×1,00`, cadenza `×1,15`
 
 Scarti estesi (PS-093): danno `×1,10`, avidità `×1,08`, raggio pickup `×0,92`, difesa `×1,05`, critico `+0%` — rinforza il glass cannon già scritto nei tre assi B47 (cadenza alta, salute bassa): più danno e più difesa completano il rischio/ricompensa invece di contraddirlo, la raccolta più bassa riflette che Alea è occupata a piroettare, non a raccogliere con metodo. Critico deliberatamente a zero: PS-105 ha riscritto la sua intera passiva per rimuovere ogni esito casuale dal suo kit ("Nessun esito è casuale"), e il critico è un meccanismo probabilistico per natura — reintrodurlo qui contraddirebbe quel redesign.
 
-Arma (PS-198) — **Cavatappi**: un colpo perfettamente dritto che a metà corsa si apre in due e diverge. L'ubriaco non ha la mira che trema, vede doppio: la precisione di partenza resta intatta, a raddoppiarsi è il risultato. Resta così distinto dalla dispersione di Alette (`beer_signature`), che invece fa tremare proprio la mira.
+Arma (PS-198) — **Cavatappi**: un colpo che parte dritto e si apre subito in due metà divergenti (a ~180 px, 10° per parte). L'ubriaco non ha la mira che trema, vede doppio: la precisione di partenza resta intatta, a raddoppiarsi è il risultato — e resta così distinto dalla dispersione di Alette (`beer_signature`), che invece fa tremare proprio la mira. Lo sdoppiamento precoce ha un prezzo dichiarato: su un nemico isolato a media distanza le due metà gli passano ai lati, quindi il Cavatappi copre spazio meglio di quanto non batta un bersaglio singolo. È coerente col profilo glass cannon di Alea, non un effetto collaterale.
 
 ## Aleo
 

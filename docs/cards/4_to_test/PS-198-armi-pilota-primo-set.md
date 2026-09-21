@@ -34,7 +34,7 @@ Quattro armi, approvate dal proprietario il 2026-09-18:
 |---|---|---|---|
 | Magno | **Carbonella** | un carbone ardente singolo, lento e massiccio, portata corta | ritmo lento; corpo grande; portata corta |
 | Bea | **Spiedo** | due spiedi sottili alternati destra/sinistra, cadenza alta, portata lunga | ritmo rapido alternato; geometria alternata; corpo sottile e veloce |
-| Alea | **Cavatappi** | colpo singolo perfettamente preciso che **a metà corsa si sdoppia** in due proiettili divergenti | traiettoria che diverge in volo; emissione singola che diventa doppia; ritmo medio |
+| Alea | **Cavatappi** | colpo singolo perfettamente preciso che **si sdoppia subito dopo la volata** in due proiettili divergenti | traiettoria che diverge in volo; emissione singola che diventa doppia; ritmo medio |
 | Migi | **Graticola** | frammenti di graticola che **orbitano** attorno al personaggio | traiettoria orbitale; emissione tutt'intorno senza mira frontale; portata fissa |
 
 Tutti i nomi stanno nel registro utensile/brace imposto da PS-196 e non usano
@@ -171,6 +171,35 @@ Barb continua a produrre un effetto sensato su entrambi.
   `default_weapon_profile.tres` "non una variante per personaggio": ora
   asserisce che l'arma sotto misura sia quella dichiarata dal personaggio
   equipaggiato, che è lo stesso controllo dopo che le varianti esistono.
+
+- **2026-09-22 — Cavatappi ritarato dopo la prova sul Pixel 9: lo sdoppiamento
+  non avveniva quasi mai.** Il proprietario ha segnalato di non capire l'arma di
+  Alea. Diagnosi, non gusto: con `stretch/aspect="expand"` su base 1280×720, il
+  Pixel 9 (2424×1080) mostra un'area di **1616×720 unità mondo**, cioè 808 px
+  fino al bordo laterale e **360 px fino al bordo alto/basso**. Lo sdoppiamento
+  cadeva a `0,8 s × 820 px/s` = **656 px**: sparando in verticale il colpo usciva
+  dallo schermo a 360 px e si apriva 296 px fuori campo, e sparando di lato si
+  apriva nell'estrema periferia. Soprattutto, la mira automatica prende il nemico
+  *più vicino* e i nemici camminano addosso al Player: a 820 px/s il colpo copre
+  400 px in 0,49 s, quindi colpiva e moriva **prima** degli 0,8 s. Il tratto
+  caratterizzante dell'arma non era mai entrato in scena.
+  Nuovi valori: `split_delay_seconds` 0,8 → **0,22** (≈180 px, ben dentro la
+  mezza altezza di 360 px) e `divergence_degrees` 17° → **10°**. Gli stessi
+  valori erano cablati come default nel `WeaponEffectRegistry` e sono stati
+  allineati: il default codificava il difetto.
+- **2026-09-22 — Accettata la dispersione come identità, non come difetto.**
+  Scelta del proprietario fra tre uscite. Il vincolo è strutturale e va
+  registrato perché non si elimina tarando: uno sdoppiamento visibile presto
+  implica due metà che si allargano dopo. A 10°, su un nemico a 400 px le due
+  metà arrivano separate di ~77 px, cioè gli passano ai lati. Il Cavatappi
+  diventa quindi un'arma di copertura più che di precisione sul bersaglio
+  singolo — coerente col profilo glass cannon e caotico di Alea. Le alternative
+  scartate erano una divergenza sottile a 5° (che tiene la precisione ma rende
+  discreto l'effetto) e lo stralcio dell'arma.
+- **2026-09-22 — Il tetto di kill-rate non si muove.** Le emissioni per colpo
+  restano due e il danno per proiettile è invariato: la ritaratura tocca solo
+  *quando* e *quanto* le due metà divergono, non quanta potenza portano. Il
+  margine dichiarato sopra resta valido senza ricalibrare le altre armi.
 
 ## Documenti sincronizzati
 
