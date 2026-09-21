@@ -312,3 +312,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-202](./4_to_test/PS-202-coperchio-arma-mischia-magno.md) | Prova il Coperchio di Magno come prima arma in mischia | feat | gameplay | IN VERIFICA | alta | PS-198 |
 | [PS-203](./2_to_do/PS-203-tetto-sei-power-up-diversi.md) | Limita a sei i power up diversi di una run | feat | gameplay | PRONTO | media | — |
 | [PS-204](./2_to_do/PS-204-mostra-power-up-presi-in-hud.md) | Mostra nell'HUD i power up presi e il loro rango | ux | ui | BLOCCATO | media | PS-203 |
+| [PS-205](./2_to_do/PS-205-slancio-magno-partenza-lenta-perdita-in-curva.md) | Fai sentire lo slancio di Magno, con partenza lenta e perdita in curva | fix | gameplay | PRONTO | media | — |
