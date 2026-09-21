@@ -15,7 +15,7 @@ aggiornato: 2026-09-18
 
 ## Contesto
 
-Con il contratto di [PS-196](./PS-196-contratto-armi-per-personaggio.md)
+Con il contratto di [PS-196](../5_completed/PS-196-contratto-armi-per-personaggio.md)
 e l'impianto neutro di
 [PS-197](./PS-197-impianto-arma-per-personaggio-neutro.md), questa
 card produce le **prime armi realmente diverse**. Il proprietario ha scelto

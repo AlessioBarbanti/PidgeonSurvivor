@@ -63,6 +63,62 @@ hitbox, collisioni o durata del timer gameplay.
 L'uso dell'abilità attiva non sostituisce lo sparo automatico, salvo che una
 specifica abilità dichiari esplicitamente un comportamento incompatibile.
 
+#### 3.1A. Arma per personaggio (PS-196)
+
+Ogni personaggio ha la **propria arma**, parte della sua identità dichiarata
+al pari di passiva e abilità attiva. L'arma non è equipaggiamento: non si
+sceglie, non si sblocca e non si cambia durante la run. Armi alternative o
+sbloccabili sono esplicitamente fuori contratto.
+
+**Invariante di compatibilità.** Ogni arma del Player emette `Projectile`.
+Non esistono raggi continui, aure o mischia pura come attacco automatico.
+È questa regola a rendere ogni Specialità di Barb valida per costruzione su
+ogni arma, senza casi speciali per personaggio: le cinque Specialità legate
+al proiettile — Arrosticini (perforazione), Tagliata (ventaglio), Fiorentina
+(esplosione alla morte), Salsiccia (catena), Alette (cadenza e dispersione) —
+passano dagli stessi setter di `WeaponController` qualunque sia l'arma
+equipaggiata.
+
+**Cinque assi di differenziazione.** Due armi qualsiasi devono distinguersi su
+**almeno tre** di questi cinque assi:
+
+1. **Traiettoria** — come il proiettile viaggia (dritta, divergente in volo,
+   orbitale attorno alla sorgente).
+2. **Geometria d'emissione** — da dove partono i colpi di uno stesso sparo
+   (dalla volata, alternati ai fianchi, tutt'intorno).
+3. **Ritmo** — cadenza e regolarità della raffica.
+4. **Corpo del proiettile** — raggio, velocità e portata (velocità × lifetime).
+5. **Comportamento a fine vita** — cosa succede a scadenza o all'impatto.
+
+**Proprietà dei valori.** L'arma possiede i valori base — cadenza, danno,
+velocità, lifetime, raggio, offset di volata, forma base. Il personaggio
+possiede solo i moltiplicatori di `FriendDefinition`
+(`base_fire_rate_multiplier`, `base_damage_multiplier`,
+`base_critical_chance_bonus`, …), che si compongono moltiplicativamente sopra
+i valori dell'arma. Lo stesso scarto non va mai dichiarato due volte: se
+l'arma è già lenta, il personaggio non abbassa anche la cadenza.
+
+**Reinterpretazione di Alette.** `beer_signature` applica la dispersione
+(`aim_spread_degrees`) all'**angolo di emissione di ciascun proiettile**, non
+alla sola linea di mira. Su un'arma frontale questo coincide con la
+dispersione di mira di sempre; su un'arma priva di direzione di mira —
+un'emissione tutt'intorno o orbitale — la dispersione irregolarizza la
+posizione di partenza di ogni colpo attorno alla sorgente. La dispersione non
+può mai essere ignorata in silenzio: se un'arma futura non potesse
+reinterpretarla, l'arma è fuori contratto, non la Specialità.
+
+**Regola di non sovrapposizione.** Nessuna arma può avere come tratto
+caratterizzante l'effetto già portato da una Specialità o da un'abilità
+esistente. Un'arma che duplica una Specialità non differenzia il personaggio:
+lo rende soltanto ridondante quando quella Specialità gli viene offerta.
+
+**Contenuto nominato e visibile.** Ogni arma ha un nome e un'icona, visibili
+nel selettore personaggi e nel pannello build in pausa: la differenziazione
+deve essere leggibile prima di giocare, non scoperta a metà partita. I nomi
+vivono nel registro **utensile/brace/condimento** e mai in quello della carne,
+riservato alle Specialità di Barb (vedi
+[powerup-catalog.md](./powerup-catalog.md), "I due registri del catalogo").
+
 ### 3.2. Nemici (Enemies) e spawner
 
 **IA nemica minimale:** i nemici si muovono in linea retta verso le coordinate

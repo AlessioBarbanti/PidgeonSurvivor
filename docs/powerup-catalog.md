@@ -20,6 +20,13 @@ il contrasto fra i due è deliberato: è quello che fa leggere una Specialità c
   griglia. La finzione lo giustifica: mentre il Player difende Barb dal Boss,
   Barb ha il tempo di cucinare, e quello che consegna alla fine è un pezzo di
   carne, la sua specialità.
+- Le **armi per personaggio** (PS-196, vedi [prd.md](./prd.md) §3.1A) si
+  aggiungono al primo registro e non lo ridefiniscono: un'arma si chiama
+  `Carbonella`, `Spiedo`, `Cavatappi`, `Graticola` — utensile, brace o
+  condimento, mai un taglio di carne. Il vincolo non è stilistico: se un'arma
+  prendesse il nome di un taglio, il giocatore non potrebbe più distinguere
+  ciò che il personaggio ha da sempre da ciò che Barb gli ha appena
+  consegnato.
 
 I primi sette nomi sono stati approvati dal proprietario il 5 settembre 2026
 (PS-078); `Pancetta` è stata prodotta il 7 settembre con PS-118. Il registro è

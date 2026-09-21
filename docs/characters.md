@@ -18,6 +18,14 @@ mitigazione a singolo colpo) o viceversa (es. Bea, salute bassa e l'unico
 vero bonus difensivo passivo del cast, a compensare l'evasione opportunista
 della sua passiva).
 
+Oltre a passiva, attiva e scarti, ogni personaggio dichiara la **propria
+arma** (PS-196, contratto in [prd.md](./prd.md) §3.1A): fissa, non
+selezionabile, parte dell'identità. L'arma possiede i valori base di cadenza,
+danno e forma del colpo; gli scarti qui sotto restano moltiplicatori che si
+compongono sopra di essi, mai una seconda dichiarazione dello stesso
+scostamento. I personaggi che non dichiarano un'arma propria usano l'arma
+condivisa `Scintilla`.
+
 ## Magno
 
 Ruolo: Mobilità e controllo delle orde.  

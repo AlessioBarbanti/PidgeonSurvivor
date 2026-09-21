@@ -3,12 +3,12 @@ id: PS-196
 titolo: Fissa il contratto delle armi per personaggio
 tipo: chore
 area: gameplay
-stato: PRONTO
+stato: COMPLETATO
 priorita: alta
 dipende_da: []
 origine:
 creato: 2026-09-18
-aggiornato: 2026-09-18
+aggiornato: 2026-09-21
 ---
 
 # PS-196 — Fissa il contratto delle armi per personaggio
@@ -61,40 +61,40 @@ i valori base rispetto ai moltiplicatori di personaggio.
 
 ## Criteri di accettazione
 
-- [ ] È dichiarato l'**invariante di compatibilità**: ogni arma del Player
+- [x] È dichiarato l'**invariante di compatibilità**: ogni arma del Player
       emette `Projectile`, così ogni Specialità di Barb resta valida per
       costruzione senza casi speciali per arma.
-- [ ] Sono dichiarati i **cinque assi di differenziazione** ammessi
+- [x] Sono dichiarati i **cinque assi di differenziazione** ammessi
       (traiettoria; geometria d'emissione; ritmo; corpo del proiettile —
       raggio/velocità/portata; comportamento a fine vita) e la regola minima
       di quanti assi devono distinguere due armi qualsiasi.
-- [ ] È dichiarato il **registro tematico**: le armi vivono nel registro
+- [x] È dichiarato il **registro tematico**: le armi vivono nel registro
       utensile/brace/condimento e mai in quello della carne, riservato alle
       Specialità di Barb — coerente con
-      [docs/powerup-catalog.md:8-29](../powerup-catalog.md),
-      [docs/visual-audio-identity.md:14-18](../visual-audio-identity.md) e col
+      [docs/powerup-catalog.md:8-29](../../powerup-catalog.md),
+      [docs/visual-audio-identity.md:14-18](../../visual-audio-identity.md) e col
       test che lo impone
       (`tests/unit/test_ps089_ordinary_catalog_meat_audit.gd:19-23`,
       `FORBIDDEN_MEAT_WORDS`).
-- [ ] È dichiarata la **proprietà dei valori**: l'arma possiede i valori base
+- [x] È dichiarata la **proprietà dei valori**: l'arma possiede i valori base
       di cadenza/danno/forma, il personaggio continua a possedere solo i
       moltiplicatori di `FriendDefinition`, senza che lo stesso scarto venga
       contato due volte.
-- [ ] È dichiarata la **reinterpretazione di Alette** (`beer_signature`) per
+- [x] È dichiarata la **reinterpretazione di Alette** (`beer_signature`) per
       armi prive di direzione di mira: la dispersione va reinterpretata su un
       parametro equivalente dell'arma, mai ignorata silenziosamente.
-- [ ] È dichiarata la **regola di non sovrapposizione**: nessuna arma può
+- [x] È dichiarata la **regola di non sovrapposizione**: nessuna arma può
       avere come tratto caratterizzante l'effetto già portato da una
       Specialità o da un'abilità esistente. Un'arma che duplica una
       Specialità non differenzia il personaggio, lo rende soltanto
       ridondante quando quella Specialità gli viene offerta.
-- [ ] È dichiarato che l'arma è **contenuto nominato e visibile** (nome +
+- [x] È dichiarato che l'arma è **contenuto nominato e visibile** (nome +
       icona) e dove compare (selettore personaggi, pannello build in pausa di
       [PS-164](../4_to_test/PS-164-mostra-build-corrente-in-pausa.md)).
-- [ ] È dichiarato che l'arma è **fissa per personaggio**, parte della sua
+- [x] È dichiarato che l'arma è **fissa per personaggio**, parte della sua
       identità: sbloccare o scegliere armi alternative è esplicitamente fuori
       contratto e resta materia di un'eventuale card futura.
-- [ ] Nessuna modifica al runtime in questa card.
+- [x] Nessuna modifica al runtime in questa card.
 
 ## Ambito
 
@@ -151,12 +151,25 @@ i valori base rispetto ai moltiplicatori di personaggio.
   della mira, qui la forma del colpo), citata perché non venga riletta come
   contraddizione.
 
+- **2026-09-21 — Il contratto vive in `prd.md` §3.1A**, non sparso su
+  quattro documenti. Motivazione: le otto clausole sono un solo contratto e
+  vanno lette insieme; gli altri tre documenti dichiarano solo la parte di
+  loro competenza e puntano là. `characters.md` dichiara che l'arma è parte
+  dell'identità e chi possiede i valori, `powerup-catalog.md` colloca le armi
+  nel registro utensile accanto alle carte ordinarie, `visual-audio-identity.md`
+  fissa il registro visivo e la distinzione dai VFX delle passive.
+- **2026-09-21 — La reinterpretazione di Alette è stata generalizzata**
+  invece di restare un caso speciale per armi senza mira: la dispersione si
+  applica all'angolo di emissione di *ogni* proiettile, per ogni arma. Su
+  un'arma frontale il risultato coincide con la dispersione di mira di
+  sempre, quindi il contratto non ha bisogno di due regole.
+
 ## Documenti sincronizzati
 
-- [ ] `docs/prd.md`
-- [ ] `docs/characters.md`
-- [ ] `docs/powerup-catalog.md`
-- [ ] `docs/visual-audio-identity.md`
+- [x] `docs/prd.md`
+- [x] `docs/characters.md`
+- [x] `docs/powerup-catalog.md`
+- [x] `docs/visual-audio-identity.md`
 
 ## Note
 

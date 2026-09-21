@@ -15,7 +15,7 @@ aggiornato: 2026-09-18
 
 ## Contesto
 
-[PS-196](./PS-196-contratto-armi-per-personaggio.md) fissa il contratto delle
+[PS-196](../5_completed/PS-196-contratto-armi-per-personaggio.md) fissa il contratto delle
 armi per personaggio. Questa card costruisce il solo impianto tecnico che lo
 regge, **senza cambiare nulla di percepibile**: al termine, tutti e otto i
 personaggi sparano esattamente come oggi, ma passando dalla nuova strada.

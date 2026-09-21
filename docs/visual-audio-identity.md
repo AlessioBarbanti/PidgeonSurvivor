@@ -16,6 +16,15 @@ del documento architetturale, non una lacuna di questo file.
   barbecue, pirofile, brace, condimenti, oggetti da cucina. I piccioni
   restano associati ai nemici e non devono essere il soggetto principale
   delle icone dei powerup positivi.
+- **Armi per personaggio** ([prd.md](./prd.md), §3.1A): stesso registro
+  utensile/brace/condimento dei powerup ordinari, mai quello della carne
+  riservato alle Specialità di Barb. Ogni arma ha nome e icona propri, alla
+  stessa gerarchia di lettura delle icone passiva: si riconoscono nel
+  selettore personaggi e nel pannello build in pausa prima ancora di giocare.
+  Quando il proiettile di un'arma condivide lo spazio con un VFX della passiva
+  dello stesso personaggio, i due vanno tenuti visivamente distinti — è il
+  caso dei frammenti orbitanti della `Graticola` di Migi contro le placche
+  aderenti del suo Guscio Tartarughina.
 - **Indicatore HUD di Alea** ([manifest](../assets/art/icons/hud/ASSET-MANIFEST.md)):
   il calice Sobrietà è una coppia di layer pixel-art allineati, con vetro
   freddo/ornamenti oro statici e vino borgogna isolato; il riempimento verticale
