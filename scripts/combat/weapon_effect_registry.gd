@@ -53,6 +53,8 @@ func get_definitions() -> Array[WeaponDefinition]:
 ## `trajectory` come il proiettile si muovera' poi.
 ## `shot_index` e' il numero del colpo nella run: serve alle armi che
 ## alternano fra un colpo e il successivo e tiene il registry senza stato.
+## Un `effect_id` serve solo dove cambia la *geometria* dell'emissione: le armi
+## che differiscono per sola traiettoria la dichiarano nei dati (PS-200).
 ## Un `effect_id` sconosciuto ricade sul colpo dritto invece di non sparare:
 ## un dato malformato deve degradare l'arma, non disarmare il personaggio.
 func build_emissions(
@@ -106,7 +108,19 @@ func build_emissions(
 				))
 			return emissions
 		_:
-			return build_straight_emissions(direction)
+			# Colpo frontale singolo. Se l'arma dichiara una traiettoria nei
+			# propri dati se la porta dietro: una differenza di sola
+			# traiettoria non giustifica un effect_id dedicato, perche'
+			# l'emissione e' identica (PS-200). I parametri passano interi,
+			# Projectile legge solo le chiavi della traiettoria che ha.
+			return [make_emission(
+				Vector2.ZERO,
+				direction,
+				StringName(definition.effect_parameters.get(
+					"trajectory", Projectile.TRAJECTORY_STRAIGHT
+				)),
+				definition.effect_parameters
+			)]
 
 
 static func build_straight_emissions(aim_direction: Vector2) -> Array[Dictionary]:

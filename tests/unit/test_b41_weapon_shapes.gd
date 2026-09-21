@@ -6,6 +6,7 @@ const DEATH_BURST := preload("res://data/upgrades/specialities/death_burst.tres"
 const MEAT_FORK_DAMAGE := preload("res://data/upgrades/meat_fork_damage.tres")
 const RAPID_FIRE := preload("res://data/upgrades/rapid_fire.tres")
 const GOSSIP := preload("res://data/upgrades/specialities/gossip_projectiles.tres")
+const SHARED_WEAPON := preload("res://data/weapons/default_weapon_profile.tres")
 const WIDE_MAGNET := preload("res://data/upgrades/wide_magnet.tres")
 const SWIFT_STEPS := preload("res://data/upgrades/swift_steps.tres")
 
@@ -132,18 +133,16 @@ func test_scene_behavior() -> void:
 	):
 		return
 
-	# PS-198: le forme d'attacco B41 vanno misurate sull'arma condivisa del
-	# roster. Magno, personaggio di default della fixture, impugna ora la
-	# Carbonella: il suo colpo singolo uccide il bersaglio di riferimento e
-	# renderebbe invisibile proprio la perforazione che questo test prova.
-	controller.prepare_restart()
-	await wait_process_frames(2)
+	# PS-198/PS-200: le forme d'attacco B41 vanno misurate sull'arma condivisa,
+	# non su quella di un personaggio. Magno, default della fixture, impugna la
+	# Carbonella, il cui colpo singolo uccide il bersaglio di riferimento e
+	# renderebbe invisibile proprio la perforazione che questo test prova; e
+	# dopo PS-200 non c'e' piu' nessun personaggio sull'arma condivisa da cui
+	# ereditarla. Si monta quindi direttamente.
 	assert_true(
-		movement_slice.select_friend_for_next_run(&"zat"),
-		"B41 deve poter misurare su un personaggio con l'arma condivisa."
+		weapon.set_weapon_definition(SHARED_WEAPON),
+		"B41 deve poter misurare sull'arma condivisa del progetto."
 	)
-	assert_true(movement_slice.start_selected_run(41040), "B41 richiede una run avviata.")
-	await wait_process_frames(2)
 
 	controller.set_process(false)
 	spawner.set_process(false)

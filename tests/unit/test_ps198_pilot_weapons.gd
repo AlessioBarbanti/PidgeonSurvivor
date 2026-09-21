@@ -16,7 +16,6 @@ const DEATH_BURST := preload("res://data/upgrades/specialities/death_burst.tres"
 const GOSSIP := preload("res://data/upgrades/specialities/gossip_projectiles.tres")
 const BEER := preload("res://data/upgrades/specialities/beer_signature.tres")
 
-const SHARED_WEAPON_ID := &"scintilla"
 const PILOT_FRIENDS: Array[StringName] = [&"magno", &"bea", &"alea", &"migi"]
 const PILOT_WEAPONS: Array[StringName] = [&"carbonella", &"spiedo", &"cavatappi", &"graticola"]
 
@@ -43,15 +42,18 @@ func test_pilot_weapons() -> void:
 	var spawner: EnemySpawner = movement_slice.get_enemy_spawner()
 	var player: Player = movement_slice.get_player()
 
-	# 1. Solo i quattro del pilota cambiano arma; gli altri restano su Scintilla.
+	# 1. I quattro del pilota dichiarano la propria arma. Che gli altri
+	#    restassero su Scintilla valeva finche' il cast non era chiuso: da
+	#    PS-200 hanno un'arma anche loro, e quella clausola vive li'.
 	var expected_by_friend: Dictionary = {}
 	for index in PILOT_FRIENDS.size():
 		expected_by_friend[PILOT_FRIENDS[index]] = PILOT_WEAPONS[index]
 	for friend in friend_registry.get_definitions():
-		var expected: StringName = expected_by_friend.get(friend.id, SHARED_WEAPON_ID)
+		if not expected_by_friend.has(friend.id):
+			continue
 		assert_eq(
-			friend.weapon_id, expected,
-			"PS-198: %s deve dichiarare l'arma %s." % [friend.id, expected]
+			friend.weapon_id, expected_by_friend[friend.id],
+			"PS-198: %s deve dichiarare l'arma %s." % [friend.id, expected_by_friend[friend.id]]
 		)
 
 	var pilots: Array[WeaponDefinition] = []

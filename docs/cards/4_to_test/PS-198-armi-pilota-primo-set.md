@@ -182,10 +182,13 @@ Barb continua a produrre un effetto sensato su entrambi.
 Comandi di verifica e marker usati come evidenza:
 
 ```powershell
-.	oolsun-milestone-checks.ps1 -Milestone PS-198 -Profile Focused `
+.	ools
+un-milestone-checks.ps1 -Milestone PS-198 -Profile Focused `
   -FocusedSmoke tests/unit/test_ps198_pilot_weapons.gd -RefreshEditor
-.	oolsun-milestone-checks.ps1 -Milestone PS-198 -Profile Full
-.	oolsun-milestone-checks.ps1 -Milestone PS-198 -Profile Release
+.	ools
+un-milestone-checks.ps1 -Milestone PS-198 -Profile Full
+.	ools
+un-milestone-checks.ps1 -Milestone PS-198 -Profile Release
 ```
 
 `Full` → `status=PASS focused=4/4 regression=161/161 toolchain=1/1`, marker
@@ -204,18 +207,19 @@ Gate ancora aperti, entrambi di competenza del proprietario:
    personaggi del set di seguito e sentire che l'attacco base è un'altra cosa.
    Nessun test automatico lo sostituisce.
 
-Restano da riverificare, come anticipato qui sotto, le prove percettive di
-PS-093 e PS-157: assumevano un'arma sola per tutto il roster.
+PS-093 e PS-157 hanno chiuso il proprio controllo percettivo quando tutto il
+roster condivideva un'arma sola: quel presupposto qui cade, e i due giudizi
+andranno rifatti.
 
 
 Il ribilanciamento degli scarti base per personaggio resta fuori da questa
 card ma andrà rivisitato dopo: le verifiche percettive ancora aperte di
-[PS-093](../4_to_test/PS-093-nuovi-assi-scarto-base-personaggi.md) e
-[PS-157](../4_to_test/PS-157-ricalibra-difficolta-primi-cinque-minuti.md)
+[PS-093](../5_completed/PS-093-nuovi-assi-scarto-base-personaggi.md) e
+[PS-157](../5_completed/PS-157-ricalibra-difficolta-primi-cinque-minuti.md)
 assumono che tutti i personaggi condividano la stessa arma, quindi vanno
 riverificate una volta che le armi divergono.
 
 Le card `art` per le icone delle armi e la card di integrazione UI (nome e
 icona nel selettore personaggi e nel pannello build in pausa di
-[PS-164](../4_to_test/PS-164-mostra-build-corrente-in-pausa.md)) si aprono
+[PS-164](../5_completed/PS-164-mostra-build-corrente-in-pausa.md)) si aprono
 quando i nomi sono approvati, non prima.

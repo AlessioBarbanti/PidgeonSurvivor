@@ -307,3 +307,5 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-197](./4_to_test/PS-197-impianto-arma-per-personaggio-neutro.md) | Introduci l'impianto arma per personaggio senza cambiare il gioco | feat | gameplay | IN VERIFICA | alta | PS-196 |
 | [PS-198](./4_to_test/PS-198-armi-pilota-primo-set.md) | Progetta e implementa il primo set di armi pilota | feat | gameplay | IN VERIFICA | alta | PS-197 |
 | [PS-199](./1_idea/PS-199-crash-a-spegnimento-suite-gut.md) | Crash a spegnimento della suite GUT completa, con report verde | bug | tooling | DA DEFINIRE | media | — |
+| [PS-200](./4_to_test/PS-200-armi-secondo-set-cast-completo.md) | Completa il cast con il secondo set di armi | feat | gameplay | IN VERIFICA | alta | PS-198 |
+| [PS-201](./1_idea/PS-201-nome-spiedo-contro-lista-parole-vietate.md) | Il nome Spiedo confligge con la lista di parole vietate | chore | contenuti | DA DEFINIRE | bassa | — |

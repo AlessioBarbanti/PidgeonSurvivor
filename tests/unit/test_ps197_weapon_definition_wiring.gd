@@ -16,8 +16,6 @@ const BASELINE_PROJECTILE_LIFETIME := 2.0
 const BASELINE_PROJECTILE_RADIUS := 6.0
 const BASELINE_MUZZLE_OFFSET := 32.0
 const SHARED_WEAPON_ID := &"scintilla"
-## Personaggio che continua a impugnare l'arma condivisa dopo PS-198.
-const SHARED_WEAPON_FRIEND_ID := &"zat"
 
 var _fired_projectiles: Array[Projectile] = []
 
@@ -111,15 +109,20 @@ func test_weapon_definition_wiring() -> void:
 			"PS-197: %s non deve partire con un ventaglio oltre quello dell'arma." % friend.id
 		)
 
-	# La prova di neutralita' dello sparo si fa su un personaggio che usa
-	# ancora l'arma condivisa: dopo PS-198 il default Magno impugna la
-	# Carbonella, che ha di suo volata, portata e ritmo diversi.
+	# La prova di neutralita' dello sparo va fatta sull'arma condivisa, che
+	# dopo PS-200 non e' piu' impugnata da nessun personaggio: il cast e'
+	# chiuso e `Scintilla` sopravvive solo come fallback dei dati. Si monta
+	# quindi a mano, invece di sperare che qualcuno la usi ancora.
 	assert_true(
-		movement_slice.select_friend_for_next_run(SHARED_WEAPON_FRIEND_ID),
-		"PS-197: la fixture deve poter equipaggiare un personaggio con l'arma condivisa."
+		movement_slice.select_friend_for_next_run(&"magno"),
+		"PS-197: la fixture deve poter equipaggiare un personaggio."
 	)
 	assert_true(movement_slice.start_selected_run(19701), "PS-197 richiede una run avviata.")
 	await wait_process_frames(2)
+	assert_true(
+		weapon.set_weapon_definition(shared_weapon),
+		"PS-197: l'arma condivisa deve restare montabile sul WeaponController."
+	)
 
 	controller.set_process(false)
 	spawner.set_process(false)

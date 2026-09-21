@@ -58,7 +58,7 @@ stessi effetti delle Specialità.
 - [x] `WeaponController.try_fire()`
       ([weapon_controller.gd:99-149](../../../scripts/combat/weapon_controller.gd))
       resta il **punto unico** di esecuzione dello sparo: sparo automatico e
-      manuale ([PS-085](../4_to_test/PS-085-introduci-sparo-manuale-con-secondo-joystick.md))
+      manuale ([PS-085](../5_completed/PS-085-introduci-sparo-manuale-con-secondo-joystick.md))
       continuano a convergere lì senza duplicazione.
 - [x] Tutti e otto i personaggi puntano all'arma di default e il
       comportamento di gioco è invariato: cadenza, danno, velocità, raggio,
@@ -194,9 +194,9 @@ alcun device collegato.
 
 
 Card aperte che toccano lo stesso codice e vanno coordinate:
-[PS-190](../4_to_test/PS-190-centralizza-letture-e-filtri-upgrade.md)
+[PS-190](../5_completed/PS-190-centralizza-letture-e-filtri-upgrade.md)
 (centralizzazione dei filtri upgrade),
-[PS-121](../4_to_test/PS-121-carte-ripetibili-sature-escono-dal-pool.md),
-[PS-160](../4_to_test/PS-160-rendi-competitivi-upgrade-velocita.md),
-[PS-085](../4_to_test/PS-085-introduci-sparo-manuale-con-secondo-joystick.md),
-[PS-093](../4_to_test/PS-093-nuovi-assi-scarto-base-personaggi.md).
+[PS-121](../5_completed/PS-121-carte-ripetibili-sature-escono-dal-pool.md),
+[PS-160](../5_completed/PS-160-rendi-competitivi-upgrade-velocita.md),
+[PS-085](../5_completed/PS-085-introduci-sparo-manuale-con-secondo-joystick.md),
+[PS-093](../5_completed/PS-093-nuovi-assi-scarto-base-personaggi.md).

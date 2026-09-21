@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/weapon_definition.gd" id="1_weapon_definition"]
+
+[resource]
+script = ExtResource("1_weapon_definition")
+id = &"paletta"
+display_name = "Paletta"
+description = "Una paletta da griglia lanciata avanti che a distanza fissa torna indietro da sola."
+effect_id = &"straight_shot"
+effect_parameters = {
+"outbound_seconds": 0.7,
+"trajectory": &"return"
+}
+shots_per_second = 1.6
+damage = 22.8
+projectile_speed = 620.0
+projectile_lifetime = 1.4
+projectile_radius = 11.0
+muzzle_offset = 32.0
+base_pierce_count = 2
+base_pierce_damage_falloff = 0.9
+base_multishot_count = 1
+base_multishot_spread_degrees = 0.0

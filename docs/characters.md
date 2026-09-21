@@ -23,8 +23,9 @@ arma** (PS-196, contratto in [prd.md](./prd.md) §3.1A): fissa, non
 selezionabile, parte dell'identità. L'arma possiede i valori base di cadenza,
 danno e forma del colpo; gli scarti qui sotto restano moltiplicatori che si
 compongono sopra di essi, mai una seconda dichiarazione dello stesso
-scostamento. I personaggi che non dichiarano un'arma propria usano l'arma
-condivisa `Scintilla`.
+scostamento. Con PS-200 il cast è chiuso: tutti e otto dichiarano la
+propria arma e `Scintilla`, l'arma condivisa, sopravvive solo come valore di
+default dei dati.
 
 ## Magno
 
@@ -62,6 +63,8 @@ Boss: Evil Zat — Signature *Tempesta di Tuoni*: l'aura orbitante di PS-004 dic
 Scarti base (B47, PS-087): salute `×1,10`, velocità `×0,95`, cadenza `×1,00` — più salute per dare margine alla quota recuperabile di Guarigione Ritardata; la sopravvivenza del ruolo è di posizionamento e cuscinetto, non di rapidità.
 
 Scarti estesi (PS-093): danno `×0,97`, avidità `×0,97`, raggio pickup `×1,04`, difesa `×1,00`, critico `+0%` — l'arma resta secondaria a Tempesta di Tuoni, leggermente sotto la norma per non sommare un quarto vettore di potenza. Difesa neutra apposta: salute alta e Guarigione Ritardata già coprono la sopravvivenza, un terzo strato l'avrebbe resa tenace su tre assi insieme.
+
+Arma (PS-200) — **Paletta**: una paletta da griglia lanciata avanti che a distanza fissa torna indietro da sola, colpendo su entrambe le gambe della corsa. Guarigione Ritardata dice che quello che perdi torna: l'arma dice la stessa frase con un oggetto. Al rientro non ricolpisce chi ha già preso all'andata — prende chi si è chiuso alle spalle.
 
 Contratto runtime di Guarigione Ritardata (confermato da PS-003; i valori vivono
 in `data/friends/zat.tres`, la logica in `FriendPassiveController`):
@@ -133,6 +136,8 @@ Scarti base (B47, PS-087): salute `×1,00`, velocità `×0,95`, cadenza `×1,10`
 
 Scarti estesi (PS-093): danno `×1,00`, avidità `×0,97`, raggio pickup `×1,00`, difesa `×1,00`, critico `+0%` — danno e difesa restano neutri per non duplicare quello che il Termostato Interno già fa dinamicamente (`hot_damage_multiplier ×1,2` sopra metà vita, `cold_damage_reduction 25%` sotto): un bonus statico si sommerebbe proprio dove Aleo è già più forte. L'avidità leggermente sotto la norma è la sua vera identità su questi assi: tecnico concentrato sullo scontro, non sulla raccolta.
 
+Arma (PS-200) — **Soffietto**: una soffiata di brace che parte forte, perde spinta lungo la corsa e si spegne poco lontano (~370 px reali). Il ritmo più rapido del cast dopo lo Spiedo (5,2 colpi/s) e la portata corta lo tengono alla distanza media dove il Termostato Interno conta davvero.
+
 ## Lollo
 
 Ruolo: Velocità, caos e imprevedibilità.  
@@ -143,6 +148,8 @@ Boss: Evil Lollo — Signature *Cosplay Casuale*: prepara in anticipo la Signatu
 Scarti base (B47, PS-087): salute `×0,90`, velocità `×1,05`, cadenza `×1,05` — fragile e rapido su entrambi gli assi offensivo e di movimento, coerente con l'imprevedibilità e il caos del ruolo.
 
 Scarti estesi (PS-093): danno `×1,00`, avidità `×1,05`, raggio pickup `×0,93`, difesa `×1,04`, critico `+6%` — raccoglitore compulsivo coerente con "caos e imprevedibilità", ma metodico nella raccolta no: il raggio scende sotto la norma a bilanciare i bonus già assegnati su XP e critico. Il critico più alto del cast non è casuale: a differenza di Alea, Iperfocus ADHD resta esplicitamente un meccanismo casuale ("Alterna a intervalli casuali"), quindi è Lollo, non più Alea, il personaggio ancora legato tematicamente al caso.
+
+Arma (PS-200) — **Attizzatoio**: un colpo sottile che parte piano e prende velocità man mano che va, arrivando lontanissimo. È un'eco di Iperfocus ADHD, non un suo doppione: la passiva cambia il ritmo di *Lollo*, l'arma cambia la velocità del *colpo* lungo il proprio volo, e le due grandezze non si sommano.
 
 ## Migi
 
@@ -167,6 +174,8 @@ Boss: Evil Marghe — Signature *Reggaeton time!*: genera un clone ballerino dis
 Scarti base (B47, PS-087): salute `×0,95`, velocità `×1,00`, cadenza `×1,10` — la cadenza sopra la norma rinforza "indebolimento e distrazione": più colpi distribuiti nel tempo per marcare bersagli.
 
 Scarti estesi (PS-093): danno `×0,95`, avidità `×1,03`, raggio pickup `×1,02`, difesa `×1,03`, critico `+0%` — il danno personale resta deliberatamente sotto la norma: Sorriso Contagioso già amplifica del `30%` ogni danno (arma e abilità) contro i nemici marchiati, un bonus diretto qui si sarebbe moltiplicato con quello. La difesa leggermente sopra riflette che la sua vera mitigazione (il clone che devia l'aggro) va guadagnata giocando l'abilità, non è passiva.
+
+Arma (PS-200) — **Marinata**: uno schizzo che a fine corsa si ferma e resta lì, bagnando chiunque ci passi sopra finché non si esaurisce. È l'unica arma del cast a usare il quinto asse di PS-196, il comportamento a fine vita. Sorriso Contagioso marca i nemici vicini *a lei*, la Marinata marca un *punto*: la stessa identità, estesa nello spazio.
 
 ## Direzione visuale del cast
 

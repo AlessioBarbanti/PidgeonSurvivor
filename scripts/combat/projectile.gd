@@ -7,6 +7,9 @@ signal chain_jumped(from_target: BaseEnemy, to_target: BaseEnemy, damage: float)
 
 const ENEMY_HURTBOX_MASK := 1 << 1
 const VISUAL_REFERENCE_RADIUS := 5.0
+## Divisore minimo per il progresso delle traiettorie a rampa: evita la
+## divisione per zero su un proiettile creato con lifetime nulla.
+const MINIMUM_RAMP_LIFETIME := 0.001
 
 ## Traiettorie dichiarate dalle armi (PS-198). Un solo campo su Projectile
 ## invece di una sottoclasse per arma: il corpo del proiettile, le collisioni
@@ -15,6 +18,14 @@ const VISUAL_REFERENCE_RADIUS := 5.0
 const TRAJECTORY_STRAIGHT := &"straight"
 const TRAJECTORY_SPLIT := &"split"
 const TRAJECTORY_ORBIT := &"orbit"
+## PS-200. `FADING` e `BUILDING` condividono la stessa matematica con fattore
+## minore o maggiore di 1: restano due nomi distinti perche' sono due scelte di
+## progetto opposte (un colpo che si esaurisce, uno che prende forza), e il
+## criterio dei cinque assi di PS-196 le deve poter distinguere.
+const TRAJECTORY_RETURN := &"return"
+const TRAJECTORY_FADING := &"fading"
+const TRAJECTORY_BUILDING := &"building"
+const TRAJECTORY_LINGERING := &"lingering"
 
 var damage := 0.0
 var direction := Vector2.RIGHT
@@ -47,6 +58,11 @@ var _split_done := false
 var _orbit_anchor: Node2D
 var _orbit_radius := 0.0
 var _orbit_angle := 0.0
+var _initial_lifetime := 0.0
+var _turn_seconds := 0.0
+var _returned := false
+var _end_speed_factor := 1.0
+var _travel_seconds := 0.0
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 @onready var _projectile_sprite: Sprite2D = %ProjectileSprite
@@ -96,6 +112,34 @@ func _physics_process(delta: float) -> void:
 				direction = direction.rotated(_split_turn_radians)
 				rotation = direction.angle()
 			global_position += direction * speed * movement_delta
+		TRAJECTORY_RETURN:
+			# Il ritorno non ricolpisce chi ha gia' colpito all'andata
+			# (`_hit_target_ids`): al rientro prende chi si e' chiuso alle
+			# spalle. Azzerare il registro raddoppierebbe il danno su bersaglio
+			# singolo e sfonderebbe il tetto di kill-rate dichiarato.
+			if not _returned and _elapsed >= _turn_seconds:
+				_returned = true
+				direction = -direction
+				rotation = direction.angle()
+			global_position += direction * speed * movement_delta
+		TRAJECTORY_FADING, TRAJECTORY_BUILDING:
+			var speed_factor := lerpf(
+				1.0, _end_speed_factor, clampf(_elapsed / _initial_lifetime, 0.0, 1.0)
+			)
+			global_position += direction * speed * speed_factor * movement_delta
+		TRAJECTORY_LINGERING:
+			# Oltre la corsa dichiarata il colpo si ferma e resta dov'e':
+			# continua a colpire chi ci passa sopra finche' la perforazione
+			# base dell'arma non e' esaurita o la lifetime non scade.
+			# Si muove solo per la porzione di passo che cade dentro la
+			# finestra di corsa: con un confronto secco su `_elapsed`, un
+			# frame piu' lungo della corsa la salterebbe per intero e il
+			# colpo resterebbe incollato alla volata.
+			var travel_delta := clampf(
+				_travel_seconds - (_elapsed - movement_delta), 0.0, movement_delta
+			)
+			if travel_delta > 0.0:
+				global_position += direction * speed * travel_delta
 		_:
 			global_position += direction * speed * movement_delta
 	lifetime_remaining -= safe_delta
@@ -143,6 +187,8 @@ func configure_trajectory(
 	_trajectory = TRAJECTORY_STRAIGHT
 	_elapsed = 0.0
 	_split_done = false
+	_returned = false
+	_initial_lifetime = maxf(lifetime_remaining, MINIMUM_RAMP_LIFETIME)
 	match trajectory:
 		TRAJECTORY_SPLIT:
 			var delay := float(parameters.get("delay", 0.0))
@@ -163,6 +209,24 @@ func configure_trajectory(
 				anchor.global_position + Vector2.RIGHT.rotated(_orbit_angle) * radius
 			)
 			_trajectory = TRAJECTORY_ORBIT
+		TRAJECTORY_RETURN:
+			var outbound_seconds := float(parameters.get("outbound_seconds", 0.0))
+			if not is_finite(outbound_seconds) or outbound_seconds <= 0.0:
+				return false
+			_turn_seconds = outbound_seconds
+			_trajectory = TRAJECTORY_RETURN
+		TRAJECTORY_FADING, TRAJECTORY_BUILDING:
+			var end_speed_factor := float(parameters.get("end_speed_factor", 1.0))
+			if not is_finite(end_speed_factor) or end_speed_factor < 0.0:
+				return false
+			_end_speed_factor = end_speed_factor
+			_trajectory = trajectory
+		TRAJECTORY_LINGERING:
+			var travel_seconds := float(parameters.get("travel_seconds", 0.0))
+			if not is_finite(travel_seconds) or travel_seconds < 0.0:
+				return false
+			_travel_seconds = travel_seconds
+			_trajectory = TRAJECTORY_LINGERING
 	return true
 
 
@@ -176,6 +240,10 @@ func get_orbit_radius() -> float:
 
 func has_split() -> bool:
 	return _split_done
+
+
+func has_returned() -> bool:
+	return _returned
 
 
 func configure_signature_effects(
