@@ -310,3 +310,5 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-200](./4_to_test/PS-200-armi-secondo-set-cast-completo.md) | Completa il cast con il secondo set di armi | feat | gameplay | IN VERIFICA | alta | PS-198 |
 | [PS-201](./1_idea/PS-201-nome-spiedo-contro-lista-parole-vietate.md) | Il nome Spiedo confligge con la lista di parole vietate | chore | contenuti | DA DEFINIRE | bassa | — |
 | [PS-202](./4_to_test/PS-202-coperchio-arma-mischia-magno.md) | Prova il Coperchio di Magno come prima arma in mischia | feat | gameplay | IN VERIFICA | alta | PS-198 |
+| [PS-203](./2_to_do/PS-203-tetto-sei-power-up-diversi.md) | Limita a sei i power up diversi di una run | feat | gameplay | PRONTO | media | — |
+| [PS-204](./2_to_do/PS-204-mostra-power-up-presi-in-hud.md) | Mostra nell'HUD i power up presi e il loro rango | ux | ui | BLOCCATO | media | PS-203 |
