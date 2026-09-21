@@ -161,10 +161,25 @@ jobs:
           path: ${{ env.APK_PATH }}
           if-no-files-found: error
 
+      # PS-206: softprops aggiorna asset e descrizione di una release esistente
+      # ma non ne sposta il tag, che restava sul commit della prima
+      # pubblicazione. Ricrearla lega tag, destinazione e data alla build
+      # corrente; sta dopo i controlli statici, cosi' una build fallita non
+      # lascia senza pre-release.
+      - name: Remove the previous debug prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view android-debug-latest --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release delete android-debug-latest --repo "${GITHUB_REPOSITORY}" --yes --cleanup-tag
+          fi
+
       - name: Publish as GitHub Release asset
         uses: softprops/action-gh-release@v3
         with:
           tag_name: android-debug-latest
+          target_commitish: ${{ github.sha }}
           name: "Pidgeon Survivor — Android debug (auto)"
           body: |
             APK Android di debug generato automaticamente dal workflow CI
