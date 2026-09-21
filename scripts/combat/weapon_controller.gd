@@ -123,6 +123,12 @@ func try_fire() -> Projectile:
 			return null
 		base_aim_direction = _manual_aim_direction
 		muzzle_offset = weapon_profile.muzzle_offset
+	elif _aims_along_movement():
+		# PS-202: il colpo va dove il personaggio va, non dove sta il nemico
+		# piu' vicino; parte solo se qualcuno e' davvero sotto il fendente.
+		base_aim_direction = (_source as Player).get_last_movement_direction()
+		if not _has_target_in_sweep(base_aim_direction):
+			return null
 	else:
 		target = _targeting_system.get_nearest_alive(_source.global_position)
 		if target == null:
@@ -714,6 +720,28 @@ func _get_engage_distance() -> float:
 	if is_instance_valid(_weapon_effect_registry) and _weapon_definition != null:
 		return _weapon_effect_registry.get_engage_distance(_weapon_definition)
 	return INF
+
+
+func _aims_along_movement() -> bool:
+	return _weapon_definition != null and _weapon_definition.aims_along_movement and _source is Player
+
+
+## Con la mira sul movimento un nemico alle spalle non deve far partire un
+## colpo che lo mancherebbe comunque, consumando il cooldown.
+## ponytail: scansione lineare dei nemici a ogni frame con cooldown pronto;
+## un indice spaziale se le orde crescono di un ordine di grandezza.
+func _has_target_in_sweep(direction: Vector2) -> bool:
+	var reach := _get_engage_distance()
+	var half_arc := (
+		_weapon_effect_registry.get_sweep_half_arc(_weapon_definition)
+		if is_instance_valid(_weapon_effect_registry)
+		else PI
+	)
+	for enemy in _targeting_system.get_alive_targets():
+		var offset := enemy.global_position - _source.global_position
+		if offset.length() <= reach and absf(direction.angle_to(offset)) <= half_arc:
+			return true
+	return false
 
 
 func _seed_aim_rng(seed_value: int) -> void:

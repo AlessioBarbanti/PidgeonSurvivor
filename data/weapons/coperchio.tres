@@ -22,3 +22,4 @@ base_pierce_count = 5
 base_pierce_damage_falloff = 0.9
 base_multishot_count = 1
 base_multishot_spread_degrees = 0.0
+aims_along_movement = true

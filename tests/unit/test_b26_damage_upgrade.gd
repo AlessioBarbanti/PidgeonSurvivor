@@ -44,6 +44,7 @@ func test_damage_upgrade() -> void:
 	spawner.set_process(false)
 	player.set_physics_process(false)
 	weapon.set_process(false)
+	assert_true(mount_shared_weapon(movement_slice), "B26: l'upgrade di danno va provato sul colpo frontale condiviso.")
 	var ability := player.get_ability_controller()
 	if ability != null:
 		ability.set_process(false)

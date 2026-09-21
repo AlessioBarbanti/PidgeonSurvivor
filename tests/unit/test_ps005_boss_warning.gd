@@ -73,6 +73,7 @@ func test_warning_uses_running_clock_and_hands_off_to_boss_intro() -> void:
 
 	controller.set_process(false)
 	spawner.set_process(false)
+	assert_true(mount_shared_weapon(movement_slice), "PS-005: il fuoco automatico va provato sul colpo frontale condiviso.")
 	director.boss_warning_changed.connect(_on_boss_warning_changed)
 	var thresholds := director.get_thresholds()
 	assert_eq(thresholds.size(), 1, "PS-005 deve conservare una sola soglia Boss fissa.")

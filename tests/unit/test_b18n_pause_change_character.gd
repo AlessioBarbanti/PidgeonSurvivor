@@ -220,7 +220,7 @@ func _action_event(action: StringName) -> InputEventAction:
 
 
 func _populate_run_state(
-	_movement_slice: Control,
+	movement_slice: Control,
 	player: Player,
 	spawner: EnemySpawner,
 	weapon: WeaponController,
@@ -236,6 +236,9 @@ func _populate_run_state(
 	enemy.global_position = player.global_position + Vector2(350.0, 0.0)
 	enemy.experience_reward_scale = 1.0
 	dropper.try_spawn_drop(enemy)
+	# Serve un proiettile in volo da ripulire all'abbandono: l'arma condivisa
+	# spara a qualunque distanza, il Coperchio di Magno solo a portata (PS-202).
+	mount_shared_weapon(movement_slice)
 	weapon.try_fire()
 	ability.try_activate()
 	if experience.add_experience(experience.get_experience_required()):

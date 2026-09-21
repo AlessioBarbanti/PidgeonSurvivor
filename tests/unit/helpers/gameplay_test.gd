@@ -38,10 +38,12 @@ func instantiate_movement_slice(
 	return slice
 
 
-## Monta l'arma condivisa `Scintilla`, il colpo frontale di riferimento. Serve
-## ai test di mira e bersagliamento, che leggono `projectile.direction`: con
-## l'arma del personaggio di default, il Coperchio in mischia di Magno
-## (PS-202), quella direzione e' l'inizio del fendente, non la mira.
+## Monta l'arma condivisa `Scintilla`, il colpo frontale di riferimento, per i
+## test che provano meccaniche generiche dell'arma (mira, upgrade, pulizia dei
+## proiettili) con il personaggio di default. Il suo Coperchio (PS-202) mira
+## nella direzione di movimento, parte solo con un nemico a portata davanti a
+## Magno e la sua `direction` e' l'inizio del fendente: nessuna di queste
+## condizioni riguarda quei test.
 func mount_shared_weapon(slice: Control) -> bool:
 	var weapon: WeaponController = slice.get_weapon_controller()
 	var registry: WeaponEffectRegistry = slice.get_weapon_effect_registry()

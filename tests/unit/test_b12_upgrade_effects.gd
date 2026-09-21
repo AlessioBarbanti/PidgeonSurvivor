@@ -43,6 +43,7 @@ func test_composed_upgrade_effects() -> void:
 	spawner.set_process(false)
 	player.set_physics_process(false)
 	weapon.set_process(false)
+	assert_true(mount_shared_weapon(movement_slice), "B12: gli upgrade dell'arma vanno provati sul colpo frontale condiviso.")
 	var ability := player.get_ability_controller()
 	if ability != null:
 		ability.set_process(false)

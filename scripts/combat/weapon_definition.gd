@@ -18,6 +18,12 @@ extends WeaponProfile
 @export var effect_id: StringName = &""
 @export var effect_parameters: Dictionary = {}
 
+@export_group("Targeting")
+## PS-202: in automatico l'arma colpisce nell'ultima direzione di movimento del
+## personaggio, come lo scatto di Bea, invece che verso il nemico piu' vicino.
+## In manuale vince sempre la mira del giocatore.
+@export var aims_along_movement := false
+
 
 func is_valid() -> bool:
 	return (

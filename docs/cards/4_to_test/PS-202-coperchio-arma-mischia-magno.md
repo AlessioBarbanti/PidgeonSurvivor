@@ -51,6 +51,9 @@ poligonali, abbastanza da leggere la forma in partita.
 - [x] In automatico il Coperchio non colpisce se il nemico più vicino è
       oltre la sua portata, e il cooldown resta pronto; le armi a distanza non
       hanno limite di portata.
+- [x] In automatico il fendente è centrato sull'ultima direzione di
+      movimento di Magno; un nemico a portata ma alle spalle non lo fa
+      partire, e voltandosi verso di lui il fendente parte.
 - [x] Il tetto aritmetico di kill-rate del cast resta entro il 10% dichiarato
       da PS-198/PS-200.
 
@@ -113,6 +116,15 @@ poligonali, abbastanza da leggere la forma in partita.
   distanza; in manuale decide il giocatore), e l'arco passa a raggio 90 con
   coperchio da 40, cioè fascia 50–130 px e portata 150 px. Cadenza e danno
   invariati, per tenere il colpo singolo sul nemico corazzato (31 HP).
+- **2026-09-22 — Il fendente va dove Magno va.** Proposta del proprietario:
+  in automatico il coperchio spazza l'arco centrato sull'ultima direzione di
+  movimento (`Player.get_last_movement_direction()`, la stessa dello scatto
+  di Bea), non verso il nemico più vicino. Parte solo se un nemico è dentro la
+  portata **e** dentro l'arco: un nemico alle spalle non consuma il cooldown
+  con un colpo che lo mancherebbe. Motivazione: Flusso Aerodinamico Bovino
+  premia già chi corre dritto, e il coperchio davanti ne fa un ariete che si
+  apre la strada. Dichiarato nei dati (`WeaponDefinition.aims_along_movement`),
+  non per personaggio nel codice; in manuale vince la mira del giocatore.
 - **Aperte, da osservare in partita:**
   - con **Salsiccia** il coperchio si ferma al primo nemico, perché la catena
     prevale sulla perforazione (regola esistente di `Projectile`, vale già per

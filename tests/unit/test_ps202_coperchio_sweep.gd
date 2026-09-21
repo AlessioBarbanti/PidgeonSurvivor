@@ -2,8 +2,10 @@ extends GutGameplayTest
 
 ## PS-202 — Il Coperchio di Magno e' un fendente, non un colpo che viaggia:
 ## nasce mezzo arco prima della mira, passa sulla linea di mira a meta' corsa,
-## resta agganciato a Magno se si sposta e scade a fine arco. E' disegnato a
-## primitive, mentre le altre armi restano sullo sprite della brace.
+## resta agganciato a Magno se si sposta e scade a fine arco. In automatico
+## mira nella direzione di movimento e parte solo con un nemico sotto l'arco.
+## E' disegnato a primitive, mentre le altre armi restano sullo sprite della
+## brace.
 
 const ANGLE_TOLERANCE := 0.02
 const POSITION_TOLERANCE := 0.5
@@ -39,9 +41,13 @@ func test_coperchio_sweep() -> void:
 
 	weapon.projectile_fired.connect(_on_projectile_fired)
 
-	# 0. In automatico il fendente aspetta che il nemico sia a portata: un colpo
-	#    nel vuoto consumerebbe il cooldown proprio quando il nemico arriva.
+	# 0. In automatico il fendente va nella direzione di movimento di Magno,
+	#    come lo scatto di Bea, e parte solo se un nemico e' davvero sotto
+	#    l'arco: un colpo nel vuoto consumerebbe il cooldown proprio quando il
+	#    nemico arriva.
+	assert_true(definition.aims_along_movement, "PS-202: il Coperchio deve mirare dove Magno va.")
 	var reach := registry.get_engage_distance(definition)
+	var sweep_half_arc := registry.get_sweep_half_arc(definition)
 	assert_true(is_finite(reach), "PS-202: il Coperchio deve dichiarare una portata.")
 	assert_eq(
 		registry.get_engage_distance(registry.resolve_definition(&"spiedo")), INF,
@@ -53,14 +59,32 @@ func test_coperchio_sweep() -> void:
 	if spawner.get_alive_count() == 1:
 		var enemy := spawner.get_spawned_enemies()[0]
 		enemy.set_physics_process(false)
+		player._update_facing_from_movement(Vector2.RIGHT)
 		enemy.global_position = player.global_position + Vector2(reach + 40.0, 0.0)
 		assert_true(_fire_weapon(weapon).is_empty(), "PS-202: oltre la portata il Coperchio non deve colpire.")
 		assert_true(weapon.is_ready_to_fire(), "PS-202: un colpo non partito non deve consumare il cooldown.")
+		enemy.global_position = player.global_position + Vector2(-(reach - 10.0), 0.0)
+		assert_true(
+			_fire_weapon(weapon).is_empty(),
+			"PS-202: un nemico alle spalle non deve far partire il fendente."
+		)
 		enemy.global_position = player.global_position + Vector2(reach - 10.0, 0.0)
-		var auto_volley := _fire_weapon(weapon)
-		assert_eq(auto_volley.size(), 1, "PS-202: a portata il Coperchio deve colpire subito.")
-		for projectile in auto_volley:
-			projectile.expire()
+		var front_volley := _fire_weapon(weapon)
+		assert_eq(front_volley.size(), 1, "PS-202: un nemico davanti e a portata va colpito subito.")
+		_expire(front_volley)
+		# Girandosi verso il nemico che era alle spalle, il fendente lo segue:
+		# conta la direzione di movimento, non dove sta il bersaglio.
+		enemy.global_position = player.global_position + Vector2(-(reach - 10.0), 0.0)
+		player._update_facing_from_movement(Vector2.LEFT)
+		var turned_volley := _fire_weapon(weapon)
+		assert_eq(turned_volley.size(), 1, "PS-202: voltandosi, Magno deve colpire il nemico che ora ha davanti.")
+		if turned_volley.size() == 1:
+			var start_angle := (turned_volley[0].global_position - player.global_position).angle()
+			assert_almost_eq(
+				wrapf(start_angle + sweep_half_arc - PI, -PI, PI), 0.0, ANGLE_TOLERANCE,
+				"PS-202: il fendente deve essere centrato sulla direzione di movimento."
+			)
+		_expire(turned_volley)
 
 	weapon.set_manual_fire_enabled(true)
 	weapon.set_manual_aim_state(Vector2.RIGHT, true)
@@ -137,6 +161,12 @@ func _finish(weapon: WeaponController, controller: RunController) -> void:
 	weapon.set_manual_fire_enabled(false)
 	weapon.projectile_fired.disconnect(_on_projectile_fired)
 	controller.prepare_restart()
+
+
+func _expire(volley: Array[Projectile]) -> void:
+	for projectile in volley:
+		if is_instance_valid(projectile) and not projectile.is_spent():
+			projectile.expire()
 
 
 func _fire_weapon(weapon: WeaponController) -> Array[Projectile]:

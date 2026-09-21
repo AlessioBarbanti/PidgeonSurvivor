@@ -124,10 +124,7 @@ func build_emissions(
 			# dell'arma (velocita' x durata) avvolta sul raggio: un bonus di
 			# velocita' allunga il fendente come allungherebbe un colpo dritto.
 			var sweep_radius := definition.get_effect_float(&"orbit_radius", DEFAULT_SWEEP_RADIUS, 1.0)
-			var half_arc := (
-				definition.projectile_speed * definition.projectile_lifetime / sweep_radius * 0.5
-			)
-			var start_direction := direction.rotated(-half_arc)
+			var start_direction := direction.rotated(-get_sweep_half_arc(definition))
 			return [make_emission(
 				start_direction * sweep_radius,
 				start_direction,
@@ -162,6 +159,15 @@ func get_engage_distance(definition: WeaponDefinition) -> float:
 		+ definition.projectile_radius
 		+ ENGAGE_TARGET_MARGIN
 	)
+
+
+## Mezza ampiezza, in radianti, dell'arco che l'arma copre attorno alla mira.
+## Solo il fendente ne ha una; le altre coprono idealmente tutto il giro.
+func get_sweep_half_arc(definition: WeaponDefinition) -> float:
+	if definition == null or definition.effect_id != SWEEPING_ARC:
+		return PI
+	var sweep_radius := definition.get_effect_float(&"orbit_radius", DEFAULT_SWEEP_RADIUS, 1.0)
+	return definition.projectile_speed * definition.projectile_lifetime / sweep_radius * 0.5
 
 
 static func build_straight_emissions(aim_direction: Vector2) -> Array[Dictionary]:

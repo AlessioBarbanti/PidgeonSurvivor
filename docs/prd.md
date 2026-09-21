@@ -74,7 +74,11 @@ sbloccabili sono esplicitamente fuori contratto.
 Non esistono raggi continui o aure come attacco automatico. Un'arma in
 mischia è ammessa solo come corpo `Projectile` agganciato al personaggio che
 spazza un arco (PS-202, il Coperchio di Magno), mai come colpo istantaneo
-fuori dal proiettile.
+fuori dal proiettile. Un'arma può dichiarare nei dati
+(`aims_along_movement`) di colpire in automatico nell'ultima direzione di
+movimento invece che verso il nemico più vicino; in quel caso parte solo con
+un nemico a portata dentro l'arco che copre. In manuale conta sempre la mira
+del giocatore.
 È questa regola a rendere ogni Specialità di Barb valida per costruzione su
 ogni arma, senza casi speciali per personaggio: le cinque Specialità legate
 al proiettile — Arrosticini (perforazione), Tagliata (ventaglio), Fiorentina
