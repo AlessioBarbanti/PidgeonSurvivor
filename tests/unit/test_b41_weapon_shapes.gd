@@ -132,6 +132,19 @@ func test_scene_behavior() -> void:
 	):
 		return
 
+	# PS-198: le forme d'attacco B41 vanno misurate sull'arma condivisa del
+	# roster. Magno, personaggio di default della fixture, impugna ora la
+	# Carbonella: il suo colpo singolo uccide il bersaglio di riferimento e
+	# renderebbe invisibile proprio la perforazione che questo test prova.
+	controller.prepare_restart()
+	await wait_process_frames(2)
+	assert_true(
+		movement_slice.select_friend_for_next_run(&"zat"),
+		"B41 deve poter misurare su un personaggio con l'arma condivisa."
+	)
+	assert_true(movement_slice.start_selected_run(41040), "B41 richiede una run avviata.")
+	await wait_process_frames(2)
+
 	controller.set_process(false)
 	spawner.set_process(false)
 	player.set_physics_process(false)

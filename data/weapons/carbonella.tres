@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/weapon_definition.gd" id="1_weapon_definition"]
+
+[resource]
+script = ExtResource("1_weapon_definition")
+id = &"carbonella"
+display_name = "Carbonella"
+description = "Un carbone ardente alla volta, lento e massiccio, che non arriva lontano."
+effect_id = &"straight_shot"
+effect_parameters = {}
+shots_per_second = 1.1
+damage = 36.4
+projectile_speed = 380.0
+projectile_lifetime = 1.15
+projectile_radius = 16.0
+muzzle_offset = 34.0
+base_pierce_count = 1
+base_pierce_damage_falloff = 1.0
+base_multishot_count = 1
+base_multishot_spread_degrees = 0.0

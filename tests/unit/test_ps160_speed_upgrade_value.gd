@@ -108,9 +108,14 @@ func test_projectile_speed_single_pick_increases_measurable_travel_distance() ->
 		weapon.get_effective_damage(), weapon.get_base_damage(), FLOAT_TOLERANCE,
 		"PS-160: la velocita' del proiettile non deve introdurre danno nascosto."
 	)
+	# PS-198: dopo le armi per personaggio l'ancora non e' piu' l'arma
+	# condivisa del roster ma quella che il personaggio sotto misura
+	# dichiara. Il controllo resta lo stesso nella sostanza: la misura non
+	# deve avvenire su un'arma finita li' per sbaglio.
+	var measured_friend := (context["player"] as Player).get_friend_definition()
 	assert_eq(
-		weapon.weapon_profile, preload("res://data/weapons/default_weapon_profile.tres"),
-		"La misura deve avvenire sull'arma automatica condivisa dal roster, non su una variante per personaggio."
+		weapon.get_weapon_definition().id, measured_friend.weapon_id,
+		"La misura deve avvenire sull'arma dichiarata dal personaggio equipaggiato."
 	)
 
 	controller.prepare_restart()

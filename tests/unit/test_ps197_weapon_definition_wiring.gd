@@ -16,6 +16,8 @@ const BASELINE_PROJECTILE_LIFETIME := 2.0
 const BASELINE_PROJECTILE_RADIUS := 6.0
 const BASELINE_MUZZLE_OFFSET := 32.0
 const SHARED_WEAPON_ID := &"scintilla"
+## Personaggio che continua a impugnare l'arma condivisa dopo PS-198.
+const SHARED_WEAPON_FRIEND_ID := &"zat"
 
 var _fired_projectiles: Array[Projectile] = []
 
@@ -38,7 +40,9 @@ func test_weapon_definition_wiring() -> void:
 	if registry == null:
 		return
 
-	# 1. Ogni profilo risolve un'arma valida e, in questa card, quella condivisa.
+	# 1. Ogni profilo risolve un'arma valida, e l'arma condivisa continua a
+	#    portare esattamente la baseline di prima della card: e' l'ancora
+	#    rispetto a cui si misura che l'impianto non ha cambiato il gioco.
 	var friend_definitions := friend_registry.get_definitions()
 	assert_eq(friend_definitions.size(), 8, "PS-197: il roster deve restare di otto personaggi.")
 	for friend in friend_definitions:
@@ -47,14 +51,16 @@ func test_weapon_definition_wiring() -> void:
 			definition != null and definition.is_valid(),
 			"PS-197: %s deve risolvere un'arma valida (%s)." % [friend.id, friend.weapon_id]
 		)
-		assert_eq(
-			friend.weapon_id, SHARED_WEAPON_ID,
-			"PS-197 e' un passo neutro: tutti gli otto profili puntano all'arma condivisa."
-		)
+	var shared_weapon := registry.resolve_definition(SHARED_WEAPON_ID)
+	assert_true(shared_weapon != null, "PS-197: l'arma condivisa deve restare nel registry.")
+	if shared_weapon == null:
+		return
+	_assert_shared_baseline(shared_weapon)
 
-	# 2. I valori effettivi a inizio run coincidono con quelli odierni, per
-	#    tutti e otto: l'arma porta la baseline, il personaggio i soli
-	#    moltiplicatori, senza contare lo stesso scarto due volte.
+	# 2. Per tutti e otto, i valori effettivi a inizio run restano il prodotto
+	#    dei due strati e di nient'altro: l'arma porta i valori base, il
+	#    personaggio i soli moltiplicatori, senza contare due volte lo stesso
+	#    scarto. Chi usa l'arma condivisa deve inoltre ritrovare la baseline.
 	# instantiate_movement_slice() consegna una run gia' avviata: il cambio
 	# personaggio e' ammesso solo in BOOT, come dal contratto RunController.
 	controller.prepare_restart()
@@ -76,56 +82,41 @@ func test_weapon_definition_wiring() -> void:
 		# I due strati vanno verificati separati, non nel loro prodotto: le
 		# passive dinamiche (Termostato di Aleo, Iperfocus di Lollo) muovono
 		# il moltiplicatore di personaggio a run in corso. Il contratto di
-		# PS-196 e' che l'arma porti la baseline e il personaggio vi si
+		# PS-196 e' che l'arma porti i valori base e il personaggio vi si
 		# componga sopra, senza contare lo stesso scarto due volte.
 		assert_almost_eq(
-			equipped.shots_per_second, BASELINE_SHOTS_PER_SECOND, FLOAT_TOLERANCE,
-			"PS-197: l'arma di %s deve portare la cadenza base odierna." % friend.id
-		)
-		assert_almost_eq(
-			equipped.damage, BASELINE_DAMAGE, FLOAT_TOLERANCE,
-			"PS-197: l'arma di %s deve portare il danno base odierno." % friend.id
-		)
-		assert_almost_eq(
 			weapon.get_base_shots_per_second(),
-			BASELINE_SHOTS_PER_SECOND * weapon.get_character_fire_rate_multiplier(),
+			equipped.shots_per_second * weapon.get_character_fire_rate_multiplier(),
 			FLOAT_TOLERANCE,
 			"PS-197: la cadenza di %s resta arma x moltiplicatore di personaggio." % friend.id
 		)
 		assert_almost_eq(
 			weapon.get_base_damage(),
-			BASELINE_DAMAGE * weapon.get_character_damage_multiplier(),
+			equipped.damage * weapon.get_character_damage_multiplier(),
 			FLOAT_TOLERANCE,
 			"PS-197: il danno di %s resta arma x moltiplicatore di personaggio." % friend.id
 		)
 		assert_almost_eq(
-			weapon.get_effective_projectile_speed(), BASELINE_PROJECTILE_SPEED, FLOAT_TOLERANCE,
-			"PS-197: la velocita' del proiettile di %s non deve cambiare." % friend.id
+			weapon.get_effective_projectile_speed(), equipped.projectile_speed, FLOAT_TOLERANCE,
+			"PS-197: la velocita' del proiettile di %s viene dall'arma." % friend.id
 		)
-		assert_almost_eq(
-			equipped.projectile_lifetime, BASELINE_PROJECTILE_LIFETIME,
-			FLOAT_TOLERANCE, "PS-197: la lifetime di %s non deve cambiare." % friend.id
-		)
-		assert_almost_eq(
-			equipped.projectile_radius, BASELINE_PROJECTILE_RADIUS, FLOAT_TOLERANCE,
-			"PS-197: il raggio del proiettile di %s non deve cambiare." % friend.id
-		)
-		assert_almost_eq(
-			equipped.muzzle_offset, BASELINE_MUZZLE_OFFSET, FLOAT_TOLERANCE,
-			"PS-197: l'offset di volata di %s non deve cambiare." % friend.id
+		if friend.weapon_id == SHARED_WEAPON_ID:
+			_assert_shared_baseline(equipped)
+		assert_eq(
+			weapon.get_effective_pierce_count(), equipped.base_pierce_count,
+			"PS-197: %s non deve partire con perforazione oltre quella dell'arma." % friend.id
 		)
 		assert_eq(
-			weapon.get_effective_pierce_count(), 1,
-			"PS-197: %s non deve partire con forme d'attacco." % friend.id
-		)
-		assert_eq(
-			weapon.get_effective_multishot_count(), 1,
-			"PS-197: %s non deve partire con un ventaglio." % friend.id
+			weapon.get_effective_multishot_count(), equipped.base_multishot_count,
+			"PS-197: %s non deve partire con un ventaglio oltre quello dell'arma." % friend.id
 		)
 
+	# La prova di neutralita' dello sparo si fa su un personaggio che usa
+	# ancora l'arma condivisa: dopo PS-198 il default Magno impugna la
+	# Carbonella, che ha di suo volata, portata e ritmo diversi.
 	assert_true(
-		movement_slice.select_friend_for_next_run(&"magno"),
-		"PS-197: la fixture deve tornare al personaggio di default."
+		movement_slice.select_friend_for_next_run(SHARED_WEAPON_FRIEND_ID),
+		"PS-197: la fixture deve poter equipaggiare un personaggio con l'arma condivisa."
 	)
 	assert_true(movement_slice.start_selected_run(19701), "PS-197 richiede una run avviata.")
 	await wait_process_frames(2)
@@ -180,6 +171,33 @@ func test_weapon_definition_wiring() -> void:
 
 	controller.prepare_restart()
 	print("PS197_WEAPON_DEFINITION_WIRING_SMOKE_OK")
+
+
+func _assert_shared_baseline(definition: WeaponDefinition) -> void:
+	assert_almost_eq(
+		definition.shots_per_second, BASELINE_SHOTS_PER_SECOND, FLOAT_TOLERANCE,
+		"PS-197: l'arma condivisa deve portare la cadenza base odierna."
+	)
+	assert_almost_eq(
+		definition.damage, BASELINE_DAMAGE, FLOAT_TOLERANCE,
+		"PS-197: l'arma condivisa deve portare il danno base odierno."
+	)
+	assert_almost_eq(
+		definition.projectile_speed, BASELINE_PROJECTILE_SPEED, FLOAT_TOLERANCE,
+		"PS-197: la velocita' del proiettile condiviso non deve cambiare."
+	)
+	assert_almost_eq(
+		definition.projectile_lifetime, BASELINE_PROJECTILE_LIFETIME, FLOAT_TOLERANCE,
+		"PS-197: la lifetime del proiettile condiviso non deve cambiare."
+	)
+	assert_almost_eq(
+		definition.projectile_radius, BASELINE_PROJECTILE_RADIUS, FLOAT_TOLERANCE,
+		"PS-197: il raggio del proiettile condiviso non deve cambiare."
+	)
+	assert_almost_eq(
+		definition.muzzle_offset, BASELINE_MUZZLE_OFFSET, FLOAT_TOLERANCE,
+		"PS-197: l'offset di volata condiviso non deve cambiare."
+	)
 
 
 func _fire_weapon(weapon: WeaponController) -> Array[Projectile]:

@@ -8,6 +8,14 @@ signal chain_jumped(from_target: BaseEnemy, to_target: BaseEnemy, damage: float)
 const ENEMY_HURTBOX_MASK := 1 << 1
 const VISUAL_REFERENCE_RADIUS := 5.0
 
+## Traiettorie dichiarate dalle armi (PS-198). Un solo campo su Projectile
+## invece di una sottoclasse per arma: il corpo del proiettile, le collisioni
+## e tutti gli effetti delle Specialita' restano esattamente gli stessi,
+## cambia solo come il punto si sposta nel tempo.
+const TRAJECTORY_STRAIGHT := &"straight"
+const TRAJECTORY_SPLIT := &"split"
+const TRAJECTORY_ORBIT := &"orbit"
+
 var damage := 0.0
 var direction := Vector2.RIGHT
 var speed := 0.0
@@ -31,6 +39,14 @@ var _pierce_current_damage := 0.0
 var _death_burst_enabled := false
 var _death_burst_radius := 0.0
 var _death_burst_damage_multiplier := 0.0
+var _trajectory := TRAJECTORY_STRAIGHT
+var _elapsed := 0.0
+var _split_delay := 0.0
+var _split_turn_radians := 0.0
+var _split_done := false
+var _orbit_anchor: Node2D
+var _orbit_radius := 0.0
+var _orbit_angle := 0.0
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 @onready var _projectile_sprite: Sprite2D = %ProjectileSprite
@@ -58,7 +74,30 @@ func _physics_process(delta: float) -> void:
 
 	var safe_delta := maxf(delta, 0.0)
 	var movement_delta := minf(safe_delta, maxf(lifetime_remaining, 0.0))
-	global_position += direction * speed * movement_delta
+	_elapsed += movement_delta
+	match _trajectory:
+		TRAJECTORY_ORBIT:
+			# Il frammento e' agganciato alla sorgente: se la sorgente sparisce
+			# sparisce anche l'orbita, invece di restare a girare attorno al
+			# nulla all'ultima posizione nota.
+			if not is_instance_valid(_orbit_anchor):
+				expire()
+				return
+			_orbit_angle += (speed / _orbit_radius) * movement_delta
+			global_position = (
+				_orbit_anchor.global_position
+				+ Vector2.RIGHT.rotated(_orbit_angle) * _orbit_radius
+			)
+			direction = Vector2.RIGHT.rotated(_orbit_angle + PI * 0.5)
+			rotation = direction.angle()
+		TRAJECTORY_SPLIT:
+			if not _split_done and _elapsed >= _split_delay:
+				_split_done = true
+				direction = direction.rotated(_split_turn_radians)
+				rotation = direction.angle()
+			global_position += direction * speed * movement_delta
+		_:
+			global_position += direction * speed * movement_delta
 	lifetime_remaining -= safe_delta
 	if lifetime_remaining <= 0.0:
 		expire()
@@ -91,6 +130,52 @@ func initialize(
 		_sync_collision_radius()
 		_sync_visual_scale()
 	return lifetime_remaining > 0.0 and is_instance_valid(_run_controller)
+
+
+## Traiettoria dichiarata dall'arma, applicata dopo `initialize()` perche'
+## legge `direction`. Una traiettoria sconosciuta o con parametri malformati
+## degrada al colpo dritto invece di far fallire lo sparo.
+func configure_trajectory(
+	trajectory: StringName,
+	parameters: Dictionary = {},
+	anchor: Node2D = null
+) -> bool:
+	_trajectory = TRAJECTORY_STRAIGHT
+	_elapsed = 0.0
+	_split_done = false
+	match trajectory:
+		TRAJECTORY_SPLIT:
+			var delay := float(parameters.get("delay", 0.0))
+			var turn_degrees := float(parameters.get("turn_degrees", 0.0))
+			if not is_finite(delay) or delay < 0.0 or not is_finite(turn_degrees):
+				return false
+			_split_delay = delay
+			_split_turn_radians = deg_to_rad(turn_degrees)
+			_trajectory = TRAJECTORY_SPLIT
+		TRAJECTORY_ORBIT:
+			var radius := float(parameters.get("radius", 0.0))
+			if not is_finite(radius) or radius <= 0.0 or not is_instance_valid(anchor):
+				return false
+			_orbit_radius = radius
+			_orbit_anchor = anchor
+			_orbit_angle = direction.angle()
+			global_position = (
+				anchor.global_position + Vector2.RIGHT.rotated(_orbit_angle) * radius
+			)
+			_trajectory = TRAJECTORY_ORBIT
+	return true
+
+
+func get_trajectory() -> StringName:
+	return _trajectory
+
+
+func get_orbit_radius() -> float:
+	return _orbit_radius
+
+
+func has_split() -> bool:
+	return _split_done
 
 
 func configure_signature_effects(

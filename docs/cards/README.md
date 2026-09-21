@@ -305,5 +305,5 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-195](./4_to_test/PS-195-personaggio-iniziale-selettore-casuale.md) | Rendi casuale il personaggio evidenziato al primo ingresso nel selettore | ux | ui | IN VERIFICA | media | — |
 | [PS-196](./5_completed/PS-196-contratto-armi-per-personaggio.md) | Fissa il contratto delle armi per personaggio | chore | gameplay | COMPLETATO | alta | — |
 | [PS-197](./4_to_test/PS-197-impianto-arma-per-personaggio-neutro.md) | Introduci l'impianto arma per personaggio senza cambiare il gioco | feat | gameplay | IN VERIFICA | alta | PS-196 |
-| [PS-198](./3_in_sprint/PS-198-armi-pilota-primo-set.md) | Progetta e implementa il primo set di armi pilota | feat | gameplay | IN CORSO | alta | PS-197 |
+| [PS-198](./4_to_test/PS-198-armi-pilota-primo-set.md) | Progetta e implementa il primo set di armi pilota | feat | gameplay | IN VERIFICA | alta | PS-197 |
 | [PS-199](./1_idea/PS-199-crash-a-spegnimento-suite-gut.md) | Crash a spegnimento della suite GUT completa, con report verde | bug | tooling | DA DEFINIRE | media | — |

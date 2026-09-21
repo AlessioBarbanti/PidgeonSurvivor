@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/weapon_definition.gd" id="1_weapon_definition"]
+
+[resource]
+script = ExtResource("1_weapon_definition")
+id = &"spiedo"
+display_name = "Spiedo"
+description = "Spiedi sottili sfilati a raffica, alternati a destra e a sinistra, che vanno lontanissimo."
+effect_id = &"alternating_skewers"
+effect_parameters = {
+"lateral_offset": 18.0
+}
+shots_per_second = 6.4
+damage = 6.25
+projectile_speed = 1150.0
+projectile_lifetime = 1.5
+projectile_radius = 4.0
+muzzle_offset = 30.0
+base_pierce_count = 1
+base_pierce_damage_falloff = 1.0
+base_multishot_count = 1
+base_multishot_spread_degrees = 0.0

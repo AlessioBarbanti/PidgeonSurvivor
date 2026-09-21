@@ -1,4 +1,4 @@
-[gd_scene load_steps=130 format=3]
+[gd_scene load_steps=134 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/movement_slice.gd" id="1_slice"]
 [ext_resource type="Script" path="res://scripts/game/arena_layout.gd" id="2_arena_layout"]
@@ -21,6 +21,10 @@
 [ext_resource type="Script" path="res://scripts/abilities/ability_effect_registry.gd" id="20_ability_registry"]
 [ext_resource type="Script" path="res://scripts/combat/weapon_effect_registry.gd" id="137_weapon_registry"]
 [ext_resource type="Resource" path="res://data/weapons/default_weapon_profile.tres" id="138_weapon_scintilla"]
+[ext_resource type="Resource" path="res://data/weapons/carbonella.tres" id="139_weapon_carbonella"]
+[ext_resource type="Resource" path="res://data/weapons/spiedo.tres" id="140_weapon_spiedo"]
+[ext_resource type="Resource" path="res://data/weapons/cavatappi.tres" id="141_weapon_cavatappi"]
+[ext_resource type="Resource" path="res://data/weapons/graticola.tres" id="142_weapon_graticola"]
 [ext_resource type="Script" path="res://scripts/progression/upgrade_registry.gd" id="21_upgrade_registry"]
 [ext_resource type="Script" path="res://scripts/progression/upgrade_service.gd" id="22_upgrade_service"]
 [ext_resource type="Resource" path="res://data/upgrades/swift_steps.tres" id="23_swift_steps"]
@@ -233,7 +237,7 @@ script = ExtResource("11_targeting")
 [node name="WeaponEffectRegistry" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("137_weapon_registry")
-definitions = Array[ExtResource("138_weapon_scintilla")]([ExtResource("138_weapon_scintilla")])
+definitions = Array[ExtResource("138_weapon_scintilla")]([ExtResource("138_weapon_scintilla"), ExtResource("139_weapon_carbonella"), ExtResource("140_weapon_spiedo"), ExtResource("141_weapon_cavatappi"), ExtResource("142_weapon_graticola")])
 
 [node name="AbilityEffectRegistry" type="Node" parent="."]
 unique_name_in_owner = true

@@ -644,9 +644,16 @@ static func _validate_initial_stats(scene: Control, failures: Array[String]) -> 
 		)
 	):
 		failures.append("La run deve iniziare senza modificatori proiettile B13.")
+	# PS-198: il riferimento e' la forma base dell'arma equipaggiata, non piu'
+	# il singolo proiettile di quando il roster condivideva un'arma sola. Il
+	# controllo resta quello di prima nella sostanza: a inizio run nessuna
+	# Specialita' deve aver gia' modificato la forma d'attacco.
 	if (
-		weapon_controller.get_effective_pierce_count() != 1
-		or weapon_controller.get_effective_multishot_count() != 1
+		weapon_controller.get_effective_pierce_count() != weapon_controller.get_base_pierce_count()
+		or (
+			weapon_controller.get_effective_multishot_count()
+			!= weapon_controller.get_base_multishot_count()
+		)
 		or weapon_controller.is_death_burst_enabled()
 	):
 		failures.append("La run deve iniziare senza forme d'attacco B41.")

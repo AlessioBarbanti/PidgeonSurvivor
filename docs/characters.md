@@ -37,6 +37,8 @@ Scarti base (B47, PS-087): salute `×1,15`, velocità `×0,95`, cadenza `×1,00`
 
 Scarti estesi (PS-093): danno `×0,98`, avidità `×1,02`, raggio pickup `×1,05`, difesa `×1,00`, critico `+0%` — il peso resta nell'onda d'urto della passiva, non nella precisione dei colpi automatici; il piccolo bonus di raccolta compensa la velocità sotto la norma.
 
+Arma (PS-198) — **Carbonella**: un carbone ardente alla volta, lento e massiccio, che non arriva lontano. Ritmo lentissimo (1,1 colpi/s), il colpo singolo più pesante del set pilota e portata corta (~440 px): per colpire, Magno deve entrare nella mischia, esattamente dove la sua passiva gli chiede di andare.
+
 ## Bea
 
 Ruolo: Evasione e riposizionamento.  
@@ -47,6 +49,8 @@ Boss: Evil Bea — Signature *Powerslide*: una linea di preavviso mostra direzio
 Scarti base (B47, PS-087): salute `×0,90`, velocità `×1,10`, cadenza `×1,00` — l'agilità da pattinatrice si traduce in velocità alta e salute bassa: l'evasione è di movimento, non di resistenza.
 
 Scarti estesi (PS-093): danno `×1,00`, avidità `×1,03`, raggio pickup `×1,04`, difesa `×0,94`, critico `+5%` — l'unico vero bonus difensivo del cast: il Sesto Senso Equino copre un colpo ogni 9 secondi, questo asse copre i colpi minori nel mezzo. La mobilità raccoglie di più incidentalmente; il critico è il fit più pulito per un'evasione opportunista.
+
+Arma (PS-198) — **Spiedo**: spiedi sottili sfilati a raffica, alternati a destra e a sinistra della linea di mira, con la portata più lunga del set pilota (~1.700 px). Ritmo rapido (6,4 colpi/s) e colpo leggero: la stessa agilità della passiva, tradotta in cadenza invece che in resistenza.
 
 ## Zat
 
@@ -116,6 +120,8 @@ Scarti base (B47, PS-087): salute `×0,85`, velocità `×1,00`, cadenza `×1,15`
 
 Scarti estesi (PS-093): danno `×1,10`, avidità `×1,08`, raggio pickup `×0,92`, difesa `×1,05`, critico `+0%` — rinforza il glass cannon già scritto nei tre assi B47 (cadenza alta, salute bassa): più danno e più difesa completano il rischio/ricompensa invece di contraddirlo, la raccolta più bassa riflette che Alea è occupata a piroettare, non a raccogliere con metodo. Critico deliberatamente a zero: PS-105 ha riscritto la sua intera passiva per rimuovere ogni esito casuale dal suo kit ("Nessun esito è casuale"), e il critico è un meccanismo probabilistico per natura — reintrodurlo qui contraddirebbe quel redesign.
 
+Arma (PS-198) — **Cavatappi**: un colpo perfettamente dritto che a metà corsa si apre in due e diverge. L'ubriaco non ha la mira che trema, vede doppio: la precisione di partenza resta intatta, a raddoppiarsi è il risultato. Resta così distinto dalla dispersione di Alette (`beer_signature`), che invece fa tremare proprio la mira.
+
 ## Aleo
 
 Ruolo: Sbalzo termico e gestione del danno.  
@@ -148,6 +154,8 @@ Boss: Evil Migi — Signature *Rallentamento Zen*: una zona attorno al Boss rall
 Scarti base (B47, PS-087): salute `×1,15`, velocità `×0,90`, cadenza `×0,95` — il profilo più lento e resistente del cast, coerente con "difesa": il guscio assorbe, non insegue.
 
 Scarti estesi (PS-093): danno `×1,05`, avidità `×0,95`, raggio pickup `×1,10`, difesa `×1,00`, critico `+0%` — il danno leggermente sopra compensa la cadenza più bassa del cast, mantenendo il DPS totale vicino alla media; il magnete più forte del cast esenta il personaggio più lento dal doversi muovere per raccogliere. Difesa neutra apposta: salute alta e il guscio a cariche già coprono la mitigazione, un terzo strato l'avrebbe resa la "non toccare mai" del cast.
+
+Arma (PS-198) — **Graticola**: tre frammenti incandescenti che orbitano attorno a Migi a distanza fissa (104 px), ciascuno capace di attraversare più nemici. Le placche del Guscio Tartarughina restano aderenti al personaggio, i frammenti girano a distanza: i due sistemi devono restare distinguibili a colpo d'occhio, altrimenti il giocatore non sa quale dei due sta guardando.
 
 ## Marghe
 

@@ -9,6 +9,9 @@ extends Node
 ## nuova eredita gratis sparo automatico e manuale.
 
 const STRAIGHT_SHOT := &"straight_shot"
+const ALTERNATING_SKEWERS := &"alternating_skewers"
+const SPLITTING_SHOT := &"splitting_shot"
+const ORBITING_FRAGMENTS := &"orbiting_fragments"
 
 @export var definitions: Array[WeaponDefinition] = []
 
@@ -46,21 +49,82 @@ func get_definitions() -> Array[WeaponDefinition]:
 
 
 ## Emissioni di un singolo colpo: per ciascuna, `offset` e' la posizione di
-## partenza relativa alla sorgente e `direction` la direzione di volo.
+## partenza relativa alla sorgente, `direction` la direzione di volo e
+## `trajectory` come il proiettile si muovera' poi.
+## `shot_index` e' il numero del colpo nella run: serve alle armi che
+## alternano fra un colpo e il successivo e tiene il registry senza stato.
 ## Un `effect_id` sconosciuto ricade sul colpo dritto invece di non sparare:
 ## un dato malformato deve degradare l'arma, non disarmare il personaggio.
-func build_emissions(definition: WeaponDefinition, aim_direction: Vector2) -> Array[Dictionary]:
+func build_emissions(
+	definition: WeaponDefinition,
+	aim_direction: Vector2,
+	shot_index: int = 0
+) -> Array[Dictionary]:
 	if definition == null or not aim_direction.is_finite() or aim_direction.is_zero_approx():
 		return build_straight_emissions(Vector2.RIGHT)
-	return build_straight_emissions(aim_direction.normalized())
+	var direction := aim_direction.normalized()
+	match definition.effect_id:
+		ALTERNATING_SKEWERS:
+			# Spiedo: uno spiedo sottile per colpo, alternato ai due fianchi.
+			# L'alternanza e' geometria d'emissione, non un secondo proiettile:
+			# il ritmo resta di un colpo per volta.
+			var lateral := definition.get_effect_float(&"lateral_offset", 18.0, 0.0)
+			var side := 1.0 if shot_index % 2 == 0 else -1.0
+			return [make_emission(direction.orthogonal() * lateral * side, direction)]
+		SPLITTING_SHOT:
+			# Cavatappi: due colpi perfettamente sovrapposti che divergono a
+			# meta' corsa. Sono due proiettili dal primo istante, non uno che
+			# si duplica: finche' viaggiano insieme sono indistinguibili da un
+			# colpo solo, e il tetto di kill-rate li conta entrambi.
+			var delay := definition.get_effect_float(&"split_delay_seconds", 0.8, 0.0)
+			var divergence := definition.get_effect_float(&"divergence_degrees", 17.0, 0.0)
+			return [
+				make_emission(
+					Vector2.ZERO, direction, Projectile.TRAJECTORY_SPLIT,
+					{"delay": delay, "turn_degrees": divergence}
+				),
+				make_emission(
+					Vector2.ZERO, direction, Projectile.TRAJECTORY_SPLIT,
+					{"delay": delay, "turn_degrees": -divergence}
+				),
+			]
+		ORBITING_FRAGMENTS:
+			# Graticola: frammenti distribuiti sull'anello, non sulla mira.
+			# La direzione di mira resta l'ancora dell'anello, cosi' Tagliata
+			# continua a ruotare il gruppo e Alette a irregolarizzarne i pezzi.
+			var fragment_count := maxi(definition.get_effect_int(&"fragment_count", 3, 1), 1)
+			var orbit_radius := definition.get_effect_float(&"orbit_radius", 104.0, 1.0)
+			var emissions: Array[Dictionary] = []
+			var step := TAU / float(fragment_count)
+			for index in fragment_count:
+				var fragment_direction := direction.rotated(step * float(index))
+				emissions.append(make_emission(
+					fragment_direction * orbit_radius,
+					fragment_direction,
+					Projectile.TRAJECTORY_ORBIT,
+					{"radius": orbit_radius}
+				))
+			return emissions
+		_:
+			return build_straight_emissions(direction)
 
 
 static func build_straight_emissions(aim_direction: Vector2) -> Array[Dictionary]:
 	return [make_emission(Vector2.ZERO, aim_direction)]
 
 
-static func make_emission(offset: Vector2, direction: Vector2) -> Dictionary:
-	return {"offset": offset, "direction": direction}
+static func make_emission(
+	offset: Vector2,
+	direction: Vector2,
+	trajectory := Projectile.TRAJECTORY_STRAIGHT,
+	parameters: Dictionary = {}
+) -> Dictionary:
+	return {
+		"offset": offset,
+		"direction": direction,
+		"trajectory": trajectory,
+		"parameters": parameters,
+	}
 
 
 func _rebuild_definition_index() -> void:

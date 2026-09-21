@@ -115,9 +115,10 @@ stessi effetti delle Specialità.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9
+- [x] Runtime Windows — chiuso dalla `Release` di PS-198, che contiene
+      anche questo codice: `windows-export` e `windows-runtime` PASS
+- [x] Validazione statica APK — stessa `Release`: `android-static` PASS
+- [ ] Runtime fisico Pixel 9 — **aperto**: nessun device collegato
 - [ ] Controllo percettivo richiesto: sì, ma in negativo — la prova è che
       **non si percepisca alcuna differenza** rispetto a oggi
 
@@ -184,10 +185,12 @@ un-milestone-checks.ps1 -Milestone PS-197 -Profile Full
 `FATAL EXCEPTION` nei log. `test_b41_weapon_shapes.gd` e
 `test_ps085_manual_fire_mode.gd` sono passati **senza modifiche**.
 
-I gate di piattaforma restano aperti e vengono esercitati una sola volta a
-valle di [PS-198](../3_in_sprint/PS-198-armi-pilota-primo-set.md), che riscrive lo stesso
-codice: un export prodotto ora verrebbe sostituito prima di poter essere
-provato.
+I gate di piattaforma sono stati esercitati una sola volta a valle di
+[PS-198](./PS-198-armi-pilota-primo-set.md), che riscrive lo stesso codice: un
+export prodotto prima sarebbe stato sostituito prima di poter essere provato.
+Windows runtime e validazione statica dell'APK sono chiusi da quella
+`Release`; il runtime fisico su Pixel 9 resta **aperto** perche' non c'era
+alcun device collegato.
 
 
 Card aperte che toccano lo stesso codice e vanno coordinate:

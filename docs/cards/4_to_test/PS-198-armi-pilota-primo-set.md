@@ -3,12 +3,12 @@ id: PS-198
 titolo: Progetta e implementa il primo set di armi pilota
 tipo: feat
 area: gameplay
-stato: BLOCCATO
+stato: IN VERIFICA
 priorita: alta
 dipende_da: [PS-197]
 origine:
 creato: 2026-09-18
-aggiornato: 2026-09-18
+aggiornato: 2026-09-21
 ---
 
 # PS-198 — Progetta e implementa il primo set di armi pilota
@@ -17,7 +17,7 @@ aggiornato: 2026-09-18
 
 Con il contratto di [PS-196](../5_completed/PS-196-contratto-armi-per-personaggio.md)
 e l'impianto neutro di
-[PS-197](../4_to_test/PS-197-impianto-arma-per-personaggio-neutro.md), questa
+[PS-197](./PS-197-impianto-arma-per-personaggio-neutro.md), questa
 card produce le **prime armi realmente diverse**. Il proprietario ha scelto
 (2026-09-18) un set pilota ristretto invece dell'intero cast: se il feel non
 cambia davvero, si è buttato poco e l'impianto resta neutro.
@@ -55,23 +55,23 @@ Barb continua a produrre un effetto sensato su entrambi.
 
 ## Criteri di accettazione
 
-- [ ] Ogni arma pilota differisce da ciascuna delle altre su **almeno tre**
+- [x] Ogni arma pilota differisce da ciascuna delle altre su **almeno tre**
       dei cinque assi dichiarati in PS-196.
-- [ ] Ogni arma pilota è dichiarata interamente come dati
+- [x] Ogni arma pilota è dichiarata interamente come dati
       (`WeaponDefinition` + parametri) più un `effect_id` gestito dal
       `WeaponEffectRegistry`: nessuna logica nei `.tres`.
-- [ ] Tutte e cinque le Specialità legate al proiettile (Arrosticini,
+- [x] Tutte e cinque le Specialità legate al proiettile (Arrosticini,
       Tagliata, Fiorentina, Salsiccia, Alette) producono un effetto
       osservabile su **ogni** arma pilota; per Alette su un'arma priva di
       direzione di mira, la reinterpretazione della dispersione è quella
       dichiarata in PS-196 e non un'omissione silenziosa.
-- [ ] Le armi pilota restano comparabili fra loro: il tetto aritmetico di
+- [x] Le armi pilota restano comparabili fra loro: il tetto aritmetico di
       `WeaponController.calculate_full_build_kill_rate_per_second()` è
       calcolato per ciascuna e lo scarto fra la più forte e la più debole
       resta entro un margine dichiarato in `Decisioni`.
-- [ ] I personaggi non toccati dal pilota continuano a usare l'arma di
+- [x] I personaggi non toccati dal pilota continuano a usare l'arma di
       default, senza alcuna differenza rispetto a oggi.
-- [ ] Sparo automatico e manuale (PS-085) funzionano su ogni arma pilota.
+- [x] Sparo automatico e manuale (PS-085) funzionano su ogni arma pilota.
 
 ## Ambito
 
@@ -98,9 +98,11 @@ Barb continua a produrre un effetto sensato su entrambi.
 
 ## Gate manuali
 
-- [ ] Runtime Windows
-- [ ] Validazione statica APK
-- [ ] Runtime fisico Pixel 9
+- [x] Runtime Windows — `windows-export` e `windows-runtime` PASS
+- [x] Validazione statica APK — `android-static` PASS (l'export e' uscito
+      sul marker `[ DONE ] export` con l'APK gia' completo, caso noto Windows)
+- [ ] Runtime fisico Pixel 9 — **aperto**: nessun device collegato
+      (`adb devices` vuoto, `android_runtime=OPEN_ADB_SERVER_NOT_RUNNING`)
 - [ ] Controllo percettivo richiesto: sì — è l'unico vero criterio del
       pilota: giocare due personaggi del set di seguito e sentire che
       l'attacco base è un'altra cosa
@@ -130,15 +132,81 @@ Barb continua a produrre un effetto sensato su entrambi.
   stralcio è il Cavatappi: è il più sottile dei quattro, mentre
   Carbonella/Spiedo/Graticola coprono già l'escursione massima
   (lento e pesante / rapido e sottile / orbitale).
-- **Aperta** — margine ammesso fra l'arma pilota più forte e la più debole sul
-  tetto di kill-rate: da fissare in implementazione e dichiarare qui.
+- **2026-09-21 — Margine ammesso sul tetto di kill-rate: 10%**, misurato su una
+  build di riferimento dichiarata (Alette `×1,25` di cadenza, danno `×1,5`,
+  Tagliata a rango 2, Arrosticini a rango 3 con decadimento `0,7`, nemico da
+  100 HP). Le quattro armi sono state calibrate *a partire* da quel tetto
+  invece che a sensazione: il prodotto `cadenza × danno × emissioni per colpo ×
+  somma del decadimento di perforazione` è tenuto costante, ed è stato fissato
+  sul valore della Scintilla condivisa (≈5,70 kill/s) perché nessun personaggio
+  del pilota risultasse indebolito dall'avere un'arma propria. Lo scarto
+  effettivo fra la più forte e la più debole è dello **0,5%**; il margine al 10%
+  è lo spazio lasciato al ritocco futuro, non la tolleranza consumata.
+- **2026-09-21 — Il Cavatappi emette due proiettili sovrapposti**, non uno che
+  si duplica a metà corsa. Motivazione: duplicare a runtime avrebbe richiesto
+  al proiettile di conoscere la propria scena e il proprio contenitore per
+  istanziarne altri; due colpi identici che condividono posizione e direzione
+  fino al ritardo dichiarato sono indistinguibili da un colpo solo, e il tetto
+  di kill-rate li conta entrambi senza casi speciali. A bruciapelo colpiscono
+  tutti e due, ed è voluto: il danno per proiettile è già dimezzato di
+  conseguenza.
+- **2026-09-21 — La perforazione ora si somma invece di prendere il massimo**
+  (`WeaponController.get_effective_pierce_count()`). Con `maxi()`, la Graticola
+  — che di suo attraversa 3 nemici — avrebbe reso invisibili i primi due
+  ranghi di Arrosticini, violando il criterio di osservabilità di questa card.
+  Per ogni arma con perforazione base 1, cioè tutte le altre, il risultato è
+  identico a prima.
+- **2026-09-21 — `RunContractValidator` confronta la forma d'attacco iniziale
+  con la forma base dell'arma**, non più con il singolo proiettile. Il controllo
+  non è allentato: continua a fallire se una Specialità ha già modificato la
+  forma a inizio run, ma smette di leggere come errore una perforazione che
+  appartiene all'arma.
+- **2026-09-21 — Due regressioni sono state aggiornate, non aggirate.**
+  `test_b41_weapon_shapes.gd` misurava le forme d'attacco su Magno, che ora
+  impugna la Carbonella: il suo colpo singolo (35,7 danno contro un bersaglio
+  da 10 HP) uccide il bersaglio di riferimento e rende invisibile la
+  perforazione da provare. La fixture ora equipaggia Zat, che usa ancora la
+  Scintilla, dichiarando così l'intenzione che il test aveva implicita.
+  `test_ps160_speed_upgrade_value.gd` asseriva l'identità con
+  `default_weapon_profile.tres` "non una variante per personaggio": ora
+  asserisce che l'arma sotto misura sia quella dichiarata dal personaggio
+  equipaggiato, che è lo stesso controllo dopo che le varianti esistono.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/characters.md` — l'arma entra nell'identità dei personaggi del
+- [x] `docs/characters.md` — l'arma entra nell'identità dei personaggi del
       pilota.
 
 ## Note
+
+Comandi di verifica e marker usati come evidenza:
+
+```powershell
+.	oolsun-milestone-checks.ps1 -Milestone PS-198 -Profile Focused `
+  -FocusedSmoke tests/unit/test_ps198_pilot_weapons.gd -RefreshEditor
+.	oolsun-milestone-checks.ps1 -Milestone PS-198 -Profile Full
+.	oolsun-milestone-checks.ps1 -Milestone PS-198 -Profile Release
+```
+
+`Full` → `status=PASS focused=4/4 regression=161/161 toolchain=1/1`, marker
+`PS198_PILOT_WEAPONS_SMOKE_OK` e `PS197_WEAPON_DEFINITION_WIRING_SMOKE_OK`,
+zero occorrenze di `SCRIPT ERROR` o `FATAL EXCEPTION`.
+
+`Release` → `windows=2/2` (export e runtime), `android_static=True`,
+`android_runtime=OPEN_ADB_SERVER_NOT_RUNNING`. I tre esiti restano distinti:
+Windows runtime è chiuso, la validazione statica dell'APK è chiusa, il
+runtime fisico su Pixel 9 è **aperto** e non è stato surrogato da nulla.
+
+Gate ancora aperti, entrambi di competenza del proprietario:
+
+1. **Runtime fisico Pixel 9** — richiede il device collegato.
+2. **Controllo percettivo** — è l'unico vero criterio del pilota: giocare due
+   personaggi del set di seguito e sentire che l'attacco base è un'altra cosa.
+   Nessun test automatico lo sostituisce.
+
+Restano da riverificare, come anticipato qui sotto, le prove percettive di
+PS-093 e PS-157: assumevano un'arma sola per tutto il roster.
+
 
 Il ribilanciamento degli scarti base per personaggio resta fuori da questa
 card ma andrà rivisitato dopo: le verifiche percettive ancora aperte di

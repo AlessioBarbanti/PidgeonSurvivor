@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/weapon_definition.gd" id="1_weapon_definition"]
+
+[resource]
+script = ExtResource("1_weapon_definition")
+id = &"cavatappi"
+display_name = "Cavatappi"
+description = "Un colpo perfettamente dritto che a metà corsa si apre in due e diverge."
+effect_id = &"splitting_shot"
+effect_parameters = {
+"divergence_degrees": 17.0,
+"split_delay_seconds": 0.8
+}
+shots_per_second = 3.2
+damage = 6.25
+projectile_speed = 820.0
+projectile_lifetime = 1.6
+projectile_radius = 5.0
+muzzle_offset = 32.0
+base_pierce_count = 1
+base_pierce_damage_falloff = 1.0
+base_multishot_count = 1
+base_multishot_spread_degrees = 0.0

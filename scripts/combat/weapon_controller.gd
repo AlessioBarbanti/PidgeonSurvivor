@@ -13,6 +13,9 @@ var _targeting_system: TargetingSystem
 ## WeaponController isolato) l'arma ricade sul colpo dritto.
 var _weapon_effect_registry: WeaponEffectRegistry
 var _weapon_definition: WeaponDefinition
+## Numero del colpo nella run: le armi che alternano fra un colpo e il
+## successivo lo leggono al posto di tenere un contatore nel registry.
+var _shot_index := 0
 var _projectile_parent: Node
 var _source: Node2D
 var _arena_layout: ArenaLayout
@@ -147,7 +150,13 @@ func try_fire() -> Projectile:
 			var spread := _sample_aim_spread()
 			var aim_direction: Vector2 = (emission["direction"] as Vector2).rotated(spread)
 			var emission_offset: Vector2 = (emission["offset"] as Vector2).rotated(spread)
-			var projectile := _spawn_projectile(aim_direction, muzzle_offset, emission_offset)
+			var projectile := _spawn_projectile(
+				aim_direction,
+				muzzle_offset,
+				emission_offset,
+				emission.get("trajectory", Projectile.TRAJECTORY_STRAIGHT),
+				emission.get("parameters", {})
+			)
 			if projectile == null:
 				continue
 			last_projectile = projectile
@@ -158,6 +167,7 @@ func try_fire() -> Projectile:
 		return null
 
 	_last_aim_direction = last_aim_direction
+	_shot_index += 1
 	rotation = _last_aim_direction.angle()
 	_cooldown_remaining = get_effective_fire_interval()
 	queue_redraw()
@@ -167,7 +177,9 @@ func try_fire() -> Projectile:
 func _spawn_projectile(
 	aim_direction: Vector2,
 	muzzle_offset: float,
-	emission_offset := Vector2.ZERO
+	emission_offset := Vector2.ZERO,
+	trajectory := Projectile.TRAJECTORY_STRAIGHT,
+	trajectory_parameters: Dictionary = {}
 ) -> Projectile:
 	var instance := projectile_scene.instantiate()
 	if not instance is Projectile:
@@ -196,6 +208,11 @@ func _spawn_projectile(
 	):
 		projectile.queue_free()
 		return null
+	# Dopo initialize(), che fissa `direction`: la traiettoria orbitale ne
+	# ricava l'angolo di partenza sull'anello.
+	if not projectile.configure_trajectory(trajectory, trajectory_parameters, _source):
+		projectile.expire()
+		return null
 	if not projectile.configure_signature_effects(
 		_projectile_chain_enabled,
 		_projectile_chain_jumps,
@@ -220,6 +237,7 @@ func _spawn_projectile(
 
 func reset_for_run(clear_existing_projectiles: bool = true) -> void:
 	_cooldown_remaining = 0.0
+	_shot_index = 0
 	reset_upgrade_stat_multipliers()
 	_last_aim_direction = Vector2.RIGHT
 	_last_shot_was_critical = false
@@ -468,12 +486,24 @@ func reset_projectile_shape_modifiers() -> void:
 	_death_burst_damage_multiplier = 0.0
 
 
+## Additivo, non un massimo (PS-198): un'arma gia' perforante di suo, come la
+## Graticola, renderebbe altrimenti invisibili i primi ranghi di Arrosticini.
+## Per un'arma con perforazione base 1 — tutte tranne la Graticola — il
+## risultato coincide con il conteggio dell'upgrade, come prima della card.
 func get_effective_pierce_count() -> int:
-	return maxi(_base_pierce_count, _pierce_count)
+	return _base_pierce_count + maxi(_pierce_count - 1, 0)
 
 
 func get_effective_pierce_damage_falloff() -> float:
-	return _pierce_damage_falloff if _pierce_count >= _base_pierce_count else _base_pierce_damage_falloff
+	return _pierce_damage_falloff if _pierce_count > 1 else _base_pierce_damage_falloff
+
+
+func get_base_pierce_count() -> int:
+	return _base_pierce_count
+
+
+func get_base_multishot_count() -> int:
+	return _base_multishot_count
 
 
 func get_effective_multishot_count() -> int:
@@ -670,7 +700,9 @@ func _sample_aim_spread() -> float:
 
 func _build_emissions(aim_direction: Vector2) -> Array[Dictionary]:
 	if is_instance_valid(_weapon_effect_registry) and _weapon_definition != null:
-		return _weapon_effect_registry.build_emissions(_weapon_definition, aim_direction)
+		return _weapon_effect_registry.build_emissions(
+			_weapon_definition, aim_direction, _shot_index
+		)
 	return WeaponEffectRegistry.build_straight_emissions(aim_direction)
 
 
