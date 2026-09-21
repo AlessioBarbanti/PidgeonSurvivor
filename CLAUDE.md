@@ -63,8 +63,12 @@ Contratti da preservare:
   **`PlatformLifecycle`** traduce Back/focus/sospensione in richieste al
   `RunController` e **non riprende mai** una run automaticamente.
 - **Registry di effetti**: i dati (`.tres` in [data/](data/)) dichiarano
-  `effect_id` + parametri; la logica vive in `AbilityEffectRegistry` e
-  `UpgradeEffectRegistry`. Mai logica nei file dati.
+  `effect_id` + parametri; la logica vive in `AbilityEffectRegistry`,
+  `UpgradeEffectRegistry` e `WeaponEffectRegistry`. Mai logica nei file dati.
+  `WeaponEffectRegistry` possiede la sola **emissione** dell'arma dichiarata
+  dal personaggio (`FriendDefinition.weapon_id`): bersagliamento, cooldown,
+  mira manuale e modificatori delle Specialità restano in `WeaponController`,
+  che resta il punto unico di esecuzione dello sparo.
 - **La UI osserva segnali e invia intenzioni**; non modifica statistiche né nodi
   nemici.
 - `PerformanceProfile` regola risoluzione interna, VFX e particelle per

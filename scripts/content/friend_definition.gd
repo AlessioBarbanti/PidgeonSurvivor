@@ -21,6 +21,11 @@ const MAXIMUM_BASE_STAT_MULTIPLIER := 2.0
 @export var active_ability_id: StringName = &""
 @export var active_ability_title := ""
 @export_multiline var active_ability_description := ""
+## Arma del personaggio (PS-196/PS-197): sullo stesso modello di
+## `active_ability_id`, il profilo nomina l'arma e WeaponEffectRegistry la
+## risolve. Il default punta all'arma condivisa, cosi' un profilo che non ne
+## dichiara una resta armato invece di restare muto.
+@export var weapon_id: StringName = &"scintilla"
 
 ## Scarti di partenza dichiarati per profilo (B47). Il default neutro `1.0`
 ## lascia un profilo non aggiornato identico alla baseline condivisa; i valori
@@ -121,6 +126,7 @@ func is_valid() -> bool:
 		or passive_description.strip_edges().is_empty()
 		or not is_valid_id(passive_id)
 		or not is_valid_id(active_ability_id)
+		or not is_valid_id(weapon_id)
 		or active_ability_title.strip_edges().is_empty()
 		or active_ability_description.strip_edges().is_empty()
 		or evil_display_name.strip_edges().is_empty()

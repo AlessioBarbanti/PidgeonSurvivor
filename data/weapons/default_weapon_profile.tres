@@ -1,9 +1,14 @@
-[gd_resource type="Resource" script_class="WeaponProfile" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="WeaponDefinition" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://scripts/combat/weapon_profile.gd" id="1_weapon_profile"]
+[ext_resource type="Script" path="res://scripts/combat/weapon_definition.gd" id="1_weapon_definition"]
 
 [resource]
-script = ExtResource("1_weapon_profile")
+script = ExtResource("1_weapon_definition")
+id = &"scintilla"
+display_name = "Scintilla"
+description = "Una brace viva sputata dritta davanti a sé, a ritmo costante."
+effect_id = &"straight_shot"
+effect_parameters = {}
 shots_per_second = 4.0
 damage = 10.0
 projectile_speed = 900.0

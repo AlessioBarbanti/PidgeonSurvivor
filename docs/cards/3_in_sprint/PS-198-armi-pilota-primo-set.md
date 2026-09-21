@@ -17,7 +17,7 @@ aggiornato: 2026-09-18
 
 Con il contratto di [PS-196](../5_completed/PS-196-contratto-armi-per-personaggio.md)
 e l'impianto neutro di
-[PS-197](./PS-197-impianto-arma-per-personaggio-neutro.md), questa
+[PS-197](../4_to_test/PS-197-impianto-arma-per-personaggio-neutro.md), questa
 card produce le **prime armi realmente diverse**. Il proprietario ha scelto
 (2026-09-18) un set pilota ristretto invece dell'intero cast: se il feel non
 cambia davvero, si è buttato poco e l'impianto resta neutro.

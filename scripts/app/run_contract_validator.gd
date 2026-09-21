@@ -453,10 +453,25 @@ static func _validate_weapon_and_ability(scene: Control, failures: Array[String]
 	var weapon_controller: WeaponController = scene.get_weapon_controller()
 	var ability_controller: AbilityController = scene.get_ability_controller()
 	var input_router: InputRouter = scene.get_node("%InputRouter")
+	var weapon_effect_registry: WeaponEffectRegistry = scene.get_weapon_effect_registry()
 	if weapon_controller.weapon_profile == null:
 		failures.append("WeaponController privo del profilo dati.")
 	if weapon_controller.projectile_scene == null:
 		failures.append("WeaponController privo della scena proiettile.")
+	# PS-197: l'arma arriva dal personaggio via registry, non piu' dalla scena.
+	if weapon_effect_registry == null:
+		failures.append("WeaponEffectRegistry non presente nella scena.")
+	else:
+		if weapon_controller.get_weapon_effect_registry() != weapon_effect_registry:
+			failures.append("WeaponController non collegato al WeaponEffectRegistry.")
+		var weapon_definition := weapon_controller.get_weapon_definition()
+		var friend_definition := player.get_friend_definition()
+		if weapon_definition == null or not weapon_definition.is_valid():
+			failures.append("WeaponController privo di WeaponDefinition valida.")
+		elif weapon_effect_registry.resolve_definition(weapon_definition.id) != weapon_definition:
+			failures.append("WeaponDefinition non registrata nel registry.")
+		elif friend_definition != null and weapon_definition.id != friend_definition.weapon_id:
+			failures.append("L'arma equipaggiata non e' quella dichiarata dal personaggio.")
 	if weapon_controller.get_run_controller() != run_controller:
 		failures.append("WeaponController non collegato al RunController.")
 	if weapon_controller.get_targeting_system() != targeting_system:

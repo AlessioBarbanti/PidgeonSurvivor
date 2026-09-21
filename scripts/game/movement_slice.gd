@@ -54,6 +54,7 @@ var gut_test_run_seed_override := 0
 @onready var _wave_event_scheduler: WaveEventScheduler = %WaveEventScheduler
 @onready var _targeting_system: TargetingSystem = %TargetingSystem
 @onready var _ability_effect_registry: AbilityEffectRegistry = %AbilityEffectRegistry
+@onready var _weapon_effect_registry: WeaponEffectRegistry = %WeaponEffectRegistry
 @onready var _friend_passive_controller: FriendPassiveController = %FriendPassiveController
 @onready var _experience_system: ExperienceSystem = %ExperienceSystem
 @onready var _upgrade_registry: UpgradeRegistry = %UpgradeRegistry
@@ -255,7 +256,8 @@ func _ready() -> void:
 		_targeting_system,
 		_projectiles,
 		_player,
-		_arena_layout
+		_arena_layout,
+		_weapon_effect_registry
 	)
 	_weapon_controller.set_manual_fire_enabled(_fire_mode_settings.is_manual_fire_enabled())
 	_friend_passive_controller.configure(
@@ -795,6 +797,10 @@ func get_ability_effect_registry() -> AbilityEffectRegistry:
 	return _ability_effect_registry
 
 
+func get_weapon_effect_registry() -> WeaponEffectRegistry:
+	return _weapon_effect_registry
+
+
 func get_ability_effect_parent() -> Node2D:
 	return _ability_effects
 
@@ -1150,6 +1156,12 @@ func _equip_friend(friend_id: StringName) -> bool:
 		definition.active_ability_id
 	)
 	if ability_definition == null or not ability_definition.is_valid():
+		return false
+	# PS-197: l'arma segue il personaggio come l'abilita' attiva, e viene
+	# assegnata prima che il passive controller applichi i moltiplicatori:
+	# i valori base devono gia' essere quelli dell'arma nuova.
+	var weapon_definition := _weapon_effect_registry.resolve_definition(definition.weapon_id)
+	if weapon_definition == null or not _weapon_controller.set_weapon_definition(weapon_definition):
 		return false
 	if not _player.set_friend_definition(definition):
 		return false

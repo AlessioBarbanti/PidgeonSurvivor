@@ -8,6 +8,11 @@ signal projectile_fired(projectile: Projectile, target: BaseEnemy)
 
 var _run_controller: RunController
 var _targeting_system: TargetingSystem
+## PS-197: l'arma e' dichiarata dal personaggio, non piu' cablata nella scena.
+## Il registry possiede la sola emissione; se manca (fixture che montano un
+## WeaponController isolato) l'arma ricade sul colpo dritto.
+var _weapon_effect_registry: WeaponEffectRegistry
+var _weapon_definition: WeaponDefinition
 var _projectile_parent: Node
 var _source: Node2D
 var _arena_layout: ArenaLayout
@@ -80,7 +85,8 @@ func configure(
 	targeting_system: TargetingSystem,
 	projectile_parent: Node,
 	source: Node2D = null,
-	arena_layout: ArenaLayout = null
+	arena_layout: ArenaLayout = null,
+	weapon_effect_registry: WeaponEffectRegistry = null
 ) -> void:
 	_disconnect_run_controller()
 	_run_controller = run_controller
@@ -88,6 +94,7 @@ func configure(
 	_projectile_parent = projectile_parent
 	_source = source if is_instance_valid(source) else get_parent() as Node2D
 	_arena_layout = arena_layout
+	_weapon_effect_registry = weapon_effect_registry
 	_capture_base_stats()
 	_connect_run_controller()
 	var seed_value := _run_controller.get_seed() if is_instance_valid(_run_controller) else 0
@@ -131,13 +138,21 @@ func try_fire() -> Projectile:
 	var last_projectile: Projectile = null
 	var last_aim_direction := base_aim_direction
 	for fan_offset in fan_offsets:
-		var aim_direction := _apply_aim_spread(base_aim_direction.rotated(fan_offset))
-		var projectile := _spawn_projectile(aim_direction, muzzle_offset)
-		if projectile == null:
-			continue
-		last_projectile = projectile
-		last_aim_direction = aim_direction
-		projectile_fired.emit(projectile, target)
+		for emission in _build_emissions(base_aim_direction.rotated(fan_offset)):
+			# La dispersione di Alette ruota dello stesso angolo direzione e
+			# posizione di partenza (PS-196): su un'arma frontale coincide con
+			# la dispersione di mira di sempre, su un'emissione tutt'intorno
+			# irregolarizza i singoli colpi invece di ruotare rigidamente il
+			# gruppo, che sarebbe invisibile.
+			var spread := _sample_aim_spread()
+			var aim_direction: Vector2 = (emission["direction"] as Vector2).rotated(spread)
+			var emission_offset: Vector2 = (emission["offset"] as Vector2).rotated(spread)
+			var projectile := _spawn_projectile(aim_direction, muzzle_offset, emission_offset)
+			if projectile == null:
+				continue
+			last_projectile = projectile
+			last_aim_direction = aim_direction
+			projectile_fired.emit(projectile, target)
 
 	if last_projectile == null:
 		return null
@@ -149,7 +164,11 @@ func try_fire() -> Projectile:
 	return last_projectile
 
 
-func _spawn_projectile(aim_direction: Vector2, muzzle_offset: float) -> Projectile:
+func _spawn_projectile(
+	aim_direction: Vector2,
+	muzzle_offset: float,
+	emission_offset := Vector2.ZERO
+) -> Projectile:
 	var instance := projectile_scene.instantiate()
 	if not instance is Projectile:
 		if is_instance_valid(instance):
@@ -164,7 +183,9 @@ func _spawn_projectile(aim_direction: Vector2, muzzle_offset: float) -> Projecti
 
 	var projectile := instance as Projectile
 	_projectile_parent.add_child(projectile)
-	projectile.global_position = _source.global_position + aim_direction * muzzle_offset
+	projectile.global_position = (
+		_source.global_position + emission_offset + aim_direction * muzzle_offset
+	)
 	if not projectile.initialize(
 		aim_direction,
 		resolve_shot_damage(),
@@ -241,6 +262,27 @@ func clear_projectiles() -> void:
 	for child in _projectile_parent.get_children():
 		if child is Projectile and not child.is_queued_for_deletion():
 			(child as Projectile).expire()
+
+
+## Unico punto in cui l'arma cambia: il profilo dati *e'* la definizione, cosi'
+## nessun consumatore deve sapere da quale delle due sorgenti legge i valori
+## base. Le statistiche base vengono ricatturate subito, prima che il
+## personaggio applichi i propri moltiplicatori.
+func set_weapon_definition(definition: WeaponDefinition) -> bool:
+	if definition == null or not definition.is_valid():
+		return false
+	_weapon_definition = definition
+	weapon_profile = definition
+	_capture_base_stats()
+	return true
+
+
+func get_weapon_definition() -> WeaponDefinition:
+	return _weapon_definition
+
+
+func get_weapon_effect_registry() -> WeaponEffectRegistry:
+	return _weapon_effect_registry if is_instance_valid(_weapon_effect_registry) else null
 
 
 func get_run_controller() -> RunController:
@@ -616,11 +658,20 @@ func _disconnect_run_controller() -> void:
 	_run_controller = null
 
 
-func _apply_aim_spread(aim_direction: Vector2) -> Vector2:
+## Angolo di dispersione di un singolo colpo, in radianti. Senza dispersione
+## non consuma l'RNG di mira: la sequenza casuale a parita' di seed resta
+## quella di prima per chi non ha Alette.
+func _sample_aim_spread() -> float:
 	if _projectile_aim_spread_degrees <= 0.0:
-		return aim_direction
+		return 0.0
 	var spread_radians := deg_to_rad(_projectile_aim_spread_degrees)
-	return aim_direction.rotated(_aim_rng.randf_range(-spread_radians, spread_radians))
+	return _aim_rng.randf_range(-spread_radians, spread_radians)
+
+
+func _build_emissions(aim_direction: Vector2) -> Array[Dictionary]:
+	if is_instance_valid(_weapon_effect_registry) and _weapon_definition != null:
+		return _weapon_effect_registry.build_emissions(_weapon_definition, aim_direction)
+	return WeaponEffectRegistry.build_straight_emissions(aim_direction)
 
 
 func _seed_aim_rng(seed_value: int) -> void:

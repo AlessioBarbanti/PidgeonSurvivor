@@ -39,6 +39,7 @@ passive_parameters = {
 active_ability_id = &"migi_zen_slowdown"
 active_ability_title = "Rallentamento Zen"
 active_ability_description = "Crea una zona che rallenta fortemente i nemici vicini e assorbe i proiettili che vi entrano."
+weapon_id = &"scintilla"
 base_health_multiplier = 1.15
 base_move_speed_multiplier = 0.9
 base_fire_rate_multiplier = 0.95
