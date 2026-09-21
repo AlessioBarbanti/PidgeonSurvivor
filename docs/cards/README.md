@@ -313,4 +313,4 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-203](./2_to_do/PS-203-tetto-sei-power-up-diversi.md) | Limita a sei i power up diversi di una run | feat | gameplay | PRONTO | media | — |
 | [PS-204](./2_to_do/PS-204-mostra-power-up-presi-in-hud.md) | Mostra nell'HUD i power up presi e il loro rango | ux | ui | BLOCCATO | media | PS-203 |
 | [PS-205](./2_to_do/PS-205-slancio-magno-partenza-lenta-perdita-in-curva.md) | Fai sentire lo slancio di Magno, con partenza lenta e perdita in curva | fix | gameplay | PRONTO | media | — |
-| [PS-206](./3_in_sprint/PS-206-tag-prerelease-debug-segue-commit.md) | Fai puntare la pre-release di debug al commit compilato | fix | tooling | IN CORSO | media | — |
+| [PS-206](./5_completed/PS-206-tag-prerelease-debug-segue-commit.md) | Fai puntare la pre-release di debug al commit compilato | fix | tooling | COMPLETATO | media | — |

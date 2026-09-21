@@ -3,7 +3,7 @@ id: PS-206
 titolo: Fai puntare la pre-release di debug al commit compilato
 tipo: fix
 area: tooling
-stato: IN CORSO
+stato: COMPLETATO
 priorita: media
 dipende_da: []
 origine:
@@ -34,15 +34,18 @@ build.
 
 ## Criteri di accettazione
 
-- [ ] Dopo un'esecuzione riuscita, `git ls-remote origin
+- [x] Dopo un'esecuzione riuscita, `git ls-remote origin
       refs/tags/android-debug-latest` restituisce lo SHA compilato dalla run.
-- [ ] La pre-release ha data di pubblicazione della run e resta marcata come
+- [x] La pre-release ha data di pubblicazione della run e resta marcata come
       pre-release, con l'APK di debug come asset.
-- [ ] Se la build o i controlli statici falliscono, la pre-release precedente
+- [x] Se la build o i controlli statici falliscono, la pre-release precedente
       resta intatta: la vecchia viene rimossa solo dopo che l'APK nuovo ha
-      superato i controlli.
-- [ ] Alla prima esecuzione, quando la pre-release non esiste ancora, il
-      workflow non fallisce.
+      superato i controlli. Verificato per costruzione, non esercitato: il
+      passo di rimozione segue i controlli statici e un passo fallito ferma il
+      job.
+- [x] Alla prima esecuzione, quando la pre-release non esiste ancora, il
+      workflow non fallisce. Verificato per costruzione, non esercitato: la
+      cancellazione parte solo se `gh release view` trova la release.
 
 ## Ambito
 
@@ -79,9 +82,15 @@ build.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/setup.md` — nessuna modifica attesa: dichiara già il "tag
+- [x] `docs/setup.md` — nessuna modifica attesa: dichiara già il "tag
       mobile", che ora lo diventa davvero.
 
 ## Note
 
 Scoperta durante la pubblicazione della pre-release di PS-202.
+
+Evidenza: run 35665820960 su `6ea1d6e` → `conclusion=success`;
+`git ls-remote origin refs/tags/android-debug-latest` →
+`6ea1d6e5bd25c188fd11eb90bb8070d039ed7952`; `gh release view
+android-debug-latest` → `isPrerelease=true`, `publishedAt=2026-09-21T23:06:54Z`,
+`targetCommitish=6ea1d6e…`, asset `pidgeon-survivor-debug.apk` (73.666.304 byte).
