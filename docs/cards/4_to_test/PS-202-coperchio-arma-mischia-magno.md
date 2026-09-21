@@ -170,6 +170,14 @@ Evidenze:
 - Primo APK su Pixel 9: export `PASS`, statica `PASS`, installato e avviato
   fino a `B18O_RUN_STARTED friend=magno` senza errori; prova del proprietario
   negativa (vedi Decisioni), da ripetere con l'APK corretto.
+- Mira sul movimento: `-Profile Full` → `status=PASS focused=1/1
+  regression=166/166 toolchain=1/1`, log puliti. Il `Full` ha trovato quattro
+  test (`test_b12_upgrade_effects`, `test_b26_damage_upgrade`,
+  `test_b18n_pause_change_character`, `test_ps005_boss_warning`) che
+  sparavano col personaggio di default a bersagli oltre i 150 px di portata
+  o non davanti a Magno: rotti già dalla correzione di portata, che il
+  `Relevant` di allora non aveva selezionato. Ora montano l'arma condivisa
+  con `mount_shared_weapon()`, come i test di mira.
 - Cattura di sviluppo con renderer Windows reale (script usa e getta, non
   versionato): coperchio con bordo e maniglia che spazza l'arco attorno a
   Magno, con la scia dell'arco già percorso. Non sostituisce il controllo
