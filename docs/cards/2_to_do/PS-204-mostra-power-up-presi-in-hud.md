@@ -25,8 +25,8 @@ Alea): la nuova lista non deve sovrapporvisi.
 
 Sul lato sinistro, **fuori dalla safe area**, nella striscia fra il bordo
 dello schermo e la safe area (su Pixel 9 in landscape è quella del foro della
-fotocamera, oggi occupata solo dall'arena), una **griglia di 6 caselle, 3
-colonne × 2 righe**, nella metà alta dello schermo. A metà altezza resta una
+fotocamera, oggi occupata solo dall'arena), una **griglia di 6 caselle, 2
+colonne × 3 righe**, nella metà alta dello schermo. A metà altezza resta una
 fascia libera, dove sta il foro. Ogni casella occupata mostra l'icona del
 power up e il suo rango; le caselle libere restano visibili e vuote, così il
 tetto si legge a colpo d'occhio. Un power up nuovo prende la prima casella
@@ -43,7 +43,7 @@ Griglia e gruppo sono solo da guardare: non intercettano tocchi o clic.
 ## Criteri di accettazione
 
 - [ ] Durante `RUNNING` l'HUD mostra a sinistra 6 caselle in una griglia di
-      3 colonne × 2 righe; il loro numero viene dal tetto di PS-203, non da
+      2 colonne × 3 righe; il loro numero viene dal tetto di PS-203, non da
       una seconda costante.
 - [ ] Scegliere un power up nuovo lo fa comparire nella prima casella libera
       senza aprire la pausa; salire di rango aggiorna il numero della stessa
@@ -110,10 +110,16 @@ Griglia e gruppo sono solo da guardare: non intercettano tocchi o clic.
 ## Decisioni
 
 - **2026-09-22 — Formato.** Confermato dal proprietario: icona + rango,
-  6 caselle sempre visibili anche se vuote, in griglia 3×2 invece che in
-  fila. Letta come 3 colonne × 2 righe: così la griglia sta fra il calice
-  di Alea e la fascia del foro; 2 colonne × 3 righe non ci entrerebbe in
-  altezza.
+  6 caselle sempre visibili anche se vuote, in griglia invece che in fila.
+- **2026-09-22 — Griglia 2 colonne × 3 righe.** Corretto dal proprietario:
+  la prima stesura l'aveva letta come 3 colonne × 2 righe. Sul Pixel la
+  griglia sta nella striscia laterale, a sinistra del calice di Alea, e le
+  tre righe hanno tutta la metà alta a disposizione. Vincolo da verificare
+  su Windows, dove la striscia non esiste: giocando Alea la griglia deve
+  stare fra il fondo del calice (`SobrietySlot`, y 58–202 nella `TopBand`) e
+  la fascia libera a metà altezza, e tre righe in quello spazio impongono
+  caselle più piccole di quanto farebbero due righe. La leggibilità va
+  giudicata nel controllo percettivo.
 - **2026-09-22 — Specialità.** Confermato dal proprietario: mostrate in un
   gruppo separato, nella metà bassa sotto la fascia del foro.
 - **2026-09-22 — Posizione fuori dalla safe area.** Confermato dal
