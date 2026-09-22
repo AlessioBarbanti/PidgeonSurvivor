@@ -34,6 +34,14 @@ const LID_FILL_COLOR := Color(0.30, 0.31, 0.34)
 const LID_RIM_COLOR := Color(0.78, 0.80, 0.84)
 const LID_HANDLE_COLOR := Color(0.12, 0.12, 0.13)
 const LID_TRAIL_COLOR := Color(1.0, 0.62, 0.28, 0.22)
+## PS-207: un colpo `building` che dichiara `heat_full_distance` si arroventa
+## col volo: il danno va da `heat_start_damage_factor` a
+## `heat_end_damage_factor` sui primi `heat_full_distance` px, e il colore
+## dalla brace scura al bianco rovente. Oltre 1 il colore schiarisce lo sprite.
+const HEAT_COLD_COLOR := Color(0.55, 0.24, 0.14)
+const HEAT_HOT_COLOR := Color(1.6, 1.5, 1.3)
+## La scia e' la strada fatta in questo tempo: si allunga con la velocita'.
+const HEAT_TRAIL_SECONDS := 0.05
 
 var damage := 0.0
 var direction := Vector2.RIGHT
@@ -72,7 +80,12 @@ var _initial_lifetime := 0.0
 var _turn_seconds := 0.0
 var _returned := false
 var _end_speed_factor := 1.0
+var _speed_factor := 1.0
 var _travel_seconds := 0.0
+var _distance_travelled := 0.0
+var _heat_full_distance := 0.0
+var _heat_start_damage_factor := 1.0
+var _heat_end_damage_factor := 1.0
 
 @onready var _collision_shape: CollisionShape2D = %CollisionShape
 @onready var _projectile_sprite: Sprite2D = %ProjectileSprite
@@ -133,10 +146,14 @@ func _physics_process(delta: float) -> void:
 				rotation = direction.angle()
 			global_position += direction * speed * movement_delta
 		TRAJECTORY_FADING, TRAJECTORY_BUILDING:
-			var speed_factor := lerpf(
+			_speed_factor = lerpf(
 				1.0, _end_speed_factor, clampf(_elapsed / _initial_lifetime, 0.0, 1.0)
 			)
-			global_position += direction * speed * speed_factor * movement_delta
+			var step := speed * _speed_factor * movement_delta
+			global_position += direction * step
+			_distance_travelled += step
+			if is_heated():
+				_sync_heat_visual()
 		TRAJECTORY_LINGERING:
 			# Oltre la corsa dichiarata il colpo si ferma e resta dov'e':
 			# continua a colpire chi ci passa sopra finche' la perforazione
@@ -200,6 +217,11 @@ func configure_trajectory(
 	_elapsed = 0.0
 	_split_done = false
 	_returned = false
+	_speed_factor = 1.0
+	_distance_travelled = 0.0
+	_heat_full_distance = 0.0
+	_heat_start_damage_factor = 1.0
+	_heat_end_damage_factor = 1.0
 	_initial_lifetime = maxf(lifetime_remaining, MINIMUM_RAMP_LIFETIME)
 	_visual = StringName(parameters.get("visual", &""))
 	if is_instance_valid(_projectile_sprite):
@@ -238,6 +260,8 @@ func configure_trajectory(
 				return false
 			_end_speed_factor = end_speed_factor
 			_trajectory = trajectory
+			if trajectory == TRAJECTORY_BUILDING and not _configure_heat(parameters):
+				return false
 		TRAJECTORY_LINGERING:
 			var travel_seconds := float(parameters.get("travel_seconds", 0.0))
 			if not is_finite(travel_seconds) or travel_seconds < 0.0:
@@ -249,6 +273,50 @@ func configure_trajectory(
 
 func get_trajectory() -> StringName:
 	return _trajectory
+
+
+func is_heated() -> bool:
+	return _heat_full_distance > 0.0
+
+
+## 0 appena partito, 1 dopo `heat_full_distance` px di volo (PS-207).
+func get_heat_ratio() -> float:
+	return clampf(_distance_travelled / _heat_full_distance, 0.0, 1.0) if is_heated() else 0.0
+
+
+func get_heat_damage_factor() -> float:
+	if not is_heated():
+		return 1.0
+	return lerpf(_heat_start_damage_factor, _heat_end_damage_factor, get_heat_ratio())
+
+
+func get_heat_trail_length() -> float:
+	return speed * _speed_factor * HEAT_TRAIL_SECONDS if is_heated() else 0.0
+
+
+func _configure_heat(parameters: Dictionary) -> bool:
+	if not parameters.has("heat_full_distance"):
+		return true
+	var full_distance := float(parameters.get("heat_full_distance", 0.0))
+	var start_factor := float(parameters.get("heat_start_damage_factor", 1.0))
+	var end_factor := float(parameters.get("heat_end_damage_factor", 1.0))
+	if (
+		not is_finite(full_distance) or full_distance <= 0.0
+		or not is_finite(start_factor) or start_factor <= 0.0
+		or not is_finite(end_factor) or end_factor <= 0.0
+	):
+		return false
+	_heat_full_distance = full_distance
+	_heat_start_damage_factor = start_factor
+	_heat_end_damage_factor = end_factor
+	_sync_heat_visual()
+	return true
+
+
+func _sync_heat_visual() -> void:
+	if is_instance_valid(_projectile_sprite):
+		_projectile_sprite.modulate = HEAT_COLD_COLOR.lerp(HEAT_HOT_COLOR, get_heat_ratio())
+	queue_redraw()
 
 
 func get_orbit_radius() -> float:
@@ -394,10 +462,10 @@ func try_hit(target: BaseEnemy) -> bool:
 
 func _current_hit_damage() -> float:
 	if _chain_enabled:
-		return _chain_current_damage
+		return _chain_current_damage * get_heat_damage_factor()
 	if _pierce_enabled:
-		return _pierce_current_damage
-	return damage
+		return _pierce_current_damage * get_heat_damage_factor()
+	return damage * get_heat_damage_factor()
 
 
 func _trigger_death_burst(origin: Vector2) -> void:
@@ -482,6 +550,12 @@ func has_hit_target(target: BaseEnemy) -> bool:
 # ponytail: primitive provvisorie del solo Coperchio (PS-202); lasciano il
 # posto a uno sprite dedicato se la prova passa e si apre la card art.
 func _draw() -> void:
+	if is_heated():
+		# Il nodo e' ruotato sulla direzione: la scia sta sul semiasse -X.
+		var heat_color := HEAT_COLD_COLOR.lerp(HEAT_HOT_COLOR, get_heat_ratio())
+		var trail_end := Vector2.LEFT * get_heat_trail_length()
+		draw_line(Vector2.ZERO, trail_end, Color(heat_color, 0.35), projectile_radius * 2.0, true)
+		draw_line(Vector2.ZERO, trail_end * 0.6, Color(heat_color, 0.7), projectile_radius, true)
 	if _visual != VISUAL_LID:
 		return
 	# La scia e' l'arco gia' spazzato, disegnato attorno al personaggio largo
