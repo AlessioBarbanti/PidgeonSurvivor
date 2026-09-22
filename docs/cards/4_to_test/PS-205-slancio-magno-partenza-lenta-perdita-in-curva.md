@@ -3,7 +3,7 @@ id: PS-205
 titolo: Fai sentire lo slancio di Magno, con partenza lenta e perdita in curva
 tipo: fix
 area: gameplay
-stato: PRONTO
+stato: IN VERIFICA
 priorita: media
 dipende_da: []
 origine:
@@ -41,24 +41,24 @@ introduce un raggio di sterzata.
 
 ## Criteri di accettazione
 
-- [ ] Da fermo, Magno si muove al 60% (±2%) della velocità base condivisa.
-- [ ] Dopo 2,5 s di corsa dritta lo slancio è pieno e Magno si muove al 140%
+- [x] Da fermo, Magno si muove al 60% (±2%) della velocità base condivisa.
+- [x] Dopo 2,5 s di corsa dritta lo slancio è pieno e Magno si muove al 140%
       (±2%) della velocità base condivisa; a metà (1,25 s) è a metà strada.
-- [ ] Da slancio pieno, una svolta di 90° (secca o graduale in 0,5 s) lascia
+- [x] Da slancio pieno, una svolta di 90° (secca o graduale in 0,5 s) lascia
       lo slancio fra 0,4 e 0,6.
-- [ ] Da slancio pieno, un'inversione a U (secca o graduale in 0,5 s) porta
+- [x] Da slancio pieno, un'inversione a U (secca o graduale in 0,5 s) porta
       lo slancio a 0.
-- [ ] Correzioni continue entro ±15° dalla direzione iniziale per 2,5 s non
+- [x] Correzioni continue entro ±15° dalla direzione iniziale per 2,5 s non
       impediscono di arrivare a slancio pieno.
-- [ ] Girare in tondo col joystick per 3 s, un giro completo al secondo, non
+- [x] Girare in tondo col joystick per 3 s, un giro completo al secondo, non
       porta mai lo slancio sopra 0,5.
-- [ ] Fermarsi azzera ancora lo slancio come oggi, e restart e cambio
+- [x] Fermarsi azzera ancora lo slancio come oggi, e restart e cambio
       personaggio lo riportano a 0 (PS-041).
-- [ ] Velocità minima, velocità massima, tempo di rincorsa e perdita in curva
+- [x] Velocità minima, velocità massima, tempo di rincorsa e perdita in curva
       stanno in `data/friends/magno.tres` (`passive_parameters`), non in
       costanti di codice.
-- [ ] Gli altri sette personaggi si muovono esattamente come oggi.
-- [ ] L'Onda d'Urto Tellurica continua a scalare con lo slancio con la stessa
+- [x] Gli altri sette personaggi si muovono esattamente come oggi.
+- [x] L'Onda d'Urto Tellurica continua a scalare con lo slancio con la stessa
       formula (`momentum_*_bonus_max` invariati).
 
 ## Ambito
@@ -104,13 +104,48 @@ introduce un raggio di sterzata.
 - **2026-09-22 — Niente inerzia di sterzata.** La richiesta riguarda quanto
   va veloce Magno, non quanto gira: la direzione resta immediata.
 
+- **2026-09-22 — Come si misura la curva.** Il riferimento di direzione
+  resta fermo finché la deviazione sta entro 20° (`Player.MOMENTUM_TURN_DEADZONE_DEGREES`):
+  le correzioni sono gratis. Oltre, si paga l'angolo intero rispetto al
+  riferimento (`momentum_turn_loss_per_90_degrees` = 0,55 per 90°, quindi
+  una U costa 1,1 e azzera) e il riferimento si riallinea. Una curva graduale
+  paga così a scatti di ~20°, per l'angolo totale. Il valore è 0,55 e non 0,5
+  perché l'ultimo tratto sotto la zona morta non si paga: con 0,5 un'inversione
+  graduale lascerebbe ~0,07 di slancio.
+- **2026-09-22 — Pausa di assestamento dopo una curva.** Per 0,25 s dopo una
+  curva pagata lo slancio non risale (`MOMENTUM_TURN_SETTLE_SECONDS`): senza
+  la pausa, fra uno scatto e l'altro di una curva graduale la rincorsa
+  restituirebbe ~0,2 in 0,5 s e una svolta di 90° lascerebbe ~0,7. Zona morta
+  e pausa sono costanti del Player, non della passiva: sono il modo in cui si
+  misura una curva, non un parametro di bilanciamento.
+- **2026-09-22 — Moltiplicatori della passiva.** 0,6316 e 1,4737 (= 60% e
+  140% diviso per lo scarto 0,95), nelle chiavi esistenti
+  `move_speed_multiplier` / `max_move_speed_multiplier`.
+- **2026-09-22 — Gli altri personaggi.** Lo slancio è tracciato per tutti; la
+  passiva passa al Player rincorsa e perdita solo per Magno, gli altri tornano
+  ai default del Player (rincorsa 1,4 s come prima). La loro velocità non
+  dipende dallo slancio. L'unico effetto indiretto è su chi copia l'Onda
+  d'Urto (Cosplay): ora anche lì le curve graduali costano slancio.
+
 ## Documenti sincronizzati
 
-- [ ] `docs/characters.md` — sezione Magno: curva di velocità e perdita in
+- [x] `docs/characters.md` — sezione Magno: curva di velocità e perdita in
       curva della passiva.
-- [ ] `tools/milestone-test-map.json` — regressioni del nuovo test.
+- [x] `tools/milestone-test-map.json` — regressioni del nuovo test.
 
 ## Note
+
+- Evidenza (2026-09-22):
+  - `.	oolsun-milestone-checks.ps1 -Milestone PS-205 -Profile Focused -FocusedSmoke tests/unit/test_ps205_magno_momentum_feel.gd`
+    → PASS, 4 test, 50 assert. Marker: `PS205_SPEED_CURVE_OK`,
+    `PS205_TURN 90° secca ratio=0.450`, `90° graduale ratio=0.487`,
+    `U secca ratio=0.000`, `U graduale ratio=0.000`, `PS205_CIRCLE peak=0.027`,
+    `PS205_OTHERS_UNCHANGED_OK`.
+  - Stesso comando con `-Profile Relevant` → PASS, 36/36 passi (regressione
+    35/35, 138 test, 4148 assert), nessun `SCRIPT ERROR` / `FATAL EXCEPTION`.
+  - Test esistenti adattati alla rincorsa di 2,5 s: B45, B17a, PS-024, PS-041
+    ora corrono 3 s invece di 2 per saturare lo slancio; B17a legge i
+    moltiplicatori dai dati invece di 1,0 / 1,35.
 
 - Rischio da osservare, non un criterio: con la rincorsa più lunga e la
   perdita in curva, l'Onda d'Urto a pieno slancio diventa più difficile da

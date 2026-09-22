@@ -129,17 +129,19 @@ func _assert_passive(player: Player, passive: FriendPassiveController, weapon: W
 		&"magno":
 			var magno_definition := passive.get_definition()
 			var magno_base := magno_definition.get_base_move_speed_multiplier()
+			var momentum_min := magno_definition.get_passive_float(&"move_speed_multiplier", 1.0)
+			var momentum_max := magno_definition.get_passive_float(&"max_move_speed_multiplier", 1.0)
 			assert_almost_eq(
-				player.get_character_move_speed_multiplier(), 1.0 * magno_base, ROSTER_FLOAT_TOLERANCE,
+				player.get_character_move_speed_multiplier(), momentum_min * magno_base, ROSTER_FLOAT_TOLERANCE,
 				"Magno deve partire dal moltiplicatore base a slancio zero."
 			)
 			player.set_movement_input(Vector2.RIGHT)
-			for _tick_index in 20:
+			for _tick_index in 30:
 				player._advance_momentum(0.1)
 			passive._apply_character_multipliers()
-			assert_true(player.get_momentum_ratio() > 0.9, "Venti tick in linea retta devono quasi saturare lo slancio.")
+			assert_true(player.get_momentum_ratio() > 0.9, "Tre secondi in linea retta devono saturare lo slancio.")
 			assert_almost_eq(
-				player.get_character_move_speed_multiplier(), 1.35 * magno_base, ROSTER_FLOAT_TOLERANCE,
+				player.get_character_move_speed_multiplier(), momentum_max * magno_base, ROSTER_FLOAT_TOLERANCE,
 				"Lo slancio pieno deve avvicinare Magno al tetto dichiarato."
 			)
 			player.clear_movement_input()

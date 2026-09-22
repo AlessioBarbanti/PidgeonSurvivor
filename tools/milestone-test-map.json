@@ -674,6 +674,22 @@
     },
     {
       "patterns": [
+        "scripts/actors/player.gd",
+        "scripts/content/friend_passive_controller.gd",
+        "data/friends/magno.tres",
+        "tests/unit/test_ps205_magno_momentum_feel.gd"
+      ],
+      "smokes": [
+        "tests/unit/test_ps205_magno_momentum_feel.gd",
+        "tests/unit/test_b45_role_identity.gd",
+        "tests/unit/test_b17a_complete_roster_abilities.gd",
+        "tests/unit/test_ps024_magno_shockwave_balance.gd",
+        "tests/unit/test_ps041_magno_trail_reset_redraw.gd",
+        "tests/unit/test_ps159_player_base_speed.gd"
+      ]
+    },
+    {
+      "patterns": [
         "assets/art/branding/*"
       ],
       "smokes": [

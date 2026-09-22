@@ -208,7 +208,7 @@ func test_magno_momentum() -> void:
 	assert_almost_eq(player.get_momentum_ratio(), 0.0, FLOAT_TOLERANCE, "Lo slancio deve partire azzerato a inizio run.")
 
 	player.set_movement_input(Vector2.RIGHT)
-	for _tick_index in 20:
+	for _tick_index in 30:
 		player._advance_momentum(0.1)
 	assert_true(player.get_momentum_ratio() > 0.9, "Muoversi a lungo in linea retta deve quasi saturare lo slancio.")
 
@@ -223,7 +223,7 @@ func test_magno_momentum() -> void:
 
 	# Lo slancio pieno scala danno/knockback dell'Onda d'Urto Tellurica.
 	player.set_movement_input(Vector2.RIGHT)
-	for _tick_index in 20:
+	for _tick_index in 30:
 		player._advance_momentum(0.1)
 	var earthquake := effects.resolve_definition(magno.active_ability_id)
 	assert_true(earthquake != null, "L'Onda d'Urto Tellurica deve essere risolvibile.")

@@ -965,8 +965,23 @@ func _reset_runtime(seed_value: int) -> void:
 	)
 	migi_shell_charges_changed.emit(_migi_shell_charges, migi_shell_max)
 	if is_instance_valid(_player):
-		_player.set_momentum_trail_enabled(
-			_definition != null and _definition.passive_id == MAGNO_AERODYNAMIC_FLOW
+		var is_magno := _definition != null and _definition.passive_id == MAGNO_AERODYNAMIC_FLOW
+		_player.set_momentum_trail_enabled(is_magno)
+		_player.set_momentum_tuning(
+			(
+				_definition.get_passive_float(
+					&"momentum_ramp_seconds", Player.MOMENTUM_RAMP_SECONDS, MINIMUM_MULTIPLIER
+				)
+				if is_magno
+				else Player.MOMENTUM_RAMP_SECONDS
+			),
+			(
+				_definition.get_passive_float(
+					&"momentum_turn_loss_per_90_degrees", Player.MOMENTUM_TURN_LOSS_PER_90_DEGREES, 0.0
+				)
+				if is_magno
+				else Player.MOMENTUM_TURN_LOSS_PER_90_DEGREES
+			)
 		)
 	_apply_character_multipliers()
 	_refresh_passive_state_tell()

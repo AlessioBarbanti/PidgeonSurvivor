@@ -34,6 +34,8 @@ Passiva — Flusso Aerodinamico Bovino: Muovendosi dritto accumula slancio: più
 Attiva — Onda d'Urto Tellurica: Genera un'onda d'urto che danneggia e respinge i nemici vicini, più forte quanto più slancio Magno ha accumulato.
 Boss: Evil Magno — Signature *Onda d'Urto Tellurica*: dopo un forte impatto a terra telegrafato, un fronte anulare parte dal Boss e si espande verso l'esterno, danneggiando e respingendo una sola volta chi attraversa. La versione Boss non usa lo slancio del Player.
 
+Slancio (PS-205, in prova): Magno è un treno. Parte al 60% della velocità base condivisa e, andando dritto, arriva al 140% in 2,5 s. Quando gira perde slancio in proporzione alla curva: circa metà a 90°, tutto con un'inversione a U, anche se la curva è graduale. Le correzioni entro circa 20° sono gratis; dopo una curva lo slancio riprende a salire solo quando la traiettoria si è stabilizzata (0,25 s). Fermarsi lo azzera in 0,5 s. La direzione cambia sempre all'istante: cambia solo la velocità. Velocità minima e massima, rincorsa e perdita in curva sono in `data/friends/magno.tres`.
+
 Scarti base (B47, PS-087): salute `×1,15`, velocità `×0,95`, cadenza `×1,00` — pesante e resistente come un energumeno tellurico; la mobilità del ruolo viene dallo slancio della passiva, non dalla velocità base, che resta sotto la norma.
 
 Scarti estesi (PS-093): danno `×0,98`, avidità `×1,02`, raggio pickup `×1,05`, difesa `×1,00`, critico `+0%` — il peso resta nell'onda d'urto della passiva, non nella precisione dei colpi automatici; il piccolo bonus di raccolta compensa la velocità sotto la norma.

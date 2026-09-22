@@ -29,8 +29,10 @@ passive_title = "Flusso Aerodinamico Bovino"
 passive_description = "Muovendosi dritto accumula slancio: più è veloce, più forte è la sua onda."
 passive_id = &"magno_aerodynamic_flow"
 passive_parameters = {
-"move_speed_multiplier": 1.0,
-"max_move_speed_multiplier": 1.35
+"move_speed_multiplier": 0.6316,
+"max_move_speed_multiplier": 1.4737,
+"momentum_ramp_seconds": 2.5,
+"momentum_turn_loss_per_90_degrees": 0.55
 }
 active_ability_id = &"magno_earthquake_shockwave"
 active_ability_title = "Onda d'Urto Tellurica"

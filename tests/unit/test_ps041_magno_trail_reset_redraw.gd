@@ -44,7 +44,7 @@ func test_reset_for_run_clears_momentum_trail_state() -> void:
 	assert_true(passive.equip_definition(magno), "La passiva deve accettare Magno.")
 
 	player.set_movement_input(Vector2.RIGHT)
-	for _tick_index in 20:
+	for _tick_index in 30:
 		player._advance_momentum(0.1)
 	assert_true(player.get_momentum_ratio() > 0.9, "Il test deve accumulare slancio quasi pieno.")
 	assert_true(

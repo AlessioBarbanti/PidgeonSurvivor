@@ -47,12 +47,19 @@ const DEFAULT_MOVE_SPEED := 300.0
 const DEFAULT_FACING_DIRECTION := Vector2.RIGHT
 const HORIZONTAL_FACING_EPSILON := 0.001
 
-## Slancio di Magno (B45): sale mentre la direzione resta entro questa soglia
-## angolare (coseno) dal frame precedente, decade altrimenti. Tracciato per
-## chiunque a costo trascurabile; solo la passiva di Magno lo rende visibile
-## o rilevante per il gameplay.
-const MOMENTUM_DIRECTION_COS_THRESHOLD := 0.85
+## Slancio di Magno (B45, PS-205): sale andando dritto, cala in proporzione
+## alle curve rispetto a una direzione di riferimento. Tracciato per chiunque
+## a costo trascurabile; solo la passiva di Magno lo rende visibile o
+## rilevante per il gameplay, e ne fornisce rincorsa e perdita in curva
+## (`set_momentum_tuning()`). Questi sono i default senza passiva.
 const MOMENTUM_RAMP_SECONDS := 1.4
+const MOMENTUM_TURN_LOSS_PER_90_DEGREES := 0.55
+## Deviazioni entro questa soglia dal riferimento sono correzioni gratuite;
+## oltre, la curva si paga e il riferimento si riallinea.
+const MOMENTUM_TURN_DEADZONE_DEGREES := 20.0
+## Dopo una curva pagata lo slancio non risale per questo tempo: una curva
+## graduale paga a scatti e senza la pausa si ricaricherebbe fra uno e l'altro.
+const MOMENTUM_TURN_SETTLE_SECONDS := 0.25
 const MOMENTUM_DECAY_SECONDS := 0.5
 const MOMENTUM_TRAIL_MAX_POINTS := 14
 const MOMENTUM_TRAIL_SAMPLE_INTERVAL := 0.03
@@ -101,6 +108,9 @@ var _character_is_walking := false
 var _last_movement_direction := DEFAULT_FACING_DIRECTION
 var _momentum_ratio := 0.0
 var _momentum_reference_direction := Vector2.ZERO
+var _momentum_turn_settle_remaining := 0.0
+var _momentum_ramp_seconds := MOMENTUM_RAMP_SECONDS
+var _momentum_turn_loss_per_90_degrees := MOMENTUM_TURN_LOSS_PER_90_DEGREES
 var _momentum_trail_enabled := false
 var _momentum_trail_points: PackedVector2Array = PackedVector2Array()
 var _momentum_trail_sample_elapsed := 0.0
@@ -212,6 +222,19 @@ func get_momentum_ratio() -> float:
 	return _momentum_ratio
 
 
+## Rincorsa e perdita in curva dello slancio: le fornisce la passiva
+## equipaggiata (solo Magno), il Player resta agnostico.
+func set_momentum_tuning(ramp_seconds: float, turn_loss_per_90_degrees: float) -> void:
+	_momentum_ramp_seconds = (
+		maxf(ramp_seconds, 0.01) if is_finite(ramp_seconds) else MOMENTUM_RAMP_SECONDS
+	)
+	_momentum_turn_loss_per_90_degrees = (
+		maxf(turn_loss_per_90_degrees, 0.0)
+		if is_finite(turn_loss_per_90_degrees)
+		else MOMENTUM_TURN_LOSS_PER_90_DEGREES
+	)
+
+
 ## Mostra/nasconde la scia procedurale dello slancio: e' la passiva
 ## equipaggiata a deciderlo (solo Magno), il Player resta agnostico rispetto
 ## a quale personaggio sia attivo.
@@ -321,6 +344,7 @@ func reset_for_run() -> void:
 	_last_movement_direction = DEFAULT_FACING_DIRECTION
 	_momentum_ratio = 0.0
 	_momentum_reference_direction = Vector2.ZERO
+	_momentum_turn_settle_remaining = 0.0
 	# PS-041: svuotare l'array non basta. CanvasItem non si ridisegna da solo
 	# quando i dati cambiano: senza questa richiesta esplicita, l'ultimo
 	# frame disegnato dalla run precedente resta a schermo finche'
@@ -979,20 +1003,26 @@ func _advance_character_animation(delta: float) -> void:
 
 
 func _advance_momentum(delta: float) -> void:
+	_momentum_turn_settle_remaining = maxf(_momentum_turn_settle_remaining - delta, 0.0)
 	if movement_input.is_zero_approx():
 		_momentum_ratio = maxf(_momentum_ratio - delta / MOMENTUM_DECAY_SECONDS, 0.0)
 		_momentum_reference_direction = Vector2.ZERO
 	else:
 		var direction := movement_input.normalized()
-		var aligned := (
-			_momentum_reference_direction.is_zero_approx()
-			or direction.dot(_momentum_reference_direction) >= MOMENTUM_DIRECTION_COS_THRESHOLD
-		)
-		if aligned:
-			_momentum_ratio = clampf(_momentum_ratio + delta / MOMENTUM_RAMP_SECONDS, 0.0, 1.0)
-		else:
-			_momentum_ratio = maxf(_momentum_ratio - delta / MOMENTUM_DECAY_SECONDS, 0.0)
-		_momentum_reference_direction = direction
+		if _momentum_reference_direction.is_zero_approx():
+			_momentum_reference_direction = direction
+		# PS-205: il riferimento non segue il frame precedente, altrimenti una
+		# curva graduale col joystick non costerebbe mai nulla. La curva si paga
+		# per l'angolo totale percorso, a scatti di almeno la zona morta.
+		var turn_degrees := rad_to_deg(absf(direction.angle_to(_momentum_reference_direction)))
+		if turn_degrees > MOMENTUM_TURN_DEADZONE_DEGREES:
+			_momentum_ratio = maxf(
+				_momentum_ratio - turn_degrees / 90.0 * _momentum_turn_loss_per_90_degrees, 0.0
+			)
+			_momentum_reference_direction = direction
+			_momentum_turn_settle_remaining = MOMENTUM_TURN_SETTLE_SECONDS
+		elif _momentum_turn_settle_remaining <= 0.0:
+			_momentum_ratio = minf(_momentum_ratio + delta / _momentum_ramp_seconds, 1.0)
 	_advance_momentum_trail(delta)
 
 

@@ -73,7 +73,7 @@ func test_full_momentum_activation_does_not_kill_common_enemy_but_still_knocks_b
 
 	# Slancio pieno: il caso peggiore per il bonus danno.
 	player.set_movement_input(Vector2.RIGHT)
-	for _tick_index in 20:
+	for _tick_index in 30:
 		player._advance_momentum(0.1)
 	assert_true(player.get_momentum_ratio() > 0.9, "Il test deve partire da slancio quasi saturo.")
 
