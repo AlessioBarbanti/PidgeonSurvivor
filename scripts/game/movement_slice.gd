@@ -470,8 +470,9 @@ func _apply_layout() -> void:
 	_aim_touch_joystick.position = aim_joystick_rect.position - safe_area.position
 	_aim_touch_joystick.size = aim_joystick_rect.size
 	# PS-204: la build parte dal bordo del viewport, nella striscia fuori dalla
-	# safe area, e scansa il joystick a riposo e il pulsante abilità.
-	var upgrade_slot_obstacles: Array[Rect2] = [joystick_rect, _hud.get_ability_panel_rect()]
+	# safe area. Il joystick di movimento è dinamico e a riposo non si vede:
+	# il proprietario ammette che il gruppo Specialità stia nella sua zona.
+	var upgrade_slot_obstacles: Array[Rect2] = [_hud.get_ability_panel_rect()]
 	_hud.layout_upgrade_slots(
 		get_viewport().get_visible_rect(), safe_area.position.y, upgrade_slot_obstacles
 	)

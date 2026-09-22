@@ -1,8 +1,9 @@
 extends GutGameplayTest
 
-## PS-204 — Griglia HUD dei power up presi (2×3, tetto PS-203) e gruppo
-## separato delle Specialità di Barb, nella striscia sinistra fuori dalla
-## safe area, sopra e sotto la fascia libera del foro fotocamera.
+## PS-204 — Griglia HUD dei power up presi (3 righe × 2 colonne, tetto
+## PS-203) e griglia separata delle Specialità di Barb (4 × 2), dal bordo
+## sinistro del viewport, sopra e sotto la fascia libera del foro fotocamera.
+## Il calice di Alea sta a destra della griglia.
 
 const HUD_SCENE := preload("res://scenes/ui/hud.tscn")
 const MOVEMENT_SLICE_SCRIPT := preload("res://scripts/game/movement_slice.gd")
@@ -13,6 +14,8 @@ const LAYOUT_PROFILES: Array[Vector2i] = [
 ]
 const COMPACT_PROFILE := Vector2i(960, 720)
 const ALEA_ID := &"alea"
+## Caselle "circa il doppio" della prima stesura (32 px), richiesta owner.
+const MIN_EXPECTED_SLOT_SIZE := 60.0
 
 
 func test_slots_follow_acquisition_order_ranks_and_reset() -> void:
@@ -46,7 +49,8 @@ func test_slots_follow_acquisition_order_ranks_and_reset() -> void:
 	_unlock_speciality(service)
 	await wait_process_frames(1)
 	var group := hud.get_speciality_slots()
-	assert_eq(group.size(), 1, "La Specialità sbloccata va nel gruppo separato.")
+	assert_eq(group.size(), 8, "Una casella per ogni Specialità del catalogo.")
+	assert_eq(_filled_count(group), 1, "Solo la Specialità sbloccata compare nel gruppo separato.")
 	assert_true(service.is_speciality_unlocked(group[0].get_upgrade_id()))
 	assert_eq(group[0].get_rank_color(), HudUpgradeSlot.SPECIALITY_RANK_COLOR, "Trattamento oro PS-164.")
 	for slot in slots:
@@ -56,7 +60,7 @@ func test_slots_follow_acquisition_order_ranks_and_reset() -> void:
 	await wait_process_frames(1)
 	for slot in hud.get_upgrade_slots():
 		assert_false(slot.is_filled(), "Il cambio personaggio svuota le caselle.")
-	assert_true(hud.get_speciality_slots().is_empty(), "Il cambio personaggio svuota il gruppo Specialità.")
+	assert_eq(_filled_count(hud.get_speciality_slots()), 0, "Il cambio personaggio svuota il gruppo Specialità.")
 	_level_up_preferring_owned(slice, [])
 	controller.prepare_restart()
 	await wait_process_frames(1)
@@ -90,11 +94,8 @@ func test_compact_profile_holds_a_full_build_and_every_speciality() -> void:
 		_level_up_preferring_new(slice)
 		guard += 1
 	await wait_process_frames(1)
-	var filled := 0
-	for slot in hud.get_upgrade_slots():
-		filled += 1 if slot.is_filled() else 0
-	assert_eq(filled, 6, "Sei caselle piene.")
-	assert_eq(hud.get_speciality_slots().size(), 8, "Tutte le otto Specialità nel gruppo.")
+	assert_eq(_filled_count(hud.get_upgrade_slots()), 6, "Sei caselle piene.")
+	assert_eq(_filled_count(hud.get_speciality_slots()), 8, "Tutte le otto Specialità nel gruppo.")
 	for slot in hud.get_speciality_slots():
 		assert_true(hud.get_speciality_group_rect().encloses(slot.get_global_rect()), "Specialità dentro il gruppo.")
 	for slot in hud.get_upgrade_slots():
@@ -121,17 +122,20 @@ func test_cutout_profile_puts_the_first_column_in_the_outer_strip() -> void:
 	var joystick_rect: Rect2 = MOVEMENT_SLICE_SCRIPT.calculate_bottom_left_control_rect(
 		safe_rect, Vector2(224.0, 224.0), Vector2(24.0, 24.0), Vector2(16.0, 32.0)
 	)
-	var obstacles: Array[Rect2] = [joystick_rect, hud.get_ability_panel_rect()]
+	var obstacles: Array[Rect2] = [hud.get_ability_panel_rect()]
 	hud.layout_upgrade_slots(viewport_rect, safe_rect.position.y, obstacles)
 	await wait_process_frames(1)
+	# Con caselle doppie la colonna non entra tutta nella striscia: ci parte.
 	var first_slot := hud.get_upgrade_slots()[0].get_global_rect()
-	assert_true(first_slot.position.x < safe_rect.position.x, "La griglia parte dal bordo del viewport.")
-	assert_true(first_slot.end.x <= safe_rect.position.x, "La prima colonna sta nella striscia esterna.")
+	assert_true(first_slot.position.x < safe_rect.position.x, "La griglia parte nella striscia esterna.")
 	assert_true(
-		hud.get_speciality_group_rect().end.x <= safe_rect.position.x, "Il gruppo Specialità sta nella striscia."
+		hud.get_speciality_slots()[0].get_global_rect().position.x < safe_rect.position.x,
+		"Il gruppo Specialità parte nella striscia esterna."
 	)
 	assert_false(hud.get_upgrade_slot_grid_rect().intersects(hud.get_sobriety_icon_rect()), "Calice libero.")
-	assert_false(hud.get_speciality_group_rect().intersects(joystick_rect), "Joystick libero.")
+	print("PS204_CUTOUT grid=%s group=%s joystick_rest=%s" % [
+		hud.get_upgrade_slot_grid_rect(), hud.get_speciality_group_rect(), joystick_rect
+	])
 
 
 func _assert_layout(slice: Control, hud: GameHud, context: String) -> void:
@@ -148,13 +152,21 @@ func _assert_layout(slice: Control, hud: GameHud, context: String) -> void:
 	)
 	assert_true(grid.end.y <= band_top, "%s: griglia sopra la fascia del foro." % context)
 	assert_true(group.position.y >= band_bottom, "%s: gruppo Specialità sotto la fascia." % context)
-	assert_true(grid.size.x > grid.size.y * 0.5 and grid.size.y > grid.size.x, "%s: 2 colonne × 3 righe." % context)
+	var slot_size := hud.get_upgrade_slot_size()
+	var step := slot_size + GameHud.UPGRADE_SLOT_GAP
+	assert_true(slot_size >= MIN_EXPECTED_SLOT_SIZE, "%s: caselle circa doppie (%s px)." % [context, slot_size])
+	assert_almost_eq(grid.size, Vector2(2.0 * step, 3.0 * step) - Vector2.ONE * GameHud.UPGRADE_SLOT_GAP,
+		Vector2.ONE * 0.5, "%s: griglia 3 righe × 2 colonne." % context)
+	assert_almost_eq(group.size, Vector2(2.0 * step, 4.0 * step) - Vector2.ONE * GameHud.UPGRADE_SLOT_GAP,
+		Vector2.ONE * 0.5, "%s: Specialità 4 righe × 2 colonne." % context)
+	assert_true(
+		hud.get_sobriety_icon_rect().position.x >= grid.end.x, "%s: il calice sta a destra della griglia." % context
+	)
 	for obstacle: Rect2 in [
 		hud.get_sobriety_icon_rect(),
 		hud.get_experience_panel_rect(),
 		hud.get_health_panel_rect(),
 		hud.get_ability_panel_rect(),
-		slice.get_touch_joystick_viewport_rect(),
 	]:
 		assert_false(grid.intersects(obstacle), "%s: la griglia non copre %s." % [context, obstacle])
 		assert_false(group.intersects(obstacle), "%s: il gruppo non copre %s." % [context, obstacle])
@@ -171,6 +183,13 @@ func _assert_layout(slice: Control, hud: GameHud, context: String) -> void:
 	for slot in hud.get_upgrade_slots():
 		assert_eq(slot.mouse_filter, Control.MOUSE_FILTER_IGNORE)
 	print("PS204_LAYOUT %s grid=%s group=%s slot=%s" % [context, grid, group, hud.get_upgrade_slot_size()])
+
+
+func _filled_count(slots: Array[HudUpgradeSlot]) -> int:
+	var filled := 0
+	for slot in slots:
+		filled += 1 if slot.is_filled() else 0
+	return filled
 
 
 func _level_up_preferring_owned(slice: Control, owned: Array[StringName]) -> StringName:

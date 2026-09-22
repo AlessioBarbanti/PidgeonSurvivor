@@ -33,9 +33,10 @@ const BOSS_WARNING_COLOR := Color("ffd166")
 const BOSS_COUNTDOWN_COLOR := Color("ff6b6b")
 const BOSS_APPROACHING_TEXT := "LA GRIGLIA STA FACENDO UN PROFUMINO..."
 const WAVE_EVENT_TELEGRAPH_COLOR := Color("6ee7ff")
-## PS-204: griglia dei power up presi, a sinistra fuori dalla safe area.
+## PS-204: griglie dei power up presi e delle Specialità, a sinistra fuori
+## dalla safe area; entrambe a 2 colonne (3 righe e 4 righe).
 const UPGRADE_SLOT_COLUMNS := 2
-const UPGRADE_SLOT_MAX_SIZE := 44
+const UPGRADE_SLOT_MAX_SIZE := 64
 const UPGRADE_SLOT_MIN_SIZE := 16
 const UPGRADE_SLOT_GAP := 4.0
 const UPGRADE_SLOT_EDGE_PADDING := 6.0
@@ -184,6 +185,9 @@ func configure_upgrade_service(service: UpgradeService) -> bool:
 	_free_children(_upgrade_slot_grid)
 	for _index in _upgrade_service.get_distinct_upgrade_cap():
 		_upgrade_slot_grid.add_child(HudUpgradeSlot.new())
+	_free_children(_speciality_slot_group)
+	for _index in _get_speciality_capacity():
+		_speciality_slot_group.add_child(HudUpgradeSlot.new())
 	_refresh_upgrade_slots()
 	return true
 
@@ -194,9 +198,9 @@ func get_upgrade_service() -> UpgradeService:
 
 ## PS-204: colloca griglia e gruppo Specialità a partire dal bordo sinistro
 ## del viewport. Vince la casella più grande che rispetta tutti i vincoli: la
-## griglia scende sotto barre e calice di Alea (riservato anche quando è
-## nascosto, così il layout non cambia col personaggio) e resta sopra la
-## fascia del foro; il gruppo sta sotto la fascia, lontano da `avoid_rects`.
+## griglia scende sotto le barre e resta sopra la fascia del foro; il gruppo
+## sta sotto la fascia, lontano da `avoid_rects`. Il calice di Alea si sposta a
+## destra della griglia (anche quando è nascosto, così il layout è uno solo).
 ## Tutti i rettangoli sono in coordinate viewport.
 func layout_upgrade_slots(viewport_rect: Rect2, top_limit: float, avoid_rects: Array[Rect2]) -> void:
 	if not viewport_rect.has_area():
@@ -206,9 +210,7 @@ func layout_upgrade_slots(viewport_rect: Rect2, top_limit: float, avoid_rects: A
 	var band_bottom := band_center + camera_hole_band_height * 0.5
 	var bottom_limit := viewport_rect.end.y - UPGRADE_SLOT_EDGE_PADDING
 	var left := viewport_rect.position.x + UPGRADE_SLOT_EDGE_PADDING
-	var top_obstacles: Array[Rect2] = [
-		get_experience_panel_rect(), get_health_panel_rect(), _sobriety_slot.get_global_rect()
-	]
+	var top_obstacles: Array[Rect2] = [get_experience_panel_rect(), get_health_panel_rect()]
 	var grid_rect := Rect2()
 	var group_rect := Rect2()
 	for cell in range(UPGRADE_SLOT_MAX_SIZE, UPGRADE_SLOT_MIN_SIZE - 1, -1):
@@ -217,7 +219,7 @@ func layout_upgrade_slots(viewport_rect: Rect2, top_limit: float, avoid_rects: A
 			top_obstacles
 		)
 		group_rect = _place_below(
-			Rect2(Vector2(left, band_bottom), _slot_block_size(cell, 1, _get_speciality_capacity())),
+			Rect2(Vector2(left, band_bottom), _slot_block_size(cell, UPGRADE_SLOT_COLUMNS, _get_speciality_capacity())),
 			avoid_rects
 		)
 		_upgrade_slot_size = cell
@@ -228,6 +230,10 @@ func layout_upgrade_slots(viewport_rect: Rect2, top_limit: float, avoid_rects: A
 	_upgrade_slot_grid.size = grid_rect.size
 	_speciality_slot_group.position = group_rect.position - origin
 	_speciality_slot_group.size = group_rect.size
+	# TopBand coincide con l'origine dell'HUD: i suoi offset sono locali all'HUD.
+	var sobriety_width := _sobriety_slot.offset_right - _sobriety_slot.offset_left
+	_sobriety_slot.offset_left = grid_rect.end.x + UPGRADE_SLOT_EDGE_PADDING - origin.x
+	_sobriety_slot.offset_right = _sobriety_slot.offset_left + sobriety_width
 	_arrange_upgrade_slots()
 
 
@@ -325,37 +331,27 @@ func _refresh_upgrade_slots() -> void:
 	var registry := _upgrade_service.get_registry()
 	if registry == null:
 		return
-	var slots := get_upgrade_slots()
-	var owned := _upgrade_service.get_distinct_upgrade_ids()
+	_fill_slots(get_upgrade_slots(), _upgrade_service.get_distinct_upgrade_ids(), registry)
+	_fill_slots(get_speciality_slots(), _upgrade_service.get_unlocked_specialities(), registry)
+	_arrange_upgrade_slots()
+
+
+func _fill_slots(slots: Array[HudUpgradeSlot], ids: Array[StringName], registry: UpgradeRegistry) -> void:
 	for index in slots.size():
-		var definition := registry.resolve_definition(owned[index]) if index < owned.size() else null
+		var definition := registry.resolve_definition(ids[index]) if index < ids.size() else null
 		if definition != null:
 			slots[index].set_entry(definition, _upgrade_service.get_rank(definition.id))
 		else:
 			slots[index].clear_entry()
-	_free_children(_speciality_slot_group)
-	for speciality_id in _upgrade_service.get_unlocked_specialities():
-		var definition := registry.resolve_definition(speciality_id)
-		if definition == null:
-			continue
-		var slot := HudUpgradeSlot.new()
-		slot.set_entry(definition, _upgrade_service.get_rank(speciality_id))
-		_speciality_slot_group.add_child(slot)
-	_arrange_upgrade_slots()
 
 
 func _arrange_upgrade_slots() -> void:
 	var step := _upgrade_slot_size + UPGRADE_SLOT_GAP
-	var grid_slots := get_upgrade_slots()
-	for index in grid_slots.size():
-		grid_slots[index].position = Vector2(
-			index % UPGRADE_SLOT_COLUMNS, index / UPGRADE_SLOT_COLUMNS
-		) * step
-		grid_slots[index].size = Vector2.ONE * _upgrade_slot_size
-	var group_slots := get_speciality_slots()
-	for index in group_slots.size():
-		group_slots[index].position = Vector2(0.0, index * step)
-		group_slots[index].size = Vector2.ONE * _upgrade_slot_size
+	for slots in [get_upgrade_slots(), get_speciality_slots()]:
+		for index in slots.size():
+			var slot := slots[index] as HudUpgradeSlot
+			slot.position = Vector2(index % UPGRADE_SLOT_COLUMNS, index / UPGRADE_SLOT_COLUMNS) * step
+			slot.size = Vector2.ONE * _upgrade_slot_size
 
 
 func _get_slot_count() -> int:
@@ -364,8 +360,7 @@ func _get_slot_count() -> int:
 	return UpgradeService.DEFAULT_DISTINCT_UPGRADE_CAP
 
 
-## Spazio riservato per tutte le Specialità del catalogo, anche se bloccate:
-## sbloccarne una non deve spostare il gruppo.
+## Una casella per ogni Specialità del catalogo, vuota finché è bloccata.
 func _get_speciality_capacity() -> int:
 	var registry := _upgrade_service.get_registry() if is_instance_valid(_upgrade_service) else null
 	return maxi(registry.get_speciality_definitions().size(), 1) if registry != null else 1
@@ -697,15 +692,8 @@ func set_bar_horizontal_offsets(left_offset: float, right_offset: float) -> void
 			var label_width := label.offset_right - label.offset_left
 			label.offset_left = safe_left + BAR_LABEL_INSET
 			label.offset_right = label.offset_left + label_width
-	# PS-138: l'indicatore Sobrietà di Alea si allinea allo stesso bordo
-	# sinistro dinamico delle barre — non un offset statico calibrato su un
-	# solo profilo (bug scoperto su device: l'inset di safe area del notch
-	# Android differisce troppo da quello desktop perché un valore fisso
-	# regga su entrambi). Larghezza preservata, solo il bordo sinistro segue.
-	if is_instance_valid(_sobriety_slot):
-		var sobriety_width := _sobriety_slot.offset_right - _sobriety_slot.offset_left
-		_sobriety_slot.offset_left = safe_left
-		_sobriety_slot.offset_right = safe_left + sobriety_width
+	# PS-204: il calice di Alea non segue più il bordo delle barre (PS-138): lo
+	# colloca `layout_upgrade_slots()`, a destra della griglia della build.
 
 
 func set_pause_edge_padding(edge_padding: Vector2) -> void:

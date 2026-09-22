@@ -213,16 +213,19 @@ guardia oltre alla safe area di sistema già applicata da `SafeAreaRoot`.
   griglia di caselle 2 colonne × 3 righe, tante quanto il tetto PS-203
   (`UpgradeService.get_distinct_upgrade_cap()`), sempre visibili anche se
   vuote; ogni casella mostra icona e rango (`HudUpgradeSlot`), in ordine di
-  acquisizione riga per riga, senza riordino al cambio di rango. Sotto, un
-  gruppo separato a una colonna con le sole Specialità di Barb sbloccate, con
-  spazio riservato per tutte quelle del catalogo. A metà altezza resta una
-  fascia libera (`GameHud.camera_hole_band_height`, 56 px logici, uguale su
-  ogni piattaforma): la griglia sta sopra, il gruppo sotto.
-  `GameHud.layout_upgrade_slots()`, chiamata da `MovementSlice._apply_layout()`,
-  sceglie la casella più grande (44→16 px) che scansa barre XP/HP, calice di
-  Alea (riservato anche con altri personaggi, così il layout è uno solo),
-  joystick a riposo e pulsante abilità. Solo da guardare: `MOUSE_FILTER_IGNORE`
-  e nessuna voce in `is_touch_origin_excluded`.
+  acquisizione riga per riga, senza riordino al cambio di rango. Sotto, una
+  griglia separata 2 colonne × 4 righe, una casella per ogni Specialità di
+  Barb del catalogo: vuota finché è bloccata, riempita in ordine di sblocco.
+  A metà altezza resta una fascia libera (`GameHud.camera_hole_band_height`,
+  56 unità logiche, uguale su ogni piattaforma): la griglia sta sopra, le
+  Specialità sotto. `GameHud.layout_upgrade_slots()`, chiamata da
+  `MovementSlice._apply_layout()`, sceglie la casella più grande (64→16 unità
+  logiche; 64 su tutti i profili coperti) che scansa barre XP/HP e pulsante
+  abilità, e sposta il calice di Alea subito a destra della griglia (anche con
+  altri personaggi, così il layout è uno solo). Le Specialità possono stare
+  nella zona di riposo del joystick di movimento, che è dinamico e a riposo
+  non si vede. Solo da guardare: `MOUSE_FILTER_IGNORE` e nessuna voce in
+  `is_touch_origin_excluded`.
 - **Level up** — `UpgradeOverlay` (`scripts/ui/upgrade_overlay.gd`): appare
   su `offer_generated` di `UpgradeService` (:327), innescato quando
   `ExperienceSystem` chiama `RunController.request_level_up()`. Mostra 3

@@ -33,8 +33,11 @@ tetto si legge a colpo d'occhio. Un power up nuovo prende la prima casella
 libera (riga per riga, da sinistra) e le caselle non si riordinano quando
 cambia un rango.
 
-Nella metà bassa, sotto la fascia libera, un **gruppo separato** con le
-Specialità di Barb sbloccate (icona + rango), distinte dagli ordinari con il
+Il calice di Alea si sposta subito a destra della griglia.
+
+Nella metà bassa, sotto la fascia libera, un **gruppo separato**, griglia 2
+colonne × 4 righe con una casella per ogni Specialità di Barb (vuota finché è
+bloccata; sbloccata: icona + rango), distinte dagli ordinari con il
 trattamento oro già fissato per le righe read-only in
 `docs/visual-audio-identity.md` (PS-164).
 
@@ -50,12 +53,14 @@ Griglia e gruppo sono solo da guardare: non intercettano tocchi o clic.
       casella.
 - [x] L'ordine delle caselle è quello di acquisizione, riga per riga da
       sinistra, e non cambia quando cambiano i ranghi.
-- [x] Le Specialità di Barb sbloccate compaiono nel gruppo separato, mai
-      dentro le 6 caselle; quelle bloccate non compaiono.
+- [x] Le Specialità di Barb sbloccate compaiono nel gruppo separato (griglia
+      2 colonne × 4 righe, una casella per Specialità del catalogo), mai
+      dentro le 6 caselle; quelle bloccate lasciano la casella vuota.
 - [x] Griglia e gruppo Specialità partono dal bordo sinistro del
       **viewport**, non da quello della safe area: con una safe area sinistra
-      rientrata (profilo cutout simulato) la prima colonna sta nella striscia
-      esterna.
+      rientrata (profilo cutout simulato) la prima colonna parte nella
+      striscia esterna. *Riformulato dopo la correzione del proprietario:
+      con caselle da 64 la colonna non entra più tutta nella striscia.*
 - [x] La griglia sta tutta sopra la fascia libera centrata a metà altezza del
       viewport, il gruppo Specialità tutto sotto; nessuna casella la
       interseca. La fascia ha un'altezza unica configurabile e vale su tutte
@@ -65,8 +70,8 @@ Griglia e gruppo sono solo da guardare: non intercettano tocchi o clic.
       dai test HUD, anche senza striscia laterale (Windows).
 - [x] Con 6 caselle piene e tutte le 8 Specialità sbloccate, sul profilo più
       compatto: la lista resta dentro il viewport e non interseca barre
-      XP/HP, calice di Alea, pannello abilità né rettangolo di riposo del
-      joystick.
+      XP/HP, calice di Alea né pannello abilità. *Il rettangolo di riposo del
+      joystick non è più un vincolo, per decisione del proprietario.*
 - [x] Un tocco che parte sopra la lista avvia il joystick di movimento come
       altrove (la lista non entra in `is_touch_origin_excluded`).
 - [x] Restart e cambio personaggio svuotano caselle e gruppo Specialità.
@@ -139,21 +144,29 @@ Griglia e gruppo sono solo da guardare: non intercettano tocchi o clic.
   i telefoni il foro della fotocamera sta esattamente a metà dello schermo.
   Basta quindi una fascia libera fissa a metà altezza, senza leggere
   `DisplayServer.get_display_cutouts()`.
-- **2026-09-22 — Dimensione delle caselle calcolata, non fissa.**
-  `GameHud.layout_upgrade_slots()` prova le caselle da 44 a 16 px e tiene la
-  più grande per cui la griglia, spinta sotto barre XP/HP e calice, resta sopra
-  la fascia e il gruppo Specialità resta sopra il fondo del viewport senza
-  toccare joystick a riposo e pulsante abilità. Esiti misurati: 1280×720 e
-  960×720 → 32 px (griglia sotto il calice, y 226–330); 1600×720 senza
-  cutout → 35 px e griglia accanto al calice, dall'alto; cutout 20:9 simulato
-  (safe area x 64) → 35 px, prima colonna x 6–41 nella striscia.
-- **2026-09-22 — Calice sempre riservato.** Il rettangolo del calice conta
-  come ostacolo anche quando non si gioca Alea: il layout resta uno solo e
-  non salta al cambio personaggio.
-- **2026-09-22 — Specialità in una colonna.** Due colonne sotto la fascia
-  urterebbero il joystick a riposo (x 60 su Windows): una colonna di 8
-  caselle sta fra la fascia e il fondo del viewport, con lo spazio riservato
-  per tutte le Specialità del catalogo così lo sblocco non sposta nulla.
+- **2026-09-22 — Correzione del proprietario sulla prima implementazione.**
+  Visto lo scatto con caselle da 32 px: entrambe le griglie a 2 colonne e
+  caselle circa doppie. Tre conflitti risolti con il proprietario:
+  1. **Calice di Alea spostato**: a 64 px la griglia non sta né accanto né
+     sotto al calice senza invadere la fascia del foro. Il calice ora sta
+     subito a destra della griglia (lo colloca `layout_upgrade_slots()`, non
+     più `set_bar_horizontal_offsets()` come da PS-138), anche con altri
+     personaggi, così il layout è uno solo.
+  2. **Specialità in griglia 4 righe × 2 colonne, sempre**: una casella per
+     ognuna delle 8 Specialità del catalogo, vuota finché è bloccata (come le
+     caselle libere della build); nessuna Specialità bloccata mostra icona.
+  3. **Joystick non più ostacolo**: il joystick di movimento è dinamico e a
+     riposo non si vede; il proprietario ammette che le Specialità stiano
+     nella sua zona di riposo. Il criterio relativo è stato aggiornato.
+- **2026-09-22 — Dimensione calcolata.** `GameHud.layout_upgrade_slots()`
+  prova le caselle da 64 a 16 unità logiche e tiene la più grande per cui la
+  griglia, sotto le barre, resta sopra la fascia e le Specialità restano sopra
+  il fondo del viewport. Esito su 1280×720, 1600×720, 960×720 e cutout 20:9
+  simulato: 64, griglia y 62–262, Specialità y 388–656, x 6–138.
+- **2026-09-22 — Unità logiche, non pixel.** Con `stretch canvas_items` +
+  `expand` su base 720 di altezza, 64 unità valgono ≈ 8,9% dell'altezza
+  dello schermo su ogni telefono landscape (96 px fisici sul Pixel 9): i
+  valori fissi sono già relativi allo schermo.
 - **2026-09-22 — Fascia del foro a 56 px logici**
   (`GameHud.camera_hole_band_height`, esportato). Valore iniziale da
   confermare sul Pixel.
@@ -187,5 +200,10 @@ Griglia e gruppo sono solo da guardare: non intercettano tocchi o clic.
   (212 test, 7529 assert), nessun `SCRIPT ERROR`/`FATAL EXCEPTION`.
   `godot_console --path . --script tools/_capture_hud_build_ps204.gd` →
   `PS204_CAPTURE_DONE`, exit 0, tre PNG (1280×720, 2424×1080, 960×720).
+- Evidenza dopo la correzione del proprietario (caselle 64, Specialità 4×2,
+  calice spostato): Focused → `status=PASS` (4 test, 308 assert, caselle a 64
+  su tutti i profili); Relevant → `status=PASS focused=1/1
+  regression=70/70`, nessun `SCRIPT ERROR`/`FATAL EXCEPTION`; cattura
+  rigenerata con `PS204_CAPTURE_DONE`, exit 0.
 - Il profilo 20:9 su desktop non ha il foro: la posizione nella striscia si
   vede solo sul Pixel.
