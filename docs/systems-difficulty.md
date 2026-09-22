@@ -204,7 +204,10 @@ genera, a ogni `level_up_started`, un'offerta di `3` carte (`generate_offer`,
 righe 115-129) pescate senza reinserimento e pesate su `UpgradeDefinition.weight`
 (`_draw_weighted_without_replacement`, righe 331-354), filtrando le carte di
 rango abilità non equipaggiate e le "Specialità" non ancora sbloccate (righe
-357-371).
+357-371). Quando la build possiede già `6` power up diversi
+(`distinct_upgrade_cap`, PS-203; carte ordinarie + carta abilità, Specialità
+escluse), il pool si riduce ai ranghi successivi di quei 6 e alle Specialità
+sbloccate, prima del fallback di saturazione PS-120.
 
 **Ricompensa Barb (PS-012).** Alla morte di un Boss,
 `UpgradeService.queue_barb_reward()` apre `RunController.BARB_REWARD`: prima

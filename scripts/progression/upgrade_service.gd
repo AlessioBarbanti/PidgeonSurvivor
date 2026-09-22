@@ -34,6 +34,7 @@ const RNG_STREAM_SALT := 0x4F1BBCDC
 const BARB_RNG_STREAM_SALT := 0x8A21FEED
 const BARB_OFFER_SIZE := 3
 const BARB_BONUS_SELECTIONS := 2
+const DEFAULT_DISTINCT_UPGRADE_CAP := 6
 
 enum BarbMode { NONE, SPECIALITY, BONUS }
 
@@ -48,6 +49,11 @@ class RankedUpgrade:
 
 
 @export_range(1, 10, 1) var offer_size := DEFAULT_OFFER_SIZE
+## PS-203: power up diversi (carte ordinarie + carta dell'abilità) che una run
+## può possedere. Le Specialità di Barb non occupano posti.
+@export_range(1, 20, 1) var distinct_upgrade_cap := DEFAULT_DISTINCT_UPGRADE_CAP:
+	set(value):
+		distinct_upgrade_cap = maxi(value, 1)
 
 var _registry: UpgradeRegistry
 var _effect_registry: UpgradeEffectRegistry
@@ -345,6 +351,20 @@ func get_acquired_upgrades() -> Array[RankedUpgrade]:
 	return entries
 
 
+## PS-203/PS-204: ID dei power up che occupano un posto, in ordine di
+## acquisizione (il Dictionary dei ranghi conserva l'ordine d'inserimento).
+func get_distinct_upgrade_ids() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for upgrade_id: Variant in _ranks:
+		if _occupies_distinct_slot(StringName(upgrade_id)):
+			ids.append(StringName(upgrade_id))
+	return ids
+
+
+func get_distinct_upgrade_cap() -> int:
+	return distinct_upgrade_cap
+
+
 func get_active_offer_level() -> int:
 	return _active_offer_level
 
@@ -401,6 +421,7 @@ func _get_offer_candidates() -> Array[UpgradeDefinition]:
 	var candidates := _registry.get_eligible_definitions(_ranks)
 	_filter_ability_rank_candidates(candidates)
 	_filter_locked_speciality_candidates(candidates)
+	_filter_distinct_cap_candidates(candidates)
 	_filter_saturated_repeatable_candidates(candidates)
 	return candidates
 
@@ -420,6 +441,25 @@ func _filter_locked_speciality_candidates(candidates: Array[UpgradeDefinition]) 
 		var definition := candidates[index]
 		if definition.is_speciality and not _unlocked_specialities.has(definition.id):
 			candidates.remove_at(index)
+
+
+## PS-203: raggiunto il tetto, restano solo i ranghi successivi dei posti già
+## occupati e le Specialità. Sotto il tetto il pool non cambia, così la
+## sequenza RNG resta quella di prima.
+func _filter_distinct_cap_candidates(candidates: Array[UpgradeDefinition]) -> void:
+	if get_distinct_upgrade_ids().size() < distinct_upgrade_cap:
+		return
+	for index in range(candidates.size() - 1, -1, -1):
+		var definition := candidates[index]
+		if not definition.is_speciality and not _ranks.has(definition.id):
+			candidates.remove_at(index)
+
+
+func _occupies_distinct_slot(upgrade_id: StringName) -> bool:
+	if int(_ranks.get(upgrade_id, 0)) <= 0:
+		return false
+	var definition := _registry.resolve_definition(upgrade_id) if is_instance_valid(_registry) else null
+	return definition != null and not definition.is_speciality
 
 
 ## PS-120: una carta ripetibile che ha già raggiunto il proprio tetto/pavimento

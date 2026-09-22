@@ -128,6 +128,12 @@ all'infinito. Il valore `max_rank = 5` resta il rango nominale/configurato
 della carta, non un limite effettivo alla scelta o allo stacking. I valori sono
 proposte di bilanciamento e restano configurabili.
 
+**Tetto dei power up diversi (PS-203).** Una run possiede al massimo `6` power
+up diversi (`UpgradeService.distinct_upgrade_cap`), contando le carte
+ordinarie e la carta dell'abilità attiva. Raggiunto il tetto, il level-up e il
+bonus di Barb offrono solo i ranghi successivi di quei 6, più le Specialità di
+Barb già sbloccate, che restano fuori dal conteggio.
+
 ### Via dalla Griglia!
 
 **ID proposto:** `projectile_speed`  

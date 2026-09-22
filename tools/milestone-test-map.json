@@ -146,6 +146,10 @@
       ],
       "smokes": [
         "tests/unit/test_ps190_upgrade_queries.gd",
+        "tests/unit/test_ps203_distinct_upgrade_cap.gd",
+        "tests/unit/test_ps012_barb_specialities.gd",
+        "tests/unit/test_ps077_barb_speciality_pool_expansion.gd",
+        "tests/unit/test_b10_upgrade_service.gd",
         "tests/unit/test_ps053_run_summary.gd",
         "tests/unit/test_ps164_pause_build_summary.gd",
         "tests/unit/test_b18g_ability_ranks.gd"
