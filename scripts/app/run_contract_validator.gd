@@ -470,8 +470,18 @@ static func _validate_weapon_and_ability(scene: Control, failures: Array[String]
 			failures.append("WeaponController privo di WeaponDefinition valida.")
 		elif weapon_effect_registry.resolve_definition(weapon_definition.id) != weapon_definition:
 			failures.append("WeaponDefinition non registrata nel registry.")
-		elif friend_definition != null and weapon_definition.id != friend_definition.weapon_id:
-			failures.append("L'arma equipaggiata non e' quella dichiarata dal personaggio.")
+		elif friend_definition != null and ability_controller != null:
+			# PS-208: con Cosplay Casuale l'arma attesa e' quella del costume.
+			var friend_registry: FriendRegistry = scene.get_friend_registry()
+			var expected_weapon_id := (
+				friend_registry.resolve_weapon_id(
+					friend_definition, ability_controller.get_pending_cosplay_ability_id()
+				)
+				if friend_registry != null
+				else friend_definition.weapon_id
+			)
+			if weapon_definition.id != expected_weapon_id:
+				failures.append("L'arma equipaggiata non e' quella dichiarata dal personaggio o dal costume.")
 	if weapon_controller.get_run_controller() != run_controller:
 		failures.append("WeaponController non collegato al RunController.")
 	if weapon_controller.get_targeting_system() != targeting_system:

@@ -147,6 +147,7 @@ func _ready() -> void:
 	_pause_overlay.change_character_requested.connect(_on_change_character_requested)
 	_pause_overlay.exit_requested.connect(_on_exit_requested)
 	_welcome_screen.play_requested.connect(_on_welcome_play_requested)
+	_ability_controller.pending_cosplay_changed.connect(_on_pending_cosplay_changed_for_weapon)
 	_welcome_screen.tutorial_requested.connect(_on_welcome_tutorial_requested)
 	_tutorial_screen.close_requested.connect(_on_tutorial_close_requested)
 	_tutorial_screen.play_requested.connect(_on_tutorial_play_requested)
@@ -1177,11 +1178,33 @@ func _equip_friend(friend_id: StringName) -> bool:
 		_hud.set_friend_definition(definition)
 	if not _ability_controller.equip_definition(ability_definition):
 		return false
+	# PS-208: l'equipaggiamento estrae il primo Cosplay, ma se ripete quello
+	# di prima il segnale non arriva: l'arma del costume va allineata qui.
+	if not _sync_costume_weapon():
+		return false
 	if not _upgrade_service.set_equipped_ability_id(ability_definition.id):
 		return false
 	if not _friend_passive_controller.equip_definition(definition):
 		return false
 	return true
+
+
+## PS-208: Lollo impugna l'arma del personaggio sul pulsante di Cosplay
+## Casuale; per gli altri `resolve_weapon_id()` restituisce la loro arma.
+func _sync_costume_weapon() -> bool:
+	var weapon_id := _friend_registry.resolve_weapon_id(
+		_player.get_friend_definition(),
+		_ability_controller.get_pending_cosplay_ability_id()
+	)
+	var current := _weapon_controller.get_weapon_definition()
+	if current != null and current.id == weapon_id:
+		return true
+	var weapon_definition := _weapon_effect_registry.resolve_definition(weapon_id)
+	return weapon_definition != null and _weapon_controller.set_weapon_definition(weapon_definition)
+
+
+func _on_pending_cosplay_changed_for_weapon(_ability_id: StringName) -> void:
+	_sync_costume_weapon()
 
 
 func _start_selected_run(seed_value: int) -> bool:

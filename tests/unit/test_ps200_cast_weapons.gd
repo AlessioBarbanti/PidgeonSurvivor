@@ -124,10 +124,13 @@ func test_cast_weapons() -> void:
 			movement_slice.select_friend_for_next_run(friend_id),
 			"PS-200: %s deve essere equipaggiabile." % friend_id
 		)
-		var definition := weapon.get_weapon_definition()
 		assert_eq(
-			definition.id, NEW_WEAPONS[index],
-			"PS-200: %s deve impugnare la sua arma." % friend_id
+			weapon.get_weapon_definition().id,
+			friend_registry.resolve_weapon_id(
+				friend_registry.resolve_definition(friend_id),
+				movement_slice.get_ability_controller().get_pending_cosplay_ability_id()
+			),
+			"PS-200: %s deve impugnare la sua arma (o quella del costume, PS-208)." % friend_id
 		)
 		assert_true(
 			movement_slice.start_selected_run(20001 + index),
@@ -137,6 +140,10 @@ func test_cast_weapons() -> void:
 		controller.set_process(false)
 		spawner.set_process(false)
 		weapon.set_process(false)
+		# PS-208: Lollo impugna l'arma del costume e l'Attizzatoio resta il
+		# ripiego dei dati; come Scintilla, lo si monta a mano per provarlo.
+		weapon.set_weapon_definition(registry.resolve_definition(NEW_WEAPONS[index]))
+		var definition := weapon.get_weapon_definition()
 
 		# 4a. Automatico: serve un bersaglio da cui ricavare la mira.
 		spawner.reset_for_run(5150)

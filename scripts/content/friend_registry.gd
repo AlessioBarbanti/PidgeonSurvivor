@@ -70,6 +70,23 @@ func resolve_by_ability_id(ability_id: StringName) -> FriendDefinition:
 	return null
 
 
+## Arma da impugnare (PS-208): con un'abilità in attesa di Cosplay Casuale il
+## travestimento è completo e l'arma è quella del personaggio copiato; senza,
+## quella dichiarata dal personaggio.
+func resolve_weapon_id(
+	definition: FriendDefinition,
+	pending_cosplay_ability_id: StringName
+) -> StringName:
+	var costume := (
+		resolve_by_ability_id(pending_cosplay_ability_id)
+		if not pending_cosplay_ability_id.is_empty()
+		else null
+	)
+	if costume != null:
+		return costume.weapon_id
+	return definition.weapon_id if definition != null else &""
+
+
 func get_definitions() -> Array[FriendDefinition]:
 	var registered: Array[FriendDefinition] = []
 	for definition in definitions:

@@ -690,6 +690,22 @@
     },
     {
       "patterns": [
+        "scripts/content/friend_registry.gd",
+        "scripts/game/movement_slice.gd",
+        "scripts/app/run_contract_validator.gd",
+        "tests/unit/test_ps208_lollo_cosplay_weapon.gd"
+      ],
+      "smokes": [
+        "tests/unit/test_ps208_lollo_cosplay_weapon.gd",
+        "tests/unit/test_ps197_weapon_definition_wiring.gd",
+        "tests/unit/test_ps200_cast_weapons.gd",
+        "tests/unit/test_ps186_run_contract_validator.gd",
+        "tests/unit/test_b17a_complete_roster_abilities.gd",
+        "tests/unit/test_b44_state_tells.gd"
+      ]
+    },
+    {
+      "patterns": [
         "assets/art/branding/*"
       ],
       "smokes": [

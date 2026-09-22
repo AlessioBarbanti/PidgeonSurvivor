@@ -76,7 +76,14 @@ func test_weapon_definition_wiring() -> void:
 		assert_true(equipped != null, "PS-197: %s deve avere un'arma equipaggiata." % friend.id)
 		if equipped == null:
 			continue
-		assert_eq(equipped.id, friend.weapon_id, "PS-197: l'arma equipaggiata deve essere la sua.")
+		# PS-208: Lollo impugna l'arma del personaggio che sta copiando.
+		assert_eq(
+			equipped.id,
+			friend_registry.resolve_weapon_id(
+				friend, movement_slice.get_ability_controller().get_pending_cosplay_ability_id()
+			),
+			"PS-197: l'arma equipaggiata deve essere la sua (o quella del costume)."
+		)
 		# I due strati vanno verificati separati, non nel loro prodotto: le
 		# passive dinamiche (Termostato di Aleo, Iperfocus di Lollo) muovono
 		# il moltiplicatore di personaggio a run in corso. Il contratto di

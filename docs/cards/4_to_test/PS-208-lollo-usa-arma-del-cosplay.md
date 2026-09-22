@@ -3,7 +3,7 @@ id: PS-208
 titolo: Fai usare a Lollo l'arma del personaggio che sta copiando
 tipo: feat
 area: gameplay
-stato: IN CORSO
+stato: IN VERIFICA
 priorita: media
 dipende_da: [PS-200, PS-202]
 origine:
@@ -34,20 +34,20 @@ resta nei dati solo come ripiego, se Cosplay non ha nessun candidato.
 
 ## Criteri di accettazione
 
-- [ ] Con Lollo equipaggiato, l'arma è quella del personaggio che possiede
+- [x] Con Lollo equipaggiato, l'arma è quella del personaggio che possiede
       l'abilità sul pulsante di Cosplay, già prima del primo colpo.
-- [ ] Dopo ogni lancio di Cosplay, quando l'abilità sul pulsante cambia,
+- [x] Dopo ogni lancio di Cosplay, quando l'abilità sul pulsante cambia,
       cambia anche l'arma nello stesso momento.
-- [ ] Nel corso di più estrazioni compaiono tutte e sette le armi degli altri
+- [x] Nel corso di più estrazioni compaiono tutte e sette le armi degli altri
       personaggi, Coperchio compreso.
-- [ ] Il cambio d'arma conserva i moltiplicatori di Lollo (scarti e passiva)
+- [x] Il cambio d'arma conserva i moltiplicatori di Lollo (scarti e passiva)
       e i potenziamenti presi nella run, comprese le Specialità di Barb.
-- [ ] Restart e cambio personaggio riallineano l'arma: gli altri sette
+- [x] Restart e cambio personaggio riallineano l'arma: gli altri sette
       personaggi usano sempre la propria arma, e Lollo quella del nuovo
       costume anche quando l'estrazione ripete quella di prima.
-- [ ] Il `RunContractValidator` accetta l'arma del costume per Lollo e
+- [x] Il `RunContractValidator` accetta l'arma del costume per Lollo e
       continua a pretendere l'arma dichiarata per tutti gli altri.
-- [ ] Senza candidati per Cosplay, Lollo usa l'Attizzatoio.
+- [x] Senza candidati per Cosplay, Lollo usa l'Attizzatoio.
 
 ## Ambito
 
@@ -87,15 +87,38 @@ resta nei dati solo come ripiego, se Cosplay non ha nessun candidato.
   diventa un personaggio da mischia: più caos, in linea col ruolo.
 - **2026-09-22 — Nessun segnale nuovo nell'HUD.** Il colpo diverso e l'icona
   sul pulsante bastano.
+- **2026-09-22 — Dove vive la regola.** `FriendRegistry.resolve_weapon_id()`
+  dà l'arma da impugnare da personaggio e abilità estratta, perché sia
+  MovementSlice sia il validatore ne hanno bisogno. MovementSlice la applica
+  con `_sync_costume_weapon()` all'equipaggiamento e a ogni
+  `pending_cosplay_changed`. All'equipaggiamento serve la chiamata esplicita:
+  se l'estrazione ripete la precedente il segnale non parte.
+- **2026-09-22 — Cadenza al cambio.** Il cooldown in corso non si azzera: il
+  colpo successivo usa già l'arma nuova.
+- **2026-09-22 — Test di PS-200 e PS-197 adattati.** Accettano l'arma del
+  costume per Lollo; PS-200 prova l'Attizzatoio montandolo a mano dopo
+  l'avvio della run, come già fa con Scintilla.
 - **Sostituisce:** PS-207 (Attizzatoio che si arroventa), ritirata perché
   Lollo non usa più l'Attizzatoio in partita.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/characters.md` — sezione Lollo, arma.
-- [ ] `tools/milestone-test-map.json` — regressioni del nuovo test.
+- [x] `docs/characters.md` — sezione Lollo, arma.
+- [x] `tools/milestone-test-map.json` — regressioni del nuovo test.
 
 ## Note
+
+- Evidenza (2026-09-22):
+  - `.	oolsun-milestone-checks.ps1 -Milestone PS-208 -Profile Focused -FocusedSmoke tests/unit/test_ps208_lollo_cosplay_weapon.gd`
+    (nel primo Relevant) → 1 test, 309 assert. Marker:
+    `PS208_LOLLO_COSPLAY_WEAPON_OK seen=[spiedo, marinata, paletta, coperchio, cavatappi, graticola, soffietto]`.
+  - Stesso comando con `-Profile Relevant` → PASS, 54/54 passi
+    (regressione 53/53, 156 test, 4785 assert), nessun `SCRIPT ERROR` /
+    `FATAL EXCEPTION`.
+  - Il validatore segnala per Lollo il controllo B18K sull'icona del
+    pulsante, che esisteva già: in partita il validatore gira solo
+    all'avvio della scena con Magno, quindi il test di PS-208 guarda solo il
+    controllo sull'arma.
 
 - Bilanciamento: tutte le armi stanno entro il 10% di kill-rate fra loro
   (PS-200), quindi il cambio non rende Lollo più forte o più debole in media.
