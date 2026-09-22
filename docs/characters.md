@@ -151,7 +151,7 @@ Scarti base (B47, PS-087): salute `×0,90`, velocità `×1,05`, cadenza `×1,05`
 
 Scarti estesi (PS-093): danno `×1,00`, avidità `×1,05`, raggio pickup `×0,93`, difesa `×1,04`, critico `+6%` — raccoglitore compulsivo coerente con "caos e imprevedibilità", ma metodico nella raccolta no: il raggio scende sotto la norma a bilanciare i bonus già assegnati su XP e critico. Il critico più alto del cast non è casuale: a differenza di Alea, Iperfocus ADHD resta esplicitamente un meccanismo casuale ("Alterna a intervalli casuali"), quindi è Lollo, non più Alea, il personaggio ancora legato tematicamente al caso.
 
-Arma (PS-200, PS-207 in prova) — **Attizzatoio**: un colpo sottile che parte piano, prende velocità man mano che va, arrivando lontanissimo, e **si arroventa** mentre vola. Appena partito è una brace scura e fa il 70% del danno; dopo 500 px è bianco rovente e fa il 150%, con una scia che si allunga con la velocità. Premia chi tiene i nemici a distanza. I tre valori stanno in `data/weapons/attizzatoio.tres`. È un'eco di Iperfocus ADHD, non un suo doppione: la passiva cambia il ritmo di *Lollo*, l'arma cambia la velocità del *colpo* lungo il proprio volo, e le due grandezze non si sommano.
+Arma (PS-200) — **Attizzatoio**: un colpo sottile che parte piano e prende velocità man mano che va, arrivando lontanissimo. È un'eco di Iperfocus ADHD, non un suo doppione: la passiva cambia il ritmo di *Lollo*, l'arma cambia la velocità del *colpo* lungo il proprio volo, e le due grandezze non si sommano.
 
 ## Migi
 

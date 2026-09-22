@@ -6,13 +6,10 @@
 script = ExtResource("1_weapon_definition")
 id = &"attizzatoio"
 display_name = "Attizzatoio"
-description = "Un colpo sottile che accelera e si arroventa mentre vola: più va lontano, più fa male."
+description = "Un colpo sottile che parte piano e prende velocità man mano che va."
 effect_id = &"straight_shot"
 effect_parameters = {
 "end_speed_factor": 2.6,
-"heat_end_damage_factor": 1.5,
-"heat_full_distance": 500.0,
-"heat_start_damage_factor": 0.7,
 "trajectory": &"building"
 }
 shots_per_second = 2.6

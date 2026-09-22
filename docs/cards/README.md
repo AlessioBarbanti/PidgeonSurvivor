@@ -314,4 +314,5 @@ sviluppo: funzionalità, fix, arte, documentazione, tooling e release.
 | [PS-204](./4_to_test/PS-204-mostra-power-up-presi-in-hud.md) | Mostra nell'HUD i power up presi e il loro rango | ux | ui | IN VERIFICA | media | PS-203 |
 | [PS-205](./4_to_test/PS-205-slancio-magno-partenza-lenta-perdita-in-curva.md) | Fai sentire lo slancio di Magno, con partenza lenta e perdita in curva | fix | gameplay | IN VERIFICA | media | — |
 | [PS-206](./5_completed/PS-206-tag-prerelease-debug-segue-commit.md) | Fai puntare la pre-release di debug al commit compilato | fix | tooling | COMPLETATO | media | — |
-| [PS-207](./4_to_test/PS-207-attizzatoio-si-arroventa-con-la-distanza.md) | Fai arroventare l'Attizzatoio di Lollo, che più va lontano più fa male | fix | gameplay | IN VERIFICA | media | PS-200 |
+| [PS-207](./6_rejected/PS-207-attizzatoio-si-arroventa-con-la-distanza.md) | Fai arroventare l'Attizzatoio di Lollo, che più va lontano più fa male | fix | gameplay | SCARTATA | media | PS-200 |
+| [PS-208](./3_in_sprint/PS-208-lollo-usa-arma-del-cosplay.md) | Fai usare a Lollo l'arma del personaggio che sta copiando | feat | gameplay | IN CORSO | media | PS-200, PS-202 |

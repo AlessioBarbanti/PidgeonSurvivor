@@ -3,7 +3,7 @@ id: PS-207
 titolo: Fai arroventare l'Attizzatoio di Lollo, che più va lontano più fa male
 tipo: fix
 area: gameplay
-stato: IN VERIFICA
+stato: SCARTATA
 priorita: media
 dipende_da: [PS-200]
 origine:
@@ -78,6 +78,12 @@ Curva di partenza (dati, per il playtest): danno ×0,7 alla bocca, ×1,5 dopo
 
 ## Decisioni
 
+- **2026-09-22 — Scartata, superata da PS-208.** Subito dopo l'implementazione
+  il proprietario ha scelto che Lollo usi sempre l'arma del personaggio
+  copiato da Cosplay Casuale: l'Attizzatoio non si spara più in partita e
+  resta solo come ripiego nei dati. Il codice dell'arroventamento
+  (`830dbac`) è stato ritirato per non lasciare una meccanica che nessuno
+  usa; la card resta come traccia della scelta.
 - **2026-09-22 — "Si arroventa".** Scelta del proprietario fra tre opzioni:
   danno che cresce con la distanza più segnale visivo (scelta), solo segnale
   visivo, oppure perforazione legata alla velocità.
@@ -105,7 +111,8 @@ Curva di partenza (dati, per il playtest): danno ×0,7 alla bocca, ×1,5 dopo
 ## Note
 
 - Evidenza (2026-09-22):
-  - `.	oolsun-milestone-checks.ps1 -Milestone PS-207 -Profile Focused -FocusedSmoke tests/unit/test_ps207_attizzatoio_heat.gd`
+  - `.	ools
+un-milestone-checks.ps1 -Milestone PS-207 -Profile Focused -FocusedSmoke tests/unit/test_ps207_attizzatoio_heat.gd`
     → PASS, 3 test, 74 assert. Marker: `PS207_HEAT_CURVE flown250=254.9 cold_trail=21.0 hot_trail=41.0`,
     `PS207_SPECIALITIES_OK`, `PS207_ATTIZZATOIO_HEAT_OK`.
   - Stesso comando con `-Profile Relevant` → PASS, 13/13 passi (PS-200 e

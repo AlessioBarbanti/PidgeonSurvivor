@@ -690,18 +690,6 @@
     },
     {
       "patterns": [
-        "scripts/combat/projectile.gd",
-        "data/weapons/attizzatoio.tres",
-        "tests/unit/test_ps207_attizzatoio_heat.gd"
-      ],
-      "smokes": [
-        "tests/unit/test_ps207_attizzatoio_heat.gd",
-        "tests/unit/test_ps200_cast_weapons.gd",
-        "tests/unit/test_b05_combat_slice.gd"
-      ]
-    },
-    {
-      "patterns": [
         "assets/art/branding/*"
       ],
       "smokes": [
