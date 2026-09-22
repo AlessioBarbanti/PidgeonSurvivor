@@ -361,3 +361,13 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_ability_button")
 expand_icon = true
 theme_override_constants/icon_max_width = 48
 script = ExtResource("2_touch_ability")
+
+[node name="UpgradeSlotGrid" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+
+[node name="SpecialitySlotGroup" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2

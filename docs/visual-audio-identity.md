@@ -84,6 +84,11 @@ del documento architetturale, non una lacuna di questo file.
   ben oltre la soglia ±0.3-0.4 già stabilita per questo pannello scuro (vedi
   voce sui bottoni secondari sopra) — un solo canale di distinzione basta,
   non serve un secondo segnale (peso del font, tag testuale, icona).
+  Nelle caselle read-only dell'HUD (PS-204, `HudUpgradeSlot`) vale la stessa
+  regola: l'unico testo è il rango, che per le Specialità passa allo stesso
+  oro; cornice e fondo restano quelli delle caselle ordinarie (fondo scuro
+  delle barre HUD, bordo `Color(0.72, 0.52, 0.24)`, attenuati a metà alpha
+  nelle caselle vuote).
 - **Ornamenti d'angolo delle carte upgrade**
   ([manifest](../assets/art/ui/upgrade_card/ASSET-MANIFEST.md)): per gli usi a
   clip, il medaglione/rivetto esiste come asset autonomo con alpha reale e

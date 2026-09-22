@@ -932,6 +932,11 @@ static func _validate_hud(scene: Control, failures: Array[String]) -> void:
 			failures.append("HUD PS-005 deve partire senza warning Boss visibile.")
 		if hud.get_friend_definition() != player.get_friend_definition():
 			failures.append("HUD B18B privo del profilo Player corrente.")
+		var upgrade_service: UpgradeService = scene.get_upgrade_service()
+		if hud.get_upgrade_service() != upgrade_service:
+			failures.append("HUD PS-204 non collegato a UpgradeService.")
+		elif hud.get_upgrade_slots().size() != upgrade_service.get_distinct_upgrade_cap():
+			failures.append("HUD PS-204: le caselle devono essere tante quanto il tetto PS-203.")
 		var top_band_rect := hud.get_top_band_rect()
 		if absf(top_band_rect.size.y - hud.get_gameplay_top_inset()) > 1.0:
 			failures.append("La fascia HUD B18Q deve coincidere con l'inset gameplay dichiarato.")

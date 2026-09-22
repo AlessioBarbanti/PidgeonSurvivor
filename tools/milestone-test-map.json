@@ -582,6 +582,27 @@
     },
     {
       "patterns": [
+        "scripts/ui/hud.gd",
+        "scripts/ui/hud_upgrade_slot.gd",
+        "scenes/ui/hud.tscn",
+        "scripts/progression/upgrade_service.gd",
+        "scripts/game/movement_slice.gd",
+        "scripts/app/run_contract_validator.gd"
+      ],
+      "smokes": [
+        "tests/unit/test_ps204_hud_upgrade_slots.gd",
+        "tests/unit/test_ps203_distinct_upgrade_cap.gd",
+        "tests/unit/test_b09_hud.gd",
+        "tests/unit/test_ps106_alea_sobriety_hud.gd",
+        "tests/unit/test_ps138_alea_ring_glow.gd",
+        "tests/unit/test_ps146_hud_bars_floating.gd",
+        "tests/unit/test_ps185_onscreen_readability.gd",
+        "tests/unit/test_ps164_pause_build_summary.gd",
+        "tests/unit/test_ps186_run_contract_validator.gd"
+      ]
+    },
+    {
+      "patterns": [
         "data/tutorial/*"
       ],
       "smokes": [

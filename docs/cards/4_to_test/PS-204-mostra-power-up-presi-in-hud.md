@@ -3,7 +3,7 @@ id: PS-204
 titolo: Mostra nell'HUD i power up presi e il loro rango
 tipo: ux
 area: ui
-stato: BLOCCATO
+stato: IN VERIFICA
 priorita: media
 dipende_da: [PS-203]
 origine:
@@ -42,34 +42,34 @@ Griglia e gruppo sono solo da guardare: non intercettano tocchi o clic.
 
 ## Criteri di accettazione
 
-- [ ] Durante `RUNNING` l'HUD mostra a sinistra 6 caselle in una griglia di
+- [x] Durante `RUNNING` l'HUD mostra a sinistra 6 caselle in una griglia di
       2 colonne × 3 righe; il loro numero viene dal tetto di PS-203, non da
       una seconda costante.
-- [ ] Scegliere un power up nuovo lo fa comparire nella prima casella libera
+- [x] Scegliere un power up nuovo lo fa comparire nella prima casella libera
       senza aprire la pausa; salire di rango aggiorna il numero della stessa
       casella.
-- [ ] L'ordine delle caselle è quello di acquisizione, riga per riga da
+- [x] L'ordine delle caselle è quello di acquisizione, riga per riga da
       sinistra, e non cambia quando cambiano i ranghi.
-- [ ] Le Specialità di Barb sbloccate compaiono nel gruppo separato, mai
+- [x] Le Specialità di Barb sbloccate compaiono nel gruppo separato, mai
       dentro le 6 caselle; quelle bloccate non compaiono.
-- [ ] Griglia e gruppo Specialità partono dal bordo sinistro del
+- [x] Griglia e gruppo Specialità partono dal bordo sinistro del
       **viewport**, non da quello della safe area: con una safe area sinistra
       rientrata (profilo cutout simulato) la prima colonna sta nella striscia
       esterna.
-- [ ] La griglia sta tutta sopra la fascia libera centrata a metà altezza del
+- [x] La griglia sta tutta sopra la fascia libera centrata a metà altezza del
       viewport, il gruppo Specialità tutto sotto; nessuna casella la
       interseca. La fascia ha un'altezza unica configurabile e vale su tutte
       le piattaforme, Windows compreso, così il layout è uno solo.
-- [ ] Giocando Alea, il rettangolo della lista non interseca
+- [x] Giocando Alea, il rettangolo della lista non interseca
       `get_sobriety_icon_rect()`, in tutti i profili di viewport già coperti
       dai test HUD, anche senza striscia laterale (Windows).
-- [ ] Con 6 caselle piene e tutte le 8 Specialità sbloccate, sul profilo più
+- [x] Con 6 caselle piene e tutte le 8 Specialità sbloccate, sul profilo più
       compatto: la lista resta dentro il viewport e non interseca barre
       XP/HP, calice di Alea, pannello abilità né rettangolo di riposo del
       joystick.
-- [ ] Un tocco che parte sopra la lista avvia il joystick di movimento come
+- [x] Un tocco che parte sopra la lista avvia il joystick di movimento come
       altrove (la lista non entra in `is_touch_origin_excluded`).
-- [ ] Restart e cambio personaggio svuotano caselle e gruppo Specialità.
+- [x] Restart e cambio personaggio svuotano caselle e gruppo Specialità.
 
 ## Ambito
 
@@ -98,14 +98,20 @@ Griglia e gruppo sono solo da guardare: non intercettano tocchi o clic.
 
 ## Gate manuali
 
-- [ ] Runtime Windows (cattura `tools/_capture_ui_screenshots.gd` con Alea,
-      6 caselle piene e Specialità sbloccate)
-- [ ] Validazione statica APK
+- [x] Runtime Windows (cattura con Alea, 6 caselle piene e Specialità
+      sbloccate) — fatta con lo script dedicato
+      `tools/_capture_hud_build_ps204.gd` invece di aggiungere uno stato a
+      `tools/_capture_ui_screenshots.gd`, per non spostare la sequenza
+      verificata da PS-044. PNG in `exports/ui-screenshots/ps204-hud-build/`.
+- [ ] Validazione statica APK — aperto: APK non ricompilato in questa
+      sessione.
 - [ ] Runtime fisico Pixel 9 (percorso: run con Alea fino a 6 power up e
       almeno una Specialità; controllo che la colonna stia nella striscia del
       foro fotocamera senza coprirlo, calice e joystick liberi)
 - [ ] Controllo percettivo richiesto: sì, con l'agente `direttore-artistico`
-      (dimensione icone, leggibilità del rango, trattamento Specialità)
+      (dimensione icone, leggibilità del rango, trattamento Specialità) —
+      aperto. Da guardare in particolare: a 32 px (1280×720 e 960×720 con il
+      calice riservato) il numero del rango copre parte dell'icona.
 
 ## Decisioni
 
@@ -133,18 +139,53 @@ Griglia e gruppo sono solo da guardare: non intercettano tocchi o clic.
   i telefoni il foro della fotocamera sta esattamente a metà dello schermo.
   Basta quindi una fascia libera fissa a metà altezza, senza leggere
   `DisplayServer.get_display_cutouts()`.
+- **2026-09-22 — Dimensione delle caselle calcolata, non fissa.**
+  `GameHud.layout_upgrade_slots()` prova le caselle da 44 a 16 px e tiene la
+  più grande per cui la griglia, spinta sotto barre XP/HP e calice, resta sopra
+  la fascia e il gruppo Specialità resta sopra il fondo del viewport senza
+  toccare joystick a riposo e pulsante abilità. Esiti misurati: 1280×720 e
+  960×720 → 32 px (griglia sotto il calice, y 226–330); 1600×720 senza
+  cutout → 35 px e griglia accanto al calice, dall'alto; cutout 20:9 simulato
+  (safe area x 64) → 35 px, prima colonna x 6–41 nella striscia.
+- **2026-09-22 — Calice sempre riservato.** Il rettangolo del calice conta
+  come ostacolo anche quando non si gioca Alea: il layout resta uno solo e
+  non salta al cambio personaggio.
+- **2026-09-22 — Specialità in una colonna.** Due colonne sotto la fascia
+  urterebbero il joystick a riposo (x 60 su Windows): una colonna di 8
+  caselle sta fra la fascia e il fondo del viewport, con lo spazio riservato
+  per tutte le Specialità del catalogo così lo sblocco non sposta nulla.
+- **2026-09-22 — Fascia del foro a 56 px logici**
+  (`GameHud.camera_hole_band_height`, esportato). Valore iniziale da
+  confermare sul Pixel.
+- **2026-09-22 — Ordine dei posti.** L'HUD legge
+  `UpgradeService.get_distinct_upgrade_ids()` (PS-203), che segue l'ordine
+  d'inserimento dei ranghi: nessuno store nella UI.
+- **2026-09-22 — Trattamento Specialità.** Solo il numero del rango passa
+  all'oro `PauseOverlay.BUILD_SUMMARY_SPECIALITY_TITLE_COLOR`, come le righe
+  read-only della pausa; nessun bordo o fondo dedicato.
 - **Aperta:** dissolvenza della lista quando il Player ci passa sotto, come il
   pulsante abilità (B52). Non richiesta ora; da valutare dopo il primo
   playtest.
 
 ## Documenti sincronizzati
 
-- [ ] `docs/ui-ux-flow.md` — sezione HUD.
-- [ ] `docs/visual-audio-identity.md` — trattamento Specialità nell'HUD.
-- [ ] `tools/milestone-test-map.json` — regressioni del nuovo test.
+- [x] `docs/ui-ux-flow.md` — sezione HUD.
+- [x] `docs/visual-audio-identity.md` — trattamento Specialità nell'HUD.
+- [x] `tools/milestone-test-map.json` — regressioni del nuovo test.
 
 ## Note
 
 - Sblocco: parte quando PS-203 raggiunge almeno `IN VERIFICA`.
 - Nessuna nuova arte: icone già presenti nelle definizioni upgrade; caselle
   vuote disegnate proceduralmente.
+- Evidenza 2026-09-22:
+  `.\tools\run-milestone-checks.ps1 -Milestone PS-204 -Profile Focused -FocusedSmoke tests/unit/test_ps204_hud_upgrade_slots.gd -RefreshEditor`
+  → al primo giro 1/4 test fallito: a 1600×720 la griglia sta dentro la
+  `TopBand`, che esclude i tocchi di suo; l'assert è stato corretto per
+  verificare che la lista non aggiunga esclusioni proprie.
+  `-Profile Relevant` → `status=PASS focused=1/1 regression=72/72`
+  (212 test, 7529 assert), nessun `SCRIPT ERROR`/`FATAL EXCEPTION`.
+  `godot_console --path . --script tools/_capture_hud_build_ps204.gd` →
+  `PS204_CAPTURE_DONE`, exit 0, tre PNG (1280×720, 2424×1080, 960×720).
+- Il profilo 20:9 su desktop non ha il foro: la posizione nella striscia si
+  vede solo sul Pixel.

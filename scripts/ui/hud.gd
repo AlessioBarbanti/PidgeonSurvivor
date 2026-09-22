@@ -33,6 +33,18 @@ const BOSS_WARNING_COLOR := Color("ffd166")
 const BOSS_COUNTDOWN_COLOR := Color("ff6b6b")
 const BOSS_APPROACHING_TEXT := "LA GRIGLIA STA FACENDO UN PROFUMINO..."
 const WAVE_EVENT_TELEGRAPH_COLOR := Color("6ee7ff")
+## PS-204: griglia dei power up presi, a sinistra fuori dalla safe area.
+const UPGRADE_SLOT_COLUMNS := 2
+const UPGRADE_SLOT_MAX_SIZE := 44
+const UPGRADE_SLOT_MIN_SIZE := 16
+const UPGRADE_SLOT_GAP := 4.0
+const UPGRADE_SLOT_EDGE_PADDING := 6.0
+
+## PS-204: fascia libera centrata a metà altezza del viewport, dove sta il foro
+## della fotocamera in landscape. Una sola altezza per tutte le piattaforme.
+@export_range(0.0, 240.0, 1.0) var camera_hole_band_height := 56.0:
+	set(value):
+		camera_hole_band_height = clampf(value, 0.0, 240.0) if is_finite(value) else 56.0
 
 @onready var _experience_bar: ProgressBar = %ExperienceBar
 @onready var _experience_kind_label: Label = %ExperienceKindLabel
@@ -52,6 +64,8 @@ const WAVE_EVENT_TELEGRAPH_COLOR := Color("6ee7ff")
 @onready var _active_ability_button: TouchAbilityButton = %ActiveAbilityButton
 @onready var _sobriety_slot: Control = %SobrietySlot
 @onready var _sobriety_icon: AleaSobrietyIndicator = %SobrietyIcon
+@onready var _upgrade_slot_grid: Control = %UpgradeSlotGrid
+@onready var _speciality_slot_group: Control = %SpecialitySlotGroup
 
 var _run_controller: RunController
 var _health_component: HealthComponent
@@ -73,6 +87,8 @@ var _ability_fade_camera: Camera2D
 var _ability_fade_target: Node2D
 var _ability_fade_target_radius := 0.0
 var _ability_alpha := 1.0
+var _upgrade_service: UpgradeService
+var _upgrade_slot_size := float(UPGRADE_SLOT_MAX_SIZE)
 
 
 func _ready() -> void:
@@ -102,6 +118,7 @@ func _process(delta: float) -> void:
 
 func _exit_tree() -> void:
 	_disconnect_sources()
+	_disconnect_upgrade_service()
 
 
 func configure(
@@ -156,6 +173,84 @@ func configure(
 	return true
 
 
+## PS-204: la build resta di `UpgradeService`; l'HUD la osserva soltanto.
+func configure_upgrade_service(service: UpgradeService) -> bool:
+	if not is_node_ready() or not is_instance_valid(service):
+		return false
+	_disconnect_upgrade_service()
+	_upgrade_service = service
+	_upgrade_service.upgrade_selected.connect(_on_build_changed)
+	_upgrade_service.ranks_reset.connect(_refresh_upgrade_slots)
+	_free_children(_upgrade_slot_grid)
+	for _index in _upgrade_service.get_distinct_upgrade_cap():
+		_upgrade_slot_grid.add_child(HudUpgradeSlot.new())
+	_refresh_upgrade_slots()
+	return true
+
+
+func get_upgrade_service() -> UpgradeService:
+	return _upgrade_service if is_instance_valid(_upgrade_service) else null
+
+
+## PS-204: colloca griglia e gruppo Specialità a partire dal bordo sinistro
+## del viewport. Vince la casella più grande che rispetta tutti i vincoli: la
+## griglia scende sotto barre e calice di Alea (riservato anche quando è
+## nascosto, così il layout non cambia col personaggio) e resta sopra la
+## fascia del foro; il gruppo sta sotto la fascia, lontano da `avoid_rects`.
+## Tutti i rettangoli sono in coordinate viewport.
+func layout_upgrade_slots(viewport_rect: Rect2, top_limit: float, avoid_rects: Array[Rect2]) -> void:
+	if not viewport_rect.has_area():
+		return
+	var band_center := viewport_rect.get_center().y
+	var band_top := band_center - camera_hole_band_height * 0.5
+	var band_bottom := band_center + camera_hole_band_height * 0.5
+	var bottom_limit := viewport_rect.end.y - UPGRADE_SLOT_EDGE_PADDING
+	var left := viewport_rect.position.x + UPGRADE_SLOT_EDGE_PADDING
+	var top_obstacles: Array[Rect2] = [
+		get_experience_panel_rect(), get_health_panel_rect(), _sobriety_slot.get_global_rect()
+	]
+	var grid_rect := Rect2()
+	var group_rect := Rect2()
+	for cell in range(UPGRADE_SLOT_MAX_SIZE, UPGRADE_SLOT_MIN_SIZE - 1, -1):
+		grid_rect = _place_below(
+			Rect2(Vector2(left, top_limit), _slot_block_size(cell, UPGRADE_SLOT_COLUMNS, _get_slot_count())),
+			top_obstacles
+		)
+		group_rect = _place_below(
+			Rect2(Vector2(left, band_bottom), _slot_block_size(cell, 1, _get_speciality_capacity())),
+			avoid_rects
+		)
+		_upgrade_slot_size = cell
+		if grid_rect.end.y <= band_top and group_rect.end.y <= bottom_limit:
+			break
+	var origin := get_global_rect().position
+	_upgrade_slot_grid.position = grid_rect.position - origin
+	_upgrade_slot_grid.size = grid_rect.size
+	_speciality_slot_group.position = group_rect.position - origin
+	_speciality_slot_group.size = group_rect.size
+	_arrange_upgrade_slots()
+
+
+func get_upgrade_slot_grid_rect() -> Rect2:
+	return _upgrade_slot_grid.get_global_rect()
+
+
+func get_speciality_group_rect() -> Rect2:
+	return _speciality_slot_group.get_global_rect()
+
+
+func get_upgrade_slot_size() -> float:
+	return _upgrade_slot_size
+
+
+func get_upgrade_slots() -> Array[HudUpgradeSlot]:
+	return _slots_in(_upgrade_slot_grid)
+
+
+func get_speciality_slots() -> Array[HudUpgradeSlot]:
+	return _slots_in(_speciality_slot_group)
+
+
 func get_run_controller() -> RunController:
 	return _run_controller if is_instance_valid(_run_controller) else null
 
@@ -206,6 +301,108 @@ func _refresh_sobriety_visibility() -> void:
 	if not is_alea:
 		_sobriety_icon.set_charge_ratio(0.0)
 		_sobriety_icon.set_brilla_active(false)
+
+
+func _disconnect_upgrade_service() -> void:
+	if not is_instance_valid(_upgrade_service):
+		return
+	if _upgrade_service.upgrade_selected.is_connected(_on_build_changed):
+		_upgrade_service.upgrade_selected.disconnect(_on_build_changed)
+	if _upgrade_service.ranks_reset.is_connected(_refresh_upgrade_slots):
+		_upgrade_service.ranks_reset.disconnect(_refresh_upgrade_slots)
+	_upgrade_service = null
+
+
+func _on_build_changed(_definition: UpgradeDefinition, _new_rank: int, _level: int) -> void:
+	_refresh_upgrade_slots()
+
+
+## L'ordine dei posti è quello di acquisizione esposto dal service (PS-203):
+## un rango nuovo aggiorna la stessa casella senza riordinare.
+func _refresh_upgrade_slots() -> void:
+	if not is_instance_valid(_upgrade_service):
+		return
+	var registry := _upgrade_service.get_registry()
+	if registry == null:
+		return
+	var slots := get_upgrade_slots()
+	var owned := _upgrade_service.get_distinct_upgrade_ids()
+	for index in slots.size():
+		var definition := registry.resolve_definition(owned[index]) if index < owned.size() else null
+		if definition != null:
+			slots[index].set_entry(definition, _upgrade_service.get_rank(definition.id))
+		else:
+			slots[index].clear_entry()
+	_free_children(_speciality_slot_group)
+	for speciality_id in _upgrade_service.get_unlocked_specialities():
+		var definition := registry.resolve_definition(speciality_id)
+		if definition == null:
+			continue
+		var slot := HudUpgradeSlot.new()
+		slot.set_entry(definition, _upgrade_service.get_rank(speciality_id))
+		_speciality_slot_group.add_child(slot)
+	_arrange_upgrade_slots()
+
+
+func _arrange_upgrade_slots() -> void:
+	var step := _upgrade_slot_size + UPGRADE_SLOT_GAP
+	var grid_slots := get_upgrade_slots()
+	for index in grid_slots.size():
+		grid_slots[index].position = Vector2(
+			index % UPGRADE_SLOT_COLUMNS, index / UPGRADE_SLOT_COLUMNS
+		) * step
+		grid_slots[index].size = Vector2.ONE * _upgrade_slot_size
+	var group_slots := get_speciality_slots()
+	for index in group_slots.size():
+		group_slots[index].position = Vector2(0.0, index * step)
+		group_slots[index].size = Vector2.ONE * _upgrade_slot_size
+
+
+func _get_slot_count() -> int:
+	if is_instance_valid(_upgrade_service):
+		return _upgrade_service.get_distinct_upgrade_cap()
+	return UpgradeService.DEFAULT_DISTINCT_UPGRADE_CAP
+
+
+## Spazio riservato per tutte le Specialità del catalogo, anche se bloccate:
+## sbloccarne una non deve spostare il gruppo.
+func _get_speciality_capacity() -> int:
+	var registry := _upgrade_service.get_registry() if is_instance_valid(_upgrade_service) else null
+	return maxi(registry.get_speciality_definitions().size(), 1) if registry != null else 1
+
+
+static func _slot_block_size(cell: int, columns: int, count: int) -> Vector2:
+	var rows := ceili(float(maxi(count, 1)) / float(columns))
+	return Vector2(
+		columns * cell + (columns - 1) * UPGRADE_SLOT_GAP,
+		rows * cell + (rows - 1) * UPGRADE_SLOT_GAP
+	)
+
+
+static func _place_below(rect: Rect2, obstacles: Array[Rect2]) -> Rect2:
+	var moved := true
+	while moved:
+		moved = false
+		for obstacle in obstacles:
+			if obstacle.has_area() and rect.intersects(obstacle):
+				rect.position.y = obstacle.end.y + UPGRADE_SLOT_GAP
+				moved = true
+	return rect
+
+
+static func _slots_in(container: Control) -> Array[HudUpgradeSlot]:
+	var slots: Array[HudUpgradeSlot] = []
+	if is_instance_valid(container):
+		for child in container.get_children():
+			if child is HudUpgradeSlot:
+				slots.append(child)
+	return slots
+
+
+static func _free_children(container: Control) -> void:
+	for child in container.get_children():
+		container.remove_child(child)
+		child.queue_free()
 
 
 func _on_alea_sobriety_changed(fill_ratio: float) -> void:

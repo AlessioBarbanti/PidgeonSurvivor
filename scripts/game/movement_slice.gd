@@ -297,6 +297,7 @@ func _ready() -> void:
 		_friend_passive_controller
 	)
 	_hud.set_friend_definition(_player.get_friend_definition())
+	_hud.configure_upgrade_service(_upgrade_service)
 	_character_select_overlay.configure(_friend_registry, _ability_effect_registry)
 	_game_audio.configure(
 		_run_controller,
@@ -468,6 +469,12 @@ func _apply_layout() -> void:
 	)
 	_aim_touch_joystick.position = aim_joystick_rect.position - safe_area.position
 	_aim_touch_joystick.size = aim_joystick_rect.size
+	# PS-204: la build parte dal bordo del viewport, nella striscia fuori dalla
+	# safe area, e scansa il joystick a riposo e il pulsante abilità.
+	var upgrade_slot_obstacles: Array[Rect2] = [joystick_rect, _hud.get_ability_panel_rect()]
+	_hud.layout_upgrade_slots(
+		get_viewport().get_visible_rect(), safe_area.position.y, upgrade_slot_obstacles
+	)
 
 	# PS-085: in automatico il joystick di movimento resta invariato (tutta la
 	# safe area, come da B18L); in manuale la meta' destra e' riservata alla
